@@ -2,7 +2,7 @@ package capstone.rt04.retailbackend.services;
 
 import capstone.rt04.retailbackend.entities.Tag;
 import capstone.rt04.retailbackend.repositories.TagRepository;
-import capstone.rt04.retailbackend.util.exceptions.TagNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.tag.TagNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

@@ -12,10 +12,9 @@ import capstone.rt04.retailbackend.entities.Review;
 
 import java.util.HashMap;
 import java.util.Map;
-import javax.persistence.PersistenceException;
 
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
-import capstone.rt04.retailbackend.util.exceptions.InvalidLoginCredentialsException;
+import capstone.rt04.retailbackend.util.exceptions.customer.InvalidLoginCredentialsException;
 import capstone.rt04.retailbackend.util.exceptions.customer.CreateNewCustomerException;
 import capstone.rt04.retailbackend.util.exceptions.customer.CustomerCannotDeleteException;
 import capstone.rt04.retailbackend.util.exceptions.customer.CustomerNotFoundException;
