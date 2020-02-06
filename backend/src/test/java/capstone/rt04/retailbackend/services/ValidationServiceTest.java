@@ -1,6 +1,6 @@
 package capstone.rt04.retailbackend.services;
 
-import static org.assertj.core.api.Assertions.assertThat;
+
 import capstone.rt04.retailbackend.entities.Category;
 import capstone.rt04.retailbackend.entities.Customer;
 import org.junit.Test;
@@ -12,6 +12,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
