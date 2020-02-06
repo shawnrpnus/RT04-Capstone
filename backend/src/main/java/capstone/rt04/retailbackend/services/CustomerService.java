@@ -1,23 +1,18 @@
 package capstone.rt04.retailbackend.services;
 
+import capstone.rt04.retailbackend.entities.*;
 import capstone.rt04.retailbackend.repositories.*;
+import capstone.rt04.retailbackend.util.exceptions.customer.*;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import capstone.rt04.retailbackend.entities.Customer;
-import capstone.rt04.retailbackend.entities.InStoreShoppingCart;
-import capstone.rt04.retailbackend.entities.InStoreShoppingCartItem;
-import capstone.rt04.retailbackend.entities.OnlineShoppingCart;
-import capstone.rt04.retailbackend.entities.OnlineShoppingCartItem;
-import capstone.rt04.retailbackend.entities.Review;
 
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
-import capstone.rt04.retailbackend.util.exceptions.customer.InvalidLoginCredentialsException;
-import capstone.rt04.retailbackend.util.exceptions.customer.CreateNewCustomerException;
-import capstone.rt04.retailbackend.util.exceptions.customer.CustomerCannotDeleteException;
-import capstone.rt04.retailbackend.util.exceptions.customer.CustomerNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -36,8 +31,11 @@ public class CustomerService {
     private final OnlineShoppingCartRepository onlineShoppingCartRepository;
     private final InStoreShoppingCartRepository inStoreShoppingCartRepository;
     private final InStoreShoppingCartItemRepository inStoreShoppingCartItemRepository;
+    private final VerificationCodeRepository verificationCodeRepository;
 
-    public CustomerService(ValidationService validationService, CustomerRepository customerRepository, ReviewRepository reviewRepository, OnlineShoppingCartItemRepository onlineShoppingCartItemRepository, OnlineShoppingCartRepository onlineShoppingCartRepository, InStoreShoppingCartRepository inStoreShoppingCartRepository, InStoreShoppingCartItemRepository inStoreShoppingCartItemRepository) {
+    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+
+    public CustomerService(ValidationService validationService, CustomerRepository customerRepository, ReviewRepository reviewRepository, OnlineShoppingCartItemRepository onlineShoppingCartItemRepository, OnlineShoppingCartRepository onlineShoppingCartRepository, InStoreShoppingCartRepository inStoreShoppingCartRepository, InStoreShoppingCartItemRepository inStoreShoppingCartItemRepository, VerificationCodeRepository verificationCodeRepository) {
         this.validationService = validationService;
         this.customerRepository = customerRepository;
         this.reviewRepository = reviewRepository;
@@ -45,6 +43,7 @@ public class CustomerService {
         this.onlineShoppingCartRepository = onlineShoppingCartRepository;
         this.inStoreShoppingCartRepository = inStoreShoppingCartRepository;
         this.inStoreShoppingCartItemRepository = inStoreShoppingCartItemRepository;
+        this.verificationCodeRepository = verificationCodeRepository;
     }
 
     public Customer createNewCustomer(Customer customer) throws InputDataValidationException, CreateNewCustomerException {
@@ -64,7 +63,6 @@ public class CustomerService {
                     throw new InputDataValidationException(errorMap, "Email already taken");
                 }
 
-                BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
                 customer.setPassword(encoder.encode(customer.getPassword()));
 
                 customerRepository.save(customer);
@@ -95,7 +93,6 @@ public class CustomerService {
     public Customer customerLogin(String email, String password) throws InvalidLoginCredentialsException {
         try {
             Customer customer = retrieveCustomerByEmail(email);
-            BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
             if (encoder.matches(password, customer.getPassword())) {
                 return customer;
             } else {
@@ -107,9 +104,49 @@ public class CustomerService {
         }
     }
 
-    //TODO: Change password
+    public void changePassword(Long customerId, String oldPassword, String newPassword) throws CustomerNotFoundException, InvalidLoginCredentialsException {
+        Customer customer = retrieveCustomerByCustomerId(customerId);
 
-    //TODO: Reset password (sending email verificationCode)
+        if(encoder.matches(oldPassword, customer.getPassword())){
+            customer.setPassword(encoder.encode(newPassword));
+        } else {
+            throw new InvalidLoginCredentialsException("The old password is incorrect!");
+        }
+    }
+
+    public String requestVerificationCode(Long customerId) throws CustomerNotFoundException {
+        Customer customer = retrieveCustomerByCustomerId(customerId);
+
+        String code = RandomStringUtils.randomAlphanumeric(6);
+
+        long now = System.currentTimeMillis();
+
+        long nowPlus1Hour =  now + TimeUnit.HOURS.toMillis(1);
+
+        VerificationCode verificationCode = new VerificationCode(code, new Timestamp(nowPlus1Hour));
+
+        verificationCodeRepository.save(verificationCode);
+
+        customer.setVerificationCode(verificationCode);
+
+        //TODO: Send email
+
+        return code;
+    }
+
+    //TODO: Reset password
+    public void resetPassword(Long customerId, String code, String newPassword) throws CustomerNotFoundException, VerificationCodeInvalidException {
+        Customer customer = retrieveCustomerByCustomerId(customerId);
+
+        if (code.equals(customer.getVerificationCode().getCode())){
+            if (customer.getVerificationCode().getExpiryDateTime().before(new Timestamp(System.currentTimeMillis()))){
+                throw new VerificationCodeInvalidException("Verification code has expired! Please request for a new one");
+            }
+            customer.setPassword(encoder.encode(newPassword));
+        } else {
+            throw new VerificationCodeInvalidException("Incorrect verification code entered");
+        }
+    }
 
     //TODO: Update measurements
 
