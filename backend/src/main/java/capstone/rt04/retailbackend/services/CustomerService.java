@@ -1,6 +1,7 @@
 package capstone.rt04.retailbackend.services;
 
 import capstone.rt04.retailbackend.repositories.*;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import capstone.rt04.retailbackend.entities.Customer;
 import capstone.rt04.retailbackend.entities.InStoreShoppingCart;
@@ -18,7 +19,6 @@ import capstone.rt04.retailbackend.util.exceptions.InvalidLoginCredentialsExcept
 import capstone.rt04.retailbackend.util.exceptions.customer.CreateNewCustomerException;
 import capstone.rt04.retailbackend.util.exceptions.customer.CustomerCannotDeleteException;
 import capstone.rt04.retailbackend.util.exceptions.customer.CustomerNotFoundException;
-import capstone.rt04.retailbackend.util.security.CryptographicHelper;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -65,9 +65,8 @@ public class CustomerService {
                     throw new InputDataValidationException(errorMap, "Email already taken");
                 }
 
-                //hash password
-                String hashedPassword = CryptographicHelper.getInstance().doSHA256hashPasswordWithSalt(customer.getPassword(), customer.getSalt());
-                customer.setPassword(hashedPassword);
+                BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+                customer.setPassword(encoder.encode(customer.getPassword()));
 
                 customerRepository.save(customer);
                 return customer;
@@ -97,9 +96,8 @@ public class CustomerService {
     public Customer customerLogin(String email, String password) throws InvalidLoginCredentialsException {
         try {
             Customer customer = retrieveCustomerByEmail(email);
-            String hashedPasswordInput = CryptographicHelper.getInstance().doSHA256hashPasswordWithSalt(password, customer.getSalt());
-
-            if (customer.getPassword().equals(hashedPasswordInput)) {
+            BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+            if (encoder.matches(password, customer.getPassword())) {
                 return customer;
             } else {
                 throw new InvalidLoginCredentialsException("Email or password is invalid!");

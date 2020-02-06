@@ -21,7 +21,6 @@ import javax.persistence.OneToOne;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 
-import capstone.rt04.retailbackend.util.security.CryptographicHelper;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -58,11 +57,7 @@ public class Customer implements Serializable {
     
     @NotNull
     @Column(columnDefinition = "CHAR(64) NOT NULL")
-    private String password; 
-    
-    @NotNull
-    @Column(columnDefinition = "CHAR(64) NOT NULL")
-    private String salt;
+    private String password;
     
     @NotNull
     @Column(nullable = false)
@@ -119,7 +114,6 @@ public class Customer implements Serializable {
     private List<Reservation> reservations;
 
     public Customer() {
-        this.salt = CryptographicHelper.getInstance().generateRandomString(64);
         this.createdDateTime = new Timestamp(System.currentTimeMillis());
         this.verified = false;
         this.usedPromoCodes = new ArrayList<>();

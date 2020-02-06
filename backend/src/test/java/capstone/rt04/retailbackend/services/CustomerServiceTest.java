@@ -42,4 +42,18 @@ public class CustomerServiceTest {
             assertThat(ex.getErrorMap()).isEqualTo(expectedErrorMap);
         }
     }
+
+    @Test
+    public void customerLogin() throws Exception {
+        Customer validCustomer = new Customer("Tony", "Stark", "tonystark@gmail.com", "spiderman");
+        Customer testValidCustomer = customerService.createNewCustomer(validCustomer);
+        assertThat(testValidCustomer.getCustomerId()).isNotNull();
+        assertThat(testValidCustomer).isEqualTo(validCustomer);
+
+        Customer loggedInCustomer = customerService.customerLogin("tonystark@gmail.com", "spiderman");
+        assertThat(loggedInCustomer.getCustomerId()).isEqualTo(testValidCustomer.getCustomerId());
+
+        Customer removedCustomer = customerService.removeCustomer(testValidCustomer.getCustomerId());
+        assertThat(removedCustomer.getCustomerId()).isEqualTo(testValidCustomer.getCustomerId());
+    }
 }
