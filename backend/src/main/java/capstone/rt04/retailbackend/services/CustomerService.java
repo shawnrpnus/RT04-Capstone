@@ -32,10 +32,11 @@ public class CustomerService {
     private final InStoreShoppingCartRepository inStoreShoppingCartRepository;
     private final InStoreShoppingCartItemRepository inStoreShoppingCartItemRepository;
     private final VerificationCodeRepository verificationCodeRepository;
+    private final MeasurementsRepository measurementsRepository;
 
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
-    public CustomerService(ValidationService validationService, CustomerRepository customerRepository, ReviewRepository reviewRepository, OnlineShoppingCartItemRepository onlineShoppingCartItemRepository, OnlineShoppingCartRepository onlineShoppingCartRepository, InStoreShoppingCartRepository inStoreShoppingCartRepository, InStoreShoppingCartItemRepository inStoreShoppingCartItemRepository, VerificationCodeRepository verificationCodeRepository) {
+    public CustomerService(ValidationService validationService, CustomerRepository customerRepository, ReviewRepository reviewRepository, OnlineShoppingCartItemRepository onlineShoppingCartItemRepository, OnlineShoppingCartRepository onlineShoppingCartRepository, InStoreShoppingCartRepository inStoreShoppingCartRepository, InStoreShoppingCartItemRepository inStoreShoppingCartItemRepository, VerificationCodeRepository verificationCodeRepository, MeasurementsRepository measurementsRepository) {
         this.validationService = validationService;
         this.customerRepository = customerRepository;
         this.reviewRepository = reviewRepository;
@@ -44,6 +45,7 @@ public class CustomerService {
         this.inStoreShoppingCartRepository = inStoreShoppingCartRepository;
         this.inStoreShoppingCartItemRepository = inStoreShoppingCartItemRepository;
         this.verificationCodeRepository = verificationCodeRepository;
+        this.measurementsRepository = measurementsRepository;
     }
 
     public Customer createNewCustomer(Customer customer) throws InputDataValidationException, CreateNewCustomerException {
@@ -107,7 +109,7 @@ public class CustomerService {
     public void changePassword(Long customerId, String oldPassword, String newPassword) throws CustomerNotFoundException, InvalidLoginCredentialsException {
         Customer customer = retrieveCustomerByCustomerId(customerId);
 
-        if(encoder.matches(oldPassword, customer.getPassword())){
+        if (encoder.matches(oldPassword, customer.getPassword())) {
             customer.setPassword(encoder.encode(newPassword));
         } else {
             throw new InvalidLoginCredentialsException("The old password is incorrect!");
@@ -121,7 +123,7 @@ public class CustomerService {
 
         long now = System.currentTimeMillis();
 
-        long nowPlus1Hour =  now + TimeUnit.HOURS.toMillis(1);
+        long nowPlus1Hour = now + TimeUnit.HOURS.toMillis(1);
 
         VerificationCode verificationCode = new VerificationCode(code, new Timestamp(nowPlus1Hour));
 
@@ -134,12 +136,11 @@ public class CustomerService {
         return code;
     }
 
-    //TODO: Reset password
     public void resetPassword(Long customerId, String code, String newPassword) throws CustomerNotFoundException, VerificationCodeInvalidException {
         Customer customer = retrieveCustomerByCustomerId(customerId);
 
-        if (code.equals(customer.getVerificationCode().getCode())){
-            if (customer.getVerificationCode().getExpiryDateTime().before(new Timestamp(System.currentTimeMillis()))){
+        if (code.equals(customer.getVerificationCode().getCode())) {
+            if (customer.getVerificationCode().getExpiryDateTime().before(new Timestamp(System.currentTimeMillis()))) {
                 throw new VerificationCodeInvalidException("Verification code has expired! Please request for a new one");
             }
             customer.setPassword(encoder.encode(newPassword));
@@ -148,7 +149,22 @@ public class CustomerService {
         }
     }
 
-    //TODO: Update measurements
+    public Measurements updateMeasurements(Long customerId, Measurements measurements) throws InputDataValidationException, CustomerNotFoundException {
+        Map<String, String> errorMap = validationService.generateErrorMap(measurements);
+        if (errorMap == null) {
+            Customer customer = retrieveCustomerByCustomerId(customerId);
+            Measurements currentMeasurements = customer.getMeasurements();
+            if (currentMeasurements != null) {
+                customer.setMeasurements(null);
+                measurementsRepository.delete(currentMeasurements);
+            }
+            customer.setMeasurements(measurements);
+            measurementsRepository.save(measurements);
+            return measurements;
+        } else {
+            throw new InputDataValidationException(errorMap, "Invalid measurements");
+        }
+    }
 
     //TODO: Update credit cards
 
