@@ -70,7 +70,7 @@ public class CustomerService {
 
                 customerRepository.save(customer);
                 return customer;
-            } catch (PersistenceException ex) {
+            } catch (Exception ex) {
                 throw new CreateNewCustomerException("Error creating new customer");
             }
         } else {
