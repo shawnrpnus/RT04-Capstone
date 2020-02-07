@@ -1,4 +1,4 @@
-package capstone.rt04.retailbackend.util.exceptions;
+package capstone.rt04.retailbackend.util.exceptions.customer;
 
 
 
