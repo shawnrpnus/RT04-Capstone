@@ -1,9 +1,13 @@
 package capstone.rt04.retailbackend.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
+import capstone.rt04.retailbackend.entities.Address;
+import capstone.rt04.retailbackend.entities.CreditCard;
 import capstone.rt04.retailbackend.entities.Customer;
 import capstone.rt04.retailbackend.entities.Measurements;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
+import capstone.rt04.retailbackend.util.exceptions.customer.InvalidLoginCredentialsException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -59,6 +63,15 @@ public class CustomerServiceTest {
     }
 
     @Test
+    public void updateEmail() throws Exception {
+        Customer validCustomer = customerService.retrieveCustomerByEmail("tonystark@gmail.com");
+        customerService.updateEmail(validCustomer.getCustomerId(), "ultron@gmail.com");
+        customerService.retrieveCustomerByEmail("ultron@gmail.com");
+        customerService.updateEmail(validCustomer.getCustomerId(), "tonystark@gmail.com");
+        customerService.retrieveCustomerByEmail("tonystark@gmail.com");
+    }
+
+    @Test(expected = InvalidLoginCredentialsException.class)
     public void customerLogin() throws Exception {
 
         Customer validCustomer = customerService.retrieveCustomerByEmail("tonystark@gmail.com");
@@ -66,6 +79,8 @@ public class CustomerServiceTest {
         Customer loggedInCustomer = customerService.customerLogin("tonystark@gmail.com", "spiderman");
         assertThat(loggedInCustomer.getCustomerId()).isEqualTo(validCustomer.getCustomerId());
 
+        customerService.customerLogin("invalidEmail@gmail.com", "password");
+        customerService.customerLogin("tonystark@gmail.com", "wrongPassword");
     }
 
     @Test
@@ -81,17 +96,22 @@ public class CustomerServiceTest {
     }
 
     @Test
-    public void requestVerificationCode() throws Exception {
+    public void generateVerificationCodeAndVerify() throws Exception {
         Customer validCustomer = customerService.retrieveCustomerByEmail("tonystark@gmail.com");
-        String code = customerService.requestVerificationCode(validCustomer.getCustomerId());
+        String code = customerService.generateVerificationCode(validCustomer.getCustomerId());
         validCustomer = customerService.retrieveCustomerByEmail("tonystark@gmail.com");
         assertThat(validCustomer.getVerificationCode().getCode()).isEqualTo(code);
+
+        customerService.verify(code);
+        validCustomer = customerService.retrieveCustomerByEmail("tonystark@gmail.com");
+        assertThat(validCustomer.isVerified()).isTrue();
     }
+
 
     @Test
     public void resetPassword() throws Exception {
         Customer validCustomer = customerService.retrieveCustomerByEmail("tonystark@gmail.com");
-        String code = customerService.requestVerificationCode(validCustomer.getCustomerId());
+        String code = customerService.generateVerificationCode(validCustomer.getCustomerId());
         validCustomer = customerService.retrieveCustomerByEmail("tonystark@gmail.com");
         assertThat(validCustomer.getVerificationCode().getCode()).isEqualTo(code);
 
@@ -118,6 +138,48 @@ public class CustomerServiceTest {
         customerService.updateMeasurements(validCustomer.getCustomerId(), secondMeasurements);
         validCustomer = customerService.retrieveCustomerByEmail("tonystark@gmail.com");
         assertThat(validCustomer.getMeasurements().getChest().compareTo(secondMeasurements.getChest())).isEqualTo(0);
+    }
+
+    @Test
+    public void crudCreditCards() throws Exception {
+        Customer validCustomer = customerService.retrieveCustomerByEmail("tonystark@gmail.com");
+        CreditCard newCreditCard = new CreditCard("123", "123", 12, 23, true);
+        customerService.addCreditCard(validCustomer.getCustomerId(), newCreditCard);
+        validCustomer = customerService.retrieveCustomerByEmail("tonystark@gmail.com");
+        assertThat(validCustomer.getCreditCards().contains(newCreditCard)).isTrue();
+        assertThat(validCustomer.getCreditCards().size()).isEqualTo(1);
+
+        CreditCard c = customerService.getCreditCard(validCustomer.getCustomerId(), validCustomer.getCreditCards().get(0).getCreditCardId());
+        assertThat(c).isEqualTo(newCreditCard);
+
+        customerService.deleteCreditCard(validCustomer.getCustomerId(), validCustomer.getCreditCards().get(0).getCreditCardId());
+        validCustomer = customerService.retrieveCustomerByEmail("tonystark@gmail.com");
+        assertThat(validCustomer.getCreditCards().size()).isEqualTo(0);
+    }
+
+    @Test
+    public void crudShippingAddress() throws Exception {
+        Customer validCustomer = customerService.retrieveCustomerByEmail("tonystark@gmail.com");
+        Address newShippingAddress = new Address("line1", null, "510149", null, false, null, null);
+        customerService.addShippingAddress(validCustomer.getCustomerId(), newShippingAddress);
+        validCustomer = customerService.retrieveCustomerByEmail("tonystark@gmail.com");
+        assertThat(validCustomer.getShippingAddresses().contains(newShippingAddress)).isTrue();
+        assertThat(validCustomer.getShippingAddresses().size()).isEqualTo(1);
+
+        Address a = customerService.getShippingAddress(validCustomer.getCustomerId(), validCustomer.getShippingAddresses().get(0).getAddressId());
+        assertThat(a).isEqualTo(newShippingAddress);
+
+        a.setLine1("line1updated");
+        customerService.updateShippingAddress(validCustomer.getCustomerId(), a);
+
+        validCustomer = customerService.retrieveCustomerByEmail("tonystark@gmail.com");
+        assertThat(validCustomer.getShippingAddresses().get(0).getLine1()).isEqualTo("line1updated");
+
+        customerService.deleteShippingAddress(validCustomer.getCustomerId(), a.getAddressId());
+        validCustomer = customerService.retrieveCustomerByEmail("tonystark@gmail.com");
+        assertThat(validCustomer.getShippingAddresses().size()).isEqualTo(0);
 
     }
+
+
 }

@@ -36,18 +36,20 @@ public class CreditCard implements Serializable {
     
     private String cvv; //encrypted
     
-    private Date expiry;
+    private Integer expiryMonth;
+
+    private Integer expiryYear;
     
     private boolean isDefault;
 
     public CreditCard() {
     }
 
-    public CreditCard(String number, String cvv, Date expiry, boolean isDefault) {
+    public CreditCard(String number, String cvv, Integer expiryMonth, Integer expiryYear, boolean isDefault) {
         this.number = number;
         this.cvv = cvv;
-        this.expiry = expiry;
+        this.expiryMonth = expiryMonth;
+        this.expiryYear = expiryYear;
         this.isDefault = isDefault;
     }
-    
 }
