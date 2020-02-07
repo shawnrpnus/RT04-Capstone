@@ -8,6 +8,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,13 +26,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class CustomerService {
 
     private final ValidationService validationService;
+    private final ShoppingCartService shoppingCartService;
 
     private final CustomerRepository customerRepository;
     private final ReviewRepository reviewRepository;
-    private final OnlineShoppingCartItemRepository onlineShoppingCartItemRepository;
-    private final OnlineShoppingCartRepository onlineShoppingCartRepository;
-    private final InStoreShoppingCartRepository inStoreShoppingCartRepository;
-    private final InStoreShoppingCartItemRepository inStoreShoppingCartItemRepository;
+    private final ShoppingCartItemRepository shoppingCartItemRepository;
+    private final ShoppingCartRepository shoppingCartRepository;
     private final VerificationCodeRepository verificationCodeRepository;
     private final MeasurementsRepository measurementsRepository;
     private final CreditCardRepository creditCardRepository;
@@ -39,14 +39,13 @@ public class CustomerService {
 
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
-    public CustomerService(ValidationService validationService, CustomerRepository customerRepository, ReviewRepository reviewRepository, OnlineShoppingCartItemRepository onlineShoppingCartItemRepository, OnlineShoppingCartRepository onlineShoppingCartRepository, InStoreShoppingCartRepository inStoreShoppingCartRepository, InStoreShoppingCartItemRepository inStoreShoppingCartItemRepository, VerificationCodeRepository verificationCodeRepository, MeasurementsRepository measurementsRepository, CreditCardRepository creditCardRepository, AddressRepository addressRepository) {
+    public CustomerService(ValidationService validationService, ShoppingCartService shoppingCartService, CustomerRepository customerRepository, ReviewRepository reviewRepository, ShoppingCartItemRepository shoppingCartItemRepository, ShoppingCartRepository shoppingCartRepository, VerificationCodeRepository verificationCodeRepository, MeasurementsRepository measurementsRepository, CreditCardRepository creditCardRepository, AddressRepository addressRepository) {
         this.validationService = validationService;
+        this.shoppingCartService = shoppingCartService;
         this.customerRepository = customerRepository;
         this.reviewRepository = reviewRepository;
-        this.onlineShoppingCartItemRepository = onlineShoppingCartItemRepository;
-        this.onlineShoppingCartRepository = onlineShoppingCartRepository;
-        this.inStoreShoppingCartRepository = inStoreShoppingCartRepository;
-        this.inStoreShoppingCartItemRepository = inStoreShoppingCartItemRepository;
+        this.shoppingCartItemRepository = shoppingCartItemRepository;
+        this.shoppingCartRepository = shoppingCartRepository;
         this.verificationCodeRepository = verificationCodeRepository;
         this.measurementsRepository = measurementsRepository;
         this.creditCardRepository = creditCardRepository;
@@ -72,10 +71,12 @@ public class CustomerService {
 
                 customer.setPassword(encoder.encode(customer.getPassword()));
                 Customer savedCustomer = customerRepository.save(customer);
+                shoppingCartService.initializeShoppingCarts(savedCustomer.getCustomerId());
                 generateVerificationCode(savedCustomer.getCustomerId());
                 //TODO: Send verification email
                 return customer;
             } catch (Exception ex) {
+                System.out.println(ex.getMessage());
                 throw new CreateNewCustomerException("Error creating new customer");
             }
         } else {
@@ -93,7 +94,7 @@ public class CustomerService {
     }
 
     public Customer retrieveCustomerByEmail(String email) throws CustomerNotFoundException {
-        Customer customer =  customerRepository.findByEmail(email)
+        Customer customer = customerRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomerNotFoundException("Customer email " + email + "does not exist!"));
         customer.getCreditCards().size();
         customer.getShippingAddresses().size();
@@ -143,7 +144,7 @@ public class CustomerService {
     public String generateVerificationCode(Long customerId) throws CustomerNotFoundException {
         Customer customer = retrieveCustomerByCustomerId(customerId);
         VerificationCode currentCode = customer.getVerificationCode();
-        if (currentCode != null){
+        if (currentCode != null) {
             currentCode.setCustomer(null);
             customer.setVerificationCode(null);
             verificationCodeRepository.delete(currentCode);
@@ -224,7 +225,6 @@ public class CustomerService {
         return customer;
     }
 
-    //TODO: Update shipping addresses
     public Customer addShippingAddress(Long customerId, Address shippingAddress) throws CustomerNotFoundException {
         Customer customer = retrieveCustomerByCustomerId(customerId);
         customer.getShippingAddresses().add(shippingAddress);
@@ -234,8 +234,8 @@ public class CustomerService {
 
     public Address getShippingAddress(Long customerId, Long addressId) throws CustomerNotFoundException, AddressNotFoundException {
         Customer customer = retrieveCustomerByCustomerId(customerId);
-        for (Address address : customer.getShippingAddresses()){
-            if (address.getAddressId().equals(addressId)){
+        for (Address address : customer.getShippingAddresses()) {
+            if (address.getAddressId().equals(addressId)) {
                 return address;
             }
         }
@@ -295,29 +295,22 @@ public class CustomerService {
         // ----------------------------------------------------
 
         // Clear relationship with both shopping carts
-        OnlineShoppingCart onlineShoppingCart = customer.getOnlineShoppingCart();
-        if (onlineShoppingCart != null) {
-            for (OnlineShoppingCartItem osci : onlineShoppingCart.getOnlineShoppingCartItems()) {
-                osci.setProductVariant(null);
-                onlineShoppingCart.getOnlineShoppingCartItems().remove(osci);
-                onlineShoppingCartItemRepository.delete(osci);
+        List<ShoppingCart> shoppingCarts = new ArrayList<>();
+        shoppingCarts.add(customer.getInStoreShoppingCart());
+        shoppingCarts.add(customer.getOnlineShoppingCart());
+        for (ShoppingCart shoppingCart : shoppingCarts) {
+            if (shoppingCart != null) {
+                for (ShoppingCartItem osci : shoppingCart.getShoppingCartItems()) {
+                    osci.setProductVariant(null);
+                    shoppingCart.getShoppingCartItems().remove(osci);
+                    shoppingCartItemRepository.delete(osci);
+                }
+                shoppingCart.setShoppingCartItems(null);
+                shoppingCart.setCustomer(null);
+                shoppingCartRepository.delete(shoppingCart);
             }
-            onlineShoppingCart.setOnlineShoppingCartItems(null);
-            onlineShoppingCart.setCustomer(null);
-            onlineShoppingCartRepository.delete(onlineShoppingCart);
         }
 
-        InStoreShoppingCart inStoreShoppingCart = customer.getInStoreShoppingCart();
-        if (inStoreShoppingCart != null) {
-            for (InStoreShoppingCartItem item : inStoreShoppingCart.getInStoreShoppingCartItems()) {
-                item.setProductVariant(null);
-                inStoreShoppingCart.getInStoreShoppingCartItems().remove(item);
-                inStoreShoppingCartItemRepository.delete(item);
-            }
-            inStoreShoppingCart.setInStoreShoppingCartItems(null);
-            inStoreShoppingCart.setCustomer(null);
-            inStoreShoppingCartRepository.delete(inStoreShoppingCart);
-        }
         //----------------------------------------
 
         customer.setWishlistItems(null);

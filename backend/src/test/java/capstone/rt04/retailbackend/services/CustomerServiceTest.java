@@ -39,6 +39,8 @@ public class CustomerServiceTest {
         Customer testValidCustomer = customerService.createNewCustomer(expectedValidCustomer);
         assertThat(testValidCustomer.getCustomerId()).isNotNull();
         assertThat(testValidCustomer).isEqualTo(expectedValidCustomer);
+        assertThat(testValidCustomer.getOnlineShoppingCart()).isNotNull();
+        assertThat(testValidCustomer.getInStoreShoppingCart()).isNotNull();
     }
 
     @After

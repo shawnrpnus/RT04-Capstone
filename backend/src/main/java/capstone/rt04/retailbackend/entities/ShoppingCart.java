@@ -31,30 +31,33 @@ import lombok.ToString;
 @Setter
 @EqualsAndHashCode
 @ToString
-public class InStoreShoppingCart implements Serializable {
+public class ShoppingCart implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long inStoreShoppingCartId;
+    private Long onlineShoppingCartId;
     
     @NotNull
     @Column(nullable = false)
     private BigDecimal initialTotalAmount;
     
-    private BigDecimal discountedTotalAmount;
+    private BigDecimal finalTotalAmount;
     
     @OneToMany
-    private List<InStoreShoppingCartItem> inStoreShoppingCartItems;
+    private List<ShoppingCartItem> shoppingCartItems;
     
     @OneToOne(mappedBy = "inStoreShoppingCart")
     @NotNull
     private Customer customer;
 
-    public InStoreShoppingCart() {
-        this.inStoreShoppingCartItems = new ArrayList<>();
+    public ShoppingCart() {
+        this.initialTotalAmount = BigDecimal.ZERO;
+        this.finalTotalAmount = BigDecimal.ZERO;
+        this.shoppingCartItems = new ArrayList<>();
     }
-
     
+    
+
     
 }
