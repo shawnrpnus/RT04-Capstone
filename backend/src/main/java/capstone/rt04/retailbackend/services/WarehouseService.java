@@ -28,6 +28,7 @@ public class WarehouseService {
     }
     //View all Warehouse inventory
     public Warehouse getWarehouseInventory(Long warehouseId) throws WarehouseNotFoundException {
+        //for loop
         Warehouse warehouse = retrieveByWarehouseId(warehouseId);
         return warehouse;
     }
