@@ -128,23 +128,6 @@ public class ProductServiceTest {
         assertThat(deletedProductStock.getProductStockId()).isEqualTo(productStock.getProductStockId());
     }
 
-}
+    // TODO: test assignProductStock
 
-//    @Test
-//    public void testCreateNewProduct() throws Exception {
-//        Product validProduct = new Product("Fila Disruptor II", "Fila", BigDecimal.valueOf(89.90), BigDecimal.valueOf(39.90));
-//
-//        Category category = categoryService.createNewCategory(new Category("Shoes"), null);
-//        validProduct.setCategory(category);
-//
-//        Product result = productService.createNewProduct(validProduct, category.getCategoryId(), null);
-//        assertThat(result).isEqualTo(validProduct);
-//
-//        // Remove from db
-//        Product removedProduct = productService.deleteProduct(result.getProductId());
-//        assertThat(removedProduct.getProductId()).isEqualTo(result.getProductId());
-//
-//        Long categoryId = category.getCategoryId();
-//        Category removedCategory = categoryService.deleteCategory(categoryId);
-//        assertThat(removedCategory.getCategoryId()).isEqualTo(categoryId);
-//    }
+}
