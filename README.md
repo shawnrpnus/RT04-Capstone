@@ -2,8 +2,8 @@
 
 ## Setup
 1. Create MySQL8 databases: retaildb and retaildbtest
-  create schema retaildb;
-  create schema retaildbtest;
+     - create schema retaildb;
+     - create schema retaildbtest;
 2. Clone repository
 3. Open IntelliJ > Import Project> navigate to RT04-Capstone/backend/pom.xml 
 4. Install the Lombok Plugin for IntelliJ: follow steps in https://projectlombok.org/setup/intellij
