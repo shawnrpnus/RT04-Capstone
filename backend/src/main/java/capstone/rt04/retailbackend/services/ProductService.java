@@ -123,6 +123,14 @@ public class ProductService {
         }
 
         // TODO: Clear product variant
+        List<ProductVariant> productVariants = productToRemove.getProductVariants();
+        productToRemove.setProductVariants(null);
+        for (ProductVariant pv : productVariants){
+            pv.setProduct(null);
+            productVariantRepository.delete(pv);
+            //TODO: have to search all shoppingcartItems and remove ref to productVariant
+        }
+
         productToRemove.getTags().clear();
 
         productRepository.delete(productToRemove);
