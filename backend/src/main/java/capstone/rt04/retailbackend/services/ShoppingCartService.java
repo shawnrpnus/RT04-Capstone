@@ -1,17 +1,20 @@
 package capstone.rt04.retailbackend.services;
 
-import capstone.rt04.retailbackend.entities.*;
+import capstone.rt04.retailbackend.entities.Customer;
+import capstone.rt04.retailbackend.entities.ProductVariant;
+import capstone.rt04.retailbackend.entities.ShoppingCart;
+import capstone.rt04.retailbackend.entities.ShoppingCartItem;
 import capstone.rt04.retailbackend.repositories.ShoppingCartItemRepository;
 import capstone.rt04.retailbackend.repositories.ShoppingCartRepository;
 import capstone.rt04.retailbackend.util.exceptions.customer.CustomerNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
-
-import static capstone.rt04.retailbackend.util.Constants.*;
-
 import capstone.rt04.retailbackend.util.exceptions.shoppingcart.InvalidCartTypeException;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static capstone.rt04.retailbackend.util.Constants.IN_STORE_SHOPPING_CART;
+import static capstone.rt04.retailbackend.util.Constants.ONLINE_SHOPPING_CART;
 
 @Service
 @Transactional
@@ -46,7 +49,7 @@ public class ShoppingCartService {
     }
 
     public ShoppingCartItem createShoppingCartItem(Integer quantity, Long productVariantId) throws ProductVariantNotFoundException {
-        ProductVariant productVariant = productService.viewProductVariant(productVariantId);
+        ProductVariant productVariant = productService.retrieveProductVariant(productVariantId);
         ShoppingCartItem shoppingCartItem = new ShoppingCartItem(quantity, productVariant);
         return shoppingCartItemRepository.save(shoppingCartItem);
     }

@@ -2,6 +2,7 @@ package capstone.rt04.retailbackend.services;
 
 import capstone.rt04.retailbackend.entities.Category;
 import capstone.rt04.retailbackend.entities.Product;
+import capstone.rt04.retailbackend.entities.ProductStock;
 import capstone.rt04.retailbackend.entities.ProductVariant;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import org.junit.After;
@@ -108,6 +109,25 @@ public class ProductServiceTest {
         ProductVariant deletedProductVariant = productService.deleteProductVariant(productVariant.getProductVariantId());
         assertThat(deletedProductVariant.getProductVariantId()).isEqualTo(productVariant.getProductVariantId());
     }
+
+    @Test
+    public void testCDProductStock() throws Exception {
+
+        Product product = productService.retrieveProductByProductId(productId);
+
+        ProductVariant validProductVariant = new ProductVariant("SKU001", "White", null, product, null);
+        ProductVariant productVariant = productService.createProductVariant(validProductVariant);
+
+        ProductStock validProductStock = new ProductStock(50, 100, 10);
+        validProductStock.setProductVariant(productVariant);
+
+        ProductStock productStock = productService.createProductStock(validProductStock, productVariant.getProductVariantId(), null, null);
+        assertThat(productStock).isEqualTo(validProductStock);
+
+        ProductStock deletedProductStock = productService.deleteProductStock(productStock.getProductStockId());
+        assertThat(deletedProductStock.getProductStockId()).isEqualTo(productStock.getProductStockId());
+    }
+
 }
 
 //    @Test

@@ -112,7 +112,6 @@ public class ProductService {
     public Product deleteProduct(Long productId) throws ProductNotFoundException//, DeleteProductException
     {
         Product productToRemove = retrieveProductByProductId(productId);
-
 //        List<TransactionLineItem> saleTransactionLineItemEntities = saleTransactionEntityControllerLocal.retrieveSaleTransactionLineItemsByProductId(productId);
 //        List<Review> reviewEntities = reviewEntityControllerLocal.retrieveReviewsForProduct(productId);
 //        if (saleTransactionLineItemEntities.isEmpty() && reviewEntities.isEmpty()) {
@@ -121,9 +120,14 @@ public class ProductService {
         for (Tag tag : productToRemove.getTags()) {
             tag.getProducts().remove(productToRemove);
         }
-
-        // TODO: Clear product variant
         productToRemove.getTags().clear();
+
+        for (ProductVariant productVariant : productToRemove.getProductVariants()) {
+            productVariant.setProduct(null);
+            productVariantRepository.delete(productVariant);
+        }
+
+        productToRemove.getProductVariants().clear();
 
         productRepository.delete(productToRemove);
 
@@ -228,7 +232,7 @@ public class ProductService {
 
     /**
      * Called in 1. createProductVariant
-     *           2. createWarehouse / createStore ( to retrieve all productVariant and call createProductStock for each product variant
+     * 2. createWarehouse / createStore ( to retrieve all productVariant and call createProductStock for each product variant
      *
      * @return productStock created
      */
@@ -274,10 +278,11 @@ public class ProductService {
     public ProductStock deleteProductStock(Long productStockId) throws ProductStockNotFoundException {
         ProductStock productStock = retrieveProductStockById(productStockId);
 
+        // TODO: Uncomment the codes when store and warehouse is done
         productStock.setProductVariant(null);
-        productStock.getStore().getProductStocks().remove(productStock);
+//        productStock.getStore().getProductStocks().remove(productStock);
         productStock.setStore(null);
-        productStock.getWarehouse().getProductStocks().remove(productStock);
+//        productStock.getWarehouse().getProductStocks().remove(productStock);
         productStock.setWarehouse(null);
 
         productStockRepository.delete(productStock);
@@ -296,9 +301,9 @@ public class ProductService {
 //    retrieveProductVariant() - done
 //    retrieveProductVariance() - done
 //
-//    createProductStock()
+//    createProductStock() - done
 //    updateProductStock()
-//    retrieveProductStock()
-//    retrieveAllProductStock()
-//    deleteProductStock()
+//    retrieveProductStock() - done
+//    retrieveAllProductStock() - done
+//    deleteProductStock() - done
 }
