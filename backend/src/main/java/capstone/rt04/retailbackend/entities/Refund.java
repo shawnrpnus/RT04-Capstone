@@ -8,7 +8,7 @@ package capstone.rt04.retailbackend.entities;
 import capstone.rt04.retailbackend.util.enums.RefundModeEnum;
 import capstone.rt04.retailbackend.util.enums.RefundStatusEnum;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.voodoodyne.jackson.jsog.JSOGGenerator;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,9 +28,7 @@ import java.sql.Timestamp;
 @Setter
 @EqualsAndHashCode
 @ToString
-@JsonIdentityInfo(
-        generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "refundId")
+@JsonIdentityInfo(generator = JSOGGenerator.class)
 public class Refund implements Serializable {
 
     private static final long serialVersionUID = 1L;

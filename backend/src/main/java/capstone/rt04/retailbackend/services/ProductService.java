@@ -115,7 +115,6 @@ public class ProductService {
         if (productId == null) {
             throw new ProductNotFoundException("Product ID not provided");
         }
-
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ProductNotFoundException("Product ID " + productId + " does not exist!"));
 

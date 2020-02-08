@@ -8,7 +8,7 @@ package capstone.rt04.retailbackend.entities;
 import capstone.rt04.retailbackend.util.enums.CollectionModeEnum;
 import capstone.rt04.retailbackend.util.enums.DeliveryStatusEnum;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.voodoodyne.jackson.jsog.JSOGGenerator;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -30,9 +30,7 @@ import java.util.List;
 @Setter
 @EqualsAndHashCode
 @ToString
-@JsonIdentityInfo(
-        generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "transactionId")
+@JsonIdentityInfo(generator = JSOGGenerator.class)
 public class Transaction implements Serializable {
 
     private static final long serialVersionUID = 1L;

@@ -6,7 +6,7 @@
 package capstone.rt04.retailbackend.entities;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.voodoodyne.jackson.jsog.JSOGGenerator;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,7 +16,6 @@ import javax.persistence.*;
 import java.io.Serializable;
 
 /**
- *
  * @author shawn
  */
 @Entity
@@ -24,9 +23,7 @@ import java.io.Serializable;
 @Setter
 @EqualsAndHashCode
 @ToString
-@JsonIdentityInfo(
-        generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "inStoreRestockOrderItemId")
+@JsonIdentityInfo(generator = JSOGGenerator.class)
 public class InStoreRestockOrderItem implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -43,10 +40,10 @@ public class InStoreRestockOrderItem implements Serializable {
     public InStoreRestockOrderItem() {
     }
 
-    
+
     public InStoreRestockOrderItem(Integer quantity, ProductVariant productVariant) {
         this.quantity = quantity;
         this.productVariant = productVariant;
     }
-    
+
 }

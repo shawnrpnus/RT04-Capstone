@@ -1,10 +1,12 @@
 package capstone.rt04.retailbackend.controllers;
 
-import capstone.rt04.retailbackend.entities.*;
+import capstone.rt04.retailbackend.entities.Category;
+import capstone.rt04.retailbackend.entities.Product;
 import capstone.rt04.retailbackend.services.CategoryService;
 import capstone.rt04.retailbackend.services.ProductService;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.product.CreateNewProductException;
+import capstone.rt04.retailbackend.util.exceptions.product.ProductNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,17 +28,13 @@ public class ProductController {
         this.productService = productService;
     }
 
-    @GetMapping("/")
-    public ResponseEntity<?> retrieveProduct(@RequestParam Long productId) {
-
-        return new ResponseEntity<>("Ola!", HttpStatus.OK);
-    }
-
-    @GetMapping("/retrieveAllCategory")
-    public ResponseEntity<?> retrieveCategory() {
+    @GetMapping("/retrieveProductById/{productId}")
+    public ResponseEntity<?> retrieveProductById(@PathVariable Long productId) {
         try {
-            List<Category> categories = categoryService.retrieveAllCategories();
-            return new ResponseEntity<>(categories, HttpStatus.OK);
+            Product product = productService.retrieveProductById(productId);
+            return new ResponseEntity<>(product, HttpStatus.OK);
+        } catch (ProductNotFoundException ex) {
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
         } catch (Exception ex) {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -46,17 +44,31 @@ public class ProductController {
     public ResponseEntity<?> retrieveAllProduct() {
         try {
             List<Product> products = productService.retrieveAllProducts();
-//            products = removeCyclicReference(products);
             return new ResponseEntity<>(products, HttpStatus.OK);
         } catch (Exception ex) {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    @PostMapping("/createNewProduct")
-    public ResponseEntity<?> createNewProduct(@RequestBody Product product) {
+    @PutMapping("/updateProduct/{productId}")
+    public ResponseEntity<?> updateProduct(@RequestBody Product newProduct) {
         try {
-            Product newProduct = productService.createNewProduct(product, null, null);
+            Product product = productService.updateProduct(newProduct);
+            return new ResponseEntity<>(product, HttpStatus.OK);
+        } catch (ProductNotFoundException ex) {
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+        }
+        catch (Exception ex) {
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping("/createNewProduct")
+    public ResponseEntity<?> createNewProduct(@RequestBody Product product, @RequestParam Long categoryId) {
+        try {
+            Category category = categoryService.retrieveCategoryByCategoryId(categoryId);
+            product.setCategory(category);
+            Product newProduct = productService.createNewProduct(product, categoryId, null);
             return new ResponseEntity<>(newProduct, HttpStatus.CREATED);
         } catch (InputDataValidationException ex) {
             return new ResponseEntity<>(ex.getErrorMap(), HttpStatus.BAD_REQUEST);
@@ -66,6 +78,17 @@ public class ProductController {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+
+//    @GetMapping("/retrieveAllCategory")
+//    public ResponseEntity<?> retrieveAllCategory() {
+//        try {
+//            List<Category> categories = categoryService.retrieveAllCategories();
+//            return new ResponseEntity<>(categories, HttpStatus.OK);
+//        } catch (Exception ex) {
+//            return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//    }
 
 //    @GetMapping("/getEvaluationsDoneByManager")
 //    public ResponseEntity<?> getEvaluationsDoneByManager(@RequestParam Long employeeId) {

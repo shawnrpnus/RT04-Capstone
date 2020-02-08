@@ -6,8 +6,7 @@
 package capstone.rt04.retailbackend.entities;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.voodoodyne.jackson.jsog.JSOGGenerator;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,9 +30,7 @@ import java.util.List;
 @Setter
 @EqualsAndHashCode
 @ToString
-@JsonIdentityInfo(
-        generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "productId")
+@JsonIdentityInfo(generator = JSOGGenerator.class)
 
 public class Product implements Serializable {
 
@@ -68,21 +65,17 @@ public class Product implements Serializable {
     private List<PromoCode> promoCodes;
 
     @ManyToMany(mappedBy = "products")
-    @JsonManagedReference
     private List<Tag> tags;
 
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
     @NotNull
-    @JsonManagedReference
     private Category category;
 
     @OneToMany(mappedBy = "product")
-    @JsonManagedReference
     private List<Review> reviews;
 
     @OneToMany(mappedBy = "product")
-    @JsonManagedReference
     private List<ProductVariant> productVariants;
 
     public Product() {
