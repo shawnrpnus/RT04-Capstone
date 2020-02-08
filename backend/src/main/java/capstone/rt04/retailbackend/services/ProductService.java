@@ -76,12 +76,11 @@ public class ProductService {
                 if (tagIds != null && (!tagIds.isEmpty())) {
                     for (Long tagId : tagIds) {
                         Tag tag = tagService.retrieveTagByTagId(tagId);
+                        // addTag is implemented in the entity
                         product.addTag(tag);
                     }
                 }
-
                 return product;
-
             } catch (PersistenceException ex) {
                 if (ex.getCause() != null
                         && ex.getCause().getCause() != null
@@ -219,7 +218,7 @@ public class ProductService {
         ProductVariant productVariant = productVariantRepository.findById(productVariantId)
                 .orElseThrow(() -> new ProductVariantNotFoundException("Product variant ID " + productVariantId + " does not exist!"));
 
-        productVariant.getProductImages();
+        productVariant.getProductImages().size();
         productVariant.getProduct();
         productVariant.getSizeDetails();
         return productVariant;
@@ -257,9 +256,9 @@ public class ProductService {
         ProductVariant productVariant = retrieveProductVariantById(productVariantId);
         productVariant.setColour(newProductVariant.getColour());
         productVariant.setSKU(newProductVariant.getSKU());
-//        productVariant.setProduct(); - change product - is this necessary?
-//        productVariant.setProductImages(); - add/remove productImage
-//        productVariant.setSizeDetails(); - add/remove sizeDetails
+        //        productVariant.setProduct(); - change product - is this necessary?
+        //        productVariant.setProductImages(); - add/remove productImage
+        //        productVariant.setSizeDetails(); - add/remove sizeDetails
         return productVariant;
     }
 
@@ -276,7 +275,7 @@ public class ProductService {
         return productVariant;
     }
 
-    // TODO : Call this method for createWarehouse / createStore
+    // TODO : Call this method in createWarehouse / createStore
     /**
      * Scenarios:
      * 1. new product -> assign to List<Warehouse> and List<Store>
@@ -360,9 +359,9 @@ public class ProductService {
         productStock.setMaxQuantity(newProductStock.getMaxQuantity());
         productStock.setNotificationLevel(newProductStock.getNotificationLevel());
         productStock.setQRcode(newProductStock.getQRcode());
-//        productStock.setStore(); - change store
-//        productStock.setWarehouse(); - change warehouse
-//        productStock.setProductVariant(); - change productVariant
+        //        productStock.setStore(); - change store
+        //        productStock.setWarehouse(); - change warehouse
+        //        productStock.setProductVariant(); - change productVariant
         return productStock;
     }
 
@@ -380,9 +379,8 @@ public class ProductService {
         return productStock;
     }
 
-    public ProductImage createProductImage(String imgUrl, Long productVariantId) throws ProductVariantNotFoundException {
+    public ProductImage createProductImage(ProductImage productImage, Long productVariantId) throws ProductVariantNotFoundException {
         ProductVariant productVariant = retrieveProductVariantById(productVariantId);
-        ProductImage productImage = new ProductImage(imgUrl);
         productImageRepository.save(productImage);
         productVariant.getProductImages().add(productImage);
         return productImage;

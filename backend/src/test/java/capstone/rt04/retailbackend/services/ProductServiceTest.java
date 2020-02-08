@@ -1,10 +1,8 @@
 package capstone.rt04.retailbackend.services;
 
-import capstone.rt04.retailbackend.entities.Category;
-import capstone.rt04.retailbackend.entities.Product;
-import capstone.rt04.retailbackend.entities.ProductStock;
-import capstone.rt04.retailbackend.entities.ProductVariant;
+import capstone.rt04.retailbackend.entities.*;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
+import capstone.rt04.retailbackend.util.exceptions.product.ProductImageNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductStockNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
 import org.junit.After;
@@ -18,7 +16,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -79,10 +76,6 @@ public class ProductServiceTest {
         Category categoryToRemove = categoryService.retrieveCategoryByCategoryId(categoryId);
         Category removedCategory = categoryService.deleteCategory(categoryToRemove.getCategoryId());
         assertThat(removedCategory.getCategoryId()).isEqualTo(categoryId);
-
-//        ProductVariant productVariant = productService.retrieveProductVariantById(productVariantId);
-//        ProductVariant deletedProductVariant = productService.deleteProductVariant(productVariant.getProductVariantId());
-//        assertThat(deletedProductVariant.getProductVariantId()).isEqualTo(productVariant.getProductVariantId());
     }
 
     @Test
@@ -98,12 +91,6 @@ public class ProductServiceTest {
         }
     }
 
-    @Test
-    public void testRetrieveAllProducts() throws Exception {
-        List<Product> result = productService.retrieveAllProducts();
-        assertThat(result).isNotNull();
-    }
-
     @Test(expected = ProductVariantNotFoundException.class)
     public void testCDProductVariant() throws Exception {
 
@@ -113,8 +100,8 @@ public class ProductServiceTest {
         ProductVariant productVariant = productService.createProductVariant(validProductVariant);
         assertThat(productVariant).isEqualTo(validProductVariant);
 
-        ProductVariant deletedProductVariant = productService.deleteProductVariant(productVariant.getProductVariantId());
-        productService.retrieveProductVariantById(deletedProductVariant.getProductVariantId());
+        productService.deleteProductVariant(productVariant.getProductVariantId());
+        productService.retrieveProductVariantById(productVariant.getProductVariantId());
     }
 
     @Test(expected = ProductStockNotFoundException.class)
@@ -128,11 +115,25 @@ public class ProductServiceTest {
         ProductStock productStock = productService.createProductStock(validProductStock, productVariant.getProductVariantId());
         assertThat(productStock).isEqualTo(validProductStock);
 
-        ProductStock deletedProductStock = productService.deleteProductStock(productStock.getProductStockId());
-        productService.retrieveProductStockById(deletedProductStock.getProductStockId());
+        productService.deleteProductStock(productStock.getProductStockId());
+        productService.retrieveProductStockById(productStock.getProductStockId());
+    }
+
+    @Test(expected = ProductImageNotFoundException.class)
+    public void testCDProductImage() throws Exception {
+        // Create
+        ProductVariant productVariant = productService.retrieveProductVariantById(productVariantId);
+        ProductImage validProductImage = new ProductImage("https://i.ebayimg.com/images/g/af8AAOSwd9dcdYMT/s-l640.jpg");
+
+        ProductImage productImage = productService.createProductImage(validProductImage, productVariant.getProductVariantId());
+        productVariant.getProductImages().add(productImage);
+        assertThat(productImage).isEqualTo(validProductImage);
+
+        // Delete
+        productVariant.getProductImages().remove(validProductImage);
+        productService.deleteProductImage(productImage.getProductImageId(), productVariant.getProductVariantId());
+        productService.retrieveProductImageById(productImage.getProductImageId());
     }
 
     // TODO: test assignProductStock - need to create store and warehouse service before
-
-
 }

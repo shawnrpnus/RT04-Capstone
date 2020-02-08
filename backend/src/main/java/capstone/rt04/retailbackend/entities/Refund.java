@@ -5,22 +5,19 @@
  */
 package capstone.rt04.retailbackend.entities;
 
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.sql.Timestamp;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
+import capstone.rt04.retailbackend.util.enums.RefundModeEnum;
+import capstone.rt04.retailbackend.util.enums.RefundStatusEnum;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import capstone.rt04.retailbackend.util.enums.RefundModeEnum;
-import capstone.rt04.retailbackend.util.enums.RefundStatusEnum;
+
+import javax.persistence.*;
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.sql.Timestamp;
 
 /**
  *
@@ -31,6 +28,9 @@ import capstone.rt04.retailbackend.util.enums.RefundStatusEnum;
 @Setter
 @EqualsAndHashCode
 @ToString
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "refundId")
 public class Refund implements Serializable {
 
     private static final long serialVersionUID = 1L;

@@ -5,19 +5,20 @@
  */
 package capstone.rt04.retailbackend.entities;
 
-import java.io.Serializable;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-import javax.persistence.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotNull;
-
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.springframework.security.core.parameters.P;
+
+import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
+import java.io.Serializable;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -28,6 +29,9 @@ import org.springframework.security.core.parameters.P;
 @Setter
 @EqualsAndHashCode
 @ToString
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "customerId")
 public class Customer implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -138,6 +142,6 @@ public class Customer implements Serializable {
             }
         }
     }
-    
+
     
 }

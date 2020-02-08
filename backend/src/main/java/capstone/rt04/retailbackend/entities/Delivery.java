@@ -5,20 +5,17 @@
  */
 package capstone.rt04.retailbackend.entities;
 
-import java.io.Serializable;
-import java.sql.Date;
-import java.util.List;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+
+import javax.persistence.*;
+import java.io.Serializable;
+import java.sql.Date;
+import java.util.List;
 
 /**
  *
@@ -29,6 +26,9 @@ import lombok.ToString;
 @Setter
 @EqualsAndHashCode
 @ToString
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "deliveryId")
 public class Delivery implements Serializable {
 
     private static final long serialVersionUID = 1L;
