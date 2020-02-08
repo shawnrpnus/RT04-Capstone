@@ -52,7 +52,7 @@ public class ShoppingCartServiceTest {
         categoryId = category.getCategoryId();
         productId = result.getProductId();
 
-        Product product = productService.retrieveProductByProductId(productId);
+        Product product = productService.retrieveProductById(productId);
         ProductVariant validProductVariant = new ProductVariant("SKU001", "White", null, product, null);
 
         ProductVariant productVariant = productService.createProductVariant(validProductVariant);
@@ -66,7 +66,7 @@ public class ShoppingCartServiceTest {
         Customer removedCustomer = customerService.removeCustomer(validCustomer.getCustomerId());
         assertThat(removedCustomer.getCustomerId()).isEqualTo(validCustomer.getCustomerId());
 
-        Product productToRemove = productService.retrieveProductByProductId(productId);
+        Product productToRemove = productService.retrieveProductById(productId);
         Product removedProduct = productService.deleteProduct(productToRemove.getProductId()); //deletes prod variant also
         assertThat(removedProduct.getProductId()).isEqualTo(productToRemove.getProductId());
 
