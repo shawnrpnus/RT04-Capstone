@@ -50,12 +50,15 @@ public class ProductController {
         }
     }
 
-    @GetMapping("/retrieveAllCategory")
-    public ResponseEntity<?> retrieveAllCategory() {
+    @PutMapping("/updateProduct/{productId}")
+    public ResponseEntity<?> updateProduct(@RequestBody Product newProduct) {
         try {
-            List<Category> categories = categoryService.retrieveAllCategories();
-            return new ResponseEntity<>(categories, HttpStatus.OK);
-        } catch (Exception ex) {
+            Product product = productService.updateProduct(newProduct);
+            return new ResponseEntity<>(product, HttpStatus.OK);
+        } catch (ProductNotFoundException ex) {
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+        }
+        catch (Exception ex) {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -75,6 +78,17 @@ public class ProductController {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+
+//    @GetMapping("/retrieveAllCategory")
+//    public ResponseEntity<?> retrieveAllCategory() {
+//        try {
+//            List<Category> categories = categoryService.retrieveAllCategories();
+//            return new ResponseEntity<>(categories, HttpStatus.OK);
+//        } catch (Exception ex) {
+//            return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//    }
 
 //    @GetMapping("/getEvaluationsDoneByManager")
 //    public ResponseEntity<?> getEvaluationsDoneByManager(@RequestParam Long employeeId) {

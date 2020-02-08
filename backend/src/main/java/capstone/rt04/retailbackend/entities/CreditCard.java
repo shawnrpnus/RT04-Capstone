@@ -26,7 +26,7 @@ import java.io.Serializable;
 @Setter
 @EqualsAndHashCode
 @ToString
-@JsonIdentityInfo(generator = JSOGGenerator.class)IdentityInfo(generator = JSOGGenerator.class)
+@JsonIdentityInfo(generator = JSOGGenerator.class)
 public class CreditCard implements Serializable {
 
     private static final long serialVersionUID = 1L;
