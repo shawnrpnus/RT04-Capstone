@@ -6,7 +6,7 @@
 package capstone.rt04.retailbackend.entities;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.voodoodyne.jackson.jsog.JSOGGenerator;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,7 +18,6 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 
 /**
- *
  * @author shawn
  */
 @Entity
@@ -26,9 +25,7 @@ import java.math.BigDecimal;
 @Setter
 @EqualsAndHashCode
 @ToString
-@JsonIdentityInfo(
-        generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "addressId")
+@JsonIdentityInfo(generator = JSOGGenerator.class)
 public class Address implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -39,26 +36,26 @@ public class Address implements Serializable {
     @NotNull
     @Column(nullable = false)
     private String line1;
-    
+
     private String line2;
-    
+
     @NotNull
     @Column(nullable = false)
     private String postalCode;
-    
+
     private String buildingName;
-    
+
     @NotNull
     @Column(nullable = false)
     private boolean isDefault;
 
     private BigDecimal xCoordinate;
-    
+
     private BigDecimal yCoordinate;
 
     public Address() {
     }
-    
+
     public Address(String line1, String line2, String postalCode, String buildingName, boolean isDefault, BigDecimal xCoordinate, BigDecimal yCoordinate) {
         this();
         this.line1 = line1;
@@ -69,7 +66,6 @@ public class Address implements Serializable {
         this.xCoordinate = xCoordinate;
         this.yCoordinate = yCoordinate;
     }
-    
-    
-   
+
+
 }

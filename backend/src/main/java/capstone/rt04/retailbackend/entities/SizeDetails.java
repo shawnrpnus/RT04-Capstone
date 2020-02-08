@@ -7,7 +7,7 @@ package capstone.rt04.retailbackend.entities;
 
 import capstone.rt04.retailbackend.util.enums.SizeEnum;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.voodoodyne.jackson.jsog.JSOGGenerator;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -29,9 +29,7 @@ import java.math.BigDecimal;
 @Setter
 @EqualsAndHashCode
 @ToString
-@JsonIdentityInfo(
-        generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "sizeDetailsId")
+@JsonIdentityInfo(generator = JSOGGenerator.class)
 public class SizeDetails implements Serializable {
 
     private static final long serialVersionUID = 1L;

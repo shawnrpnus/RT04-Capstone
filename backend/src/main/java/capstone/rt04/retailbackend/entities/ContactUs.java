@@ -7,7 +7,7 @@ package capstone.rt04.retailbackend.entities;
 
 import capstone.rt04.retailbackend.util.enums.ContactUsCategoryEnum;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.voodoodyne.jackson.jsog.JSOGGenerator;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,7 +19,6 @@ import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 /**
- *
  * @author shawn
  */
 @Entity
@@ -27,29 +26,27 @@ import java.io.Serializable;
 @Setter
 @EqualsAndHashCode
 @ToString
-@JsonIdentityInfo(
-        generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "contactUsId")
+@JsonIdentityInfo(generator = JSOGGenerator.class)
 public class ContactUs implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long contactUsId;
-    
+
     @NotNull
     @Column(nullable = false)
     private ContactUsCategoryEnum contactUsCategory;
-    
+
     @NotNull
     @Column(nullable = false, columnDefinition = "VARCHAR(1337)")
     @Size(max = 1337)
     private String content;
-    
+
     @NotNull
     @Column(nullable = false)
     private String customerEmail;
-    
+
     private boolean acknowledged;
 
     public ContactUs() {
@@ -62,5 +59,5 @@ public class ContactUs implements Serializable {
         this.content = content;
         this.customerEmail = customerEmail;
     }
-         
+
 }
