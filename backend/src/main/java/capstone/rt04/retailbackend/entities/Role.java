@@ -5,19 +5,18 @@
  */
 package capstone.rt04.retailbackend.entities;
 
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.List;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import capstone.rt04.retailbackend.util.enums.RoleNameEnum;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import capstone.rt04.retailbackend.util.enums.RoleNameEnum;
+
+import javax.persistence.*;
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.List;
 
 /**
  *
@@ -28,6 +27,9 @@ import capstone.rt04.retailbackend.util.enums.RoleNameEnum;
 @Setter
 @EqualsAndHashCode
 @ToString
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "roleId")
 public class Role implements Serializable {
 
     private static final long serialVersionUID = 1L;

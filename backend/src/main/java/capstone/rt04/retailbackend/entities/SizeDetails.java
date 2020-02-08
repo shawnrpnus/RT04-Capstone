@@ -5,17 +5,20 @@
  */
 package capstone.rt04.retailbackend.entities;
 
-import java.io.Serializable;
-import java.math.BigDecimal;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import capstone.rt04.retailbackend.util.enums.SizeEnum;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import capstone.rt04.retailbackend.util.enums.SizeEnum;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  *
@@ -26,6 +29,9 @@ import capstone.rt04.retailbackend.util.enums.SizeEnum;
 @Setter
 @EqualsAndHashCode
 @ToString
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "sizeDetailsId")
 public class SizeDetails implements Serializable {
 
     private static final long serialVersionUID = 1L;
