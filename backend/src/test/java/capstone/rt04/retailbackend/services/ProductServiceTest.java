@@ -139,5 +139,5 @@ public class ProductServiceTest {
      * To test for productStock, you need productVariant
      *
      **/
-    
+
 }
