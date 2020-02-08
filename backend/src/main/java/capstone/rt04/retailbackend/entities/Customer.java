@@ -91,18 +91,18 @@ public class Customer implements Serializable {
     
     @OneToMany(mappedBy = "customer")
     private List<Refund> refunds;
-    
+
     @OneToOne
     //TODO: Uncomment when shopping cart CRUD available
 //    @JoinColumn(nullable = false)
 //    @NotNull
-    private InStoreShoppingCart inStoreShoppingCart;
-    
+    private ShoppingCart inStoreShoppingCart;
+
     @OneToOne
     //TODO: Uncomment when shopping cart CRUD available
 //    @JoinColumn(nullable = false)
 //    @NotNull
-    private OnlineShoppingCart onlineShoppingCart;
+    private ShoppingCart onlineShoppingCart;
     
     @ManyToMany
     private List<ProductVariant> wishlistItems;

@@ -6,16 +6,13 @@
 package capstone.rt04.retailbackend.entities;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -31,31 +28,34 @@ import lombok.ToString;
 @Setter
 @EqualsAndHashCode
 @ToString
-public class OnlineShoppingCart implements Serializable {
+public class ShoppingCartItem implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long onlineShoppingCartId;
-    
+    private Long onlineShoppingCartItemId;
+
     @NotNull
     @Column(nullable = false)
-    private BigDecimal initialTotalAmount;
+    private Integer quantity;
     
-    private BigDecimal discountedTotalAmount;
-    
-    @OneToMany
-    private List<OnlineShoppingCartItem> onlineShoppingCartItems;
-    
-    @OneToOne(mappedBy = "onlineShoppingCart")
+    @ManyToOne
     @NotNull
-    private Customer customer;
+    @JoinColumn(nullable = false)
+    private ProductVariant productVariant;
 
-    public OnlineShoppingCart() {
-        this.onlineShoppingCartItems = new ArrayList<>();
+    public ShoppingCartItem() {
+    }
+    
+    public ShoppingCartItem(Integer quantity, ProductVariant productVariant) {
+        this.quantity = quantity;
+        this.productVariant = productVariant;
     }
     
     
-
+    
+    
+    
+    
     
 }
