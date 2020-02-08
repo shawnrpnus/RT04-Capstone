@@ -23,6 +23,8 @@ public class StoreServiceTest {
     @Autowired
     private StoreService storeService;
 
+    private static Long storeId;
+
     @Before
     public void beforeEachTest() throws Exception{
 
@@ -30,6 +32,7 @@ public class StoreServiceTest {
         Store testValidStore = storeService.createNewStore(expectedValidStore);
         assertThat(testValidStore.getStoreId()).isNotNull();
         assertThat(testValidStore).isEqualTo(expectedValidStore);
+        storeId = testValidStore.getStoreId();
     }
 
     @Test
@@ -48,7 +51,7 @@ public class StoreServiceTest {
     @Test
     public void deleteStore() throws Exception {
         int storeNumberBeforeDeletion = storeService.retrieveAllStores().size();
-        storeService.deleteStore(Long.valueOf(1));
+        storeService.deleteStore(storeId);
         int storeNumberAfterDeletion = storeService.retrieveAllStores().size();
         assertThat(storeNumberBeforeDeletion).isNotEqualTo(storeNumberAfterDeletion);
     }
