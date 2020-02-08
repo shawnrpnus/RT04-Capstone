@@ -134,10 +134,5 @@ public class ProductServiceTest {
 
     // TODO: test assignProductStock - need to create store and warehouse service before
 
-    /**
-     * To test for productImage, you need productVariant
-     * To test for productStock, you need productVariant
-     *
-     **/
 
 }
