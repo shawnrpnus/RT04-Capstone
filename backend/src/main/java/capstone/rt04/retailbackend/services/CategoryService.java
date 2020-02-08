@@ -10,6 +10,7 @@ import capstone.rt04.retailbackend.util.exceptions.category.UpdateCategoryExcept
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Service
@@ -30,7 +31,19 @@ public class CategoryService {
 
         if (errorMap == null) {
             try {
+                Category existingCategory = null;
+                try {
+                    existingCategory = retrieveCategoryByName(newCategory.getName());
+                } catch (CategoryNotFoundException ex) {
+                }
+                if (existingCategory != null) {
+                    errorMap = new HashMap<>();
+                    errorMap.put("category", "This category is already created!");
+                    throw new InputDataValidationException(errorMap, "Category already created");
+                }
                 if (parentCategoryId != null) {
+
+
                     Category parentCategoryEntity = retrieveCategoryByCategoryId(parentCategoryId);
 
                     if (!parentCategoryEntity.getProducts().isEmpty()) {
@@ -49,6 +62,14 @@ public class CategoryService {
         } else {
             throw new InputDataValidationException(errorMap, "Invalid Category");
         }
+    }
+
+    public Category retrieveCategoryByName(String name) throws CategoryNotFoundException {
+        Category category = categoryRepository.findByName(name).orElseThrow(
+                () -> new CategoryNotFoundException(("Category with name " + name + " does not exist!")));
+
+        lazilyLoadSubCategories(category);
+        return category;
     }
 
     public Category retrieveCategoryByCategoryId(Long categoryId) throws CategoryNotFoundException {
@@ -89,7 +110,10 @@ public class CategoryService {
                         categoryToUpdate.setParentCategory(parentCategory);
                     }
                 } else {
-                    throw new CategoryNotFoundException("Category ID not provided for category to be updated");
+                    if(categoryToUpdate.getParentCategory() != null) {
+                        throw new CategoryNotFoundException("Category ID not provided for category to be updated");
+                    }
+
                 }
             } catch (Exception ex) {
                 throw new UpdateCategoryException("Error updating category");
