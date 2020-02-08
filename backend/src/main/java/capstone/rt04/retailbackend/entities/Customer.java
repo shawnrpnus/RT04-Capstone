@@ -9,15 +9,7 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 
@@ -25,6 +17,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.security.core.parameters.P;
 
 /**
  *
@@ -93,15 +86,9 @@ public class Customer implements Serializable {
     private List<Refund> refunds;
 
     @OneToOne
-    //TODO: Uncomment when shopping cart CRUD available
-//    @JoinColumn(nullable = false)
-//    @NotNull
     private ShoppingCart inStoreShoppingCart;
 
     @OneToOne
-    //TODO: Uncomment when shopping cart CRUD available
-//    @JoinColumn(nullable = false)
-//    @NotNull
     private ShoppingCart onlineShoppingCart;
     
     @ManyToMany
@@ -134,6 +121,22 @@ public class Customer implements Serializable {
         this.lastName = lastName;
         this.email = email;
         this.password = password;
+    }
+
+    public void addShippingAddress(Address address){
+        if (address != null){
+            if (!this.shippingAddresses.contains(address)){
+                this.shippingAddresses.add(address);
+            }
+        }
+    }
+
+    public void addCreditCard(CreditCard creditCard){
+        if (creditCard != null){
+            if (!this.creditCards.contains(creditCard)){
+                this.creditCards.add(creditCard);
+            }
+        }
     }
     
     

@@ -201,7 +201,7 @@ public class CustomerService {
     public Customer addCreditCard(Long customerId, CreditCard creditCard) throws CustomerNotFoundException {
         Customer customer = retrieveCustomerByCustomerId(customerId);
         creditCardRepository.save(creditCard);
-        customer.getCreditCards().add(creditCard);
+        customer.addCreditCard(creditCard);
         return customer;
     }
 
@@ -226,8 +226,8 @@ public class CustomerService {
 
     public Customer addShippingAddress(Long customerId, Address shippingAddress) throws CustomerNotFoundException {
         Customer customer = retrieveCustomerByCustomerId(customerId);
-        customer.getShippingAddresses().add(shippingAddress);
         addressRepository.save(shippingAddress);
+        customer.addShippingAddress(shippingAddress);
         return customer;
     }
 
@@ -297,15 +297,17 @@ public class CustomerService {
         List<ShoppingCart> shoppingCarts = new ArrayList<>();
         shoppingCarts.add(customer.getInStoreShoppingCart());
         shoppingCarts.add(customer.getOnlineShoppingCart());
+        customer.setOnlineShoppingCart(null);
+        customer.setInStoreShoppingCart(null);
         for (ShoppingCart shoppingCart : shoppingCarts) {
             if (shoppingCart != null) {
-                for (ShoppingCartItem osci : shoppingCart.getShoppingCartItems()) {
-                    osci.setProductVariant(null);
-                    shoppingCart.getShoppingCartItems().remove(osci);
-                    shoppingCartItemRepository.delete(osci);
+                List<ShoppingCartItem> shoppingCartItems = shoppingCart.getShoppingCartItems();
+                shoppingCart.setShoppingCartItems(null);
+                for (ShoppingCartItem shoppingCartItem : shoppingCartItems) {
+                    shoppingCartItem.setProductVariant(null);
+                    shoppingCartItemRepository.delete(shoppingCartItem);
                 }
                 shoppingCart.setShoppingCartItems(null);
-                shoppingCart.setCustomer(null);
                 shoppingCartRepository.delete(shoppingCart);
             }
         }
