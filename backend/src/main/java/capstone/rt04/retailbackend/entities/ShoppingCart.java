@@ -34,7 +34,7 @@ public class ShoppingCart implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long onlineShoppingCartId;
+    private Long shoppingCartId;
     
     @NotNull
     @Column(nullable = false)
@@ -44,10 +44,6 @@ public class ShoppingCart implements Serializable {
     
     @OneToMany
     private List<ShoppingCartItem> shoppingCartItems;
-    
-    @OneToOne(mappedBy = "inStoreShoppingCart")
-    @NotNull
-    private Customer customer;
 
     public ShoppingCart() {
         this.initialTotalAmount = BigDecimal.ZERO;

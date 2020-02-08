@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
+import static capstone.rt04.retailbackend.util.Constants.*;
 
 import java.math.BigDecimal;
 
@@ -85,19 +86,28 @@ public class ShoppingCartServiceTest {
         Customer validCustomer = customerService.retrieveCustomerByEmail("tonystark@gmail.com");
 
         //add
-        ShoppingCart shoppingCart = shoppingCartService.updateQuantityOfProductVariant(1, productVariantId, validCustomer.getCustomerId(), "online");
-        shoppingCart = shoppingCartService.getShoppingCart(validCustomer.getCustomerId(), "online");
+        shoppingCartService.updateQuantityOfProductVariant(1, productVariantId, validCustomer.getCustomerId(), ONLINE_SHOPPING_CART);
+        ShoppingCart shoppingCart = shoppingCartService.getShoppingCart(validCustomer.getCustomerId(), ONLINE_SHOPPING_CART);
         assertThat(shoppingCart.getShoppingCartItems().size()).isEqualTo(1);
 
         //update
-        shoppingCartService.updateQuantityOfProductVariant(2, productVariantId, validCustomer.getCustomerId(), "online");
-        shoppingCart = shoppingCartService.getShoppingCart(validCustomer.getCustomerId(), "online");
+        shoppingCartService.updateQuantityOfProductVariant(2, productVariantId, validCustomer.getCustomerId(), ONLINE_SHOPPING_CART);
+        shoppingCart = shoppingCartService.getShoppingCart(validCustomer.getCustomerId(), ONLINE_SHOPPING_CART);
         assertThat(shoppingCart.getShoppingCartItems().size()).isEqualTo(1);
         assertThat(shoppingCart.getShoppingCartItems().get(0).getQuantity()).isEqualTo(2);
 
         //delete
-        shoppingCartService.updateQuantityOfProductVariant(0, productVariantId, validCustomer.getCustomerId(), "online");
-        shoppingCart = shoppingCartService.getShoppingCart(validCustomer.getCustomerId(), "online");
+        shoppingCartService.updateQuantityOfProductVariant(0, productVariantId, validCustomer.getCustomerId(), ONLINE_SHOPPING_CART);
+        shoppingCart = shoppingCartService.getShoppingCart(validCustomer.getCustomerId(), ONLINE_SHOPPING_CART);
+        assertThat(shoppingCart.getShoppingCartItems().size()).isEqualTo(0);
+
+        shoppingCartService.updateQuantityOfProductVariant(10, productVariantId, validCustomer.getCustomerId(), ONLINE_SHOPPING_CART);
+        shoppingCart = shoppingCartService.getShoppingCart(validCustomer.getCustomerId(), ONLINE_SHOPPING_CART);
+        assertThat(shoppingCart.getShoppingCartItems().size()).isEqualTo(1);
+        assertThat(shoppingCart.getShoppingCartItems().get(0).getQuantity()).isEqualTo(10);
+
+        shoppingCartService.clearShoppingCart(validCustomer.getCustomerId(), ONLINE_SHOPPING_CART);
+        shoppingCart = shoppingCartService.getShoppingCart(validCustomer.getCustomerId(), ONLINE_SHOPPING_CART);
         assertThat(shoppingCart.getShoppingCartItems().size()).isEqualTo(0);
     }
 
