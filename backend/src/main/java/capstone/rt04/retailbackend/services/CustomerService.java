@@ -101,6 +101,12 @@ public class CustomerService {
         customer.getCreditCards().size();
         customer.getShippingAddresses().size();
         customer.getMeasurements();
+        customer.getWishlistItems().size();
+        customer.getReservations().size();
+        customer.getRefunds().size();
+        customer.getTransactions().size();
+        customer.getUsedPromoCodes().size();
+        customer.getReviews().size();
         return customer;
     }
 
