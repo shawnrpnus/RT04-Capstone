@@ -11,8 +11,8 @@ import capstone.rt04.retailbackend.util.exceptions.tag.UpdateTagException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.PersistenceException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -80,7 +80,6 @@ public class TagService {
     public Tag deleteTag(Long tagId) throws TagNotFoundException, DeleteTagException
     {
         Tag tagToRemove = retrieveTagByTagId(tagId);
-
         for(Product p :tagToRemove.getProducts()) {
             p.getTags().remove(tagToRemove);
         }
@@ -99,9 +98,11 @@ public class TagService {
         {
             throw new TagNotFoundException("Tag ID not provided");
         }
-
         return tagRepository.findById(tagId)
                 .orElseThrow(() -> new TagNotFoundException("Tag ID " + tagId + " does not exist!"));
+    }
 
+    public List<Tag> retrieveListOfTagsById(List<Long> tagIds) {
+        return (List<Tag>) tagRepository.findAllById(tagIds);
     }
 }

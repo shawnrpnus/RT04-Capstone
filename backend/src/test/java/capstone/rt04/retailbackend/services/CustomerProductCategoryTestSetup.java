@@ -22,6 +22,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles("test")
 public class CustomerProductCategoryTestSetup {
 
+    protected static final String VALID_CUST_EMAIL = "tonystark@gmail.com";
+
     @Autowired
     protected CustomerService customerService;
 
@@ -36,7 +38,7 @@ public class CustomerProductCategoryTestSetup {
 
     @Before
     public void beforeEachTest() throws Exception{
-        Customer expectedValidCustomer = new Customer("Tony", "Stark", "tonystark@gmail.com", "spiderman");
+        Customer expectedValidCustomer = new Customer("Tony", "Stark", VALID_CUST_EMAIL, "spiderman");
         Customer testValidCustomer = customerService.createNewCustomer(expectedValidCustomer);
         assertThat(testValidCustomer.getCustomerId()).isNotNull();
         assertThat(testValidCustomer).isEqualTo(expectedValidCustomer);
@@ -62,7 +64,7 @@ public class CustomerProductCategoryTestSetup {
 
     @After
     public void afterEachTest() throws Exception{
-        Customer validCustomer = customerService.retrieveCustomerByEmail("tonystark@gmail.com");
+        Customer validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
         Customer removedCustomer = customerService.removeCustomer(validCustomer.getCustomerId());
         assertThat(removedCustomer.getCustomerId()).isEqualTo(validCustomer.getCustomerId());
 

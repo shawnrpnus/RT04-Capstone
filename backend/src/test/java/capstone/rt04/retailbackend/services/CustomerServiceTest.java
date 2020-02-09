@@ -46,88 +46,87 @@ public class CustomerServiceTest extends CustomerProductCategoryTestSetup {
 
     @Test
     public void updateEmail() throws Exception {
-        Customer validCustomer = customerService.retrieveCustomerByEmail("tonystark@gmail.com");
-        customerService.updateEmail(validCustomer.getCustomerId(), "ultron@gmail.com");
+        Customer validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
+        customerService.changeEmail(validCustomer.getCustomerId(), "ultron@gmail.com");
         customerService.retrieveCustomerByEmail("ultron@gmail.com");
-        customerService.updateEmail(validCustomer.getCustomerId(), "tonystark@gmail.com");
-        customerService.retrieveCustomerByEmail("tonystark@gmail.com");
+        customerService.changeEmail(validCustomer.getCustomerId(), VALID_CUST_EMAIL);
+        customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
     }
 
     @Test(expected = InvalidLoginCredentialsException.class)
     public void customerLogin() throws Exception {
 
-        Customer validCustomer = customerService.retrieveCustomerByEmail("tonystark@gmail.com");
-
-        Customer loggedInCustomer = customerService.customerLogin("tonystark@gmail.com", "spiderman");
+        Customer validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
+        generateVerificationCodeAndVerify();
+        Customer loggedInCustomer = customerService.customerLogin(VALID_CUST_EMAIL, "spiderman");
         assertThat(loggedInCustomer.getCustomerId()).isEqualTo(validCustomer.getCustomerId());
 
         customerService.customerLogin("invalidEmail@gmail.com", "password");
-        customerService.customerLogin("tonystark@gmail.com", "wrongPassword");
+        customerService.customerLogin(VALID_CUST_EMAIL, "wrongPassword");
     }
 
     @Test
     public void changePassword() throws Exception {
-        Customer validCustomer = customerService.retrieveCustomerByEmail("tonystark@gmail.com");
+        Customer validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
         String newPasswordRaw = "password";
 
         customerService.changePassword(validCustomer.getCustomerId(), "spiderman", newPasswordRaw);
 
-        validCustomer = customerService.retrieveCustomerByEmail("tonystark@gmail.com");
+        validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
 
         assertThat(encoder.matches(newPasswordRaw, validCustomer.getPassword())).isTrue();
     }
 
-    @Test
     public void generateVerificationCodeAndVerify() throws Exception {
-        Customer validCustomer = customerService.retrieveCustomerByEmail("tonystark@gmail.com");
+        Customer validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
         String code = customerService.generateVerificationCode(validCustomer.getCustomerId());
-        validCustomer = customerService.retrieveCustomerByEmail("tonystark@gmail.com");
+        validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
         assertThat(validCustomer.getVerificationCode().getCode()).isEqualTo(code);
 
         customerService.verify(code);
-        validCustomer = customerService.retrieveCustomerByEmail("tonystark@gmail.com");
+        validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
         assertThat(validCustomer.isVerified()).isTrue();
     }
 
 
     @Test
     public void resetPassword() throws Exception {
-        Customer validCustomer = customerService.retrieveCustomerByEmail("tonystark@gmail.com");
+        Customer validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
         String code = customerService.generateVerificationCode(validCustomer.getCustomerId());
-        validCustomer = customerService.retrieveCustomerByEmail("tonystark@gmail.com");
+        validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
         assertThat(validCustomer.getVerificationCode().getCode()).isEqualTo(code);
 
         String newPassword = "password123";
 
         customerService.resetPassword(validCustomer.getCustomerId(), code, newPassword);
 
-        validCustomer =  customerService.retrieveCustomerByEmail("tonystark@gmail.com");
+        validCustomer =  customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
 
         assertThat(encoder.matches(newPassword, validCustomer.getPassword())).isTrue();
     }
 
     @Test
     public void updateMeasurements() throws Exception{
-        Customer validCustomer = customerService.retrieveCustomerByEmail("tonystark@gmail.com");
+        Customer validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
         Measurements initialMeasurements = new Measurements();
         initialMeasurements.setChest(BigDecimal.valueOf(38.00));
         customerService.updateMeasurements(validCustomer.getCustomerId(), initialMeasurements);
-        validCustomer = customerService.retrieveCustomerByEmail("tonystark@gmail.com");
+        validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
         assertThat(validCustomer.getMeasurements().getChest().compareTo(initialMeasurements.getChest())).isEqualTo(0);
 
         Measurements secondMeasurements = new Measurements();
         secondMeasurements.setChest(BigDecimal.valueOf(100.00));
         customerService.updateMeasurements(validCustomer.getCustomerId(), secondMeasurements);
-        validCustomer = customerService.retrieveCustomerByEmail("tonystark@gmail.com");
+        validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
         assertThat(validCustomer.getMeasurements().getChest().compareTo(secondMeasurements.getChest())).isEqualTo(0);
     }
 
     @Test
     public void crudCreditCards() throws Exception {
-        Customer validCustomer = customerService.retrieveCustomerByEmail("tonystark@gmail.com");
+        Customer validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
         CreditCard newCreditCard = new CreditCard("123", "123", 12, 23, true);
         customerService.addCreditCard(validCustomer.getCustomerId(), newCreditCard);
-        validCustomer = customerService.retrieveCustomerByEmail("tonystark@gmail.com");
+        validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
         assertThat(validCustomer.getCreditCards().contains(newCreditCard)).isTrue();
         assertThat(validCustomer.getCreditCards().size()).isEqualTo(1);
 
@@ -135,16 +134,16 @@ public class CustomerServiceTest extends CustomerProductCategoryTestSetup {
         assertThat(c).isEqualTo(newCreditCard);
 
         customerService.deleteCreditCard(validCustomer.getCustomerId(), validCustomer.getCreditCards().get(0).getCreditCardId());
-        validCustomer = customerService.retrieveCustomerByEmail("tonystark@gmail.com");
+        validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
         assertThat(validCustomer.getCreditCards().size()).isEqualTo(0);
     }
 
     @Test
     public void crudShippingAddress() throws Exception {
-        Customer validCustomer = customerService.retrieveCustomerByEmail("tonystark@gmail.com");
+        Customer validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
         Address newShippingAddress = new Address("line1", null, "510149", null, false, null, null);
         customerService.addShippingAddress(validCustomer.getCustomerId(), newShippingAddress);
-        validCustomer = customerService.retrieveCustomerByEmail("tonystark@gmail.com");
+        validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
         assertThat(validCustomer.getShippingAddresses().contains(newShippingAddress)).isTrue();
         assertThat(validCustomer.getShippingAddresses().size()).isEqualTo(1);
 
@@ -154,34 +153,34 @@ public class CustomerServiceTest extends CustomerProductCategoryTestSetup {
         a.setLine1("line1updated");
         customerService.updateShippingAddress(validCustomer.getCustomerId(), a);
 
-        validCustomer = customerService.retrieveCustomerByEmail("tonystark@gmail.com");
+        validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
         assertThat(validCustomer.getShippingAddresses().get(0).getLine1()).isEqualTo("line1updated");
 
         customerService.deleteShippingAddress(validCustomer.getCustomerId(), a.getAddressId());
-        validCustomer = customerService.retrieveCustomerByEmail("tonystark@gmail.com");
+        validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
         assertThat(validCustomer.getShippingAddresses().size()).isEqualTo(0);
 
     }
 
     @Test
     public void crudWishlistItems() throws Exception{
-        Customer validCustomer = customerService.retrieveCustomerByEmail("tonystark@gmail.com");
+        Customer validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
         customerService.addProductToWishlist(validCustomer.getCustomerId(), productVariantId);
-        validCustomer = customerService.retrieveCustomerByEmail("tonystark@gmail.com");
+        validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
         assertThat(validCustomer.getWishlistItems().size()).isEqualTo(1);
         assertThat(validCustomer.getWishlistItems().get(0).getProductVariantId()).isEqualTo(productVariantId);
 
         customerService.removeProductFromWishlist(validCustomer.getCustomerId(), productVariantId);
-        validCustomer = customerService.retrieveCustomerByEmail("tonystark@gmail.com");
+        validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
         assertThat(validCustomer.getWishlistItems().size()).isEqualTo(0);
 
         customerService.addProductToWishlist(validCustomer.getCustomerId(), productVariantId);
-        validCustomer = customerService.retrieveCustomerByEmail("tonystark@gmail.com");
+        validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
         assertThat(validCustomer.getWishlistItems().size()).isEqualTo(1);
         assertThat(validCustomer.getWishlistItems().get(0).getProductVariantId()).isEqualTo(productVariantId);
 
         customerService.clearWishList(validCustomer.getCustomerId());
-        validCustomer = customerService.retrieveCustomerByEmail("tonystark@gmail.com");
+        validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
         assertThat(validCustomer.getWishlistItems().size()).isEqualTo(0);
     }
 
