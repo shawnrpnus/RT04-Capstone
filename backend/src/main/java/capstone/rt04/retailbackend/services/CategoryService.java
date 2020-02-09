@@ -2,7 +2,7 @@ package capstone.rt04.retailbackend.services;
 
 import capstone.rt04.retailbackend.entities.Category;
 import capstone.rt04.retailbackend.repositories.CategoryRepository;
-import capstone.rt04.retailbackend.util.exceptions.*;
+import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.category.CategoryNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.category.CreateNewCategoryException;
 import capstone.rt04.retailbackend.util.exceptions.category.DeleteCategoryException;
@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -82,6 +83,10 @@ public class CategoryService {
 
         lazilyLoadSubCategories(category);
         return category;
+    }
+
+    public List<Category> retrieveAllCategories() {
+        return (List<Category>) categoryRepository.findAll();
     }
 
     public void updateCategory(Category category, Long parentCategoryId) throws InputDataValidationException, CategoryNotFoundException, UpdateCategoryException {

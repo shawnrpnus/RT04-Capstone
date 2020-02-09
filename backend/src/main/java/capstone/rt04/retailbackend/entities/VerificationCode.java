@@ -5,15 +5,17 @@
  */
 package capstone.rt04.retailbackend.entities;
 
-import java.io.Serializable;
-import java.sql.Timestamp;
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.voodoodyne.jackson.jsog.JSOGGenerator;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import java.io.Serializable;
+import java.sql.Timestamp;
 
 /**
  *
@@ -24,6 +26,7 @@ import lombok.ToString;
 @Setter
 @EqualsAndHashCode
 @ToString
+@JsonIdentityInfo(generator = JSOGGenerator.class)
 public class VerificationCode implements Serializable {
 
     private static final long serialVersionUID = 1L;

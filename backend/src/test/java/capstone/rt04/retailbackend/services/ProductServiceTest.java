@@ -1,10 +1,10 @@
 package capstone.rt04.retailbackend.services;
 
-import capstone.rt04.retailbackend.entities.Category;
-import capstone.rt04.retailbackend.entities.Product;
-import capstone.rt04.retailbackend.entities.ProductStock;
-import capstone.rt04.retailbackend.entities.ProductVariant;
+import capstone.rt04.retailbackend.entities.*;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
+import capstone.rt04.retailbackend.util.exceptions.product.ProductImageNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.product.ProductStockNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,7 +16,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,8 +33,14 @@ public class ProductServiceTest {
     private static boolean initialized = false;
     private static Long categoryId;
     private static Long productId;
+    private static Long productVariantId;
 
-    @Before // testCreateNewProduct
+
+    /**
+     * Test for create/delete Product
+     * Test for create/delete ProductVariant
+     **/
+    @Before
     public void beforeEachTest() throws Exception {
         Product validProduct = new Product("Fila Disruptor II", "Fila", BigDecimal.valueOf(89.90), BigDecimal.valueOf(39.90));
         Product invalidProduct = new Product("Adidas Alpha Bounce", "Adidas", BigDecimal.valueOf(109.90), BigDecimal.valueOf(59.90));
@@ -44,29 +49,33 @@ public class ProductServiceTest {
         validProduct.setCategory(category);
         invalidProduct.setCategory(category);
 
-        Product result = productService.createNewProduct(validProduct, category.getCategoryId(), null);
+        Product product = productService.createNewProduct(validProduct, category.getCategoryId(), null);
+
+        ProductVariant validProductVariant = new ProductVariant("SKU001", "White", null, product, null);
+        ProductVariant productVariant = productService.createProductVariant(validProductVariant);
 
         if (!initialized) {
-            assertThat(result).isEqualTo(validProduct);
-            assertThat(result).isNotEqualTo(invalidProduct);
+            assertThat(product).isEqualTo(validProduct);
+            assertThat(product).isNotEqualTo(invalidProduct);
+            assertThat(productVariant).isEqualTo(validProductVariant);
         }
 
         categoryId = category.getCategoryId();
-        productId = result.getProductId();
+        productId = product.getProductId();
+        productVariantId = productVariant.getProductVariantId();
         initialized = true;
     }
 
     @After
     public void afterEachTest() throws Exception {
 
-        Product productToRemove = productService.retrieveProductByProductId(productId);
+        Product productToRemove = productService.retrieveProductById(productId);
         Product removedProduct = productService.deleteProduct(productToRemove.getProductId());
-        if (!initialized) assertThat(removedProduct.getProductId()).isEqualTo(productToRemove.getProductId());
+        assertThat(removedProduct.getProductId()).isEqualTo(productToRemove.getProductId());
 
         Category categoryToRemove = categoryService.retrieveCategoryByCategoryId(categoryId);
-        Long categoryId = categoryToRemove.getCategoryId();
-        Category removedCategory = categoryService.deleteCategory(categoryId);
-        if (!initialized) assertThat(removedCategory.getCategoryId()).isEqualTo(categoryId);
+        Category removedCategory = categoryService.deleteCategory(categoryToRemove.getCategoryId());
+        assertThat(removedCategory.getCategoryId()).isEqualTo(categoryId);
     }
 
     @Test
@@ -82,52 +91,49 @@ public class ProductServiceTest {
         }
     }
 
-
-    @Test
-    public void testRetrieveAllProducts() throws Exception {
-        List<Product> result = productService.retrieveAllProducts();
-        assertThat(result).isNotNull();
-    }
-
-    @Test
-    public void testDeleteProduct() throws Exception {
-    }
-
-    @Test
-    public void testSetProductPrice() throws Exception {
-    }
-
-    @Test
+    @Test(expected = ProductVariantNotFoundException.class)
     public void testCDProductVariant() throws Exception {
 
-        Product product = productService.retrieveProductByProductId(productId);
-        ProductVariant validProductVariant = new ProductVariant("SKU001", "White", null, product, null);
+        Product product = productService.retrieveProductById(productId);
+        ProductVariant validProductVariant = new ProductVariant("SKU002", "Black", null, product, null);
 
         ProductVariant productVariant = productService.createProductVariant(validProductVariant);
         assertThat(productVariant).isEqualTo(validProductVariant);
 
-        ProductVariant deletedProductVariant = productService.deleteProductVariant(productVariant.getProductVariantId());
-        assertThat(deletedProductVariant.getProductVariantId()).isEqualTo(productVariant.getProductVariantId());
+        productService.deleteProductVariant(productVariant.getProductVariantId());
+        productService.retrieveProductVariantById(productVariant.getProductVariantId());
     }
 
-    @Test
+    @Test(expected = ProductStockNotFoundException.class)
     public void testCDProductStock() throws Exception {
 
-        Product product = productService.retrieveProductByProductId(productId);
-
-        ProductVariant validProductVariant = new ProductVariant("SKU001", "White", null, product, null);
-        ProductVariant productVariant = productService.createProductVariant(validProductVariant);
+        ProductVariant productVariant = productService.retrieveProductVariantById(productVariantId);
 
         ProductStock validProductStock = new ProductStock(50, 100, 10);
         validProductStock.setProductVariant(productVariant);
 
-        ProductStock productStock = productService.createProductStock(validProductStock, productVariant.getProductVariantId(), null, null);
+        ProductStock productStock = productService.createProductStock(validProductStock, productVariant.getProductVariantId());
         assertThat(productStock).isEqualTo(validProductStock);
 
-        ProductStock deletedProductStock = productService.deleteProductStock(productStock.getProductStockId());
-        assertThat(deletedProductStock.getProductStockId()).isEqualTo(productStock.getProductStockId());
+        productService.deleteProductStock(productStock.getProductStockId());
+        productService.retrieveProductStockById(productStock.getProductStockId());
     }
 
-    // TODO: test assignProductStock
+    @Test(expected = ProductImageNotFoundException.class)
+    public void testCDProductImage() throws Exception {
+        // Create
+        ProductVariant productVariant = productService.retrieveProductVariantById(productVariantId);
+        ProductImage validProductImage = new ProductImage("https://i.ebayimg.com/images/g/af8AAOSwd9dcdYMT/s-l640.jpg");
 
+        ProductImage productImage = productService.createProductImage(validProductImage, productVariant.getProductVariantId());
+        productVariant.getProductImages().add(productImage);
+        assertThat(productImage).isEqualTo(validProductImage);
+
+        // Delete
+        productVariant.getProductImages().remove(validProductImage);
+        productService.deleteProductImage(productImage.getProductImageId(), productVariant.getProductVariantId());
+        productService.retrieveProductImageById(productImage.getProductImageId());
+    }
+
+    // TODO: test assignProductStock - need to create store and warehouse service before
 }

@@ -11,4 +11,6 @@ public interface ProductVariantRepository extends CrudRepository<ProductVariant,
 
     List<ProductVariant> findAll();
 
+    ProductVariant findBySKU(String sku);
+
 }

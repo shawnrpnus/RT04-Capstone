@@ -1,10 +1,8 @@
 package capstone.rt04.retailbackend.services;
 
 
-import capstone.rt04.retailbackend.entities.*;
-import capstone.rt04.retailbackend.repositories.*;
-import capstone.rt04.retailbackend.util.exceptions.customer.AddressNotFoundException;
-import capstone.rt04.retailbackend.util.exceptions.customer.CustomerNotFoundException;
+import capstone.rt04.retailbackend.entities.Warehouse;
+import capstone.rt04.retailbackend.repositories.WarehouseRepository;
 import capstone.rt04.retailbackend.util.exceptions.warehouse.WarehouseNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,9 +16,9 @@ public class WarehouseService {
         this.warehouseRepository = warehouseRepository;
     }
 
-    public Warehouse retrieveByWarehouseId(Long warehouseId) throws WarehouseNotFoundException {
+    public Warehouse retrieveWarehouseById(Long warehouseId) throws WarehouseNotFoundException {
         if (warehouseId == null) {
-            throw new WarehouseNotFoundException("Warehouse does not exist, Please try again");
+            throw new WarehouseNotFoundException("Warehouse ID not provided. Please try again!");
         }
 
         return warehouseRepository.findById(warehouseId)
@@ -29,7 +27,7 @@ public class WarehouseService {
     //View all Warehouse inventory
     public Warehouse getWarehouseInventory(Long warehouseId) throws WarehouseNotFoundException {
         //for loop
-        Warehouse warehouse = retrieveByWarehouseId(warehouseId);
+        Warehouse warehouse = retrieveWarehouseById(warehouseId);
         return warehouse;
     }
     //View Warehouse Inventory Details

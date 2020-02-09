@@ -1,13 +1,17 @@
 package capstone.rt04.retailbackend.services;
 
 import capstone.rt04.retailbackend.entities.*;
-import capstone.rt04.retailbackend.repositories.*;
+import capstone.rt04.retailbackend.repositories.ProductImageRepository;
+import capstone.rt04.retailbackend.repositories.ProductRepository;
+import capstone.rt04.retailbackend.repositories.ProductStockRepository;
+import capstone.rt04.retailbackend.repositories.ProductVariantRepository;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.category.CategoryNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.discount.DiscountNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.product.*;
 import capstone.rt04.retailbackend.util.exceptions.promoCode.PromoCodeNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.tag.TagNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.warehouse.WarehouseNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +31,8 @@ public class ProductService {
     private final DiscountService discountService;
     private final PromoCodeService promoCodeService;
     private final ValidationService validationService;
+    @Autowired
+    private final WarehouseService warehouseService;
 
     @Autowired
     private final ProductRepository productRepository;
@@ -34,7 +40,7 @@ public class ProductService {
     private final ProductStockRepository productStockRepository;
     private final ProductVariantRepository productVariantRepository;
 
-    public ProductService(ValidationService validationService, TagService tagService, CategoryService categoryService, ProductRepository productRepository, ProductVariantRepository productVariantRepository, ProductStockRepository productStockRepository, ProductImageRepository productImageRepository, DiscountService discountService, PromoCodeService promoCodeService) {
+    public ProductService(ValidationService validationService, TagService tagService, CategoryService categoryService, ProductRepository productRepository, ProductVariantRepository productVariantRepository, ProductStockRepository productStockRepository, ProductImageRepository productImageRepository, DiscountService discountService, PromoCodeService promoCodeService, WarehouseService warehouseService) {
         this.validationService = validationService;
         this.tagService = tagService;
         this.categoryService = categoryService;
@@ -44,6 +50,7 @@ public class ProductService {
         this.productImageRepository = productImageRepository;
         this.discountService = discountService;
         this.promoCodeService = promoCodeService;
+        this.warehouseService = warehouseService;
     }
 
     public Product createNewProduct(Product product, Long categoryId, List<Long> tagIds) throws InputDataValidationException, CreateNewProductException {
@@ -70,12 +77,11 @@ public class ProductService {
                 if (tagIds != null && (!tagIds.isEmpty())) {
                     for (Long tagId : tagIds) {
                         Tag tag = tagService.retrieveTagByTagId(tagId);
+                        // addTag is implemented in the entity
                         product.addTag(tag);
                     }
                 }
-
                 return product;
-
             } catch (PersistenceException ex) {
                 if (ex.getCause() != null
                         && ex.getCause().getCause() != null
@@ -106,11 +112,10 @@ public class ProductService {
         return productEntities;
     }
 
-    public Product retrieveProductByProductId(Long productId) throws ProductNotFoundException {
+    public Product retrieveProductById(Long productId) throws ProductNotFoundException {
         if (productId == null) {
             throw new ProductNotFoundException("Product ID not provided");
         }
-
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ProductNotFoundException("Product ID " + productId + " does not exist!"));
 
@@ -131,7 +136,7 @@ public class ProductService {
 
     public Product updateProduct(Product newProduct) throws ProductNotFoundException {
 
-        Product product = retrieveProductByProductId(newProduct.getProductId());
+        Product product = retrieveProductById(newProduct.getProductId());
         product.setPrice(newProduct.getPrice());
         product.setProductName(newProduct.getProductName());
         product.setCost(newProduct.getCost());
@@ -147,7 +152,7 @@ public class ProductService {
 
     public Product deleteProduct(Long productId) throws ProductNotFoundException//, DeleteProductException
     {
-        Product productToRemove = retrieveProductByProductId(productId);
+        Product productToRemove = retrieveProductById(productId);
 //        List<TransactionLineItem> saleTransactionLineItemEntities = saleTransactionEntityControllerLocal.retrieveSaleTransactionLineItemsByProductId(productId);
 //        List<Review> reviewEntities = reviewEntityControllerLocal.retrieveReviewsForProduct(productId);
 //        if (saleTransactionLineItemEntities.isEmpty() && reviewEntities.isEmpty()) {
@@ -175,7 +180,7 @@ public class ProductService {
     }
 
     public void setProductPrice(Long productId, BigDecimal price) throws ProductNotFoundException {
-        Product product = retrieveProductByProductId(productId);
+        Product product = retrieveProductById(productId);
         product.setPrice(price);
     }
 
@@ -186,11 +191,17 @@ public class ProductService {
         if (errorMap == null) {
 
             try {
-                Product product = retrieveProductByProductId(productVariant.getProduct().getProductId());
+                Product product = retrieveProductById(productVariant.getProduct().getProductId());
 
-                // TODO: link to productImage and sizeDetails?
+                // ProductImage and SizeDetails will be added separately afterwards
                 productVariantRepository.save(productVariant);
                 product.getProductVariants().add(productVariant);
+
+                // TODO: uncomment when warehouse and store services are done
+//                List<Warehouse> warehouses = warehouseService.retrieveAllWarehouse();
+//                List<Store> stores = storeService.retrieveAllStore();
+//
+//                assignProductStock(warehouses, stores);
 
                 return productVariant;
             } catch (PersistenceException ex) {
@@ -217,7 +228,26 @@ public class ProductService {
         ProductVariant productVariant = productVariantRepository.findById(productVariantId)
                 .orElseThrow(() -> new ProductVariantNotFoundException("Product variant ID " + productVariantId + " does not exist!"));
 
+        productVariant.getProductImages().size();
+        productVariant.getProduct();
+        productVariant.getSizeDetails();
+        return productVariant;
+    }
+
+    public ProductVariant retrieveProductVariantBySku(String sku) throws ProductVariantNotFoundException {
+        if (sku == null) {
+            throw new ProductVariantNotFoundException("Product variant SKU not provided");
+        }
+
+        ProductVariant productVariant = productVariantRepository.findBySKU(sku);
+
+        if (productVariant == null) {
+            throw new ProductVariantNotFoundException("Product variant with SKU " + sku + " does not exist!");
+        };
+
         productVariant.getProductImages();
+        productVariant.getProduct();
+        productVariant.getSizeDetails();
         return productVariant;
     }
 
@@ -236,9 +266,9 @@ public class ProductService {
         ProductVariant productVariant = retrieveProductVariantById(productVariantId);
         productVariant.setColour(newProductVariant.getColour());
         productVariant.setSKU(newProductVariant.getSKU());
-//        productVariant.setProduct(); - change product - is this necessary?
-//        productVariant.setProductImages(); - add/remove productImage
-//        productVariant.setSizeDetails(); - add/remove sizeDetails
+        //        productVariant.setProduct(); - change product - is this necessary?
+        //        productVariant.setProductImages(); - add/remove productImage
+        //        productVariant.setSizeDetails(); - add/remove sizeDetails
         return productVariant;
     }
 
@@ -255,42 +285,34 @@ public class ProductService {
         return productVariant;
     }
 
-    // TODO : Call this method for createWarehouse / createStore
+    // TODO : Call this method in createWarehouse / createStore
     /**
-     * Conditions:
+     * Scenarios:
      * 1. new product -> assign to List<Warehouse> and List<Store>
      * 2. new store -> retrieve List<Product> and assign to Store
      * 3. new warehouse -> retrieve List<Product> and assign to Warehouse
      *
      * @return void
-     * TODO: uncomment warehouseService and storeService
      */
-
-    public void assignProductStock(List<Long> warehouseIds, List<Long> storeIds) throws CreateNewProductStockException, InputDataValidationException {
-        Warehouse warehouse = new Warehouse();
-        Store store = new Store();
+    public void assignProductStock(List<Warehouse> warehouses, List<Store> stores) throws CreateNewProductStockException, InputDataValidationException, WarehouseNotFoundException {
         List<ProductVariant> productVariants = productVariantRepository.findAll();
 
-        for(Long warehouseId: warehouseIds ) {
-//            warehouse = warehouseService.retrieveById(warehouseId);
-
+        for(Warehouse warehouse: warehouses ) {
             for (ProductVariant productVariant: productVariants ) {
                 ProductStock productStock = new ProductStock(0, null, null);
                 productStock.setProductVariant(productVariant);
-                ProductStock newProductStock = createProductStock(productStock, productVariant.getProductVariantId(), warehouseId, null);
+                ProductStock newProductStock = createProductStock(productStock, productVariant.getProductVariantId());
 
                 warehouse.getProductStocks().add(newProductStock);
                 newProductStock.setWarehouse(warehouse);
             }
         }
 
-        for(Long storeId: storeIds) {
-//            store = storeService.retrieveById(storeId);
-
+        for(Store store: stores) {
             for (ProductVariant productVariant: productVariants ) {
                 ProductStock productStock = new ProductStock(0, null, null);
                 productStock.setProductVariant(productVariant);
-                ProductStock newProductStock = createProductStock(productStock, productVariant.getProductVariantId(), null, storeId);
+                ProductStock newProductStock = createProductStock(productStock, productVariant.getProductVariantId());
 
                 store.getProductStocks().add(newProductStock);
                 newProductStock.setStore(store);
@@ -305,7 +327,7 @@ public class ProductService {
      *
      * @return productStock created
      */
-    public ProductStock createProductStock(ProductStock productStock, Long productVariantId, Long warehouseId, Long storeId) throws InputDataValidationException, CreateNewProductStockException {
+    public ProductStock createProductStock(ProductStock productStock, Long productVariantId) throws InputDataValidationException, CreateNewProductStockException {
 
         Map<String, String> errorMap = validationService.generateErrorMap(productStock);
 
@@ -315,10 +337,7 @@ public class ProductService {
                 ProductVariant productVariant = retrieveProductVariantById(productVariantId);
                 productStock.setProductVariant(productVariant);
 
-                // TODO: link to warehouse OR store
-
                 productStockRepository.save(productStock);
-
                 return productStock;
             } catch (Exception ex) {
                 throw new CreateNewProductStockException("An unexpected error has occurred: " + ex.getMessage());
@@ -343,6 +362,19 @@ public class ProductService {
         return (List<ProductStock>) productStockRepository.findAll();
     }
 
+    public ProductStock updateProductStock(ProductStock newProductStock) throws ProductStockNotFoundException {
+
+        ProductStock productStock = retrieveProductStockById(newProductStock.getProductStockId());
+        productStock.setQuantity(newProductStock.getQuantity());
+        productStock.setMaxQuantity(newProductStock.getMaxQuantity());
+        productStock.setNotificationLevel(newProductStock.getNotificationLevel());
+        productStock.setQRcode(newProductStock.getQRcode());
+        //        productStock.setStore(); - change store
+        //        productStock.setWarehouse(); - change warehouse
+        //        productStock.setProductVariant(); - change productVariant
+        return productStock;
+    }
+
     public ProductStock deleteProductStock(Long productStockId) throws ProductStockNotFoundException {
         ProductStock productStock = retrieveProductStockById(productStockId);
 
@@ -357,9 +389,8 @@ public class ProductService {
         return productStock;
     }
 
-    public ProductImage createProductImage(String imgUrl, Long productVariantId) throws ProductVariantNotFoundException {
+    public ProductImage createProductImage(ProductImage productImage, Long productVariantId) throws ProductVariantNotFoundException {
         ProductVariant productVariant = retrieveProductVariantById(productVariantId);
-        ProductImage productImage = new ProductImage(imgUrl);
         productImageRepository.save(productImage);
         productVariant.getProductImages().add(productImage);
         return productImage;
@@ -388,9 +419,9 @@ public class ProductService {
     /**
      * List of update operations for relationships of Product
      */
-    public void changeCategory(Long categoryId, Long productId) throws CategoryNotFoundException, ProductNotFoundException {
+    public void changeCategoryForProduct(Long categoryId, Long productId) throws CategoryNotFoundException, ProductNotFoundException {
         Category newCategory = categoryService.retrieveCategoryByCategoryId(categoryId);
-        Product product = retrieveProductByProductId(productId);
+        Product product = retrieveProductById(productId);
         Category oldCategory = product.getCategory();
 
         oldCategory.getProducts().remove(product);
@@ -400,42 +431,42 @@ public class ProductService {
 
     public void addTag(Long tagId, Long productId) throws ProductNotFoundException, TagNotFoundException {
         Tag tag = tagService.retrieveTagByTagId(tagId);
-        Product product = retrieveProductByProductId(productId);
+        Product product = retrieveProductById(productId);
         product.getTags().add(tag);
         tag.getProducts().add(product);
     }
 
     public void removeTag(Long tagId, Long productId) throws ProductNotFoundException, TagNotFoundException {
         Tag tag = tagService.retrieveTagByTagId(tagId);
-        Product product = retrieveProductByProductId(productId);
+        Product product = retrieveProductById(productId);
         product.getTags().remove(tag);
         tag.getProducts().remove(product);
     }
 
     public void addPromoCode(Long promoCodeId, Long productId) throws PromoCodeNotFoundException, ProductNotFoundException {
         PromoCode promoCode = promoCodeService.retrievePromoCodeById(promoCodeId);
-        Product product = retrieveProductByProductId(productId);
+        Product product = retrieveProductById(productId);
         product.getPromoCodes().add(promoCode);
         promoCode.getProducts().add(product);
     }
 
     public void removePromoCode(Long promoCodeId, Long productId) throws PromoCodeNotFoundException, ProductNotFoundException {
         PromoCode promoCode = promoCodeService.retrievePromoCodeById(promoCodeId);
-        Product product = retrieveProductByProductId(productId);
+        Product product = retrieveProductById(productId);
         product.getPromoCodes().remove(promoCode);
         promoCode.getProducts().remove(product);
     }
 
     public void addDiscount(Long discountId, Long productId) throws ProductNotFoundException, DiscountNotFoundException {
         Discount discount = discountService.retrieveDiscountById(discountId);
-        Product product = retrieveProductByProductId(productId);
+        Product product = retrieveProductById(productId);
         product.getDiscounts().add(discount);
         discount.getProducts().add(product);
     }
 
     public void removeDiscount(Long discountId, Long productId) throws ProductNotFoundException, DiscountNotFoundException {
         Discount discount = discountService.retrieveDiscountById(discountId);
-        Product product = retrieveProductByProductId(productId);
+        Product product = retrieveProductById(productId);
         product.getDiscounts().remove(discount);
         discount.getProducts().remove(product);
     }
@@ -443,9 +474,16 @@ public class ProductService {
     /**
      * List of update operations for relationships of ProductVariant
      */
-    //        productVariant.setProduct(); - change product - is this necessary?
-    //        productVariant.setProductImages(); - add/remove productImage
-    //        productVariant.setSizeDetails(); - add/remove sizeDetails
+    public void changeProductForProductVariant(Long productId, Long productVariantId) throws ProductVariantNotFoundException, ProductNotFoundException {
+        Product newProduct = retrieveProductById(productId);
+        ProductVariant productVariant = retrieveProductVariantById(productVariantId);
+        Product oldProduct = productVariant.getProduct();
+
+        oldProduct.getProductVariants().remove(productVariant);
+        productVariant.setProduct(newProduct);
+        newProduct.getProductVariants().add(productVariant);
+    }
+
     public void addProductImage(Long productImageId, Long productVariantId) throws ProductVariantNotFoundException, ProductImageNotFoundException {
         ProductVariant productVariant = retrieveProductVariantById(productVariantId);
         productVariant.getProductImages().add(retrieveProductImageById(productImageId));
@@ -458,6 +496,7 @@ public class ProductService {
 
     public void addSizeDetails(Long sizeDetailId, Long productVariantId) throws ProductVariantNotFoundException {
         ProductVariant productVariant = retrieveProductVariantById(productVariantId);
+        // TODO: uncomment after sizeDetailsService is implemented
 //        SizeDetails sizeDetails = sizeDetailsService.retrieveSizeDetailsById(sizeDetailId);
 //        productVariant.setSizeDetails(sizeDetails);
     }
@@ -467,21 +506,32 @@ public class ProductService {
         productVariant.setSizeDetails(null);
     }
 
-//    updateProduct() - done
+    /**
+     * List of update operations for relationships of ProductStore
+     */
+    public void changeStoreOrWarehouseForProductStock(Long storeId, Long warehouseId, Long productStockId ) throws ProductStockNotFoundException, WarehouseNotFoundException {
+        ProductStock productStock = retrieveProductStockById(productStockId);
+
+        // TODO: uncomment after storeService is implemented
+//        if (storeId != null ) {
+//            Store store = storeService.retrieveStoreById(storeId);
+//            Store oldStore = productStock.getStore();
 //
-//    setProductPrice() - done
-//    updateProductPrice() - same as setProductPrice()
-//    viewProductPrice() - redundant (get from the entity)
+//            oldStore.getProductStocks().remove(productStockId);
+//            productStock.setStore(store);
+//            store.getProductStocks().add(productStock);
+//        } else if (warehouseId != null) {
+//            Warehouse warehouse = warehouseService.retrieveWarehouseById(warehouseId);
+//            Warehouse oldWarehouse = productStock.getWarehouse();
 //
-//    createProductVariant() - done
-//    editProductVariant()
-//    deleteProductVariant() - done
-//    retrieveProductVariant() - done
-//    retrieveProductVariance() - done
-//
-//    createProductStock() - done
-//    updateProductStock()
-//    retrieveProductStock() - done
-//    retrieveAllProductStock() - done
-//    deleteProductStock() - done
+//            oldWarehouse.getProductStocks().remove(productStock);
+//            productStock.setWarehouse(warehouse);
+//            warehouse.getProductStocks().add(productStock);
+//        }
+    }
+
+    public void changeProductVariantForProductStock(Long productVariantId, Long productStockId) throws ProductVariantNotFoundException, ProductStockNotFoundException {
+        ProductStock productStock = retrieveProductStockById(productStockId);
+        productStock.setProductVariant(retrieveProductVariantById(productVariantId));
+    }
 }

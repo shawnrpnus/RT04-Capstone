@@ -5,26 +5,21 @@
  */
 package capstone.rt04.retailbackend.entities;
 
-import java.io.Serializable;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotNull;
-
+import capstone.rt04.retailbackend.util.ErrorMessages;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.voodoodyne.jackson.jsog.JSOGGenerator;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+
+import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
+import java.io.Serializable;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -35,6 +30,7 @@ import lombok.ToString;
 @Setter
 @EqualsAndHashCode
 @ToString
+@JsonIdentityInfo(generator = JSOGGenerator.class)
 public class Customer implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -42,20 +38,20 @@ public class Customer implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long customerId;
 
-    @NotNull
+    @NotNull(message = ErrorMessages.FIRST_NAME_REQUIRED)
     @Column(nullable = false)
     private String firstName;
     
-    @NotNull
+    @NotNull(message = ErrorMessages.LAST_NAME_REQUIRED)
     @Column(nullable = false)
     private String lastName;
     
-    @NotNull
+    @NotNull(message = ErrorMessages.EMAIL_REQUIRED)
     @Column(nullable = false, unique = true)
-    @Email(message = "Email format is invalid")
+    @Email(message = ErrorMessages.EMAIL_INVALID)
     private String email; 
     
-    @NotNull
+    @NotNull(message = ErrorMessages.PASSWORD_REQUIRED)
     @Column(columnDefinition = "CHAR(64) NOT NULL")
     private String password;
     
@@ -93,15 +89,9 @@ public class Customer implements Serializable {
     private List<Refund> refunds;
 
     @OneToOne
-    //TODO: Uncomment when shopping cart CRUD available
-//    @JoinColumn(nullable = false)
-//    @NotNull
     private ShoppingCart inStoreShoppingCart;
 
     @OneToOne
-    //TODO: Uncomment when shopping cart CRUD available
-//    @JoinColumn(nullable = false)
-//    @NotNull
     private ShoppingCart onlineShoppingCart;
     
     @ManyToMany
@@ -135,6 +125,22 @@ public class Customer implements Serializable {
         this.email = email;
         this.password = password;
     }
-    
+
+    public void addShippingAddress(Address address){
+        if (address != null){
+            if (!this.shippingAddresses.contains(address)){
+                this.shippingAddresses.add(address);
+            }
+        }
+    }
+
+    public void addCreditCard(CreditCard creditCard){
+        if (creditCard != null){
+            if (!this.creditCards.contains(creditCard)){
+                this.creditCards.add(creditCard);
+            }
+        }
+    }
+
     
 }
