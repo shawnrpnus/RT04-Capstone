@@ -5,13 +5,11 @@ import capstone.rt04.retailbackend.entities.Address;
 import capstone.rt04.retailbackend.entities.CreditCard;
 import capstone.rt04.retailbackend.entities.Customer;
 import capstone.rt04.retailbackend.entities.Measurements;
+import capstone.rt04.retailbackend.util.ErrorMessages;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.customer.InvalidLoginCredentialsException;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
@@ -29,27 +27,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles("test")
 public class CustomerServiceTest extends CustomerProductCategoryTestSetup {
 
-//    @Autowired
-//    private CustomerService customerService;
 
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-
-//    @Before
-//    public void beforeEachTest() throws Exception{
-//        Customer expectedValidCustomer = new Customer("Tony", "Stark", "tonystark@gmail.com", "spiderman");
-//        Customer testValidCustomer = customerService.createNewCustomer(expectedValidCustomer);
-//        assertThat(testValidCustomer.getCustomerId()).isNotNull();
-//        assertThat(testValidCustomer).isEqualTo(expectedValidCustomer);
-//        assertThat(testValidCustomer.getOnlineShoppingCart()).isNotNull();
-//        assertThat(testValidCustomer.getInStoreShoppingCart()).isNotNull();
-//    }
-//
-//    @After
-//    public void afterEachTest() throws Exception{
-//        Customer validCustomer = customerService.retrieveCustomerByEmail("tonystark@gmail.com");
-//        Customer removedCustomer = customerService.removeCustomer(validCustomer.getCustomerId());
-//        assertThat(removedCustomer.getCustomerId()).isEqualTo(validCustomer.getCustomerId());
-//    }
 
     @Test
     public void createNewCustomer() throws Exception {
@@ -60,7 +39,7 @@ public class CustomerServiceTest extends CustomerProductCategoryTestSetup {
             customerService.createNewCustomer(invalidCustomer);
         } catch (InputDataValidationException ex) {
             Map<String, String> expectedErrorMap = new HashMap<>();
-            expectedErrorMap.put("email", "Email format is invalid");
+            expectedErrorMap.put("email", ErrorMessages.EMAIL_INVALID);
             assertThat(ex.getErrorMap()).isEqualTo(expectedErrorMap);
         }
     }

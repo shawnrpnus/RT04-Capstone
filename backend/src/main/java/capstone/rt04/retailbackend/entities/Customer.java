@@ -5,6 +5,7 @@
  */
 package capstone.rt04.retailbackend.entities;
 
+import capstone.rt04.retailbackend.util.ErrorMessages;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.voodoodyne.jackson.jsog.JSOGGenerator;
 import lombok.EqualsAndHashCode;
@@ -37,20 +38,20 @@ public class Customer implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long customerId;
 
-    @NotNull
+    @NotNull(message = ErrorMessages.FIRST_NAME_REQUIRED)
     @Column(nullable = false)
     private String firstName;
     
-    @NotNull
+    @NotNull(message = ErrorMessages.LAST_NAME_REQUIRED)
     @Column(nullable = false)
     private String lastName;
     
-    @NotNull
+    @NotNull(message = ErrorMessages.EMAIL_REQUIRED)
     @Column(nullable = false, unique = true)
-    @Email(message = "Email format is invalid")
+    @Email(message = ErrorMessages.EMAIL_INVALID)
     private String email; 
     
-    @NotNull
+    @NotNull(message = ErrorMessages.PASSWORD_REQUIRED)
     @Column(columnDefinition = "CHAR(64) NOT NULL")
     private String password;
     

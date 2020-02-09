@@ -26,6 +26,7 @@ public class StoreService {
 
     public Store createNewStore(Store store) throws CreateNewStoreException {
         try {
+            //TODO: create product stock with qty 0 for all existing product variants
             storeRepository.save(store);
             return store;
         } catch (Exception e) {
