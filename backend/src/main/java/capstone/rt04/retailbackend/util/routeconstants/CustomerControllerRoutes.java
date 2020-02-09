@@ -8,5 +8,6 @@ public class CustomerControllerRoutes {
     public static final String DELETE_CUSTOMER = "/deleteCustomer/{customerId}";
     public static final String CHANGE_PASSWORD = "/changePassword";
     public static final String VERIFY = "/verify/{verificationCode}";
-
+    public static final String RESET_PASSWORD = "/resetPassword";
+    public static final String UPDATE_MEASUREMENTS = "/updateMeasurements";
 }

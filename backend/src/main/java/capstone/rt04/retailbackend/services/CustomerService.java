@@ -191,6 +191,9 @@ public class CustomerService {
         javaMailSender.send(msg);
     }
 
+    //give link /api/customer/resetpassword/948273h1fadnenfjns
+    //customer inputs new password at that link
+    //on front-end, make api call by extracting the code from the link
     public void resetPassword(Long customerId, String code, String newPassword) throws CustomerNotFoundException, VerificationCodeInvalidException {
         Customer customer = retrieveCustomerByCustomerId(customerId);
 

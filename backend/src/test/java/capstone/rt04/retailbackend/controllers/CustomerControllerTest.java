@@ -1,9 +1,8 @@
 package capstone.rt04.retailbackend.controllers;
 
 import capstone.rt04.retailbackend.entities.Customer;
-import capstone.rt04.retailbackend.request.customer.CustomerChangePasswordRequest;
-import capstone.rt04.retailbackend.request.customer.CustomerEmailRequest;
-import capstone.rt04.retailbackend.request.customer.CustomerLoginRequest;
+import capstone.rt04.retailbackend.entities.Measurements;
+import capstone.rt04.retailbackend.request.customer.*;
 import capstone.rt04.retailbackend.util.ErrorMessages;
 
 import static capstone.rt04.retailbackend.util.routeconstants.CustomerControllerRoutes.*;
@@ -17,6 +16,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import java.math.BigDecimal;
 
 import static io.restassured.RestAssured.*;
 import static org.hamcrest.Matchers.*;
@@ -90,6 +91,12 @@ public class CustomerControllerTest {
                 .when().post(CUSTOMER_BASE_ROUTE + GET_CUSTOMER_BY_EMAIL)
                 .then().statusCode(HttpStatus.OK.value()).extract().body().as(Customer.class);
         assertThat(customer.getCustomerId()).isEqualTo(createdCustomerId);
+        CustomerEmailRequest badReq = new CustomerEmailRequest("invalidemail@invalid.com");
+        given()
+                .contentType("application/json")
+                .body(badReq)
+                .when().post(CUSTOMER_BASE_ROUTE + GET_CUSTOMER_BY_EMAIL)
+                .then().statusCode(HttpStatus.NOT_FOUND.value());
     }
 
     @Test
@@ -145,8 +152,47 @@ public class CustomerControllerTest {
         assertThat(customer.getCustomerId()).isEqualTo(createdCustomerId);
     }
 
-    // TODO: Reset password
+    @Test
+    public void resetPassword(){
+        CustomerResetPasswordRequest badReq = new CustomerResetPasswordRequest(createdCustomerId, "abcdef", "newPassword");
+        given()
+                .contentType("application/json")
+                .body(badReq)
+                .when().post(CUSTOMER_BASE_ROUTE + RESET_PASSWORD)
+                .then().statusCode(HttpStatus.BAD_REQUEST.value());
+
+        CustomerResetPasswordRequest req = new CustomerResetPasswordRequest(createdCustomerId, verificationCode, "newPassword");
+        Customer customer = given()
+                .contentType("application/json")
+                .body(req)
+                .when().post(CUSTOMER_BASE_ROUTE + RESET_PASSWORD)
+                .then().statusCode(HttpStatus.OK.value()).extract().body().as(Customer.class);
+        assertThat(customer.getCustomerId()).isEqualTo(createdCustomerId);
+    }
+
     // TODO: Update measurements
+    @Test
+    public void updateMeasurements(){
+        Measurements initialMeasurements = new Measurements();
+        initialMeasurements.setChest(BigDecimal.valueOf(38.00));
+        CustomerUpdateMeasurementsRequest req  = new CustomerUpdateMeasurementsRequest(createdCustomerId, initialMeasurements);
+        Measurements measurements1 = given()
+                .contentType("application/json")
+                .body(req)
+                .when().post(CUSTOMER_BASE_ROUTE + UPDATE_MEASUREMENTS)
+                .then().statusCode(HttpStatus.OK.value()).extract().body().as(Measurements.class);
+        assertThat(measurements1.getMeasurementsId()).isNotNull();
+        assertThat(measurements1.getChest().compareTo(initialMeasurements.getChest())).isEqualTo(0);
+
+        req.getMeasurements().setChest(BigDecimal.valueOf(100.00));
+        Measurements measurements2 = given()
+                .contentType("application/json")
+                .body(req)
+                .when().post(CUSTOMER_BASE_ROUTE + UPDATE_MEASUREMENTS)
+                .then().statusCode(HttpStatus.OK.value()).extract().body().as(Measurements.class);
+        assertThat(measurements2.getMeasurementsId()).isNotNull();
+        assertThat(measurements2.getChest().compareTo(req.getMeasurements().getChest())).isEqualTo(0);
+    }
     // TODO: CRUD credit cards
     // TODO: CRUD shipping address
     // TODO: CRUD wishlist

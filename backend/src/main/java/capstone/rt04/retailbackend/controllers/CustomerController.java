@@ -1,9 +1,8 @@
 package capstone.rt04.retailbackend.controllers;
 
 import capstone.rt04.retailbackend.entities.Customer;
-import capstone.rt04.retailbackend.request.customer.CustomerChangePasswordRequest;
-import capstone.rt04.retailbackend.request.customer.CustomerEmailRequest;
-import capstone.rt04.retailbackend.request.customer.CustomerLoginRequest;
+import capstone.rt04.retailbackend.entities.Measurements;
+import capstone.rt04.retailbackend.request.customer.*;
 import capstone.rt04.retailbackend.response.GenericErrorResponse;
 import capstone.rt04.retailbackend.services.CustomerService;
 import capstone.rt04.retailbackend.services.ValidationService;
@@ -64,6 +63,10 @@ public class CustomerController {
 
     @PostMapping(CustomerControllerRoutes.LOGIN)
     public ResponseEntity<?> customerLogin(@RequestBody CustomerLoginRequest customerLoginRequest){
+        Map<String, String> inputErrMap = validationService.generateErrorMap(customerLoginRequest);
+        if (inputErrMap != null){
+            return new ResponseEntity<>(inputErrMap, HttpStatus.BAD_REQUEST);
+        }
         try {
             Customer customer = customerService.customerLogin(customerLoginRequest.getEmail(), customerLoginRequest.getPassword());
             return new ResponseEntity<>(customer, HttpStatus.OK);
@@ -100,6 +103,43 @@ public class CustomerController {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
+
+    @PostMapping(CustomerControllerRoutes.RESET_PASSWORD)
+    public ResponseEntity<?> resetPassword(@RequestBody CustomerResetPasswordRequest customerResetPasswordRequest){
+        Map<String, String> inputErrMap = validationService.generateErrorMap(customerResetPasswordRequest);
+        if (inputErrMap != null){
+            return new ResponseEntity<>(inputErrMap, HttpStatus.BAD_REQUEST);
+        }
+        try{
+            customerService.resetPassword(customerResetPasswordRequest.getCustomerId(),
+                    customerResetPasswordRequest.getVerificationCode(),
+                    customerResetPasswordRequest.getNewPassword());
+            Customer customer = customerService.retrieveCustomerByCustomerId(customerResetPasswordRequest.getCustomerId());
+            return new ResponseEntity<>(customer, HttpStatus.OK);
+        } catch (VerificationCodeInvalidException ex) {
+            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
+        } catch (CustomerNotFoundException ex) {
+            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PostMapping(CustomerControllerRoutes.UPDATE_MEASUREMENTS)
+    public ResponseEntity<?> updateMeasurements(@RequestBody CustomerUpdateMeasurementsRequest customerUpdateMeasurementsRequest){
+        try{
+            Measurements measurements = customerService.updateMeasurements(
+                    customerUpdateMeasurementsRequest.getCustomerId(),
+                    customerUpdateMeasurementsRequest.getMeasurements());
+            return new ResponseEntity<>(measurements, HttpStatus.OK);
+        } catch (CustomerNotFoundException ex) {
+            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
+        } catch (InputDataValidationException ex) {
+            return new ResponseEntity<>(ex.getErrorMap(), HttpStatus.BAD_REQUEST);
+        }
+    }
+    // TODO: Update measurements
+    // TODO: CRUD credit cards
+    // TODO: CRUD shipping address
+    // TODO: CRUD wishlist
 
     @DeleteMapping(CustomerControllerRoutes.DELETE_CUSTOMER)
     public ResponseEntity<?> deleteCustomer(@PathVariable Long customerId){

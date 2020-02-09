@@ -1,6 +1,5 @@
 package capstone.rt04.retailbackend.request.customer;
 
-import capstone.rt04.retailbackend.util.ErrorMessages;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,11 +11,14 @@ import javax.validation.constraints.NotNull;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CustomerLoginRequest {
+public class CustomerResetPasswordRequest {
 
-    @NotNull(message = ErrorMessages.EMAIL_REQUIRED)
-    private String email;
+    @NotNull
+    private Long customerId;
 
-    @NotNull(message = ErrorMessages.PASSWORD_REQUIRED)
-    private String password;
+    @NotNull
+    private String verificationCode;
+
+    @NotNull
+    private String newPassword;
 }
