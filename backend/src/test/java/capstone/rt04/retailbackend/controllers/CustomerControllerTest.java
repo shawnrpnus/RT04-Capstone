@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -22,6 +23,23 @@ public class CustomerControllerTest {
 
     @Before
     public void setUp() throws Exception {
+        Customer validCustomer = new Customer("Tony", "Stark", "tonystark@gmail.com", "spiderman");
+        Customer createdCustomer = given().
+                contentType("application/json").
+                body(validCustomer).
+                when().post("/api/customer/createNewCustomer").
+                then().statusCode(HttpStatus.CREATED.value()).extract().body().as(Customer.class);
+        //body("email", equalTo(validCustomer.getEmail()));
+        assertThat(createdCustomer.getCustomerId().equals(validCustomer.getCustomerId()));
+        assertThat(createdCustomer.getOnlineShoppingCart()).isNotNull();
+        assertThat(createdCustomer.getInStoreShoppingCart()).isNotNull();
+
+        Customer deletedCustomer = given().
+                pathParam("customerId", createdCustomer.getCustomerId()).
+                when().delete("/api/customer/deleteCustomer/{customerId}").
+                then().statusCode(HttpStatus.OK.value()).extract().body().as(Customer.class);
+
+        assertThat(deletedCustomer.getCustomerId().equals(createdCustomer.getCustomerId()));
     }
 
     @After
@@ -30,22 +48,12 @@ public class CustomerControllerTest {
 
     @Test
     public void createNewCustomer() {
-        Customer validCustomer = new Customer("Tony", "Stark", "tonystark@gmail.com", "spiderman");
-        Customer createdCustomer = given().
+        Customer invalidCustomer = new Customer("Steve", "Rogers", "steve@tony@bucky", "blablabla");
+        given().
                 contentType("application/json").
-                body(validCustomer).
+                body(invalidCustomer).
                 when().post("/api/customer/createNewCustomer").
-                then().statusCode(201).extract().body().as(Customer.class);
-                //body("email", equalTo(validCustomer.getEmail()));
-        assertThat(createdCustomer.getCustomerId().equals(validCustomer.getCustomerId()));
-        assertThat(createdCustomer.getOnlineShoppingCart()).isNotNull();
-        assertThat(createdCustomer.getInStoreShoppingCart()).isNotNull();
-
-        Customer deletedCustomer = given().
-                pathParam("customerId", createdCustomer.getCustomerId()).
-                when().delete("/api/customer/deleteCustomer/{customerId}").
-                then().statusCode(200).extract().body().as(Customer.class);
-
-        assertThat(deletedCustomer.getCustomerId().equals(createdCustomer.getCustomerId()));
+                then().statusCode(HttpStatus.BAD_REQUEST.value()).
+                body("email", equalTo("Email format is invalid"));
     }
 }
