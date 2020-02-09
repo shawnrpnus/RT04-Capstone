@@ -47,7 +47,7 @@ public class CustomerControllerTest {
     }
 
     @Test
-    public void createNewCustomer() {
+    public void createInvalidCustomer() {
         Customer invalidCustomer = new Customer("Steve", "Rogers", "steve@tony@bucky", "blablabla");
         given().
                 contentType("application/json").
@@ -55,5 +55,13 @@ public class CustomerControllerTest {
                 when().post("/api/customer/createNewCustomer").
                 then().statusCode(HttpStatus.BAD_REQUEST.value()).
                 body("email", equalTo("Email format is invalid"));
+    }
+
+    @Test
+    public void deleteCustomerThatDoesNotExist() {
+        given().
+                pathParam("customerId", 91293129).
+                when().delete("/api/customer/deleteCustomer/{customerId}").
+                then().statusCode(HttpStatus.NOT_FOUND.value());
     }
 }
