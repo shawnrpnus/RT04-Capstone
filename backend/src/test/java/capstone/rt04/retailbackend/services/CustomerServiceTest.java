@@ -47,9 +47,9 @@ public class CustomerServiceTest extends CustomerProductCategoryTestSetup {
     @Test
     public void updateEmail() throws Exception {
         Customer validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
-        customerService.updateEmail(validCustomer.getCustomerId(), "ultron@gmail.com");
+        customerService.changeEmail(validCustomer.getCustomerId(), "ultron@gmail.com");
         customerService.retrieveCustomerByEmail("ultron@gmail.com");
-        customerService.updateEmail(validCustomer.getCustomerId(), VALID_CUST_EMAIL);
+        customerService.changeEmail(validCustomer.getCustomerId(), VALID_CUST_EMAIL);
         customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
     }
 
@@ -57,7 +57,7 @@ public class CustomerServiceTest extends CustomerProductCategoryTestSetup {
     public void customerLogin() throws Exception {
 
         Customer validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
-
+        generateVerificationCodeAndVerify();
         Customer loggedInCustomer = customerService.customerLogin(VALID_CUST_EMAIL, "spiderman");
         assertThat(loggedInCustomer.getCustomerId()).isEqualTo(validCustomer.getCustomerId());
 
@@ -77,7 +77,6 @@ public class CustomerServiceTest extends CustomerProductCategoryTestSetup {
         assertThat(encoder.matches(newPasswordRaw, validCustomer.getPassword())).isTrue();
     }
 
-    @Test
     public void generateVerificationCodeAndVerify() throws Exception {
         Customer validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
         String code = customerService.generateVerificationCode(validCustomer.getCustomerId());

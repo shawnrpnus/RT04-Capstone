@@ -7,5 +7,6 @@ public class CustomerControllerRoutes {
     public static final String LOGIN = "/login";
     public static final String DELETE_CUSTOMER = "/deleteCustomer/{customerId}";
     public static final String CHANGE_PASSWORD = "/changePassword";
+    public static final String VERIFY = "/verify/{verificationCode}";
 
 }

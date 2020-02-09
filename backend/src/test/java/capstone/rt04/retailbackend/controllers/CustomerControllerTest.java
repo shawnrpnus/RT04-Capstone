@@ -33,6 +33,7 @@ public class CustomerControllerTest {
     private static final String VALID_CUST_PASSWORD = "spiderman";
 
     private static Long createdCustomerId;
+    private static String verificationCode;
 
     @Before
     public void setUp() throws Exception {
@@ -47,6 +48,7 @@ public class CustomerControllerTest {
         assertThat(createdCustomer.getOnlineShoppingCart()).isNotNull();
         assertThat(createdCustomer.getInStoreShoppingCart()).isNotNull();
         createdCustomerId = createdCustomer.getCustomerId();
+        verificationCode = createdCustomer.getVerificationCode().getCode();
     }
 
     @After
@@ -93,6 +95,18 @@ public class CustomerControllerTest {
     @Test
     public void login() {
         CustomerLoginRequest req = new CustomerLoginRequest(VALID_CUST_EMAIL, VALID_CUST_PASSWORD);
+        //valid credentials, but unverified
+        given()
+                .contentType("application/json")
+                .body(req)
+                .when().post(CUSTOMER_BASE_ROUTE + LOGIN)
+                .then().statusCode(HttpStatus.UNAUTHORIZED.value());
+        //verify
+        given()
+                .pathParam("verificationCode", verificationCode)
+                .when().get(CUSTOMER_BASE_ROUTE + VERIFY)
+                .then().statusCode(HttpStatus.OK.value());
+        //successful login
         Customer customer = given()
                 .contentType("application/json")
                 .body(req)
@@ -131,4 +145,9 @@ public class CustomerControllerTest {
         assertThat(customer.getCustomerId()).isEqualTo(createdCustomerId);
     }
 
+    // TODO: Reset password
+    // TODO: Update measurements
+    // TODO: CRUD credit cards
+    // TODO: CRUD shipping address
+    // TODO: CRUD wishlist
 }

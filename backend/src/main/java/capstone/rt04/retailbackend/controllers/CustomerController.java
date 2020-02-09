@@ -8,10 +8,7 @@ import capstone.rt04.retailbackend.response.GenericErrorResponse;
 import capstone.rt04.retailbackend.services.CustomerService;
 import capstone.rt04.retailbackend.services.ValidationService;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
-import capstone.rt04.retailbackend.util.exceptions.customer.CreateNewCustomerException;
-import capstone.rt04.retailbackend.util.exceptions.customer.CustomerCannotDeleteException;
-import capstone.rt04.retailbackend.util.exceptions.customer.CustomerNotFoundException;
-import capstone.rt04.retailbackend.util.exceptions.customer.InvalidLoginCredentialsException;
+import capstone.rt04.retailbackend.util.exceptions.customer.*;
 import capstone.rt04.retailbackend.util.routeconstants.CustomerControllerRoutes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -65,13 +62,12 @@ public class CustomerController {
     }
 
 
-
     @PostMapping(CustomerControllerRoutes.LOGIN)
     public ResponseEntity<?> customerLogin(@RequestBody CustomerLoginRequest customerLoginRequest){
         try {
             Customer customer = customerService.customerLogin(customerLoginRequest.getEmail(), customerLoginRequest.getPassword());
             return new ResponseEntity<>(customer, HttpStatus.OK);
-        } catch (InvalidLoginCredentialsException ex) {
+        } catch (InvalidLoginCredentialsException | CustomerNotVerifiedException ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.UNAUTHORIZED);
         }
     }
@@ -92,6 +88,16 @@ public class CustomerController {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.UNAUTHORIZED);
         } catch (CustomerNotFoundException ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping(CustomerControllerRoutes.VERIFY)
+    public ResponseEntity<?> verifyCustomer(@PathVariable String verificationCode){
+        try {
+            Customer customer = customerService.verify(verificationCode);
+            return new ResponseEntity<>(customer, HttpStatus.OK);
+        } catch (VerificationCodeInvalidException ex) {
+            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
 
