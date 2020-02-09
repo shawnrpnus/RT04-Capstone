@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.PersistenceException;
 import java.math.BigDecimal;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -121,6 +122,16 @@ public class ProductService {
         product.getCategory();
         product.getTags().size();
         return product;
+    }
+
+    public List<Product> retrieveProductListByProductId(List<Long> productIds) throws ProductNotFoundException {
+        List<Product> products = new LinkedList<>();
+
+        for(int i=0; i < productIds.size(); i++) {
+            products.add(retrieveProductByProductId(productIds.get(i)));
+        }
+
+        return products;
     }
 
     public Product updateProduct(Product newProduct) throws ProductNotFoundException {

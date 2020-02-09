@@ -71,12 +71,19 @@ public class CategoryServiceTest {
 
     @Test
     public void updateChildCategoryName() throws Exception {
+        //Create
         Category category = new Category("CLOTHING");
         Category parentCategory = categoryService.retrieveCategoryByName("MEN");
         Category subCategory = categoryService.createNewCategory(category, parentCategory.getCategoryId());
 
         assertThat(subCategory.getParentCategory().getCategoryId().compareTo(parentCategory.getCategoryId())).isEqualTo(0);
 
+        //Update
+        Category categoryToUpdate = categoryService.retrieveCategoryByCategoryId(subCategory.getCategoryId());
+        categoryToUpdate.setName("NOT_CLOTHING");
+        categoryService.updateCategory(categoryToUpdate, categoryToUpdate.getParentCategory().getCategoryId());
+
+        //Delete
         categoryService.deleteCategory(subCategory.getCategoryId());
     }
 }
