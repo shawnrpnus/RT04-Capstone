@@ -81,6 +81,21 @@ public class PromoCode implements Serializable {
         this.products = products;
     }
 
+    public void addProduct(Product product)
+    {
+        if(product != null)
+        {
+            if(!this.products.contains(product))
+            {
+                this.products.add(product);
+
+                if(!product.getPromoCodes().contains(this))
+                {
+                    product.getPromoCodes().add(this);
+                }
+            }
+        }
+    }
     
 
 }
