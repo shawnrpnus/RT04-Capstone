@@ -85,11 +85,11 @@ public class ProductController {
     public ResponseEntity<?> addOrRemovePromoCode(@RequestParam Long promoCodeId, @RequestParam Long productId, @RequestParam Boolean add) {
         try {
             if (add) {
-                Product product = productService.addPromoCode(promoCodeId, productId);
-                return new ResponseEntity<>(product, HttpStatus.CREATED);
+                List<Product> products = productService.addPromoCode(promoCodeId, null);
+                return new ResponseEntity<>(products, HttpStatus.CREATED);
             } else {
-                Product product = productService.removePromoCode(promoCodeId, productId);
-                return new ResponseEntity<>(product, HttpStatus.CREATED);
+                List<Product> products = productService.removePromoCode(promoCodeId, null);
+                return new ResponseEntity<>(products, HttpStatus.CREATED);
             }
         } catch (PromoCodeNotFoundException ex) {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
@@ -99,7 +99,7 @@ public class ProductController {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    
+
     @PutMapping("/addOrRemoveTag")
     public ResponseEntity<?> addOrRemoveTag(@RequestParam Long tagId, @RequestParam Long productId, @RequestParam Boolean add) {
         try {

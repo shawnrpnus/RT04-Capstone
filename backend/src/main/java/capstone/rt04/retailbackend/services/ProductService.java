@@ -99,16 +99,9 @@ public class ProductService {
 
     public List<Product> retrieveAllProducts() {
 
-        List<Product> productEntities = productRepository.findAll();
-
-        for (Product product : productEntities) {
-            product.getProductName();
-            product.getCategory();
-            product.getTags().size();
-            product.getReviews().size();
-            product.getDiscounts().size();
-        }
-        return productEntities;
+        List<Product> products = productRepository.findAll();
+        lazilyLoadProduct(products);
+        return products;
     }
 
     public Product retrieveProductById(Long productId) throws ProductNotFoundException {
@@ -118,9 +111,27 @@ public class ProductService {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ProductNotFoundException("Product ID " + productId + " does not exist!"));
 
-        product.getCategory();
-        product.getTags().size();
+        lazilyLoadProduct((List<Product>) product);
         return product;
+    }
+
+    public List<Product> retrieveListOfProductsById(List<Long> productIds) throws ProductNotFoundException {
+        if (productIds == null) {
+            throw new ProductNotFoundException("Product IDs not provided");
+        }
+        List<Product> products = (List<Product>) productRepository.findAllById(productIds);
+        lazilyLoadProduct(products);
+        return products;
+    }
+
+    private void lazilyLoadProduct(List<Product> products) {
+        for (Product product : products) {
+            product.getProductName();
+            product.getCategory();
+            product.getTags().size();
+            product.getReviews().size();
+            product.getDiscounts().size();
+        }
     }
 
     public Product updateProduct(Product newProduct) throws ProductNotFoundException {
@@ -155,7 +166,7 @@ public class ProductService {
         // TODO: Clear product variant
         List<ProductVariant> productVariants = productToRemove.getProductVariants();
         productToRemove.setProductVariants(null);
-        for (ProductVariant productVariant : productVariants){
+        for (ProductVariant productVariant : productVariants) {
             productVariant.setProduct(null);
             productVariantRepository.delete(productVariant);
             //TODO: have to search all shoppingcartItems and remove ref to productVariant
@@ -232,7 +243,8 @@ public class ProductService {
 
         if (productVariant == null) {
             throw new ProductVariantNotFoundException("Product variant with SKU " + sku + " does not exist!");
-        };
+        }
+        ;
 
         productVariant.getProductImages();
         productVariant.getProduct();
@@ -275,6 +287,7 @@ public class ProductService {
     }
 
     // TODO : Call this method in createWarehouse / createStore
+
     /**
      * Scenarios:
      * 1. new product -> assign to List<Warehouse> and List<Store>
@@ -286,8 +299,8 @@ public class ProductService {
     public void assignProductStock(List<Warehouse> warehouses, List<Store> stores) throws CreateNewProductStockException, InputDataValidationException, WarehouseNotFoundException {
         List<ProductVariant> productVariants = productVariantRepository.findAll();
 
-        for(Warehouse warehouse: warehouses ) {
-            for (ProductVariant productVariant: productVariants ) {
+        for (Warehouse warehouse : warehouses) {
+            for (ProductVariant productVariant : productVariants) {
                 ProductStock productStock = new ProductStock(0, null, null);
                 productStock.setProductVariant(productVariant);
                 ProductStock newProductStock = createProductStock(productStock, productVariant.getProductVariantId());
@@ -297,8 +310,8 @@ public class ProductService {
             }
         }
 
-        for(Store store: stores) {
-            for (ProductVariant productVariant: productVariants ) {
+        for (Store store : stores) {
+            for (ProductVariant productVariant : productVariants) {
                 ProductStock productStock = new ProductStock(0, null, null);
                 productStock.setProductVariant(productVariant);
                 ProductStock newProductStock = createProductStock(productStock, productVariant.getProductVariantId());
@@ -387,7 +400,7 @@ public class ProductService {
 
     public ProductImage retrieveProductImageById(Long productImageId) throws ProductImageNotFoundException {
         ProductImage productImage = productImageRepository.findById(productImageId)
-                .orElseThrow(()-> new ProductImageNotFoundException("Product image " + productImageId + " not found!"));
+                .orElseThrow(() -> new ProductImageNotFoundException("Product image " + productImageId + " not found!"));
         return productImage;
     }
 
@@ -434,34 +447,46 @@ public class ProductService {
         return tag;
     }
 
-    public Product addPromoCode(Long promoCodeId, Long productId) throws PromoCodeNotFoundException, ProductNotFoundException {
+    public List<Product> addPromoCode(Long promoCodeId, List<Long> productIds) throws PromoCodeNotFoundException, ProductNotFoundException {
         PromoCode promoCode = promoCodeService.retrievePromoCodeById(promoCodeId);
-        Product product = retrieveProductById(productId);
-        product.getPromoCodes().add(promoCode);
-        promoCode.getProducts().add(product);
-        return product;
+        List<Product> products = retrieveListOfProductsById(productIds);
+        for (Product product : products) {
+            promoCode.getProducts().add(product);
+            product.getPromoCodes().add(promoCode);
+        }
+        return products;
     }
 
-    public Product removePromoCode(Long promoCodeId, Long productId) throws PromoCodeNotFoundException, ProductNotFoundException {
+    public List<Product> removePromoCode(Long promoCodeId, List<Long> productIds) throws PromoCodeNotFoundException, ProductNotFoundException {
         PromoCode promoCode = promoCodeService.retrievePromoCodeById(promoCodeId);
-        Product product = retrieveProductById(productId);
-        product.getPromoCodes().remove(promoCode);
-        promoCode.getProducts().remove(product);
-        return product;
+        // Products to remove promoCode
+        List<Product> products = retrieveListOfProductsById(productIds);
+        for (Product product : products) {
+            product.getPromoCodes().remove(promoCode);
+            promoCode.getProducts().remove(products);
+        }
+        return products;
     }
 
-    public void addDiscount(Long discountId, Long productId) throws ProductNotFoundException, DiscountNotFoundException {
+    public List<Product> addDiscount(Long discountId, List<Long> productIds) throws ProductNotFoundException, DiscountNotFoundException {
         Discount discount = discountService.retrieveDiscountById(discountId);
-        Product product = retrieveProductById(productId);
-        product.getDiscounts().add(discount);
-        discount.getProducts().add(product);
+        List<Product> products = retrieveListOfProductsById(productIds);
+        for (Product product : products) {
+            product.getDiscounts().add(discount);
+            discount.getProducts().add(product);
+        }
+        return products;
     }
 
-    public void removeDiscount(Long discountId, Long productId) throws ProductNotFoundException, DiscountNotFoundException {
+    public List<Product> removeDiscount(Long discountId, List<Long> productIds) throws ProductNotFoundException, DiscountNotFoundException {
         Discount discount = discountService.retrieveDiscountById(discountId);
-        Product product = retrieveProductById(productId);
-        product.getDiscounts().remove(discount);
-        discount.getProducts().remove(product);
+        // Products to remove discounts
+        List<Product> products = retrieveListOfProductsById(productIds);
+        for (Product product : products) {
+            product.getDiscounts().remove(discount);
+            discount.getProducts().remove(product);
+        }
+        return products;
     }
 
     /**
@@ -502,7 +527,7 @@ public class ProductService {
     /**
      * List of update operations for relationships of ProductStore
      */
-    public void changeStoreOrWarehouseForProductStock(Long storeId, Long warehouseId, Long productStockId ) throws ProductStockNotFoundException, WarehouseNotFoundException {
+    public void changeStoreOrWarehouseForProductStock(Long storeId, Long warehouseId, Long productStockId) throws ProductStockNotFoundException, WarehouseNotFoundException {
         ProductStock productStock = retrieveProductStockById(productStockId);
 
         // TODO: uncomment after storeService is implemented
