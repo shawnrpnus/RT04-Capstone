@@ -3,6 +3,7 @@ package capstone.rt04.retailbackend.services;
 
 import capstone.rt04.retailbackend.entities.Category;
 import capstone.rt04.retailbackend.entities.Customer;
+import capstone.rt04.retailbackend.util.ErrorMessages;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,7 @@ public class ValidationServiceTest {
         assertThat(result).isEqualTo(expResult);
 
         Map<String, String> expResult2 = new HashMap<>();
-        expResult2.put("email", "Email format is invalid");
+        expResult2.put("email", ErrorMessages.EMAIL_INVALID);
         result = validationService.generateErrorMap(customer);
         assertThat(result).isEqualTo(expResult2);
 

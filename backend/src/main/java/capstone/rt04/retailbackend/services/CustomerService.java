@@ -91,23 +91,16 @@ public class CustomerService {
             throw new CustomerNotFoundException("Customer ID not provided");
         }
 
-        return customerRepository.findById(customerId)
+        Customer customer = customerRepository.findById(customerId)
                 .orElseThrow(() -> new CustomerNotFoundException("Customer with id: " + customerId + " does not exist"));
+        return lazyLoadCustomerFields(customer);
     }
 
     public Customer retrieveCustomerByEmail(String email) throws CustomerNotFoundException {
         Customer customer = customerRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomerNotFoundException("Customer email " + email + "does not exist!"));
-        customer.getCreditCards().size();
-        customer.getShippingAddresses().size();
-        customer.getMeasurements();
-        customer.getWishlistItems().size();
-        customer.getReservations().size();
-        customer.getRefunds().size();
-        customer.getTransactions().size();
-        customer.getUsedPromoCodes().size();
-        customer.getReviews().size();
-        return customer;
+
+        return lazyLoadCustomerFields(customer);
     }
 
     public Customer updateEmail(Long customerId, String newEmail) throws CustomerNotFoundException {
@@ -349,6 +342,19 @@ public class CustomerService {
 
         customerRepository.delete(customer);
 
+        return customer;
+    }
+
+    public Customer lazyLoadCustomerFields(Customer customer){
+        customer.getCreditCards().size();
+        customer.getShippingAddresses().size();
+        customer.getMeasurements();
+        customer.getWishlistItems().size();
+        customer.getReservations().size();
+        customer.getRefunds().size();
+        customer.getTransactions().size();
+        customer.getUsedPromoCodes().size();
+        customer.getReviews().size();
         return customer;
     }
 }
