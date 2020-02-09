@@ -1,6 +1,7 @@
 package capstone.rt04.retailbackend.services;
 
 import org.springframework.core.env.Environment;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

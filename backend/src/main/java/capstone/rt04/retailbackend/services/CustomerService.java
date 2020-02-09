@@ -95,9 +95,9 @@ public class CustomerService {
     }
 
     public Customer retrieveCustomerByCustomerId(Long customerId) throws CustomerNotFoundException {
-        if (customerId == null) {
-            throw new CustomerNotFoundException("Customer ID not provided");
-        }
+//        if (customerId == null) {
+//            throw new CustomerNotFoundException("Customer ID not provided");
+//        }
 
         Customer customer = customerRepository.findById(customerId)
                 .orElseThrow(() -> new CustomerNotFoundException("Customer with id: " + customerId + " does not exist"));
