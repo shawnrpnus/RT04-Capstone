@@ -7,6 +7,10 @@ import capstone.rt04.retailbackend.util.exceptions.warehouse.WarehouseNotFoundEx
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.LinkedList;
+import java.util.List;
+
+
 @Service
 @Transactional
 public class WarehouseService {
@@ -24,12 +28,43 @@ public class WarehouseService {
         return warehouseRepository.findById(warehouseId)
                 .orElseThrow(() -> new WarehouseNotFoundException("Warehouse with id: " + warehouseId + " does not exist"));
     }
+
     //View all Warehouse inventory
-    public Warehouse getWarehouseInventory(Long warehouseId) throws WarehouseNotFoundException {
-        //for loop
-        Warehouse warehouse = retrieveWarehouseById(warehouseId);
-        return warehouse;
+    //Retrieve Address, inStockRestoreOrders, productStocks
+    public List<Warehouse> retrieveAllWarehouseInventory() {
+
+        List<Warehouse> allWarehouse = warehouseRepository.findAll();
+
+        for (Warehouse warehouse : allWarehouse) {
+            warehouse.getAddress();
+            warehouse.getProductStocks();
+            warehouse.getInStoreRestockOrders();
+        }
+        return allWarehouse;
     }
+
+
     //View Warehouse Inventory Details
-    //Edit Warehouse Inventory Details
+    public Warehouse retrieveWarehouseDetailsByID(Long warehouseId) throws WarehouseNotFoundException {
+        Warehouse warehouse = retrieveWarehouseById(warehouseId);
+        Warehouse viewWareHouse = new Warehouse();
+        viewWareHouse.setAddress(warehouse.getAddress());
+        viewWareHouse.setInStoreRestockOrders(warehouse.getInStoreRestockOrders());
+        viewWareHouse.setProductStocks(warehouse.getProductStocks());
+        return viewWareHouse;
+
+    }
+
+    public Warehouse updateWarehouse(Warehouse warehouse) throws WarehouseNotFoundException {
+        Warehouse newWareHouse = retrieveWarehouseById(warehouse.getWarehouseId());
+        newWareHouse.setProductStocks(warehouse.getProductStocks());
+        newWareHouse.setAddress(warehouse.getAddress());
+        newWareHouse.setInStoreRestockOrders(warehouse.getInStoreRestockOrders());
+        newWareHouse.setWarehouseId(warehouse.getWarehouseId());
+
+        return newWareHouse;
+    }
+
+
 }
+
