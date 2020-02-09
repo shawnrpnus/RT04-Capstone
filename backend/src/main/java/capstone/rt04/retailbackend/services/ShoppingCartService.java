@@ -55,6 +55,7 @@ public class ShoppingCartService {
         return shoppingCartItemRepository.save(shoppingCartItem);
     }
 
+    // use for adding, editing, deleting item from shopping cart
     public ShoppingCart updateQuantityOfProductVariant(Integer quantity, Long productVariantId, Long customerId, String cartType) throws CustomerNotFoundException, ProductVariantNotFoundException, InvalidCartTypeException {
         ShoppingCart shoppingCart = getShoppingCart(customerId, cartType);
         for (ShoppingCartItem shoppingCartItem : shoppingCart.getShoppingCartItems()) {

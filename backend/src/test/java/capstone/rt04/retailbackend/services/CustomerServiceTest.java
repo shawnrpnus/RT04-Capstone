@@ -27,29 +27,29 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @ActiveProfiles("test")
-public class CustomerServiceTest {
+public class CustomerServiceTest extends CustomerProductCategoryTestSetup {
 
-    @Autowired
-    private CustomerService customerService;
+//    @Autowired
+//    private CustomerService customerService;
 
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
-    @Before
-    public void beforeEachTest() throws Exception{
-        Customer expectedValidCustomer = new Customer("Tony", "Stark", "tonystark@gmail.com", "spiderman");
-        Customer testValidCustomer = customerService.createNewCustomer(expectedValidCustomer);
-        assertThat(testValidCustomer.getCustomerId()).isNotNull();
-        assertThat(testValidCustomer).isEqualTo(expectedValidCustomer);
-        assertThat(testValidCustomer.getOnlineShoppingCart()).isNotNull();
-        assertThat(testValidCustomer.getInStoreShoppingCart()).isNotNull();
-    }
-
-    @After
-    public void afterEachTest() throws Exception{
-        Customer validCustomer = customerService.retrieveCustomerByEmail("tonystark@gmail.com");
-        Customer removedCustomer = customerService.removeCustomer(validCustomer.getCustomerId());
-        assertThat(removedCustomer.getCustomerId()).isEqualTo(validCustomer.getCustomerId());
-    }
+//    @Before
+//    public void beforeEachTest() throws Exception{
+//        Customer expectedValidCustomer = new Customer("Tony", "Stark", "tonystark@gmail.com", "spiderman");
+//        Customer testValidCustomer = customerService.createNewCustomer(expectedValidCustomer);
+//        assertThat(testValidCustomer.getCustomerId()).isNotNull();
+//        assertThat(testValidCustomer).isEqualTo(expectedValidCustomer);
+//        assertThat(testValidCustomer.getOnlineShoppingCart()).isNotNull();
+//        assertThat(testValidCustomer.getInStoreShoppingCart()).isNotNull();
+//    }
+//
+//    @After
+//    public void afterEachTest() throws Exception{
+//        Customer validCustomer = customerService.retrieveCustomerByEmail("tonystark@gmail.com");
+//        Customer removedCustomer = customerService.removeCustomer(validCustomer.getCustomerId());
+//        assertThat(removedCustomer.getCustomerId()).isEqualTo(validCustomer.getCustomerId());
+//    }
 
     @Test
     public void createNewCustomer() throws Exception {
@@ -182,6 +182,28 @@ public class CustomerServiceTest {
         validCustomer = customerService.retrieveCustomerByEmail("tonystark@gmail.com");
         assertThat(validCustomer.getShippingAddresses().size()).isEqualTo(0);
 
+    }
+
+    @Test
+    public void crudWishlistItems() throws Exception{
+        Customer validCustomer = customerService.retrieveCustomerByEmail("tonystark@gmail.com");
+        customerService.addProductToWishlist(validCustomer.getCustomerId(), productVariantId);
+        validCustomer = customerService.retrieveCustomerByEmail("tonystark@gmail.com");
+        assertThat(validCustomer.getWishlistItems().size()).isEqualTo(1);
+        assertThat(validCustomer.getWishlistItems().get(0).getProductVariantId()).isEqualTo(productVariantId);
+
+        customerService.removeProductFromWishlist(validCustomer.getCustomerId(), productVariantId);
+        validCustomer = customerService.retrieveCustomerByEmail("tonystark@gmail.com");
+        assertThat(validCustomer.getWishlistItems().size()).isEqualTo(0);
+
+        customerService.addProductToWishlist(validCustomer.getCustomerId(), productVariantId);
+        validCustomer = customerService.retrieveCustomerByEmail("tonystark@gmail.com");
+        assertThat(validCustomer.getWishlistItems().size()).isEqualTo(1);
+        assertThat(validCustomer.getWishlistItems().get(0).getProductVariantId()).isEqualTo(productVariantId);
+
+        customerService.clearWishList(validCustomer.getCustomerId());
+        validCustomer = customerService.retrieveCustomerByEmail("tonystark@gmail.com");
+        assertThat(validCustomer.getWishlistItems().size()).isEqualTo(0);
     }
 
 

@@ -4,6 +4,7 @@ import capstone.rt04.retailbackend.entities.*;
 import capstone.rt04.retailbackend.repositories.*;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.customer.*;
+import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ public class CustomerService {
 
     private final ValidationService validationService;
     private final ShoppingCartService shoppingCartService;
+    private final ProductService productService;
 
     private final CustomerRepository customerRepository;
     private final ReviewRepository reviewRepository;
@@ -38,9 +40,10 @@ public class CustomerService {
 
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
-    public CustomerService(ValidationService validationService, ShoppingCartService shoppingCartService, CustomerRepository customerRepository, ReviewRepository reviewRepository, ShoppingCartItemRepository shoppingCartItemRepository, ShoppingCartRepository shoppingCartRepository, VerificationCodeRepository verificationCodeRepository, MeasurementsRepository measurementsRepository, CreditCardRepository creditCardRepository, AddressRepository addressRepository) {
+    public CustomerService(ValidationService validationService, ShoppingCartService shoppingCartService, ProductService productService, CustomerRepository customerRepository, ReviewRepository reviewRepository, ShoppingCartItemRepository shoppingCartItemRepository, ShoppingCartRepository shoppingCartRepository, VerificationCodeRepository verificationCodeRepository, MeasurementsRepository measurementsRepository, CreditCardRepository creditCardRepository, AddressRepository addressRepository) {
         this.validationService = validationService;
         this.shoppingCartService = shoppingCartService;
+        this.productService = productService;
         this.customerRepository = customerRepository;
         this.reviewRepository = reviewRepository;
         this.shoppingCartItemRepository = shoppingCartItemRepository;
@@ -98,6 +101,12 @@ public class CustomerService {
         customer.getCreditCards().size();
         customer.getShippingAddresses().size();
         customer.getMeasurements();
+        customer.getWishlistItems().size();
+        customer.getReservations().size();
+        customer.getRefunds().size();
+        customer.getTransactions().size();
+        customer.getUsedPromoCodes().size();
+        customer.getReviews().size();
         return customer;
     }
 
@@ -259,6 +268,26 @@ public class CustomerService {
 
         customer.getShippingAddresses().remove(shippingAddressToRemove);
         addressRepository.delete(shippingAddressToRemove);
+        return customer;
+    }
+
+    public Customer addProductToWishlist(Long customerId, Long productVariantId) throws CustomerNotFoundException, ProductVariantNotFoundException {
+        Customer customer = retrieveCustomerByCustomerId(customerId);
+        ProductVariant productVariant = productService.retrieveProductVariantById(productVariantId);
+        customer.getWishlistItems().add(productVariant);
+        return customer;
+    }
+
+    public Customer removeProductFromWishlist(Long customerId, Long productVariantId) throws ProductVariantNotFoundException, CustomerNotFoundException {
+        Customer customer = retrieveCustomerByCustomerId(customerId);
+        ProductVariant productVariant = productService.retrieveProductVariantById(productVariantId);
+        customer.getWishlistItems().remove(productVariant);
+        return customer;
+    }
+
+    public Customer clearWishList(Long customerId) throws CustomerNotFoundException {
+        Customer customer = retrieveCustomerByCustomerId(customerId);
+        customer.setWishlistItems(new ArrayList<>());
         return customer;
     }
 

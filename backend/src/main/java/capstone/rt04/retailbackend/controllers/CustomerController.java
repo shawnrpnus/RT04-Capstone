@@ -5,13 +5,15 @@ import capstone.rt04.retailbackend.entities.Customer;
 import capstone.rt04.retailbackend.services.CustomerService;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.customer.CreateNewCustomerException;
+import capstone.rt04.retailbackend.util.exceptions.customer.CustomerCannotDeleteException;
 import capstone.rt04.retailbackend.util.exceptions.customer.CustomerNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import org.springframework.web.bind.annotation.*;
 
-
+import java.util.HashMap;
+import java.util.Map;
 
 
 @RestController
@@ -27,7 +29,9 @@ public class CustomerController {
 
     @GetMapping("/test")
     public ResponseEntity<?> test(){
-        return new ResponseEntity<>("Hello!", HttpStatus.OK);
+        Map<String, String> rsp = new HashMap<>();
+        rsp.put("message", "Hello!");
+        return new ResponseEntity<>(rsp, HttpStatus.OK);
     }
 
     @PostMapping("/createNewCustomer")
@@ -40,6 +44,18 @@ public class CustomerController {
         } catch (CreateNewCustomerException ex) {
             //TODO: create a response entity
             return null;
+        }
+    }
+
+    @DeleteMapping("/deleteCustomer/{customerId}")
+    public ResponseEntity<?> deleteCustomer(@PathVariable Long customerId){
+        try {
+            Customer deletedCustomer = customerService.removeCustomer(customerId);
+            return new ResponseEntity<>(deletedCustomer, HttpStatus.OK);
+        } catch (CustomerNotFoundException ex) {
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (CustomerCannotDeleteException ex){
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
