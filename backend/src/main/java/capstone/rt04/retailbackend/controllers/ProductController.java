@@ -2,11 +2,14 @@ package capstone.rt04.retailbackend.controllers;
 
 import capstone.rt04.retailbackend.entities.Category;
 import capstone.rt04.retailbackend.entities.Product;
+import capstone.rt04.retailbackend.entities.Tag;
 import capstone.rt04.retailbackend.services.CategoryService;
 import capstone.rt04.retailbackend.services.ProductService;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.product.CreateNewProductException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.promoCode.PromoCodeNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.tag.TagNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -57,8 +60,7 @@ public class ProductController {
             return new ResponseEntity<>(product, HttpStatus.OK);
         } catch (ProductNotFoundException ex) {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -78,6 +80,46 @@ public class ProductController {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @PutMapping("/addOrRemovePromoCode")
+    public ResponseEntity<?> addOrRemovePromoCode(@RequestParam Long promoCodeId, @RequestParam Long productId, @RequestParam Boolean add) {
+        try {
+            if (add) {
+                Product product = productService.addPromoCode(promoCodeId, productId);
+                return new ResponseEntity<>(product, HttpStatus.CREATED);
+            } else {
+                Product product = productService.removePromoCode(promoCodeId, productId);
+                return new ResponseEntity<>(product, HttpStatus.CREATED);
+            }
+        } catch (PromoCodeNotFoundException ex) {
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (ProductNotFoundException ex) {
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (Exception ex) {
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    @PutMapping("/addOrRemoveTag")
+    public ResponseEntity<?> addOrRemoveTag(@RequestParam Long tagId, @RequestParam Long productId, @RequestParam Boolean add) {
+        try {
+            if (add) {
+                Tag tag = productService.addTag(tagId, productId);
+                return new ResponseEntity<>(tag, HttpStatus.CREATED);
+            } else {
+                Tag tag = productService.removeTag(tagId, productId);
+                return new ResponseEntity<>(tag, HttpStatus.CREATED);
+            }
+        } catch (ProductNotFoundException ex) {
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (TagNotFoundException ex) {
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (Exception ex) {
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
 
 
 //    @GetMapping("/retrieveAllCategory")

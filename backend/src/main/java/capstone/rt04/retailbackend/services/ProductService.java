@@ -418,32 +418,36 @@ public class ProductService {
         newCategory.getProducts().add(product);
     }
 
-    public void addTag(Long tagId, Long productId) throws ProductNotFoundException, TagNotFoundException {
+    public Tag addTag(Long tagId, Long productId) throws ProductNotFoundException, TagNotFoundException {
         Tag tag = tagService.retrieveTagByTagId(tagId);
         Product product = retrieveProductById(productId);
         product.getTags().add(tag);
         tag.getProducts().add(product);
+        return tag;
     }
 
-    public void removeTag(Long tagId, Long productId) throws ProductNotFoundException, TagNotFoundException {
+    public Tag removeTag(Long tagId, Long productId) throws ProductNotFoundException, TagNotFoundException {
         Tag tag = tagService.retrieveTagByTagId(tagId);
         Product product = retrieveProductById(productId);
         product.getTags().remove(tag);
         tag.getProducts().remove(product);
+        return tag;
     }
 
-    public void addPromoCode(Long promoCodeId, Long productId) throws PromoCodeNotFoundException, ProductNotFoundException {
+    public Product addPromoCode(Long promoCodeId, Long productId) throws PromoCodeNotFoundException, ProductNotFoundException {
         PromoCode promoCode = promoCodeService.retrievePromoCodeById(promoCodeId);
         Product product = retrieveProductById(productId);
         product.getPromoCodes().add(promoCode);
         promoCode.getProducts().add(product);
+        return product;
     }
 
-    public void removePromoCode(Long promoCodeId, Long productId) throws PromoCodeNotFoundException, ProductNotFoundException {
+    public Product removePromoCode(Long promoCodeId, Long productId) throws PromoCodeNotFoundException, ProductNotFoundException {
         PromoCode promoCode = promoCodeService.retrievePromoCodeById(promoCodeId);
         Product product = retrieveProductById(productId);
         product.getPromoCodes().remove(promoCode);
         promoCode.getProducts().remove(product);
+        return product;
     }
 
     public void addDiscount(Long discountId, Long productId) throws ProductNotFoundException, DiscountNotFoundException {
