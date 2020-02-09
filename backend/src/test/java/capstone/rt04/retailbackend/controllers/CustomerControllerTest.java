@@ -1,5 +1,7 @@
 package capstone.rt04.retailbackend.controllers;
 
+import capstone.rt04.retailbackend.entities.Address;
+import capstone.rt04.retailbackend.entities.CreditCard;
 import capstone.rt04.retailbackend.entities.Customer;
 import capstone.rt04.retailbackend.entities.Measurements;
 import capstone.rt04.retailbackend.request.customer.*;
@@ -123,7 +125,7 @@ public class CustomerControllerTest {
     }
 
     @Test
-    public void changePassword(){
+    public void changePassword() {
         CustomerChangePasswordRequest req = new CustomerChangePasswordRequest(createdCustomerId, "wrongPw", "newPassword");
         //wrong password
         given()
@@ -153,7 +155,7 @@ public class CustomerControllerTest {
     }
 
     @Test
-    public void resetPassword(){
+    public void resetPassword() {
         CustomerResetPasswordRequest badReq = new CustomerResetPasswordRequest(createdCustomerId, "abcdef", "newPassword");
         given()
                 .contentType("application/json")
@@ -170,12 +172,11 @@ public class CustomerControllerTest {
         assertThat(customer.getCustomerId()).isEqualTo(createdCustomerId);
     }
 
-    // TODO: Update measurements
     @Test
-    public void updateMeasurements(){
+    public void updateMeasurements() {
         Measurements initialMeasurements = new Measurements();
         initialMeasurements.setChest(BigDecimal.valueOf(38.00));
-        CustomerUpdateMeasurementsRequest req  = new CustomerUpdateMeasurementsRequest(createdCustomerId, initialMeasurements);
+        CustomerUpdateMeasurementsRequest req = new CustomerUpdateMeasurementsRequest(createdCustomerId, initialMeasurements);
         Measurements measurements1 = given()
                 .contentType("application/json")
                 .body(req)
@@ -193,7 +194,66 @@ public class CustomerControllerTest {
         assertThat(measurements2.getMeasurementsId()).isNotNull();
         assertThat(measurements2.getChest().compareTo(req.getMeasurements().getChest())).isEqualTo(0);
     }
-    // TODO: CRUD credit cards
-    // TODO: CRUD shipping address
+
+    @Test
+    public void createDeleteCreditCard() {
+        CreditCard newCreditCard = new CreditCard("123", "123", 12, 23, true);
+        AddCreditCardRequest addCreditCardRequest = new AddCreditCardRequest(createdCustomerId, newCreditCard);
+        Customer customer = given()
+                .contentType("application/json")
+                .body(addCreditCardRequest)
+                .when().post(CUSTOMER_BASE_ROUTE + ADD_CREDIT_CARD)
+                .then().statusCode(HttpStatus.OK.value()).extract().body().as(Customer.class);
+        assertThat(customer.getCustomerId()).isEqualTo(createdCustomerId);
+        assertThat(customer.getCreditCards().size()).isEqualTo(1);
+        assertThat(customer.getCreditCards().get(0).getCreditCardId()).isNotNull();
+
+        Long creditCardId = customer.getCreditCards().get(0).getCreditCardId();
+        RemoveCreditCardRequest removeCreditCardRequest = new RemoveCreditCardRequest(createdCustomerId, creditCardId);
+        customer = given()
+                .contentType("application/json")
+                .body(removeCreditCardRequest)
+                .when().delete(CUSTOMER_BASE_ROUTE + REMOVE_CREDIT_CARD)
+                .then().statusCode(HttpStatus.OK.value()).extract().body().as(Customer.class);
+        assertThat(customer.getCustomerId()).isEqualTo(createdCustomerId);
+        assertThat(customer.getCreditCards().size()).isEqualTo(0);
+
+    }
+
+    // TODO: CUD shipping address
+    @Test
+    public void CUDshippingAddress(){
+        Address newShippingAddress = new Address("line1", null, "510149", null, false, null, null);
+        AddUpdateShippingAddressRequest req = new AddUpdateShippingAddressRequest(createdCustomerId, newShippingAddress);
+        Customer customer = given()
+                .contentType("application/json")
+                .body(req)
+                .when().post(CUSTOMER_BASE_ROUTE + ADD_SHIPPING_ADDRESS)
+                .then().statusCode(HttpStatus.OK.value()).extract().body().as(Customer.class);
+        assertThat(customer.getCustomerId()).isEqualTo(createdCustomerId);
+        assertThat(customer.getShippingAddresses().size()).isEqualTo(1);
+        assertThat(customer.getShippingAddresses().get(0).getAddressId()).isNotNull();
+
+        Address createdAddr = customer.getShippingAddresses().get(0);
+        String newLine1 = "line1updated";
+        createdAddr.setLine1(newLine1);
+        req.setShippingAddress(createdAddr);
+        Address updatedAddr = given()
+                .contentType("application/json")
+                .body(req)
+                .when().post(CUSTOMER_BASE_ROUTE + UPDATE_SHIPPING_ADDRESS)
+                .then().statusCode(HttpStatus.OK.value()).extract().body().as(Address.class);
+        assertThat(updatedAddr.getAddressId().compareTo(createdAddr.getAddressId())).isEqualTo(0);
+        assertThat(updatedAddr.getLine1()).isEqualTo(newLine1);
+
+        RemoveShippingAddressRequest removeReq = new RemoveShippingAddressRequest(createdCustomerId, updatedAddr.getAddressId());
+        customer = given()
+                .contentType("application/json")
+                .body(removeReq)
+                .when().delete(CUSTOMER_BASE_ROUTE + REMOVE_SHIPPING_ADDRESS)
+                .then().statusCode(HttpStatus.OK.value()).extract().body().as(Customer.class);
+        assertThat(customer.getCustomerId()).isEqualTo(createdCustomerId);
+        assertThat(customer.getShippingAddresses().size()).isEqualTo(0);
+    }
     // TODO: CRUD wishlist
 }

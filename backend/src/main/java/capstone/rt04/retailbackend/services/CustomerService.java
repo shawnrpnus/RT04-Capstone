@@ -84,7 +84,7 @@ public class CustomerService {
                 Customer savedCustomer = customerRepository.save(customer);
                 shoppingCartService.initializeShoppingCarts(savedCustomer.getCustomerId());
                 generateVerificationCode(savedCustomer.getCustomerId());
-                return customer;
+                return lazyLoadCustomerFields(customer);
             } catch (PersistenceException | CustomerNotFoundException ex) {
                 System.out.println(ex.getMessage());
                 throw new CreateNewCustomerException("Error creating new customer");
@@ -116,7 +116,7 @@ public class CustomerService {
         Customer customer = retrieveCustomerByCustomerId(customerId);
         customer.setEmail(newEmail);
         // TODO: Send verification email
-        return customer;
+        return lazyLoadCustomerFields(customer);
     }
 
     public Customer customerLogin(String email, String password) throws InvalidLoginCredentialsException, CustomerNotVerifiedException {
@@ -126,7 +126,7 @@ public class CustomerService {
                 if (!customer.isVerified()){
                     throw new CustomerNotVerifiedException(ErrorMessages.CUSTOMER_NOT_VERIFIED);
                 }
-                return customer;
+                return lazyLoadCustomerFields(customer);
             } else {
                 throw new InvalidLoginCredentialsException(ErrorMessages.LOGIN_FAILED);
             }
@@ -228,7 +228,7 @@ public class CustomerService {
         Customer customer = retrieveCustomerByCustomerId(customerId);
         creditCardRepository.save(creditCard);
         customer.addCreditCard(creditCard);
-        return customer;
+        return lazyLoadCustomerFields(customer);
     }
 
     public CreditCard getCreditCard(Long customerId, Long creditCardId) throws CustomerNotFoundException, CreditCardNotFoundException {
@@ -247,14 +247,14 @@ public class CustomerService {
 
         customer.getCreditCards().remove(creditCardToRemove);
         creditCardRepository.delete(creditCardToRemove);
-        return customer;
+        return lazyLoadCustomerFields(customer);
     }
 
     public Customer addShippingAddress(Long customerId, Address shippingAddress) throws CustomerNotFoundException {
         Customer customer = retrieveCustomerByCustomerId(customerId);
         addressRepository.save(shippingAddress);
         customer.addShippingAddress(shippingAddress);
-        return customer;
+        return lazyLoadCustomerFields(customer);
     }
 
     public Address getShippingAddress(Long customerId, Long addressId) throws CustomerNotFoundException, AddressNotFoundException {
@@ -285,27 +285,27 @@ public class CustomerService {
 
         customer.getShippingAddresses().remove(shippingAddressToRemove);
         addressRepository.delete(shippingAddressToRemove);
-        return customer;
+        return lazyLoadCustomerFields(customer);
     }
 
     public Customer addProductToWishlist(Long customerId, Long productVariantId) throws CustomerNotFoundException, ProductVariantNotFoundException {
         Customer customer = retrieveCustomerByCustomerId(customerId);
         ProductVariant productVariant = productService.retrieveProductVariantById(productVariantId);
         customer.getWishlistItems().add(productVariant);
-        return customer;
+        return lazyLoadCustomerFields(customer);
     }
 
     public Customer removeProductFromWishlist(Long customerId, Long productVariantId) throws ProductVariantNotFoundException, CustomerNotFoundException {
         Customer customer = retrieveCustomerByCustomerId(customerId);
         ProductVariant productVariant = productService.retrieveProductVariantById(productVariantId);
         customer.getWishlistItems().remove(productVariant);
-        return customer;
+        return lazyLoadCustomerFields(customer);
     }
 
     public Customer clearWishList(Long customerId) throws CustomerNotFoundException {
         Customer customer = retrieveCustomerByCustomerId(customerId);
         customer.setWishlistItems(new ArrayList<>());
-        return customer;
+        return lazyLoadCustomerFields(customer);
     }
 
     //method used just for test case removal

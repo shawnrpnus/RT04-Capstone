@@ -8,6 +8,7 @@ import capstone.rt04.retailbackend.util.exceptions.product.ProductNotFoundExcept
 import capstone.rt04.retailbackend.util.exceptions.promoCode.CreateNewPromoCodeException;
 import capstone.rt04.retailbackend.util.exceptions.promoCode.PromoCodeNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,17 +20,15 @@ import java.util.Map;
 @Transactional
 public class PromoCodeService {
 
-    private final PromoCodeService promoCodeService;
     private final ValidationService validationService;
     private final ProductService productService;
 
     @Autowired
     private final PromoCodeRepository promoCodeRepository;
 
-    public PromoCodeService(ProductService productService, ValidationService validationService, PromoCodeService promoCodeService, PromoCodeRepository promoCodeRepository) {
+    public PromoCodeService(@Lazy ProductService productService, ValidationService validationService, PromoCodeRepository promoCodeRepository) {
         this.productService = productService;
         this.validationService = validationService;
-        this.promoCodeService = promoCodeService;
         this.promoCodeRepository = promoCodeRepository;
     }
 

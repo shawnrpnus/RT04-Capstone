@@ -128,7 +128,7 @@ public class ProductService {
         List<Product> products = new LinkedList<>();
 
         for(int i=0; i < productIds.size(); i++) {
-            products.add(retrieveProductByProductId(productIds.get(i)));
+            products.add(retrieveProductById(productIds.get(i)));
         }
 
         return products;

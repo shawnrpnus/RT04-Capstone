@@ -37,8 +37,8 @@ public class CustomerExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @ExceptionHandler
-    public final ResponseEntity<Object> handleNotFoundExceptions(CustomerNotFoundException ex, WebRequest req) {
+    @ExceptionHandler({CustomerNotFoundException.class, CreditCardNotFoundException.class, AddressNotFoundException.class})
+    public final ResponseEntity<Object> handleNotFoundExceptions(Exception ex, WebRequest req) {
         return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
     }
 

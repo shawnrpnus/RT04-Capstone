@@ -1,9 +1,9 @@
 package capstone.rt04.retailbackend.controllers;
 
+import capstone.rt04.retailbackend.entities.Address;
 import capstone.rt04.retailbackend.entities.Customer;
 import capstone.rt04.retailbackend.entities.Measurements;
 import capstone.rt04.retailbackend.request.customer.*;
-import capstone.rt04.retailbackend.response.GenericErrorResponse;
 import capstone.rt04.retailbackend.services.CustomerService;
 import capstone.rt04.retailbackend.services.ValidationService;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
@@ -103,17 +103,46 @@ public class CustomerController {
         return new ResponseEntity<>(measurements, HttpStatus.OK);
     }
 
-    // TODO: CD credit cards
     @PostMapping(CustomerControllerRoutes.ADD_CREDIT_CARD)
-    public ResponseEntity<?> addCreditCard(@RequestBody AddCreditCardRequest addCreditCardRequest) {
+    public ResponseEntity<?> addCreditCard(@RequestBody AddCreditCardRequest addCreditCardRequest) throws CustomerNotFoundException {
         Map<String, String> inputErrMap = validationService.generateErrorMap(addCreditCardRequest);
-        if (inputErrMap != null) {
-            return new ResponseEntity<>(inputErrMap, HttpStatus.BAD_REQUEST);
-        }
-        return null;
+        if (inputErrMap != null) return new ResponseEntity<>(inputErrMap, HttpStatus.BAD_REQUEST);
+        Customer customer = customerService.addCreditCard(addCreditCardRequest.getCustomerId(), addCreditCardRequest.getCreditCard());
+        return new ResponseEntity<>(customer, HttpStatus.OK);
+    }
+
+    @DeleteMapping(CustomerControllerRoutes.REMOVE_CREDIT_CARD)
+    public ResponseEntity<?> removeCreditCard(@RequestBody RemoveCreditCardRequest removeCreditCardRequest) throws CustomerNotFoundException, CreditCardNotFoundException {
+        Map<String, String> inputErrMap = validationService.generateErrorMap(removeCreditCardRequest);
+        if (inputErrMap != null) return new ResponseEntity<>(inputErrMap, HttpStatus.BAD_REQUEST);
+        Customer customer = customerService.deleteCreditCard(removeCreditCardRequest.getCustomerId(), removeCreditCardRequest.getCreditCardId());
+        return new ResponseEntity<>(customer, HttpStatus.OK);
     }
 
     // TODO: CUD shipping address
+    @PostMapping(CustomerControllerRoutes.ADD_SHIPPING_ADDRESS)
+    public ResponseEntity<?> addShippingAddress(@RequestBody AddUpdateShippingAddressRequest addUpdateShippingAddressRequest) throws CustomerNotFoundException {
+        Map<String, String> inputErrMap = validationService.generateErrorMap(addUpdateShippingAddressRequest);
+        if (inputErrMap != null) return new ResponseEntity<>(inputErrMap, HttpStatus.BAD_REQUEST);
+        Customer customer = customerService.addShippingAddress(addUpdateShippingAddressRequest.getCustomerId(), addUpdateShippingAddressRequest.getShippingAddress());
+        return new ResponseEntity<>(customer, HttpStatus.OK);
+    }
+
+    @PostMapping(CustomerControllerRoutes.UPDATE_SHIPPING_ADDRESS)
+    public ResponseEntity<?> updateShippingAddress(@RequestBody AddUpdateShippingAddressRequest req) throws CustomerNotFoundException, AddressNotFoundException {
+        Map<String, String> inputErrMap = validationService.generateErrorMap(req);
+        if (inputErrMap != null) return new ResponseEntity<>(inputErrMap, HttpStatus.BAD_REQUEST);
+        Address address = customerService.updateShippingAddress(req.getCustomerId(), req.getShippingAddress());
+        return new ResponseEntity<>(address, HttpStatus.OK);
+    }
+
+    @DeleteMapping(CustomerControllerRoutes.REMOVE_SHIPPING_ADDRESS)
+    public ResponseEntity<?> removeShippingAddress(@RequestBody RemoveShippingAddressRequest req) throws CustomerNotFoundException, AddressNotFoundException {
+        Map<String, String> inputErrMap = validationService.generateErrorMap(req);
+        if (inputErrMap != null) return new ResponseEntity<>(inputErrMap, HttpStatus.BAD_REQUEST);
+        Customer customer = customerService.deleteShippingAddress(req.getCustomerId(), req.getShippingAddressId());
+        return new ResponseEntity<>(customer, HttpStatus.OK);
+    }
     // TODO: CRUD wishlist
 
     @DeleteMapping(CustomerControllerRoutes.DELETE_CUSTOMER)
