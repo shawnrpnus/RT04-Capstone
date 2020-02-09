@@ -38,6 +38,5 @@ public class ValidationServiceTest {
         expResult2.put("email", "Email format is invalid");
         result = validationService.generateErrorMap(customer);
         assertThat(result).isEqualTo(expResult2);
-
     }
 }

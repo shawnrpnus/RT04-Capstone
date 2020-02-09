@@ -54,6 +54,9 @@ public class ProductVariant implements Serializable {
     @OneToOne
     private SizeDetails sizeDetails;
 
+    @OneToMany
+    private List<ProductStock> productStocks;
+
     public ProductVariant() {
     }
 
