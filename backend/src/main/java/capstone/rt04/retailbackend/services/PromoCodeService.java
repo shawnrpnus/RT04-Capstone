@@ -7,7 +7,6 @@ import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.promoCode.CreateNewPromoCodeException;
 import capstone.rt04.retailbackend.util.exceptions.promoCode.PromoCodeNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,8 +21,6 @@ public class PromoCodeService {
 
     private final ValidationService validationService;
     private final ProductService productService;
-
-    @Autowired
     private final PromoCodeRepository promoCodeRepository;
 
     public PromoCodeService(@Lazy ProductService productService, ValidationService validationService, PromoCodeRepository promoCodeRepository) {
@@ -40,7 +37,7 @@ public class PromoCodeService {
                 List<Product> products = new LinkedList<>();
                 promoCode = promoCodeRepository.save(promoCode);
                 if(!productIds.isEmpty()) {
-                    products = productService.retrieveProductListByProductId(productIds);
+                    products = productService.retrieveListOfProductsById(productIds);
                     for(Product p : products) {
                         promoCode.addProduct(p);
                     }

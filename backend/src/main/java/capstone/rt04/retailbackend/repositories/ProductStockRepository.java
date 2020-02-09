@@ -14,4 +14,10 @@ public interface ProductStockRepository extends CrudRepository<ProductStock, Lon
     @Override
     Optional<ProductStock> findById(Long aLong);
 
+    List<ProductStock> findAllByStoreStoreId(Long storeId);
+
+    List<ProductStock> findAllByWarehouseWarehouseId(Long warehouseId);
+
+    List<ProductStock> findAllByProductVariantProductVariantId(Long productVariantId);
+
 }

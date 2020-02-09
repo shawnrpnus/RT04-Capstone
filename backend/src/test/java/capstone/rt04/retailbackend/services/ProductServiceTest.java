@@ -15,7 +15,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -51,8 +53,8 @@ public class ProductServiceTest {
 
         Product product = productService.createNewProduct(validProduct, category.getCategoryId(), null);
 
-        ProductVariant validProductVariant = new ProductVariant("SKU001", "White", null, product, null);
-        ProductVariant productVariant = productService.createProductVariant(validProductVariant);
+        ProductVariant validProductVariant = new ProductVariant("SKU001", "White", null, null, null);
+        ProductVariant productVariant = productService.createProductVariant(validProductVariant, product.getProductId());
 
         if (!initialized) {
             assertThat(product).isEqualTo(validProduct);
@@ -95,9 +97,9 @@ public class ProductServiceTest {
     public void testCDProductVariant() throws Exception {
 
         Product product = productService.retrieveProductById(productId);
-        ProductVariant validProductVariant = new ProductVariant("SKU002", "Black", null, product, null);
+        ProductVariant validProductVariant = new ProductVariant("SKU002", "Black", null, null, null);
 
-        ProductVariant productVariant = productService.createProductVariant(validProductVariant);
+        ProductVariant productVariant = productService.createProductVariant(validProductVariant, product.getProductId());
         assertThat(productVariant).isEqualTo(validProductVariant);
 
         productService.deleteProductVariant(productVariant.getProductVariantId());
@@ -125,14 +127,17 @@ public class ProductServiceTest {
         ProductVariant productVariant = productService.retrieveProductVariantById(productVariantId);
         ProductImage validProductImage = new ProductImage("https://i.ebayimg.com/images/g/af8AAOSwd9dcdYMT/s-l640.jpg");
 
-        ProductImage productImage = productService.createProductImage(validProductImage, productVariant.getProductVariantId());
-        productVariant.getProductImages().add(productImage);
-        assertThat(productImage).isEqualTo(validProductImage);
+        List<ProductImage> productImagesToAdd = new ArrayList<>();
+        productImagesToAdd.add(validProductImage);
+
+        List<ProductImage> productImages = productService.createProductImage(productImagesToAdd, productVariant.getProductVariantId());
+        productVariant.getProductImages().add(productImages.get(0));
+        assertThat(productImages.get(0)).isEqualTo(validProductImage);
 
         // Delete
         productVariant.getProductImages().remove(validProductImage);
-        productService.deleteProductImage(productImage.getProductImageId(), productVariant.getProductVariantId());
-        productService.retrieveProductImageById(productImage.getProductImageId());
+        productService.deleteProductImage(productImages.get(0).getProductImageId(), productVariant.getProductVariantId());
+        productService.retrieveProductImageById(productImages.get(0).getProductImageId());
     }
 
     // TODO: test assignProductStock - need to create store and warehouse service before

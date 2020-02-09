@@ -55,9 +55,9 @@ public class CustomerProductCategoryTestSetup {
         productId = result.getProductId();
 
         Product product = productService.retrieveProductById(productId);
-        ProductVariant validProductVariant = new ProductVariant("SKU001", "White", null, product, null);
+        ProductVariant validProductVariant = new ProductVariant("SKU001", "White", null, null, null);
 
-        ProductVariant productVariant = productService.createProductVariant(validProductVariant);
+        ProductVariant productVariant = productService.createProductVariant(validProductVariant, product.getProductId());
         productVariantId = productVariant.getProductVariantId();
         assertThat(productVariant).isEqualTo(validProductVariant);
     }

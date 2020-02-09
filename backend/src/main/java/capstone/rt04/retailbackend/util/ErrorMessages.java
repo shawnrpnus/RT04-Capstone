@@ -18,8 +18,7 @@ public class ErrorMessages {
     public static final String VERIFICATION_CODE_INVALID = "Invalid verification code!";
     public static final String VERIFICATION_CODE_EXPIRED = "Verification code has expired! Request for a new one";
 
-
-
-
-
+    public static final String PROMO_CODE_REQUIRED = "Promo code is required!";
+    public static final String PRODUCTS_REQUIRED = "Products are required!";
+    public static final String TAG_REQUIRED = "Tag is required!";
 }
