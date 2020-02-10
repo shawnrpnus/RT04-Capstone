@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/product")
+@RequestMapping("/api/productStock")
 @CrossOrigin(origins = {"http://localhost:3000"})
 public class ProductStockController {
 
@@ -78,7 +78,7 @@ public class ProductStockController {
     public ResponseEntity<?> deleteProductStock(@PathVariable Long productStockId) {
         try {
             ProductStock productStock = productService.deleteProductStock(productStockId);
-            return new ResponseEntity<>(productStock, HttpStatus.CREATED);
+            return new ResponseEntity<>(productStock, HttpStatus.OK);
         } catch (ProductStockNotFoundException ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
         } catch (Exception ex) {

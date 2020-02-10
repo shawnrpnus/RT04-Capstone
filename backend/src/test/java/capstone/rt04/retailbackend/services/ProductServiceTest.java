@@ -32,7 +32,6 @@ public class ProductServiceTest {
     @Autowired
     private ProductService productService;
 
-    private static boolean initialized = false;
     private static Long categoryId;
     private static Long productId;
     private static Long productVariantId;
@@ -56,16 +55,13 @@ public class ProductServiceTest {
         ProductVariant validProductVariant = new ProductVariant("SKU001", "White", null, null, null);
         ProductVariant productVariant = productService.createProductVariant(validProductVariant, product.getProductId());
 
-        if (!initialized) {
-            assertThat(product).isEqualTo(validProduct);
-            assertThat(product).isNotEqualTo(invalidProduct);
-            assertThat(productVariant).isEqualTo(validProductVariant);
-        }
+        assertThat(product).isEqualTo(validProduct);
+        assertThat(product).isNotEqualTo(invalidProduct);
+        assertThat(productVariant).isEqualTo(validProductVariant);
 
         categoryId = category.getCategoryId();
         productId = product.getProductId();
         productVariantId = productVariant.getProductVariantId();
-        initialized = true;
     }
 
     @After
@@ -81,7 +77,7 @@ public class ProductServiceTest {
     }
 
     @Test
-    public void testCreateNewProduct() throws Exception {
+    public void testCreateErrorProduct() throws Exception {
         try {
             Product invalidProduct = new Product(null, "Fila", BigDecimal.valueOf(89.90), BigDecimal.valueOf(39.90));
             invalidProduct.setCategory(categoryService.retrieveCategoryByCategoryId(categoryId));
