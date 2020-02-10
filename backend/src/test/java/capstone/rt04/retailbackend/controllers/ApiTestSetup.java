@@ -6,11 +6,13 @@ import capstone.rt04.retailbackend.entities.ProductVariant;
 import capstone.rt04.retailbackend.request.category.CategoryCreateRequest;
 import capstone.rt04.retailbackend.request.product.ProductCreateRequest;
 import capstone.rt04.retailbackend.request.productVariant.ProductVariantCreateRequest;
+import io.restassured.RestAssured;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
@@ -27,9 +29,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DirtiesContext
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 public class ApiTestSetup {
+
+    @LocalServerPort
+    int port;
 
     private static Long categoryId;
     private static Long productId;
@@ -37,6 +42,7 @@ public class ApiTestSetup {
 
     @Before
     public void setUp() throws Exception {
+        RestAssured.port = port;
         Category validCategory = new Category("Shoes");
         Product validProduct = new Product("Fila Disruptor II", "Fila", BigDecimal.valueOf(89.90), BigDecimal.valueOf(39.90));
         ProductVariant validProductVariant = new ProductVariant("SKU001", "White", null, null, null);
