@@ -156,6 +156,7 @@ public class ProductService {
     public Product deleteProduct(Long productId) throws ProductNotFoundException//, DeleteProductException
     {
         Product productToRemove = retrieveProductById(productId);
+        productToRemove.toString();
 //        List<TransactionLineItem> saleTransactionLineItemEntities = saleTransactionEntityControllerLocal.retrieveSaleTransactionLineItemsByProductId(productId);
 //        List<Review> reviewEntities = reviewEntityControllerLocal.retrieveReviewsForProduct(productId);
 //        if (saleTransactionLineItemEntities.isEmpty() && reviewEntities.isEmpty()) {

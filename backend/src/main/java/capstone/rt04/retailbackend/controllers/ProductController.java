@@ -7,6 +7,7 @@ import capstone.rt04.retailbackend.services.ProductService;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.product.CreateNewProductException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductNotFoundException;
+import capstone.rt04.retailbackend.util.routeconstants.ProductControllerRoutes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/product")
+@RequestMapping(ProductControllerRoutes.PRODUCT_BASE_ROUTE)
 @CrossOrigin(origins = {"http://localhost:3000"})
 public class ProductController {
 
@@ -26,7 +27,7 @@ public class ProductController {
         this.productService = productService;
     }
 
-    @GetMapping("/retrieveProductById/{productId}")
+    @GetMapping(ProductControllerRoutes.RETRIEVE_PRODUCT_BY_ID)
     public ResponseEntity<?> retrieveProductById(@PathVariable Long productId) {
         try {
             Product product = productService.retrieveProductById(productId);
@@ -38,8 +39,8 @@ public class ProductController {
         }
     }
 
-    @GetMapping("/retrieveAllProduct")
-    public ResponseEntity<?> retrieveAllProduct() {
+    @GetMapping(ProductControllerRoutes.RETRIEVE_ALL_PRODUCTS)
+    public ResponseEntity<?> retrieveAllProducts() {
         try {
             List<Product> products = productService.retrieveAllProducts();
             return new ResponseEntity<>(products, HttpStatus.OK);
@@ -48,7 +49,7 @@ public class ProductController {
         }
     }
 
-    @PostMapping("/createNewProduct")
+    @PostMapping(ProductControllerRoutes.CREATE_NEW_PRODUCT)
     public ResponseEntity<?> createNewProduct(@RequestBody ProductCreateRequest productCreateRequest) {
         try {
             Product newProduct = productService.createNewProduct(productCreateRequest.getProduct(),
@@ -63,7 +64,7 @@ public class ProductController {
         }
     }
 
-    @PutMapping("/updateProduct")
+    @PutMapping(ProductControllerRoutes.UPDATE_PRODUCT)
     public ResponseEntity<?> updateProduct(@RequestBody Product newProduct) {
         try {
             Product product = productService.updateProduct(newProduct);
@@ -75,7 +76,7 @@ public class ProductController {
         }
     }
 
-//    @PutMapping("/addOrRemovePromoCodeToAProduct")
+//    @PutMapping(ProductControllerRoutes.ADD_REMOVE_PROMOCODE_TO_A_PRODUCT)
 //    public ResponseEntity<?> addOrRemovePromoCodeToAProduct(@RequestBody ProductPromoCodeRequest productPromoCodeRequest) {
 //        try {
 //            if (productPromoCodeRequest.getIsAppend()) {
@@ -96,7 +97,7 @@ public class ProductController {
 //        }
 //    }
 //
-//    @PutMapping("/addOrRemovePromoCodeForAListOfProducts")
+//    @PutMapping(ProductControllerRoutes.ADD_REMOVE_PROMOCODE_FOR_A_LIST_OF_PRODUCTS)
 //    public ResponseEntity<?> addOrRemovePromoCodeForAListOfProducts(@RequestBody ProductPromoCodeRequest productPromoCodeRequest) {
 //        try {
 //            if (productPromoCodeRequest.getIsAppend()) {
@@ -115,7 +116,7 @@ public class ProductController {
 //        }
 //    }
 //
-//    @PutMapping("/addOrRemoveTagToAProduct")
+//    @PutMapping(ProductControllerRoutes.ADD_REMOVE_TAG_TO_PRODUCT)
 //    public ResponseEntity<?> addOrRemoveTagToAProduct(@RequestBody ProductTagRequest productTagRequest) {
 //        try {
 //            if (productTagRequest.getIsAppend()) {
@@ -136,7 +137,7 @@ public class ProductController {
 //        }
 //    }
 //
-//    @PutMapping("/addOrRemoveTagForAListOfProducts")
+//    @PutMapping(ProductControllerRoutes.ADD_REMOVE_TAG_FOR_A_LIST_OF_PRODUCTS)
 //    public ResponseEntity<?> addOrRemoveTagForAListOfProducts(@RequestBody ProductTagRequest productTagRequest) {
 //        try {
 //            if (productTagRequest.getIsAppend()) {
@@ -157,11 +158,11 @@ public class ProductController {
 //        }
 //    }
 
-    @DeleteMapping("/deleteProduct/{productId}")
+    @DeleteMapping(ProductControllerRoutes.DELETE_PRODUCT)
     public ResponseEntity<?> deleteProduct(@PathVariable Long productId) {
         try {
             Product product = productService.deleteProduct(productId);
-            return new ResponseEntity<>(product, HttpStatus.CREATED);
+            return new ResponseEntity<>(product, HttpStatus.OK);
         } catch (ProductNotFoundException ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
         } catch (Exception ex) {

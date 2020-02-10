@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/product")
+@RequestMapping("/api/productImage")
 @CrossOrigin(origins = {"http://localhost:3000"})
 public class ProductImageController {
 
@@ -76,7 +76,7 @@ public class ProductImageController {
         try {
             ProductImage productImage = productService.deleteProductImage(productImageDeleteRequest.getProductImageId(),
                     productImageDeleteRequest.getProductVariantId());
-            return new ResponseEntity<>(productImage, HttpStatus.CREATED);
+            return new ResponseEntity<>(productImage, HttpStatus.OK);
         } catch (ProductVariantNotFoundException ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
         } catch (ProductImageNotFoundException ex) {

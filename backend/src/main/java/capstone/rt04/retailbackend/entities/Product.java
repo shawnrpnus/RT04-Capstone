@@ -29,7 +29,7 @@ import java.util.List;
 @Getter
 @Setter
 @EqualsAndHashCode
-@ToString
+@ToString(exclude = "category")
 @JsonIdentityInfo(generator = JSOGGenerator.class)
 
 public class Product implements Serializable {

@@ -8,6 +8,7 @@ import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.product.CreateNewProductVariantException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
+import capstone.rt04.retailbackend.util.routeconstants.ProductVariantControllerRoutes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/product")
+@RequestMapping(ProductVariantControllerRoutes.PRODUCT_VARIANT_BASE_ROUTE)
 @CrossOrigin(origins = {"http://localhost:3000"})
 public class ProductVariantController {
 
@@ -25,7 +26,7 @@ public class ProductVariantController {
         this.productService = productService;
     }
 
-    @GetMapping("/retrieveProductVariantById/{productVariantId}")
+    @GetMapping(ProductVariantControllerRoutes.RETRIEVE_PRODUCT_VARIANT_BY_ID)
     public ResponseEntity<?> retrieveProductVariantById(@PathVariable Long productVariantId) {
         try {
             ProductVariant productVariant = productService.retrieveProductVariantById(productVariantId);
@@ -37,7 +38,7 @@ public class ProductVariantController {
         }
     }
 
-    @GetMapping("/retrieveProductVariantByProduct/{productId}")
+    @GetMapping(ProductVariantControllerRoutes.RETRIEVE_PRODUCT_VARIANT_BY_PRODUCT)
     public ResponseEntity<?> retrieveProductVariantByProduct(@PathVariable Long productId) {
         try {
             List<ProductVariant> productVariant = productService.retrieveProductVariantByProduct(productId);
@@ -47,8 +48,8 @@ public class ProductVariantController {
         }
     }
 
-    @GetMapping("/retrieveAllProductVariant")
-    public ResponseEntity<?> retrieveAllProductVariant() {
+    @GetMapping(ProductVariantControllerRoutes.RETRIEVE_ALL_PRODUCT_VARIANTS)
+    public ResponseEntity<?> retrieveAllProductVariants() {
         try {
             List<ProductVariant> productVariants = productService.retrieveAllProductVariant();
             return new ResponseEntity<>(productVariants, HttpStatus.OK);
@@ -57,8 +58,8 @@ public class ProductVariantController {
         }
     }
 
-    @PostMapping("/createProductVariant")
-    public ResponseEntity<?> createProductVariant(@RequestBody ProductVariantCreateRequest productVariantCreateRequest) {
+    @PostMapping(ProductVariantControllerRoutes.CREATE_NEW_PRODUCT_VARIANT)
+    public ResponseEntity<?> createNewProductVariant(@RequestBody ProductVariantCreateRequest productVariantCreateRequest) {
         try {
             ProductVariant productVariant = productService.createProductVariant(productVariantCreateRequest.getProductVariant(), productVariantCreateRequest.getProductId());
             return new ResponseEntity<>(productVariant, HttpStatus.CREATED);
@@ -73,7 +74,7 @@ public class ProductVariantController {
         }
     }
 
-    @PutMapping("/updateProductVariant")
+    @PutMapping(ProductVariantControllerRoutes.UPDATE_PRODUCT_VARIANT)
     public ResponseEntity<?> updateProductVariant(@RequestBody ProductVariant productVariant) {
         try {
             ProductVariant newProductVariant = productService.updateProductVariant(productVariant);
@@ -85,7 +86,7 @@ public class ProductVariantController {
         }
     }
 
-    @DeleteMapping("/deleteProductVariant/{productVariantId}")
+    @DeleteMapping(ProductVariantControllerRoutes.DELETE_PRODUCT_VARIANT)
     public ResponseEntity<?> deleteProductVariant(@PathVariable Long productVariantId) {
         try {
             ProductVariant productVariant = productService.deleteProductVariant(productVariantId);
@@ -96,30 +97,4 @@ public class ProductVariantController {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-
-
-//    @GetMapping("/retrieveAllCategory")
-//    public ResponseEntity<?> retrieveAllCategory() {
-//        try {
-//            List<Category> categories = categoryService.retrieveAllCategories();
-//            return new ResponseEntity<>(categories, HttpStatus.OK);
-//        } catch (Exception ex) {
-//            return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//    }
-
-//    @GetMapping("/getEvaluationsDoneByManager")
-//    public ResponseEntity<?> getEvaluationsDoneByManager(@RequestParam Long employeeId) {
-//        List<Evaluation> evals = evaluationService.getEvaluationsDoneByManager(employeeId);
-//        for (Evaluation e : evals) {
-//            e.getSurveyForm().setEvaluations(null);
-//        }
-//        return new ResponseEntity<>(evals, HttpStatus.OK);
-//    }
-//
-//    @GetMapping("/getEmployeesForManager/{managerId}")
-//    public ResponseEntity<?> getEmployeesForManager(@PathVariable Long managerId) {
-//        return new ResponseEntity<>(employeeService.getEmployeesForManager(managerId), HttpStatus.OK);
-//    }
 }
