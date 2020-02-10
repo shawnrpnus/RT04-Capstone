@@ -25,7 +25,6 @@ import static io.restassured.RestAssured.*;
 import static org.hamcrest.Matchers.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
 @DirtiesContext
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -47,7 +46,10 @@ public class CustomerControllerTest {
                 when().post(CUSTOMER_BASE_ROUTE + CREATE_NEW_CUSTOMER).
                 then().statusCode(HttpStatus.CREATED.value()).extract().body().as(Customer.class);
         //body("email", equalTo(validCustomer.getEmail()));
-        assertThat(createdCustomer.getCustomerId().equals(validCustomer.getCustomerId()));
+        System.out.println(validCustomer.getCustomerId());
+        System.out.println(createdCustomer.getCustomerId());
+        assertThat(createdCustomer.getCustomerId()).isNotNull();
+        assertThat(createdCustomer.getEmail()).isEqualTo(validCustomer.getEmail());
         assertThat(createdCustomer.getOnlineShoppingCart()).isNotNull();
         assertThat(createdCustomer.getInStoreShoppingCart()).isNotNull();
         createdCustomerId = createdCustomer.getCustomerId();
@@ -220,7 +222,6 @@ public class CustomerControllerTest {
 
     }
 
-    // TODO: CUD shipping address
     @Test
     public void CUDshippingAddress(){
         Address newShippingAddress = new Address("line1", null, "510149", null, false, null, null);
@@ -255,5 +256,5 @@ public class CustomerControllerTest {
         assertThat(customer.getCustomerId()).isEqualTo(createdCustomerId);
         assertThat(customer.getShippingAddresses().size()).isEqualTo(0);
     }
-    // TODO: CRUD wishlist
+    // TODO: add remove clear wishlist
 }

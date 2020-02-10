@@ -378,6 +378,7 @@ public class CustomerService {
         customer.getTransactions().size();
         customer.getUsedPromoCodes().size();
         customer.getReviews().size();
+        customer.getVerificationCode();
         return customer;
     }
 }

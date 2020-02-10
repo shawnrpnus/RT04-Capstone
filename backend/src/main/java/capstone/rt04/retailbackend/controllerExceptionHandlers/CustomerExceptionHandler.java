@@ -3,6 +3,7 @@ package capstone.rt04.retailbackend.controllerExceptionHandlers;
 import capstone.rt04.retailbackend.response.GenericErrorResponse;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.customer.*;
+import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +38,8 @@ public class CustomerExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @ExceptionHandler({CustomerNotFoundException.class, CreditCardNotFoundException.class, AddressNotFoundException.class})
+    @ExceptionHandler({CustomerNotFoundException.class, CreditCardNotFoundException.class,
+            AddressNotFoundException.class, ProductVariantNotFoundException.class})
     public final ResponseEntity<Object> handleNotFoundExceptions(Exception ex, WebRequest req) {
         return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
     }

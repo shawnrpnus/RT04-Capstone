@@ -8,6 +8,7 @@ import capstone.rt04.retailbackend.services.CustomerService;
 import capstone.rt04.retailbackend.services.ValidationService;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.customer.*;
+import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
 import capstone.rt04.retailbackend.util.routeconstants.CustomerControllerRoutes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -119,7 +120,6 @@ public class CustomerController {
         return new ResponseEntity<>(customer, HttpStatus.OK);
     }
 
-    // TODO: CUD shipping address
     @PostMapping(CustomerControllerRoutes.ADD_SHIPPING_ADDRESS)
     public ResponseEntity<?> addShippingAddress(@RequestBody AddUpdateShippingAddressRequest addUpdateShippingAddressRequest) throws CustomerNotFoundException {
         Map<String, String> inputErrMap = validationService.generateErrorMap(addUpdateShippingAddressRequest);
@@ -143,7 +143,24 @@ public class CustomerController {
         Customer customer = customerService.deleteShippingAddress(req.getCustomerId(), req.getShippingAddressId());
         return new ResponseEntity<>(customer, HttpStatus.OK);
     }
-    // TODO: CRUD wishlist
+
+    @PostMapping(CustomerControllerRoutes.ADD_TO_WISHLIST)
+    public ResponseEntity<?> addToWishlist(@RequestParam Long customerId, @RequestParam Long productVariantId) throws CustomerNotFoundException, ProductVariantNotFoundException {
+        Customer customer = customerService.addProductToWishlist(customerId, productVariantId);
+        return new ResponseEntity<>(customer, HttpStatus.OK);
+    }
+
+    @PostMapping(CustomerControllerRoutes.REMOVE_FROM_WISHLIST)
+    public ResponseEntity<?> removeFromWishlist(@RequestParam Long customerId, @RequestParam Long productVariantId) throws ProductVariantNotFoundException, CustomerNotFoundException {
+        Customer customer = customerService.removeProductFromWishlist(customerId, productVariantId);
+        return new ResponseEntity<>(customer, HttpStatus.OK);
+    }
+
+    @PostMapping(CustomerControllerRoutes.CLEAR_WISHLIST)
+    public ResponseEntity<?> clearWishlist(@RequestParam Long customerId) throws CustomerNotFoundException {
+        Customer customer = customerService.clearWishList(customerId);
+        return new ResponseEntity<>(customer, HttpStatus.OK);
+    }
 
     @DeleteMapping(CustomerControllerRoutes.DELETE_CUSTOMER)
     public ResponseEntity<?> deleteCustomer(@PathVariable Long customerId) throws CustomerCannotDeleteException, CustomerNotFoundException {
