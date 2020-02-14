@@ -118,6 +118,7 @@ public class Customer implements Serializable {
         this.wishlistItems = new ArrayList<>();
         this.reservationCartItems = new ArrayList<>();
         this.reservations = new ArrayList<>();
+        this.preferredStyles = new ArrayList<>();
     }
 
 
