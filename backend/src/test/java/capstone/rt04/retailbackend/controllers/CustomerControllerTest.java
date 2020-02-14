@@ -221,5 +221,41 @@ public class CustomerControllerTest extends ApiTestSetup {
         assertThat(customer.getCustomerId()).isEqualTo(createdCustomerId);
         assertThat(customer.getShippingAddresses().size()).isEqualTo(0);
     }
-    // TODO: add remove clear wishlist
+
+    @Test
+    public void addRemoveClearWishlist(){
+
+        addToWishlist();
+
+        Customer customer = given()
+                .queryParam("customerId", createdCustomerId)
+                .queryParam("productVariantId", productVariantId)
+                .when().post(CUSTOMER_BASE_ROUTE + REMOVE_FROM_WISHLIST)
+                .then().statusCode(HttpStatus.OK.value()).extract().body().as(Customer.class);
+        assertThat(customer.getCustomerId()).isEqualTo(createdCustomerId);
+        assertThat(customer.getWishlistItems().size()).isEqualTo(0);
+
+        addToWishlist();
+
+        customer = given()
+                .queryParam("customerId", createdCustomerId)
+                .when().post(CUSTOMER_BASE_ROUTE + CLEAR_WISHLIST)
+                .then().statusCode(HttpStatus.OK.value()).extract().body().as(Customer.class);
+        assertThat(customer.getCustomerId()).isEqualTo(createdCustomerId);
+        assertThat(customer.getWishlistItems().size()).isEqualTo(0);
+
+    }
+
+    private void addToWishlist(){
+        Customer customer = given()
+                .queryParam("customerId", createdCustomerId)
+                .queryParam("productVariantId", productVariantId)
+                .when().post(CUSTOMER_BASE_ROUTE + ADD_TO_WISHLIST)
+                .then().statusCode(HttpStatus.OK.value()).extract().body().as(Customer.class);
+        assertThat(customer.getCustomerId()).isEqualTo(createdCustomerId);
+        assertThat(customer.getWishlistItems().size()).isEqualTo(1);
+        assertThat(customer.getWishlistItems().get(0).getProductVariantId()).isNotNull();
+        assertThat(customer.getWishlistItems().get(0).getProductVariantId().compareTo(productVariantId)).isZero();
+    }
+
 }
