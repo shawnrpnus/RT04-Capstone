@@ -13,8 +13,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static capstone.rt04.retailbackend.util.routeconstants.ProductImageControllerRoutes.*;
+
 @RestController
-@RequestMapping("/api/productImage")
+@RequestMapping(PRODUCT_IMAGE_BASE_ROUTE)
 @CrossOrigin(origins = {"http://localhost:3000"})
 public class ProductImageController {
 
@@ -24,7 +26,7 @@ public class ProductImageController {
         this.productService = productService;
     }
 
-    @GetMapping("/retrieveProductImageById/{productImageId}")
+    @GetMapping(RETRIEVE_PRODUCT_IMAGE_BY_ID)
     public ResponseEntity<?> retrieveProductImageById(@PathVariable Long productImageId) {
         try {
             ProductImage productImage = productService.retrieveProductImageById(productImageId);
@@ -36,8 +38,8 @@ public class ProductImageController {
         }
     }
 
-    @GetMapping("/retrieveProductImageByProductVariant/{productVariantId}")
-    public ResponseEntity<?> retrieveProductImageByProductVariant(@PathVariable Long productVariantId) {
+    @GetMapping(RETRIEVE_PRODUCT_IMAGES_BY_PRODUCT_VARIANT)
+    public ResponseEntity<?> retrieveProductImagesByProductVariant(@PathVariable Long productVariantId) {
         try {
             List<ProductImage> productImages = productService.retrieveProductImageByProductVariant(productVariantId);
             return new ResponseEntity<>(productImages, HttpStatus.OK);
@@ -46,7 +48,7 @@ public class ProductImageController {
         }
     }
 
-    @PostMapping("/createProductImage")
+    @PostMapping(CREATE_PRODUCT_IMAGE)
     public ResponseEntity<?> createProductImage(@RequestBody ProductImageCreateRequest productImageCreateRequest) {
         try {
             List<ProductImage> productImages = productService.createProductImage(productImageCreateRequest.getProductImages(),
@@ -59,7 +61,7 @@ public class ProductImageController {
         }
     }
 
-    @PutMapping("/updateProductImage")
+    @PutMapping(UPDATE_PRODUCT_IMAGE)
     public ResponseEntity<?> updateProductImage(@RequestBody ProductImage productImage) {
         try {
             ProductImage newProductImage = productService.updateProductImage(productImage);
@@ -71,12 +73,14 @@ public class ProductImageController {
         }
     }
 
-    @DeleteMapping("/deleteProductImage/{productImageId}")
-    public ResponseEntity<?> deleteProductImage(@PathVariable ProductImageDeleteRequest productImageDeleteRequest) {
+    @DeleteMapping(DELETE_PRODUCT_IMAGES)
+    public ResponseEntity<?> deleteProductImage(@RequestBody ProductImageDeleteRequest productImageDeleteRequest) {
         try {
-            ProductImage productImage = productService.deleteProductImage(productImageDeleteRequest.getProductImageId(),
+            System.out.println(productImageDeleteRequest.getProductVariantId());
+            System.out.println(productImageDeleteRequest.getProductImages().size());
+            List<ProductImage> productImages = productService.deleteProductImage(productImageDeleteRequest.getProductImages(),
                     productImageDeleteRequest.getProductVariantId());
-            return new ResponseEntity<>(productImage, HttpStatus.OK);
+            return new ResponseEntity<>(productImages, HttpStatus.OK);
         } catch (ProductVariantNotFoundException ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
         } catch (ProductImageNotFoundException ex) {

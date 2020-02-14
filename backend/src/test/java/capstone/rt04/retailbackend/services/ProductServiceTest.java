@@ -132,7 +132,7 @@ public class ProductServiceTest {
 
         // Delete
         productVariant.getProductImages().remove(validProductImage);
-        productService.deleteProductImage(productImages.get(0).getProductImageId(), productVariant.getProductVariantId());
+        productService.deleteProductImage(productImages, productVariant.getProductVariantId());
         productService.retrieveProductImageById(productImages.get(0).getProductImageId());
     }
 

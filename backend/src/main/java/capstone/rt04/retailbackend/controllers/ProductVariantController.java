@@ -58,7 +58,7 @@ public class ProductVariantController {
         }
     }
 
-    @PostMapping(ProductVariantControllerRoutes.CREATE_NEW_PRODUCT_VARIANT)
+    @PostMapping(ProductVariantControllerRoutes.CREATE_PRODUCT_VARIANT)
     public ResponseEntity<?> createNewProductVariant(@RequestBody ProductVariantCreateRequest productVariantCreateRequest) {
         try {
             ProductVariant productVariant = productService.createProductVariant(productVariantCreateRequest.getProductVariant(), productVariantCreateRequest.getProductId());

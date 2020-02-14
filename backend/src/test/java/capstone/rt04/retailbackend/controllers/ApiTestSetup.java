@@ -22,7 +22,7 @@ import java.math.BigDecimal;
 
 import static capstone.rt04.retailbackend.util.routeconstants.CategoryControllerRoutes.*;
 import static capstone.rt04.retailbackend.util.routeconstants.ProductControllerRoutes.*;
-import static capstone.rt04.retailbackend.util.routeconstants.ProductVariantControllerRoutes.CREATE_NEW_PRODUCT_VARIANT;
+import static capstone.rt04.retailbackend.util.routeconstants.ProductVariantControllerRoutes.CREATE_PRODUCT_VARIANT;
 import static capstone.rt04.retailbackend.util.routeconstants.ProductVariantControllerRoutes.PRODUCT_VARIANT_BASE_ROUTE;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,9 +36,9 @@ public class ApiTestSetup {
     @LocalServerPort
     int port;
 
-    private static Long categoryId;
-    private static Long productId;
-    private static Long productVariantId;
+    protected static Long categoryId;
+    protected static Long productId;
+    protected static Long productVariantId;
 
     @Before
     public void setUp() throws Exception {
@@ -59,7 +59,7 @@ public class ApiTestSetup {
         Product product = given().
                 contentType("application/json").
                 body(productCreateRequest).
-                when().post(PRODUCT_BASE_ROUTE + CREATE_NEW_PRODUCT).
+                when().post(PRODUCT_BASE_ROUTE + CREATE_PRODUCT).
                 then().statusCode(HttpStatus.CREATED.value()).extract().body().as(Product.class);
         productId = product.getProductId();
 
@@ -67,10 +67,11 @@ public class ApiTestSetup {
         ProductVariant productVariant = given().
                 contentType("application/json").
                 body(productVariantCreateRequest).
-                when().post(PRODUCT_VARIANT_BASE_ROUTE + CREATE_NEW_PRODUCT_VARIANT).
+                when().post(PRODUCT_VARIANT_BASE_ROUTE + CREATE_PRODUCT_VARIANT).
                 then().statusCode(HttpStatus.CREATED.value()).extract().body().as(ProductVariant.class);
         productVariantId = productVariant.getProductVariantId();
 
+        assertThat(product.getProductId()).isNotNull();
         assertThat(product.getProductName()).isEqualTo(validProduct.getProductName());
         assertThat(productVariant.getSKU()).isEqualTo(validProductVariant.getSKU());
     }

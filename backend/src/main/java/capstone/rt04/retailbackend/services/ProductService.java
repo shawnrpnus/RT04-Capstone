@@ -289,6 +289,7 @@ public class ProductService {
     public ProductVariant deleteProductVariant(Long productVariantId) throws ProductVariantNotFoundException {
 
         ProductVariant productVariant = retrieveProductVariantById(productVariantId);
+        productVariant.toString();
         productVariant.setProductImages(null);
         productVariant.setSizeDetails(null);
         productVariant.getProduct().getProductVariants().remove(productVariant);
@@ -408,7 +409,7 @@ public class ProductService {
 
     public ProductStock deleteProductStock(Long productStockId) throws ProductStockNotFoundException {
         ProductStock productStock = retrieveProductStockById(productStockId);
-
+        productStock.toString();
         // TODO: Uncomment the codes when store and warehouse is done
         productStock.setProductVariant(null);
 //        productStock.getStore().getProductStocks().remove(productStock);
@@ -423,7 +424,8 @@ public class ProductService {
     public List<ProductImage> createProductImage(List<ProductImage> productImages, Long productVariantId) throws ProductVariantNotFoundException {
         // Uploading to Google Drive will be done at frontend
         List<ProductImage> productImageList = retrieveProductVariantById(productVariantId).getProductImages();
-        for(ProductImage productImage : productImages) {
+
+        for (ProductImage productImage : productImages) {
             productImageRepository.save(productImage);
             productImageList.add(productImage);
         }
@@ -452,12 +454,19 @@ public class ProductService {
         return productImage;
     }
 
-    public ProductImage deleteProductImage(Long productImageId, Long productVariantId) throws ProductImageNotFoundException, ProductVariantNotFoundException {
+    public List<ProductImage> deleteProductImage(List<ProductImage> productImages, Long productVariantId) throws ProductImageNotFoundException, ProductVariantNotFoundException {
         ProductVariant productVariant = retrieveProductVariantById(productVariantId);
-        ProductImage productImage = retrieveProductImageById(productImageId);
-        productVariant.getProductImages().remove(productImage);
-        productImageRepository.delete(productImage);
-        return productImage;
+
+        List<ProductImage> deletedProductImages = new ArrayList<>();
+        ProductImage productImage;
+
+        for (ProductImage prodImage : productImages) {
+            productImage = retrieveProductImageById(prodImage.getProductImageId());
+            productVariant.getProductImages().remove(productImage);
+            productImageRepository.delete(productImage);
+            deletedProductImages.add(productImage);
+        }
+        return deletedProductImages;
     }
 
     /**

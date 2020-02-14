@@ -49,8 +49,8 @@ public class ProductController {
         }
     }
 
-    @PostMapping(ProductControllerRoutes.CREATE_NEW_PRODUCT)
-    public ResponseEntity<?> createNewProduct(@RequestBody ProductCreateRequest productCreateRequest) {
+    @PostMapping(ProductControllerRoutes.CREATE_PRODUCT)
+    public ResponseEntity<?> createProduct(@RequestBody ProductCreateRequest productCreateRequest) {
         try {
             Product newProduct = productService.createNewProduct(productCreateRequest.getProduct(),
                     productCreateRequest.getCategoryId(), null);

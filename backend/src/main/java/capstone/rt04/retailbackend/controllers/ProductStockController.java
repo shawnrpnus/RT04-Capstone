@@ -8,6 +8,7 @@ import capstone.rt04.retailbackend.services.ProductService;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.product.CreateNewProductStockException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductStockNotFoundException;
+import capstone.rt04.retailbackend.util.routeconstants.ProductStockControllerRoutes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/productStock")
+@RequestMapping(ProductStockControllerRoutes.PRODUCT_STOCK_BASE_ROUTE)
 @CrossOrigin(origins = {"http://localhost:3000"})
 public class ProductStockController {
 
@@ -25,7 +26,7 @@ public class ProductStockController {
         this.productService = productService;
     }
 
-    @GetMapping("/retrieveProductStockById/{productStockId}")
+    @GetMapping(ProductStockControllerRoutes.RETRIEVE_PRODUCT_STOCK_BY_ID)
     public ResponseEntity<?> retrieveProductStockById(@PathVariable Long productStockId) {
         try {
             ProductStock productStock = productService.retrieveProductStockById(productStockId);
@@ -37,7 +38,7 @@ public class ProductStockController {
         }
     }
 
-    @GetMapping("/retrieveProductStocksByParameter")
+    @GetMapping(ProductStockControllerRoutes.RETRIEVE_PRODUCT_STOCKS_BY_PARAMETER)
     public ResponseEntity<?> retrieveProductStocksByParameter(@RequestBody ProductStockReadRequest productStockReadRequest) {
         try {
             List<ProductStock> productStocks = productService.retrieveProductStocksByParameter(productStockReadRequest.getStoreId(),
@@ -48,7 +49,7 @@ public class ProductStockController {
         }
     }
 
-    @PostMapping("/createProductStock")
+    @PostMapping(ProductStockControllerRoutes.CREATE_PRODUCT_STOCK)
     public ResponseEntity<?> createProductStock(@RequestBody ProductStockCreateRequest productStockCreateRequest) {
         try {
             ProductStock productStock = productService.createProductStock(productStockCreateRequest.getProductStock(), productStockCreateRequest.getProductVariantId());
@@ -62,7 +63,7 @@ public class ProductStockController {
         }
     }
 
-    @PutMapping("/updateProductStock")
+    @PutMapping(ProductStockControllerRoutes.UPDATE_PRODUCT_STOCK)
     public ResponseEntity<?> updateProductStock(@RequestBody ProductStock productStock) {
         try {
             ProductStock newProductStock = productService.updateProductStock(productStock);
@@ -74,7 +75,7 @@ public class ProductStockController {
         }
     }
 
-    @DeleteMapping("/deleteProductStock/{productStockId}")
+    @DeleteMapping(ProductStockControllerRoutes.DELETE_PRODUCT_STOCK)
     public ResponseEntity<?> deleteProductStock(@PathVariable Long productStockId) {
         try {
             ProductStock productStock = productService.deleteProductStock(productStockId);
