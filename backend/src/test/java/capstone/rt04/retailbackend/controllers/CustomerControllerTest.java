@@ -30,43 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("test")
-public class CustomerControllerTest {
-
-    private static final String VALID_CUST_EMAIL = "tonystark@gmail.com";
-    private static final String VALID_CUST_PASSWORD = "spiderman";
-
-    private static Long createdCustomerId;
-    private static String verificationCode;
-
-    @Before
-    public void setUp() throws Exception {
-        Customer validCustomer = new Customer("Tony", "Stark", VALID_CUST_EMAIL, VALID_CUST_PASSWORD);
-        Customer createdCustomer = given().
-                contentType("application/json").
-                body(validCustomer).
-                when().post(CUSTOMER_BASE_ROUTE + CREATE_NEW_CUSTOMER).
-                then().statusCode(HttpStatus.CREATED.value()).extract().body().as(Customer.class);
-        //body("email", equalTo(validCustomer.getEmail()));
-        System.out.println(validCustomer.getCustomerId());
-        System.out.println(createdCustomer.getCustomerId());
-        assertThat(createdCustomer.getCustomerId()).isNotNull();
-        assertThat(createdCustomer.getEmail()).isEqualTo(validCustomer.getEmail());
-        assertThat(createdCustomer.getOnlineShoppingCart()).isNotNull();
-        assertThat(createdCustomer.getInStoreShoppingCart()).isNotNull();
-        createdCustomerId = createdCustomer.getCustomerId();
-        verificationCode = createdCustomer.getVerificationCode().getCode();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        Customer deletedCustomer = given().
-                pathParam("customerId", createdCustomerId).
-                when().delete(CUSTOMER_BASE_ROUTE + DELETE_CUSTOMER).
-                then().statusCode(HttpStatus.OK.value()).extract().body().as(Customer.class);
-
-        assertThat(deletedCustomer.getCustomerId().equals(createdCustomerId));
-        createdCustomerId = null;
-    }
+public class CustomerControllerTest extends ApiTestSetup {
 
     @Test
     public void createInvalidCustomer() {
