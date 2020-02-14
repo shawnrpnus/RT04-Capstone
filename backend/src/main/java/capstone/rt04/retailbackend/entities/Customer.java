@@ -103,6 +103,9 @@ public class Customer implements Serializable {
     @OneToMany(mappedBy = "customer")
     private List<Reservation> reservations;
 
+    @ManyToMany
+    private List<Style> preferredStyles;
+
     public Customer() {
         this.createdDateTime = new Timestamp(System.currentTimeMillis());
         this.verified = false;
