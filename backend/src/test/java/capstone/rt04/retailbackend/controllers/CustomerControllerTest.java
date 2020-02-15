@@ -69,6 +69,20 @@ public class CustomerControllerTest extends ApiTestSetup {
     }
 
     @Test
+    public void updateCustomerDetails(){
+        Customer updatedCustomer = new Customer("Bruce", "Wayne", VALID_CUST_EMAIL, VALID_CUST_PASSWORD);
+        updatedCustomer.setCustomerId(createdCustomerId);
+        updatedCustomer = given()
+                .contentType("application/json")
+                .body(updatedCustomer)
+                .when().post(CUSTOMER_BASE_ROUTE + UPDATE_CUSTOMER)
+                .then().statusCode(HttpStatus.OK.value()).extract().body().as(Customer.class);
+        assertThat(updatedCustomer.getCustomerId()).isEqualTo(createdCustomerId);
+        assertThat(updatedCustomer.getFirstName()).isEqualTo("Bruce");
+        assertThat(updatedCustomer.getLastName()).isEqualTo("Wayne");
+    }
+
+    @Test
     public void login() {
         CustomerLoginRequest req = new CustomerLoginRequest(VALID_CUST_EMAIL, VALID_CUST_PASSWORD);
         //valid credentials, but unverified

@@ -52,6 +52,12 @@ public class CustomerController {
         return new ResponseEntity<>(customer, HttpStatus.OK);
     }
 
+    @PostMapping(CustomerControllerRoutes.UPDATE_CUSTOMER)
+    public ResponseEntity<?> updateCustomer(@RequestBody Customer customer) throws CustomerNotFoundException, InputDataValidationException {
+        Customer updatedCustomer = customerService.updateCustomerDetails(customer);
+        return new ResponseEntity<>(updatedCustomer, HttpStatus.OK);
+    }
+
 
     @PostMapping(CustomerControllerRoutes.LOGIN)
     public ResponseEntity<?> customerLogin(@RequestBody CustomerLoginRequest customerLoginRequest) throws CustomerNotVerifiedException, InvalidLoginCredentialsException {
