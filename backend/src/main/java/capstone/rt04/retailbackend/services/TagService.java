@@ -56,7 +56,7 @@ public class TagService {
 
     }
 
-    public void updateTag(Tag tag) throws InputDataValidationException, TagNotFoundException, UpdateTagException
+    public Tag updateTag(Tag tag) throws InputDataValidationException, TagNotFoundException, UpdateTagException
     {
         Map<String, String> errorMap = validationService.generateErrorMap(tag);
         if (errorMap == null) {
@@ -69,6 +69,7 @@ public class TagService {
                 }
 
                 tagToUpdate.setName(tag.getName());
+                return tagToUpdate;
             } catch (Exception ex) {
                 throw new UpdateTagException("Error updating tag");
             }
@@ -100,6 +101,10 @@ public class TagService {
         }
         return tagRepository.findById(tagId)
                 .orElseThrow(() -> new TagNotFoundException("Tag ID " + tagId + " does not exist!"));
+    }
+
+    public List<Tag> retrieveAllTags() {
+        return tagRepository.findAll();
     }
 
     public List<Tag> retrieveListOfTagsById(List<Long> tagIds) {
