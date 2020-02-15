@@ -49,7 +49,10 @@ public class Customer implements Serializable {
     @NotNull(message = ErrorMessages.EMAIL_REQUIRED)
     @Column(nullable = false, unique = true)
     @Email(message = ErrorMessages.EMAIL_INVALID)
-    private String email; 
+    private String email;
+
+    @Email(message = ErrorMessages.EMAIL_INVALID)
+    private String requestedNewEmail;
     
     @NotNull(message = ErrorMessages.PASSWORD_REQUIRED)
     @Column(columnDefinition = "CHAR(64) NOT NULL")

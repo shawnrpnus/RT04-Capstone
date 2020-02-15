@@ -1,10 +1,8 @@
 package capstone.rt04.retailbackend.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import capstone.rt04.retailbackend.entities.Address;
-import capstone.rt04.retailbackend.entities.CreditCard;
-import capstone.rt04.retailbackend.entities.Customer;
-import capstone.rt04.retailbackend.entities.Measurements;
+
+import capstone.rt04.retailbackend.entities.*;
 import capstone.rt04.retailbackend.util.ErrorMessages;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.customer.InvalidLoginCredentialsException;
@@ -56,10 +54,14 @@ public class CustomerServiceTest extends ServiceTestSetup {
     @Test
     public void updateEmail() throws Exception {
         Customer validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
-        customerService.changeEmail(validCustomer.getCustomerId(), "ultron@gmail.com");
-        customerService.retrieveCustomerByEmail("ultron@gmail.com");
-        customerService.changeEmail(validCustomer.getCustomerId(), VALID_CUST_EMAIL);
-        customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
+        customerService.sendUpdateEmailLink(validCustomer.getCustomerId(), "ultron@gmail.com");
+        validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
+        assertThat(validCustomer.getRequestedNewEmail()).isEqualTo("ultron@gmail.com");
+
+        customerService.updateEmail(validCustomer.getVerificationCode().getCode());
+        Customer updatedEmailCustomer = customerService.retrieveCustomerByEmail("ultron@gmail.com");
+        assertThat(updatedEmailCustomer.getCustomerId().compareTo(validCustomer.getCustomerId())).isZero();
+        assertThat(updatedEmailCustomer.getRequestedNewEmail()).isNull();
     }
 
     @Test(expected = InvalidLoginCredentialsException.class)
@@ -88,11 +90,11 @@ public class CustomerServiceTest extends ServiceTestSetup {
 
     public void generateVerificationCodeAndVerify() throws Exception {
         Customer validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
-        String code = customerService.generateVerificationCode(validCustomer.getCustomerId());
+        VerificationCode vCode = customerService.generateVerificationCode(validCustomer.getCustomerId());
         validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
-        assertThat(validCustomer.getVerificationCode().getCode()).isEqualTo(code);
+        assertThat(validCustomer.getVerificationCode().getCode()).isEqualTo(vCode.getCode());
 
-        customerService.verify(code);
+        customerService.verify(vCode.getCode());
         validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
         assertThat(validCustomer.isVerified()).isTrue();
     }
@@ -101,13 +103,13 @@ public class CustomerServiceTest extends ServiceTestSetup {
     @Test
     public void resetPassword() throws Exception {
         Customer validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
-        String code = customerService.generateVerificationCode(validCustomer.getCustomerId());
+        VerificationCode vCode = customerService.generateVerificationCode(validCustomer.getCustomerId());
         validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
-        assertThat(validCustomer.getVerificationCode().getCode()).isEqualTo(code);
+        assertThat(validCustomer.getVerificationCode().getCode()).isEqualTo(vCode.getCode());
 
         String newPassword = "password123";
 
-        customerService.resetPassword(validCustomer.getCustomerId(), code, newPassword);
+        customerService.resetPassword(validCustomer.getCustomerId(), vCode.getCode(), newPassword);
 
         validCustomer =  customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
 

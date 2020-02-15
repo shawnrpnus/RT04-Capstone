@@ -69,6 +69,39 @@ public class CustomerControllerTest extends ApiTestSetup {
     }
 
     @Test
+    public void updateEmail(){
+        String newEmail = "ultron@gmail.com";
+        given()
+                .queryParam("customerId", createdCustomerId)
+                .queryParam("newEmail", newEmail)
+                .when().post(CUSTOMER_BASE_ROUTE + SEND_UPDATE_EMAIL_LINK)
+                .then().statusCode(HttpStatus.OK.value())
+                .body("message", equalTo("Please check your email for the link to reset your password"));
+
+        CustomerEmailRequest req = new CustomerEmailRequest(VALID_CUST_EMAIL);
+        Customer customer = given()
+                .contentType("application/json")
+                .body(req)
+                .when().post(CUSTOMER_BASE_ROUTE + GET_CUSTOMER_BY_EMAIL)
+                .then().statusCode(HttpStatus.OK.value()).extract().body().as(Customer.class);
+        assertThat(customer.getCustomerId()).isEqualTo(createdCustomerId);
+        assertThat(customer.getRequestedNewEmail()).isEqualTo(newEmail);
+
+        String code = customer.getVerificationCode().getCode();
+
+        Customer updatedCustomer = given()
+                .pathParam("code", code)
+                .when().get(CUSTOMER_BASE_ROUTE + UPDATE_EMAIL)
+                .then().statusCode(HttpStatus.OK.value())
+                .extract().body().as(Customer.class);
+
+        assertThat(updatedCustomer.getCustomerId()).isEqualTo(createdCustomerId);
+        assertThat(updatedCustomer.getEmail()).isEqualTo(newEmail);
+        assertThat(updatedCustomer.getRequestedNewEmail()).isNull();
+
+    }
+
+    @Test
     public void updateCustomerDetails(){
         Customer updatedCustomer = new Customer("Bruce", "Wayne", VALID_CUST_EMAIL, VALID_CUST_PASSWORD);
         updatedCustomer.setCustomerId(createdCustomerId);
@@ -141,14 +174,14 @@ public class CustomerControllerTest extends ApiTestSetup {
         given()
                 .contentType("application/json")
                 .body(badReq)
-                .when().post(CUSTOMER_BASE_ROUTE + RESET_PASSWORD)
+                .when().post(CUSTOMER_BASE_ROUTE + RESET_PASSWORD_POST)
                 .then().statusCode(HttpStatus.BAD_REQUEST.value());
 
         CustomerResetPasswordRequest req = new CustomerResetPasswordRequest(createdCustomerId, verificationCode, "newPassword");
         Customer customer = given()
                 .contentType("application/json")
                 .body(req)
-                .when().post(CUSTOMER_BASE_ROUTE + RESET_PASSWORD)
+                .when().post(CUSTOMER_BASE_ROUTE + RESET_PASSWORD_POST)
                 .then().statusCode(HttpStatus.OK.value()).extract().body().as(Customer.class);
         assertThat(customer.getCustomerId()).isEqualTo(createdCustomerId);
     }

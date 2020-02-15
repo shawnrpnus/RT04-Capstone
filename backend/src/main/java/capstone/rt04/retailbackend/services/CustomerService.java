@@ -83,7 +83,10 @@ public class CustomerService {
             customer.setPassword(encoder.encode(customer.getPassword()));
             Customer savedCustomer = customerRepository.save(customer);
             shoppingCartService.initializeShoppingCarts(savedCustomer.getCustomerId());
-            generateVerificationCode(savedCustomer.getCustomerId());
+            VerificationCode vCode = generateVerificationCode(savedCustomer.getCustomerId());
+            if (Arrays.asList(environment.getActiveProfiles()).contains("dev")) {
+                sendEmailVerificationLink(vCode.getCode(), "shawnroshan@gmail.com"); //TODO: to change to actual email
+            }
             return lazyLoadCustomerFields(customer);
         } catch (PersistenceException | CustomerNotFoundException ex) {
             System.out.println(ex.getMessage());
@@ -92,11 +95,21 @@ public class CustomerService {
 
     }
 
+    //for when customer signs up initially, email sent in create customer
+    public Customer verify(String code) throws VerificationCodeInvalidException {
+        VerificationCode verificationCode = verificationCodeRepository.findByCode(code)
+                .orElseThrow(() -> new VerificationCodeInvalidException(ErrorMessages.VERIFICATION_CODE_INVALID));
+        if (verificationCode.getExpiryDateTime().before(new Timestamp(System.currentTimeMillis()))) {
+            throw new VerificationCodeInvalidException(ErrorMessages.VERIFICATION_CODE_EXPIRED);
+        }
+        verificationCode.getCustomer().setVerified(true);
+        return lazyLoadCustomerFields(verificationCode.getCustomer());
+    }
+
     public Customer retrieveCustomerByCustomerId(Long customerId) throws CustomerNotFoundException {
 //        if (customerId == null) {
 //            throw new CustomerNotFoundException("Customer ID not provided");
 //        }
-
         Customer customer = customerRepository.findById(customerId)
                 .orElseThrow(() -> new CustomerNotFoundException("Customer with id: " + customerId + " does not exist"));
         return lazyLoadCustomerFields(customer);
@@ -109,15 +122,42 @@ public class CustomerService {
         return lazyLoadCustomerFields(customer);
     }
 
-    // TODO: Need verificationCode to change email? Should we even allow?
-    public Customer changeEmail(Long customerId, String newEmail) throws CustomerNotFoundException {
+    public Customer retrieveCustomerByVerificationCode(String code) throws VerificationCodeInvalidException {
+        VerificationCode verificationCode = verificationCodeRepository.findByCode(code)
+                .orElseThrow(() -> new VerificationCodeInvalidException(ErrorMessages.VERIFICATION_CODE_INVALID));
+        return lazyLoadCustomerFields(verificationCode.getCustomer());
+    }
+
+    /*
+        Process: login > update email > put in new email >
+        system send new email with verification link > click link > new email updated
+     */
+    // TODO: Update with actual link
+    public void sendUpdateEmailLink(Long customerId, String newEmail) throws CustomerNotFoundException {
+        VerificationCode vCode = generateVerificationCode(customerId);
         Customer customer = retrieveCustomerByCustomerId(customerId);
-        customer.setEmail(newEmail);
-        // TODO: Send verification email
+        customer.setRequestedNewEmail(newEmail);
+        if (Arrays.asList(environment.getActiveProfiles()).contains("dev")) {
+            SimpleMailMessage msg = new SimpleMailMessage();
+            msg.setTo(newEmail);
+            msg.setSubject("Click to update your email");
+            msg.setText("http://localhost:8080/api/customer/updateEmail/" + vCode.getCode());
+            javaMailSender.send(msg);
+        }
+    }
+
+    public Customer updateEmail(String code) throws CustomerNotFoundException, VerificationCodeInvalidException {
+        VerificationCode verificationCode = verificationCodeRepository.findByCode(code)
+                .orElseThrow(() -> new VerificationCodeInvalidException(ErrorMessages.VERIFICATION_CODE_INVALID));
+        if (verificationCode.getExpiryDateTime().before(new Timestamp(System.currentTimeMillis()))) {
+            throw new VerificationCodeInvalidException(ErrorMessages.VERIFICATION_CODE_EXPIRED);
+        }
+        Customer customer = verificationCode.getCustomer();
+        customer.setEmail(customer.getRequestedNewEmail());
+        customer.setRequestedNewEmail(null);
         return lazyLoadCustomerFields(customer);
     }
 
-    // TODO: Update firstname and lastname
     public Customer updateCustomerDetails(Customer customer) throws CustomerNotFoundException, InputDataValidationException {
         validationService.throwExceptionIfInvalidBean(customer);
         Customer customerToUpdate = retrieveCustomerByCustomerId(customer.getCustomerId());
@@ -153,15 +193,7 @@ public class CustomerService {
         }
     }
 
-    public Customer verify(String code) throws VerificationCodeInvalidException {
-        VerificationCode verificationCode = verificationCodeRepository.findByCode(code)
-                .orElseThrow(() -> new VerificationCodeInvalidException(ErrorMessages.VERIFICATION_CODE_INVALID));
-
-        verificationCode.getCustomer().setVerified(true);
-        return lazyLoadCustomerFields(verificationCode.getCustomer());
-    }
-
-    public String generateVerificationCode(Long customerId) throws CustomerNotFoundException {
+    public VerificationCode generateVerificationCode(Long customerId) throws CustomerNotFoundException {
         Customer customer = retrieveCustomerByCustomerId(customerId);
         VerificationCode currentCode = customer.getVerificationCode();
         if (currentCode != null) {
@@ -184,20 +216,19 @@ public class CustomerService {
         verificationCodeRepository.save(verificationCode);
         customer.setVerificationCode(verificationCode);
 
-        if (Arrays.asList(environment.getActiveProfiles()).contains("dev")) {
-            sendEmailVerificationLink(code);
-        }
-        return code;
+        return verificationCode;
     }
 
-    private void sendEmailVerificationLink(String code) {
+    // TODO: Update with actual link
+    private void sendEmailVerificationLink(String code, String email) {
         SimpleMailMessage msg = new SimpleMailMessage();
-        msg.setTo("shawnroshan@gmail.com");
-        msg.setSubject("Verify your email");
+        msg.setTo(email);
+        msg.setSubject("Activate your account");
         msg.setText("http://localhost:8080/api/customer/verify/" + code);
         javaMailSender.send(msg);
     }
 
+    //customer click forget password --> send email to customer's email
     //give link /api/customer/resetpassword/948273h1fadnenfjns
     //customer inputs new password at that link
     //on front-end, make api call by extracting the code from the link
@@ -212,6 +243,16 @@ public class CustomerService {
         } else {
             throw new VerificationCodeInvalidException(ErrorMessages.VERIFICATION_CODE_INVALID);
         }
+    }
+
+    // TODO: Update with actual link
+    public void sendResetPasswordLink(Long customerId) throws CustomerNotFoundException {
+        VerificationCode vCode = generateVerificationCode(customerId);
+        SimpleMailMessage msg = new SimpleMailMessage();
+        msg.setTo(vCode.getCustomer().getEmail());
+        msg.setSubject("Reset your password");
+        msg.setText("http://localhost:8080/api/customer/resetPassword/" + vCode.getCode());
+        javaMailSender.send(msg);
     }
 
     public Customer updateMeasurements(Long customerId, Measurements measurements) throws InputDataValidationException, CustomerNotFoundException {
