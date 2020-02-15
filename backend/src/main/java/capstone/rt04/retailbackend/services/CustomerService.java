@@ -315,8 +315,10 @@ public class CustomerService {
     public Customer addStyle(Long customerId, Long styleId) throws CustomerNotFoundException, StyleNotFoundException {
         Customer customer = retrieveCustomerByCustomerId(customerId);
         Style style = styleService.retrieveStyleByStyleId(styleId);
-        customer.getPreferredStyles().add(style);
-        style.getCustomers().add(customer);
+        if (!customer.getPreferredStyles().contains(style)) {
+            customer.getPreferredStyles().add(style);
+            style.getCustomers().add(customer);
+        }
         return lazyLoadCustomerFields(customer);
     }
 
