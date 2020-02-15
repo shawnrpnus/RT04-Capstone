@@ -60,7 +60,6 @@ public class StoreServiceTest {
     @Test
     public void retrieveStoreById() throws Exception {
         Store store = storeService.retrieveStoreById(storeId);
-        System.out.println(store.toString());
     }
 }
 

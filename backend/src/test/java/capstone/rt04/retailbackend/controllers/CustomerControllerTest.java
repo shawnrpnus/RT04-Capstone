@@ -28,7 +28,7 @@ import static org.hamcrest.Matchers.*;
 import static org.assertj.core.api.Assertions.assertThat;
 @DirtiesContext
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 public class CustomerControllerTest extends ApiTestSetup {
 
@@ -257,5 +257,7 @@ public class CustomerControllerTest extends ApiTestSetup {
         assertThat(customer.getWishlistItems().get(0).getProductVariantId()).isNotNull();
         assertThat(customer.getWishlistItems().get(0).getProductVariantId().compareTo(productVariantId)).isZero();
     }
+
+    //TODO: CRUD styles
 
 }

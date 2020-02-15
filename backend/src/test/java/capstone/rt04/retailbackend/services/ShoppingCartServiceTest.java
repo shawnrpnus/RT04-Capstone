@@ -1,8 +1,6 @@
 package capstone.rt04.retailbackend.services;
 
 import capstone.rt04.retailbackend.entities.*;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,14 +9,12 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import static capstone.rt04.retailbackend.util.Constants.*;
 
-import java.math.BigDecimal;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @ActiveProfiles("test")
-public class ShoppingCartServiceTest extends  CustomerProductCategoryTestSetup {
+public class ShoppingCartServiceTest extends ServiceTestSetup {
 
     @Autowired
     private ShoppingCartService shoppingCartService;
