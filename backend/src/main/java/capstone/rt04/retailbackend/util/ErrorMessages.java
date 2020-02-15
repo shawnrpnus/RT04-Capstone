@@ -23,4 +23,5 @@ public class ErrorMessages {
     public static final String TAG_REQUIRED = "Tag is required!";
 
     public static final String STYLE_NAME_REQUIRED = "Style name is required!";
+    public static final String STYLE_ALREADY_EXISTS = "This style already exists!";
 }

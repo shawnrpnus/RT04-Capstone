@@ -4,6 +4,7 @@ import capstone.rt04.retailbackend.entities.Customer;
 import capstone.rt04.retailbackend.entities.Product;
 import capstone.rt04.retailbackend.entities.Style;
 import capstone.rt04.retailbackend.repositories.StyleRepository;
+import capstone.rt04.retailbackend.util.ErrorMessages;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.style.CreateNewStyleException;
 import capstone.rt04.retailbackend.util.exceptions.style.DeleteStyleException;
@@ -34,7 +35,7 @@ public class StyleService {
         if (errorMap != null){
             throw new InputDataValidationException(errorMap, "Style is invalid!");
         }
-        checkDuplicateStyeName(style.getStyleName());
+        checkDuplicateStyleName(style.getStyleName());
         try {
             Style createdStyle = styleRepository.save(style);
             createdStyle.getProducts().size();
@@ -52,12 +53,16 @@ public class StyleService {
         return style;
     }
 
+    public List<Style> retrieveAllStyles() {
+        return styleRepository.findAll();
+    }
+
     public Style updateStyle(Style style) throws InputDataValidationException, StyleNotFoundException, UpdateStyleException {
         Map<String, String> errorMap = validationService.generateErrorMap(style);
         if (errorMap != null){
             throw new InputDataValidationException(errorMap, "Style is invalid!");
         }
-        checkDuplicateStyeName(style.getStyleName());
+        checkDuplicateStyleName(style.getStyleName());
         try {
             Style styleToUpdate = retrieveStyleByStyleId(style.getStyleId());
             styleToUpdate.setStyleName(style.getStyleName());
@@ -68,7 +73,7 @@ public class StyleService {
         }
     }
 
-    private Style deleteStyle(Style style) throws StyleNotFoundException, DeleteStyleException {
+    public Style deleteStyle(Style style) throws StyleNotFoundException, DeleteStyleException {
         Style styleToDelete = retrieveStyleByStyleId(style.getStyleId());
         try {
             List<Customer> customers = styleToDelete.getCustomers();
@@ -90,12 +95,12 @@ public class StyleService {
         }
     }
 
-    private void checkDuplicateStyeName(String styleName) throws InputDataValidationException {
+    private void checkDuplicateStyleName(String styleName) throws InputDataValidationException {
         Style existingStyle = styleRepository.findByStyleName(styleName).orElse(null);
         if (existingStyle != null){
             Map<String, String> errorMap = new HashMap<>();
             errorMap.put("styleName", "This style already exists!");
-            throw new InputDataValidationException(errorMap, "Style already exists");
+            throw new InputDataValidationException(errorMap, ErrorMessages.STYLE_ALREADY_EXISTS);
         }
     }
 }
