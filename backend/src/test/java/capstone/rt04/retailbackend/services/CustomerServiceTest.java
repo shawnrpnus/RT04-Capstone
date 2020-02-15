@@ -128,6 +128,9 @@ public class CustomerServiceTest extends ServiceTestSetup {
         customerService.updateMeasurements(validCustomer.getCustomerId(), secondMeasurements);
         validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
         assertThat(validCustomer.getMeasurements().getChest().compareTo(secondMeasurements.getChest())).isEqualTo(0);
+
+        validCustomer = customerService.deleteMeasurements(validCustomer.getCustomerId());
+        assertThat(validCustomer.getMeasurements()).isNull();
     }
 
     @Test

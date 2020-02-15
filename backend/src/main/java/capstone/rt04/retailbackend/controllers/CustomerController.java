@@ -105,10 +105,16 @@ public class CustomerController {
 
     @PostMapping(CustomerControllerRoutes.UPDATE_MEASUREMENTS)
     public ResponseEntity<?> updateMeasurements(@RequestBody CustomerUpdateMeasurementsRequest customerUpdateMeasurementsRequest) throws CustomerNotFoundException, InputDataValidationException {
-        Measurements measurements = customerService.updateMeasurements(
+        Customer customer = customerService.updateMeasurements(
                 customerUpdateMeasurementsRequest.getCustomerId(),
                 customerUpdateMeasurementsRequest.getMeasurements());
-        return new ResponseEntity<>(measurements, HttpStatus.OK);
+        return new ResponseEntity<>(customer, HttpStatus.OK);
+    }
+
+    @PostMapping(CustomerControllerRoutes.DELETE_MEASUREMENTS)
+    public ResponseEntity<?> deleteMeasurements(@RequestParam Long customerId) throws CustomerNotFoundException {
+        Customer customer = customerService.deleteMeasurements(customerId);
+        return new ResponseEntity<>(customer, HttpStatus.OK);
     }
 
     @PostMapping(CustomerControllerRoutes.ADD_CREDIT_CARD)
