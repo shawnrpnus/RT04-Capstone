@@ -78,6 +78,10 @@ public class Product implements Serializable {
     @OneToMany(mappedBy = "product")
     private List<ProductVariant> productVariants;
 
+    @ManyToMany(mappedBy = "products")
+    private List<Style> styles;
+
+
     public Product() {
         this.discounts = new ArrayList<>();
         this.tags = new ArrayList<>();
