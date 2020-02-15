@@ -62,7 +62,7 @@ public class StyleServiceTest {
         assertThat(updatedStyle.getStyleId().compareTo(retrievedStyle.getStyleId())).isZero();
         assertThat(updatedStyle.getStyleName()).isEqualTo("Updated");
 
-        styleService.deleteStyle(updatedStyle);
+        styleService.deleteStyle(updatedStyle.getStyleId());
         allStyles = styleService.retrieveAllStyles();
         assertThat(allStyles.size()).isZero();
     }

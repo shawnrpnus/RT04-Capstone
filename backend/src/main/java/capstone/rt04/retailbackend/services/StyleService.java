@@ -73,23 +73,23 @@ public class StyleService {
         }
     }
 
-    public Style deleteStyle(Style style) throws StyleNotFoundException, DeleteStyleException {
-        Style styleToDelete = retrieveStyleByStyleId(style.getStyleId());
+    public Style deleteStyle(Long styleId) throws StyleNotFoundException, DeleteStyleException {
+        Style styleToDelete = retrieveStyleByStyleId(styleId);
         try {
             List<Customer> customers = styleToDelete.getCustomers();
             styleToDelete.setCustomers(null);
             for (Customer customer : customers){
-                customer.getPreferredStyles().remove(style);
+                customer.getPreferredStyles().remove(styleToDelete);
             }
 
             List<Product> products = styleToDelete.getProducts();
             styleToDelete.setProducts(null);
             for (Product product : products){
-                product.getStyles().remove(style);
+                product.getStyles().remove(styleToDelete);
             }
 
-            styleRepository.delete(style);
-            return style;
+            styleRepository.delete(styleToDelete);
+            return styleToDelete;
         } catch (Exception ex){
             throw new DeleteStyleException("Error deleting style!");
         }

@@ -32,16 +32,16 @@ public class CategoryService {
 
         if (errorMap == null) {
             try {
-                Category existingCategory = null;
-                try {
-                    existingCategory = retrieveCategoryByName(newCategory.getName());
-                } catch (CategoryNotFoundException ex) {
-                }
-                if (existingCategory != null) {
-                    errorMap = new HashMap<>();
-                    errorMap.put("category", "This category is already created!");
-                    throw new InputDataValidationException(errorMap, "Category already created");
-                }
+//                Category existingCategory = null;
+//                try {
+//                    existingCategory = retrieveCategoryByName(newCategory.getName());
+//                } catch (CategoryNotFoundException ex) {
+//                }
+//                if (existingCategory != null) {
+//                    errorMap = new HashMap<>();
+//                    errorMap.put("category", "This category is already created!");
+//                    throw new InputDataValidationException(errorMap, "Category already created");
+//                }
                 if (parentCategoryId != null) {
 
 
@@ -89,7 +89,7 @@ public class CategoryService {
         return (List<Category>) categoryRepository.findAll();
     }
 
-    public void updateCategory(Category category, Long parentCategoryId) throws InputDataValidationException, CategoryNotFoundException, UpdateCategoryException {
+    public Category updateCategory(Category category, Long parentCategoryId) throws InputDataValidationException, CategoryNotFoundException, UpdateCategoryException {
         Map<String, String> errorMap = validationService.generateErrorMap(category);
 
         if (errorMap == null) {
@@ -97,6 +97,9 @@ public class CategoryService {
                 Category categoryToUpdate = retrieveCategoryByCategoryId(category.getCategoryId());
                 Category existingCategory = categoryRepository.findByNameAndCategoryId(category.getName(), category.getCategoryId()).orElse(null);
 
+                if(categoryToUpdate.getParentCategory() != null) {
+                    parentCategoryId = categoryToUpdate.getParentCategory().getCategoryId();
+                }
                 if (existingCategory != null) {
                     throw new UpdateCategoryException("Name of category to be updated is duplicated!");
                 }
@@ -120,6 +123,7 @@ public class CategoryService {
                     }
 
                 }
+                return categoryToUpdate;
             } catch (Exception ex) {
                 throw new UpdateCategoryException("Error updating category");
             }

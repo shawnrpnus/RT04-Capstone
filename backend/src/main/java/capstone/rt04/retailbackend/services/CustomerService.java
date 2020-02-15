@@ -66,34 +66,30 @@ public class CustomerService {
     }
 
     public Customer createNewCustomer(Customer customer) throws InputDataValidationException, CreateNewCustomerException {
-        Map<String, String> errorMap = validationService.generateErrorMap(customer);
-
-        if (errorMap == null) {//no errors
+        validationService.throwExceptionIfInvalidBean(customer);
+        try {
+            //check email is new
+            Customer existingCustomer = null;
             try {
-                //check email is new
-                Customer existingCustomer = null;
-                try {
-                    existingCustomer = retrieveCustomerByEmail(customer.getEmail());
-                } catch (CustomerNotFoundException ex) {
-                }
-                if (existingCustomer != null) {
-                    errorMap = new HashMap<>();
-                    errorMap.put("email", ErrorMessages.EMAIL_TAKEN);
-                    throw new InputDataValidationException(errorMap, ErrorMessages.EMAIL_TAKEN);
-                }
-
-                customer.setPassword(encoder.encode(customer.getPassword()));
-                Customer savedCustomer = customerRepository.save(customer);
-                shoppingCartService.initializeShoppingCarts(savedCustomer.getCustomerId());
-                generateVerificationCode(savedCustomer.getCustomerId());
-                return lazyLoadCustomerFields(customer);
-            } catch (PersistenceException | CustomerNotFoundException ex) {
-                System.out.println(ex.getMessage());
-                throw new CreateNewCustomerException("Error creating new customer");
+                existingCustomer = retrieveCustomerByEmail(customer.getEmail());
+            } catch (CustomerNotFoundException ex) {
             }
-        } else {
-            throw new InputDataValidationException(errorMap, "Invalid Customer");
+            if (existingCustomer != null) {
+                Map<String, String> errorMap = new HashMap<>();
+                errorMap.put("email", ErrorMessages.EMAIL_TAKEN);
+                throw new InputDataValidationException(errorMap, ErrorMessages.EMAIL_TAKEN);
+            }
+
+            customer.setPassword(encoder.encode(customer.getPassword()));
+            Customer savedCustomer = customerRepository.save(customer);
+            shoppingCartService.initializeShoppingCarts(savedCustomer.getCustomerId());
+            generateVerificationCode(savedCustomer.getCustomerId());
+            return lazyLoadCustomerFields(customer);
+        } catch (PersistenceException | CustomerNotFoundException ex) {
+            System.out.println(ex.getMessage());
+            throw new CreateNewCustomerException("Error creating new customer");
         }
+
     }
 
     public Customer retrieveCustomerByCustomerId(Long customerId) throws CustomerNotFoundException {
@@ -122,12 +118,19 @@ public class CustomerService {
     }
 
     // TODO: Update firstname and lastname
+    public Customer updateCustomerDetails(Customer customer) throws CustomerNotFoundException, InputDataValidationException {
+        validationService.throwExceptionIfInvalidBean(customer);
+        Customer customerToUpdate = retrieveCustomerByCustomerId(customer.getCustomerId());
+        customerToUpdate.setFirstName(customer.getFirstName());
+        customerToUpdate.setLastName(customer.getLastName());
+        return lazyLoadCustomerFields(customerToUpdate);
+    }
 
     public Customer customerLogin(String email, String password) throws InvalidLoginCredentialsException, CustomerNotVerifiedException {
         try {
             Customer customer = retrieveCustomerByEmail(email);
             if (encoder.matches(password, customer.getPassword())) {
-                if (!customer.isVerified()){
+                if (!customer.isVerified()) {
                     throw new CustomerNotVerifiedException(ErrorMessages.CUSTOMER_NOT_VERIFIED);
                 }
                 return lazyLoadCustomerFields(customer);
@@ -181,17 +184,17 @@ public class CustomerService {
         verificationCodeRepository.save(verificationCode);
         customer.setVerificationCode(verificationCode);
 
-        if (Arrays.asList(environment.getActiveProfiles()).contains("dev")){
+        if (Arrays.asList(environment.getActiveProfiles()).contains("dev")) {
             sendEmailVerificationLink(code);
         }
         return code;
     }
 
-    private void sendEmailVerificationLink(String code){
+    private void sendEmailVerificationLink(String code) {
         SimpleMailMessage msg = new SimpleMailMessage();
         msg.setTo("shawnroshan@gmail.com");
         msg.setSubject("Verify your email");
-        msg.setText("http://localhost:8080/api/customer/verify/"+code);
+        msg.setText("http://localhost:8080/api/customer/verify/" + code);
         javaMailSender.send(msg);
     }
 
@@ -254,11 +257,34 @@ public class CustomerService {
         return lazyLoadCustomerFields(customer);
     }
 
+
     public Customer addShippingAddress(Long customerId, Address shippingAddress) throws CustomerNotFoundException {
         Customer customer = retrieveCustomerByCustomerId(customerId);
         addressRepository.save(shippingAddress);
+        if (shippingAddress.isDefault()) {
+            customer = setOtherAddressesToNonDefault(customerId);
+        }
+        if (shippingAddress.isBilling()) {
+            customer = setOtherAddressesToNonBilling(customerId);
+        }
         customer.addShippingAddress(shippingAddress);
         return lazyLoadCustomerFields(customer);
+    }
+
+    private Customer setOtherAddressesToNonDefault(Long customerId) throws CustomerNotFoundException {
+        Customer customer = retrieveCustomerByCustomerId(customerId);
+        for (Address addr : customer.getShippingAddresses()) {
+            addr.setDefault(false);
+        }
+        return customer;
+    }
+
+    private Customer setOtherAddressesToNonBilling(Long customerId) throws CustomerNotFoundException {
+        Customer customer = retrieveCustomerByCustomerId(customerId);
+        for (Address addr : customer.getShippingAddresses()) {
+            addr.setBilling(false);
+        }
+        return customer;
     }
 
     public Address getShippingAddress(Long customerId, Long addressId) throws CustomerNotFoundException, AddressNotFoundException {
@@ -274,7 +300,17 @@ public class CustomerService {
     public Address updateShippingAddress(Long customerId, Address newShippingAddress) throws CustomerNotFoundException, AddressNotFoundException {
         Address addressToUpdate = getShippingAddress(customerId, newShippingAddress.getAddressId());
         addressToUpdate.setBuildingName(newShippingAddress.getBuildingName());
+
+        if (newShippingAddress.isDefault()) {
+            setOtherAddressesToNonDefault(customerId);
+        }
         addressToUpdate.setDefault(newShippingAddress.isDefault());
+
+        if (newShippingAddress.isBilling()) {
+            setOtherAddressesToNonBilling(customerId);
+        }
+        addressToUpdate.setBilling(newShippingAddress.isBilling());
+
         addressToUpdate.setLine1(newShippingAddress.getLine1());
         addressToUpdate.setLine2(newShippingAddress.getLine2());
         addressToUpdate.setPostalCode(newShippingAddress.getPostalCode());
@@ -288,7 +324,9 @@ public class CustomerService {
         Address shippingAddressToRemove = getShippingAddress(customerId, shippingAddressId);
 
         customer.getShippingAddresses().remove(shippingAddressToRemove);
+
         addressRepository.delete(shippingAddressToRemove);
+
         return lazyLoadCustomerFields(customer);
     }
 
@@ -315,8 +353,10 @@ public class CustomerService {
     public Customer addStyle(Long customerId, Long styleId) throws CustomerNotFoundException, StyleNotFoundException {
         Customer customer = retrieveCustomerByCustomerId(customerId);
         Style style = styleService.retrieveStyleByStyleId(styleId);
-        customer.getPreferredStyles().add(style);
-        style.getCustomers().add(customer);
+        if (!customer.getPreferredStyles().contains(style)) {
+            customer.getPreferredStyles().add(style);
+            style.getCustomers().add(customer);
+        }
         return lazyLoadCustomerFields(customer);
     }
 
@@ -383,7 +423,7 @@ public class CustomerService {
         //clear relationships with styles
         List<Style> styles = customer.getPreferredStyles();
         customer.setPreferredStyles(null);
-        for (Style style : styles){
+        for (Style style : styles) {
             style.getCustomers().remove(customer);
         }
 
@@ -396,7 +436,7 @@ public class CustomerService {
         return customer;
     }
 
-    public Customer lazyLoadCustomerFields(Customer customer){
+    public Customer lazyLoadCustomerFields(Customer customer) {
         customer.getCreditCards().size();
         customer.getShippingAddresses().size();
         customer.getMeasurements();
@@ -410,5 +450,7 @@ public class CustomerService {
         customer.getPreferredStyles().size();
         return customer;
     }
+
+
 }
 
