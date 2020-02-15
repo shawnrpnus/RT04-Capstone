@@ -11,7 +11,6 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.core.env.Environment;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.security.core.parameters.P;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -67,34 +66,30 @@ public class CustomerService {
     }
 
     public Customer createNewCustomer(Customer customer) throws InputDataValidationException, CreateNewCustomerException {
-        Map<String, String> errorMap = validationService.generateErrorMap(customer);
-
-        if (errorMap == null) {//no errors
+        validationService.throwExceptionIfInvalidBean(customer);
+        try {
+            //check email is new
+            Customer existingCustomer = null;
             try {
-                //check email is new
-                Customer existingCustomer = null;
-                try {
-                    existingCustomer = retrieveCustomerByEmail(customer.getEmail());
-                } catch (CustomerNotFoundException ex) {
-                }
-                if (existingCustomer != null) {
-                    errorMap = new HashMap<>();
-                    errorMap.put("email", ErrorMessages.EMAIL_TAKEN);
-                    throw new InputDataValidationException(errorMap, ErrorMessages.EMAIL_TAKEN);
-                }
-
-                customer.setPassword(encoder.encode(customer.getPassword()));
-                Customer savedCustomer = customerRepository.save(customer);
-                shoppingCartService.initializeShoppingCarts(savedCustomer.getCustomerId());
-                generateVerificationCode(savedCustomer.getCustomerId());
-                return lazyLoadCustomerFields(customer);
-            } catch (PersistenceException | CustomerNotFoundException ex) {
-                System.out.println(ex.getMessage());
-                throw new CreateNewCustomerException("Error creating new customer");
+                existingCustomer = retrieveCustomerByEmail(customer.getEmail());
+            } catch (CustomerNotFoundException ex) {
             }
-        } else {
-            throw new InputDataValidationException(errorMap, "Invalid Customer");
+            if (existingCustomer != null) {
+                Map<String, String> errorMap = new HashMap<>();
+                errorMap.put("email", ErrorMessages.EMAIL_TAKEN);
+                throw new InputDataValidationException(errorMap, ErrorMessages.EMAIL_TAKEN);
+            }
+
+            customer.setPassword(encoder.encode(customer.getPassword()));
+            Customer savedCustomer = customerRepository.save(customer);
+            shoppingCartService.initializeShoppingCarts(savedCustomer.getCustomerId());
+            generateVerificationCode(savedCustomer.getCustomerId());
+            return lazyLoadCustomerFields(customer);
+        } catch (PersistenceException | CustomerNotFoundException ex) {
+            System.out.println(ex.getMessage());
+            throw new CreateNewCustomerException("Error creating new customer");
         }
+
     }
 
     public Customer retrieveCustomerByCustomerId(Long customerId) throws CustomerNotFoundException {
@@ -123,6 +118,13 @@ public class CustomerService {
     }
 
     // TODO: Update firstname and lastname
+    public Customer updateCustomerDetails(Customer customer) throws CustomerNotFoundException, InputDataValidationException {
+        validationService.throwExceptionIfInvalidBean(customer);
+        Customer customerToUpdate = retrieveCustomerByCustomerId(customer.getCustomerId());
+        customerToUpdate.setFirstName(customer.getFirstName());
+        customerToUpdate.setLastName(customer.getLastName());
+        return lazyLoadCustomerFields(customerToUpdate);
+    }
 
     public Customer customerLogin(String email, String password) throws InvalidLoginCredentialsException, CustomerNotVerifiedException {
         try {
@@ -212,21 +214,25 @@ public class CustomerService {
         }
     }
 
-    public Measurements updateMeasurements(Long customerId, Measurements measurements) throws InputDataValidationException, CustomerNotFoundException {
-        Map<String, String> errorMap = validationService.generateErrorMap(measurements);
-        if (errorMap == null) {
-            Customer customer = retrieveCustomerByCustomerId(customerId);
-            Measurements currentMeasurements = customer.getMeasurements();
-            if (currentMeasurements != null) {
-                customer.setMeasurements(null);
-                measurementsRepository.delete(currentMeasurements);
-            }
-            customer.setMeasurements(measurements);
-            measurementsRepository.save(measurements);
-            return measurements;
-        } else {
-            throw new InputDataValidationException(errorMap, "Invalid measurements");
+    public Customer updateMeasurements(Long customerId, Measurements measurements) throws InputDataValidationException, CustomerNotFoundException {
+        validationService.throwExceptionIfInvalidBean(measurements);
+        Customer customer = retrieveCustomerByCustomerId(customerId);
+        Measurements currentMeasurements = customer.getMeasurements();
+        if (currentMeasurements != null) {
+            customer.setMeasurements(null);
+            measurementsRepository.delete(currentMeasurements);
         }
+        customer.setMeasurements(measurements);
+        measurementsRepository.save(measurements);
+        return lazyLoadCustomerFields(customer);
+    }
+
+    public Customer deleteMeasurements(Long customerId) throws CustomerNotFoundException {
+        Customer customer = retrieveCustomerByCustomerId(customerId);
+        Measurements m = customer.getMeasurements();
+        customer.setMeasurements(null);
+        measurementsRepository.delete(m);
+        return customer;
     }
 
     public Customer addCreditCard(Long customerId, CreditCard creditCard) throws CustomerNotFoundException {
@@ -259,10 +265,10 @@ public class CustomerService {
     public Customer addShippingAddress(Long customerId, Address shippingAddress) throws CustomerNotFoundException {
         Customer customer = retrieveCustomerByCustomerId(customerId);
         addressRepository.save(shippingAddress);
-        if (shippingAddress.isDefault()){
+        if (shippingAddress.isDefault()) {
             customer = setOtherAddressesToNonDefault(customerId);
         }
-        if (shippingAddress.isBilling()){
+        if (shippingAddress.isBilling()) {
             customer = setOtherAddressesToNonBilling(customerId);
         }
         customer.addShippingAddress(shippingAddress);
@@ -271,7 +277,7 @@ public class CustomerService {
 
     private Customer setOtherAddressesToNonDefault(Long customerId) throws CustomerNotFoundException {
         Customer customer = retrieveCustomerByCustomerId(customerId);
-        for (Address addr : customer.getShippingAddresses()){
+        for (Address addr : customer.getShippingAddresses()) {
             addr.setDefault(false);
         }
         return customer;
@@ -279,7 +285,7 @@ public class CustomerService {
 
     private Customer setOtherAddressesToNonBilling(Long customerId) throws CustomerNotFoundException {
         Customer customer = retrieveCustomerByCustomerId(customerId);
-        for (Address addr : customer.getShippingAddresses()){
+        for (Address addr : customer.getShippingAddresses()) {
             addr.setBilling(false);
         }
         return customer;
@@ -299,12 +305,12 @@ public class CustomerService {
         Address addressToUpdate = getShippingAddress(customerId, newShippingAddress.getAddressId());
         addressToUpdate.setBuildingName(newShippingAddress.getBuildingName());
 
-        if (newShippingAddress.isDefault()){
+        if (newShippingAddress.isDefault()) {
             setOtherAddressesToNonDefault(customerId);
         }
         addressToUpdate.setDefault(newShippingAddress.isDefault());
 
-        if (newShippingAddress.isBilling()){
+        if (newShippingAddress.isBilling()) {
             setOtherAddressesToNonBilling(customerId);
         }
         addressToUpdate.setBilling(newShippingAddress.isBilling());
@@ -449,10 +455,6 @@ public class CustomerService {
         return customer;
     }
 
-    private <E> void throwExceptionIfInvalidBean(E entity) throws InputDataValidationException {
-        Map<String, String> errorMap = validationService.generateErrorMap(entity);
-        if (errorMap != null)
-            throw new InputDataValidationException(errorMap, entity.getClass().toString() + " is invalid!");
-    }
+
 }
 

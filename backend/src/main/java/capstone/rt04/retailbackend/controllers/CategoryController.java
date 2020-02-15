@@ -2,6 +2,7 @@ package capstone.rt04.retailbackend.controllers;
 
 import capstone.rt04.retailbackend.entities.Category;
 import capstone.rt04.retailbackend.request.category.CategoryCreateRequest;
+import capstone.rt04.retailbackend.request.category.CategoryUpdateRequest;
 import capstone.rt04.retailbackend.response.GenericErrorResponse;
 import capstone.rt04.retailbackend.services.CategoryService;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
@@ -11,6 +12,8 @@ import capstone.rt04.retailbackend.util.routeconstants.CategoryControllerRoutes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping(CategoryControllerRoutes.CATEGORY_BASE_ROUTE)
@@ -35,6 +38,16 @@ public class CategoryController {
         }
     }
 
+    @GetMapping(CategoryControllerRoutes.RETRIEVE_ALL_CATEGORY)
+    public ResponseEntity<?> retrieveAllCategories() {
+        try {
+            List<Category> categoryList = categoryService.retrieveAllCategories();
+            return new ResponseEntity<>(categoryList, HttpStatus.OK);
+        } catch (Exception ex) {
+            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @PostMapping(CategoryControllerRoutes.CREATE_NEW_CATEGORY)
     public ResponseEntity<?> createNewCategory(@RequestBody CategoryCreateRequest categoryCreateRequest) {
         try {
@@ -45,6 +58,18 @@ public class CategoryController {
             return new ResponseEntity<>(ex.getErrorMap(), HttpStatus.BAD_REQUEST);
         } catch (CreateNewCategoryException ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
+        } catch (Exception ex) {
+            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PutMapping(CategoryControllerRoutes.UPDATE_CATEGORY)
+    public ResponseEntity<?> updateCategory(@RequestBody CategoryUpdateRequest categoryUpdateRequest) {
+        try {
+            Category category = categoryService.updateCategory(categoryUpdateRequest.getCategory(), categoryUpdateRequest.getParentCategoryId());
+            return new ResponseEntity<>(category, HttpStatus.OK);
+        } catch (CategoryNotFoundException ex) {
+            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
         } catch (Exception ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }

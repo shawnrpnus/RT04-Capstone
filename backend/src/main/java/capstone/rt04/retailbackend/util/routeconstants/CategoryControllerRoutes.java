@@ -5,6 +5,7 @@ public class CategoryControllerRoutes {
     public static final String CREATE_NEW_CATEGORY = "/createNewCategory";
     public static final String RETRIEVE_ALL_CATEGORY = "/retrieveAllCategory";
     public static final String RETRIEVE_CATEGORY_BY_ID = "/retrieveCategoryById/{categoryId}";
+    public static final String UPDATE_CATEGORY = "/updateCategory/{categoryId}";
     public static final String DELETE_CATEGORY = "/deleteCategory/{categoryId}";
 
 }

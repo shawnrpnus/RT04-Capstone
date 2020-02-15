@@ -55,7 +55,9 @@ public class TagService {
 
     }
 
-    public void updateTag(Tag tag) throws InputDataValidationException, TagNotFoundException, UpdateTagException {
+
+    public Tag updateTag(Tag tag) throws InputDataValidationException, TagNotFoundException, UpdateTagException
+    {
         Map<String, String> errorMap = validationService.generateErrorMap(tag);
         if (errorMap == null) {
             try {
@@ -67,6 +69,7 @@ public class TagService {
                 }
 
                 tagToUpdate.setName(tag.getName());
+                return tagToUpdate;
             } catch (Exception ex) {
                 throw new UpdateTagException("Error updating tag");
             }
@@ -104,5 +107,9 @@ public class TagService {
     private List<Tag> lazilyLoadTag(List<Tag> tags) {
         for (Tag tag : tags) tag.getProducts().size();
         return tags;
+    }
+
+    public List<Tag> retrieveAllTags() {
+        return lazilyLoadTag(tagRepository.findAll());
     }
 }

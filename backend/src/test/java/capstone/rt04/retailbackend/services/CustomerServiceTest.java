@@ -43,6 +43,17 @@ public class CustomerServiceTest extends ServiceTestSetup {
     }
 
     @Test
+    public void updateCustomer() throws Exception {
+        Customer validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
+        validCustomer.setFirstName("Bruce");
+        validCustomer.setLastName("Wayne");
+        customerService.updateCustomerDetails(validCustomer);
+        Customer updatedCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
+        assertThat(updatedCustomer.getFirstName()).isEqualTo(validCustomer.getFirstName());
+        assertThat(updatedCustomer.getLastName()).isEqualTo(validCustomer.getLastName());
+    }
+
+    @Test
     public void updateEmail() throws Exception {
         Customer validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
         customerService.changeEmail(validCustomer.getCustomerId(), "ultron@gmail.com");
@@ -117,6 +128,9 @@ public class CustomerServiceTest extends ServiceTestSetup {
         customerService.updateMeasurements(validCustomer.getCustomerId(), secondMeasurements);
         validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
         assertThat(validCustomer.getMeasurements().getChest().compareTo(secondMeasurements.getChest())).isEqualTo(0);
+
+        validCustomer = customerService.deleteMeasurements(validCustomer.getCustomerId());
+        assertThat(validCustomer.getMeasurements()).isNull();
     }
 
     @Test
@@ -138,28 +152,45 @@ public class CustomerServiceTest extends ServiceTestSetup {
 
     @Test
     public void crudShippingAddress() throws Exception {
+        //create
         Customer validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
         Address newShippingAddress = new Address("line1", null, "510149", null, false, null, null);
+        newShippingAddress.setBilling(true);
         customerService.addShippingAddress(validCustomer.getCustomerId(), newShippingAddress);
         validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
         assertThat(validCustomer.getShippingAddresses().contains(newShippingAddress)).isTrue();
         assertThat(validCustomer.getShippingAddresses().size()).isEqualTo(1);
+        assertThat(validCustomer.getShippingAddresses().get(0).isBilling()).isTrue();
 
+        //create another
+        Address newShippingAddress2 = new Address("line1", null, "510148", "building");
+        newShippingAddress2.setBilling(true);
+        customerService.addShippingAddress(validCustomer.getCustomerId(), newShippingAddress2);
+        validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
+        assertThat(validCustomer.getShippingAddresses().contains(newShippingAddress2)).isTrue();
+        assertThat(validCustomer.getShippingAddresses().size()).isEqualTo(2);
+        assertThat(validCustomer.getShippingAddresses().get(1).isBilling()).isTrue();
+        assertThat(validCustomer.getShippingAddresses().get(0).isBilling()).isFalse();
+
+        //retrieve
         Address a = customerService.getShippingAddress(validCustomer.getCustomerId(), validCustomer.getShippingAddresses().get(0).getAddressId());
+        newShippingAddress.setBilling(false); //is false after address2 is set as billing
         assertThat(a).isEqualTo(newShippingAddress);
 
+        //update
         a.setLine1("line1updated");
         customerService.updateShippingAddress(validCustomer.getCustomerId(), a);
-
         validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
         assertThat(validCustomer.getShippingAddresses().get(0).getLine1()).isEqualTo("line1updated");
 
-
-
+        //delete both
         customerService.deleteShippingAddress(validCustomer.getCustomerId(), a.getAddressId());
         validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
-        assertThat(validCustomer.getShippingAddresses().size()).isEqualTo(0);
+        assertThat(validCustomer.getShippingAddresses().size()).isEqualTo(1);
 
+        customerService.deleteShippingAddress(validCustomer.getCustomerId(), validCustomer.getShippingAddresses().get(0).getAddressId());
+        validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
+        assertThat(validCustomer.getShippingAddresses().size()).isEqualTo(0);
     }
 
     @Test

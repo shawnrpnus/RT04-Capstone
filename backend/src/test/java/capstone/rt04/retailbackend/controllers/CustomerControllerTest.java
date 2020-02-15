@@ -69,6 +69,20 @@ public class CustomerControllerTest extends ApiTestSetup {
     }
 
     @Test
+    public void updateCustomerDetails(){
+        Customer updatedCustomer = new Customer("Bruce", "Wayne", VALID_CUST_EMAIL, VALID_CUST_PASSWORD);
+        updatedCustomer.setCustomerId(createdCustomerId);
+        updatedCustomer = given()
+                .contentType("application/json")
+                .body(updatedCustomer)
+                .when().post(CUSTOMER_BASE_ROUTE + UPDATE_CUSTOMER)
+                .then().statusCode(HttpStatus.OK.value()).extract().body().as(Customer.class);
+        assertThat(updatedCustomer.getCustomerId()).isEqualTo(createdCustomerId);
+        assertThat(updatedCustomer.getFirstName()).isEqualTo("Bruce");
+        assertThat(updatedCustomer.getLastName()).isEqualTo("Wayne");
+    }
+
+    @Test
     public void login() {
         CustomerLoginRequest req = new CustomerLoginRequest(VALID_CUST_EMAIL, VALID_CUST_PASSWORD);
         //valid credentials, but unverified
@@ -140,26 +154,36 @@ public class CustomerControllerTest extends ApiTestSetup {
     }
 
     @Test
-    public void updateMeasurements() {
+    public void createUpdateDeleteMeasurements() {
+        //create
         Measurements initialMeasurements = new Measurements();
         initialMeasurements.setChest(BigDecimal.valueOf(38.00));
         CustomerUpdateMeasurementsRequest req = new CustomerUpdateMeasurementsRequest(createdCustomerId, initialMeasurements);
-        Measurements measurements1 = given()
+        Customer customer = given()
                 .contentType("application/json")
                 .body(req)
                 .when().post(CUSTOMER_BASE_ROUTE + UPDATE_MEASUREMENTS)
-                .then().statusCode(HttpStatus.OK.value()).extract().body().as(Measurements.class);
-        assertThat(measurements1.getMeasurementsId()).isNotNull();
-        assertThat(measurements1.getChest().compareTo(initialMeasurements.getChest())).isEqualTo(0);
+                .then().statusCode(HttpStatus.OK.value()).extract().body().as(Customer.class);
+        assertThat(customer.getMeasurements().getMeasurementsId()).isNotNull();
+        assertThat(customer.getMeasurements().getChest().compareTo(initialMeasurements.getChest())).isEqualTo(0);
 
+        //update
         req.getMeasurements().setChest(BigDecimal.valueOf(100.00));
-        Measurements measurements2 = given()
+        customer = given()
                 .contentType("application/json")
                 .body(req)
                 .when().post(CUSTOMER_BASE_ROUTE + UPDATE_MEASUREMENTS)
-                .then().statusCode(HttpStatus.OK.value()).extract().body().as(Measurements.class);
-        assertThat(measurements2.getMeasurementsId()).isNotNull();
-        assertThat(measurements2.getChest().compareTo(req.getMeasurements().getChest())).isEqualTo(0);
+                .then().statusCode(HttpStatus.OK.value()).extract().body().as(Customer.class);
+        assertThat(customer.getMeasurements().getMeasurementsId()).isNotNull();
+        assertThat(customer.getMeasurements().getChest().compareTo(req.getMeasurements().getChest())).isEqualTo(0);
+
+        //delete
+        customer = given()
+                .queryParam("customerId", createdCustomerId)
+                .when().post(CUSTOMER_BASE_ROUTE + DELETE_MEASUREMENTS)
+                .then().statusCode(HttpStatus.OK.value()).extract().body().as(Customer.class);
+        assertThat(customer.getCustomerId().compareTo(createdCustomerId)).isZero();
+        assertThat(customer.getMeasurements()).isNull();
     }
 
     @Test
