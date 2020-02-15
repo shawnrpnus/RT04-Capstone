@@ -44,6 +44,7 @@ public class StoreService {
                 storeRepository.save(store);
                 List<Store> stores = new ArrayList<>();
                 stores.add(store);
+                //create product stock with qty 0 for all existing product variants
                 productService.assignProductStock(null, stores);
             }  else {
                 throw new InputDataValidationException(errorMap, "Invalid data");
