@@ -214,21 +214,25 @@ public class CustomerService {
         }
     }
 
-    public Measurements updateMeasurements(Long customerId, Measurements measurements) throws InputDataValidationException, CustomerNotFoundException {
-        Map<String, String> errorMap = validationService.generateErrorMap(measurements);
-        if (errorMap == null) {
-            Customer customer = retrieveCustomerByCustomerId(customerId);
-            Measurements currentMeasurements = customer.getMeasurements();
-            if (currentMeasurements != null) {
-                customer.setMeasurements(null);
-                measurementsRepository.delete(currentMeasurements);
-            }
-            customer.setMeasurements(measurements);
-            measurementsRepository.save(measurements);
-            return measurements;
-        } else {
-            throw new InputDataValidationException(errorMap, "Invalid measurements");
+    public Customer updateMeasurements(Long customerId, Measurements measurements) throws InputDataValidationException, CustomerNotFoundException {
+        validationService.throwExceptionIfInvalidBean(measurements);
+        Customer customer = retrieveCustomerByCustomerId(customerId);
+        Measurements currentMeasurements = customer.getMeasurements();
+        if (currentMeasurements != null) {
+            customer.setMeasurements(null);
+            measurementsRepository.delete(currentMeasurements);
         }
+        customer.setMeasurements(measurements);
+        measurementsRepository.save(measurements);
+        return lazyLoadCustomerFields(customer);
+    }
+
+    public Customer deleteMeasurements(Long customerId) throws CustomerNotFoundException {
+        Customer customer = retrieveCustomerByCustomerId(customerId);
+        Measurements m = customer.getMeasurements();
+        customer.setMeasurements(null);
+        measurementsRepository.delete(m);
+        return customer;
     }
 
     public Customer addCreditCard(Long customerId, CreditCard creditCard) throws CustomerNotFoundException {
