@@ -4,6 +4,8 @@ import capstone.rt04.retailbackend.response.GenericErrorResponse;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.category.CategoryNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.category.CreateNewCategoryException;
+import capstone.rt04.retailbackend.util.exceptions.category.DeleteCategoryException;
+import capstone.rt04.retailbackend.util.exceptions.category.UpdateCategoryException;
 import capstone.rt04.retailbackend.util.exceptions.customer.*;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.style.CreateNewStyleException;
@@ -11,7 +13,9 @@ import capstone.rt04.retailbackend.util.exceptions.style.DeleteStyleException;
 import capstone.rt04.retailbackend.util.exceptions.style.StyleNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.style.UpdateStyleException;
 import capstone.rt04.retailbackend.util.exceptions.tag.CreateNewTagException;
+import capstone.rt04.retailbackend.util.exceptions.tag.DeleteTagException;
 import capstone.rt04.retailbackend.util.exceptions.tag.TagNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.tag.UpdateTagException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -45,7 +49,8 @@ public class GeneralExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler({
             CreateNewCustomerException.class, CustomerCannotDeleteException.class,
             CreateNewStyleException.class, UpdateStyleException.class, DeleteStyleException.class,
-            CreateNewTagException.class, CreateNewCategoryException.class
+            CreateNewTagException.class, DeleteTagException.class, UpdateTagException.class,
+            CreateNewCategoryException.class, UpdateCategoryException.class, DeleteCategoryException.class
     })
     public final ResponseEntity<Object> handlePersistenceExceptions(Exception ex, WebRequest req) {
         return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
