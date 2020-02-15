@@ -53,8 +53,22 @@ public class StyleService {
         return style;
     }
 
+    public List<Style> retrieveListOfStylesById(List<Long> styleIds) {
+        List<Style> styles = (List<Style>) styleRepository.findAllById(styleIds);
+        return lazilyLoadStyle(styles);
+    }
+
     public List<Style> retrieveAllStyles() {
-        return styleRepository.findAll();
+        List<Style> styles = styleRepository.findAll();
+        return lazilyLoadStyle(styleRepository.findAll());
+    }
+
+    private List<Style> lazilyLoadStyle(List<Style> styles) {
+        for(Style style: styles) {
+            style.getProducts().size();
+            style.getCustomers().size();
+        }
+        return styles;
     }
 
     public Style updateStyle(Style style) throws InputDataValidationException, StyleNotFoundException, UpdateStyleException {

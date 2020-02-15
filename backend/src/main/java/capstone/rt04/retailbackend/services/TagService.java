@@ -28,8 +28,7 @@ public class TagService {
         this.tagRepository = tagRepository;
     }
 
-    public Tag createNewTag(Tag newTag) throws InputDataValidationException, CreateNewTagException
-    {
+    public Tag createNewTag(Tag newTag) throws InputDataValidationException, CreateNewTagException {
         Map<String, String> errorMap = validationService.generateErrorMap(newTag);
         if (errorMap == null) {
             try {
@@ -46,7 +45,7 @@ public class TagService {
                 tagRepository.save(newTag);
 
                 return newTag;
-            } catch(Exception ex) {
+            } catch (Exception ex) {
                 throw new CreateNewTagException("Error creating new tag: " + ex.getMessage());
             }
         } else {
@@ -56,8 +55,7 @@ public class TagService {
 
     }
 
-    public void updateTag(Tag tag) throws InputDataValidationException, TagNotFoundException, UpdateTagException
-    {
+    public void updateTag(Tag tag) throws InputDataValidationException, TagNotFoundException, UpdateTagException {
         Map<String, String> errorMap = validationService.generateErrorMap(tag);
         if (errorMap == null) {
             try {
@@ -77,32 +75,34 @@ public class TagService {
         }
     }
 
-    public Tag deleteTag(Long tagId) throws TagNotFoundException, DeleteTagException
-    {
+    public Tag deleteTag(Long tagId) throws TagNotFoundException, DeleteTagException {
         Tag tagToRemove = retrieveTagByTagId(tagId);
-        for(Product p :tagToRemove.getProducts()) {
+        for (Product p : tagToRemove.getProducts()) {
             p.getTags().remove(tagToRemove);
         }
         tagRepository.delete(tagToRemove);
         return tagToRemove;
     }
 
-    public Tag retrieveTagByName(String name) throws TagNotFoundException
-    {
+    public Tag retrieveTagByName(String name) throws TagNotFoundException {
         return tagRepository.findByName(name).orElse(null);
     }
 
-    public Tag retrieveTagByTagId(Long tagId) throws TagNotFoundException
-    {
-        if(tagId == null)
-        {
+    public Tag retrieveTagByTagId(Long tagId) throws TagNotFoundException {
+        if (tagId == null) {
             throw new TagNotFoundException("Tag ID not provided");
         }
         return tagRepository.findById(tagId)
                 .orElseThrow(() -> new TagNotFoundException("Tag ID " + tagId + " does not exist!"));
     }
 
-    public List<Tag> retrieveListOfTagsById(List<Long> tagIds) {
-        return (List<Tag>) tagRepository.findAllById(tagIds);
+    public List<Tag> retrieveListOfTagsByIds(List<Long> tagIds) {
+        List<Tag> tags = (List<Tag>) tagRepository.findAllById(tagIds);
+        return lazilyLoadTag(tags);
+    }
+
+    private List<Tag> lazilyLoadTag(List<Tag> tags) {
+        for (Tag tag : tags) tag.getProducts().size();
+        return tags;
     }
 }

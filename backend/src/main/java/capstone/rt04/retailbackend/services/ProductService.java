@@ -7,7 +7,11 @@ import capstone.rt04.retailbackend.repositories.ProductStockRepository;
 import capstone.rt04.retailbackend.repositories.ProductVariantRepository;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.category.CategoryNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.discount.DiscountNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.product.*;
+import capstone.rt04.retailbackend.util.exceptions.promoCode.PromoCodeNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.style.StyleNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.tag.TagNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.warehouse.WarehouseNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,6 +33,7 @@ public class ProductService {
     private final PromoCodeService promoCodeService;
     private final ValidationService validationService;
     @Autowired
+    private final StyleService styleService;
     private final StoreService storeService;
     private final WarehouseService warehouseService;
 
@@ -38,10 +43,11 @@ public class ProductService {
     private final ProductStockRepository productStockRepository;
     private final ProductVariantRepository productVariantRepository;
 
-    public ProductService(ValidationService validationService, TagService tagService, CategoryService categoryService, StoreService storeService, ProductRepository productRepository, ProductVariantRepository productVariantRepository, ProductStockRepository productStockRepository, ProductImageRepository productImageRepository, DiscountService discountService, PromoCodeService promoCodeService, WarehouseService warehouseService) {
+    public ProductService(ValidationService validationService, TagService tagService, CategoryService categoryService, StyleService styleService, StoreService storeService, ProductRepository productRepository, ProductVariantRepository productVariantRepository, ProductStockRepository productStockRepository, ProductImageRepository productImageRepository, DiscountService discountService, PromoCodeService promoCodeService, WarehouseService warehouseService) {
         this.validationService = validationService;
         this.tagService = tagService;
         this.categoryService = categoryService;
+        this.styleService = styleService;
         this.storeService = storeService;
         this.productRepository = productRepository;
         this.productVariantRepository = productVariantRepository;
@@ -129,11 +135,13 @@ public class ProductService {
 
     private void lazilyLoadProduct(List<Product> products) {
         for (Product product : products) {
-            product.getProductName();
             product.getCategory();
             product.getTags().size();
             product.getReviews().size();
             product.getDiscounts().size();
+            product.getPromoCodes().size();
+            product.getProductVariants().size();
+            product.getStyles().size();
         }
     }
 
@@ -485,106 +493,139 @@ public class ProductService {
         newCategory.getProducts().add(product);
     }
 
-//    public void addOrRemoveTag(Long tagId, Long productId, List<Long> tagIds, List<Long> productIds, Boolean isAppend) throws ProductNotFoundException, TagNotFoundException, TagNotFoundException {
-//        // Adding / removing tag for a list of products
-//        if (tagId != null) {
-//            Tag tag = tagService.retrieveTagByTagId(tagId);
-//            List<Product> products = retrieveListOfProductsById(productIds);
-//            if (isAppend) {
-//                for (Product product : products) {
-//                    product.getTags().add(tag);
-//                    tag.getProducts().add(product);
-//                }
-//            } else {
-//                for (Product product : products) {
-//                    product.getTags().remove(tag);
-//                    tag.getProducts().remove(product);
-//                }
-//            }
-//        } else if (productId != null) {
-//            Product product = retrieveProductById(productId);
-//            List<Tag> tags = tagService.retrieveListOfTagsById(tagIds);
-//            if (isAppend) {
-//                for (Tag tag : tags) {
-//                    product.getTags().add(tag);
-//                    tag.getProducts().add(product);
-//                }
-//            } else {
-//                for (Tag tag : tags) {
-//                    product.getTags().remove(tag);
-//                    tag.getProducts().remove(product);
-//                }
-//            }
-//        }
-//    }
-//
-//    public void addOrRemovePromoCode(Long promoCodeId, Long productId, List<Long> promoCodeIds, List<Long> productIds, Boolean isAppend) throws PromoCodeNotFoundException, ProductNotFoundException, PromoCodeNotFoundException {
-//        // Adding / removing promoCode for a list of products
-//        if (promoCodeId != null) {
-//            PromoCode promoCode = promoCodeService.retrievePromoCodeById(promoCodeId);
-//            List<Product> products = retrieveListOfProductsById(productIds);
-//            if (isAppend) {
-//                for (Product product : products) {
-//                    promoCode.getProducts().add(product);
-//                    product.getPromoCodes().add(promoCode);
-//                }
-//            } else {
-//                for (Product product : products) {
-//                    promoCode.getProducts().remove(product);
-//                    product.getPromoCodes().remove(promoCode);
-//                }
-//            }
-//        }
-//        // Adding / removing a list of promoCodes for a product
-//        else if (productId != null) {
-//            Product product = retrieveProductById(productId);
-//            List<PromoCode> promoCodes = promoCodeService.retrieveListOfPromoCodesById(promoCodeIds);
-//            if (isAppend) {
-//                for (PromoCode promoCode : promoCodes) {
-//                    product.getPromoCodes().add(promoCode);
-//                    promoCode.getProducts().add(product);
-//                }
-//            } else {
-//                for (PromoCode promoCode : promoCodes) {
-//                    product.getPromoCodes().remove(promoCode);
-//                    promoCode.getProducts().remove(product);
-//                }
-//            }
-//        }
-//    }
-//
-//    public void addOrRemoveDiscount(Long discountId, Long productId, List<Long> discountIds, List<Long> productIds, Boolean isAppend) throws ProductNotFoundException, DiscountNotFoundException, DiscountNotFoundException {
-//        // Adding / removing discount for a list of products
-//        if (discountId != null) {
-//            Discount discount = discountService.retrieveDiscountById(discountId);
-//            List<Product> products = retrieveListOfProductsById(productIds);
-//            if (isAppend) {
-//                for (Product product : products) {
-//                    discount.getProducts().add(product);
-//                    product.getDiscounts().add(discount);
-//                }
-//            } else {
-//                for (Product product : products) {
-//                    discount.getProducts().remove(product);
-//                    product.getDiscounts().remove(discount);
-//                }
-//            }
-//        }
-//        // Adding / removing a list of discounts for a product
-//        else if (productId != null) {
-//            Product product = retrieveProductById(productId);
-//            List<Discount> discounts = discountService.retrieveListOfDiscountsById(discountIds);
-//            if (isAppend) {
-//                for (Discount discount : discounts) {
-//                    product.getDiscounts().add(discount);
-//                    discount.getProducts().add(product);
-//                }
-//            } else {
-//                for (Discount discount : discounts) {
-//                    product.getDiscounts().remove(discount);
-//                    discount.getProducts().remove(product);
-//                }
-//            }
-//        }
-//    }
+    public void addOrRemoveTag(Long tagId, Long productId, List<Long> tagIds, List<Long> productIds, Boolean isAppend) throws ProductNotFoundException, TagNotFoundException, TagNotFoundException, TagNotFoundException {
+        // Adding / removing tag for a list of products
+        if (tagId != null) {
+            Tag tag = tagService.retrieveTagByTagId(tagId);
+            List<Product> products = retrieveListOfProductsById(productIds);
+            if (isAppend) {
+                for (Product product : products) {
+                    product.getTags().add(tag);
+                    tag.getProducts().add(product);
+                }
+            } else {
+                for (Product product : products) {
+                    product.getTags().remove(tag);
+                    tag.getProducts().remove(product);
+                }
+            }
+        } else if (productId != null) {
+            Product product = retrieveProductById(productId);
+            List<Tag> tags = tagService.retrieveListOfTagsByIds(tagIds);
+            if (isAppend) {
+                for (Tag tag : tags) {
+                    product.getTags().add(tag);
+                    tag.getProducts().add(product);
+                }
+            } else {
+                for (Tag tag : tags) {
+                    product.getTags().remove(tag);
+                    tag.getProducts().remove(product);
+                }
+            }
+        }
+    }
+
+    public void addOrRemovePromoCode(Long promoCodeId, Long productId, List<Long> promoCodeIds, List<Long> productIds, Boolean isAppend) throws PromoCodeNotFoundException, ProductNotFoundException, PromoCodeNotFoundException, PromoCodeNotFoundException, PromoCodeNotFoundException {
+        // Adding / removing promoCode for a list of products
+        if (promoCodeId != null) {
+            PromoCode promoCode = promoCodeService.retrievePromoCodeByIds(promoCodeId);
+            List<Product> products = retrieveListOfProductsById(productIds);
+            if (isAppend) {
+                for (Product product : products) {
+                    promoCode.getProducts().add(product);
+                    product.getPromoCodes().add(promoCode);
+                }
+            } else {
+                for (Product product : products) {
+                    promoCode.getProducts().remove(product);
+                    product.getPromoCodes().remove(promoCode);
+                }
+            }
+        }
+        // Adding / removing a list of promoCodes for a product
+        else if (productId != null) {
+            Product product = retrieveProductById(productId);
+            List<PromoCode> promoCodes = promoCodeService.retrieveListOfPromoCodesByIds(promoCodeIds);
+            if (isAppend) {
+                for (PromoCode promoCode : promoCodes) {
+                    product.getPromoCodes().add(promoCode);
+                    promoCode.getProducts().add(product);
+                }
+            } else {
+                for (PromoCode promoCode : promoCodes) {
+                    product.getPromoCodes().remove(promoCode);
+                    promoCode.getProducts().remove(product);
+                }
+            }
+        }
+    }
+
+    public void addOrRemoveDiscount(Long discountId, Long productId, List<Long> discountIds, List<Long> productIds, Boolean isAppend) throws ProductNotFoundException, DiscountNotFoundException, DiscountNotFoundException, DiscountNotFoundException, DiscountNotFoundException {
+        // Adding / removing discount for a list of products
+        if (discountId != null) {
+            Discount discount = discountService.retrieveDiscountById(discountId);
+            List<Product> products = retrieveListOfProductsById(productIds);
+            if (isAppend) {
+                for (Product product : products) {
+                    discount.getProducts().add(product);
+                    product.getDiscounts().add(discount);
+                }
+            } else {
+                for (Product product : products) {
+                    discount.getProducts().remove(product);
+                    product.getDiscounts().remove(discount);
+                }
+            }
+        }
+        // Adding / removing a list of discounts for a product
+        else if (productId != null) {
+            Product product = retrieveProductById(productId);
+            List<Discount> discounts = discountService.retrieveListOfDiscountsByIds(discountIds);
+            if (isAppend) {
+                for (Discount discount : discounts) {
+                    product.getDiscounts().add(discount);
+                    discount.getProducts().add(product);
+                }
+            } else {
+                for (Discount discount : discounts) {
+                    product.getDiscounts().remove(discount);
+                    discount.getProducts().remove(product);
+                }
+            }
+        }
+    }
+
+    public void addOrRemoveStyle(Long styleId, Long productId, List<Long> styleIds, List<Long> productIds, Boolean isAppend) throws ProductNotFoundException, TagNotFoundException, TagNotFoundException, TagNotFoundException, StyleNotFoundException, StyleNotFoundException {
+        // Adding / removing style for a list of products
+        if (styleId != null) {
+            Style style = styleService.retrieveStyleByStyleId(styleId);
+            List<Product> products = retrieveListOfProductsById(productIds);
+            if (isAppend) {
+                for (Product product : products) {
+                    product.getStyles().add(style);
+                    style.getProducts().add(product);
+                }
+            } else {
+                for (Product product : products) {
+                    product.getStyles().remove(style);
+                    style.getProducts().remove(product);
+                }
+            }
+        } else if (productId != null) {
+            Product product = retrieveProductById(productId);
+            List<Style> styles = styleService.retrieveListOfStylesById(styleIds);
+            if (isAppend) {
+                for (Style style : styles) {
+                    product.getStyles().add(style);
+                    style.getProducts().add(product);
+                }
+            } else {
+                for (Style style : styles) {
+                    product.getStyles().remove(style);
+                    style.getProducts().remove(product);
+                }
+            }
+        }
+    }
 }
