@@ -1,6 +1,5 @@
 package capstone.rt04.retailbackend.services;
 
-import capstone.rt04.retailbackend.entities.Address;
 import capstone.rt04.retailbackend.entities.Store;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,7 +26,6 @@ public class StoreServiceTest {
 
     @Before
     public void beforeEachTest() throws Exception{
-
         Store expectedValidStore = new Store(8, Time.valueOf("10:00:00"), Time.valueOf("21:00:00"), 2, 6, null);
         Store testValidStore = storeService.createNewStore(expectedValidStore);
         assertThat(testValidStore.getStoreId()).isNotNull();
@@ -43,17 +41,26 @@ public class StoreServiceTest {
     }
 
     @Test
-    public void RetrieveAllStores() throws Exception {
+    public void retrieveAllStores() throws Exception {
         List<Store> allStores = storeService.retrieveAllStores();
         assertThat(allStores).isNotNull();
     }
 
     @Test
     public void deleteStore() throws Exception {
+        Store newStore = new Store(8, Time.valueOf("11:00:00"), Time.valueOf("21:00:00"), 1, 8, null);
+        storeService.createNewStore(newStore);
+
         int storeNumberBeforeDeletion = storeService.retrieveAllStores().size();
-        storeService.deleteStore(storeId);
+        storeService.deleteStore(newStore.getStoreId());
         int storeNumberAfterDeletion = storeService.retrieveAllStores().size();
         assertThat(storeNumberBeforeDeletion).isNotEqualTo(storeNumberAfterDeletion);
+    }
+
+    @Test
+    public void retrieveStoreById() throws Exception {
+        Store store = storeService.retrieveStoreById(storeId);
+        System.out.println(store.toString());
     }
 }
 
