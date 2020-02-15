@@ -154,6 +154,8 @@ public class CustomerServiceTest extends ServiceTestSetup {
         validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
         assertThat(validCustomer.getShippingAddresses().get(0).getLine1()).isEqualTo("line1updated");
 
+
+
         customerService.deleteShippingAddress(validCustomer.getCustomerId(), a.getAddressId());
         validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
         assertThat(validCustomer.getShippingAddresses().size()).isEqualTo(0);

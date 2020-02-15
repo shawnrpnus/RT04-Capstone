@@ -9,6 +9,7 @@ import capstone.rt04.retailbackend.services.ValidationService;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.customer.*;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.style.StyleNotFoundException;
 import capstone.rt04.retailbackend.util.routeconstants.CustomerControllerRoutes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -168,5 +169,16 @@ public class CustomerController {
         return new ResponseEntity<>(deletedCustomer, HttpStatus.OK);
     }
 
-    //TODO: CRUD styles
+    @PostMapping(CustomerControllerRoutes.ADD_STYLE)
+    public ResponseEntity<?> addStyle(@RequestParam Long customerId, @RequestParam Long styleId) throws CustomerNotFoundException, StyleNotFoundException {
+        Customer customer = customerService.addStyle(customerId, styleId);
+        return new ResponseEntity<>(customer, HttpStatus.OK);
+    }
+
+    @PostMapping(CustomerControllerRoutes.REMOVE_STYLE)
+    public ResponseEntity<?> removeStyle(@RequestParam Long customerId, @RequestParam Long styleId) throws CustomerNotFoundException, StyleNotFoundException {
+        Customer customer = customerService.removeStyle(customerId, styleId);
+        return new ResponseEntity<>(customer, HttpStatus.OK);
+    }
+
 }

@@ -45,15 +45,23 @@ public class Address implements Serializable {
 
     private String buildingName;
 
-    @NotNull
-    @Column(nullable = false)
     private boolean isDefault;
+
+    private boolean isBilling;
 
     private BigDecimal xCoordinate;
 
     private BigDecimal yCoordinate;
 
     public Address() {
+    }
+
+    public Address(@NotNull String line1, String line2, @NotNull String postalCode, String buildingName) {
+        this();
+        this.line1 = line1;
+        this.line2 = line2;
+        this.postalCode = postalCode;
+        this.buildingName = buildingName;
     }
 
     public Address(String line1, String line2, String postalCode, String buildingName, boolean isDefault, BigDecimal xCoordinate, BigDecimal yCoordinate) {
