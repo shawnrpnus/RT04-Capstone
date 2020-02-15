@@ -5,6 +5,7 @@ import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductImageNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductStockNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.promoCode.PromoCodeNotFoundException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,6 +30,8 @@ public class ProductServiceTest {
 
     @Autowired
     private CategoryService categoryService;
+    @Autowired
+    private PromoCodeService promoCodeService;
     @Autowired
     private ProductService productService;
 
@@ -77,7 +80,7 @@ public class ProductServiceTest {
     }
 
     @Test
-    public void testCreateErrorProduct() throws Exception {
+    public void createErrorProduct() throws Exception {
         try {
             Product invalidProduct = new Product(null, "Fila", BigDecimal.valueOf(89.90), BigDecimal.valueOf(39.90));
             invalidProduct.setCategory(categoryService.retrieveCategoryByCategoryId(categoryId));
@@ -90,7 +93,7 @@ public class ProductServiceTest {
     }
 
     @Test(expected = ProductVariantNotFoundException.class)
-    public void testCDProductVariant() throws Exception {
+    public void CDProductVariant() throws Exception {
 
         Product product = productService.retrieveProductById(productId);
         ProductVariant validProductVariant = new ProductVariant("SKU002", "Black", null, null, null);
@@ -103,7 +106,7 @@ public class ProductServiceTest {
     }
 
     @Test(expected = ProductStockNotFoundException.class)
-    public void testCDProductStock() throws Exception {
+    public void CDProductStock() throws Exception {
 
         ProductVariant productVariant = productService.retrieveProductVariantById(productVariantId);
 
@@ -118,7 +121,7 @@ public class ProductServiceTest {
     }
 
     @Test(expected = ProductImageNotFoundException.class)
-    public void testCDProductImage() throws Exception {
+    public void CDProductImage() throws Exception {
         // Create
         ProductVariant productVariant = productService.retrieveProductVariantById(productVariantId);
         ProductImage validProductImage = new ProductImage("https://i.ebayimg.com/images/g/af8AAOSwd9dcdYMT/s-l640.jpg");
@@ -137,4 +140,17 @@ public class ProductServiceTest {
     }
 
     // TODO: test assignProductStock - need to create store and warehouse service before
+
+    @Test(expected = PromoCodeNotFoundException.class)
+    public void addAndRemovePromoCode() throws Exception {
+        List<Product> products = productService.retrieveAllProducts();
+        PromoCode promoCode = new PromoCode("CNY Promotion", BigDecimal.TEN, BigDecimal.valueOf(5), BigDecimal.valueOf(20), 5, products);
+        promoCodeService.createNewPromoCode(promoCode);
+
+        products = productService.retrieveAllProducts();
+        assertThat(products.get(0).getPromoCodes().get(0).getPromoCodeId()).isEqualTo(promoCode.getPromoCodeId());
+
+        promoCodeService.deletePromoCode(promoCode.getPromoCodeId());
+        promoCodeService.retrievePromoCodeByIds(promoCode.getPromoCodeId());
+    }
 }
