@@ -30,7 +30,6 @@ public class StyleServiceTest {
 
     @Test
     public void crudStyle() throws CreateNewStyleException, InputDataValidationException, StyleNotFoundException, UpdateStyleException, DeleteStyleException {
-        //TODO: write test method
         Style invalidStyle = new Style();
         try {
             styleService.createNewStyle(invalidStyle);

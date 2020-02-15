@@ -72,8 +72,6 @@ public class ApiTestSetup {
                 when().post(CUSTOMER_BASE_ROUTE + CREATE_NEW_CUSTOMER).
                 then().statusCode(HttpStatus.CREATED.value()).extract().body().as(Customer.class);
         //body("email", equalTo(validCustomer.getEmail()));
-        System.out.println(validCustomer.getCustomerId());
-        System.out.println(createdCustomer.getCustomerId());
         assertThat(createdCustomer.getCustomerId()).isNotNull();
         assertThat(createdCustomer.getEmail()).isEqualTo(validCustomer.getEmail());
         assertThat(createdCustomer.getOnlineShoppingCart()).isNotNull();
