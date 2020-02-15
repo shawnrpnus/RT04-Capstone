@@ -1,37 +1,54 @@
 package capstone.rt04.retailbackend.services;
 
 import capstone.rt04.retailbackend.entities.*;
-import capstone.rt04.retailbackend.repositories.*;
+import capstone.rt04.retailbackend.repositories.InStoreRestockOrderRepository;
+import capstone.rt04.retailbackend.repositories.StoreRepository;
 import capstone.rt04.retailbackend.util.enums.DeliveryStatusEnum;
-import capstone.rt04.retailbackend.util.exceptions.store.CreateNewStoreException;
+import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
+import capstone.rt04.retailbackend.util.exceptions.product.CreateNewProductStockException;
 import capstone.rt04.retailbackend.util.exceptions.store.StoreCannotDeleteException;
 import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.store.StoreUnableToUpdateException;
+import capstone.rt04.retailbackend.util.exceptions.warehouse.WarehouseNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional
 public class StoreService {
 
+    @Autowired
+    private final ValidationService validationService;
+    private final ProductService productService;
+
     private final StoreRepository storeRepository;
     private final InStoreRestockOrderRepository inStoreRestockOrderRepository;
 
-    public StoreService(StoreRepository storeRepository, InStoreRestockOrderRepository inStoreRestockOrderRepository) {
+    public StoreService(ValidationService validationService, @Lazy ProductService productService, StoreRepository storeRepository, InStoreRestockOrderRepository inStoreRestockOrderRepository) {
+        this.validationService = validationService;
+        this.productService = productService;
         this.storeRepository = storeRepository;
         this.inStoreRestockOrderRepository = inStoreRestockOrderRepository;
     }
 
-    public Store createNewStore(Store store) throws CreateNewStoreException {
-        try {
-            //TODO: create product stock with qty 0 for all existing product variants
-            storeRepository.save(store);
+    public Store createNewStore(Store store) throws CreateNewProductStockException, WarehouseNotFoundException, InputDataValidationException {
+            Map<String, String> errorMap = validationService.generateErrorMap(store);
+
+            if (errorMap == null) {
+                storeRepository.save(store);
+                List<Store> stores = new ArrayList<>();
+                stores.add(store);
+                productService.assignProductStock(null, stores);
+            }  else {
+                throw new InputDataValidationException(errorMap, "Invalid data");
+            }
             return store;
-        } catch (Exception e) {
-            throw new CreateNewStoreException("error creating new store");
-        }
     }
 
     public Store retrieveStoreById(Long storeId) throws StoreNotFoundException {
