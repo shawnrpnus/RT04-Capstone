@@ -50,6 +50,30 @@ public class CategoryController {
         }
     }
 
+    @PutMapping(CategoryControllerRoutes.UPDATE_CATEGORY)
+    public ResponseEntity<?> updateCategory(@RequestBody Category newCategory) {
+        try {
+            Category category = categoryService.updateCategory(newCategory);
+            return new ResponseEntity<>(category, HttpStatus.OK);
+        } catch (CategoryNotFoundException ex) {
+            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
+        } catch (Exception ex) {
+            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+//    @PutMapping(ProductControllerRoutes.UPDATE_PRODUCT)
+//    public ResponseEntity<?> updateProduct(@RequestBody Product newProduct) {
+//        try {
+//            Product product = productService.updateProduct(newProduct);
+//            return new ResponseEntity<>(product, HttpStatus.OK);
+//        } catch (ProductNotFoundException ex) {
+//            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
+//        } catch (Exception ex) {
+//            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//    }
+
     @DeleteMapping(CategoryControllerRoutes.DELETE_CATEGORY)
     public ResponseEntity<?> deleteProduct(@PathVariable Long categoryId) {
         try {

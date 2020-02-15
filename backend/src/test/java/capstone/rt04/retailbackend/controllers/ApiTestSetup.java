@@ -52,12 +52,14 @@ public class ApiTestSetup {
         RestAssured.port = port;
         setUpCustomer();
         setUpProduct();
+        setUpCategory();
     }
 
     @After
     public void tearDown() throws Exception {
         tearDownCustomer();
         tearDownProduct();
+        tearDownCategory();
     }
 
     @Test
@@ -132,6 +134,29 @@ public class ApiTestSetup {
                 when().delete(PRODUCT_BASE_ROUTE + DELETE_PRODUCT).
                 then().statusCode(HttpStatus.OK.value()).extract().body().as(Product.class);
         assertThat(removedProduct.getProductId()).isEqualTo(productId);
+
+        Category removedCategory = given().
+                pathParam("categoryId", categoryId).
+                when().delete(CATEGORY_BASE_ROUTE + DELETE_CATEGORY).
+                then().statusCode(HttpStatus.OK.value()).extract().body().as(Category.class);
+        assertThat(removedCategory.getCategoryId()).isEqualTo(categoryId);
+    }
+
+    private void setUpCategory() {
+        Category validCategory = new Category("Shoes");
+
+        CategoryCreateRequest categoryCreateRequest = new CategoryCreateRequest(validCategory, null);
+        Category category = given().
+                contentType("application/json").
+                body(categoryCreateRequest).
+                when().post(CATEGORY_BASE_ROUTE + CREATE_NEW_CATEGORY).
+                then().statusCode(HttpStatus.CREATED.value()).extract().body().as(Category.class);
+        categoryId = category.getCategoryId();
+
+        assertThat(category.getCategoryId()).isEqualTo(validCategory.getCategoryId());
+    }
+
+    private void tearDownCategory(){
 
         Category removedCategory = given().
                 pathParam("categoryId", categoryId).
