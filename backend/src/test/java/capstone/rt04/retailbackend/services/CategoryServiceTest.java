@@ -59,12 +59,12 @@ public class CategoryServiceTest {
         Category updateCategory = categoryService.retrieveCategoryByName("MEN");
         String change = "WOMEN";
         updateCategory.setName(change);
-        categoryService.updateCategory(updateCategory);
+        categoryService.updateCategory(updateCategory, null);
         Category existingCategory = categoryService.retrieveCategoryByName("WOMEN");
         assertThat(existingCategory.getName().compareTo(change)).isEqualTo(0);
 
         existingCategory.setName("MEN");
-        categoryService.updateCategory(existingCategory);
+        categoryService.updateCategory(existingCategory, null);
         Category finalCategory = categoryService.retrieveCategoryByName("MEN");
         assertThat(finalCategory.getName().compareTo("MEN")).isEqualTo(0);
     }
@@ -81,7 +81,7 @@ public class CategoryServiceTest {
         //Update
         Category categoryToUpdate = categoryService.retrieveCategoryByCategoryId(subCategory.getCategoryId());
         categoryToUpdate.setName("NOT_CLOTHING");
-        categoryService.updateCategory(categoryToUpdate);
+        categoryService.updateCategory(categoryToUpdate, parentCategory.getCategoryId());
 
         //Delete
         categoryService.deleteCategory(subCategory.getCategoryId());

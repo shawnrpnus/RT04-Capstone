@@ -89,7 +89,7 @@ public class CategoryService {
         return (List<Category>) categoryRepository.findAll();
     }
 
-    public Category updateCategory(Category category) throws InputDataValidationException, CategoryNotFoundException, UpdateCategoryException {
+    public Category updateCategory(Category category, Long parentCategoryId) throws InputDataValidationException, CategoryNotFoundException, UpdateCategoryException {
         Map<String, String> errorMap = validationService.generateErrorMap(category);
 
         if (errorMap == null) {
@@ -97,7 +97,6 @@ public class CategoryService {
                 Category categoryToUpdate = retrieveCategoryByCategoryId(category.getCategoryId());
                 Category existingCategory = categoryRepository.findByNameAndCategoryId(category.getName(), category.getCategoryId()).orElse(null);
 
-                Long parentCategoryId = null;
                 if(categoryToUpdate.getParentCategory() != null) {
                     parentCategoryId = categoryToUpdate.getParentCategory().getCategoryId();
                 }
