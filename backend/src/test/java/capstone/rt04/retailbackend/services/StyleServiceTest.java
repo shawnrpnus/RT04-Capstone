@@ -30,7 +30,6 @@ public class StyleServiceTest {
 
     @Test
     public void crudStyle() throws CreateNewStyleException, InputDataValidationException, StyleNotFoundException, UpdateStyleException, DeleteStyleException {
-        //TODO: write test method
         Style invalidStyle = new Style();
         try {
             styleService.createNewStyle(invalidStyle);
@@ -63,7 +62,7 @@ public class StyleServiceTest {
         assertThat(updatedStyle.getStyleId().compareTo(retrievedStyle.getStyleId())).isZero();
         assertThat(updatedStyle.getStyleName()).isEqualTo("Updated");
 
-        styleService.deleteStyle(updatedStyle);
+        styleService.deleteStyle(updatedStyle.getStyleId());
         allStyles = styleService.retrieveAllStyles();
         assertThat(allStyles.size()).isZero();
     }

@@ -121,6 +121,8 @@ public class CustomerService {
         return lazyLoadCustomerFields(customer);
     }
 
+    // TODO: Update firstname and lastname
+
     public Customer customerLogin(String email, String password) throws InvalidLoginCredentialsException, CustomerNotVerifiedException {
         try {
             Customer customer = retrieveCustomerByEmail(email);

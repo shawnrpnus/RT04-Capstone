@@ -86,7 +86,7 @@ public class ServiceTestSetup {
         assertThat(removedCategory.getCategoryId()).isEqualTo(categoryId);
 
         Style styleToRemove = styleService.retrieveStyleByStyleId(styleId);
-        styleService.deleteStyle(styleToRemove);
+        styleService.deleteStyle(styleToRemove.getStyleId());
         List<Style> allStyles = styleService.retrieveAllStyles();
         assertThat(allStyles.size()).isZero();
 
