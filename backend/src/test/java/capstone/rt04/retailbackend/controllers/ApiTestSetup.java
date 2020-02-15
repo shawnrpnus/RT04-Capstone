@@ -1,12 +1,10 @@
 package capstone.rt04.retailbackend.controllers;
 
-import capstone.rt04.retailbackend.entities.Category;
-import capstone.rt04.retailbackend.entities.Customer;
-import capstone.rt04.retailbackend.entities.Product;
-import capstone.rt04.retailbackend.entities.ProductVariant;
+import capstone.rt04.retailbackend.entities.*;
 import capstone.rt04.retailbackend.request.category.CategoryCreateRequest;
 import capstone.rt04.retailbackend.request.product.ProductCreateRequest;
 import capstone.rt04.retailbackend.request.productVariant.ProductVariantCreateRequest;
+import capstone.rt04.retailbackend.util.routeconstants.StyleControllerRoutes;
 import io.restassured.RestAssured;
 import org.junit.After;
 import org.junit.Before;
@@ -41,6 +39,7 @@ public class ApiTestSetup {
     protected static final String VALID_CUST_EMAIL = "tonystark@gmail.com";
     protected static final String VALID_CUST_PASSWORD = "spiderman";
 
+    protected static Long styleId;
     protected static Long categoryId;
     protected static Long productId;
     protected static Long productVariantId;
@@ -52,12 +51,14 @@ public class ApiTestSetup {
         RestAssured.port = port;
         setUpCustomer();
         setUpProduct();
+        setUpStyle();
     }
 
     @After
     public void tearDown() throws Exception {
         tearDownCustomer();
         tearDownProduct();
+        tearDownStyle();
     }
 
     @Test
@@ -136,6 +137,26 @@ public class ApiTestSetup {
                 when().delete(CATEGORY_BASE_ROUTE + DELETE_CATEGORY).
                 then().statusCode(HttpStatus.OK.value()).extract().body().as(Category.class);
         assertThat(removedCategory.getCategoryId()).isEqualTo(categoryId);
+    }
+
+    private void setUpStyle(){
+        Style validStyle = new Style("Bold");
+        Style createdStyle = given()
+                .contentType("application/json")
+                .body(validStyle)
+                .when().post(StyleControllerRoutes.STYLE_BASE_ROUTE + StyleControllerRoutes.CREATE_NEW_STYLE)
+                .then().statusCode(HttpStatus.CREATED.value()).extract().body().as(Style.class);
+        assertThat(createdStyle.getStyleId()).isNotNull();
+        assertThat(createdStyle.getStyleName()).isEqualTo(validStyle.getStyleName());
+        styleId = createdStyle.getStyleId();
+    }
+
+    private void tearDownStyle(){
+        given()
+                .pathParam("styleId", styleId)
+                .when().delete(StyleControllerRoutes.STYLE_BASE_ROUTE + StyleControllerRoutes.DELETE_STYLE)
+                .then().statusCode(HttpStatus.OK.value());
+        styleId = null;
     }
 
 }
