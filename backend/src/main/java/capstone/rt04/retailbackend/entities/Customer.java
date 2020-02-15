@@ -76,9 +76,6 @@ public class Customer implements Serializable {
     @OneToMany(cascade = CascadeType.REMOVE)
     private List<CreditCard> creditCards;
 
-    @OneToOne(cascade = CascadeType.REMOVE)
-    private Address billingAddress;
-
     @OneToMany(cascade = CascadeType.REMOVE)
     private List<Address> shippingAddresses;
     

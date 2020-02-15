@@ -11,6 +11,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.core.env.Environment;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -127,7 +128,7 @@ public class CustomerService {
         try {
             Customer customer = retrieveCustomerByEmail(email);
             if (encoder.matches(password, customer.getPassword())) {
-                if (!customer.isVerified()){
+                if (!customer.isVerified()) {
                     throw new CustomerNotVerifiedException(ErrorMessages.CUSTOMER_NOT_VERIFIED);
                 }
                 return lazyLoadCustomerFields(customer);
@@ -181,17 +182,17 @@ public class CustomerService {
         verificationCodeRepository.save(verificationCode);
         customer.setVerificationCode(verificationCode);
 
-        if (Arrays.asList(environment.getActiveProfiles()).contains("dev")){
+        if (Arrays.asList(environment.getActiveProfiles()).contains("dev")) {
             sendEmailVerificationLink(code);
         }
         return code;
     }
 
-    private void sendEmailVerificationLink(String code){
+    private void sendEmailVerificationLink(String code) {
         SimpleMailMessage msg = new SimpleMailMessage();
         msg.setTo("shawnroshan@gmail.com");
         msg.setSubject("Verify your email");
-        msg.setText("http://localhost:8080/api/customer/verify/"+code);
+        msg.setText("http://localhost:8080/api/customer/verify/" + code);
         javaMailSender.send(msg);
     }
 
@@ -254,37 +255,34 @@ public class CustomerService {
         return lazyLoadCustomerFields(customer);
     }
 
-    //sets billing address to existing shipping address, or replaces curr billing address, or saves new one
-    public Customer updateBillingAddress(Long customerId, Address billingAddress) throws CustomerNotFoundException, InputDataValidationException {
-        throwExceptionIfInvalidBean(billingAddress);
-        Customer customer = retrieveCustomerByCustomerId(customerId);
-        Address currBillingAddr = customer.getBillingAddress();
-        if (customer.getShippingAddresses().contains(billingAddress)){
-            customer.setBillingAddress(billingAddress);
-        } else if (currBillingAddr != null){ //replace billing addr
-            customer.setBillingAddress(null);
-            addressRepository.delete(currBillingAddr);
-            customer.setBillingAddress(billingAddress);
-        } else { //new
-            addressRepository.save(billingAddress);
-            customer.setBillingAddress(billingAddress);
-        }
-        return customer;
-    }
-
-    public Customer removeBillingAddress(Long customerId) throws CustomerNotFoundException {
-        Customer customer = retrieveCustomerByCustomerId(customerId);
-        Address billingaddr = customer.getBillingAddress();
-        customer.setBillingAddress(null);
-        addressRepository.delete(billingaddr);
-        return customer;
-    }
 
     public Customer addShippingAddress(Long customerId, Address shippingAddress) throws CustomerNotFoundException {
         Customer customer = retrieveCustomerByCustomerId(customerId);
         addressRepository.save(shippingAddress);
+        if (shippingAddress.isDefault()){
+            customer = setOtherAddressesToNonDefault(customerId);
+        }
+        if (shippingAddress.isBilling()){
+            customer = setOtherAddressesToNonBilling(customerId);
+        }
         customer.addShippingAddress(shippingAddress);
         return lazyLoadCustomerFields(customer);
+    }
+
+    private Customer setOtherAddressesToNonDefault(Long customerId) throws CustomerNotFoundException {
+        Customer customer = retrieveCustomerByCustomerId(customerId);
+        for (Address addr : customer.getShippingAddresses()){
+            addr.setDefault(false);
+        }
+        return customer;
+    }
+
+    private Customer setOtherAddressesToNonBilling(Long customerId) throws CustomerNotFoundException {
+        Customer customer = retrieveCustomerByCustomerId(customerId);
+        for (Address addr : customer.getShippingAddresses()){
+            addr.setBilling(false);
+        }
+        return customer;
     }
 
     public Address getShippingAddress(Long customerId, Long addressId) throws CustomerNotFoundException, AddressNotFoundException {
@@ -300,7 +298,17 @@ public class CustomerService {
     public Address updateShippingAddress(Long customerId, Address newShippingAddress) throws CustomerNotFoundException, AddressNotFoundException {
         Address addressToUpdate = getShippingAddress(customerId, newShippingAddress.getAddressId());
         addressToUpdate.setBuildingName(newShippingAddress.getBuildingName());
+
+        if (newShippingAddress.isDefault()){
+            setOtherAddressesToNonDefault(customerId);
+        }
         addressToUpdate.setDefault(newShippingAddress.isDefault());
+
+        if (newShippingAddress.isBilling()){
+            setOtherAddressesToNonBilling(customerId);
+        }
+        addressToUpdate.setBilling(newShippingAddress.isBilling());
+
         addressToUpdate.setLine1(newShippingAddress.getLine1());
         addressToUpdate.setLine2(newShippingAddress.getLine2());
         addressToUpdate.setPostalCode(newShippingAddress.getPostalCode());
@@ -314,7 +322,9 @@ public class CustomerService {
         Address shippingAddressToRemove = getShippingAddress(customerId, shippingAddressId);
 
         customer.getShippingAddresses().remove(shippingAddressToRemove);
+
         addressRepository.delete(shippingAddressToRemove);
+
         return lazyLoadCustomerFields(customer);
     }
 
@@ -411,7 +421,7 @@ public class CustomerService {
         //clear relationships with styles
         List<Style> styles = customer.getPreferredStyles();
         customer.setPreferredStyles(null);
-        for (Style style : styles){
+        for (Style style : styles) {
             style.getCustomers().remove(customer);
         }
 
@@ -424,7 +434,7 @@ public class CustomerService {
         return customer;
     }
 
-    public Customer lazyLoadCustomerFields(Customer customer){
+    public Customer lazyLoadCustomerFields(Customer customer) {
         customer.getCreditCards().size();
         customer.getShippingAddresses().size();
         customer.getMeasurements();
@@ -441,7 +451,8 @@ public class CustomerService {
 
     private <E> void throwExceptionIfInvalidBean(E entity) throws InputDataValidationException {
         Map<String, String> errorMap = validationService.generateErrorMap(entity);
-        if (errorMap != null) throw new InputDataValidationException(errorMap, entity.getClass().toString()+" is invalid!");
+        if (errorMap != null)
+            throw new InputDataValidationException(errorMap, entity.getClass().toString() + " is invalid!");
     }
 }
 
