@@ -167,4 +167,6 @@ public class CustomerController {
         Customer deletedCustomer = customerService.removeCustomer(customerId);
         return new ResponseEntity<>(deletedCustomer, HttpStatus.OK);
     }
+
+    //TODO: CRUD styles
 }

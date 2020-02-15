@@ -19,13 +19,11 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @ActiveProfiles("test")
-public class CustomerServiceTest extends CustomerProductCategoryTestSetup {
+public class CustomerServiceTest extends ServiceTestSetup {
 
 
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
@@ -184,5 +182,16 @@ public class CustomerServiceTest extends CustomerProductCategoryTestSetup {
         assertThat(validCustomer.getWishlistItems().size()).isEqualTo(0);
     }
 
+    @Test
+    public void addRemoveStyles() throws Exception {
+        Customer validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
+        customerService.addStyle(validCustomer.getCustomerId(), styleId);
+        validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
+        assertThat(validCustomer.getPreferredStyles().size()).isOne();
+        assertThat(validCustomer.getPreferredStyles().get(0).getStyleId().compareTo(styleId)).isZero();
 
+        customerService.removeStyle(validCustomer.getCustomerId(), styleId);
+        validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
+        assertThat(validCustomer.getPreferredStyles().size()).isZero();
+    }
 }

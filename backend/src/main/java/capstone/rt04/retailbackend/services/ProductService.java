@@ -312,25 +312,29 @@ public class ProductService {
     public void assignProductStock(List<Warehouse> warehouses, List<Store> stores) throws CreateNewProductStockException, InputDataValidationException, WarehouseNotFoundException {
         List<ProductVariant> productVariants = productVariantRepository.findAll();
 
-        for (Warehouse warehouse : warehouses) {
-            for (ProductVariant productVariant : productVariants) {
-                ProductStock productStock = new ProductStock(0, null, null);
-                productStock.setProductVariant(productVariant);
-                ProductStock newProductStock = createProductStock(productStock, productVariant.getProductVariantId());
+        if (warehouses != null ) {
+            for (Warehouse warehouse : warehouses) {
+                for (ProductVariant productVariant : productVariants) {
+                    ProductStock productStock = new ProductStock(0, null, null);
+                    productStock.setProductVariant(productVariant);
+                    ProductStock newProductStock = createProductStock(productStock, productVariant.getProductVariantId());
 
-                warehouse.getProductStocks().add(newProductStock);
-                newProductStock.setWarehouse(warehouse);
+                    warehouse.getProductStocks().add(newProductStock);
+                    newProductStock.setWarehouse(warehouse);
+                }
             }
         }
 
-        for (Store store : stores) {
-            for (ProductVariant productVariant : productVariants) {
-                ProductStock productStock = new ProductStock(0, null, null);
-                productStock.setProductVariant(productVariant);
-                ProductStock newProductStock = createProductStock(productStock, productVariant.getProductVariantId());
+        if (stores != null ) {
+            for (Store store : stores) {
+                for (ProductVariant productVariant : productVariants) {
+                    ProductStock productStock = new ProductStock(0, null, null);
+                    productStock.setProductVariant(productVariant);
+                    ProductStock newProductStock = createProductStock(productStock, productVariant.getProductVariantId());
 
-                store.getProductStocks().add(newProductStock);
-                newProductStock.setStore(store);
+                    store.getProductStocks().add(newProductStock);
+                    newProductStock.setStore(store);
+                }
             }
         }
     }
@@ -347,7 +351,6 @@ public class ProductService {
         Map<String, String> errorMap = validationService.generateErrorMap(productStock);
 
         if (errorMap == null) {
-
             try {
                 ProductVariant productVariant = retrieveProductVariantById(productVariantId);
                 productStock.setProductVariant(productVariant);

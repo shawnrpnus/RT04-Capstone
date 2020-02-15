@@ -6,6 +6,7 @@ import capstone.rt04.retailbackend.util.ErrorMessages;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.customer.*;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.style.StyleNotFoundException;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.core.env.Environment;
 import org.springframework.mail.SimpleMailMessage;
@@ -34,6 +35,7 @@ public class CustomerService {
     private final ValidationService validationService;
     private final ShoppingCartService shoppingCartService;
     private final ProductService productService;
+    private final StyleService styleService;
 
     private final CustomerRepository customerRepository;
     private final ReviewRepository reviewRepository;
@@ -46,7 +48,7 @@ public class CustomerService {
 
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
-    public CustomerService(JavaMailSender javaMailSender, ValidationService validationService, ShoppingCartService shoppingCartService, ProductService productService, CustomerRepository customerRepository, ReviewRepository reviewRepository, ShoppingCartItemRepository shoppingCartItemRepository, ShoppingCartRepository shoppingCartRepository, VerificationCodeRepository verificationCodeRepository, MeasurementsRepository measurementsRepository, CreditCardRepository creditCardRepository, AddressRepository addressRepository, Environment environment) {
+    public CustomerService(JavaMailSender javaMailSender, ValidationService validationService, ShoppingCartService shoppingCartService, ProductService productService, CustomerRepository customerRepository, ReviewRepository reviewRepository, ShoppingCartItemRepository shoppingCartItemRepository, ShoppingCartRepository shoppingCartRepository, VerificationCodeRepository verificationCodeRepository, MeasurementsRepository measurementsRepository, CreditCardRepository creditCardRepository, AddressRepository addressRepository, Environment environment, StyleService styleService) {
         this.javaMailSender = javaMailSender;
         this.validationService = validationService;
         this.shoppingCartService = shoppingCartService;
@@ -60,6 +62,7 @@ public class CustomerService {
         this.creditCardRepository = creditCardRepository;
         this.addressRepository = addressRepository;
         this.environment = environment;
+        this.styleService = styleService;
     }
 
     public Customer createNewCustomer(Customer customer) throws InputDataValidationException, CreateNewCustomerException {
@@ -307,6 +310,22 @@ public class CustomerService {
         return lazyLoadCustomerFields(customer);
     }
 
+    public Customer addStyle(Long customerId, Long styleId) throws CustomerNotFoundException, StyleNotFoundException {
+        Customer customer = retrieveCustomerByCustomerId(customerId);
+        Style style = styleService.retrieveStyleByStyleId(styleId);
+        customer.getPreferredStyles().add(style);
+        style.getCustomers().add(customer);
+        return lazyLoadCustomerFields(customer);
+    }
+
+    public Customer removeStyle(Long customerId, Long styleId) throws CustomerNotFoundException, StyleNotFoundException {
+        Customer customer = retrieveCustomerByCustomerId(customerId);
+        Style style = styleService.retrieveStyleByStyleId(styleId);
+        customer.getPreferredStyles().remove(style);
+        style.getCustomers().remove(customer);
+        return lazyLoadCustomerFields(customer);
+    }
+
     //method used just for test case removal
     public Customer removeCustomer(Long customerId) throws CustomerNotFoundException, CustomerCannotDeleteException {
         Customer customer = retrieveCustomerByCustomerId(customerId);
@@ -359,6 +378,13 @@ public class CustomerService {
 
         //----------------------------------------
 
+        //clear relationships with styles
+        List<Style> styles = customer.getPreferredStyles();
+        customer.setPreferredStyles(null);
+        for (Style style : styles){
+            style.getCustomers().remove(customer);
+        }
+
         customer.setWishlistItems(null);
 
         customer.setReservationCartItems(null);
@@ -379,6 +405,7 @@ public class CustomerService {
         customer.getUsedPromoCodes().size();
         customer.getReviews().size();
         customer.getVerificationCode();
+        customer.getPreferredStyles().size();
         return customer;
     }
 }

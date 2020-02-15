@@ -1,9 +1,6 @@
 package capstone.rt04.retailbackend.services;
 
-import capstone.rt04.retailbackend.entities.Category;
-import capstone.rt04.retailbackend.entities.Customer;
-import capstone.rt04.retailbackend.entities.Product;
-import capstone.rt04.retailbackend.entities.ProductVariant;
+import capstone.rt04.retailbackend.entities.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,13 +11,14 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @ActiveProfiles("test")
-public class CustomerProductCategoryTestSetup {
+public class ServiceTestSetup {
 
     protected static final String VALID_CUST_EMAIL = "tonystark@gmail.com";
 
@@ -32,9 +30,15 @@ public class CustomerProductCategoryTestSetup {
 
     @Autowired
     protected ProductService productService;
+
+    @Autowired
+    protected StyleService styleService;
+
+
     protected static Long categoryId;
     protected static Long productId;
     protected static Long productVariantId;
+    protected static Long styleId;
 
     @Before
     public void beforeEachTest() throws Exception{
@@ -60,6 +64,10 @@ public class CustomerProductCategoryTestSetup {
         ProductVariant productVariant = productService.createProductVariant(validProductVariant, product.getProductId());
         productVariantId = productVariant.getProductVariantId();
         assertThat(productVariant).isEqualTo(validProductVariant);
+
+        Style style = styleService.createNewStyle(new Style("Bold"));
+        assertThat(style.getStyleId()).isNotNull();
+        styleId = style.getStyleId();
     }
 
     @After
@@ -77,13 +85,19 @@ public class CustomerProductCategoryTestSetup {
         Category removedCategory = categoryService.deleteCategory(categoryId);
         assertThat(removedCategory.getCategoryId()).isEqualTo(categoryId);
 
+        Style styleToRemove = styleService.retrieveStyleByStyleId(styleId);
+        styleService.deleteStyle(styleToRemove);
+        List<Style> allStyles = styleService.retrieveAllStyles();
+        assertThat(allStyles.size()).isZero();
+
         productId = null;
         categoryId = null;
         productVariantId = null;
+        styleId = null;
     }
 
     @Test
     public void setup(){
-        System.out.println("Customer Product Category Setup");
+        System.out.println("Customer Product Category Style Setup");
     }
 }
