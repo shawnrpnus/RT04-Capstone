@@ -254,6 +254,32 @@ public class CustomerService {
         return lazyLoadCustomerFields(customer);
     }
 
+    //sets billing address to existing shipping address, or replaces curr billing address, or saves new one
+    public Customer updateBillingAddress(Long customerId, Address billingAddress) throws CustomerNotFoundException, InputDataValidationException {
+        throwExceptionIfInvalidBean(billingAddress);
+        Customer customer = retrieveCustomerByCustomerId(customerId);
+        Address currBillingAddr = customer.getBillingAddress();
+        if (customer.getShippingAddresses().contains(billingAddress)){
+            customer.setBillingAddress(billingAddress);
+        } else if (currBillingAddr != null){ //replace billing addr
+            customer.setBillingAddress(null);
+            addressRepository.delete(currBillingAddr);
+            customer.setBillingAddress(billingAddress);
+        } else { //new
+            addressRepository.save(billingAddress);
+            customer.setBillingAddress(billingAddress);
+        }
+        return customer;
+    }
+
+    public Customer removeBillingAddress(Long customerId) throws CustomerNotFoundException {
+        Customer customer = retrieveCustomerByCustomerId(customerId);
+        Address billingaddr = customer.getBillingAddress();
+        customer.setBillingAddress(null);
+        addressRepository.delete(billingaddr);
+        return customer;
+    }
+
     public Customer addShippingAddress(Long customerId, Address shippingAddress) throws CustomerNotFoundException {
         Customer customer = retrieveCustomerByCustomerId(customerId);
         addressRepository.save(shippingAddress);
@@ -411,6 +437,11 @@ public class CustomerService {
         customer.getVerificationCode();
         customer.getPreferredStyles().size();
         return customer;
+    }
+
+    private <E> void throwExceptionIfInvalidBean(E entity) throws InputDataValidationException {
+        Map<String, String> errorMap = validationService.generateErrorMap(entity);
+        if (errorMap != null) throw new InputDataValidationException(errorMap, entity.getClass().toString()+" is invalid!");
     }
 }
 
