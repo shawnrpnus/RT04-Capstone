@@ -8,6 +8,7 @@ import capstone.rt04.retailbackend.util.exceptions.customer.CustomerNotFoundExce
 import capstone.rt04.retailbackend.util.exceptions.staff.CreateNewStaffAccountException;
 import capstone.rt04.retailbackend.util.exceptions.staff.CreateNewStaffException;
 import capstone.rt04.retailbackend.util.exceptions.staff.StaffNotFoundException;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.core.env.Environment;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -62,7 +63,7 @@ public class StaffService {
     //staff entity: first name, last name, nric, username&password(to be configured by admin),leave remaining
     //for HR to create staff. HR supplies, first name, last name, nric, address, bank details,
     //role, department.
-    public Staff createNewStaff (Staff staff,Address staffAddress,BankDetails bankDetails) throws InputDataValidationException, CreateNewStaffException {
+    public Staff createNewStaff (Staff staff,Address staffAddress) throws InputDataValidationException, CreateNewStaffException {
         validationService.throwExceptionIfInvalidBean(staff);
 
         try{
@@ -80,11 +81,10 @@ public class StaffService {
             }
 
             //If staff does not exist
-            //Persist address, bank details and staff. Link staff to address and bank details
+            //Persist address and staff. Link staff to address
             addressRepository.save(staffAddress);
             Staff savedStaff = staffRepository.save(staff);
             savedStaff.setAddress(staffAddress);
-            savedStaff.setBankDetails(bankDetails);
             return lazyLoadStaffFields(savedStaff);
 
 
@@ -102,18 +102,8 @@ public class StaffService {
             staff.setUsername(staffID.toString());
 
             //generate random password
-            String Capital_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-            String Small_chars = "abcdefghijklmnopqrstuvwxyz";
-            String numbers = "0123456789";
-            String symbols = "!@#$%^&*_=+-/.?<>)";
-            String values = Capital_chars + Small_chars + numbers + symbols;
-            Random rndm_method = new Random();
-            char[] password = new char[12];
-            for (int i = 0; i < 12; i++) {
-                password[i] = values.charAt(rndm_method.nextInt(values.length()));
-
-            }
-            staff.setPassword(new String(password));
+            String password = RandomStringUtils.randomAlphanumeric(32);
+            staff.setPassword(password);
 
             return staff;
         }catch (StaffNotFoundException ex){
