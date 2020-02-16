@@ -50,7 +50,6 @@ public class TagService {
                 throw new CreateNewTagException("Error creating new tag: " + ex.getMessage());
             }
         } else {
-            System.out.println("DID THIS HAPPEN");
             throw new InputDataValidationException(errorMap, "Invalid Tag");
         }
 

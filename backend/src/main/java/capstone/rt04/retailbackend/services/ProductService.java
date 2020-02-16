@@ -8,6 +8,7 @@ import capstone.rt04.retailbackend.repositories.ProductVariantRepository;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.category.CategoryNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.product.*;
+import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.warehouse.WarehouseNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -309,24 +310,29 @@ public class ProductService {
      *
      * @return void
      */
-    public void assignProductStock(List<Warehouse> warehouses, List<Store> stores) throws CreateNewProductStockException, InputDataValidationException, WarehouseNotFoundException {
+    public void assignProductStock(List<Warehouse> warehouses, List<Store> stores) throws CreateNewProductStockException, InputDataValidationException, WarehouseNotFoundException, StoreNotFoundException {
         List<ProductVariant> productVariants = productVariantRepository.findAll();
 
         if (warehouses != null ) {
             for (Warehouse warehouse : warehouses) {
+                Warehouse realW = warehouseService.retrieveWarehouseById(warehouse.getWarehouseId());
+                warehouseService.lazyLoadWarehouseFields(realW);
                 for (ProductVariant productVariant : productVariants) {
-                    ProductStock productStock = new ProductStock(0, null, null);
+                    ProductStock productStock = new ProductStock(0, 0, 0);
                     productStock.setProductVariant(productVariant);
                     ProductStock newProductStock = createProductStock(productStock, productVariant.getProductVariantId());
 
-                    warehouse.getProductStocks().add(newProductStock);
-                    newProductStock.setWarehouse(warehouse);
+//                    System.out.println("QWERQWERQWERQWER" + warehouse.getProductStocks().size());
+                    realW.getProductStocks().add(newProductStock);
+                    newProductStock.setWarehouse(realW);
                 }
             }
         }
 
         if (stores != null ) {
-            for (Store store : stores) {
+            for (Store s : stores) {
+                Store store = storeService.retrieveStoreById(s.getStoreId());
+                storeService.lazyLoadStoreFields(store);
                 for (ProductVariant productVariant : productVariants) {
                     ProductStock productStock = new ProductStock(0, null, null);
                     productStock.setProductVariant(productVariant);
@@ -349,7 +355,7 @@ public class ProductService {
     public ProductStock createProductStock(ProductStock productStock, Long productVariantId) throws InputDataValidationException, CreateNewProductStockException {
 
         Map<String, String> errorMap = validationService.generateErrorMap(productStock);
-
+        System.out.println(errorMap + "HI WHERE DID I GO WRONG");
         if (errorMap == null) {
             try {
                 ProductVariant productVariant = retrieveProductVariantById(productVariantId);
