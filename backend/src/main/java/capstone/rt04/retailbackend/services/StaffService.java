@@ -5,6 +5,7 @@ import capstone.rt04.retailbackend.repositories.*;
 import capstone.rt04.retailbackend.util.ErrorMessages;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.customer.CustomerNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.staff.CreateNewStaffAccountException;
 import capstone.rt04.retailbackend.util.exceptions.staff.CreateNewStaffException;
 import capstone.rt04.retailbackend.util.exceptions.staff.StaffNotFoundException;
 import org.springframework.core.env.Environment;
@@ -14,7 +15,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.PersistenceException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 @Service
 @Transactional
@@ -58,9 +61,10 @@ public class StaffService {
         this.rosterRepository = rosterRepository;
     }
 
-//staff entity: first name, last name, nric, username&password(to be configured by admin),leave remaining
-//for HR to create the staff.
-    public Staff createNewStaff (Staff staff) throws InputDataValidationException, CreateNewStaffException {
+    //staff entity: first name, last name, nric, username&password(to be configured by admin),leave remaining
+    //for HR to create staff. HR supplies, first name, last name, nric, address, bank details,
+    //role, department.
+    public Staff createNewStaff (Staff staff,Address staffAddress,BankDetails bankDetails) throws InputDataValidationException, CreateNewStaffException {
         validationService.throwExceptionIfInvalidBean(staff);
 
         try{
@@ -77,14 +81,67 @@ public class StaffService {
                 throw new InputDataValidationException(errorMap, ErrorMessages.NRIC_TAKEN);
             }
 
+            //If staff does not exist
+            //Persist address, bank details and staff. Link staff to address and bank details
+            addressRepository.save(staffAddress);
+            bankDetailsRepository.save(bankDetails);
             Staff savedStaff = staffRepository.save(staff);
-            return lazyLoadStaffFields(staff);
+            savedStaff.setAddress(staffAddress);
+            savedStaff.setBankDetails(bankDetails);
+            return lazyLoadStaffFields(savedStaff);
 
 
         } catch (PersistenceException ex) {
             System.out.println(ex.getMessage());
             throw new CreateNewStaffException("Error creating new staff");
         }
+    }
+
+    //staff username will be unique ID
+    public Staff createNewStaffAccount(Long staffID) throws CreateNewStaffAccountException {
+
+        try {
+            Staff staff = retrieveStaffByStaffId(staffID);
+            staff.setUsername(staffID.toString());
+
+            //generate random password
+            String Capital_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            String Small_chars = "abcdefghijklmnopqrstuvwxyz";
+            String numbers = "0123456789";
+            String symbols = "!@#$%^&*_=+-/.?<>)";
+            String values = Capital_chars + Small_chars + numbers + symbols;
+            Random rndm_method = new Random();
+            char[] password = new char[12];
+            for (int i = 0; i < 12; i++) {
+                password[i] = values.charAt(rndm_method.nextInt(values.length()));
+
+            }
+            staff.setPassword(new String(password));
+
+            return staff;
+        }catch (StaffNotFoundException ex){
+            throw new CreateNewStaffAccountException("Staff does not exist");
+        }
+
+    }
+
+    //for HR to retrieve all staff
+    public List<Staff> retrieveAllStaff() {
+        List<Staff> allStaff= staffRepository.findAll();
+
+        for (Staff staff : allStaff) {
+            staff.getLeaves().size();
+            staff.getRepliedReviews().size();
+            staff.getRoster();
+            staff.getRole();
+            staff.getDepartment();
+            staff.getPayrolls().size();
+            staff.getDeliveries().size();
+            staff.getBankDetails();
+            staff.getAddress();
+            staff.getAdvertisements().size();
+        }
+        return allStaff;
     }
 
     public Staff retrieveStaffByStaffId(Long staffId) throws StaffNotFoundException {
@@ -111,8 +168,6 @@ public class StaffService {
     }
 
     private Staff lazyLoadStaffFields(Staff staff) {
-        staff.getAddress();
-        staff.getBankDetails();
         staff.getAdvertisements().size();
         staff.getDeliveries().size();
         staff.getLeaves().size();
