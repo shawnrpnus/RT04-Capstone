@@ -27,7 +27,7 @@ public class CustomerControllerRoutes {
     public static final String CLEAR_WISHLIST = "/clearWishlist";
     public static final String ADD_STYLE = "/addStyle";
     public static final String REMOVE_STYLE = "/removeStyle";
-    public static final String UPDATE_SHOPPING_CART = "/addToShoppingCart";
+    public static final String UPDATE_SHOPPING_CART = "/updateShoppingCart";
     public static final String CLEAR_SHOPPING_CART = "/clearShoppingCart";
     public static final String ADD_TO_RESERVATION_CART = "/addToReservationCart";
     public static final String REMOVE_FROM_RESERVATION_CART = "/removeFromReservationCart";
