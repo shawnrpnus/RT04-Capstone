@@ -29,7 +29,7 @@ import java.util.List;
 @Getter
 @Setter
 @EqualsAndHashCode
-@ToString(exclude = "category")
+@ToString(exclude = {"category"})
 @JsonIdentityInfo(generator = JSOGGenerator.class)
 
 public class Product implements Serializable {
@@ -106,6 +106,22 @@ public class Product implements Serializable {
                 if(!tag.getProducts().contains(this))
                 {
                     tag.getProducts().add(this);
+                }
+            }
+        }
+    }
+
+    public void addPromoCode(PromoCode promoCode)
+    {
+        if(promoCode != null)
+        {
+            if(!this.promoCodes.contains(promoCode))
+            {
+                this.promoCodes.add(promoCode);
+
+                if(!promoCode.getProducts().contains(this))
+                {
+                    promoCode.getProducts().add(this);
                 }
             }
         }

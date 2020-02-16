@@ -39,6 +39,7 @@ public class ServiceTestSetup {
     protected static Long productId;
     protected static Long productVariantId;
     protected static Long styleId;
+    protected static Long createdCustomerId;
 
     @Before
     public void beforeEachTest() throws Exception{
@@ -48,6 +49,7 @@ public class ServiceTestSetup {
         assertThat(testValidCustomer).isEqualTo(expectedValidCustomer);
         assertThat(testValidCustomer.getOnlineShoppingCart()).isNotNull();
         assertThat(testValidCustomer.getInStoreShoppingCart()).isNotNull();
+        createdCustomerId = testValidCustomer.getCustomerId();
 
         Product validProduct = new Product("Fila Disruptor II", "Fila", BigDecimal.valueOf(89.90), BigDecimal.valueOf(39.90));
         Category category = categoryService.createNewCategory(new Category("Shoes"), null);
@@ -72,9 +74,8 @@ public class ServiceTestSetup {
 
     @After
     public void afterEachTest() throws Exception{
-        Customer validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
-        Customer removedCustomer = customerService.removeCustomer(validCustomer.getCustomerId());
-        assertThat(removedCustomer.getCustomerId()).isEqualTo(validCustomer.getCustomerId());
+        Customer removedCustomer = customerService.removeCustomer(createdCustomerId);
+        assertThat(removedCustomer.getCustomerId()).isEqualTo(createdCustomerId);
 
         Product productToRemove = productService.retrieveProductById(productId);
         Product removedProduct = productService.deleteProduct(productToRemove.getProductId()); //deletes prod variant also
@@ -94,6 +95,7 @@ public class ServiceTestSetup {
         categoryId = null;
         productVariantId = null;
         styleId = null;
+        createdCustomerId = null;
     }
 
     @Test

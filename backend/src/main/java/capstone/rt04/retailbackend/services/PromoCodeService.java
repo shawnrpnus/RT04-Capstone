@@ -5,13 +5,12 @@ import capstone.rt04.retailbackend.entities.PromoCode;
 import capstone.rt04.retailbackend.repositories.PromoCodeRepository;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductNotFoundException;
-import capstone.rt04.retailbackend.util.exceptions.promoCode.CreateNewPromoCodeException;
 import capstone.rt04.retailbackend.util.exceptions.promoCode.PromoCodeNotFoundException;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -29,30 +28,35 @@ public class PromoCodeService {
         this.promoCodeRepository = promoCodeRepository;
     }
 
-    public PromoCode createNewPromoCode(PromoCode promoCode, List<Long> productIds) throws ProductNotFoundException, CreateNewPromoCodeException, InputDataValidationException {
+    public PromoCode createNewPromoCode(PromoCode promoCode) throws InputDataValidationException, ProductNotFoundException {
+
         Map<String, String> errorMap = validationService.generateErrorMap(promoCode);
 
-        if(errorMap == null) {
+        if (errorMap == null) {
             try {
-                List<Product> products = new LinkedList<>();
-                promoCode = promoCodeRepository.save(promoCode);
-                if(!productIds.isEmpty()) {
-                    products = productService.retrieveListOfProductsById(productIds);
-                    for(Product p : products) {
-                        promoCode.addProduct(p);
-                    }
+                List<Product> products = new ArrayList<>(promoCode.getProducts());
+                Product product = null;
+
+                for (Product prod : products) {
+                    promoCode.addProduct(prod);
+                    product = productService.retrieveProductById(prod.getProductId());
+                    product.addPromoCode(promoCode);
+                    promoCode.addProduct(product);
                 }
+
+                promoCodeRepository.save(promoCode);
                 return promoCode;
-            }catch (Exception ex) {
-                throw new CreateNewPromoCodeException("Error creating new category");
+            } catch (ProductNotFoundException ex) {
+                throw new ProductNotFoundException("Unable to find certain products to link to the promo code " + ex.getMessage());
             }
         } else {
             throw new InputDataValidationException(errorMap, "Invalid Promo Code");
         }
+
     }
 
     public PromoCode updatePromoCode(PromoCode newPromoCode) throws PromoCodeNotFoundException {
-        PromoCode promoCode = retrievePromoCodeById(newPromoCode.getPromoCodeId());
+        PromoCode promoCode = retrievePromoCodeByIds(newPromoCode.getPromoCodeId());
 
         promoCode.setFlatDiscount(newPromoCode.getFlatDiscount());
         promoCode.setMinimumPurchase(newPromoCode.getMinimumPurchase());
@@ -65,23 +69,32 @@ public class PromoCodeService {
     }
 
     public PromoCode deletePromoCode(Long promoCodeId) throws PromoCodeNotFoundException {
-        PromoCode promoCodeToRemove = retrievePromoCodeById(promoCodeId);
-        for(Product p : promoCodeToRemove.getProducts()) {
-            p.getPromoCodes().remove(promoCodeToRemove);
+        PromoCode promoCodeToRemove = retrievePromoCodeByIds(promoCodeId);
+        for (Product product : promoCodeToRemove.getProducts()) {
+            product.getPromoCodes().remove(promoCodeToRemove);
         }
-        promoCodeToRemove.getProducts().clear();
-
+        promoCodeToRemove.setProducts(null);
         promoCodeRepository.delete(promoCodeToRemove);
 
         return promoCodeToRemove;
-
     }
 
-    public PromoCode retrievePromoCodeById(Long promoCodeId) throws PromoCodeNotFoundException {
-
+    public PromoCode retrievePromoCodeByIds(Long promoCodeId) throws PromoCodeNotFoundException {
         PromoCode promoCode = promoCodeRepository.findById(promoCodeId)
                 .orElseThrow(() -> new PromoCodeNotFoundException("Promo code " + promoCodeId + " not found!"));
-
+        promoCode.getProducts().size();
         return promoCode;
+    }
+
+    public List<PromoCode> retrieveListOfPromoCodesByIds(List<Long> promoCodeIds) {
+        List<PromoCode> promoCodes = (List<PromoCode>) promoCodeRepository.findAllById(promoCodeIds);
+        return lazilyLoadPromoCode(promoCodes);
+    }
+
+    private List<PromoCode> lazilyLoadPromoCode(List<PromoCode> promoCodes) {
+        for (PromoCode promoCode : promoCodes) {
+            promoCode.getProducts().size();
+        }
+        return promoCodes;
     }
 }

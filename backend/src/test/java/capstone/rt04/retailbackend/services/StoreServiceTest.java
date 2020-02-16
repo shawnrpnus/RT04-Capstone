@@ -1,7 +1,5 @@
 package capstone.rt04.retailbackend.services;
 
-import capstone.rt04.retailbackend.entities.Category;
-import capstone.rt04.retailbackend.entities.Product;
 import capstone.rt04.retailbackend.entities.Store;
 import org.junit.After;
 import org.junit.Before;
@@ -62,9 +60,26 @@ public class StoreServiceTest {
     }
 
     @Test
+    public void retrieveStoreById() throws Exception {
+        Store store = storeService.retrieveStoreById(storeId);
+        //changed from store.toString() as has lazy initalization exception
+        System.out.println(store.getOpeningTime().toString());
+    }
+
+    @Test
     public void retrieveAllStores() throws Exception {
         List<Store> allStores = storeService.retrieveAllStores();
         assertThat(allStores).isNotNull();
+    }
+
+    @Test
+    public void updateStore() throws Exception {
+        Store store = new Store(6, Time.valueOf("11:00:00"), Time.valueOf("21:00:00"), 2, 8, null);
+        Store newStore = storeService.createNewStore(store);
+        System.out.println(newStore.getStoreId());
+        newStore.setNumAssistants(6);
+        Store updatedStore = storeService.updateStore(newStore);
+        assertThat(newStore.getStoreId()).isEqualTo(updatedStore.getStoreId());
     }
 
     @Test
@@ -78,12 +93,6 @@ public class StoreServiceTest {
         assertThat(storeNumberBeforeDeletion).isNotEqualTo(storeNumberAfterDeletion);
     }
 
-    @Test
-    public void retrieveStoreById() throws Exception {
-        Store store = storeService.retrieveStoreById(storeId);
-        //changed from store.toString() as has lazy initalization exception
-        System.out.println(store.getOpeningTime().toString());
-    }
 }
 
 

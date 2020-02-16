@@ -6,6 +6,8 @@ import capstone.rt04.retailbackend.util.exceptions.discount.DiscountNotFoundExce
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Transactional
 public class DiscountService {
@@ -19,7 +21,18 @@ public class DiscountService {
     public Discount retrieveDiscountById(Long discountId) throws DiscountNotFoundException {
         Discount discount = discountRepository.findById(discountId)
                 .orElseThrow(() -> new DiscountNotFoundException("Discount " + discountId + "not found!"));
-
         return discount;
+    }
+
+    public List<Discount> retrieveListOfDiscountsByIds(List<Long> discountIds) {
+        List<Discount> discounts = (List<Discount>) discountRepository.findAllById(discountIds);
+        return lazilyLoadDiscounts(discounts);
+    }
+
+    private List<Discount> lazilyLoadDiscounts(List<Discount> discounts) {
+        for(Discount discount:discounts) {
+            discount.getProducts().size();
+        }
+        return discounts;
     }
 }

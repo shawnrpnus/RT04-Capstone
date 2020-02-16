@@ -10,6 +10,7 @@ import capstone.rt04.retailbackend.util.exceptions.store.StoreCannotDeleteExcept
 import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.store.StoreUnableToUpdateException;
 import capstone.rt04.retailbackend.util.exceptions.warehouse.WarehouseNotFoundException;
+import jdk.internal.util.xml.impl.Input;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -76,39 +77,50 @@ public class StoreService {
 
     //edit store details: update existing store information
     //numChangingRooms, openingTime, closingTime, numManagers, numAssistants, address
-    public Store updateStore(Store store) throws StoreUnableToUpdateException {
-        try {
-            Store storeToUpdate = retrieveStoreById(store.getStoreId());
-            if (storeToUpdate.equals(store)) {
-                throw new StoreUnableToUpdateException("Store has nothing to update");
+    public Store updateStore(Store store) throws StoreUnableToUpdateException, InputDataValidationException {
+        Map<String, String> errorMap = validationService.generateErrorMap(store);
+        if (errorMap == null) {
+            try {
+                Store storeToUpdate = retrieveStoreById(store.getStoreId());
+                if (storeToUpdate.equals(store)) {
+                    throw new StoreUnableToUpdateException("Store has nothing to update");
+                }
+                //Integer: numChangingRooms, numManagers, numAssistants
+                if (storeToUpdate.getNumChangingRooms() != store.getNumChangingRooms() && storeToUpdate.getNumChangingRooms() > 0) {
+                    storeToUpdate.setNumChangingRooms(store.getNumChangingRooms());
+                }
+                if (storeToUpdate.getNumAssistants() != store.getNumAssistants() && storeToUpdate.getNumAssistants() > 0) {
+                    storeToUpdate.setNumAssistants(store.getNumAssistants());
+                }
+                if(storeToUpdate.getNumManagers() != store.getNumManagers() && storeToUpdate.getNumManagers() > 0) {
+                    storeToUpdate.setNumManagers(store.getNumManagers());
+                }
+                //Time: openingTime, closingTime
+                if (!storeToUpdate.getOpeningTime().toString().equals(store.getOpeningTime().toString())) {
+                    storeToUpdate.setOpeningTime(store.getOpeningTime());
+                }
+                if (!storeToUpdate.getClosingTime().toString().equals(store.getClosingTime().toString())) {
+                    storeToUpdate.setClosingTime(store.getClosingTime());
+                }
+                //Address
+                //initially did not set address but update store with address
+                if (storeToUpdate.getAddress() == null && store.getAddress() != null) {
+                    storeToUpdate.setAddress(store.getAddress());
+                }
+                //initially set address and made changes to the address
+                if (storeToUpdate.getAddress() != null && store.getAddress() != null) {
+                    if (storeToUpdate.getAddress() != store.getAddress()) {
+                        storeToUpdate.setAddress(store.getAddress());
+                    }
+                }
+                storeRepository.save(storeToUpdate);
+                return storeToUpdate;
+            } catch (StoreNotFoundException ex) {
+                throw new StoreUnableToUpdateException("Unable to update store as store cannot be found");
             }
-            //Integer: numChangingRooms, numManagers, numAssistants
-            if (storeToUpdate.getNumChangingRooms() != store.getNumChangingRooms()) {
-                storeToUpdate.setNumChangingRooms(store.getNumChangingRooms());
-            }
-            if (storeToUpdate.getNumAssistants() != store.getNumAssistants()) {
-                storeToUpdate.setNumAssistants(store.getNumAssistants());
-            }
-            if(storeToUpdate.getNumManagers() != store.getNumManagers()) {
-                storeToUpdate.setNumManagers(store.getNumManagers());
-            }
-            //Time: openingTime, closingTime
-            if (!storeToUpdate.getOpeningTime().toString().equals(store.getOpeningTime().toString())) {
-                storeToUpdate.setOpeningTime(store.getOpeningTime());
-            }
-            if (!storeToUpdate.getClosingTime().toString().equals(store.getClosingTime().toString())) {
-                storeToUpdate.setClosingTime(store.getClosingTime());
-            }
-            //Address
-            if (!storeToUpdate.getAddress().equals(store.getAddress())) {
-                storeToUpdate.setAddress(store.getAddress());
-            }
-            storeRepository.save(storeToUpdate);
-            return storeToUpdate;
-        } catch (StoreNotFoundException ex) {
-            throw new StoreUnableToUpdateException("Unable to update store as store cannot be found");
+        } else {
+            throw new InputDataValidationException(errorMap, "Invalid data");
         }
-
     }
 
     public Store deleteStore(Long storeId) throws StoreNotFoundException, StoreCannotDeleteException {
