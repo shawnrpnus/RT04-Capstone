@@ -197,31 +197,57 @@ public class CustomerServiceTest extends ServiceTestSetup {
 
     @Test
     public void crudWishlistItems() throws Exception{
+        //add
         Customer validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
         customerService.addProductToWishlist(validCustomer.getCustomerId(), productVariantId);
         validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
         assertThat(validCustomer.getWishlistItems().size()).isEqualTo(1);
         assertThat(validCustomer.getWishlistItems().get(0).getProductVariantId()).isEqualTo(productVariantId);
 
+        //remove
         customerService.removeProductFromWishlist(validCustomer.getCustomerId(), productVariantId);
         validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
         assertThat(validCustomer.getWishlistItems().size()).isEqualTo(0);
 
+        //add again
         customerService.addProductToWishlist(validCustomer.getCustomerId(), productVariantId);
         validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
         assertThat(validCustomer.getWishlistItems().size()).isEqualTo(1);
         assertThat(validCustomer.getWishlistItems().get(0).getProductVariantId()).isEqualTo(productVariantId);
 
+        //add to shopping cart
         customerService.addWishlistToShoppingCart(validCustomer.getCustomerId());
         validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
         assertThat(validCustomer.getOnlineShoppingCart().getShoppingCartItems().size()).isEqualTo(1);
         assertThat(validCustomer.getOnlineShoppingCart().getShoppingCartItems().get(0)
                 .getProductVariant().getProductVariantId()).isEqualTo(productVariantId);
 
-
+        //clear
         customerService.clearWishList(validCustomer.getCustomerId());
         validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
         assertThat(validCustomer.getWishlistItems().size()).isEqualTo(0);
+    }
+
+    @Test
+    public void crudReservationCartItems() throws Exception{
+        Customer validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
+        customerService.addProductToReservationCart(validCustomer.getCustomerId(), productVariantId);
+        validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
+        assertThat(validCustomer.getReservationCartItems().size()).isEqualTo(1);
+        assertThat(validCustomer.getReservationCartItems().get(0).getProductVariantId()).isEqualTo(productVariantId);
+
+        customerService.removeProductFromReservationCart(validCustomer.getCustomerId(), productVariantId);
+        validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
+        assertThat(validCustomer.getReservationCartItems().size()).isEqualTo(0);
+
+        customerService.addProductToReservationCart(validCustomer.getCustomerId(), productVariantId);
+        validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
+        assertThat(validCustomer.getReservationCartItems().size()).isEqualTo(1);
+        assertThat(validCustomer.getReservationCartItems().get(0).getProductVariantId()).isEqualTo(productVariantId);
+
+        customerService.clearReservationCart(validCustomer.getCustomerId());
+        validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
+        assertThat(validCustomer.getReservationCartItems().size()).isEqualTo(0);
     }
 
     @Test

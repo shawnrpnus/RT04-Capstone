@@ -427,6 +427,27 @@ public class CustomerService {
         return lazyLoadCustomerFields(customer);
     }
 
+    public Customer addProductToReservationCart(Long customerId, Long productVariantId) throws CustomerNotFoundException, ProductVariantNotFoundException {
+        Customer customer = retrieveCustomerByCustomerId(customerId);
+        ProductVariant productVariant = productService.retrieveProductVariantById(productVariantId);
+        customer.getReservationCartItems().add(productVariant);
+        return lazyLoadCustomerFields(customer);
+    }
+
+    public Customer removeProductFromReservationCart(Long customerId, Long productVariantId) throws ProductVariantNotFoundException, CustomerNotFoundException {
+        Customer customer = retrieveCustomerByCustomerId(customerId);
+        ProductVariant productVariant = productService.retrieveProductVariantById(productVariantId);
+        customer.getReservationCartItems().remove(productVariant);
+        return lazyLoadCustomerFields(customer);
+    }
+
+    public Customer clearReservationCart(Long customerId) throws CustomerNotFoundException {
+        Customer customer = retrieveCustomerByCustomerId(customerId);
+        customer.setReservationCartItems(new ArrayList<>());
+        return lazyLoadCustomerFields(customer);
+    }
+
+
     //method used just for test case removal
     public Customer removeCustomer(Long customerId) throws CustomerNotFoundException, CustomerCannotDeleteException {
         Customer customer = retrieveCustomerByCustomerId(customerId);
@@ -507,6 +528,7 @@ public class CustomerService {
         customer.getReviews().size();
         customer.getVerificationCode();
         customer.getPreferredStyles().size();
+        customer.getReservationCartItems().size();
         if (customer.getOnlineShoppingCart() != null) {
             customer.getOnlineShoppingCart().getShoppingCartItems().size();
             for (ShoppingCartItem sci : customer.getOnlineShoppingCart().getShoppingCartItems()) {

@@ -270,5 +270,23 @@ public class CustomerController {
         return new ResponseEntity<>(customer, HttpStatus.OK);
     }
 
+    @PostMapping(CustomerControllerRoutes.ADD_TO_RESERVATION_CART)
+    public ResponseEntity<?> addtoReservationCart(@RequestParam Long customerId, @RequestParam Long productVariantId) throws CustomerNotFoundException, ProductVariantNotFoundException {
+        Customer customer = customerService.addProductToReservationCart(customerId, productVariantId);
+        return new ResponseEntity<>(customer, HttpStatus.OK);
+    }
+
+    @PostMapping(CustomerControllerRoutes.REMOVE_FROM_RESERVATION_CART)
+    public ResponseEntity<?> removeFromReservationCart(@RequestParam Long customerId, @RequestParam Long productVariantId) throws ProductVariantNotFoundException, CustomerNotFoundException {
+        Customer customer = customerService.removeProductFromReservationCart(customerId, productVariantId);
+        return new ResponseEntity<>(customer, HttpStatus.OK);
+    }
+
+    @PostMapping(CustomerControllerRoutes.CLEAR_RESERVATION_CART)
+    public ResponseEntity<?> clearReservationCart(@RequestParam Long customerId) throws CustomerNotFoundException {
+        Customer customer = customerService.clearReservationCart(customerId);
+        return new ResponseEntity<>(customer, HttpStatus.OK);
+    }
+
 
 }

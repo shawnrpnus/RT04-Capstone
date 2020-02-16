@@ -395,4 +395,41 @@ public class CustomerControllerTest extends ApiTestSetup {
         assertThat(customer.getOnlineShoppingCart().getShoppingCartItems().size()).isEqualTo(0);
     }
 
+    @Test
+    public void addRemoveClearReservationCart(){
+
+        addToReservationCart();
+
+        Customer customer = given()
+                .queryParam("customerId", createdCustomerId)
+                .queryParam("productVariantId", productVariantId)
+                .when().post(CUSTOMER_BASE_ROUTE + REMOVE_FROM_RESERVATION_CART)
+                .then().statusCode(HttpStatus.OK.value()).extract().body().as(Customer.class);
+        assertThat(customer.getCustomerId()).isEqualTo(createdCustomerId);
+        assertThat(customer.getReservationCartItems().size()).isEqualTo(0);
+
+        addToReservationCart();
+
+
+        customer = given()
+                .queryParam("customerId", createdCustomerId)
+                .when().post(CUSTOMER_BASE_ROUTE + CLEAR_RESERVATION_CART)
+                .then().statusCode(HttpStatus.OK.value()).extract().body().as(Customer.class);
+        assertThat(customer.getCustomerId()).isEqualTo(createdCustomerId);
+        assertThat(customer.getReservationCartItems().size()).isEqualTo(0);
+
+    }
+
+    private void addToReservationCart(){
+        Customer customer = given()
+                .queryParam("customerId", createdCustomerId)
+                .queryParam("productVariantId", productVariantId)
+                .when().post(CUSTOMER_BASE_ROUTE + ADD_TO_RESERVATION_CART)
+                .then().statusCode(HttpStatus.OK.value()).extract().body().as(Customer.class);
+        assertThat(customer.getCustomerId()).isEqualTo(createdCustomerId);
+        assertThat(customer.getReservationCartItems().size()).isEqualTo(1);
+        assertThat(customer.getReservationCartItems().get(0).getProductVariantId()).isNotNull();
+        assertThat(customer.getReservationCartItems().get(0).getProductVariantId().compareTo(productVariantId)).isZero();
+    }
+
 }
