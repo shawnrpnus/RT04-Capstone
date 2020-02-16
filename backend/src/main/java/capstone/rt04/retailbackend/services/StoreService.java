@@ -38,7 +38,7 @@ public class StoreService {
         this.inStoreRestockOrderRepository = inStoreRestockOrderRepository;
     }
 
-    public Store createNewStore(Store store) throws CreateNewProductStockException, WarehouseNotFoundException, InputDataValidationException {
+    public Store createNewStore(Store store) throws CreateNewProductStockException, WarehouseNotFoundException, InputDataValidationException, StoreNotFoundException {
             Map<String, String> errorMap = validationService.generateErrorMap(store);
 
             if (errorMap == null) {
@@ -186,4 +186,16 @@ public class StoreService {
         storeRepository.delete(storeToDelete);
         return storeToDelete;
     }
+
+    public Store lazyLoadStoreFields(Store store) {
+        store.getInStoreRestockOrders().size();
+        store.getProductStocks().size();
+        store.getReservations().size();
+        store.getRosters().size();
+        store.getTransactions().size();
+        store.getAddress();
+
+        return store;
+    }
+
 }

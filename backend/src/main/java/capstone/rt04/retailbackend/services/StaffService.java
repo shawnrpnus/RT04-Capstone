@@ -5,9 +5,7 @@ import capstone.rt04.retailbackend.repositories.*;
 import capstone.rt04.retailbackend.util.ErrorMessages;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.customer.CustomerNotFoundException;
-import capstone.rt04.retailbackend.util.exceptions.staff.CreateNewStaffAccountException;
-import capstone.rt04.retailbackend.util.exceptions.staff.CreateNewStaffException;
-import capstone.rt04.retailbackend.util.exceptions.staff.StaffNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.staff.*;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.core.env.Environment;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -64,8 +62,9 @@ public class StaffService {
     //staff entity: first name, last name, nric, username&password(to be configured by admin),leave remaining
     //for HR to create staff. HR supplies, first name, last name, nric, address, bank details,
     //role, department.
-    public Staff createNewStaff (Staff staff,Address staffAddress) throws InputDataValidationException, CreateNewStaffException {
+    public Staff createNewStaff (Staff staff,Address staffAddress, Role role, Department department) throws InputDataValidationException, CreateNewStaffException {
         validationService.throwExceptionIfInvalidBean(staff);
+        validationService.throwExceptionIfInvalidBean(staffAddress);
 
         try{
            Staff existingStaff = null;
@@ -82,10 +81,13 @@ public class StaffService {
             }
 
             //If staff does not exist
-            //Persist address and staff. Link staff to address
+            //Role and department already created beforehand
+            //Only address is new
             addressRepository.save(staffAddress);
             Staff savedStaff = staffRepository.save(staff);
             savedStaff.setAddress(staffAddress);
+            savedStaff.setRole(role);
+            savedStaff.setDepartment(department);
             return lazyLoadStaffFields(savedStaff);
 
 
@@ -95,6 +97,7 @@ public class StaffService {
         }
     }
 
+    //For admin to configure staff account
     //staff username will be unique ID
     public Staff createNewStaffAccount(Long staffID) throws CreateNewStaffAccountException {
 
@@ -155,13 +158,35 @@ public class StaffService {
         return lazyLoadStaffFields(staff);
     }
 
+    //For HR to update first name, last name, NRIC, bank details, department , role, address
+    public Staff updateStaffDetails(Staff staff, Role role, Department department, Address address)throws UpdateStaffDetailsException, InputDataValidationException {
+        validationService.throwExceptionIfInvalidBean(staff);
+        validationService.throwExceptionIfInvalidBean(address);
+        try {
+            Staff staffToUpdate = retrieveStaffByStaffId(staff.getStaffId());
+            addressRepository.save(address);
+
+            staffToUpdate.setFirstName(staff.getFirstName());
+            staffToUpdate.setLastName(staff.getLastName());
+            staffToUpdate.setNric(staff.getNric());
+            staffToUpdate.setBankDetails(staff.getBankDetails());
+            staffToUpdate.setDepartment(department);
+            staffToUpdate.setRole(role);
+            staffToUpdate.setAddress(address);
+
+            return lazyLoadStaffFields(staffToUpdate);
+        }catch (StaffNotFoundException ex) {
+            throw new UpdateStaffDetailsException("Staff does not exist");
+        }
+
+    }
+
+
     private Staff lazyLoadStaffFields(Staff staff) {
         staff.getAdvertisements().size();
         staff.getDeliveries().size();
         staff.getLeaves().size();
-        staff.getDepartment();
         staff.getPayrolls().size();
-        staff.getRole();
         staff.getRoster();
         staff.getRepliedReviews().size();
 
