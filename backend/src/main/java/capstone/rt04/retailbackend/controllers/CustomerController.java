@@ -2,13 +2,14 @@ package capstone.rt04.retailbackend.controllers;
 
 import capstone.rt04.retailbackend.entities.Address;
 import capstone.rt04.retailbackend.entities.Customer;
-import capstone.rt04.retailbackend.entities.Measurements;
 import capstone.rt04.retailbackend.request.customer.*;
 import capstone.rt04.retailbackend.services.CustomerService;
+import capstone.rt04.retailbackend.services.ShoppingCartService;
 import capstone.rt04.retailbackend.services.ValidationService;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.customer.*;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.shoppingcart.InvalidCartTypeException;
 import capstone.rt04.retailbackend.util.exceptions.style.StyleNotFoundException;
 import capstone.rt04.retailbackend.util.routeconstants.CustomerControllerRoutes;
 import org.springframework.http.HttpStatus;
@@ -26,10 +27,12 @@ public class CustomerController {
 
     private final CustomerService customerService;
     private final ValidationService validationService;
+    private final ShoppingCartService shoppingCartService;
 
-    public CustomerController(CustomerService customerService, ValidationService validationService) {
+    public CustomerController(CustomerService customerService, ValidationService validationService, ShoppingCartService shoppingCartService) {
         this.customerService = customerService;
         this.validationService = validationService;
+        this.shoppingCartService = shoppingCartService;
     }
 
     @GetMapping("/test")
@@ -194,16 +197,14 @@ public class CustomerController {
 
     @PostMapping(CustomerControllerRoutes.UPDATE_SHIPPING_ADDRESS)
     public ResponseEntity<?> updateShippingAddress(@RequestBody AddUpdateShippingAddressRequest req) throws CustomerNotFoundException, AddressNotFoundException, InputDataValidationException {
-        Map<String, String> inputErrMap = validationService.generateErrorMap(req);
-        if (inputErrMap != null) return new ResponseEntity<>(inputErrMap, HttpStatus.BAD_REQUEST);
+        validationService.throwExceptionIfInvalidBean(req);
         Address address = customerService.updateShippingAddress(req.getCustomerId(), req.getShippingAddress());
         return new ResponseEntity<>(address, HttpStatus.OK);
     }
 
     @DeleteMapping(CustomerControllerRoutes.REMOVE_SHIPPING_ADDRESS)
-    public ResponseEntity<?> removeShippingAddress(@RequestBody RemoveShippingAddressRequest req) throws CustomerNotFoundException, AddressNotFoundException {
-        Map<String, String> inputErrMap = validationService.generateErrorMap(req);
-        if (inputErrMap != null) return new ResponseEntity<>(inputErrMap, HttpStatus.BAD_REQUEST);
+    public ResponseEntity<?> removeShippingAddress(@RequestBody RemoveShippingAddressRequest req) throws CustomerNotFoundException, AddressNotFoundException, InputDataValidationException {
+        validationService.throwExceptionIfInvalidBean(req);
         Customer customer = customerService.deleteShippingAddress(req.getCustomerId(), req.getShippingAddressId());
         return new ResponseEntity<>(customer, HttpStatus.OK);
     }
@@ -243,5 +244,24 @@ public class CustomerController {
         Customer customer = customerService.removeStyle(customerId, styleId);
         return new ResponseEntity<>(customer, HttpStatus.OK);
     }
+
+    @PostMapping(CustomerControllerRoutes.UPDATE_SHOPPING_CART)
+    public ResponseEntity<?> updateShoppingCart(@RequestBody UpdateShoppingCartRequest updateShoppingCartRequest) throws InputDataValidationException, ProductVariantNotFoundException, InvalidCartTypeException, CustomerNotFoundException {
+        validationService.throwExceptionIfInvalidBean(updateShoppingCartRequest);
+        Customer customer = shoppingCartService.updateQuantityOfProductVariant(
+                updateShoppingCartRequest.getQuantity(),
+                updateShoppingCartRequest.getProductVariantId(),
+                updateShoppingCartRequest.getCustomerId(),
+                updateShoppingCartRequest.getCartType()
+        );
+        return new ResponseEntity<>(customer, HttpStatus.OK);
+    }
+
+    @PostMapping(CustomerControllerRoutes.CLEAR_SHOPPING_CART)
+    public ResponseEntity<?> clearShoppingCart(@RequestParam Long customerId, @RequestParam String cartType) throws CustomerNotFoundException, InvalidCartTypeException {
+        Customer customer = shoppingCartService.clearShoppingCart(customerId, cartType);
+        return new ResponseEntity<>(customer, HttpStatus.OK);
+    }
+
 
 }

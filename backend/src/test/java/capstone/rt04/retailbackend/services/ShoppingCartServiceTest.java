@@ -27,29 +27,36 @@ public class ShoppingCartServiceTest extends ServiceTestSetup {
         Customer validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
 
         //add
-        shoppingCartService.updateQuantityOfProductVariant(1, productVariantId, validCustomer.getCustomerId(), ONLINE_SHOPPING_CART);
+        Customer customer = shoppingCartService.updateQuantityOfProductVariant(1, productVariantId, validCustomer.getCustomerId(), ONLINE_SHOPPING_CART);
         ShoppingCart shoppingCart = shoppingCartService.getShoppingCart(validCustomer.getCustomerId(), ONLINE_SHOPPING_CART);
         assertThat(shoppingCart.getShoppingCartItems().size()).isEqualTo(1);
+        assertThat(customer.getOnlineShoppingCart().getShoppingCartItems().size()).isEqualTo(1);
 
         //update
-        shoppingCartService.updateQuantityOfProductVariant(2, productVariantId, validCustomer.getCustomerId(), ONLINE_SHOPPING_CART);
+        customer = shoppingCartService.updateQuantityOfProductVariant(2, productVariantId, validCustomer.getCustomerId(), ONLINE_SHOPPING_CART);
         shoppingCart = shoppingCartService.getShoppingCart(validCustomer.getCustomerId(), ONLINE_SHOPPING_CART);
         assertThat(shoppingCart.getShoppingCartItems().size()).isEqualTo(1);
         assertThat(shoppingCart.getShoppingCartItems().get(0).getQuantity()).isEqualTo(2);
+        assertThat(customer.getOnlineShoppingCart().getShoppingCartItems().size()).isEqualTo(1);
+        assertThat(customer.getOnlineShoppingCart().getShoppingCartItems().get(0).getQuantity()).isEqualTo(2);
 
         //delete
-        shoppingCartService.updateQuantityOfProductVariant(0, productVariantId, validCustomer.getCustomerId(), ONLINE_SHOPPING_CART);
+        customer = shoppingCartService.updateQuantityOfProductVariant(0, productVariantId, validCustomer.getCustomerId(), ONLINE_SHOPPING_CART);
         shoppingCart = shoppingCartService.getShoppingCart(validCustomer.getCustomerId(), ONLINE_SHOPPING_CART);
         assertThat(shoppingCart.getShoppingCartItems().size()).isEqualTo(0);
+        assertThat(customer.getOnlineShoppingCart().getShoppingCartItems().size()).isEqualTo(0);
 
-        shoppingCartService.updateQuantityOfProductVariant(10, productVariantId, validCustomer.getCustomerId(), ONLINE_SHOPPING_CART);
+        customer = shoppingCartService.updateQuantityOfProductVariant(10, productVariantId, validCustomer.getCustomerId(), ONLINE_SHOPPING_CART);
         shoppingCart = shoppingCartService.getShoppingCart(validCustomer.getCustomerId(), ONLINE_SHOPPING_CART);
         assertThat(shoppingCart.getShoppingCartItems().size()).isEqualTo(1);
         assertThat(shoppingCart.getShoppingCartItems().get(0).getQuantity()).isEqualTo(10);
+        assertThat(customer.getOnlineShoppingCart().getShoppingCartItems().size()).isEqualTo(1);
+        assertThat(customer.getOnlineShoppingCart().getShoppingCartItems().get(0).getQuantity()).isEqualTo(10);
 
-        shoppingCartService.clearShoppingCart(validCustomer.getCustomerId(), ONLINE_SHOPPING_CART);
+        customer = shoppingCartService.clearShoppingCart(validCustomer.getCustomerId(), ONLINE_SHOPPING_CART);
         shoppingCart = shoppingCartService.getShoppingCart(validCustomer.getCustomerId(), ONLINE_SHOPPING_CART);
         assertThat(shoppingCart.getShoppingCartItems().size()).isEqualTo(0);
+        assertThat(customer.getOnlineShoppingCart().getShoppingCartItems().size()).isEqualTo(0);
     }
 
 

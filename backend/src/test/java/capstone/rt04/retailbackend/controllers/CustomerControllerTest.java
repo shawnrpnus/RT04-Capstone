@@ -5,6 +5,7 @@ import capstone.rt04.retailbackend.entities.CreditCard;
 import capstone.rt04.retailbackend.entities.Customer;
 import capstone.rt04.retailbackend.entities.Measurements;
 import capstone.rt04.retailbackend.request.customer.*;
+import capstone.rt04.retailbackend.util.Constants;
 import capstone.rt04.retailbackend.util.ErrorMessages;
 
 import static capstone.rt04.retailbackend.util.routeconstants.CustomerControllerRoutes.*;
@@ -333,6 +334,56 @@ public class CustomerControllerTest extends ApiTestSetup {
                 .then().statusCode(HttpStatus.OK.value()).extract().body().as(Customer.class);
         assertThat(customer.getCustomerId()).isEqualTo(createdCustomerId);
         assertThat(customer.getPreferredStyles().size()).isZero();
+    }
+
+    @Test
+    public void shoppingCartTests(){
+        //create
+        UpdateShoppingCartRequest req = new UpdateShoppingCartRequest(1, productVariantId, createdCustomerId, Constants.ONLINE_SHOPPING_CART);
+        Customer customer = given()
+                .contentType("application/json")
+                .body(req)
+                .when().post(CUSTOMER_BASE_ROUTE + UPDATE_SHOPPING_CART)
+                .then().statusCode(HttpStatus.OK.value()).extract().body().as(Customer.class);
+        assertThat(customer.getOnlineShoppingCart().getShoppingCartItems().size()).isEqualTo(1);
+        assertThat(customer.getOnlineShoppingCart().getShoppingCartItems().get(0).getQuantity()).isEqualTo(1);
+
+        //update
+        req.setQuantity(2);
+        customer = given()
+                .contentType("application/json")
+                .body(req)
+                .when().post(CUSTOMER_BASE_ROUTE + UPDATE_SHOPPING_CART)
+                .then().statusCode(HttpStatus.OK.value()).extract().body().as(Customer.class);
+        assertThat(customer.getOnlineShoppingCart().getShoppingCartItems().size()).isEqualTo(1);
+        assertThat(customer.getOnlineShoppingCart().getShoppingCartItems().get(0).getQuantity()).isEqualTo(2);
+
+        //delete
+        req.setQuantity(0);
+        customer = given()
+                .contentType("application/json")
+                .body(req)
+                .when().post(CUSTOMER_BASE_ROUTE + UPDATE_SHOPPING_CART)
+                .then().statusCode(HttpStatus.OK.value()).extract().body().as(Customer.class);
+        assertThat(customer.getOnlineShoppingCart().getShoppingCartItems().size()).isEqualTo(0);
+
+        //create again
+        req = new UpdateShoppingCartRequest(1, productVariantId, createdCustomerId, Constants.ONLINE_SHOPPING_CART);
+        customer = given()
+                .contentType("application/json")
+                .body(req)
+                .when().post(CUSTOMER_BASE_ROUTE + UPDATE_SHOPPING_CART)
+                .then().statusCode(HttpStatus.OK.value()).extract().body().as(Customer.class);
+        assertThat(customer.getOnlineShoppingCart().getShoppingCartItems().size()).isEqualTo(1);
+        assertThat(customer.getOnlineShoppingCart().getShoppingCartItems().get(0).getQuantity()).isEqualTo(1);
+
+        //clear cart
+        customer = given()
+                .queryParam("customerId", createdCustomerId)
+                .queryParam("cartType", Constants.ONLINE_SHOPPING_CART)
+                .when().post(CUSTOMER_BASE_ROUTE + CLEAR_SHOPPING_CART)
+                .then().statusCode(HttpStatus.OK.value()).extract().body().as(Customer.class);
+        assertThat(customer.getOnlineShoppingCart().getShoppingCartItems().size()).isEqualTo(0);
     }
 
 }
