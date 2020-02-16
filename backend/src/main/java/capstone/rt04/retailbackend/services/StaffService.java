@@ -11,6 +11,7 @@ import capstone.rt04.retailbackend.util.exceptions.staff.StaffNotFoundException;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.core.env.Environment;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,7 +40,7 @@ public class StaffService {
     private final ReviewRepository reviewRepository;
     private final RoleRepository roleRepository;
     private final RosterRepository rosterRepository;
-
+    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
 
 
@@ -102,8 +103,8 @@ public class StaffService {
             staff.setUsername(staffID.toString());
 
             //generate random password
-            String password = RandomStringUtils.randomAlphanumeric(32);
-            staff.setPassword(password);
+            String password = RandomStringUtils.randomAlphanumeric(12);
+            staff.setPassword(encoder.encode(password));
 
             return staff;
         }catch (StaffNotFoundException ex){
