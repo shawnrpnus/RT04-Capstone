@@ -82,7 +82,6 @@ public class StaffService {
             //If staff does not exist
             //Persist address, bank details and staff. Link staff to address and bank details
             addressRepository.save(staffAddress);
-            bankDetailsRepository.save(bankDetails);
             Staff savedStaff = staffRepository.save(staff);
             savedStaff.setAddress(staffAddress);
             savedStaff.setBankDetails(bankDetails);
