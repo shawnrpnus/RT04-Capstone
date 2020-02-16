@@ -125,6 +125,14 @@ public class CustomerService {
         return lazyLoadCustomerFields(customer);
     }
 
+    public List<Customer> retrieveAllCustomers(){
+         List<Customer> customers = customerRepository.findAll();
+         for (Customer c : customers){
+             lazyLoadCustomerFields(c);
+         }
+         return customers;
+    }
+
     public Customer retrieveCustomerByVerificationCode(String code) throws VerificationCodeInvalidException {
         VerificationCode verificationCode = verificationCodeRepository.findByCode(code)
                 .orElseThrow(() -> new VerificationCodeInvalidException(ErrorMessages.VERIFICATION_CODE_INVALID));
