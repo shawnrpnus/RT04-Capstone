@@ -1,13 +1,14 @@
 package capstone.rt04.retailbackend.services;
 
 
+import capstone.rt04.retailbackend.entities.Address;
 import capstone.rt04.retailbackend.entities.Warehouse;
+import capstone.rt04.retailbackend.repositories.AddressRepository;
 import capstone.rt04.retailbackend.repositories.WarehouseRepository;
 import capstone.rt04.retailbackend.util.exceptions.warehouse.WarehouseNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.LinkedList;
 import java.util.List;
 
 
@@ -15,10 +16,26 @@ import java.util.List;
 @Transactional
 public class WarehouseService {
     private final WarehouseRepository warehouseRepository;
+    private final AddressRepository addressRepository;
+    private final ValidationService validationService;
 
-    public WarehouseService(WarehouseRepository warehouseRepository) {
+    public WarehouseService(WarehouseRepository warehouseRepository, AddressRepository addressRepository, ValidationService validationService) {
         this.warehouseRepository = warehouseRepository;
+        this.addressRepository = addressRepository;
+        this.validationService = validationService;
     }
+
+
+    public Warehouse createWarehouse(Warehouse warehouse, Address address) {
+        validationService.generateErrorMap(address);
+        Address a = addressRepository.save(address);
+        warehouse.setAddress(a);
+        warehouseRepository.save(warehouse);
+
+        return lazyLoadWarehouseFields(warehouse);
+    }
+
+
 
     public Warehouse retrieveWarehouseById(Long warehouseId) throws WarehouseNotFoundException {
         if (warehouseId == null) {
@@ -63,6 +80,13 @@ public class WarehouseService {
         newWareHouse.setWarehouseId(warehouse.getWarehouseId());
 
         return newWareHouse;
+    }
+
+    public Warehouse lazyLoadWarehouseFields(Warehouse warehouse) {
+        warehouse.getInStoreRestockOrders().size();
+        warehouse.getProductStocks().size();
+        warehouse.getAddress();
+        return warehouse;
     }
 
 

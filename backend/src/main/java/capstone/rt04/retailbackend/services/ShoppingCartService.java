@@ -56,36 +56,41 @@ public class ShoppingCartService {
     }
 
     // use for adding, editing, deleting item from shopping cart
-    public ShoppingCart updateQuantityOfProductVariant(Integer quantity, Long productVariantId, Long customerId, String cartType) throws CustomerNotFoundException, ProductVariantNotFoundException, InvalidCartTypeException {
+    public Customer updateQuantityOfProductVariant(Integer quantity, Long productVariantId, Long customerId, String cartType) throws CustomerNotFoundException, ProductVariantNotFoundException, InvalidCartTypeException {
         ShoppingCart shoppingCart = getShoppingCart(customerId, cartType);
+
         for (ShoppingCartItem shoppingCartItem : shoppingCart.getShoppingCartItems()) {
             if (shoppingCartItem.getProductVariant().getProductVariantId().equals(productVariantId)) {
                 if (quantity > 0) { //set to whatever input quantity
                     shoppingCartItem.setQuantity(quantity);
-                    return shoppingCart;
+                    Customer customer = customerService.retrieveCustomerByCustomerId(customerId);
+                    return customerService.lazyLoadCustomerFields(customer);
                 } else if (quantity == 0){ // delete
                     shoppingCartItem.setProductVariant(null);
                     shoppingCart.getShoppingCartItems().remove(shoppingCartItem);
                     shoppingCartItemRepository.delete(shoppingCartItem);
-                    return shoppingCart;
+                    Customer customer = customerService.retrieveCustomerByCustomerId(customerId);
+                    return customerService.lazyLoadCustomerFields(customer);
                 }
             }
         }
         // does not exist in cart, so add  (first time adding)
         ShoppingCartItem shoppingCartItem = createShoppingCartItem(quantity, productVariantId);
         shoppingCart.getShoppingCartItems().add(shoppingCartItem);
-        return shoppingCart;
+        Customer customer = customerService.retrieveCustomerByCustomerId(customerId);
+        return customerService.lazyLoadCustomerFields(customer);
     }
 
-    public ShoppingCart clearShoppingCart(Long customerId, String cartType) throws CustomerNotFoundException, InvalidCartTypeException {
+    public Customer clearShoppingCart(Long customerId, String cartType) throws CustomerNotFoundException, InvalidCartTypeException {
         ShoppingCart shoppingCart = getShoppingCart(customerId, cartType);
         List<ShoppingCartItem> shoppingCartItems = shoppingCart.getShoppingCartItems();
         shoppingCart.setShoppingCartItems(new ArrayList<>());
+        Customer customer = customerService.retrieveCustomerByCustomerId(customerId);
         for (ShoppingCartItem shoppingCartItem : shoppingCartItems){
             shoppingCartItem.setProductVariant(null);
             shoppingCartItemRepository.delete(shoppingCartItem);
         }
-        return shoppingCart;
+        return customerService.lazyLoadCustomerFields(customer);
     }
 
     public ShoppingCart getShoppingCart(Long customerId, String cartType) throws CustomerNotFoundException, InvalidCartTypeException {
@@ -100,7 +105,6 @@ public class ShoppingCartService {
             throw new InvalidCartTypeException("Cart type is invalid! Must be either instore or online");
         }
     }
-
 
 
 

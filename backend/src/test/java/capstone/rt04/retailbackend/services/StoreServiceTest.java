@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @ActiveProfiles("test")
-public class StoreServiceTest {
+public class StoreServiceTest extends ServiceTestSetup {
 
     @Autowired
     private StoreService storeService;
@@ -29,7 +29,7 @@ public class StoreServiceTest {
     private static Long storeId;
 
     @Before
-    public void beforeEachTest() throws Exception{
+    public void beforeEachTest() throws Exception {
         Store expectedValidStore = new Store(8, Time.valueOf("10:00:00"), Time.valueOf("21:00:00"), 2, 6, null);
         Store testValidStore = storeService.createNewStore(expectedValidStore);
         assertThat(testValidStore.getStoreId()).isNotNull();
@@ -63,7 +63,7 @@ public class StoreServiceTest {
     public void retrieveStoreById() throws Exception {
         Store store = storeService.retrieveStoreById(storeId);
         //changed from store.toString() as has lazy initalization exception
-        System.out.println(store.getOpeningTime().toString());
+        System.err.println(store.getOpeningTime().toString());
     }
 
     @Test

@@ -31,7 +31,7 @@ public class ValidationService {
     public <E> void throwExceptionIfInvalidBean(E entity) throws InputDataValidationException {
         Map<String, String> errorMap = generateErrorMap(entity);
         if (errorMap != null)
-            throw new InputDataValidationException(errorMap, entity.getClass().toString() + " is invalid!");
+            throw new InputDataValidationException(errorMap, entity.getClass().toString() + " is invalid! Errors: " + errorMap.toString());
     }
 
     private <E> Map<String, String> generateErrorMapFromConstraintViolations(Set<ConstraintViolation<E>> constraintViolations) {

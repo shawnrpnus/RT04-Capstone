@@ -27,4 +27,5 @@ public class ErrorMessages {
 
     public static final String TAG_NAME_REQUIRED = "Tag name is required!";
 
+    public static final String NRIC_TAKEN = "There is already a staff with this NRIC!" ;
 }

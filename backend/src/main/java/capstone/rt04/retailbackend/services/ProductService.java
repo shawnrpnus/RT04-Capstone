@@ -7,6 +7,7 @@ import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.category.CategoryNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.discount.DiscountNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.product.*;
+import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.promoCode.PromoCodeNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.style.StyleNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.tag.TagNotFoundException;
@@ -332,13 +333,13 @@ public class ProductService {
     }
 
     public List<ProductVariant> retrieveProductVariantByProduct(Long productId) {
-        List<ProductVariant> productVariants = productVariantRepository.findAllByProduct(productId);
+        List<ProductVariant> productVariants = productVariantRepository.findAllByProduct_ProductId(productId);
         lazilyLoadProductVariant(productVariants);
         return productVariants;
     }
 
     public List<ProductVariant> retrieveAllProductVariant() {
-        List<ProductVariant> productVariants = productVariantRepository.findAll();
+        List<ProductVariant> productVariants = (List<ProductVariant>) productVariantRepository.findAll();
         lazilyLoadProductVariant(productVariants);
         return productVariants;
     }
@@ -383,13 +384,16 @@ public class ProductService {
      *
      * @return void
      */
-    public void assignProductStock(List<Warehouse> warehouses, List<Store> stores) throws CreateNewProductStockException, InputDataValidationException, WarehouseNotFoundException {
-        List<ProductVariant> productVariants = productVariantRepository.findAll();
+    public void assignProductStock(List<Warehouse> warehouses, List<Store> stores) throws CreateNewProductStockException, InputDataValidationException, WarehouseNotFoundException, StoreNotFoundException {
+        List<ProductVariant> productVariants = retrieveAllProductVariant();
+        System.out.println(productVariants.toString());
 
         if (warehouses != null) {
-            for (Warehouse warehouse : warehouses) {
+            for (Warehouse w : warehouses) {
+                Warehouse warehouse = warehouseService.retrieveWarehouseById(w.getWarehouseId());
+                warehouseService.lazyLoadWarehouseFields(warehouse);
                 for (ProductVariant productVariant : productVariants) {
-                    ProductStock productStock = new ProductStock(0, null, null);
+                    ProductStock productStock = new ProductStock(0, 0, 0);
                     productStock.setProductVariant(productVariant);
                     ProductStock newProductStock = createProductStock(productStock, productVariant.getProductVariantId());
 
@@ -399,15 +403,24 @@ public class ProductService {
             }
         }
 
-        if (stores != null) {
-            for (Store store : stores) {
+        if (stores != null ) {
+            System.out.println("BP 1");
+            for (Store s : stores) {
+                System.out.println("BP 2");
+                Store store = storeService.retrieveStoreById(s.getStoreId());
                 for (ProductVariant productVariant : productVariants) {
+                    System.out.println("BP 3");
+
                     ProductStock productStock = new ProductStock(0, null, null);
                     productStock.setProductVariant(productVariant);
                     ProductStock newProductStock = createProductStock(productStock, productVariant.getProductVariantId());
 
                     store.getProductStocks().add(newProductStock);
                     newProductStock.setStore(store);
+
+                    System.out.println(store.toString());
+                    System.out.println(newProductStock.toString());
+
                 }
             }
         }
@@ -423,7 +436,7 @@ public class ProductService {
     public ProductStock createProductStock(ProductStock productStock, Long productVariantId) throws InputDataValidationException, CreateNewProductStockException {
 
         Map<String, String> errorMap = validationService.generateErrorMap(productStock);
-
+        System.out.println(errorMap + "HI WHERE DID I GO WRONG");
         if (errorMap == null) {
             try {
                 ProductVariant productVariant = retrieveProductVariantById(productVariantId);

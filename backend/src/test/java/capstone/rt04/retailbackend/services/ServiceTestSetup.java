@@ -40,6 +40,7 @@ public class ServiceTestSetup {
     protected static Long productVariantId;
     protected static Long styleId;
     protected static Long productId2;
+    protected static Long createdCustomerId;
 
     @Before
     public void beforeEachTest() throws Exception {
@@ -49,6 +50,7 @@ public class ServiceTestSetup {
         assertThat(testValidCustomer).isEqualTo(expectedValidCustomer);
         assertThat(testValidCustomer.getOnlineShoppingCart()).isNotNull();
         assertThat(testValidCustomer.getInStoreShoppingCart()).isNotNull();
+        createdCustomerId = testValidCustomer.getCustomerId();
 
         Product validProduct = new Product("Fila Disruptor II", "Fila", BigDecimal.valueOf(89.90), BigDecimal.valueOf(39.90));
         Category category = categoryService.createNewCategory(new Category("Shoes"), null);
@@ -108,8 +110,7 @@ public class ServiceTestSetup {
         categoryId = null;
         productVariantId = null;
         styleId = null;
-
-
+        createdCustomerId = null;
     }
 
     @Test
