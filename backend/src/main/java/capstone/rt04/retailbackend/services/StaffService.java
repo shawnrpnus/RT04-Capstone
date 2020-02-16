@@ -28,7 +28,6 @@ public class StaffService {
     private final StaffRepository staffRepository;
     private final AddressRepository addressRepository;
     private final AdvertisementRepository advertisementRepository;
-    private final BankDetailsRepository bankDetailsRepository;
     private final DeliveryRepository deliveryRepository;
     private final DepartmentRepository departmentRepository;
     private final StaffLeaveRepository staffLeaveRepository;
@@ -41,14 +40,13 @@ public class StaffService {
 
 
 
-    public StaffService(JavaMailSender javaMailSender, Environment environment, ValidationService validationService, StaffRepository staffRepository, AddressRepository addressRepository, AdvertisementRepository advertisementRepository, BankDetailsRepository bankDetailsRepository, DeliveryRepository deliveryRepository, DepartmentRepository departmentRepository, StaffLeaveRepository staffLeaveRepository, ReviewRepository reviewRepository, PayrollRepository payrollRepository, RoleRepository roleRepository, RosterRepository rosterRepository) {
+    public StaffService(JavaMailSender javaMailSender, Environment environment, ValidationService validationService, StaffRepository staffRepository, AddressRepository addressRepository, AdvertisementRepository advertisementRepository, DeliveryRepository deliveryRepository, DepartmentRepository departmentRepository, StaffLeaveRepository staffLeaveRepository, ReviewRepository reviewRepository, PayrollRepository payrollRepository, RoleRepository roleRepository, RosterRepository rosterRepository) {
         this.javaMailSender = javaMailSender;
         this.environment = environment;
         this.validationService = validationService;
         this.staffRepository = staffRepository;
         this.addressRepository = addressRepository;
         this.advertisementRepository = advertisementRepository;
-        this.bankDetailsRepository = bankDetailsRepository;
         this.deliveryRepository = deliveryRepository;
         this.departmentRepository = departmentRepository;
         this.staffLeaveRepository = staffLeaveRepository;
