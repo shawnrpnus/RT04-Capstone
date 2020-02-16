@@ -1,5 +1,7 @@
 package capstone.rt04.retailbackend.request.product;
 
+import capstone.rt04.retailbackend.entities.Product;
+import capstone.rt04.retailbackend.entities.Tag;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,9 +19,9 @@ public class ProductTagRequest {
 
     private Long productId;
 
-    private List<Long> tagIds;
+    private List<Tag> tags;
 
-    private List<Long> productIds;
+    private List<Product> products;
 
     private Boolean isAppend;
 

@@ -15,4 +15,6 @@ public interface ProductVariantRepository extends CrudRepository<ProductVariant,
 
     List<ProductVariant> findAllByProduct(Long productId);
 
+    List<ProductVariant> findAllByColourIn(List<String> colour);
+
 }

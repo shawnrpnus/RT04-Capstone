@@ -33,17 +33,20 @@ public class TagService {
         if (errorMap == null) {
             try {
                 Tag existingTag = null;
+
                 try {
                     existingTag = retrieveTagByName(newTag.getName());
                 } catch (TagNotFoundException ex) {
+                    throw new TagNotFoundException("Tag does not exist!");
                 }
+
                 if (existingTag != null) {
                     errorMap = new HashMap<>();
                     errorMap.put("tag", "This tag is already created!");
                     throw new InputDataValidationException(errorMap, "Tag already created");
                 }
-                tagRepository.save(newTag);
 
+                tagRepository.save(newTag);
                 return newTag;
             } catch (Exception ex) {
                 throw new CreateNewTagException("Error creating new tag: " + ex.getMessage());
@@ -56,8 +59,7 @@ public class TagService {
     }
 
 
-    public Tag updateTag(Tag tag) throws InputDataValidationException, TagNotFoundException, UpdateTagException
-    {
+    public Tag updateTag(Tag tag) throws InputDataValidationException, TagNotFoundException, UpdateTagException {
         Map<String, String> errorMap = validationService.generateErrorMap(tag);
         if (errorMap == null) {
             try {
