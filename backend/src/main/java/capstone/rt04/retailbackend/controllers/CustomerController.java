@@ -51,7 +51,7 @@ public class CustomerController {
     public ResponseEntity<?> verifyCustomer(@PathVariable String verificationCode) throws VerificationCodeInvalidException {
         Customer customer = customerService.verify(verificationCode);
         /*
-        TODO: Redirect to success page OR the link sent is to a front-end page, which
+        TODO: Redirect to success page OR the loink sent is to a front-end page, which
          calls this API upon loading, then displays result based on the response
          */
         return new ResponseEntity<>(customer, HttpStatus.OK);
@@ -185,7 +185,7 @@ public class CustomerController {
     }
 
     @PostMapping(CustomerControllerRoutes.ADD_SHIPPING_ADDRESS)
-    public ResponseEntity<?> addShippingAddress(@RequestBody AddUpdateShippingAddressRequest addUpdateShippingAddressRequest) throws CustomerNotFoundException {
+    public ResponseEntity<?> addShippingAddress(@RequestBody AddUpdateShippingAddressRequest addUpdateShippingAddressRequest) throws CustomerNotFoundException, InputDataValidationException {
         Map<String, String> inputErrMap = validationService.generateErrorMap(addUpdateShippingAddressRequest);
         if (inputErrMap != null) return new ResponseEntity<>(inputErrMap, HttpStatus.BAD_REQUEST);
         Customer customer = customerService.addShippingAddress(addUpdateShippingAddressRequest.getCustomerId(), addUpdateShippingAddressRequest.getShippingAddress());
@@ -193,7 +193,7 @@ public class CustomerController {
     }
 
     @PostMapping(CustomerControllerRoutes.UPDATE_SHIPPING_ADDRESS)
-    public ResponseEntity<?> updateShippingAddress(@RequestBody AddUpdateShippingAddressRequest req) throws CustomerNotFoundException, AddressNotFoundException {
+    public ResponseEntity<?> updateShippingAddress(@RequestBody AddUpdateShippingAddressRequest req) throws CustomerNotFoundException, AddressNotFoundException, InputDataValidationException {
         Map<String, String> inputErrMap = validationService.generateErrorMap(req);
         if (inputErrMap != null) return new ResponseEntity<>(inputErrMap, HttpStatus.BAD_REQUEST);
         Address address = customerService.updateShippingAddress(req.getCustomerId(), req.getShippingAddress());

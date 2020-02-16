@@ -303,7 +303,8 @@ public class CustomerService {
     }
 
 
-    public Customer addShippingAddress(Long customerId, Address shippingAddress) throws CustomerNotFoundException {
+    public Customer addShippingAddress(Long customerId, Address shippingAddress) throws CustomerNotFoundException, InputDataValidationException {
+        validationService.throwExceptionIfInvalidBean(shippingAddress);
         Customer customer = retrieveCustomerByCustomerId(customerId);
         addressRepository.save(shippingAddress);
         if (shippingAddress.isDefault()) {
@@ -342,7 +343,8 @@ public class CustomerService {
         throw new AddressNotFoundException("Address id: " + addressId + " not found for customer id: " + customerId);
     }
 
-    public Address updateShippingAddress(Long customerId, Address newShippingAddress) throws CustomerNotFoundException, AddressNotFoundException {
+    public Address updateShippingAddress(Long customerId, Address newShippingAddress) throws CustomerNotFoundException, AddressNotFoundException, InputDataValidationException {
+        validationService.throwExceptionIfInvalidBean(newShippingAddress);
         Address addressToUpdate = getShippingAddress(customerId, newShippingAddress.getAddressId());
         addressToUpdate.setBuildingName(newShippingAddress.getBuildingName());
 
@@ -355,7 +357,6 @@ public class CustomerService {
             setOtherAddressesToNonBilling(customerId);
         }
         addressToUpdate.setBilling(newShippingAddress.isBilling());
-
         addressToUpdate.setLine1(newShippingAddress.getLine1());
         addressToUpdate.setLine2(newShippingAddress.getLine2());
         addressToUpdate.setPostalCode(newShippingAddress.getPostalCode());
