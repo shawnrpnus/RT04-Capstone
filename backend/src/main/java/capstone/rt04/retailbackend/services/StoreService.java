@@ -186,5 +186,4 @@ public class StoreService {
         storeRepository.delete(storeToDelete);
         return storeToDelete;
     }
-
 }
