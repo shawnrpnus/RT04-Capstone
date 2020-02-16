@@ -2,6 +2,7 @@ package capstone.rt04.retailbackend.services;
 
 import capstone.rt04.retailbackend.entities.Customer;
 import capstone.rt04.retailbackend.entities.ShoppingCart;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Component
+@Slf4j
 public class TimerService {
 
     private final CustomerService customerService;
@@ -19,15 +21,17 @@ public class TimerService {
 
     private final Integer unattendedTimeLimit = 4;
 
+    private final Integer intervalMs = 60*60*1000;
+
     public TimerService(CustomerService customerService, JavaMailSender javaMailSender) {
         this.customerService = customerService;
         this.javaMailSender = javaMailSender;
     }
 
     // in milliseconds
-    @Scheduled(fixedRate = 60*60*1000, initialDelay = 10000)
+    @Scheduled(fixedRate = intervalMs, initialDelay = 10000)
     public void checkForUnattendedShoppingCarts() {
-        System.out.println("*********** TIMER ************");
+        log.info("checkForUnattendedShoppingCarts() triggered");
         List<Customer> allCustomers = customerService.retrieveAllCustomers();
 
         for (Customer customer : allCustomers){
@@ -46,6 +50,7 @@ public class TimerService {
                     msg.setText("Hello! We noticed you have yet to checkout your shopping cart items! " +
                                     "Click here to continue shopping!");
                     javaMailSender.send(msg);
+                    log.info("Email has been sent to {}", email);
                 }
             }
         }

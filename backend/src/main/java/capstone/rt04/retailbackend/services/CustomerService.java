@@ -92,7 +92,6 @@ public class CustomerService {
             }
             return lazyLoadCustomerFields(customer);
         } catch (PersistenceException | CustomerNotFoundException ex) {
-            System.out.println(ex.getMessage());
             throw new CreateNewCustomerException("Error creating new customer");
         }
 
