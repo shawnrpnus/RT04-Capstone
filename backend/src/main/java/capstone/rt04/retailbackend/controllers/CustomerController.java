@@ -227,6 +227,7 @@ public class CustomerController {
         return new ResponseEntity<>(customer, HttpStatus.OK);
     }
 
+
     @DeleteMapping(CustomerControllerRoutes.DELETE_CUSTOMER)
     public ResponseEntity<?> deleteCustomer(@PathVariable Long customerId) throws CustomerCannotDeleteException, CustomerNotFoundException {
         Customer deletedCustomer = customerService.removeCustomer(customerId);
@@ -260,6 +261,12 @@ public class CustomerController {
     @PostMapping(CustomerControllerRoutes.CLEAR_SHOPPING_CART)
     public ResponseEntity<?> clearShoppingCart(@RequestParam Long customerId, @RequestParam String cartType) throws CustomerNotFoundException, InvalidCartTypeException {
         Customer customer = shoppingCartService.clearShoppingCart(customerId, cartType);
+        return new ResponseEntity<>(customer, HttpStatus.OK);
+    }
+
+    @PostMapping(CustomerControllerRoutes.ADD_WISHLIST_TO_SHOPPING_CART)
+    public ResponseEntity<?> addWishlistToShoppingCart(@RequestParam Long customerId) throws InvalidCartTypeException, ProductVariantNotFoundException, CustomerNotFoundException {
+        Customer customer = customerService.addWishlistToShoppingCart(customerId);
         return new ResponseEntity<>(customer, HttpStatus.OK);
     }
 

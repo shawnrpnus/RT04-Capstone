@@ -297,6 +297,15 @@ public class CustomerControllerTest extends ApiTestSetup {
 
         customer = given()
                 .queryParam("customerId", createdCustomerId)
+                .when().post(CUSTOMER_BASE_ROUTE + ADD_WISHLIST_TO_SHOPPING_CART)
+                .then().statusCode(HttpStatus.OK.value()).extract().body().as(Customer.class);
+        assertThat(customer.getOnlineShoppingCart().getShoppingCartItems().size()).isEqualTo(1);
+        assertThat(customer.getOnlineShoppingCart().getShoppingCartItems().get(0)
+                .getProductVariant().getProductVariantId()).isEqualTo(productVariantId);
+
+
+        customer = given()
+                .queryParam("customerId", createdCustomerId)
                 .when().post(CUSTOMER_BASE_ROUTE + CLEAR_WISHLIST)
                 .then().statusCode(HttpStatus.OK.value()).extract().body().as(Customer.class);
         assertThat(customer.getCustomerId()).isEqualTo(createdCustomerId);

@@ -212,6 +212,13 @@ public class CustomerServiceTest extends ServiceTestSetup {
         assertThat(validCustomer.getWishlistItems().size()).isEqualTo(1);
         assertThat(validCustomer.getWishlistItems().get(0).getProductVariantId()).isEqualTo(productVariantId);
 
+        customerService.addWishlistToShoppingCart(validCustomer.getCustomerId());
+        validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
+        assertThat(validCustomer.getOnlineShoppingCart().getShoppingCartItems().size()).isEqualTo(1);
+        assertThat(validCustomer.getOnlineShoppingCart().getShoppingCartItems().get(0)
+                .getProductVariant().getProductVariantId()).isEqualTo(productVariantId);
+
+
         customerService.clearWishList(validCustomer.getCustomerId());
         validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
         assertThat(validCustomer.getWishlistItems().size()).isEqualTo(0);

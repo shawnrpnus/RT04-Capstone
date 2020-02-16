@@ -6,6 +6,7 @@ import capstone.rt04.retailbackend.util.ErrorMessages;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.customer.*;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.shoppingcart.InvalidCartTypeException;
 import capstone.rt04.retailbackend.util.exceptions.style.StyleNotFoundException;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.core.env.Environment;
@@ -19,6 +20,8 @@ import javax.persistence.PersistenceException;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+
+import static capstone.rt04.retailbackend.util.Constants.ONLINE_SHOPPING_CART;
 
 /**
  * @author shawn
@@ -396,6 +399,16 @@ public class CustomerService {
         return lazyLoadCustomerFields(customer);
     }
 
+    // ONLINE CART ONLY
+    public Customer addWishlistToShoppingCart(Long customerId) throws CustomerNotFoundException, InvalidCartTypeException, ProductVariantNotFoundException {
+        Customer customer = retrieveCustomerByCustomerId(customerId);
+        for (ProductVariant pv : customer.getWishlistItems()){
+            shoppingCartService.updateQuantityOfProductVariant(1, pv.getProductVariantId(), customerId, ONLINE_SHOPPING_CART);
+        }
+        customer = retrieveCustomerByCustomerId(customerId);
+        return customer;
+    }
+
     public Customer addStyle(Long customerId, Long styleId) throws CustomerNotFoundException, StyleNotFoundException {
         Customer customer = retrieveCustomerByCustomerId(customerId);
         Style style = styleService.retrieveStyleByStyleId(styleId);
@@ -494,6 +507,19 @@ public class CustomerService {
         customer.getReviews().size();
         customer.getVerificationCode();
         customer.getPreferredStyles().size();
+        if (customer.getOnlineShoppingCart() != null) {
+            customer.getOnlineShoppingCart().getShoppingCartItems().size();
+            for (ShoppingCartItem sci : customer.getOnlineShoppingCart().getShoppingCartItems()) {
+                sci.getProductVariant().getProduct();
+            }
+        }
+        if (customer.getInStoreShoppingCart() != null) {
+            customer.getInStoreShoppingCart().getShoppingCartItems().size();
+            for (ShoppingCartItem sci : customer.getInStoreShoppingCart().getShoppingCartItems()) {
+                sci.getProductVariant().getProduct();
+            }
+        }
+
         return customer;
     }
 
