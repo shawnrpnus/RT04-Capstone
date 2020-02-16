@@ -14,6 +14,7 @@ import lombok.ToString;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -47,6 +48,8 @@ public class Warehouse implements Serializable {
     }
 
     public Warehouse() {
+        this.inStoreRestockOrders = new ArrayList<>();
+        this.productStocks = new ArrayList<>();
     }
        
     
