@@ -31,7 +31,7 @@ public class StaffController {
 
     @PostMapping(StaffControllerRoutes.CREATE_NEW_STAFF)
     public ResponseEntity<?> createNewStaff(@RequestBody StaffCreateRequest staffCreateRequest) throws InputDataValidationException, CreateNewStaffException {
-        Staff newStaff = staffService.createNewStaff(staffCreateRequest.getStaff(),staffCreateRequest.getStaffAddress(),staffCreateRequest.getBankDetails());
+        Staff newStaff = staffService.createNewStaff(staffCreateRequest.getStaff(),staffCreateRequest.getStaffAddress());
         return new ResponseEntity<>(newStaff, HttpStatus.CREATED);
     }
 

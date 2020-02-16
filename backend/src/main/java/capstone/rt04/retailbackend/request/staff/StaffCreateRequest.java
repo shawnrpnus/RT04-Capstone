@@ -1,7 +1,6 @@
 package capstone.rt04.retailbackend.request.staff;
 
 import capstone.rt04.retailbackend.entities.Address;
-import capstone.rt04.retailbackend.entities.BankDetails;
 import capstone.rt04.retailbackend.entities.Staff;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,6 +15,5 @@ public class StaffCreateRequest {
 
     private Staff staff;
     private Address staffAddress;
-    private BankDetails bankDetails;
 
 }
