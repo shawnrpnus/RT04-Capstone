@@ -13,6 +13,6 @@ public interface ProductVariantRepository extends CrudRepository<ProductVariant,
 
     ProductVariant findBySKU(String sku);
 
-    List<ProductVariant> findAllByProduct(Long productId);
+    List<ProductVariant> findAllByProductProductId(Long productId);
 
 }

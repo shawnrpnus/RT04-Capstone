@@ -268,7 +268,7 @@ public class ProductService {
     }
 
     public List<ProductVariant> retrieveProductVariantByProduct(Long productId) {
-        List<ProductVariant> productVariants = productVariantRepository.findAllByProduct(productId);
+        List<ProductVariant> productVariants = productVariantRepository.findAllByProductProductId(productId);
         lazilyLoadProductVariant(productVariants);
         return productVariants;
     }
