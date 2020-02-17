@@ -19,12 +19,16 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.math.BigDecimal;
+import java.sql.Time;
 
 import static capstone.rt04.retailbackend.util.routeconstants.CategoryControllerRoutes.*;
 import static capstone.rt04.retailbackend.util.routeconstants.CustomerControllerRoutes.*;
 import static capstone.rt04.retailbackend.util.routeconstants.ProductControllerRoutes.*;
 import static capstone.rt04.retailbackend.util.routeconstants.ProductVariantControllerRoutes.CREATE_PRODUCT_VARIANT;
 import static capstone.rt04.retailbackend.util.routeconstants.ProductVariantControllerRoutes.PRODUCT_VARIANT_BASE_ROUTE;
+import static capstone.rt04.retailbackend.util.routeconstants.StoreControllerRoutes.CREATE_STORE;
+import static capstone.rt04.retailbackend.util.routeconstants.StoreControllerRoutes.DELETE_STORE;
+import static capstone.rt04.retailbackend.util.routeconstants.StoreControllerRoutes.STORE_BASE_ROUTE;
 import static capstone.rt04.retailbackend.util.routeconstants.TagControllerRoutes.DELETE_TAG;
 import static capstone.rt04.retailbackend.util.routeconstants.TagControllerRoutes.TAG_BASE_ROUTE;
 import static io.restassured.RestAssured.given;
@@ -50,6 +54,7 @@ public class ApiTestSetup {
     protected static Long tagId1;
     protected static Long tagId2;
     protected static String verificationCode;
+    protected static Long storeId;
 
     @Before
     public void setUp() throws Exception {
@@ -58,6 +63,7 @@ public class ApiTestSetup {
         setUpProduct();
         setUpStyle();
         setUpTag();
+        setUpStore();
     }
 
     @After
@@ -66,6 +72,7 @@ public class ApiTestSetup {
         tearDownProduct();
         tearDownStyle();
         tearDownTag();
+        tearDownStore();
     }
 
     @Test
@@ -193,5 +200,28 @@ public class ApiTestSetup {
         tagId1 = null;
         tagId2 = null;
     }
+
+    private void setUpStore(){
+        Store validStore = new Store(4, Time.valueOf("10:00:00"), Time.valueOf("21:00:00"), 2, 5, null);
+        Store createdStore = given()
+                .contentType("application/json")
+                .body(validStore)
+                .when().post(STORE_BASE_ROUTE + CREATE_STORE)
+                .then().statusCode(HttpStatus.CREATED.value()).extract().body().as(Store.class);
+        assertThat(createdStore.getStoreId()).isNotNull();
+        storeId = createdStore.getStoreId();
+    }
+
+    private void tearDownStore(){
+
+        Store removedStore = given().
+                pathParam("storeId", storeId).
+                when().delete(STORE_BASE_ROUTE + DELETE_STORE).
+                then().statusCode(HttpStatus.OK.value()).extract().body().as(Store.class);
+
+        assertThat(removedStore.getStoreId().equals(storeId));
+        storeId = null;
+    }
+
 
 }

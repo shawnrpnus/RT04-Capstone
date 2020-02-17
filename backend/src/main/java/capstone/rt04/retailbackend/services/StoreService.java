@@ -125,7 +125,6 @@ public class StoreService {
         store cannot be deleted if:
         i) there are reservations unhandled
         ii) there are in-store restock orders that are PROCESSING/IN-TRANSIT
-        iii) there are product stocks
          */
         Store storeToDelete = retrieveStoreById(storeId);
 
@@ -151,13 +150,14 @@ public class StoreService {
             }
         }
 
+        /*
         if (storeToDelete.getProductStocks() != null && storeToDelete.getProductStocks().size() > 0) {
             for (ProductStock productStock : storeToDelete.getProductStocks()) {
                 if (productStock.getQuantity() > 0) {
                     throw new StoreCannotDeleteException("Store cannot be deleted as there are product stocks in store");
                 }
             }
-        }
+        }*/
 
         //clear r/s with RO & delete RO
         for (InStoreRestockOrder ro : storeToDelete.getInStoreRestockOrders()) {
@@ -179,6 +179,7 @@ public class StoreService {
         }
         storeToDelete.setReservations(null);
 
+        //delete product stocks before deleting store
         List<ProductStock> productStocks = new ArrayList<>(storeToDelete.getProductStocks());
 //        storeToDelete.getProductStocks().clear();
         for(ProductStock productStock  : productStocks) {
