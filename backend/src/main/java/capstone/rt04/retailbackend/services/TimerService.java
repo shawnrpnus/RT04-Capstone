@@ -29,7 +29,7 @@ public class TimerService {
     }
 
     // in milliseconds
-    @Scheduled(fixedRate = intervalMs, initialDelay = 10000)
+    @Scheduled(fixedRate = 60*60*1000, initialDelay = 10000)
     public void checkForUnattendedShoppingCarts() {
         log.info("checkForUnattendedShoppingCarts() triggered");
         List<Customer> allCustomers = customerService.retrieveAllCustomers();
