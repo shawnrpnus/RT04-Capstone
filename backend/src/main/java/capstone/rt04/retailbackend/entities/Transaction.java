@@ -54,6 +54,9 @@ public class Transaction implements Serializable {
     
     @ManyToOne
     private PromoCode promoCode;
+
+    @ManyToOne
+    private Address deliveryAddress;
     
     @OneToMany(mappedBy = "transaction")
     @Size(min = 1)
