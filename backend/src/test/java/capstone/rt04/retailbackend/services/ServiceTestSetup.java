@@ -11,6 +11,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.math.BigDecimal;
+import java.sql.Time;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -24,15 +25,14 @@ public class ServiceTestSetup {
 
     @Autowired
     protected CustomerService customerService;
-
     @Autowired
     protected CategoryService categoryService;
-
     @Autowired
     protected ProductService productService;
-
     @Autowired
     protected StyleService styleService;
+    @Autowired
+    protected StoreService storeService;
 
 
     protected static Long categoryId;
@@ -41,6 +41,7 @@ public class ServiceTestSetup {
     protected static Long styleId;
     protected static Long productId2;
     protected static Long createdCustomerId;
+    protected static Long storeId;
 
     @Before
     public void beforeEachTest() throws Exception {
@@ -62,7 +63,7 @@ public class ServiceTestSetup {
         productId = result.getProductId();
 
         Product product = productService.retrieveProductById(productId);
-        ProductVariant validProductVariant = new ProductVariant("SKU001", "White", null, null, null);
+        ProductVariant validProductVariant = new ProductVariant("SKU009", "White", null, null, null);
 
         ProductVariant productVariant = productService.createProductVariant(validProductVariant, product.getProductId());
         productVariantId = productVariant.getProductVariantId();
@@ -79,7 +80,15 @@ public class ServiceTestSetup {
         productId2 = product2.getProductId();
 
         ProductVariant validProductVariant2 = new ProductVariant("SKU002", "Pink", null, null, null);
-        productService.createProductVariant(validProductVariant2, product2.getProductId());
+        ProductVariant pv2 = productService.createProductVariant(validProductVariant2, product2.getProductId());
+
+        // Create store
+        Store expectedValidStore = new Store(8, Time.valueOf("10:00:00"), Time.valueOf("21:00:00"), 2, 6, null);
+        Store testValidStore = storeService.createNewStore(expectedValidStore);
+        assertThat(testValidStore.getStoreId()).isNotNull();
+        assertThat(testValidStore).isEqualTo(expectedValidStore);
+        storeId = testValidStore.getStoreId();
+
     }
 
     @After
@@ -111,6 +120,12 @@ public class ServiceTestSetup {
         productVariantId = null;
         styleId = null;
         createdCustomerId = null;
+
+        // Remove store
+        Store storeToRemove = storeService.retrieveStoreById(storeId);
+        Store removedStore = storeService.deleteStore(storeToRemove.getStoreId());
+        assertThat(removedStore.getStoreId()).isEqualTo(storeToRemove.getStoreId());
+        ///
     }
 
     @Test

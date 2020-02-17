@@ -84,7 +84,11 @@ public class Product implements Serializable {
 
     public Product() {
         this.discounts = new ArrayList<>();
+        this.promoCodes = new ArrayList<>();
         this.tags = new ArrayList<>();
+        this.reviews = new ArrayList<>();
+        this.productVariants = new ArrayList<>();
+        this.styles = new ArrayList<>();
     }
 
     public Product(String productName, String description, BigDecimal price, BigDecimal cost) {

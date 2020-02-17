@@ -5,7 +5,6 @@ import capstone.rt04.retailbackend.request.productVariant.ProductVariantCreateRe
 import capstone.rt04.retailbackend.response.GenericErrorResponse;
 import capstone.rt04.retailbackend.services.ProductService;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
-import capstone.rt04.retailbackend.util.exceptions.product.CreateNewProductVariantException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
 import capstone.rt04.retailbackend.util.routeconstants.ProductVariantControllerRoutes;
@@ -65,8 +64,6 @@ public class ProductVariantController {
             return new ResponseEntity<>(productVariant, HttpStatus.CREATED);
         } catch (InputDataValidationException ex) {
             return new ResponseEntity<>(ex.getErrorMap(), HttpStatus.BAD_REQUEST);
-        } catch (CreateNewProductVariantException ex) {
-            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
         } catch (ProductNotFoundException ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
         } catch (Exception ex) {

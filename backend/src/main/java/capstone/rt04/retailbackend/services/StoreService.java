@@ -6,6 +6,7 @@ import capstone.rt04.retailbackend.repositories.StoreRepository;
 import capstone.rt04.retailbackend.util.enums.DeliveryStatusEnum;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.product.CreateNewProductStockException;
+import capstone.rt04.retailbackend.util.exceptions.product.ProductStockNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.store.StoreCannotDeleteException;
 import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.store.StoreUnableToUpdateException;
@@ -45,7 +46,7 @@ public class StoreService {
             List<Store> stores = new ArrayList<>();
             stores.add(store);
             //create product stock with qty 0 for all existing product variants
-            productService.assignProductStock(null, stores);
+            productService.assignProductStock(null, stores, null);
         } else {
             throw new InputDataValidationException(errorMap, "Invalid data");
         }
@@ -119,7 +120,7 @@ public class StoreService {
         }
     }
 
-    public Store deleteStore(Long storeId) throws StoreNotFoundException, StoreCannotDeleteException {
+    public Store deleteStore(Long storeId) throws StoreNotFoundException, StoreCannotDeleteException, ProductStockNotFoundException {
         /*
         store cannot be deleted if:
         i) there are reservations unhandled
@@ -176,9 +177,13 @@ public class StoreService {
         for (Reservation r : storeToDelete.getReservations()) {
             r.setStore(null);
         }
-
         storeToDelete.setReservations(null);
 
+        List<ProductStock> productStocks = new ArrayList<>(storeToDelete.getProductStocks());
+//        storeToDelete.getProductStocks().clear();
+        for(ProductStock productStock  : productStocks) {
+            productService.deleteProductStock(productStock.getProductStockId());
+        }
         storeRepository.delete(storeToDelete);
         return storeToDelete;
     }

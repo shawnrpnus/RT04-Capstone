@@ -72,11 +72,9 @@ public class ProductServiceTest extends ServiceTestSetup {
 
     @Test(expected = ProductVariantNotFoundException.class)
     public void CDProductVariant() throws Exception {
+        ProductVariant validProductVariant = new ProductVariant("SKU005", "Black", null, null, null);
 
-        Product product = productService.retrieveProductById(productId);
-        ProductVariant validProductVariant = new ProductVariant("SKU003", "Black", null, null, null);
-
-        ProductVariant productVariant = productService.createProductVariant(validProductVariant, product.getProductId());
+        ProductVariant productVariant = productService.createProductVariant(validProductVariant, productId);
         assertThat(productVariant).isEqualTo(validProductVariant);
 
         productService.deleteProductVariant(productVariant.getProductVariantId());
@@ -176,7 +174,7 @@ public class ProductServiceTest extends ServiceTestSetup {
     public void retrieveProductByCategory() throws Exception {
         Category category = categoryService.retrieveCategoryByCategoryId(categoryId);
 
-        List<Product> products = productService.retrieveProductByCriteria(category, null, null, null, BigDecimal.ZERO, BigDecimal.valueOf(500), null);
+        List<Product> products = productService.retrieveProductByCategory(category);
         assertThat(products.size()).isNotEqualTo(0);
     }
 
