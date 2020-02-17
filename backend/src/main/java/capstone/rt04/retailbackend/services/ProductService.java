@@ -329,6 +329,7 @@ public class ProductService {
     }
 
     public List<ProductVariant> retrieveProductVariantByProduct(Long productId) {
+
         List<ProductVariant> productVariants = productVariantRepository.findAllByProduct_ProductId(productId);
         System.out.println(productVariants);
         lazilyLoadProductVariant(productVariants);
@@ -402,7 +403,7 @@ public class ProductService {
                 Warehouse warehouse = warehouseService.retrieveWarehouseById(w.getWarehouseId());
                 warehouseService.lazyLoadWarehouseFields(warehouse);
                 for (ProductVariant productVariant : productVariants) {
-                    ProductStock productStock = new ProductStock(0, 0, 0);
+                    ProductStock productStock = new ProductStock(0, 0, 0, 0);
                     productStock.setWarehouse(warehouse);
                     ProductStock newProductStock = createProductStock(productStock, productVariant.getProductVariantId());
                     warehouse.getProductStocks().add(newProductStock);
@@ -415,7 +416,7 @@ public class ProductService {
                 Store store = storeService.retrieveStoreById(s.getStoreId());
 
                 for (ProductVariant productVariant : productVariants) {
-                    ProductStock productStock = new ProductStock(0, 0, 0);
+                    ProductStock productStock = new ProductStock(0, 0, 0,0);
                     productStock.setStore(store);
                     ProductStock newProductStock = createProductStock(productStock, productVariant.getProductVariantId());
                     store.getProductStocks().add(newProductStock);
@@ -483,6 +484,12 @@ public class ProductService {
         return productStocks;
     }
 
+    public List<ProductStock> retrieveProductStockQuantityLessThanRequired(Long warehouseId) {
+        List<ProductStock> productStocks = productStockRepository.findAllQuantityLessThanNotificationLevel(warehouseId);
+        lazilyLoadProductStock(productStocks);
+        return productStocks;
+    }
+
     public ProductStock updateProductStock(ProductStock newProductStock) throws ProductStockNotFoundException {
 
         ProductStock productStock = retrieveProductStockById(newProductStock.getProductStockId());
@@ -490,6 +497,7 @@ public class ProductService {
         productStock.setMaxQuantity(newProductStock.getMaxQuantity());
         productStock.setNotificationLevel(newProductStock.getNotificationLevel());
         productStock.setQRcode(newProductStock.getQRcode());
+        productStock.setReorderQuantity(newProductStock.getReorderQuantity());
         return productStock;
     }
 

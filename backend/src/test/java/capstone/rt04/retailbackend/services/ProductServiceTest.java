@@ -86,7 +86,7 @@ public class ProductServiceTest extends ServiceTestSetup {
 
         ProductVariant productVariant = productService.retrieveProductVariantById(productVariantId);
 
-        ProductStock validProductStock = new ProductStock(50, 100, 10);
+        ProductStock validProductStock = new ProductStock(50, 100, 10, 20);
         validProductStock.setProductVariant(productVariant);
 
         ProductStock productStock = productService.createProductStock(validProductStock, productVariant.getProductVariantId());

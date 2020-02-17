@@ -9,4 +9,6 @@ public class WarehouseControllerRoutes {
     public static final String UPDATE_WAREHOUSE = "/updateWarehouse";
     public static final String DELETE_WAREHOUSE = "/deleteWarehouse/{warehouseId}";
     public static final String RETRIEVE_ALL_WAREHOUSE_INVENTORIES = "/retrieveAllWarehouseInventories";
+    public static final String RETRIEVE_WAREHOUSE_INVENTORY = "/retrieveWarehouseInventory";
+    public static final String UPDATE_WAREHOUSE_INVENTORY = "/updateWarehouseInventory";
 }

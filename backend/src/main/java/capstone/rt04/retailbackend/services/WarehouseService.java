@@ -2,8 +2,11 @@ package capstone.rt04.retailbackend.services;
 
 
 import capstone.rt04.retailbackend.entities.Address;
+import capstone.rt04.retailbackend.entities.ProductStock;
 import capstone.rt04.retailbackend.entities.Warehouse;
 import capstone.rt04.retailbackend.repositories.AddressRepository;
+import capstone.rt04.retailbackend.repositories.ProductRepository;
+import capstone.rt04.retailbackend.repositories.ProductStockRepository;
 import capstone.rt04.retailbackend.repositories.WarehouseRepository;
 import capstone.rt04.retailbackend.util.exceptions.warehouse.WarehouseNotFoundException;
 import org.springframework.stereotype.Service;
@@ -18,11 +21,14 @@ public class WarehouseService {
     private final WarehouseRepository warehouseRepository;
     private final AddressRepository addressRepository;
     private final ValidationService validationService;
+    private final ProductStockRepository productStockRepository;
 
-    public WarehouseService(WarehouseRepository warehouseRepository, AddressRepository addressRepository, ValidationService validationService) {
+    public WarehouseService(WarehouseRepository warehouseRepository, AddressRepository addressRepository,
+                            ValidationService validationService, ProductStockRepository productStockRepository) {
         this.warehouseRepository = warehouseRepository;
         this.addressRepository = addressRepository;
         this.validationService = validationService;
+        this.productStockRepository = productStockRepository;
     }
 
 
@@ -60,6 +66,10 @@ public class WarehouseService {
         return allWarehouse;
     }
 
+    public List<Warehouse> retrieveAllWarehouses() {
+        return warehouseRepository.findAll();
+    }
+
 
     //View Warehouse Inventory Details
     public Warehouse retrieveWarehouseDetailsByID(Long warehouseId) throws WarehouseNotFoundException {
@@ -78,6 +88,7 @@ public class WarehouseService {
         newWareHouse.setAddress(warehouse.getAddress());
         newWareHouse.setInStoreRestockOrders(warehouse.getInStoreRestockOrders());
         newWareHouse.setWarehouseId(warehouse.getWarehouseId());
+        newWareHouse.setDayOfMonth(warehouse.getDayOfMonth());
 
         return newWareHouse;
     }
@@ -91,8 +102,6 @@ public class WarehouseService {
 
     // E1.4
     // Set Criteria for automated ordering from supplier
-    //
-
-
+    // Criteria is set in ProductStock.reorderQuantity
 }
 

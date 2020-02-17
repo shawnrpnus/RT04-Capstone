@@ -66,7 +66,7 @@ public class ProductControllerTest extends ApiTestSetup {
                 when().get(PRODUCT_VARIANT_BASE_ROUTE + RETRIEVE_PRODUCT_VARIANT_BY_ID).
                 then().statusCode(HttpStatus.OK.value()).extract().body().as(ProductVariant.class);
 
-        ProductStock validProductStock = new ProductStock(10, 100, 30);
+        ProductStock validProductStock = new ProductStock(10, 100, 30, 20);
         validProductStock.setProductVariant(productVariant);
         ProductStockCreateRequest productStockCreateRequest = new ProductStockCreateRequest(validProductStock, productVariantId);
 
