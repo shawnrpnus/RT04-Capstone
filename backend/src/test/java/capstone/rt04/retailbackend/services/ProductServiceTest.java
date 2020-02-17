@@ -1,13 +1,14 @@
 package capstone.rt04.retailbackend.services;
 
 import capstone.rt04.retailbackend.entities.*;
+import capstone.rt04.retailbackend.util.enums.SortEnum;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductImageNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductStockNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.promoCode.PromoCodeNotFoundException;
-import org.junit.After;
-import org.junit.Before;
+import capstone.rt04.retailbackend.util.exceptions.style.StyleNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.tag.TagNotFoundException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @ActiveProfiles("test")
-public class ProductServiceTest {
+public class ProductServiceTest extends ServiceTestSetup {
 
     @Autowired
     private CategoryService categoryService;
@@ -34,50 +35,27 @@ public class ProductServiceTest {
     private PromoCodeService promoCodeService;
     @Autowired
     private ProductService productService;
+    @Autowired
+    private StyleService styleService;
+    @Autowired
+    private TagService tagService;
 
-    private static Long categoryId;
-    private static Long productId;
-    private static Long productVariantId;
-
-
-    /**
-     * Test for create/delete Product
-     * Test for create/delete ProductVariant
-     **/
-    @Before
-    public void beforeEachTest() throws Exception {
-        Product validProduct = new Product("Fila Disruptor II", "Fila", BigDecimal.valueOf(89.90), BigDecimal.valueOf(39.90));
-        Product invalidProduct = new Product("Adidas Alpha Bounce", "Adidas", BigDecimal.valueOf(109.90), BigDecimal.valueOf(59.90));
-
-        Category category = categoryService.createNewCategory(new Category("Shoes"), null);
-        validProduct.setCategory(category);
-        invalidProduct.setCategory(category);
-
-        Product product = productService.createNewProduct(validProduct, category.getCategoryId(), null);
-
-        ProductVariant validProductVariant = new ProductVariant("SKU001", "White", null, null, null);
-        ProductVariant productVariant = productService.createProductVariant(validProductVariant, product.getProductId());
-
-        assertThat(product).isEqualTo(validProduct);
-        assertThat(product).isNotEqualTo(invalidProduct);
-        assertThat(productVariant).isEqualTo(validProductVariant);
-
-        categoryId = category.getCategoryId();
-        productId = product.getProductId();
-        productVariantId = productVariant.getProductVariantId();
-    }
-
-    @After
-    public void afterEachTest() throws Exception {
-
-        Product productToRemove = productService.retrieveProductById(productId);
-        Product removedProduct = productService.deleteProduct(productToRemove.getProductId());
-        assertThat(removedProduct.getProductId()).isEqualTo(productToRemove.getProductId());
-
-        Category categoryToRemove = categoryService.retrieveCategoryByCategoryId(categoryId);
-        Category removedCategory = categoryService.deleteCategory(categoryToRemove.getCategoryId());
-        assertThat(removedCategory.getCategoryId()).isEqualTo(categoryId);
-    }
+//    @Before
+//    public void beforeEachTest() throws Exception {
+//
+//    }
+//
+//    @After
+//    public void afterEachTest() throws Exception {
+//
+//        Product productToRemove = productService.retrieveProductById(productId);
+//        Product removedProduct = productService.deleteProduct(productToRemove.getProductId());
+//        assertThat(removedProduct.getProductId()).isEqualTo(productToRemove.getProductId());
+//
+//        Category categoryToRemove = categoryService.retrieveCategoryByCategoryId(categoryId);
+//        Category removedCategory = categoryService.deleteCategory(categoryToRemove.getCategoryId());
+//        assertThat(removedCategory.getCategoryId()).isEqualTo(categoryId);
+//    }
 
     @Test
     public void createErrorProduct() throws Exception {
@@ -94,11 +72,9 @@ public class ProductServiceTest {
 
     @Test(expected = ProductVariantNotFoundException.class)
     public void CDProductVariant() throws Exception {
+        ProductVariant validProductVariant = new ProductVariant("SKU005", "Black", null, null, null);
 
-        Product product = productService.retrieveProductById(productId);
-        ProductVariant validProductVariant = new ProductVariant("SKU002", "Black", null, null, null);
-
-        ProductVariant productVariant = productService.createProductVariant(validProductVariant, product.getProductId());
+        ProductVariant productVariant = productService.createProductVariant(validProductVariant, productId);
         assertThat(productVariant).isEqualTo(validProductVariant);
 
         productService.deleteProductVariant(productVariant.getProductVariantId());
@@ -144,13 +120,117 @@ public class ProductServiceTest {
     @Test(expected = PromoCodeNotFoundException.class)
     public void addAndRemovePromoCode() throws Exception {
         List<Product> products = productService.retrieveAllProducts();
+
         PromoCode promoCode = new PromoCode("CNY Promotion", BigDecimal.TEN, BigDecimal.valueOf(5), BigDecimal.valueOf(20), 5, products);
         promoCodeService.createNewPromoCode(promoCode);
 
         products = productService.retrieveAllProducts();
         assertThat(products.get(0).getPromoCodes().get(0).getPromoCodeId()).isEqualTo(promoCode.getPromoCodeId());
 
+        productService.addOrRemovePromoCode(promoCode.getPromoCodeId(), null, null, products, false);
+        products = productService.retrieveAllProducts();
+        assertThat(products.get(0).getPromoCodes().size()).isEqualTo(0);
+
+        productService.addOrRemovePromoCode(promoCode.getPromoCodeId(), null, null, products, true);
+        products = productService.retrieveAllProducts();
+        assertThat(products.get(0).getPromoCodes().get(0).getPromoCodeId()).isEqualTo(promoCode.getPromoCodeId());
+
         promoCodeService.deletePromoCode(promoCode.getPromoCodeId());
-        promoCodeService.retrievePromoCodeByIds(promoCode.getPromoCodeId());
+        promoCodeService.retrievePromoCodeById(promoCode.getPromoCodeId());
+    }
+
+    @Test(expected = StyleNotFoundException.class)
+    public void addAndRemoveStyle() throws Exception {
+        List<Product> products = productService.retrieveAllProducts();
+        Style style = new Style("Chic", products);
+        styleService.createNewStyle(style);
+
+        products = productService.retrieveAllProducts();
+        assertThat(products.get(0).getStyles().get(0).getStyleId()).isEqualTo(style.getStyleId());
+
+        styleService.deleteStyle(style.getStyleId());
+        styleService.retrieveStyleByStyleId(style.getStyleId());
+    }
+
+    @Test(expected = TagNotFoundException.class)
+    public void addAndRemoveTag() throws Exception {
+        List<Product> products = productService.retrieveAllProducts();
+        Tag tag = new Tag("Chic", null);
+        tagService.createNewTag(tag);
+
+        productService.addOrRemoveTag(tag.getTagId(), null, null, products, true);
+        products = productService.retrieveAllProducts();
+        assertThat(products.get(0).getTags().get(0).getTagId()).isEqualTo(tag.getTagId());
+
+        productService.addOrRemoveTag(tag.getTagId(), null, null, products, false);
+        products = productService.retrieveAllProducts();
+        assertThat(products.get(0).getTags().size()).isEqualTo(0);
+
+        tagService.deleteTag(tag.getTagId());
+        tagService.retrieveTagByTagId(tag.getTagId());
+    }
+
+    @Test
+    public void retrieveProductByCategory() throws Exception {
+        Category category = categoryService.retrieveCategoryByCategoryId(categoryId);
+
+        List<Product> products = productService.retrieveProductByCategory(category);
+        assertThat(products.size()).isNotEqualTo(0);
+    }
+
+
+    @Test
+    public void retrieveProductByCriteria() throws Exception {
+        List<Product> products = productService.retrieveAllProducts();
+        Tag tag1 = new Tag("Classy", null);
+        tagService.createNewTag(tag1);
+        Tag tag2 = new Tag("Urban", null);
+        tagService.createNewTag(tag2);
+
+        productService.addOrRemoveTag(tag1.getTagId(), null, null, products, true);
+        products = productService.retrieveAllProducts();
+
+        Category category = categoryService.retrieveCategoryByCategoryId(categoryId);
+        List<Tag> tags = new ArrayList<>();
+        tags.add(tag1);
+        List<String> colours = new ArrayList<>();
+        colours.add("White");
+        colours.add("Pink");
+
+        List<Product> productList = productService.retrieveProductByCriteria(category, tags, colours, null, BigDecimal.ZERO, BigDecimal.valueOf(300), null);
+        assertThat(productList.size()).isNotEqualTo(0);
+        assertThat(productList.get(0).getProductName()).isEqualTo("Adidas Alpha Bounce");
+
+        productList = productService.retrieveProductByCriteria(category, tags, colours, null, BigDecimal.ZERO, BigDecimal.valueOf(300), SortEnum.PRICE_HIGH_TO_LOW);
+        assertThat(productList.get(0).getProductName()).isEqualTo("Adidas Alpha Bounce");
+
+        productList = productService.retrieveProductByCriteria(category, tags, colours, null, BigDecimal.ZERO, BigDecimal.valueOf(300), SortEnum.PRICE_LOW_TO_HIGH);
+        assertThat(productList.get(0).getProductName()).isEqualTo("Fila Disruptor II");
+
+        colours.remove("White");
+        colours.remove("Pink");
+        colours.add("Red");
+        productList = productService.retrieveProductByCriteria(category, tags, colours, null, BigDecimal.ZERO, BigDecimal.valueOf(300), null);
+        // Product does not have Red tag
+        assertThat(productList.size()).isEqualTo(0);
+        colours.remove("Red");
+
+        colours.add("White");
+        tags.remove(tag1);
+        productList = productService.retrieveProductByCriteria(category, tags, colours, null, BigDecimal.ZERO, BigDecimal.valueOf(500), null);
+        // No tags case - one product with 'white' tag exist
+        assertThat(productList.size()).isEqualTo(1);
+
+        tags.add(tag1);
+        tags.add(tag2);
+        colours.add("White");
+        colours.add("Pink");
+        colours.add("Red");
+        productList = productService.retrieveProductByCriteria(category, tags, colours, null, BigDecimal.valueOf(500), BigDecimal.valueOf(300), null);
+        // Wrong min price
+         assertThat(productList.size()).isEqualTo(0);
+
+        tagService.deleteTag(tag1.getTagId());
+        tagService.deleteTag(tag2.getTagId());
     }
 }

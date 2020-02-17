@@ -80,7 +80,7 @@ public class StartUpService {
             Warehouse w = warehouseService.createWarehouse(warehouse, address);
             List<Warehouse> warehouses = warehouseService.retrieveAllWarehouseInventory();
 
-            productService.assignProductStock(warehouses, null);
+            productService.assignProductStock(warehouses, null, null);
 
         }
 

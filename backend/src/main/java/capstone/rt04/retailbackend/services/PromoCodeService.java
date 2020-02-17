@@ -36,15 +36,14 @@ public class PromoCodeService {
             try {
                 List<Product> products = new ArrayList<>(promoCode.getProducts());
                 Product product = null;
+                promoCode.getProducts().clear();
 
                 for (Product prod : products) {
-                    promoCode.addProduct(prod);
                     product = productService.retrieveProductById(prod.getProductId());
-                    product.addPromoCode(promoCode);
                     promoCode.addProduct(product);
                 }
-
                 promoCodeRepository.save(promoCode);
+
                 return promoCode;
             } catch (ProductNotFoundException ex) {
                 throw new ProductNotFoundException("Unable to find certain products to link to the promo code " + ex.getMessage());
@@ -56,7 +55,7 @@ public class PromoCodeService {
     }
 
     public PromoCode updatePromoCode(PromoCode newPromoCode) throws PromoCodeNotFoundException {
-        PromoCode promoCode = retrievePromoCodeByIds(newPromoCode.getPromoCodeId());
+        PromoCode promoCode = retrievePromoCodeById(newPromoCode.getPromoCodeId());
 
         promoCode.setFlatDiscount(newPromoCode.getFlatDiscount());
         promoCode.setMinimumPurchase(newPromoCode.getMinimumPurchase());
@@ -69,7 +68,7 @@ public class PromoCodeService {
     }
 
     public PromoCode deletePromoCode(Long promoCodeId) throws PromoCodeNotFoundException {
-        PromoCode promoCodeToRemove = retrievePromoCodeByIds(promoCodeId);
+        PromoCode promoCodeToRemove = retrievePromoCodeById(promoCodeId);
         for (Product product : promoCodeToRemove.getProducts()) {
             product.getPromoCodes().remove(promoCodeToRemove);
         }
@@ -79,7 +78,7 @@ public class PromoCodeService {
         return promoCodeToRemove;
     }
 
-    public PromoCode retrievePromoCodeByIds(Long promoCodeId) throws PromoCodeNotFoundException {
+    public PromoCode retrievePromoCodeById(Long promoCodeId) throws PromoCodeNotFoundException {
         PromoCode promoCode = promoCodeRepository.findById(promoCodeId)
                 .orElseThrow(() -> new PromoCodeNotFoundException("Promo code " + promoCodeId + " not found!"));
         promoCode.getProducts().size();

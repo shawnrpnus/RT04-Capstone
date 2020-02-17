@@ -29,7 +29,7 @@ import java.util.List;
 @Getter
 @Setter
 @EqualsAndHashCode
-@ToString(exclude = {"category"})
+@ToString(exclude = {"category", "productVariants"})
 @JsonIdentityInfo(generator = JSOGGenerator.class)
 
 public class Product implements Serializable {
@@ -84,7 +84,11 @@ public class Product implements Serializable {
 
     public Product() {
         this.discounts = new ArrayList<>();
+        this.promoCodes = new ArrayList<>();
         this.tags = new ArrayList<>();
+        this.reviews = new ArrayList<>();
+        this.productVariants = new ArrayList<>();
+        this.styles = new ArrayList<>();
     }
 
     public Product(String productName, String description, BigDecimal price, BigDecimal cost) {
@@ -110,21 +114,4 @@ public class Product implements Serializable {
             }
         }
     }
-
-    public void addPromoCode(PromoCode promoCode)
-    {
-        if(promoCode != null)
-        {
-            if(!this.promoCodes.contains(promoCode))
-            {
-                this.promoCodes.add(promoCode);
-
-                if(!promoCode.getProducts().contains(this))
-                {
-                    promoCode.getProducts().add(this);
-                }
-            }
-        }
-    }
-
 }

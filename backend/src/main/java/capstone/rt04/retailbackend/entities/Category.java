@@ -50,6 +50,7 @@ public class Category implements Serializable {
 
     public Category() {
         this.products = new ArrayList<>();
+        this.childCategories = new ArrayList<>();
     }
 
     public Category(String name) {

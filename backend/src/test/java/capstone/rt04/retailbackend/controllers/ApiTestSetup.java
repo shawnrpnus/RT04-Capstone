@@ -5,6 +5,7 @@ import capstone.rt04.retailbackend.request.category.CategoryCreateRequest;
 import capstone.rt04.retailbackend.request.product.ProductCreateRequest;
 import capstone.rt04.retailbackend.request.productVariant.ProductVariantCreateRequest;
 import capstone.rt04.retailbackend.util.routeconstants.StyleControllerRoutes;
+import capstone.rt04.retailbackend.util.routeconstants.TagControllerRoutes;
 import io.restassured.RestAssured;
 import org.junit.After;
 import org.junit.Before;
@@ -24,6 +25,8 @@ import static capstone.rt04.retailbackend.util.routeconstants.CustomerController
 import static capstone.rt04.retailbackend.util.routeconstants.ProductControllerRoutes.*;
 import static capstone.rt04.retailbackend.util.routeconstants.ProductVariantControllerRoutes.CREATE_PRODUCT_VARIANT;
 import static capstone.rt04.retailbackend.util.routeconstants.ProductVariantControllerRoutes.PRODUCT_VARIANT_BASE_ROUTE;
+import static capstone.rt04.retailbackend.util.routeconstants.TagControllerRoutes.DELETE_TAG;
+import static capstone.rt04.retailbackend.util.routeconstants.TagControllerRoutes.TAG_BASE_ROUTE;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -44,6 +47,8 @@ public class ApiTestSetup {
     protected static Long productId;
     protected static Long productVariantId;
     protected static Long createdCustomerId;
+    protected static Long tagId1;
+    protected static Long tagId2;
     protected static String verificationCode;
 
     @Before
@@ -52,6 +57,7 @@ public class ApiTestSetup {
         setUpCustomer();
         setUpProduct();
         setUpStyle();
+        setUpTag();
     }
 
     @After
@@ -59,6 +65,7 @@ public class ApiTestSetup {
         tearDownCustomer();
         tearDownProduct();
         tearDownStyle();
+        tearDownTag();
     }
 
     @Test
@@ -125,6 +132,21 @@ public class ApiTestSetup {
         assertThat(productVariant.getSKU()).isEqualTo(validProductVariant.getSKU());
     }
 
+    private void setUpTag() {
+        Tag tag1 = given()
+                .contentType("application/json")
+                .body(new Tag("Christmas"))
+                .when().post(TAG_BASE_ROUTE + TagControllerRoutes.CREATE_NEW_TAG)
+                .then().statusCode(HttpStatus.CREATED.value()).extract().body().as(Tag.class);
+        tagId1 = tag1.getTagId();
+        Tag tag2 = given()
+                .contentType("application/json")
+                .body(new Tag("Coronavirus"))
+                .when().post(TAG_BASE_ROUTE + TagControllerRoutes.CREATE_NEW_TAG)
+                .then().statusCode(HttpStatus.CREATED.value()).extract().body().as(Tag.class);
+        tagId2 = tag2.getTagId();
+    }
+
     private void tearDownProduct(){
         Product removedProduct = given().
                 pathParam("productId", productId).
@@ -157,6 +179,19 @@ public class ApiTestSetup {
                 .when().delete(StyleControllerRoutes.STYLE_BASE_ROUTE + StyleControllerRoutes.DELETE_STYLE)
                 .then().statusCode(HttpStatus.OK.value());
         styleId = null;
+    }
+
+    private void tearDownTag() {
+        given()
+                .pathParam("tagId", tagId1)
+                .when().delete(TAG_BASE_ROUTE + DELETE_TAG)
+                .then().statusCode(HttpStatus.OK.value());
+        given()
+                .pathParam("tagId", tagId2)
+                .when().delete(TAG_BASE_ROUTE + DELETE_TAG)
+                .then().statusCode(HttpStatus.OK.value());
+        tagId1 = null;
+        tagId2 = null;
     }
 
 }

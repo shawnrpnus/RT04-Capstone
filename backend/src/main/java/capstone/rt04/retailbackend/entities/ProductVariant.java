@@ -14,8 +14,8 @@ import lombok.ToString;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -44,7 +44,6 @@ public class ProductVariant implements Serializable {
     private String colour;
         
     @OneToMany
-    @Size(min = 1)
     private List<ProductImage> productImages;
     
     @ManyToOne(optional = false)
@@ -58,9 +57,12 @@ public class ProductVariant implements Serializable {
     private List<ProductStock> productStocks;
 
     public ProductVariant() {
+        this.productStocks = new ArrayList<>();
+        this.productImages = new ArrayList<>();
     }
 
     public ProductVariant(String SKU, String colour, List<ProductImage> productImages, Product product, SizeDetails sizeDetails) {
+        this();
         this.SKU = SKU;
         this.colour = colour;
         this.productImages = productImages;

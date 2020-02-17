@@ -1,8 +1,8 @@
 package capstone.rt04.retailbackend.controllers;
 
-import capstone.rt04.retailbackend.entities.ProductImage;
-import capstone.rt04.retailbackend.entities.ProductStock;
-import capstone.rt04.retailbackend.entities.ProductVariant;
+import capstone.rt04.retailbackend.entities.*;
+import capstone.rt04.retailbackend.request.product.ProductRetrieveRequest;
+import capstone.rt04.retailbackend.request.product.ProductTagRequest;
 import capstone.rt04.retailbackend.request.productImage.ProductImageCreateRequest;
 import capstone.rt04.retailbackend.request.productImage.ProductImageDeleteRequest;
 import capstone.rt04.retailbackend.request.productStock.ProductStockCreateRequest;
@@ -15,12 +15,16 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import static capstone.rt04.retailbackend.util.routeconstants.ProductControllerRoutes.*;
 import static capstone.rt04.retailbackend.util.routeconstants.ProductImageControllerRoutes.*;
 import static capstone.rt04.retailbackend.util.routeconstants.ProductStockControllerRoutes.*;
 import static capstone.rt04.retailbackend.util.routeconstants.ProductVariantControllerRoutes.*;
+import static capstone.rt04.retailbackend.util.routeconstants.TagControllerRoutes.RETRIEVE_ALL_TAGS;
+import static capstone.rt04.retailbackend.util.routeconstants.TagControllerRoutes.TAG_BASE_ROUTE;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -32,7 +36,7 @@ public class ProductControllerTest extends ApiTestSetup {
 
     @Test
     public void testCDProductVariant() {
-        ProductVariant validProductVariant = new ProductVariant("SKU002", "Pink", null, null, null);
+        ProductVariant validProductVariant = new ProductVariant("SKU004", "Pink", null, null, null);
         ProductVariantCreateRequest productVariantCreateRequest = new ProductVariantCreateRequest(validProductVariant, productId);
 
         ProductVariant productVariantToCreate = given().
@@ -126,8 +130,65 @@ public class ProductControllerTest extends ApiTestSetup {
         assertThat(deletedProductImages.size()).isEqualTo(productImages.size());
 
         given().
-               pathParam("productImageId", productImageId).
+                pathParam("productImageId", productImageId).
                 when().get(PRODUCT_IMAGE_BASE_ROUTE + RETRIEVE_PRODUCT_IMAGE_BY_ID).
                 then().statusCode(HttpStatus.NOT_FOUND.value());
+    }
+
+    @Test
+    public void addOrRemoveTagAndRetrieveByCriteria() throws Exception {
+        // Create
+        List<Product> products = given().when().get(PRODUCT_BASE_ROUTE + RETRIEVE_ALL_PRODUCTS).
+                then().statusCode(HttpStatus.OK.value()).extract().body().jsonPath().getList(".", Product.class);
+
+        ProductTagRequest productTagRequest = new ProductTagRequest(tagId1, null, null, products, true);
+        given().
+                contentType("application/json").
+                body(productTagRequest).
+                when().put(PRODUCT_BASE_ROUTE + ADD_REMOVE_TAG_FOR_A_LIST_OF_PRODUCTS).
+                then().statusCode(HttpStatus.OK.value());
+
+        products = given()
+                .when().get(PRODUCT_BASE_ROUTE + RETRIEVE_ALL_PRODUCTS)
+                .then().statusCode(HttpStatus.OK.value()).extract().body().jsonPath().getList(".", Product.class);
+        assertThat(products.get(0).getTags().get(0).getName()).isEqualTo("Christmas");
+
+        // Start
+        // Test retrieve by criteria
+        List<Tag> tags = given()
+                .when().get(TAG_BASE_ROUTE + RETRIEVE_ALL_TAGS)
+                .then().statusCode(HttpStatus.OK.value()).extract().body().jsonPath().getList(".", Tag.class);
+
+        List<String> colours = new ArrayList<>();
+        colours.add("Pink");
+
+        ProductRetrieveRequest productRetrieveRequest = new ProductRetrieveRequest(null, tags, colours,
+                null, BigDecimal.ZERO, BigDecimal.valueOf(500), null);
+        products = given()
+                .contentType("application/json")
+                .body(productRetrieveRequest)
+                .when().get(PRODUCT_BASE_ROUTE + RETRIEVE_PRODUCTS_BY_CRITERIA)
+                .then().statusCode(HttpStatus.OK.value()).extract().body().jsonPath().getList(".", Product.class);
+        assertThat(products.size()).isEqualTo(0);
+
+        colours.add("White");
+        products = given()
+                .contentType("application/json")
+                .body(productRetrieveRequest)
+                .when().get(PRODUCT_BASE_ROUTE + RETRIEVE_PRODUCTS_BY_CRITERIA)
+                .then().statusCode(HttpStatus.OK.value()).extract().body().jsonPath().getList(".", Product.class);
+        assertThat(products.size()).isEqualTo(1);
+
+        // End
+        productTagRequest = new ProductTagRequest(tagId1, null, null, products, false);
+        given().
+                contentType("application/json").
+                body(productTagRequest).
+                when().put(PRODUCT_BASE_ROUTE + ADD_REMOVE_TAG_FOR_A_LIST_OF_PRODUCTS).
+                then().statusCode(HttpStatus.OK.value());
+
+        products = given().when().get(PRODUCT_BASE_ROUTE + RETRIEVE_ALL_PRODUCTS).
+                then().statusCode(HttpStatus.OK.value()).extract().body().jsonPath().getList(".", Product.class);
+        assertThat(products.get(0).getTags().size()).isEqualTo(0);
     }
 }
