@@ -15,14 +15,6 @@ import Landing from './components/landing'
 
 // Layouts
 import Fashion from './components/layouts/fashion/main';
-import Vegetables from './components/layouts/vegetables/main';
-import Kids from './components/layouts/kids/main';
-import Pets from './components/layouts/pets/main';
-import Furniture from './components/layouts/furniture/main';
-import Watch from './components/layouts/watch/main';
-import Beauty from './components/layouts/beauty/main';
-import Electronic from './components/layouts/electronic/main';
-
 
 //Collection Pages
 import CollectionLeftSidebar from "./components/collection/collection-left-sidebar";
@@ -101,13 +93,6 @@ class Root extends React.Component {
 					<ScrollContext>
 						<Switch>
                             <Route exact path={`${process.env.PUBLIC_URL}/`} component={Landing}/>
-                            <Route path={`${process.env.PUBLIC_URL}/vegetables`} component={Vegetables}/>
-							<Route path={`${process.env.PUBLIC_URL}/electronic`} component={Electronic}/>
-                            <Route path={`${process.env.PUBLIC_URL}/furniture`} component={Furniture}/>
-							<Route path={`${process.env.PUBLIC_URL}/pets`} component={Pets}/>
-							<Route path={`${process.env.PUBLIC_URL}/watch`} component={Watch}/>
-                            <Route path={`${process.env.PUBLIC_URL}/kids`} component={Kids}/>
-                            <Route path={`${process.env.PUBLIC_URL}/beauty`} component={Beauty}/>
                             <Layout>
 
                                 {/*Routes For Layouts*/}
