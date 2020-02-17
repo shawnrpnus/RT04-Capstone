@@ -9,7 +9,6 @@ import capstone.rt04.retailbackend.util.exceptions.warehouse.WarehouseNotFoundEx
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.LinkedList;
 import java.util.List;
 
 
@@ -89,6 +88,10 @@ public class WarehouseService {
         warehouse.getAddress();
         return warehouse;
     }
+
+    // E1.4
+    // Set Criteria for automated ordering from supplier
+    //
 
 
 }

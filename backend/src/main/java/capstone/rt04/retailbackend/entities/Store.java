@@ -16,6 +16,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.sql.Time;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -26,7 +27,7 @@ import java.util.List;
 @Getter
 @Setter
 @EqualsAndHashCode
-@ToString
+@ToString(exclude = "productStocks")
 @JsonIdentityInfo(generator = JSOGGenerator.class)
 public class Store implements Serializable {
 
@@ -74,10 +75,16 @@ public class Store implements Serializable {
     private List<Roster> rosters;
     
     public Store() {
+        this.reservations = new ArrayList<>();
+        this.inStoreRestockOrders = new ArrayList<>();
+        this.productStocks = new ArrayList<>();
+        this.transactions = new ArrayList<>();
+        this.rosters = new ArrayList<>();
     }
     
 
     public Store(Integer numChangingRooms, Time openingTime, Time closingTime, Integer numManagers, Integer numAssistants, Address address) {
+        this();
         this.numChangingRooms = numChangingRooms;
         this.openingTime = openingTime;
         this.closingTime = closingTime;

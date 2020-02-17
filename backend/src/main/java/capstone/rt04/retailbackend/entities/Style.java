@@ -48,7 +48,6 @@ public class Style implements Serializable {
     private List<Customer> customers;
 
     public Style() {
-
         this.products = new ArrayList<>();
         this.customers = new ArrayList<>();
     }

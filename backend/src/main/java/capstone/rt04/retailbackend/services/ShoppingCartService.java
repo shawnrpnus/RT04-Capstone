@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,11 +65,13 @@ public class ShoppingCartService {
                 if (quantity > 0) { //set to whatever input quantity
                     shoppingCartItem.setQuantity(quantity);
                     Customer customer = customerService.retrieveCustomerByCustomerId(customerId);
+                    shoppingCart.setLastUpdated(new Timestamp(System.currentTimeMillis()));
                     return customerService.lazyLoadCustomerFields(customer);
                 } else if (quantity == 0){ // delete
                     shoppingCartItem.setProductVariant(null);
                     shoppingCart.getShoppingCartItems().remove(shoppingCartItem);
                     shoppingCartItemRepository.delete(shoppingCartItem);
+                    shoppingCart.setLastUpdated(new Timestamp(System.currentTimeMillis()));
                     Customer customer = customerService.retrieveCustomerByCustomerId(customerId);
                     return customerService.lazyLoadCustomerFields(customer);
                 }
@@ -77,6 +80,7 @@ public class ShoppingCartService {
         // does not exist in cart, so add  (first time adding)
         ShoppingCartItem shoppingCartItem = createShoppingCartItem(quantity, productVariantId);
         shoppingCart.getShoppingCartItems().add(shoppingCartItem);
+        shoppingCart.setLastUpdated(new Timestamp(System.currentTimeMillis()));
         Customer customer = customerService.retrieveCustomerByCustomerId(customerId);
         return customerService.lazyLoadCustomerFields(customer);
     }

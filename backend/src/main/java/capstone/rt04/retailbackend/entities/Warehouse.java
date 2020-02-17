@@ -43,14 +43,16 @@ public class Warehouse implements Serializable {
     @OneToMany(mappedBy = "warehouse")
     private List<ProductStock> productStocks;
 
-    public Warehouse(Address address) {
-        this.address = address;
-    }
-
     public Warehouse() {
         this.inStoreRestockOrders = new ArrayList<>();
         this.productStocks = new ArrayList<>();
     }
+    public Warehouse(Address address) {
+        this();
+        this.address = address;
+    }
+
+
        
     
 }

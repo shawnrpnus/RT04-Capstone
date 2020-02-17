@@ -2,11 +2,14 @@ package capstone.rt04.retailbackend.controllers;
 
 import capstone.rt04.retailbackend.entities.Product;
 import capstone.rt04.retailbackend.request.product.ProductCreateRequest;
+import capstone.rt04.retailbackend.request.product.ProductRetrieveRequest;
+import capstone.rt04.retailbackend.request.product.ProductTagRequest;
 import capstone.rt04.retailbackend.response.GenericErrorResponse;
 import capstone.rt04.retailbackend.services.ProductService;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.product.CreateNewProductException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.tag.TagNotFoundException;
 import capstone.rt04.retailbackend.util.routeconstants.ProductControllerRoutes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -35,6 +38,18 @@ public class ProductController {
         } catch (ProductNotFoundException ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
         } catch (Exception ex) {
+            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping(ProductControllerRoutes.RETRIEVE_PRODUCTS_BY_CRITERIA)
+    public ResponseEntity<?> retrieveProductsByCriteria(@RequestBody ProductRetrieveRequest productRetrieveRequest) {
+        try {
+            List<Product> products = productService.retrieveProductByCriteria(productRetrieveRequest.getCategory(), productRetrieveRequest.getTags(),
+                    productRetrieveRequest.getColours(), productRetrieveRequest.getSizeDetails(),
+                    productRetrieveRequest.getMinPrice(), productRetrieveRequest.getMaxPrice(), productRetrieveRequest.getSortEnum());
+            return new ResponseEntity<>(products, HttpStatus.OK);
+        }  catch (Exception ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -116,47 +131,45 @@ public class ProductController {
 //        }
 //    }
 //
-//    @PutMapping(ProductControllerRoutes.ADD_REMOVE_TAG_TO_PRODUCT)
-//    public ResponseEntity<?> addOrRemoveTagToAProduct(@RequestBody ProductTagRequest productTagRequest) {
-//        try {
-//            if (productTagRequest.getIsAppend()) {
-//                productService.addOrRemoveTag(null, productTagRequest.getProductId(),
-//                        productTagRequest.getTagIds(), null, true);
-//                return new ResponseEntity<>(new GenericErrorResponse("Success!"), HttpStatus.CREATED);
-//            } else {
-//                productService.addOrRemoveTag(null, productTagRequest.getProductId(),
-//                        productTagRequest.getTagIds(), null, false);
-//                return new ResponseEntity<>(new GenericErrorResponse("Failed"), HttpStatus.CREATED);
-//            }
-//        } catch (ProductNotFoundException ex) {
-//            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
-//        } catch (TagNotFoundException ex) {
-//            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
-//        } catch (Exception ex) {
-//            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//    }
-//
-//    @PutMapping(ProductControllerRoutes.ADD_REMOVE_TAG_FOR_A_LIST_OF_PRODUCTS)
-//    public ResponseEntity<?> addOrRemoveTagForAListOfProducts(@RequestBody ProductTagRequest productTagRequest) {
-//        try {
-//            if (productTagRequest.getIsAppend()) {
-//                productService.addOrRemoveTag(productTagRequest.getTagId(), null,
-//                        null, productTagRequest.getProductIds(), true);
-//                return new ResponseEntity<>(new GenericErrorResponse("Success!"), HttpStatus.CREATED);
-//            } else {
-//                productService.addOrRemoveTag(productTagRequest.getTagId(), null,
-//                        null, productTagRequest.getProductIds(), true);
-//                return new ResponseEntity<>(new GenericErrorResponse("Failed"), HttpStatus.CREATED);
-//            }
-//        } catch (ProductNotFoundException ex) {
-//            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
-//        } catch (TagNotFoundException ex) {
-//            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
-//        } catch (Exception ex) {
-//            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//    }
+    @PutMapping(ProductControllerRoutes.ADD_REMOVE_TAG_TO_PRODUCT)
+    public ResponseEntity<?> addOrRemoveTagToAProduct(@RequestBody ProductTagRequest productTagRequest) {
+        try {
+            if (productTagRequest.getIsAppend()) {
+                productService.addOrRemoveTag(null, productTagRequest.getProductId(),
+                        productTagRequest.getTags(), null, true);
+                return new ResponseEntity<>(new GenericErrorResponse("Success!"), HttpStatus.OK);
+            } else {
+                productService.addOrRemoveTag(null, productTagRequest.getProductId(),
+                        productTagRequest.getTags(), null, false);
+                return new ResponseEntity<>(new GenericErrorResponse("Failed"), HttpStatus.OK);
+            }
+        } catch (ProductNotFoundException | TagNotFoundException ex) {
+            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
+        } catch (Exception ex) {
+            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PutMapping(ProductControllerRoutes.ADD_REMOVE_TAG_FOR_A_LIST_OF_PRODUCTS)
+    public ResponseEntity<?> addOrRemoveTagForAListOfProducts(@RequestBody ProductTagRequest productTagRequest) {
+        try {
+            if (productTagRequest.getIsAppend()) {
+                productService.addOrRemoveTag(productTagRequest.getTagId(), null,
+                        null, productTagRequest.getProducts(), true);
+                return new ResponseEntity<>(new GenericErrorResponse("Success!"), HttpStatus.OK);
+            } else {
+                productService.addOrRemoveTag(productTagRequest.getTagId(), null,
+                        null, productTagRequest.getProducts(), false);
+                return new ResponseEntity<>(new GenericErrorResponse("Failed"), HttpStatus.OK);
+            }
+        } catch (ProductNotFoundException ex) {
+            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
+        } catch (TagNotFoundException ex) {
+            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
+        } catch (Exception ex) {
+            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
     @DeleteMapping(ProductControllerRoutes.DELETE_PRODUCT)
     public ResponseEntity<?> deleteProduct(@PathVariable Long productId) {

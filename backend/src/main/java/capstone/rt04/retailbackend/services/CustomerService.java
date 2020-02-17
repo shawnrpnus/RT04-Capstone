@@ -92,7 +92,6 @@ public class CustomerService {
             }
             return lazyLoadCustomerFields(customer);
         } catch (PersistenceException | CustomerNotFoundException ex) {
-            System.out.println(ex.getMessage());
             throw new CreateNewCustomerException("Error creating new customer");
         }
 
@@ -119,10 +118,21 @@ public class CustomerService {
     }
 
     public Customer retrieveCustomerByEmail(String email) throws CustomerNotFoundException {
+
+        System.out.println(customerRepository.findAll());
+
         Customer customer = customerRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomerNotFoundException("Customer email: " + email + "does not exist!"));
 
         return lazyLoadCustomerFields(customer);
+    }
+
+    public List<Customer> retrieveAllCustomers(){
+         List<Customer> customers = customerRepository.findAll();
+         for (Customer c : customers){
+             lazyLoadCustomerFields(c);
+         }
+         return customers;
     }
 
     public Customer retrieveCustomerByVerificationCode(String code) throws VerificationCodeInvalidException {

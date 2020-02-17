@@ -9,10 +9,10 @@ import java.util.List;
 @Repository
 public interface ProductVariantRepository extends CrudRepository<ProductVariant, Long> {
 
-    List<ProductVariant> findAll();
-
     ProductVariant findBySKU(String sku);
 
     List<ProductVariant> findAllByProductProductId(Long productId);
+
+    List<ProductVariant> findAllByColourIn(List<String> colour);
 
 }
