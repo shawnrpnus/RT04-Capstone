@@ -46,6 +46,8 @@ public class ProductStock implements Serializable {
     @NotNull
     @Column(nullable = false)
     private Integer notificationLevel;
+
+    private Integer reorderQuantity;
     
     @ManyToOne
     private Store store;
@@ -61,11 +63,12 @@ public class ProductStock implements Serializable {
     public ProductStock() {
     }
 
-    public ProductStock(Integer quantity, Integer maxQuantity, Integer notificationLevel) {
+    public ProductStock(Integer quantity, Integer maxQuantity, Integer notificationLevel, Integer reorderQuantity) {
         this();
         this.quantity = quantity;
         this.maxQuantity = maxQuantity;
         this.notificationLevel = notificationLevel;
+        this.reorderQuantity = reorderQuantity;
     }
 
 }

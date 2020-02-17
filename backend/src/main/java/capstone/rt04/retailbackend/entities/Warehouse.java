@@ -33,6 +33,8 @@ public class Warehouse implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long warehouseId;
+
+    private Integer dayOfMonth;
     
     @OneToOne(optional = false)
     private Address address;
@@ -46,6 +48,7 @@ public class Warehouse implements Serializable {
     public Warehouse() {
         this.inStoreRestockOrders = new ArrayList<>();
         this.productStocks = new ArrayList<>();
+        this.dayOfMonth = 5;
     }
     public Warehouse(Address address) {
         this();

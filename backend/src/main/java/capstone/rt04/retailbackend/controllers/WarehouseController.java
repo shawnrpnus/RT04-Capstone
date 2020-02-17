@@ -5,6 +5,7 @@ import capstone.rt04.retailbackend.entities.ProductVariant;
 import capstone.rt04.retailbackend.entities.Warehouse;
 import capstone.rt04.retailbackend.services.ProductService;
 import capstone.rt04.retailbackend.services.WarehouseService;
+import capstone.rt04.retailbackend.util.exceptions.product.ProductStockNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.warehouse.WarehouseNotFoundException;
 import capstone.rt04.retailbackend.util.routeconstants.WarehouseControllerRoutes;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,4 +55,9 @@ public class WarehouseController {
         return new ResponseEntity<>(updatedWarehouse, HttpStatus.OK);
     }
 
+    @PostMapping(WarehouseControllerRoutes.UPDATE_WAREHOUSE_INVENTORY)
+    public ResponseEntity<?> updateWarehouseInventory(@RequestBody ProductStock productStock, @RequestParam Long warehouseId) throws ProductStockNotFoundException {
+        ProductStock updatedProductStock = productService.updateProductStock(productStock);
+        return new ResponseEntity<>(updatedProductStock, HttpStatus.OK);
+    }
 }
