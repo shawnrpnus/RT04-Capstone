@@ -21,7 +21,7 @@ public class TimerService {
 
     private final Integer unattendedTimeLimit = 4;
 
-    private final Integer intervalMs = 60*60*1000;
+    private static final int intervalMs = 60 * 60 * 1000;
 
     public TimerService(CustomerService customerService, JavaMailSender javaMailSender) {
         this.customerService = customerService;
@@ -29,7 +29,7 @@ public class TimerService {
     }
 
     // in milliseconds
-    @Scheduled(fixedRate = 60*60*1000, initialDelay = 10000)
+    @Scheduled(fixedRate = intervalMs, initialDelay = 10000)
     public void checkForUnattendedShoppingCarts() {
         log.info("checkForUnattendedShoppingCarts() triggered");
         List<Customer> allCustomers = customerService.retrieveAllCustomers();
