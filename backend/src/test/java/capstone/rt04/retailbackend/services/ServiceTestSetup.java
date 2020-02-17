@@ -93,9 +93,9 @@ public class ServiceTestSetup {
 
     @After
     public void afterEachTest() throws Exception {
-        Customer validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
-        Customer removedCustomer = customerService.removeCustomer(validCustomer.getCustomerId());
-        assertThat(removedCustomer.getCustomerId()).isEqualTo(validCustomer.getCustomerId());
+
+        Customer removedCustomer = customerService.removeCustomer(createdCustomerId);
+        assertThat(removedCustomer.getCustomerId()).isEqualTo(createdCustomerId);
 
         Product productToRemove = productService.retrieveProductById(productId);
         Product removedProduct = productService.deleteProduct(productToRemove.getProductId()); // deletes prod variant also
