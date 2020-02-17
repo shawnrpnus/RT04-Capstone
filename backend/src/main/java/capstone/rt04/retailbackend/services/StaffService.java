@@ -92,7 +92,6 @@ public class StaffService {
 
 
         } catch (PersistenceException ex) {
-            System.out.println(ex.getMessage());
             throw new CreateNewStaffException("Error creating new staff");
         }
     }

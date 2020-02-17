@@ -89,6 +89,10 @@ public class WarehouseService {
         return warehouse;
     }
 
+    // E1.4
+    // Set Criteria for automated ordering from supplier
+    //
+
 
 }
 

@@ -16,6 +16,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,6 +42,8 @@ public class ShoppingCart implements Serializable {
     private BigDecimal initialTotalAmount;
     
     private BigDecimal finalTotalAmount;
+
+    private Timestamp lastUpdated;
     
     @OneToMany
     private List<ShoppingCartItem> shoppingCartItems;
