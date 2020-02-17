@@ -62,7 +62,7 @@ class checkOut extends Component {
             var handler = (window).StripeCheckout.configure({
                 key: 'pk_test_glxk17KhP7poKIawsaSgKtsL',
                 locale: 'auto',
-                token: (token: any) => {
+                token: (token) => {
                     console.log(token)
                       this.props.history.push({
                           pathname: '/order-success',

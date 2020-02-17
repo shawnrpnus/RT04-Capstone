@@ -37,13 +37,13 @@ public class StaffController {
         this.staffService = staffService;
         this.validationService = validationService;
     }
-
     @PostMapping(StaffControllerRoutes.CREATE_NEW_STAFF)
     public ResponseEntity<?> createNewStaff(@RequestBody StaffCreateRequest staffCreateRequest) throws InputDataValidationException, CreateNewStaffException {
         Staff newStaff = staffService.createNewStaff(staffCreateRequest.getStaff(),staffCreateRequest.getStaffAddress(),
                 staffCreateRequest.getRole(),staffCreateRequest.getDepartment());
         return new ResponseEntity<>(newStaff, HttpStatus.CREATED);
     }
+
 
     @PostMapping(StaffControllerRoutes.CREATE_NEW_STAFF_ACCOUNT)
     public ResponseEntity<?> createNewStaffAccount(@PathVariable Long staffID) throws CreateNewStaffAccountException {
