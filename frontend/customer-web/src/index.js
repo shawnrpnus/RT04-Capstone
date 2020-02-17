@@ -19,7 +19,7 @@ import Kids from "./components/layouts/kids/main";
 import Pets from "./components/layouts/pets/main";
 import Furniture from "./components/layouts/furniture/main";
 import Watch from "./components/layouts/watch/main";
-// import Beauty from "./components/layouts/beauty/main";
+import Beauty from "./components/layouts/beauty/main";
 import Electronic from "./components/layouts/electronic/main";
 
 //Collection Pages
@@ -125,10 +125,10 @@ class Root extends React.Component {
                   path={`${process.env.PUBLIC_URL}/kids`}
                   component={Kids}
                 />
-                {/* <Route
+                <Route
                   path={`${process.env.PUBLIC_URL}/beauty`}
                   component={Beauty}
-                /> */}
+                />
                 <Layout>
                   {/*Routes For Layouts*/}
                   <Route
