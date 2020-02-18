@@ -16,6 +16,7 @@ import lombok.ToString;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -40,10 +41,12 @@ public class Customer implements Serializable {
 
     @NotNull(message = ErrorMessages.FIRST_NAME_REQUIRED)
     @Column(nullable = false)
+    @Size(min = 1, message = ErrorMessages.FIRST_NAME_REQUIRED)
     private String firstName;
     
     @NotNull(message = ErrorMessages.LAST_NAME_REQUIRED)
     @Column(nullable = false)
+    @Size(min = 1, message = ErrorMessages.FIRST_NAME_REQUIRED)
     private String lastName;
     
     @NotNull(message = ErrorMessages.EMAIL_REQUIRED)
@@ -55,6 +58,7 @@ public class Customer implements Serializable {
     private String requestedNewEmail;
     
     @NotNull(message = ErrorMessages.PASSWORD_REQUIRED)
+    @Size(min = 1, message = ErrorMessages.PASSWORD_REQUIRED)
     @Column(columnDefinition = "CHAR(64) NOT NULL")
     private String password;
     

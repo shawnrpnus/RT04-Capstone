@@ -18,8 +18,8 @@ import {
 
 class Fashion extends Component {
 
-    componentDidMount() {
-        document.getElementById("color").setAttribute("href", `#` );
+    constructor(props){
+        super(props);
     }
 
 	render() {

@@ -81,7 +81,7 @@ class Header extends Component {
 
         return (
             <div>
-                <header id="sticky" className="sticky header-2 header-6">
+                <header id="sticky" className="header-2 header-6">
                     {this.state.isLoading ? <Pace color="#27ae60"/> : null}
                     <div className="mobile-fix-option"/>
                     {/*Top Header Component*/}
