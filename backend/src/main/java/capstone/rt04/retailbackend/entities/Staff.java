@@ -53,8 +53,7 @@ public class Staff implements Serializable {
     @Email(message = ErrorMessages.EMAIL_INVALID)
     private String email;
 
-    @OneToOne(cascade = CascadeType.REMOVE)
-    private VerificationCode staffVerificationCode;
+
 
     @Size(min = 6)
     private String password;

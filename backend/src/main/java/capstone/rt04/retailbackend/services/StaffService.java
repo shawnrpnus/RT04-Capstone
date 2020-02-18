@@ -126,16 +126,16 @@ public class StaffService {
 
     }
 
-    public void resetPassword(Long staffId, String code, String newPassword) throws StaffNotFoundException, VerificationCodeInvalidException {
+    //For IT department to reset for staff
+    public void resetPassword(Long staffId) throws StaffNotFoundException{
         Staff staff = retrieveStaffByStaffId(staffId);
 
-        if (code.equals(staff.getStaffVerificationCode().getCode())) {
-            if (staff.getStaffVerificationCode().getExpiryDateTime().before(new Timestamp(System.currentTimeMillis()))) {
-                throw new VerificationCodeInvalidException(ErrorMessages.VERIFICATION_CODE_EXPIRED);
-            }
-            staff.setPassword(encoder.encode(newPassword));
-        } else {
-            throw new VerificationCodeInvalidException(ErrorMessages.VERIFICATION_CODE_INVALID);
+        String password = RandomStringUtils.randomAlphanumeric(12);
+        staff.setPassword(encoder.encode(password));
+
+        if (Arrays.asList(environment.getActiveProfiles()).contains("dev")) {
+            //send an email to staff informing staff new password
+            sendEmail(staffId.toString(),password, "shawnroshan@gmail.com"); //TODO: to change to actual email
         }
     }
 
@@ -243,32 +243,7 @@ public class StaffService {
         return staff;
     }
 
-    public VerificationCode generateVerificationCode(Long staffId) throws StaffNotFoundException {
-        Staff staff = retrieveStaffByStaffId(staffId);
-        VerificationCode currentCode = staff.getStaffVerificationCode();
-        if (currentCode != null) {
-            currentCode.setStaff(null);
-            staff.setStaffVerificationCode(null);
-            verificationCodeRepository.delete(currentCode);
-        }
 
-        String code = RandomStringUtils.randomAlphanumeric(32);
-        VerificationCode existingCode = verificationCodeRepository.findByCode(code).orElse(null);
-        while (existingCode != null) {
-            code = RandomStringUtils.randomAlphanumeric(32);
-            existingCode = verificationCodeRepository.findByCode(code).orElse(null);
-        }
-
-        long now = System.currentTimeMillis();
-        long nowPlus1Hour = now + TimeUnit.HOURS.toMillis(1);
-
-        //uses the other constructor-> customer attribute remains null
-        VerificationCode verificationCode = new VerificationCode(code, new Timestamp(nowPlus1Hour), staff);
-        verificationCodeRepository.save(verificationCode);
-        staff.setStaffVerificationCode(verificationCode);
-
-        return verificationCode;
-    }
 
 
     private void sendEmail(String username, String password, String email) {
@@ -279,13 +254,13 @@ public class StaffService {
         javaMailSender.send(msg);
     }
 
-    // TODO: Update with actual link
-    public void sendStaffResetPasswordLink(Long staffId) throws StaffNotFoundException {
-        VerificationCode vCode = generateVerificationCode(staffId);
+    private void sendResetPassword(String password, String email) {
         SimpleMailMessage msg = new SimpleMailMessage();
-        msg.setTo(vCode.getStaff().getEmail());
-        msg.setSubject("Reset your password");
-        msg.setText("http://localhost:8080/api/staff/resetStaffPassword/" + vCode.getCode());
+        msg.setTo(email);
+        msg.setSubject("Your Password Has Been Reset");
+        msg.setText("Your New Password is:" + password);
         javaMailSender.send(msg);
     }
+
+
 }

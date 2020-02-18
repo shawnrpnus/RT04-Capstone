@@ -120,37 +120,17 @@ public class StaffController {
         return new ResponseEntity<>(staff, HttpStatus.OK);
     }
 
-    // TODO: Implement below 2 methods with actual email and redirection etc.
-    // Staff clicks button to reset password --> call this API --> send email
-    @PostMapping(StaffControllerRoutes.SEND_STAFF_RESET_PASSWORD_LINK)
-    public ResponseEntity<?> sendStaffResetPasswordLink(@RequestParam Long staffId) throws StaffNotFoundException {
-        staffService.sendStaffResetPasswordLink(staffId);
+    // TODO: Implement below method with actual email.
+    // For IT to reset password for staff
+    @PostMapping(StaffControllerRoutes.RESET_STAFF_PASSWORD)
+    public ResponseEntity<?> resetStaffPassword(@RequestParam Long staffId) throws StaffNotFoundException {
+        staffService.resetPassword(staffId);
         Map<String, String> successMessage = new HashMap<>();
-        successMessage.put("message","Please check your email for the link to reset your password");
+        successMessage.put("message","Please inform staff to check email for new password");
         return new ResponseEntity<>(successMessage, HttpStatus.OK);
     }
 
-    // Staff clicks email link --> call this api --> redirect to page with form to enter new password
-    @GetMapping(StaffControllerRoutes.RESET_STAFF_PASSWORD_GET)
-    public ResponseEntity<?> resetStaffPasswordLinkClicked(@PathVariable String code){
-        /*TODO: Redirect to staff page, staff will use code to get customer info
-         *  OR email link sent will go straight to staff page with the code info, then call getStaffFromCode API*/
-        return new ResponseEntity<>(null, HttpStatus.OK);
-    }
 
-    // Staff enters new password, clicks submit --> call this api
-    @PostMapping(StaffControllerRoutes.RESET_STAFF_PASSWORD_POST)
-    public ResponseEntity<?> resetPassword(@RequestBody StaffResetPasswordRequest staffResetPasswordRequest) throws StaffNotFoundException, VerificationCodeInvalidException {
-        Map<String, String> inputErrMap = validationService.generateErrorMap(staffResetPasswordRequest);
-        if (inputErrMap != null) {
-            return new ResponseEntity<>(inputErrMap, HttpStatus.BAD_REQUEST);
-        }
-        staffService.resetPassword(staffResetPasswordRequest.getStaffId(),
-                staffResetPasswordRequest.getVerificationCode(),
-                staffResetPasswordRequest.getNewPassword());
-        Staff staff = staffService.retrieveStaffByStaffId(staffResetPasswordRequest.getStaffId());
-        return new ResponseEntity<>(staff, HttpStatus.OK);
-    }
 
 
 }
