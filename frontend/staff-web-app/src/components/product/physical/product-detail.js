@@ -13,7 +13,7 @@ import twentySeven from '../../../assets/images/pro3/27.jpg';
 import one from '../../../assets/images/pro3/1.jpg';
 import size_chart from '../../../assets/images/size-chart.jpg'
 
-export class Product_detail extends Component {
+export class ProductDetail extends Component {
     constructor(props) {
         super(props)
         this.state = {
@@ -215,4 +215,4 @@ export class Product_detail extends Component {
     }
 }
 
-export default Product_detail
+export default ProductDetail

@@ -21,20 +21,20 @@ export const MENUITEMS = [
             {
                 title: 'Physical', type: 'sub', active: false, children: [
                     { path: '/product/physical/category', title: 'Category', type: 'link' },
-                    { path: '/product/physical/sub-category', title: 'Sub Category', type: 'link' },
+                    // { path: '/product/physical/sub-category', title: 'Sub Category', type: 'link' },
                     { path: '/product/physical/product-list', title: 'Product List', type: 'link' },
                     { path: '/product/physical/product-detail', title: 'Product Detail', type: 'link' },
                     { path: '/product/physical/add-product', title: 'Add Product', type: 'link' },
                 ]
             },
-            {
-                title: 'digital', type: 'sub', active: false, children: [
-                    { path: '/product/digital/digital-category', title: 'Category', type: 'link' },
-                    { path: '/product/digital/digital-sub-category', title: 'Sub Category', type: 'link' },
-                    { path: '/product/digital/digital-product-list', title: 'Product List', type: 'link' },
-                    { path: '/product/digital/digital-add-product', title: 'Add Product', type: 'link' },
-                ]
-            },
+            // {
+            //     title: 'digital', type: 'sub', active: false, children: [
+            //         { path: '/product/digital/digital-category', title: 'Category', type: 'link' },
+            //         { path: '/product/digital/digital-sub-category', title: 'Sub Category', type: 'link' },
+            //         { path: '/product/digital/digital-product-list', title: 'Product List', type: 'link' },
+            //         { path: '/product/digital/digital-add-product', title: 'Add Product', type: 'link' },
+            //     ]
+            // },
         ]
     },
     {

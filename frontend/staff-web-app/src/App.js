@@ -8,6 +8,9 @@ import Login from "./components/auth/login";
 import Dashboard from "./components/dashboard";
 import Layout from "./components/layout";
 import AddProduct from './components/product/physical/add-product';
+import Category from "./components/product/physical/category";
+import ProductDetail from "./components/product/physical/product-detail";
+import ProductList from "./components/product/physical/product-list";
 
 function App() {
   return (
@@ -20,8 +23,11 @@ function App() {
                 <Route exact key="login" path="/login" component={Login} />
 
                 <Layout>
-                    <Route exact key="dashboard" path="/dashboard" component={Dashboard} />
+                    <Route key="dashboard" path="/dashboard" component={Dashboard} />
                     <Route path='/product/physical/add-product' component={AddProduct} />
+                    <Route path='/product/physical/category' component={Category} />
+                    <Route path='/product/physical/product-detail' component={ProductDetail} />
+                    <Route path='/product/physical/product-list' component={ProductList} />
 
                 </Layout>
 

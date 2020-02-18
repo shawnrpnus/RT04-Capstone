@@ -4,7 +4,7 @@ import data from '../../../assets/data/physical_list';
 import { Edit, Trash2 } from 'react-feather'
 
 
-export class Product_list extends Component {
+export class ProductList extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -78,4 +78,4 @@ export class Product_list extends Component {
     }
 }
 
-export default Product_list
+export default ProductList

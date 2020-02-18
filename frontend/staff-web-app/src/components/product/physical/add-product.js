@@ -1,4 +1,4 @@
-import React, { Component,Fragment } from 'react';
+import React, { Component, Fragment } from 'react';
 import Breadcrumb from '../../common/breadcrumb';
 import CKEditors from "react-ckeditor-component";
 import { AvField, AvForm } from 'availity-reactstrap-validation';
@@ -18,7 +18,9 @@ export class AddProduct extends Component {
                 { img: user },
                 { img: user },
                 { img: user },
-            ]
+            ],
+            colours: [],
+            selectedColours: []
         }
     }
     IncrementItem = () => {
@@ -47,6 +49,24 @@ export class AddProduct extends Component {
         this.setState({ quantity: event.target.value });
     }
 
+    handleSelectColour = (e) => {
+        console.log(e.target.color)
+        // this.setState({c})
+    }
+
+    handleOnCheckboxButtonClick = (e) => {
+        const selectedColours = [...this.state.selectedColours];
+        const index = selectedColours.indexOf(e);
+        if (index < 0) {
+            console.log("add");
+            selectedColours.push(e);
+        } else {
+            console.log("remove");
+            selectedColours.splice(index, 1);
+        }
+        this.setState({ selectedColours })
+    }
+
     //image upload
     _handleSubmit(e) {
         e.preventDefault();
@@ -70,6 +90,9 @@ export class AddProduct extends Component {
     }
 
     render() {
+
+        const { selectedColours } = this.state;
+
         return (
             <Fragment>
                 <Breadcrumb title="Add Product" parent="Physical" />
@@ -138,14 +161,25 @@ export class AddProduct extends Component {
                                                     <div className="form-group row">
                                                         <label className="col-xl-3 col-sm-4 mb-0" >Select Size :</label>
                                                         <div className="col-xl-8 col-sm-7">
-                                                            <select className="form-control digits" id="exampleFormControlSelect1">
-                                                                <option>Small</option>
-                                                                <option>Medium</option>
-                                                                <option>Large</option>
-                                                                <option>Extra Large</option>
-                                                            </select>
+                                                            <button color={selectedColours.includes(1) ? 'rgb(200,200,200,1)' : 'rgb(200,200,200,0.5)'} onClick={() => { this.handleOnCheckboxButtonClick(1) }} >One</button>
+                                                            <button color={selectedColours.includes(1) ? 'rgb(200,255,200,1)' : 'rgb(200,0,200,0.5)'} onClick={() => { this.handleOnCheckboxButtonClick(2) }} >Two</button>
+                                                            <button color={selectedColours.includes(1) ? 'rgb(200,100,214,1)' : 'rgb(200,105,200,0.5)'} onClick={() => { this.handleOnCheckboxButtonClick(3) }}>Three</button>
                                                         </div>
                                                     </div>
+
+                                                    <div className="product-page-details product-right mb-0">
+                                                        <div className="form-group row">
+                                                            <label className="col-xl-3 col-sm-4 mb-0" >Select Colour :</label>
+                                                            <div className="col-xl-8 col-sm-7">
+                                                                <ul className="color-variant" onClick={this.handleSelectColour}>
+                                                                    <button hidden> <li style={{ backgroundColor: "pink" }} color="pink"></li></button>
+                                                                    <li className="bg-light1" color="gold"></li>
+                                                                    <li className="bg-light2" color="grey"></li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
                                                     <div className="form-group row">
                                                         <label className="col-xl-3 col-sm-4 mb-0">Total Products :</label>
                                                         <fieldset className="qty-box ml-0">
@@ -195,9 +229,9 @@ export class AddProduct extends Component {
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </Fragment>
+                    </div >
+                </div >
+            </Fragment >
         )
     }
 }
