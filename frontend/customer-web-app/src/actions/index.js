@@ -1,7 +1,34 @@
 import * as types from "./types";
 import { toast  } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.min.css';
+import {CLEAR_ERRORS} from "./types";
+import { createNewCustomer} from "./customer-actions";
 
+export const clearErrors = () => ({
+    type: CLEAR_ERRORS
+})
+
+export {createNewCustomer};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// TEMPLATE STUFF
 export const changeCurrency = (symbol) => ({
     type: types.CHANGE_CURRENCY,
     symbol

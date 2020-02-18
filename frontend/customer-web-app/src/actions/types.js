@@ -1,3 +1,18 @@
+// Customer
+export const CREATE_NEW_CUSTOMER = 'CREATE_NEW_CUSTOMER';
+
+
+// Error
+export const GET_ERRORS = 'GET_ERRORS';
+export const CLEAR_ERRORS = 'CLEAR_ERRORS';
+
+
+
+
+
+
+
+
 // Get Products
 export const FETCH_PRODUCTS_BEGIN = 'FETCH_PRODUCTS_BEGIN';
 export const RECEIVE_PRODUCTS = 'RECEIVE_PRODUCTS';
