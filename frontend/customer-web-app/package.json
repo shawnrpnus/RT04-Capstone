@@ -7,6 +7,7 @@
     "@testing-library/react": "^9.4.0",
     "@testing-library/user-event": "^7.2.1",
     "axios": "^0.19.2",
+    "classnames": "^2.2.6",
     "fetch-instagram": "^1.0.0-alpha.3",
     "moment": "^2.24.0",
     "node-sass": "^4.13.1",
@@ -55,5 +56,5 @@
       "last 1 safari version"
     ]
   },
-  "proxy":  "http://localhost:8080"
+  "proxy": "http://localhost:8080"
 }

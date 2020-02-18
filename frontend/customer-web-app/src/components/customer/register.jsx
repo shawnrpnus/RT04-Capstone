@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import { connect } from "react-redux";
+import classnames from "classnames";
 
 import Breadcrumb from "../common/breadcrumb";
 import CreateCustomerRequest from "../../models/create-customer-request";
@@ -19,11 +20,16 @@ class Register extends Component {
 
     }
 
+    componentWillMount() {
+        this.props.clearErrors();
+    }
+
     onChange = (e) => {
         console.log("change");
         console.log(e.target.name)
         console.log(e.target.value)
         this.setState({[e.target.name]: e.target.value}); //computed property name syntax
+        if (Object.keys(this.props.errors).length !== 0) this.props.clearErrors();
     }
 
     onSubmit = (e) => {
@@ -36,9 +42,6 @@ class Register extends Component {
         this.props.createNewCustomer(req, this.props.history);
     }
 
-    componentWillUpdate() {
-        if (Object.keys(this.props.errors).length !== 0) this.props.clearErrors();
-    }
 
     render() {
         const {errors} = this.props;
@@ -56,58 +59,65 @@ class Register extends Component {
                                         <div className="form-row">
                                             <div className="col-md-6">
                                                 <label htmlFor="firstName">First Name</label>
-                                                <input type="text" className="form-control" id="firstName"
+                                                {errors.firstName && (
+                                                    <label htmlFor="firstName" style={{color:"red", float: "right"}}>
+                                                        {errors.firstName}
+                                                    </label>
+                                                )}
+                                                <input type="text"
+                                                       className={classnames("form-control", {"is-invalid": errors.firstName})}
+                                                       id="firstName"
                                                        placeholder="First Name"
                                                        name="firstName"
                                                        value={this.state.firstName}
                                                        onChange={this.onChange}/>
-                                                {errors.firstName && (
-                                                    <p style={{color:"red"}}>
-                                                        {errors.firstName}
-                                                    </p>
-                                                )}
+
                                             </div>
                                             <div className="col-md-6">
                                                 <label htmlFor="lastName">Last Name</label>
-                                                <input type="text" className="form-control" id="lastName"
+                                                {errors.lastName && (
+                                                    <label htmlFor="lastName" style={{color:"red", float: "right"}}>
+                                                        {errors.lastName}
+                                                    </label>
+                                                )}
+                                                <input type="text"
+                                                       className={classnames("form-control", {"is-invalid": errors.lastName})}                                                       id="lastName"
                                                        placeholder="Last Name"
                                                        name="lastName"
                                                        value={this.state.lastName}
                                                        onChange={this.onChange}/>
-                                                {errors.lastName && (
-                                                    <p style={{color:"red"}}>
-                                                        {errors.lastName}
-                                                    </p>
-                                                )}
                                             </div>
                                         </div>
                                         <div className="form-row">
                                             <div className="col-md-6">
                                                 <label htmlFor="email">Email</label>
-                                                <input className="form-control" id="email"
+                                                {errors.email && (
+                                                    <label htmlFor="email" style={{color:"red", float: "right"}}>
+                                                        {errors.email}
+                                                    </label>
+                                                )}
+                                                <input type="text"
+                                                       className={classnames("form-control", {"is-invalid": errors.email})}
+                                                       id="email"
                                                        placeholder="Email"
                                                        name="email"
                                                        value={this.state.email}
                                                        onChange={this.onChange}/>
-                                                {errors.email && (
-                                                    <p style={{color:"red"}}>
-                                                        {errors.email}
-                                                    </p>
-                                                )}
                                             </div>
 
                                             <div className="col-md-6">
                                                 <label htmlFor="password">Password</label>
-                                                <input type="password" className="form-control" id="password"
+                                                {errors.password && (
+                                                    <label htmlFor="password" style={{color:"red", float: "right"}}>
+                                                        {errors.password}
+                                                    </label>
+                                                )}
+                                                <input type="password"
+                                                       className={classnames("form-control", {"is-invalid": errors.password})}                                                       id="password"
                                                        placeholder="Enter your password"
                                                        name="password"
                                                        value={this.state.password}
                                                        onChange={this.onChange}/>
-                                                {errors.password && (
-                                                    <p style={{color:"red"}}>
-                                                        {errors.password}
-                                                    </p>
-                                                )}
                                             </div>
 
                                             <input type="submit" className="btn btn-solid" value="Create Account"/>
