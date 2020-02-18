@@ -1,5 +1,5 @@
 import axios from "axios";
-import {CREATE_NEW_CUSTOMER, GET_ERRORS} from "./types";
+import {CREATE_NEW_CUSTOMER, CUSTOMER_LOGIN, GET_ERRORS} from "./types";
 
 const CUSTOMER_BASE_URL = "/api/customer/";
 
@@ -9,12 +9,12 @@ export const createNewCustomer = (createCustomerRequest, history) => {
         axios
             .post(CUSTOMER_BASE_URL + "createNewCustomer", createCustomerRequest)
             .then(response => {
-                dispatch(createCustomerSuccess(response));
+                dispatch(createCustomerSuccess(response.data));
                 history.push("/login"); // TODO: update redirect path
             })
             .catch(err => {
                 dispatch(createCustomerError(err.response.data));
-                console.log(err.response.data);
+                //console.log(err.response.data);
             });
     };
 };
@@ -29,4 +29,28 @@ const createCustomerError = response => ({
     errorMap: response
 })
 
+export const customerLogin = (customerLoginRequest, history) => {
+    return (dispatch) => {
+        axios
+            .post(CUSTOMER_BASE_URL + "login", customerLoginRequest)
+            .then(response => {
+                dispatch(customerLoginSuccess(response.data));
+                history.push("/login"); // TODO: update redirect path
+            })
+            .catch(err => {
+                dispatch(customerLoginError(err.response.data));
+                //console.log(err.response.data);
+            });
+    }
+}
+
+const customerLoginSuccess = response => ({
+    type: CUSTOMER_LOGIN,
+    customer: response
+})
+
+const customerLoginError = response => ({
+    type: GET_ERRORS,
+    errorMap: response
+})
 

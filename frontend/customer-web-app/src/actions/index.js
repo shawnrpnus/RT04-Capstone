@@ -2,13 +2,13 @@ import * as types from "./types";
 import { toast  } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.min.css';
 import {CLEAR_ERRORS} from "./types";
-import { createNewCustomer} from "./customer-actions";
+import { createNewCustomer, customerLogin} from "./customer-actions";
 
 export const clearErrors = () => ({
     type: CLEAR_ERRORS
 })
 
-export {createNewCustomer};
+export {createNewCustomer, customerLogin};
 
 
 

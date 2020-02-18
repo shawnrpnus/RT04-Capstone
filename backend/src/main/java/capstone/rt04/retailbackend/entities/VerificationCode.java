@@ -55,4 +55,5 @@ public class VerificationCode implements Serializable {
         this.customer = customer;
     }
 
+
 }

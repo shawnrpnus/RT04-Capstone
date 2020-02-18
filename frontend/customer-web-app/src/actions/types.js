@@ -1,5 +1,6 @@
 // Customer
 export const CREATE_NEW_CUSTOMER = 'CREATE_NEW_CUSTOMER';
+export const CUSTOMER_LOGIN = 'CUSTOMER_LOGIN';
 
 
 // Error

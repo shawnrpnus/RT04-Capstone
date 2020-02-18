@@ -5,6 +5,7 @@
  */
 package capstone.rt04.retailbackend.entities;
 
+import capstone.rt04.retailbackend.util.ErrorMessages;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.voodoodyne.jackson.jsog.JSOGGenerator;
 import lombok.EqualsAndHashCode;
@@ -13,6 +14,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
@@ -45,6 +47,13 @@ public class Staff implements Serializable {
 
     @Size(min = 6)
     private String username;
+
+    @NotNull(message = ErrorMessages.EMAIL_REQUIRED)
+    @Column(nullable = false, unique = true)
+    @Email(message = ErrorMessages.EMAIL_INVALID)
+    private String email;
+
+
 
     @Size(min = 6)
     private String password;
@@ -92,13 +101,14 @@ public class Staff implements Serializable {
     public Staff() {
     }
 
-    public Staff(String firstName, String lastName, Integer leaveRemaining, String nric, Role role, Department department) {
+    public Staff(String firstName, String lastName, Integer leaveRemaining, String nric, Role role, Department department, String email) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.leaveRemaining = leaveRemaining;
         this.nric = nric;
         this.role = role;
         this.department = department;
+        this.email = email;
     }
     
     
