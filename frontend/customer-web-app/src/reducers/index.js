@@ -1,11 +1,10 @@
 import { combineReducers } from 'redux';
+import errorReducer from "./errorReducer";
+import customerReducer from "./customerReducer";
 
 const rootReducer = combineReducers({
-    data: null,
-    cartList: null,
-    filters: null,
-    wishlist: null,
-    compare: null
-});
+    errors: errorReducer,
+    customer: customerReducer
+})
 
 export default rootReducer;
