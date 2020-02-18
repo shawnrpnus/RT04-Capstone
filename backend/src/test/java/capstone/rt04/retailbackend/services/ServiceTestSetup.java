@@ -88,7 +88,6 @@ public class ServiceTestSetup {
         assertThat(testValidStore.getStoreId()).isNotNull();
         assertThat(testValidStore).isEqualTo(expectedValidStore);
         storeId = testValidStore.getStoreId();
-
     }
 
     @After
@@ -125,7 +124,7 @@ public class ServiceTestSetup {
         Store storeToRemove = storeService.retrieveStoreById(storeId);
         Store removedStore = storeService.deleteStore(storeToRemove.getStoreId());
         assertThat(removedStore.getStoreId()).isEqualTo(storeToRemove.getStoreId());
-        ///
+        storeId = null;
     }
 
     @Test
