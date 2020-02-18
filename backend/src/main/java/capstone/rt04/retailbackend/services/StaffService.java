@@ -5,19 +5,21 @@ import capstone.rt04.retailbackend.repositories.*;
 import capstone.rt04.retailbackend.util.ErrorMessages;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.customer.CustomerNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.customer.InvalidLoginCredentialsException;
+import capstone.rt04.retailbackend.util.exceptions.customer.VerificationCodeInvalidException;
 import capstone.rt04.retailbackend.util.exceptions.staff.*;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.core.env.Environment;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.PersistenceException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.sql.Timestamp;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @Transactional
@@ -30,6 +32,7 @@ public class StaffService {
 
     private final StaffRepository staffRepository;
     private final AddressRepository addressRepository;
+    private final VerificationCodeRepository verificationCodeRepository;
     private final AdvertisementRepository advertisementRepository;
     private final DeliveryRepository deliveryRepository;
     private final DepartmentRepository departmentRepository;
@@ -43,12 +46,13 @@ public class StaffService {
 
 
 
-    public StaffService(JavaMailSender javaMailSender, Environment environment, ValidationService validationService, StaffRepository staffRepository, AddressRepository addressRepository, AdvertisementRepository advertisementRepository, DeliveryRepository deliveryRepository, DepartmentRepository departmentRepository, StaffLeaveRepository staffLeaveRepository, ReviewRepository reviewRepository, PayrollRepository payrollRepository, RoleRepository roleRepository, RosterRepository rosterRepository) {
+    public StaffService(JavaMailSender javaMailSender, Environment environment, ValidationService validationService, StaffRepository staffRepository, AddressRepository addressRepository, VerificationCodeRepository verificationCodeRepository, AdvertisementRepository advertisementRepository, DeliveryRepository deliveryRepository, DepartmentRepository departmentRepository, StaffLeaveRepository staffLeaveRepository, ReviewRepository reviewRepository, PayrollRepository payrollRepository, RoleRepository roleRepository, RosterRepository rosterRepository) {
         this.javaMailSender = javaMailSender;
         this.environment = environment;
         this.validationService = validationService;
         this.staffRepository = staffRepository;
         this.addressRepository = addressRepository;
+        this.verificationCodeRepository = verificationCodeRepository;
         this.advertisementRepository = advertisementRepository;
         this.deliveryRepository = deliveryRepository;
         this.departmentRepository = departmentRepository;
@@ -98,6 +102,8 @@ public class StaffService {
 
     //For admin to configure staff account
     //staff username will be unique ID
+    //After admin creates staff account, system sends staff via staff email the account username and password
+    //No verification done here
     public Staff createNewStaffAccount(Long staffID) throws CreateNewStaffAccountException {
 
         try {
@@ -107,12 +113,30 @@ public class StaffService {
             //generate random password
             String password = RandomStringUtils.randomAlphanumeric(12);
             staff.setPassword(encoder.encode(password));
+            //dont need to save in repository because staff already saved when HR created.
+            if (Arrays.asList(environment.getActiveProfiles()).contains("dev")) {
+                //send an email to staff informing staff of username and password
+                sendEmail(staffID.toString(),password, "shawnroshan@gmail.com"); //TODO: to change to actual email
+            }
 
             return staff;
         }catch (StaffNotFoundException ex){
             throw new CreateNewStaffAccountException("Staff does not exist");
         }
 
+    }
+
+    public void resetPassword(Long staffId, String code, String newPassword) throws StaffNotFoundException, VerificationCodeInvalidException {
+        Staff staff = retrieveStaffByStaffId(staffId);
+
+        if (code.equals(staff.getStaffVerificationCode().getCode())) {
+            if (staff.getStaffVerificationCode().getExpiryDateTime().before(new Timestamp(System.currentTimeMillis()))) {
+                throw new VerificationCodeInvalidException(ErrorMessages.VERIFICATION_CODE_EXPIRED);
+            }
+            staff.setPassword(encoder.encode(newPassword));
+        } else {
+            throw new VerificationCodeInvalidException(ErrorMessages.VERIFICATION_CODE_INVALID);
+        }
     }
 
     //for HR to retrieve all staff
@@ -157,7 +181,7 @@ public class StaffService {
         return lazyLoadStaffFields(staff);
     }
 
-    //For HR to update first name, last name, NRIC, bank details, department , role, address
+    //For HR to update first name, last name, NRIC, username, bank details, department , role, address
     public Staff updateStaffDetails(Staff staff, Role role, Department department, Address address)throws UpdateStaffDetailsException, InputDataValidationException {
         validationService.throwExceptionIfInvalidBean(staff);
         validationService.throwExceptionIfInvalidBean(address);
@@ -168,6 +192,7 @@ public class StaffService {
             staffToUpdate.setFirstName(staff.getFirstName());
             staffToUpdate.setLastName(staff.getLastName());
             staffToUpdate.setNric(staff.getNric());
+            staffToUpdate.setEmail(staff.getEmail());
             staffToUpdate.setBankDetails(staff.getBankDetails());
             staffToUpdate.setDepartment(department);
             staffToUpdate.setRole(role);
@@ -180,6 +205,32 @@ public class StaffService {
 
     }
 
+    //staff logins with username
+    public Staff staffLogin(String username, String password) throws InvalidLoginCredentialsException{
+        try {
+            Staff staff = retrieveStaffByUsername(username);
+            if (encoder.matches(password, staff.getPassword())) {
+                return lazyLoadStaffFields(staff);
+            } else {
+                throw new InvalidLoginCredentialsException(ErrorMessages.LOGIN_FAILED);
+            }
+
+        } catch (StaffNotFoundException ex) {
+            throw new InvalidLoginCredentialsException(ErrorMessages.LOGIN_FAILED);
+        }
+    }
+
+    public void changeStaffPassword(Long staffId, String oldPassword, String newPassword) throws StaffNotFoundException, InvalidLoginCredentialsException {
+        Staff staff = retrieveStaffByStaffId(staffId);
+
+        if (encoder.matches(oldPassword, staff.getPassword())) {
+            staff.setPassword(encoder.encode(newPassword));
+        } else {
+            throw new InvalidLoginCredentialsException(ErrorMessages.OLD_PASSWORD_INCORRECT);
+        }
+    }
+
+
 
     private Staff lazyLoadStaffFields(Staff staff) {
         staff.getAdvertisements().size();
@@ -190,5 +241,51 @@ public class StaffService {
         staff.getRepliedReviews().size();
 
         return staff;
+    }
+
+    public VerificationCode generateVerificationCode(Long staffId) throws StaffNotFoundException {
+        Staff staff = retrieveStaffByStaffId(staffId);
+        VerificationCode currentCode = staff.getStaffVerificationCode();
+        if (currentCode != null) {
+            currentCode.setStaff(null);
+            staff.setStaffVerificationCode(null);
+            verificationCodeRepository.delete(currentCode);
+        }
+
+        String code = RandomStringUtils.randomAlphanumeric(32);
+        VerificationCode existingCode = verificationCodeRepository.findByCode(code).orElse(null);
+        while (existingCode != null) {
+            code = RandomStringUtils.randomAlphanumeric(32);
+            existingCode = verificationCodeRepository.findByCode(code).orElse(null);
+        }
+
+        long now = System.currentTimeMillis();
+        long nowPlus1Hour = now + TimeUnit.HOURS.toMillis(1);
+
+        //uses the other constructor-> customer attribute remains null
+        VerificationCode verificationCode = new VerificationCode(code, new Timestamp(nowPlus1Hour), staff);
+        verificationCodeRepository.save(verificationCode);
+        staff.setStaffVerificationCode(verificationCode);
+
+        return verificationCode;
+    }
+
+
+    private void sendEmail(String username, String password, String email) {
+        SimpleMailMessage msg = new SimpleMailMessage();
+        msg.setTo(email);
+        msg.setSubject("Here are your account details");
+        msg.setText("Your Username:"+ username + " Your Password:" + password);
+        javaMailSender.send(msg);
+    }
+
+    // TODO: Update with actual link
+    public void sendStaffResetPasswordLink(Long staffId) throws StaffNotFoundException {
+        VerificationCode vCode = generateVerificationCode(staffId);
+        SimpleMailMessage msg = new SimpleMailMessage();
+        msg.setTo(vCode.getStaff().getEmail());
+        msg.setSubject("Reset your password");
+        msg.setText("http://localhost:8080/api/staff/resetStaffPassword/" + vCode.getCode());
+        javaMailSender.send(msg);
     }
 }

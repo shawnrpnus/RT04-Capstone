@@ -45,6 +45,11 @@ public class VerificationCode implements Serializable {
     @OneToOne(mappedBy = "verificationCode" , optional = false)
     private Customer customer;
 
+    //For staff when they reset their passwords
+    @NotNull
+    @OneToOne(mappedBy = "staffVerificationCode" , optional = false)
+    private Staff staff;
+
 
     public VerificationCode() {
     }
@@ -53,6 +58,12 @@ public class VerificationCode implements Serializable {
         this.code = code;
         this.expiryDateTime = expiryDateTime;
         this.customer = customer;
+    }
+
+    public VerificationCode(String code, Timestamp expiryDateTime, Staff staff) {
+        this.code = code;
+        this.expiryDateTime = expiryDateTime;
+        this.staff = staff;
     }
 
 }

@@ -1,6 +1,5 @@
 package capstone.rt04.retailbackend.request.staff;
 
-import capstone.rt04.retailbackend.util.ErrorMessages;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,14 +11,14 @@ import javax.validation.constraints.NotNull;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class StaffChangePasswordRequest {
+public class StaffResetPasswordRequest {
 
     @NotNull
     private Long staffId;
 
-    @NotNull(message = ErrorMessages.OLD_PASSWORD_REQUIRED)
-    private String oldPassword;
+    @NotNull
+    private String verificationCode;
 
-    @NotNull(message = ErrorMessages.NEW_PASSWORD_REQUIRED)
+    @NotNull
     private String newPassword;
 }
