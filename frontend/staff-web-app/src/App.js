@@ -1,5 +1,5 @@
 import React from 'react';
-import {Route, Switch, Redirect, BrowserRouter} from 'react-router-dom';
+import { Route, Switch, Redirect, BrowserRouter } from 'react-router-dom';
 import { Provider } from "react-redux";
 import { ScrollContext } from "react-router-scroll-4";
 import "./App.css";
@@ -11,32 +11,44 @@ import AddProduct from './components/product/physical/add-product';
 import Category from "./components/product/physical/category";
 import ProductDetail from "./components/product/physical/product-detail";
 import ProductList from "./components/product/physical/product-list";
+import { MuiThemeProvider, createMuiTheme } from "@material-ui/core";
+
+
+const theme = createMuiTheme({
+  palette: {
+    // primary: { 500: "#ff8084" },
+  },
+});
 
 function App() {
   return (
-      // <Provider store={store}>
-      <BrowserRouter basename={'/'}>
-          <ScrollContext>
-            <Switch>
-                {/*Staff Routes*/}
-                <Route exact key="login" path="/" component={Login} />
-                <Route exact key="login" path="/login" component={Login} />
+    // <Provider store={store}>
+    <BrowserRouter basename={'/'}>
+      <ScrollContext>
+        <MuiThemeProvider theme={theme}>
 
-                <Layout>
-                    <Route key="dashboard" path="/dashboard" component={Dashboard} />
-                    <Route path='/product/physical/add-product' component={AddProduct} />
-                    <Route path='/product/physical/category' component={Category} />
-                    <Route path='/product/physical/product-detail' component={ProductDetail} />
-                    <Route path='/product/physical/product-list' component={ProductList} />
+          <Switch>
+            {/*Staff Routes*/}
+            <Route exact key="login" path="/" component={Login} />
+            <Route exact key="login" path="/login" component={Login} />
 
-                </Layout>
+            <Layout>
+              <Route key="dashboard" path="/dashboard" component={Dashboard} />
+              <Route path='/product/physical/add-product' component={AddProduct} />
+              <Route path='/product/physical/category' component={Category} />
+              <Route path='/product/physical/product-detail' component={ProductDetail} />
+              <Route path='/product/physical/product-list' component={ProductList} />
 
-                <Redirect from="/" exact to="/login" />
-                <Redirect to="/login" />
-            </Switch>
-          </ScrollContext>
-      </BrowserRouter>
-      // </Provider>
+            </Layout>
+
+            <Redirect from="/" exact to="/login" />
+            <Redirect to="/login" />
+          </Switch>
+        </MuiThemeProvider>
+      </ScrollContext>
+
+    </BrowserRouter>
+    // </Provider>
   );
 }
 
