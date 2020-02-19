@@ -2,6 +2,7 @@ package capstone.rt04.retailbackend.services;
 
 import capstone.rt04.retailbackend.entities.*;
 import capstone.rt04.retailbackend.repositories.*;
+import capstone.rt04.retailbackend.util.Constants;
 import capstone.rt04.retailbackend.util.ErrorMessages;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.customer.*;
@@ -88,7 +89,7 @@ public class CustomerService {
             shoppingCartService.initializeShoppingCarts(savedCustomer.getCustomerId());
             VerificationCode vCode = generateVerificationCode(savedCustomer.getCustomerId());
             if (Arrays.asList(environment.getActiveProfiles()).contains("dev")) {
-                sendEmailVerificationLink(vCode.getCode(), "shawnroshan@gmail.com"); //TODO: to change to actual email
+                sendEmailVerificationLink(vCode.getCode(), savedCustomer.getEmail());
             }
             return lazyLoadCustomerFields(customer);
         } catch (PersistenceException | CustomerNotFoundException ex) {
@@ -154,7 +155,7 @@ public class CustomerService {
             SimpleMailMessage msg = new SimpleMailMessage();
             msg.setTo(newEmail);
             msg.setSubject("Click to update your email");
-            msg.setText("http://localhost:8080/api/customer/updateEmail/" + vCode.getCode());
+            msg.setText(Constants.FRONTEND_URL + "/updateEmail/" + vCode.getCode());
             javaMailSender.send(msg);
         }
     }
@@ -237,7 +238,7 @@ public class CustomerService {
         SimpleMailMessage msg = new SimpleMailMessage();
         msg.setTo(email);
         msg.setSubject("Activate your account");
-        msg.setText("http://localhost:8080/api/customer/verify/" + code);
+        msg.setText(Constants.FRONTEND_URL + "/verify/" + code);
         javaMailSender.send(msg);
     }
 
@@ -264,7 +265,7 @@ public class CustomerService {
         SimpleMailMessage msg = new SimpleMailMessage();
         msg.setTo(vCode.getCustomer().getEmail());
         msg.setSubject("Reset your password");
-        msg.setText("http://localhost:8080/api/customer/resetPassword/" + vCode.getCode());
+        msg.setText(Constants.FRONTEND_URL + "/resetPassword/" + vCode.getCode());
         javaMailSender.send(msg);
     }
 
