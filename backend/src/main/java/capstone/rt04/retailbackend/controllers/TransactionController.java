@@ -1,14 +1,19 @@
 package capstone.rt04.retailbackend.controllers;
 
+import capstone.rt04.retailbackend.entities.Product;
 import capstone.rt04.retailbackend.entities.Transaction;
+import capstone.rt04.retailbackend.request.transaction.TransactionRetrieveRequest;
 import capstone.rt04.retailbackend.response.GenericErrorResponse;
 import capstone.rt04.retailbackend.services.TransactionService;
 import capstone.rt04.retailbackend.util.exceptions.transaction.TransactionNotFoundException;
 import capstone.rt04.retailbackend.util.routeconstants.TransactionControllerRoutes;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RestController
@@ -16,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin(origins = {"http://localhost:3000"})
 public class TransactionController {
 
+    @Autowired
     private final TransactionService transactionService;
 
     public TransactionController(TransactionService transactionService) {
@@ -44,7 +50,6 @@ public class TransactionController {
 
     @GetMapping(TransactionControllerRoutes.RETRIEVE_ALL_TRANSACTIONS)
     public ResponseEntity<?> retrievePastOrders() {
-        System.out.println(transactionService.retrievePastOrders());
         try {
             return new ResponseEntity<>(transactionService.retrievePastOrders(), HttpStatus.OK);
         } catch (Exception ex) {
@@ -52,4 +57,15 @@ public class TransactionController {
         }
     }
 
+    @GetMapping(TransactionControllerRoutes.RETRIEVE_MATCHED_TRANSACTIONS)
+    public ResponseEntity<?> retrieveMatchedOrders(@RequestBody TransactionRetrieveRequest transactionRetrieveRequest) {
+        try {
+            List<Transaction> transactions = transactionService.filterSortOrderHistory(transactionRetrieveRequest.getCollectionMode(), transactionRetrieveRequest.getDeliveryStatus(),
+                    transactionRetrieveRequest.getStartDate(), transactionRetrieveRequest.getEndDate(),
+                   transactionRetrieveRequest.getSortEnum());
+            return new ResponseEntity<>(transactions, HttpStatus.OK);
+        }  catch (Exception ex) {
+            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
