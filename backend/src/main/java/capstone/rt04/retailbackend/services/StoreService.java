@@ -24,7 +24,7 @@ import java.util.Map;
 @Transactional
 public class StoreService {
 
-    @Autowired
+
     private final ValidationService validationService;
     private final ProductService productService;
 
@@ -82,6 +82,7 @@ public class StoreService {
                 if (storeToUpdate.equals(store)) {
                     throw new StoreUnableToUpdateException("Store has nothing to update");
                 }
+                storeToUpdate.setStoreName(store.getStoreName());
                 //Integer: numChangingRooms, numManagers, numAssistants
                 if (storeToUpdate.getNumChangingRooms() != store.getNumChangingRooms() && storeToUpdate.getNumChangingRooms() > 0) {
                     storeToUpdate.setNumChangingRooms(store.getNumChangingRooms());

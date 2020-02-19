@@ -13,7 +13,9 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.sql.Time;
 import java.util.ArrayList;
@@ -35,6 +37,11 @@ public class Store implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long storeId;
+
+    @NotNull(message = "Store name is required")
+    @Column(nullable = false)
+    @Size(min = 1, message = "Store name is required")
+    private String storeName;
     
     @NotNull
     @Column(nullable = false)
@@ -56,7 +63,8 @@ public class Store implements Serializable {
     @Column(nullable = false)
     private Integer numAssistants;
     
-    @OneToOne
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    @Valid
     private Address address;
     
     @OneToMany(mappedBy = "store")
@@ -83,8 +91,9 @@ public class Store implements Serializable {
     }
     
 
-    public Store(Integer numChangingRooms, Time openingTime, Time closingTime, Integer numManagers, Integer numAssistants, Address address) {
+    public Store(String storeName, Integer numChangingRooms, Time openingTime, Time closingTime, Integer numManagers, Integer numAssistants, Address address) {
         this();
+        this.storeName = storeName;
         this.numChangingRooms = numChangingRooms;
         this.openingTime = openingTime;
         this.closingTime = closingTime;

@@ -28,7 +28,8 @@ function loadFromLocalStorage() {
     }
 }
 
-const persistedState = loadFromLocalStorage();
+let persistedState = loadFromLocalStorage();
+persistedState = {};
 /**
  * Create a Redux store that holds the app state.
  */

@@ -313,7 +313,7 @@
 }
 
 .form__button-toolbar {
-  margin-top: 10px;
+  margin-top: 20px;
   @include directify($directions) {
     direction: #{directed('direction')};
   }
