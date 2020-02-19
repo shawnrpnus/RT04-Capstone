@@ -8,13 +8,13 @@ import store from "./store"
 
 function App() {
   return (
-      <Provider store={store}>
-        <BrowserRouter>
-          <ScrollToTop>
-              <Router/>
-          </ScrollToTop>
-        </BrowserRouter>
-      </Provider>
+    <Provider store={store}>
+      <BrowserRouter>
+        <ScrollToTop>
+          <Router />
+        </ScrollToTop>
+      </BrowserRouter>
+    </Provider>
   )
 }
 
