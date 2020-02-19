@@ -1,3 +1,7 @@
+import React, { Component } from 'react';
+import { Link, NavLink } from 'react-router-dom';
+import { IntlActions } from 'react-redux-multilingual'
+import Pace from 'react-pace-progress'
 import React, {Component} from 'react';
 import Pace from 'react-pace-progress';
 import {Link} from "react-router-dom";
@@ -5,7 +9,7 @@ import {Link} from "react-router-dom";
 import NavBar from "./common/navbar";
 import CartContainer from "../../../containers/cart-container";
 import TopBarDark from "./common/topbar-dark";
-import {connect} from "react-redux";
+import { connect } from "react-redux";
 import LogoImage from "./common/logo";
 
 class Header extends Component {
@@ -65,10 +69,11 @@ class Header extends Component {
     }
 
     load = () => {
+        this.setState({ isLoading: true });
         this.setState({isLoading: true});
         fetch().then(() => {
             // deal with data fetched
-            this.setState({isLoading: false})
+            this.setState({ isLoading: false })
         })
     };
 
@@ -77,11 +82,10 @@ class Header extends Component {
         return (
             <div>
                 <header id="sticky" className="header-2 header-6">
-                    {this.state.isLoading ? <Pace color="#27ae60"/> : null}
-                    <div className="mobile-fix-option"/>
+                    {this.state.isLoading ? <Pace color="#27ae60" /> : null}
+                    <div className="mobile-fix-option" />
                     {/*Top Header Component*/}
-                    {/*<TopBarDark/>*/}
-
+                    <TopBarDark />
                     <div className="container">
                         <div className="row">
                             <div className="col-sm-12">
@@ -92,10 +96,11 @@ class Header extends Component {
                                     <div>
                                         <form className="form_search" role="form">
                                             <input id="query search-autocomplete" type="search"
-                                                   placeholder="Search for products"
-                                                   className="nav-search nav-search-field" aria-expanded="true"/>
+                                                placeholder="Find the best for your pet..."
+                                                className="nav-search nav-search-field" aria-expanded="true" />
                                             <button type="submit" name="nav-submit-button" className="btn-search">
-                                                <i className="fa fa-search"/>
+                                                <i className="fa fa-search" />
+
                                             </button>
                                         </form>
                                     </div>
@@ -104,6 +109,7 @@ class Header extends Component {
                                             <div className="icon-nav">
                                                 <ul>
                                                     <li className="onhover-div mobile-search">
+
                                                         <div><img
                                                             src={`${process.env.PUBLIC_URL}/assets/images/icon/search.png`}
                                                             onClick={this.openSearch} className="img-fluid" alt=""/>
@@ -133,7 +139,7 @@ class Header extends Component {
                         <div className="row">
                             <div className="col-lg-12">
                                 <div className="main-nav-center">
-                                    <NavBar/>
+                                    <NavBar />
                                 </div>
                             </div>
                         </div>
@@ -151,8 +157,7 @@ class Header extends Component {
                                                 <input type="text" className="form-control" id="exampleInputPassword1"
                                                        placeholder="Search a Product"/>
                                             </div>
-                                            <button type="submit" className="btn btn-primary"><i
-                                                className="fa fa-search"></i></button>
+                                            <button type="submit" className="btn btn-primary"><i className="fa fa-search" /></button>
                                         </form>
                                     </div>
                                 </div>
