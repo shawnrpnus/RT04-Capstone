@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import PropTypes from 'prop-types';
+import * as PropTypes from 'prop-types';
 
 const icon = `${process.env.PUBLIC_URL}/img/burger.svg`;
 

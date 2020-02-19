@@ -1,7 +1,10 @@
 import { combineReducers } from 'redux';
+import sidebarReducer from "./sidebarReducer";
+
 
 const rootReducer = combineReducers({
-    products: []
+    products: [],
+    sidebar: sidebarReducer,
 })
 
 export default rootReducer;

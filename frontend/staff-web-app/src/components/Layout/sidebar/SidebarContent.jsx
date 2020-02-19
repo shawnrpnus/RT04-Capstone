@@ -17,14 +17,14 @@ class SidebarContent extends Component {
     return (
       <div className="sidebar__content">
         <ul className="sidebar__block">
-          <SidebarLink title="Log Out" icon="exit" route="/log_in" />
+          <SidebarLink title="Log Out" icon="exit" route="/log_in" onClick={this.hideSidebar} />
           <SidebarLink
             title="Dashboard E-commerce"
             icon="store"
             route="/dashboard_e_commerce"
             onClick={this.hideSidebar}
           />
-          <SidebarCategory title="Products">
+          <SidebarCategory title="Products" icon="diamond">
             <SidebarLink title="Create" route="/" onClick={this.hideSidebar} />
             <SidebarLink title="View All" route="/" onClick={this.hideSidebar} />
           </SidebarCategory>

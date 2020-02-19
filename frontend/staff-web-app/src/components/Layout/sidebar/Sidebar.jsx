@@ -3,12 +3,15 @@ import Scrollbar from 'react-smooth-scrollbar';
 import classNames from 'classnames';
 import * as PropTypes from 'prop-types';
 import SidebarContent from './SidebarContent';
+import {SidebarProps } from '../../../shared/prop-types/ReducerProps';
 
 const Sidebar = ({
-  changeMobileSidebarVisibility
+  changeMobileSidebarVisibility, sidebar
 }) => {
   const sidebarClass = classNames({
     sidebar: true,
+    'sidebar--show': sidebar.show,
+    'sidebar--collapse': sidebar.collapse,
   });
 
   return (
@@ -31,6 +34,7 @@ const Sidebar = ({
 };
 
 Sidebar.propTypes = {
+  sidebar: SidebarProps.isRequired,
   changeMobileSidebarVisibility: PropTypes.func.isRequired,
 };
 
