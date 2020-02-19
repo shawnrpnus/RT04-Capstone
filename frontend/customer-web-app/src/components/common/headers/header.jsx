@@ -1,15 +1,15 @@
 import React, { Component } from 'react';
-import { Link, NavLink} from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { IntlActions } from 'react-redux-multilingual'
 import Pace from 'react-pace-progress'
-
+import React, {Component} from 'react';
+import Pace from 'react-pace-progress';
+import {Link} from "react-router-dom";
 // Import custom components
-import store from '../../../store';
 import NavBar from "./common/navbar";
-import SideBar from "./common/sidebar";
 import CartContainer from "../../../containers/cart-container";
 import TopBarDark from "./common/topbar-dark";
-import {connect} from "react-redux";
+import { connect } from "react-redux";
 import LogoImage from "./common/logo";
 
 class Header extends Component {
@@ -18,7 +18,7 @@ class Header extends Component {
         super(props);
 
         this.state = {
-            isLoading:false
+            isLoading: false
         }
     }
 
@@ -26,14 +26,15 @@ class Header extends Component {
          Pre loader
          ==========================*/
     componentDidMount() {
-        setTimeout(function() {
+        setTimeout(function () {
             document.querySelector(".loader-wrapper").style = "display: none";
         }, 2000);
     }
 
-    componentWillMount(){
+    componentWillMount() {
         window.addEventListener('scroll', this.handleScroll);
     }
+
     componentWillUnmount() {
         window.removeEventListener('scroll', this.handleScroll);
     }
@@ -44,23 +45,21 @@ class Header extends Component {
         if (number >= 300) {
             if (window.innerWidth < 576) {
                 document.getElementById("sticky").classList.remove('fixed');
-            }else
+            } else
                 document.getElementById("sticky").classList.add('fixed');
         } else {
             document.getElementById("sticky").classList.remove('fixed');
         }
     };
 
-    changeLanguage(lang) {
-        store.dispatch(IntlActions.setLocale(lang))
-    }
 
     openNav() {
         const openmyslide = document.getElementById("mySidenav");
-        if(openmyslide){
+        if (openmyslide) {
             openmyslide.classList.add('open-side')
         }
     }
+
     openSearch() {
         document.getElementById("search-overlay").style.display = "block";
     }
@@ -69,11 +68,12 @@ class Header extends Component {
         document.getElementById("search-overlay").style.display = "none";
     }
 
-    load = ()=>{
+    load = () => {
+        this.setState({ isLoading: true });
         this.setState({isLoading: true});
-        fetch().then(()=>{
+        fetch().then(() => {
             // deal with data fetched
-            this.setState({isLoading: false})
+            this.setState({ isLoading: false })
         })
     };
 
@@ -82,26 +82,26 @@ class Header extends Component {
         return (
             <div>
                 <header id="sticky" className="header-2 header-6">
-                    {this.state.isLoading ? <Pace color="#27ae60"/> : null}
-                    <div className="mobile-fix-option"/>
+                    {this.state.isLoading ? <Pace color="#27ae60" /> : null}
+                    <div className="mobile-fix-option" />
                     {/*Top Header Component*/}
-                    <TopBarDark/>
-
+                    <TopBarDark />
                     <div className="container">
                         <div className="row">
                             <div className="col-sm-12">
                                 <div className="main-menu border-section border-top-0">
                                     <div className="brand-logo layout2-logo">
-                                        <LogoImage logo={this.props.logoName} />
+                                        <LogoImage logo={this.props.logoName}/>
                                     </div>
                                     <div>
                                         <form className="form_search" role="form">
                                             <input id="query search-autocomplete" type="search"
-                                                   placeholder="Find the best for your pet..."
-                                                   className="nav-search nav-search-field" aria-expanded="true" />
-                                                <button type="submit" name="nav-submit-button" className="btn-search">
-                                                    <i className="fa fa-search"/>
-                                                </button>
+                                                placeholder="Find the best for your pet..."
+                                                className="nav-search nav-search-field" aria-expanded="true" />
+                                            <button type="submit" name="nav-submit-button" className="btn-search">
+                                                <i className="fa fa-search" />
+
+                                            </button>
                                         </form>
                                     </div>
                                     <div className="menu-right pull-right">
@@ -109,28 +109,23 @@ class Header extends Component {
                                             <div className="icon-nav">
                                                 <ul>
                                                     <li className="onhover-div mobile-search">
-                                                        <div><img src={`${process.env.PUBLIC_URL}/assets/images/icon/search.png`} onClick={this.openSearch} className="img-fluid" alt="" />
-                                                            <i className="fa fa-search" onClick={this.openSearch}/></div>
-                                                    </li>
-                                                    <li className="onhover-div mobile-setting">
-                                                        <div><img src={`${process.env.PUBLIC_URL}/assets/images/icon/setting.png`} className="img-fluid" alt="" />
-                                                            <i className="fa fa-cog"/></div>
-                                                        <div className="show-div setting">
-                                                            <h6>language</h6>
-                                                            <ul>
-                                                                <li><a href={null} onClick={() => this.changeLanguage('en')}>English</a> </li>
-                                                                <li><a href={null} onClick={() => this.changeLanguage('fn')}>French</a> </li>
-                                                            </ul>
-                                                            <h6>currency</h6>
-                                                            <ul className="list-inline">
-                                                                <li><a href={null} onClick={() => this.props.changeCurrency('€')}>euro</a> </li>
-                                                                <li><a href={null} onClick={() => this.props.changeCurrency('₹')}>rupees</a> </li>
-                                                                <li><a href={null} onClick={() => this.props.changeCurrency('£')}>pound</a> </li>
-                                                                <li><a href={null} onClick={() => this.props.changeCurrency('$')}>doller</a> </li>
-                                                            </ul>
+
+                                                        <div><img
+                                                            src={`${process.env.PUBLIC_URL}/assets/images/icon/search.png`}
+                                                            onClick={this.openSearch} className="img-fluid" alt=""/>
+                                                            <i className="fa fa-search" onClick={this.openSearch}/>
                                                         </div>
                                                     </li>
-                                                    {/*Header Cart Component */}
+                                                    <li className="onhover-div mobile-account">
+                                                        <i className="fa fa-user" aria-hidden="true"/> My Account
+                                                        <ul className="show-div shopping-cart">
+                                                            <div className="buttons">
+                                                                <Link to="/login">Login</Link>
+
+                                                                <Link to="/register">Register</Link>
+                                                            </div>
+                                                        </ul>
+                                                    </li>
                                                     <CartContainer/>
                                                 </ul>
                                             </div>
@@ -144,13 +139,12 @@ class Header extends Component {
                         <div className="row">
                             <div className="col-lg-12">
                                 <div className="main-nav-center">
-                                    <NavBar/>
+                                    <NavBar />
                                 </div>
                             </div>
                         </div>
                     </div>
                 </header>
-
                 <div id="search-overlay" className="search-overlay">
                     <div>
                         <span className="closebtn" onClick={this.closeSearch} title="Close Overlay">×</span>
@@ -160,9 +154,10 @@ class Header extends Component {
                                     <div className="col-xl-12">
                                         <form>
                                             <div className="form-group">
-                                                <input type="text" className="form-control" id="exampleInputPassword1" placeholder="Search a Product" />
+                                                <input type="text" className="form-control" id="exampleInputPassword1"
+                                                       placeholder="Search a Product"/>
                                             </div>
-                                            <button type="submit" className="btn btn-primary"><i className="fa fa-search"/></button>
+                                            <button type="submit" className="btn btn-primary"><i className="fa fa-search" /></button>
                                         </form>
                                     </div>
                                 </div>
@@ -176,5 +171,5 @@ class Header extends Component {
 }
 
 export default connect(null,
-    { }
+    {}
 )(Header);

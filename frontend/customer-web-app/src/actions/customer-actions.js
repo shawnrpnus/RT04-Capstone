@@ -1,5 +1,5 @@
 import axios from "axios";
-import {CREATE_NEW_CUSTOMER, CUSTOMER_LOGIN, GET_ERRORS} from "./types";
+import {CREATE_NEW_CUSTOMER, CUSTOMER_LOGIN, CUSTOMER_LOGOUT, GET_ERRORS} from "./types";
 
 const CUSTOMER_BASE_URL = "/api/customer/";
 
@@ -52,5 +52,9 @@ const customerLoginSuccess = response => ({
 const customerLoginError = response => ({
     type: GET_ERRORS,
     errorMap: response
+})
+
+export const customerLogout = () => ({
+    type: CUSTOMER_LOGOUT
 })
 

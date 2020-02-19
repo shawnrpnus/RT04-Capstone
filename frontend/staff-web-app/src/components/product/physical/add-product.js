@@ -1,75 +1,86 @@
-import React, { Component,Fragment } from 'react';
+import React, { Component, Fragment } from 'react';
 import Breadcrumb from '../../common/breadcrumb';
 import CKEditors from "react-ckeditor-component";
 import { AvField, AvForm } from 'availity-reactstrap-validation';
 import one from '../../../assets/images/pro3/1.jpg'
 import user from '../../../assets/images/user.png';
+import Checkbox from '@material-ui/core/Checkbox';
+import CircleCheckedFilled from '@material-ui/icons/CheckCircle';
+import Brightness1Icon from '@material-ui/icons/Brightness1';
+import Button from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField';
+
+const light = "rgb(255,128,132, 0.3)"
+const dark = "rgb(255,128,132, 0.8)"
 
 export class AddProduct extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            quantity: 1,
-            file: '',
-            dummyimgs: [
-                { img: user },
-                { img: user },
-                { img: user },
-                { img: user },
-                { img: user },
-                { img: user },
-            ]
+            colours: [],
+            selectedColours: [],
+            selectedSizes: [],
+            details: {
+                description: "",
+                productName: "",
+                cost: "",
+                price: ""
+            }
         }
     }
-    IncrementItem = () => {
-        this.setState(prevState => {
-            if (prevState.quantity < 9) {
-                return {
-                    quantity: prevState.quantity + 1
-                }
-            } else {
-                return null;
-            }
-        });
-    }
-    DecreaseItem = () => {
-        this.setState(prevState => {
-            if (prevState.quantity > 0) {
-                return {
-                    quantity: prevState.quantity - 1
-                }
-            } else {
-                return null;
-            }
-        });
-    }
-    handleChange = (event) => {
-        this.setState({ quantity: event.target.value });
+
+
+    handleChange = ({ target: input }) => {
+        const details = { ...this.state.details }
+        details[input.name] = input.value;
+        this.setState({ details })
     }
 
-    //image upload
-    _handleSubmit(e) {
-        e.preventDefault();
-    }
-
-    _handleImgChange(e, i) {
-        e.preventDefault();
-
-        let reader = new FileReader();
-        let file = e.target.files[0];
-        const { dummyimgs } = this.state;
-
-        reader.onloadend = () => {
-            dummyimgs[i].img = reader.result;
-            this.setState({
-                file: file,
-                dummyimgs,
-            });
+    handleSelectSize = e => {
+        const size = e.currentTarget.value || e.target.value
+        const selectedSizes = [...this.state.selectedSizes];
+        const index = selectedSizes.indexOf(size);
+        if (index < 0) {
+            selectedSizes.push(size);
+        } else {
+            selectedSizes.splice(index, 1);
         }
-        reader.readAsDataURL(file)
+        this.setState({ selectedSizes })
     }
+
+    handleOnCheckboxButtonClick = (event, colour) => {
+        const selectedColours = [...this.state.selectedColours];
+        const index = selectedColours.indexOf(colour);
+        if (index < 0) {
+            selectedColours.push(colour);
+        } else {
+            selectedColours.splice(index, 1);
+        }
+        this.setState({ selectedColours })
+    }
+
+    handleDiscard = () => {
+        this.setState({
+            colours: [],
+            selectedColours: [],
+            selectedSizes: [],
+            details: {
+                description: "",
+                productName: "",
+                cost: "",
+                price: ""
+            }
+        })
+    }
+
+    handleCreateProduct = () => {
+    }
+
+
 
     render() {
+
+        const { selectedColours, selectedSizes, content } = this.state;
         return (
             <Fragment>
                 <Breadcrumb title="Add Product" parent="Physical" />
@@ -83,7 +94,7 @@ export class AddProduct extends Component {
                                 </div>
                                 <div className="card-body">
                                     <div className="row product-adding">
-                                        <div className="col-xl-5">
+                                        {/* <div className="col-xl-5">
                                             <div className="add-product">
                                                 <div className="row">
                                                     <div className="col-xl-9 xl-50 col-sm-6 col-9">
@@ -108,86 +119,87 @@ export class AddProduct extends Component {
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div className="col-xl-7">
+                                        </div> */}
+                                        <div className="col-xl-8">
                                             <AvForm className="needs-validation add-product-form" onValidSubmit={this.handleValidSubmit} onInvalidSubmit={this.handleInvalidSubmit}>
                                                 <div className="form form-label-center">
                                                     <div className="form-group mb-3 row">
                                                         <label className="col-xl-3 col-sm-4 mb-0">Product Name :</label>
                                                         <div className="col-xl-8 col-sm-7">
-                                                            <AvField className="form-control" name="product_name" id="validationCustom01" type="text" required />
+                                                            <AvField className="form-control" name="productName" id="validationCustom01" type="text" required
+                                                                onChange={this.handleChange} />
                                                         </div>
                                                         <div className="valid-feedback">Looks good!</div>
                                                     </div>
                                                     <div className="form-group mb-3 row">
                                                         <label className="col-xl-3 col-sm-4 mb-0">Price :</label>
                                                         <div className="col-xl-8 col-sm-7">
-                                                            <AvField className="form-control mb-0" name="price" id="validationCustom02" type="number" required />
+                                                            <AvField className="form-control mb-0" name="price" id="validationCustom02" type="number" required
+                                                                onChange={this.handleChange} />
                                                         </div>
                                                         <div className="valid-feedback">Looks good!</div>
                                                     </div>
                                                     <div className="form-group mb-3 row">
-                                                        <label className="col-xl-3 col-sm-4 mb-0">Product Code :</label>
+                                                        <label className="col-xl-3 col-sm-4 mb-0">Cost :</label>
                                                         <div className="col-xl-8 col-sm-7">
-                                                            <AvField className="form-control " name="product_code" id="validationCustomUsername" type="number" required />
+                                                            <AvField className="form-control " name="cost" id="validationCustomUsername"
+                                                                type="number" required onChange={this.handleChange} />
                                                         </div>
                                                         <div className="invalid-feedback offset-sm-4 offset-xl-3">Please choose Valid Code.</div>
                                                     </div>
                                                 </div>
                                                 <div className="form">
                                                     <div className="form-group row">
-                                                        <label className="col-xl-3 col-sm-4 mb-0" >Select Size :</label>
+                                                        <label className="col-xl-3 col-sm-4 mb-0" >Select Colour :</label>
                                                         <div className="col-xl-8 col-sm-7">
-                                                            <select className="form-control digits" id="exampleFormControlSelect1">
-                                                                <option>Small</option>
-                                                                <option>Medium</option>
-                                                                <option>Large</option>
-                                                                <option>Extra Large</option>
-                                                            </select>
+                                                            <Checkbox
+                                                                disableRipple
+                                                                onChange={(e) => this.handleOnCheckboxButtonClick(e, '0072ea')} value={selectedColours.includes("0072ea")}
+                                                                icon={<Brightness1Icon style={{ fill: '#0072ea' }} />}
+                                                                checkedIcon={<CircleCheckedFilled style={{ fill: '#0072ea' }} />}
+                                                            />
+                                                            <Checkbox
+                                                                disableRipple
+                                                                onChange={(e) => this.handleOnCheckboxButtonClick(e, 'gold')} value={selectedColours.includes("gold")}
+                                                                icon={<Brightness1Icon style={{ fill: 'gold' }} />}
+                                                                checkedIcon={<CircleCheckedFilled style={{ fill: 'gold' }} />}
+                                                            />
+                                                            <Checkbox
+                                                                disableRipple
+                                                                onChange={(e) => this.handleOnCheckboxButtonClick(e, 'red')} value={selectedColours.includes("red")}
+                                                                icon={<Brightness1Icon style={{ fill: 'red' }} />}
+                                                                checkedIcon={<CircleCheckedFilled style={{ fill: 'red' }} />}
+                                                            />
                                                         </div>
                                                     </div>
-                                                    <div className="form-group row">
-                                                        <label className="col-xl-3 col-sm-4 mb-0">Total Products :</label>
-                                                        <fieldset className="qty-box ml-0">
-                                                            <div className="input-group bootstrap-touchspin">
-                                                                <div className="input-group-prepend">
-                                                                    <button className="btn btn-primary btn-square bootstrap-touchspin-down" type="button" onClick={this.DecreaseItem} >
-                                                                        <i className="fa fa-minus"></i>
-                                                                    </button>
-                                                                </div>
-                                                                <div className="input-group-prepend">
-                                                                    <span className="input-group-text bootstrap-touchspin-prefix" ></span>
-                                                                </div>
-                                                                <input className="touchspin form-control" type="text" value={this.state.quantity} onChange={this.handleChange} />
-                                                                <div className="input-group-append">
-                                                                    <span className="input-group-text bootstrap-touchspin-postfix"></span>
-                                                                </div>
-                                                                <div className="input-group-append ml-0">
-                                                                    <button className="btn btn-primary btn-square bootstrap-touchspin-up" type="button" onClick={this.IncrementItem}>
-                                                                        <i className="fa fa-plus"></i>
-                                                                    </button>
-                                                                </div>
+                                                    <div className="form">
+                                                        <div className="form-group row">
+                                                            <label className="col-xl-3 col-sm-4 mb-0" >Select Size :</label>
+                                                            <div className="col-xl-8 col-sm-7">
+                                                                {["XS", "S", "M", "L", "XL"].map((size) => {
+                                                                    return <Button
+                                                                        variant="contained" color="primary"
+                                                                        style={{
+                                                                            backgroundColor: !selectedSizes.includes(size) ? light : dark,
+                                                                            borderRadius: 50,
+                                                                            margin: "0 1% 3% 1%"
+                                                                        }}
+                                                                        onClick={this.handleSelectSize} value={size}><p style={{ color: "black" }}>{size}</p></Button>
+                                                                })}
                                                             </div>
-                                                        </fieldset>
+                                                        </div>
                                                     </div>
                                                     <div className="form-group row">
                                                         <label className="col-xl-3 col-sm-4">Add Description :</label>
                                                         <div className="col-xl-8 col-sm-7 description-sm">
-                                                            <CKEditors
-                                                                activeclassName="p10"
-                                                                content={this.state.content}
-                                                                events={{
-                                                                    "blur": this.onBlur,
-                                                                    "afterPaste": this.afterPaste,
-                                                                    "change": this.onChange
-                                                                }}
-                                                            />
+                                                            <AvField className="form-control" name="product_name" id="validationCustom01" type="textarea" required
+                                                                onChange={this.handleChange} />
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div className="offset-xl-3 offset-sm-4">
-                                                    <button type="submit" className="btn btn-primary">Add</button>
-                                                    <button type="button" className="btn btn-light">Discard</button>
+                                                    <button type="submit" className="btn btn-primary" onClick={this.handleCreateProduct}>Create</button>
+                                                    <button type="button" className="btn btn-light" onClick={this.handleDiscard}>Discard</button>
                                                 </div>
                                             </AvForm>
                                         </div>
@@ -195,9 +207,9 @@ export class AddProduct extends Component {
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </Fragment>
+                    </div >
+                </div >
+            </Fragment >
         )
     }
 }
