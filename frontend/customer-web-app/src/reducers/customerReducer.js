@@ -16,8 +16,11 @@ export default function(state = initialState, action){
         case types.CUSTOMER_LOGIN:
             return {
                 ...state,
+                registeredCustomer: {},
                 loggedInCustomer: action.customer
             }
+        case types.CUSTOMER_LOGOUT:
+            return initialState;
         default:
             return state;
     }

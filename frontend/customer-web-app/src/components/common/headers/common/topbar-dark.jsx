@@ -1,5 +1,4 @@
-import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
+import React, {Component} from 'react';
 
 class TopBarDark extends Component {
 
@@ -24,16 +23,18 @@ class TopBarDark extends Component {
                                 <li className="onhover-dropdown mobile-account">
                                     <i className="fa fa-user" aria-hidden="true" /> My Account
                                     <ul className="onhover-show-div">
-                                        <li>
-                                            <a href="#" data-lng="en">
-                                                Login
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="#" data-lng="es">
-                                                Register
-                                            </a>
-                                        </li>
+                                        <div>
+                                            <li>
+                                                <a href="#" data-lng="en">
+                                                    Login
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="#" data-lng="es">
+                                                    Register
+                                                </a>
+                                            </li>
+                                        </div>
                                     </ul>
                                 </li>
                             </ul>
