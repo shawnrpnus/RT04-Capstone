@@ -9,7 +9,7 @@ export default () => (
     <div>
         <Layout/>
         <div className="container__wrap">
-            <Route path="/storeEdit" component={StoreEdit}/>
+            <Route path="/store" component={StoreEdit}/>
             <Route path="/viewAllProduct" component={ProductTable}/>
             <Route path="/viewProductDetails/:id" component={ProductPage}/>
         </div>
