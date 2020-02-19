@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import 'moment';
 import {connect} from "react-redux";
-import { withRouter } from "react-router";
+import {withRouter} from "react-router";
 
 import {clearErrors, createNewStore} from "../../../redux/actions";
 import CreateStoreRequest from "../../../models/store/createStoreRequest";
@@ -11,12 +11,19 @@ import MomentUtils from "@date-io/moment";
 import {Grid, MenuItem, Select} from "@material-ui/core";
 import MaterialTextField from "../../../shared/components/Form/MaterialTextField";
 import {Button, ButtonToolbar} from "reactstrap";
+import * as PropTypes from 'prop-types';
 
 let moment = require('moment');
 
-const resolvePath = require('object-resolve-path');
-
 class StoreEditForm extends Component {
+    static propTypes = {
+        createdUpdatedStore: PropTypes.object,
+        errors: PropTypes.object,
+        clearErrors: PropTypes.func.isRequired,
+        createNewStore: PropTypes.func.isRequired
+    }
+
+
     constructor(props) {
         super(props)
 
@@ -55,9 +62,11 @@ class StoreEditForm extends Component {
 
     handleSubmit = (e) => {
         e.preventDefault();
-        const {storeName, numChangingRooms, openingTime,
+        const {
+            storeName, numChangingRooms, openingTime,
             closingTime, numManagers, numAssistants, line1, line2,
-            buildingName, postalCode} = this.state
+            buildingName, postalCode
+        } = this.state
         const address = new Address(line1, line2, postalCode, buildingName);
         const req = new CreateStoreRequest(
             storeName,
@@ -86,11 +95,11 @@ class StoreEditForm extends Component {
                                                state={this.state}
                                                errors={errors}/>
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid item xs={12} md={6}>
                             <div className="material-form__label">Opening Time</div>
                             <KeyboardTimePicker
                                 className="material-form__field"
-                                style={{"margin-top": 0}}
+                                style={{"marginTop": 0}}
                                 margin="normal"
                                 variant="dialog"
                                 inputVariant="outlined"
@@ -100,11 +109,11 @@ class StoreEditForm extends Component {
                                 }}
                             />
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid item xs={12} md={6}>
                             <div className="material-form__label">Closing Time</div>
                             <KeyboardTimePicker
                                 className="material-form__field"
-                                style={{"margin-top": 0}}
+                                style={{"marginTop": 0}}
                                 margin="normal"
                                 variant="dialog"
                                 inputVariant="outlined"
@@ -114,30 +123,39 @@ class StoreEditForm extends Component {
                                 }}
                             />
                         </Grid>
-                        <Grid item xs={4}>
+                        <Grid item xs={12} md={4}>
                             <div className="material-form__label">Number of changing rooms</div>
-                            <Select className="material-form__field"
-                                    labelId="label" id="select" value={this.state.numChangingRooms}>
+                            <Select name="numChangingRooms"
+                                    className="material-form__field"
+                                    onChange={this.onChange}
+                                    labelId="label"
+                                    value={this.state.numChangingRooms}>
                                 {numberOptions.map(option =>
-                                    <MenuItem value={option}>{option}</MenuItem>)
+                                    <MenuItem key={`ncr-${option}`} value={option}>{option}</MenuItem>)
                                 }
                             </Select>
                         </Grid>
-                        <Grid item xs={4}>
+                        <Grid item xs={12} md={4}>
                             <div className="material-form__label">Number of managers</div>
-                            <Select className="material-form__field"
-                                    labelId="label" id="select" value={this.state.numManagers}>
+                            <Select name="numManagers"
+                                    className="material-form__field"
+                                    onChange={this.onChange}
+                                    labelId="label"
+                                    value={this.state.numManagers}>
                                 {numberOptions.map(option =>
-                                    <MenuItem value={option}>{option}</MenuItem>)
+                                    <MenuItem key={`nm-${option}`} value={option}>{option}</MenuItem>)
                                 }
                             </Select>
                         </Grid>
-                        <Grid item xs={4}>
+                        <Grid item xs={12} md={4}>
                             <div className="material-form__label">Number of assistants</div>
-                            <Select className="material-form__field"
-                                    labelId="label" id="select" value={this.state.numAssistants}>
+                            <Select name="numAssistants"
+                                    className="material-form__field"
+                                    onChange={this.onChange}
+                                    labelId="label"
+                                    value={this.state.numAssistants}>
                                 {numberOptions.map(option =>
-                                    <MenuItem value={option}>{option}</MenuItem>)
+                                    <MenuItem key={`na-${option}`} value={option}>{option}</MenuItem>)
                                 }
                             </Select>
                         </Grid>

@@ -1,9 +1,8 @@
 import React from 'react';
-import { Route, Switch } from 'react-router-dom';
+import {Route, Switch} from 'react-router-dom';
 import LogIn from "../../components/Account/LogIn"
 import WrappedRoutes from './WrappedRoutes';
 import MainWrapper from "./MainWrapper";
-import ProductTable from "../../components/DataTable/Products";
 
 const Router = () => (
     <MainWrapper>

@@ -1,5 +1,5 @@
 import {applyMiddleware, compose, createStore} from 'redux';
-import { composeWithDevTools } from "redux-devtools-extension";
+import {composeWithDevTools} from "redux-devtools-extension";
 // middlewares
 import thunk from 'redux-thunk'
 // Import custom components
