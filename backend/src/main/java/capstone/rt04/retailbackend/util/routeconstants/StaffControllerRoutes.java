@@ -9,5 +9,8 @@ public class StaffControllerRoutes {
     public static final String UPDATE_STAFF = "/updateStaffDetails";
     public static final String DELETE_STAFF = "/deleteStaff/{staffId}";
     public static final String UPDATE_STAFF_ADDRESS = "/updateStaffAddress";
+    public static final String LOGIN_STAFF = "/loginStaff";
+    public static final String CHANGE_STAFF_PASSWORD = "/changeStaffPassword";
+    public static final String RESET_STAFF_PASSWORD = "/resetStaffPassword";
 
 }
