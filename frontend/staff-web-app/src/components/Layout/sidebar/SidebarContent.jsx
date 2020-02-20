@@ -25,6 +25,9 @@ class SidebarContent extends Component {
             <SidebarLink title="Create" route="/" onClick={this.hideSidebar} />
             <SidebarLink title="View All" route="/viewAllProduct" onClick={this.hideSidebar} />
           </SidebarCategory>
+          <SidebarCategory title="Tag" icon="diamond">
+            <SidebarLink title="Create" route="/tag/edit" onClick={this.hideSidebar} />
+          </SidebarCategory>
         </ul>
       </div>
     );

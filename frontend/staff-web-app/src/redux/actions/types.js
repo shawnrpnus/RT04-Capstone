@@ -7,3 +7,7 @@ export const CLEAR_ERRORS = "CLEAR_ERRORS";
 export const CREATE_STORE = "CREATE_STORE";
 
 
+// Tag
+export const CREATE_TAG = "CREATE_TAG";
+
+
