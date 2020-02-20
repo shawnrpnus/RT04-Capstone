@@ -39,11 +39,16 @@ class ProductCard extends PureComponent {
 
   componentDidMount() {
     const product = this.props.retrieveProductById(this.props.match.params.id);
-    this.setState({ product })
+  }
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (this.props.currentProduct !== prevState.product) {
+      this.setState({ product: this.props.currentProduct });
+    }
   }
 
   render() {
-    console.log(this.props.currentProduct)
+    console.log(this.state)
     return (
       <Col md={12} lg={12}>
         <Card>
