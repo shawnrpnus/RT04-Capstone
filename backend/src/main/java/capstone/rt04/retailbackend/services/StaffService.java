@@ -68,7 +68,7 @@ public class StaffService {
     //role, department.
     public Staff createNewStaff (Staff staff,Address staffAddress, Role role, Department department) throws InputDataValidationException, CreateNewStaffException {
         validationService.throwExceptionIfInvalidBean(staff);
-        validationService.throwExceptionIfInvalidBean(staffAddress);
+      //  validationService.throwExceptionIfInvalidBean(staffAddress);
 
         try{
            Staff existingStaff = null;
@@ -85,13 +85,12 @@ public class StaffService {
             }
 
             //If staff does not exist
-            //Role and department already created beforehand
-            //Only address is new
             addressRepository.save(staffAddress);
+            staff.setAddress(staffAddress);
+            staff.setRole(role);
+            staff.setDepartment(department);
             Staff savedStaff = staffRepository.save(staff);
-            savedStaff.setAddress(staffAddress);
-            savedStaff.setRole(role);
-            savedStaff.setDepartment(department);
+
             return lazyLoadStaffFields(savedStaff);
 
 
@@ -237,7 +236,6 @@ public class StaffService {
         staff.getDeliveries().size();
         staff.getLeaves().size();
         staff.getPayrolls().size();
-        staff.getRoster();
         staff.getRepliedReviews().size();
 
         return staff;

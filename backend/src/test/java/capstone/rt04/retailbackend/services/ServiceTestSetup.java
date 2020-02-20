@@ -1,6 +1,9 @@
 package capstone.rt04.retailbackend.services;
 
 import capstone.rt04.retailbackend.entities.*;
+import capstone.rt04.retailbackend.repositories.DepartmentRepository;
+import capstone.rt04.retailbackend.repositories.RoleRepository;
+import capstone.rt04.retailbackend.util.enums.RoleNameEnum;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,7 +37,6 @@ public class ServiceTestSetup {
     @Autowired
     protected StoreService storeService;
 
-
     protected static Long categoryId;
     protected static Long productId;
     protected static Long productVariantId;
@@ -42,6 +44,7 @@ public class ServiceTestSetup {
     protected static Long productId2;
     protected static Long createdCustomerId;
     protected static Long storeId;
+
 
     @Before
     public void beforeEachTest() throws Exception {
@@ -52,6 +55,7 @@ public class ServiceTestSetup {
         assertThat(testValidCustomer.getOnlineShoppingCart()).isNotNull();
         assertThat(testValidCustomer.getInStoreShoppingCart()).isNotNull();
         createdCustomerId = testValidCustomer.getCustomerId();
+
 
         Product validProduct = new Product("Fila Disruptor II", "Fila", BigDecimal.valueOf(89.90), BigDecimal.valueOf(39.90));
         Category category = categoryService.createNewCategory(new Category("Shoes"), null);
