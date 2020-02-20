@@ -1,9 +1,9 @@
 import * as types from "../actions/types";
 
 const initialState = {
-    currentStore: null,
-    allStores: null,
-    crudAction: null,
+  currentStore: null,
+  allStores: null,
+  crudAction: null,
 }
 
 

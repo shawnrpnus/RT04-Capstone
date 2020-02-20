@@ -1,6 +1,7 @@
 package capstone.rt04.retailbackend.services;
 
 import capstone.rt04.retailbackend.entities.*;
+import capstone.rt04.retailbackend.util.enums.SizeEnum;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.category.CategoryNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.category.CreateNewCategoryException;
@@ -47,16 +48,20 @@ public class StartUpService {
     private void createProductIfNotFound() throws CategoryNotFoundException, InputDataValidationException, CreateNewProductException {
         List<Product> products = productService.retrieveAllProducts();
         if (products.size() == 0) {
-            Product product =  new Product("Stan Smith", "Adidas", BigDecimal.valueOf(109.90), BigDecimal.valueOf(49.90));
+            Product product = new Product("0010", "Stan Smith", "Adidas", BigDecimal.valueOf(109.90), BigDecimal.valueOf(49.90));
             Category category = categoryService.retrieveCategoryByName("Sneakers");
             product.setCategory(category);
-            productService.createNewProduct(product, category.getCategoryId(), null);
+            List<SizeEnum> sizes = new ArrayList<>();
+            sizes.add(SizeEnum.S);
+            List<String> colors = new ArrayList<>();
+            colors.add("pink");
+            productService.createNewProduct(product, category.getCategoryId(), null, sizes, colors);
         }
     }
 
     private void createProductVariantAndProductStockIfNotFound() throws ProductNotFoundException, CreateNewProductVariantException, InputDataValidationException, ProductVariantNotFoundException, CreateNewProductStockException, WarehouseNotFoundException, StoreNotFoundException {
         List<ProductVariant> productVariants = productService.retrieveAllProductVariant();
-        if(productVariants.size() == 0) {
+        if (productVariants.size() == 0) {
 
             ProductImage productImage1 = new ProductImage("https://www.adidas.com.sg/stan-smith-shoes/M20327.html");
             ProductImage productImage2 = new ProductImage("https://www.adidas.com.sg/stan-smith-shoes/M20325.html");
@@ -70,7 +75,7 @@ public class StartUpService {
             ProductVariant productVariant1 = new ProductVariant("SKU0001", "Black", null, null, null);
             ProductVariant productVariant2 = new ProductVariant("SKU0002", "White", null, null, null);
             ProductVariant pv1 = productService.createProductVariant(productVariant1, 3l);
-            ProductVariant pv2 = productService.createProductVariant(productVariant2,3l);
+            ProductVariant pv2 = productService.createProductVariant(productVariant2, 3l);
             productService.createProductImage(productImages1, pv1.getProductVariantId());
             productService.createProductImage(productImages2, pv2.getProductVariantId());
 

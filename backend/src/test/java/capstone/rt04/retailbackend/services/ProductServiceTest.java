@@ -1,6 +1,7 @@
 package capstone.rt04.retailbackend.services;
 
 import capstone.rt04.retailbackend.entities.*;
+import capstone.rt04.retailbackend.util.enums.SizeEnum;
 import capstone.rt04.retailbackend.util.enums.SortEnum;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductImageNotFoundException;
@@ -60,9 +61,15 @@ public class ProductServiceTest extends ServiceTestSetup {
     @Test
     public void createErrorProduct() throws Exception {
         try {
-            Product invalidProduct = new Product(null, "Fila", BigDecimal.valueOf(89.90), BigDecimal.valueOf(39.90));
+            Product invalidProduct = new Product("0003", null, "Fila", BigDecimal.valueOf(89.90), BigDecimal.valueOf(39.90));
             invalidProduct.setCategory(categoryService.retrieveCategoryByCategoryId(categoryId));
-            productService.createNewProduct(invalidProduct, categoryId, null);
+            List<SizeEnum> sizes = new ArrayList<>();
+            sizes.add(SizeEnum.S);
+            sizes.add(SizeEnum.M);
+            List<String> colors = new ArrayList<>();
+            colors.add("pink");
+            colors.add("gold");
+            productService.createNewProduct(invalidProduct, categoryId, null, sizes, colors);
         } catch (InputDataValidationException ex) {
             Map<String, String> expectedErrorMap = new HashMap<>();
             expectedErrorMap.put("productName", "must not be null");

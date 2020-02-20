@@ -2,17 +2,17 @@ package capstone.rt04.retailbackend.services;
 
 import capstone.rt04.retailbackend.entities.*;
 import capstone.rt04.retailbackend.repositories.*;
+import capstone.rt04.retailbackend.util.enums.SizeEnum;
 import capstone.rt04.retailbackend.util.enums.SortEnum;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.category.CategoryNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.discount.DiscountNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.product.*;
-import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.promoCode.PromoCodeNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.style.StyleNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.tag.TagNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.warehouse.WarehouseNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,20 +29,20 @@ public class ProductService {
     private final DiscountService discountService;
     private final PromoCodeService promoCodeService;
     private final ValidationService validationService;
-    @Autowired
     private final StyleService styleService;
     private final StoreService storeService;
     private final WarehouseService warehouseService;
+    private final SizeDetailsService sizeDetailsService;
 
-    @Autowired
-    private final SizeDetailsRepository sizeDetailsRepository;
     private final ProductRepository productRepository;
     private final ProductImageRepository productImageRepository;
     private final ProductStockRepository productStockRepository;
     private final ProductVariantRepository productVariantRepository;
-    private final WarehouseRepository warehouseRepository;
 
-    public ProductService(ValidationService validationService, TagService tagService, CategoryService categoryService, StyleService styleService, StoreService storeService, ProductRepository productRepository, ProductVariantRepository productVariantRepository, ProductStockRepository productStockRepository, ProductImageRepository productImageRepository, DiscountService discountService, PromoCodeService promoCodeService, WarehouseService warehouseService, SizeDetailsRepository sizeDetailsRepository, WarehouseRepository warehouseRepository) {
+    public ProductService(ValidationService validationService, TagService tagService, CategoryService categoryService, StyleService styleService,
+                          StoreService storeService, ProductRepository productRepository, ProductVariantRepository productVariantRepository,
+                          ProductStockRepository productStockRepository, ProductImageRepository productImageRepository, DiscountService discountService,
+                          PromoCodeService promoCodeService, WarehouseService warehouseService, SizeDetailsService sizeDetailsService) {
         this.validationService = validationService;
         this.tagService = tagService;
         this.categoryService = categoryService;
@@ -55,15 +55,16 @@ public class ProductService {
         this.discountService = discountService;
         this.promoCodeService = promoCodeService;
         this.warehouseService = warehouseService;
-        this.sizeDetailsRepository = sizeDetailsRepository;
-        this.warehouseRepository = warehouseRepository;
+        this.sizeDetailsService = sizeDetailsService;
     }
 
-    public Product createNewProduct(Product product, Long categoryId, List<Long> tagIds) throws InputDataValidationException, CreateNewProductException, CategoryNotFoundException {
+    public Product createNewProduct(Product product, Long categoryId, List<Long> tagIds, List<SizeEnum> sizes, List<String> colors) throws InputDataValidationException, CreateNewProductException, CategoryNotFoundException {
 
         if (categoryId == null) {
             throw new CreateNewProductException("The new product must be associated a leaf category");
         }
+
+        // TODO: Generate product variant for each of the selected sizes and colours (also generate product stock for each of the generate product variant)
 
         Category category = categoryService.retrieveCategoryByCategoryId(categoryId);
         product.setCategory(category);
@@ -88,6 +89,20 @@ public class ProductService {
                         product.addTag(tag);
                     }
                 }
+
+                ProductVariant productVariant;
+                String sku;
+                SizeDetails sizeDetails;
+
+                for (String color : colors) {
+                    for (SizeEnum size : sizes) {
+                        sku = product.getSerialNumber() + "-" + color + "-" + size;
+                        sizeDetails = new SizeDetails(size);
+                        productVariant = new ProductVariant(sku, color, null, product, sizeDetailsService.createSizeDetails(sizeDetails));
+                        createProductVariant(productVariant, product.getProductId());
+                    }
+                }
+
                 return product;
             } catch (PersistenceException ex) {
                 if (ex.getCause() != null
@@ -279,17 +294,17 @@ public class ProductService {
         Map<String, String> errorMap = validationService.generateErrorMap(productVariant);
 
         if (errorMap == null) {
-            // SizeDetails will be added separately afterwards
             // TODO: Create ProductImage and link to Product before saving
 
             productVariantRepository.save(productVariant);
             product.getProductVariants().add(productVariant);
 
             // TODO: uncomment when warehouse and store services are done
-//                List<Warehouse> warehouses = warehouseRepository.retrieveAllWarehouse();
+            List<Warehouse> warehouses = warehouseService.retrieveAllWarehouses();
             List<Store> stores = storeService.retrieveAllStores();
 
-            assignProductStock(null, stores, productVariant);
+            assignProductStock(warehouses, stores, productVariant);
+
             return productVariant;
         } else {
             throw new InputDataValidationException(errorMap, "Invalid Category");
@@ -416,7 +431,7 @@ public class ProductService {
                 Store store = storeService.retrieveStoreById(s.getStoreId());
 
                 for (ProductVariant productVariant : productVariants) {
-                    ProductStock productStock = new ProductStock(0, 0, 0,0);
+                    ProductStock productStock = new ProductStock(0, 0, 0, 0);
                     productStock.setStore(store);
                     ProductStock newProductStock = createProductStock(productStock, productVariant.getProductVariantId());
                     store.getProductStocks().add(newProductStock);

@@ -3,6 +3,7 @@ package capstone.rt04.retailbackend.services;
 import capstone.rt04.retailbackend.entities.*;
 import capstone.rt04.retailbackend.repositories.*;
 import capstone.rt04.retailbackend.util.ErrorMessages;
+import capstone.rt04.retailbackend.util.enums.RoleNameEnum;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.customer.CustomerCannotDeleteException;
 import capstone.rt04.retailbackend.util.exceptions.customer.CustomerNotFoundException;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.PersistenceException;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -62,6 +64,18 @@ public class StaffService {
         this.payrollRepository = payrollRepository;
         this.roleRepository = roleRepository;
         this.rosterRepository = rosterRepository;
+    }
+
+    public Role createNewRole (RoleNameEnum name, BigDecimal value){
+        Role newRole = new Role(name, value);
+        roleRepository.save(newRole);
+        return newRole;
+    }
+
+    public Department createNewDepartment (String name){
+        Department newDepartment = new Department(name);
+        departmentRepository.save(newDepartment);
+        return newDepartment;
     }
 
     //staff entity: first name, last name, nric, username&password(to be configured by admin),leave remaining
@@ -216,15 +230,17 @@ public class StaffService {
     //staff logins with username
     public Staff staffLogin(String username, String password) throws InvalidLoginCredentialsException{
         try {
-            Staff staff = retrieveStaffByUsername(username);
-            if (encoder.matches(password, staff.getPassword())) {
+            Staff staff = retrieveStaffByStaffId(Long.valueOf(username));
+            if (password.equals(staff.getPassword())) {
                 return lazyLoadStaffFields(staff);
             } else {
-                throw new InvalidLoginCredentialsException(ErrorMessages.LOGIN_FAILED);
+                System.out.println(password);
+                System.out.println(staff.getPassword());
+                throw new InvalidLoginCredentialsException(ErrorMessages.STAFF_LOGIN_FAILED);
             }
 
-        } catch (StaffNotFoundException ex) {
-            throw new InvalidLoginCredentialsException(ErrorMessages.LOGIN_FAILED);
+        } catch (StaffNotFoundException | java.lang.NumberFormatException ex) {
+            throw new InvalidLoginCredentialsException(ErrorMessages.STAFF_LOGIN_FAILED);
         }
     }
 
