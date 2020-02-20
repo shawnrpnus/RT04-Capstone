@@ -4,6 +4,7 @@ import capstone.rt04.retailbackend.entities.*;
 import capstone.rt04.retailbackend.repositories.*;
 import capstone.rt04.retailbackend.util.ErrorMessages;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
+import capstone.rt04.retailbackend.util.exceptions.customer.CustomerCannotDeleteException;
 import capstone.rt04.retailbackend.util.exceptions.customer.CustomerNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.customer.InvalidLoginCredentialsException;
 import capstone.rt04.retailbackend.util.exceptions.customer.VerificationCodeInvalidException;
@@ -85,6 +86,8 @@ public class StaffService {
             }
 
             //If staff does not exist
+            //Set address, role and department before saving because of sql constraint
+            //Address ID, role ID and department ID column cannot be empty
             addressRepository.save(staffAddress);
             staff.setAddress(staffAddress);
             staff.setRole(role);
@@ -227,6 +230,79 @@ public class StaffService {
         } else {
             throw new InvalidLoginCredentialsException(ErrorMessages.OLD_PASSWORD_INCORRECT);
         }
+    }
+
+    public Staff removeStaff(Long staffId) throws StaffNotFoundException, StaffCannotDeleteException {
+        try {
+            Staff existingStaff = retrieveStaffByStaffId(staffId);
+            Address a = existingStaff.getAddress();
+
+            if ((existingStaff.getAdvertisements() != null && existingStaff.getAdvertisements().size() >0)
+                    || (existingStaff.getDeliveries() != null && existingStaff.getDeliveries().size()>0)){
+                throw new StaffCannotDeleteException("Staff cannot be deleted due to existing associations "
+                        + "(advertisments/deliveries) with the store");
+            }
+
+            // Clear relationship with payrolls, and delete payrolls
+            for (Payroll p : existingStaff.getPayrolls()) {
+                p.getStaff().getPayrolls().remove(p);
+                p.setStaff(null);
+                payrollRepository.delete(p);
+            }
+            existingStaff.setPayrolls(null);
+            // ----------------------------------------------------
+
+            // Clear relationship with leaves, and delete leaves
+            for (StaffLeave l : existingStaff.getLeaves()) {
+                l.getApplicant().getLeaves().remove(l);
+                l.setApplicant(null);
+                l.setApprover(null);
+                l.setEndorser(null);
+                staffLeaveRepository.delete(l);
+            }
+            existingStaff.setLeaves(null);
+            // ----------------------------------------------------
+
+            // Clear relationship with role and department
+            existingStaff.setRole(null);
+            existingStaff.setDepartment(null);
+            // ----------------------------------------------------
+
+
+            // Clear relationship with replied reviews, and delete replied reviews
+            for (Review r : existingStaff.getRepliedReviews()) {
+                r.getProduct().getReviews().remove(r);
+                r.setProduct(null);
+                r.getStaff().getRepliedReviews().remove(r);
+                r.setStaff(null);
+                reviewRepository.delete(r);
+            }
+            existingStaff.setRepliedReviews(null);;
+            // ----------------------------------------------------
+
+            // Clear relationship with advertisements, and delete advertisements
+            //for (Advertisement ad : existingStaff.getAdvertisements()) {
+              //  ad.getCreator().getAdvertisements().remove(ad);
+              //  ad.setCreator(null);
+             //   advertisementRepository.delete(ad);
+          //  }
+         //   existingStaff.setAdvertisements(null);
+            // ----------------------------------------------------
+
+            staffRepository.delete(existingStaff);
+            // Delete address
+
+            addressRepository.delete(a);
+            // ----------------------------------------------------
+            return existingStaff;
+
+
+        } catch (StaffNotFoundException ex){
+            throw new StaffNotFoundException("Staff not found");
+        }
+
+
+
     }
 
 

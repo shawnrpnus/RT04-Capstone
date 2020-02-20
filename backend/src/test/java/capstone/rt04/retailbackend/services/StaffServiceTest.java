@@ -8,6 +8,10 @@ import capstone.rt04.retailbackend.repositories.RoleRepository;
 import capstone.rt04.retailbackend.util.ErrorMessages;
 import capstone.rt04.retailbackend.util.enums.RoleNameEnum;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
+import capstone.rt04.retailbackend.util.exceptions.customer.InvalidLoginCredentialsException;
+import capstone.rt04.retailbackend.util.exceptions.staff.CreateNewStaffAccountException;
+import capstone.rt04.retailbackend.util.exceptions.staff.StaffNotFoundException;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,6 +47,8 @@ public class StaffServiceTest {
     @Before
     public void beforeEachTest() throws Exception{
         Staff expectedValidStaff = new Staff("Bob", "Vance", 10, "S1111111D", VALID_STAFF_EMAIL);
+
+        //Role and department has to be created beforehand
         RoleNameEnum rolename = RoleNameEnum.valueOf("ASSISTANT");
         BigDecimal salary = new BigDecimal(1000);
         testRole = new Role(rolename,salary);
@@ -59,7 +65,7 @@ public class StaffServiceTest {
     @Test
     public void createNewStaff() throws Exception {
 
-
+        //Valid address
         Address a = new Address("aba", "aaa", "12345", "blah");
         Staff invalidStaff = new Staff("bob", "vance", 10, "S111111D",  "bob@Bob@com");
 
@@ -71,4 +77,19 @@ public class StaffServiceTest {
            assertThat(ex.getErrorMap()).isEqualTo(expectedErrorMap);
         }
    }
+
+   @Test (expected = CreateNewStaffAccountException.class)
+    public void createNewStaffAccount() throws Exception {
+        //Will throw exception that staff does not exist
+
+           Staff invalidStaff = staffService.createNewStaffAccount(Long.valueOf("12345"));
+
+   }
+
+    @After
+    public void afterEachTest() throws Exception {
+        Staff removedStaff = staffService.removeStaff(createdStaffId);
+        assertThat(removedStaff.getStaffId()).isEqualTo(createdStaffId);
+
+    }
 }
