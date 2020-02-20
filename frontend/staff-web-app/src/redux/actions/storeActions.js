@@ -1,6 +1,6 @@
 import axios from "axios";
 import * as types from "./types";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 
 const STORE_BASE_URL = "/api/store";
 const jsog = require("jsog");
@@ -40,7 +40,7 @@ export const retrieveStoreById = storeId => {
     axios
       .get(STORE_BASE_URL + "/retrieveStoreById/" + storeId)
       .then(response => {
-        const {data} = jsog.decode(response);
+        const { data } = jsog.decode(response);
         dispatch(retrieveStoreSuccess(data));
       })
       .catch(err => {
@@ -86,6 +86,30 @@ const updateStoreSuccess = data => ({
 });
 
 const updateStoreError = data => ({
+  type: types.GET_ERRORS,
+  errorMap: data
+});
+
+export const retrieveAllStores = () => {
+  return dispatch => {
+    axios
+      .get(STORE_BASE_URL + "/retrieveAllStores")
+      .then(response => {
+        const { data } = jsog.decode(response);
+        dispatch(retrieveAllStoresSuccess(data));
+      })
+      .catch(err => {
+        dispatch(retrieveAllStoresError(err.response.data));
+      });
+  };
+};
+
+const retrieveAllStoresSuccess = data => ({
+  type: types.RETRIEVE_ALL_STORES,
+  storeEntities: data
+});
+
+const retrieveAllStoresError = data => ({
   type: types.GET_ERRORS,
   errorMap: data
 });
