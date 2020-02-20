@@ -35,6 +35,7 @@ class TagEditForm extends Component {
         console.log(this.state);
     }
 
+    // this method makes the api calls
     handleSubmit = (e) => {
         e.preventDefault();
         const{name} = this.state
