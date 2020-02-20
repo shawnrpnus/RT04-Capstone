@@ -130,26 +130,12 @@ public class TransactionControllerTest {
 
     //TODO: test got error - unresolved forward reference, could not resolve object id. tested on postman and it works
     @Test
-    public void retrievePastOrder() throws JsonProcessingException {
-        List<String> pastOrders = given()
+    public void retrievePastOrder()  {
+        List<Transaction> pastOrders = given()
                 .when()
                 .get(TRANSACTION_BASE_ROUTE + RETRIEVE_ALL_TRANSACTIONS)
-<<<<<<< HEAD
                 .then().statusCode(HttpStatus.OK.value()).extract().body().jsonPath().getList(".", Transaction.class);
-        //assertThat(pastOrders.size()).isEqualTo(2);
-=======
-                .then().statusCode(HttpStatus.OK.value()).extract().body().jsonPath().getList(".");
-        for (String s : pastOrders) {
-            log.info(s);
-        }
-        ObjectMapper mapper = new ObjectMapper();
-        SimpleModule module = new SimpleModule();
-        module.addDeserializer(JSOGRef.class, new JSOGRefDeserializer());
-        mapper.registerModule(module);
-        //List<Transaction> transactions = mapper.readValue(pastOrders, new TypeReference<List<Transaction>>(){});
-
        //assertThat(transactions.size()).isEqualTo(4);
->>>>>>> 5ba4f9e87777e6dc8f33b2202169d7493f0e663a
     }
 
     @Test
