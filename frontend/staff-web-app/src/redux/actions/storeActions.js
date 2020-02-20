@@ -1,5 +1,6 @@
 import axios from "axios";
 import * as types from "./types";
+import { toast } from 'react-toastify';
 
 const STORE_BASE_URL = "/api/store";
 const jsog = require("jsog");
@@ -12,6 +13,9 @@ export const createNewStore = (createStoreRequest, history) => {
         const { data } = jsog.decode(response);
         const storeId = data.storeId;
         dispatch(createStoreSuccess(data));
+        toast.success("Store Created!", {
+          position: toast.POSITION.TOP_CENTER
+        });
         history.push(`/store/view/${storeId}`); // TODO: update redirect path
       })
       .catch(err => {
@@ -64,6 +68,9 @@ export const updateStore = (updateStoreRequest, history) => {
         const { data } = jsog.decode(response);
         const storeId = data.storeId;
         dispatch(updateStoreSuccess(data));
+        toast.success("Store Updated!", {
+          position: toast.POSITION.TOP_CENTER
+        });
         history.push(`/store/view/${storeId}`);
       })
       .catch(err => {

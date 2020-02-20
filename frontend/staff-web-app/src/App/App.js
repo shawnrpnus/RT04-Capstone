@@ -6,6 +6,12 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "../scss/app.scss";
 import ScrollToTop from "./ScrollToTop";
 import store from "./store";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+toast.configure({
+  autoClose: 3000
+})
 
 function App() {
   return (
