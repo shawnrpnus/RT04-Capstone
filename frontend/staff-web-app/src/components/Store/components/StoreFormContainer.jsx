@@ -11,8 +11,14 @@ import CreateUpdateStoreRequest from "../../../models/store/CreateUpdateStoreReq
 import Address from "../../../models/address";
 import * as PropTypes from "prop-types";
 import StoreForm from "./StoreForm";
-import Loading from "../../../shared/components/Loading";
 import withPage from "../../Layout/page/withPage";
+import { css } from "@emotion/core";
+import { BounceLoader } from "react-spinners";
+
+const override = css`
+  display: block;
+  margin: 0 auto;
+`;
 
 class StoreFormContainer extends Component {
   static propTypes = {
@@ -107,7 +113,7 @@ class StoreFormContainer extends Component {
             history={this.props.history}
           />
         ) : (
-          <Loading loading={true} />
+          <BounceLoader css={override} size={100} color={"#36D7B7"}loading={true} />
         )}
       </React.Fragment>
     );
