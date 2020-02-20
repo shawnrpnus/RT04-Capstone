@@ -8,7 +8,7 @@ import tagReducer from "./tagReducer";
 const rootReducer = combineReducers({
     errors: errorReducer,
     sidebar: sidebarReducer,
-    store: storeReducer,
+    storeEntity: storeReducer,
     tag: tagReducer
 })
 
