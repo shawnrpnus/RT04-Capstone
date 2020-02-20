@@ -6,7 +6,17 @@ import capstone.rt04.retailbackend.request.transaction.TransactionRetrieveReques
 import capstone.rt04.retailbackend.util.enums.CollectionModeEnum;
 import capstone.rt04.retailbackend.util.enums.DeliveryStatusEnum;
 import capstone.rt04.retailbackend.util.enums.SortEnum;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.voodoodyne.jackson.jsog.JSOGRef;
+import com.voodoodyne.jackson.jsog.JSOGRefDeserializer;
 import io.restassured.RestAssured;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,6 +27,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -33,6 +44,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
+@Slf4j
 public class TransactionControllerTest {
 
     private static Long transactionId1;
@@ -118,16 +130,30 @@ public class TransactionControllerTest {
 
     //TODO: test got error - unresolved forward reference, could not resolve object id. tested on postman and it works
     @Test
-    public void retrievePastOrder() {
-        List<Transaction> pastOrders = given()
+    public void retrievePastOrder() throws JsonProcessingException {
+        List<String> pastOrders = given()
                 .when()
                 .get(TRANSACTION_BASE_ROUTE + RETRIEVE_ALL_TRANSACTIONS)
+<<<<<<< HEAD
                 .then().statusCode(HttpStatus.OK.value()).extract().body().jsonPath().getList(".", Transaction.class);
         //assertThat(pastOrders.size()).isEqualTo(2);
+=======
+                .then().statusCode(HttpStatus.OK.value()).extract().body().jsonPath().getList(".");
+        for (String s : pastOrders) {
+            log.info(s);
+        }
+        ObjectMapper mapper = new ObjectMapper();
+        SimpleModule module = new SimpleModule();
+        module.addDeserializer(JSOGRef.class, new JSOGRefDeserializer());
+        mapper.registerModule(module);
+        //List<Transaction> transactions = mapper.readValue(pastOrders, new TypeReference<List<Transaction>>(){});
+
+       //assertThat(transactions.size()).isEqualTo(4);
+>>>>>>> 5ba4f9e87777e6dc8f33b2202169d7493f0e663a
     }
 
     @Test
-    public void retrieveMatchedOrders() {
+    public void retrieveMatchedOrders() throws IOException {
         //set startDate for date range criteria
         Calendar cal = Calendar.getInstance();
         cal.clear();

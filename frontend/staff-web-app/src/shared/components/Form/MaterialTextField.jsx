@@ -4,7 +4,7 @@ import TextField from "@material-ui/core/TextField";
 
 const resolvePath = require('object-resolve-path');
 
-const MaterialTextField = ({fieldLabel, fieldName, type, state, errors, onChange, variant}) => {
+const MaterialTextField = ({fieldLabel, fieldName, type, state, errors, onChange, variant, disabled}) => {
     return (
         <div>
             <span className="material-form__label">{fieldLabel}</span>
@@ -17,6 +17,7 @@ const MaterialTextField = ({fieldLabel, fieldName, type, state, errors, onChange
                 error={!!errors[fieldName]}
                 helperText={errors[fieldName]}
                 type={type}
+                disabled = {disabled}
             />
         </div>
     );
@@ -29,7 +30,8 @@ MaterialTextField.propTypes = {
     fieldLabel: PropTypes.string.isRequired,
     fieldName: PropTypes.string.isRequired,
     type: PropTypes.string,
-    variant: PropTypes.string
+    variant: PropTypes.string,
+    disabled: PropTypes.bool
 };
 
 MaterialTextField.defaultProps = {

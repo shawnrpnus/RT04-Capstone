@@ -4,6 +4,7 @@ export const CLEAR_ERRORS = "CLEAR_ERRORS";
 
 // Store
 export const CREATE_STORE = "CREATE_STORE";
+export const RETRIEVE_STORE = "RETRIEVE_STORE";
 
 // Product
 export const CREATE_PRODUCT = "CREATE_PRODUCT";

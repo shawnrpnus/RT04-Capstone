@@ -87,6 +87,9 @@ public class StoreService {
                 if (storeToUpdate.getNumChangingRooms() != store.getNumChangingRooms() && storeToUpdate.getNumChangingRooms() > 0) {
                     storeToUpdate.setNumChangingRooms(store.getNumChangingRooms());
                 }
+
+                storeToUpdate.setNumReservedChangingRooms(store.getNumReservedChangingRooms());
+
                 if (storeToUpdate.getNumAssistants() != store.getNumAssistants() && storeToUpdate.getNumAssistants() > 0) {
                     storeToUpdate.setNumAssistants(store.getNumAssistants());
                 }

@@ -212,7 +212,7 @@ public class ApiTestSetup {
     }
 
     private void setUpStore(){
-        Store validStore = new Store("Store 1", 4, Time.valueOf("10:00:00"), Time.valueOf("21:00:00"), 2, 5, null);
+        Store validStore = new Store("Store 1", 4, 2, Time.valueOf("10:00:00"), Time.valueOf("21:00:00"), 2, 5, null);
         Store createdStore = given()
                 .contentType("application/json")
                 .body(validStore)
