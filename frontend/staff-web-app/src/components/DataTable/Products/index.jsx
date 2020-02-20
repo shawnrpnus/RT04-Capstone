@@ -45,7 +45,7 @@ export default class ProductTable extends PureComponent {
         const { redirect, id } = this.state;
         if (redirect) return <Redirect to={`/viewProductDetails/${id}`} />
 
-        return <Container>
+        return <Container >
             <Row>
                 <Col md={12}>
                     <h3 className="page-title">Products List</h3>
@@ -55,66 +55,68 @@ export default class ProductTable extends PureComponent {
                 </Col>
             </Row>
             <Row>
-                <MaterialTable
-                    fullWidth
-                    title="Basic Filtering Preview"
-                    icons={tableIcons}
-                    columns={[
-                        {
-                            title: 'Avatar', field: 'avatar',
-                            render: rowData => (
-                                <Link>
-                                    <img
-                                        style={{ width: 36, borderRadius: '50%' }}
-                                        src={rowData.avatar}
-                                        onClick={() => console.log("You saved me" + rowData.avatar)}
-                                    />
-                                </Link>
-                            ),
-                        },
-                        { title: 'Name', field: 'name' },
-                        { title: 'Cost', field: 'cost', type: "currency" },
-                        { title: 'Price', field: 'price', type: "currency" },
-                        {
-                            title: 'Color', field: 'color',
-                            render: rowData => (
-                                rowData.color.map((color) => {
-                                    return <FiberManualRecordIcon style={{ color }} />
-                                })
+                <div style={{ width: 'auto', overflowX: 'scroll' }}>
+                    <MaterialTable
+                        title="Basic Filtering Preview"
+                        icons={tableIcons}
+                        columns={[
+                            {
+                                title: 'Avatar', field: 'avatar',
+                                render: rowData => (
+                                    <Link>
+                                        <img
+                                            style={{ width: 36, borderRadius: '50%' }}
+                                            src={rowData.avatar}
+                                            onClick={() => console.log("You saved me" + rowData.avatar)}
+                                        />
+                                    </Link>
+                                ),
+                            },
+                            { title: 'Name', field: 'name' },
+                            { title: 'Cost', field: 'cost', type: "currency" },
+                            { title: 'Price', field: 'price', type: "currency" },
+                            {
+                                title: 'Color', field: 'color',
+                                render: rowData => (
+                                    rowData.color.map((color) => {
+                                        return <FiberManualRecordIcon style={{ color }} />
+                                    })
 
-                            ),
-                        },
-                        {
-                            title: 'Category',
-                            field: 'category',
-                            lookup: { 1: 'Shoes', 2: 'Shirt' },
-                        },
-                    ]}
-                    data={[
-                        { id: 1, name: 'Fila Disruptor II', surname: 'Baran', image: 1987, category: 1, color: ["orange", "yellow"], cost: 49.00, price: 89.90, avatar: "./img/shoes/01.png" },
-                        { id: 2, name: 'Turtleneck ', surname: 'Baran', image: 2017, category: 2, color: ["blue", "brown", "black"], cost: 89.00, price: 199.90, avatar: "./img/shoes/02.png" },
-                    ]}
-                    options={{
-                        filtering: true,
-                        sorting: true,
-                        pageSize: 10,
-                        pageSizeOptions: [10, 20, 40],
-                        actionsColumnIndex: -1
-                    }}
-                    actions={[
-                        {
-                            icon: PageviewOutlinedIcon,
-                            tooltip: 'View Product Variants',
-                            onClick: (event, rowData) => this.handleViewProductDetails(rowData.id)
-                        },
-                        // rowData => ({
-                        //   icon: 'delete',
-                        //   tooltip: 'Delete User',
-                        //   onClick: (event, rowData) => confirm("You want to delete " + rowData.name),
-                        //   disabled: rowData.birthYear < 2000
-                        // })
-                    ]}
-                />
+                                ),
+                            },
+                            {
+                                title: 'Category',
+                                field: 'category',
+                                lookup: { 1: 'Shoes', 2: 'Shirt' },
+                            },
+                        ]}
+                        data={[
+                            { id: 1, name: 'Fila Disruptor II', surname: 'Baran', image: 1987, category: 1, color: ["orange", "yellow"], cost: 49.00, price: 89.90, avatar: "./img/shoes/01.png" },
+                            { id: 2, name: 'Turtleneck ', surname: 'Baran', image: 2017, category: 2, color: ["blue", "brown", "black"], cost: 89.00, price: 199.90, avatar: "./img/shoes/02.png" },
+                        ]}
+                        options={{
+                            filtering: true,
+                            sorting: true,
+                            pageSize: 10,
+                            pageSizeOptions: [10, 20, 40],
+                            actionsColumnIndex: -1,
+                            headerStyle: { backgroundColor: 'grey' }, //change header padding
+                        }}
+                        actions={[
+                            {
+                                icon: PageviewOutlinedIcon,
+                                tooltip: 'View Product Variants',
+                                onClick: (event, rowData) => this.handleViewProductDetails(rowData.id)
+                            },
+                            // rowData => ({
+                            //   icon: 'delete',
+                            //   tooltip: 'Delete User',
+                            //   onClick: (event, rowData) => confirm("You want to delete " + rowData.name),
+                            //   disabled: rowData.birthYear < 2000
+                            // })
+                        ]}
+                    />
+                </div>
             </Row>
         </Container>
     }

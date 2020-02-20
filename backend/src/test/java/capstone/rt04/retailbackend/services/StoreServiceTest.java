@@ -64,7 +64,7 @@ public class StoreServiceTest extends ServiceTestSetup {
 
     @Test
     public void deleteStore() throws Exception {
-        Store newStore = new Store("Store 1", 8, Time.valueOf("11:00:00"), Time.valueOf("21:00:00"), 1, 8, null);
+        Store newStore = new Store("Store 1", 8, 4, Time.valueOf("11:00:00"), Time.valueOf("21:00:00"), 1, 8, null);
         newStore = storeService.createNewStore(newStore);
 
         /**

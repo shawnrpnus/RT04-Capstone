@@ -40,6 +40,10 @@ public class Product implements Serializable {
     private Long productId;
 
     @NotNull
+    @Column(nullable = false, unique = true)
+    private String serialNumber;
+
+    @NotNull
     @Column(nullable = false)
     private String productName;
 
@@ -91,8 +95,9 @@ public class Product implements Serializable {
         this.styles = new ArrayList<>();
     }
 
-    public Product(String productName, String description, BigDecimal price, BigDecimal cost) {
+    public Product(String serialNumber, String productName, String description, BigDecimal price, BigDecimal cost) {
         this();
+        this.serialNumber = serialNumber;
         this.productName = productName;
         this.description = description;
         this.price = price;

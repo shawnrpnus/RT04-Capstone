@@ -1,17 +1,15 @@
 import * as types from "../actions/types";
 
 const initialState = {
-  createdUpdatedTag: null,
-  allTags: null,
-  crudAction: null
+  currentProduct: null
 };
 
 export default function(state = initialState, action) {
   switch (action.type) {
-    case types.CREATE_TAG:
+    case types.RETRIEVE_PRODUCT_BY_ID:
       return {
         ...state,
-        createdUpdatedTag: action.tag
+        currentProduct: action.product
       };
     default:
       return state;

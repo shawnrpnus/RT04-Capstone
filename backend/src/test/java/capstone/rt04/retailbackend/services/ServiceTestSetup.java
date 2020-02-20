@@ -4,6 +4,7 @@ import capstone.rt04.retailbackend.entities.*;
 import capstone.rt04.retailbackend.repositories.DepartmentRepository;
 import capstone.rt04.retailbackend.repositories.RoleRepository;
 import capstone.rt04.retailbackend.util.enums.RoleNameEnum;
+import capstone.rt04.retailbackend.util.enums.SizeEnum;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,6 +16,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.math.BigDecimal;
 import java.sql.Time;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -56,12 +58,19 @@ public class ServiceTestSetup {
         assertThat(testValidCustomer.getInStoreShoppingCart()).isNotNull();
         createdCustomerId = testValidCustomer.getCustomerId();
 
-
-        Product validProduct = new Product("Fila Disruptor II", "Fila", BigDecimal.valueOf(89.90), BigDecimal.valueOf(39.90));
+        Product validProduct = new Product("0001","Fila Disruptor II", "Fila", BigDecimal.valueOf(89.90), BigDecimal.valueOf(39.90));
         Category category = categoryService.createNewCategory(new Category("Shoes"), null);
         validProduct.setCategory(category);
 
-        Product result = productService.createNewProduct(validProduct, category.getCategoryId(), null);
+        // Adding colors and sizes
+        List<SizeEnum> sizes = new ArrayList<>();
+        sizes.add(SizeEnum.S);
+        sizes.add(SizeEnum.M);
+        List<String> colors = new ArrayList<>();
+        colors.add("pink");
+        colors.add("gold");
+
+        Product result = productService.createNewProduct(validProduct, category.getCategoryId(), null, sizes, colors);
         assertThat(result).isEqualTo(validProduct);
         categoryId = category.getCategoryId();
         productId = result.getProductId();
@@ -78,16 +87,16 @@ public class ServiceTestSetup {
         styleId = style.getStyleId();
 
         // 2nd product
-        Product validProduct2 = new Product("Adidas Alpha Bounce", "Adidas", BigDecimal.valueOf(299.90), BigDecimal.valueOf(59.90));
+        Product validProduct2 = new Product("0002","Adidas Alpha Bounce", "Adidas", BigDecimal.valueOf(299.90), BigDecimal.valueOf(59.90));
         validProduct.setCategory(categoryService.retrieveCategoryByCategoryId(categoryId));
-        Product product2 = productService.createNewProduct(validProduct2, categoryId, null);
+        Product product2 = productService.createNewProduct(validProduct2, categoryId, null, sizes, colors);
         productId2 = product2.getProductId();
 
         ProductVariant validProductVariant2 = new ProductVariant("SKU002", "Pink", null, null, null);
         ProductVariant pv2 = productService.createProductVariant(validProductVariant2, product2.getProductId());
 
         // Create store
-        Store expectedValidStore = new Store("Store1", 8, Time.valueOf("10:00:00"), Time.valueOf("21:00:00"), 2, 6, null);
+        Store expectedValidStore = new Store("Store1", 8, 4, Time.valueOf("10:00:00"), Time.valueOf("21:00:00"), 2, 6, null);
         Store testValidStore = storeService.createNewStore(expectedValidStore);
         assertThat(testValidStore.getStoreId()).isNotNull();
         assertThat(testValidStore).isEqualTo(expectedValidStore);

@@ -21,7 +21,6 @@ import java.util.List;
 @CrossOrigin(origins = {"http://localhost:3000"})
 public class TransactionController {
 
-    @Autowired
     private final TransactionService transactionService;
 
     public TransactionController(TransactionService transactionService) {
