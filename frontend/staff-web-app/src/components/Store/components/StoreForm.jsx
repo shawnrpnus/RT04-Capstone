@@ -1,7 +1,7 @@
 import React from "react";
 import "moment";
 import MomentUtils from "@date-io/moment";
-import { Grid, MenuItem, Select } from "@material-ui/core";
+import { Grid } from "@material-ui/core";
 import MaterialTextField from "../../../shared/components/Form/MaterialTextField";
 import {
   KeyboardTimePicker,
