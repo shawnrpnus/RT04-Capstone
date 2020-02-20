@@ -7,7 +7,7 @@ import errorReducer from "./errorReducer";
 const rootReducer = combineReducers({
     errors: errorReducer,
     sidebar: sidebarReducer,
-    store: storeReducer
+    storeEntity: storeReducer
 })
 
 export default rootReducer;

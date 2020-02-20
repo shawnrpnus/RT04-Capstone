@@ -46,7 +46,11 @@ public class Store implements Serializable {
     @NotNull
     @Column(nullable = false)
     private Integer numChangingRooms;
-    
+
+    @NotNull
+    @Column(nullable = false)
+    private Integer numReservedChangingRooms;
+
     @NotNull
     @Column(nullable = false)
     private Time openingTime;
@@ -91,10 +95,11 @@ public class Store implements Serializable {
     }
     
 
-    public Store(String storeName, Integer numChangingRooms, Time openingTime, Time closingTime, Integer numManagers, Integer numAssistants, Address address) {
+    public Store(String storeName, Integer numChangingRooms, Integer numReservedChangingRooms, Time openingTime, Time closingTime, Integer numManagers, Integer numAssistants, Address address) {
         this();
         this.storeName = storeName;
         this.numChangingRooms = numChangingRooms;
+        this.numReservedChangingRooms = numReservedChangingRooms;
         this.openingTime = openingTime;
         this.closingTime = closingTime;
         this.numManagers = numManagers;

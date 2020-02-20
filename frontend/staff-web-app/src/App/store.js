@@ -31,7 +31,7 @@ function loadFromLocalStorage() {
 let persistedState = loadFromLocalStorage();
 persistedState = {};
 /**
- * Create a Redux store that holds the app state.
+ * Create a Redux storeEntity that holds the app state.
  */
 let store = createStore(
     rootReducer,

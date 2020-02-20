@@ -1,7 +1,7 @@
 import * as types from "../actions/types";
 
 const initialState = {
-    createdUpdatedStore: null,
+    currentStore: null,
     allStores: null,
     crudAction: null,
 }
@@ -12,8 +12,13 @@ export default function(state = initialState, action){
         case types.CREATE_STORE:
             return {
                 ...state,
-                createdUpdatedStore: action.store
+                currentStore: action.storeEntity
             };
+        case types.RETRIEVE_STORE:
+            return {
+                ...state,
+                currentStore: action.storeEntity
+            }
         default:
             return state;
     }

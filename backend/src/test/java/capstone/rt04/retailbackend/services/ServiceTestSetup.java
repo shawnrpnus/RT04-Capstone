@@ -83,7 +83,7 @@ public class ServiceTestSetup {
         ProductVariant pv2 = productService.createProductVariant(validProductVariant2, product2.getProductId());
 
         // Create store
-        Store expectedValidStore = new Store("Store1", 8, Time.valueOf("10:00:00"), Time.valueOf("21:00:00"), 2, 6, null);
+        Store expectedValidStore = new Store("Store1", 8, 4, Time.valueOf("10:00:00"), Time.valueOf("21:00:00"), 2, 6, null);
         Store testValidStore = storeService.createNewStore(expectedValidStore);
         assertThat(testValidStore.getStoreId()).isNotNull();
         assertThat(testValidStore).isEqualTo(expectedValidStore);
