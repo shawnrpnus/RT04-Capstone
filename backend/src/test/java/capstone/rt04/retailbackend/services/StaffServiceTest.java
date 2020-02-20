@@ -42,6 +42,7 @@ public class StaffServiceTest {
     @Autowired
     protected RoleRepository roleRepository;
     protected static Long createdStaffId;
+    protected static String createdStaffPassword;
 
 
     @Before
@@ -60,6 +61,8 @@ public class StaffServiceTest {
         assertThat(testValidStaff.getStaffId()).isNotNull();
         assertThat(testValidStaff).isEqualTo(expectedValidStaff);
         createdStaffId = testValidStaff.getStaffId();
+
+        createdStaffPassword =(staffService.createNewStaffAccount(createdStaffId)).getPassword();
     }
 
     @Test
@@ -83,8 +86,19 @@ public class StaffServiceTest {
         //Will throw exception that staff does not exist
 
            Staff invalidStaff = staffService.createNewStaffAccount(Long.valueOf("12345"));
-
    }
+
+   @Test (expected = InvalidLoginCredentialsException.class)
+   public void staffLogin() throws Exception {
+       Staff validStaff = staffService.retrieveStaffByUsername(String.valueOf(createdStaffId));
+
+       Staff loggedInStaff = staffService.staffLogin(String.valueOf(createdStaffId), "spiderman");
+       assertThat(loggedInStaff.getStaffId()).isEqualTo(validStaff.getStaffId());
+
+       staffService.staffLogin("invalidEmail@gmail.com", createdStaffPassword);
+       staffService.staffLogin(validStaff.getUsername(), "wrongPassword");
+   }
+
 
     @After
     public void afterEachTest() throws Exception {

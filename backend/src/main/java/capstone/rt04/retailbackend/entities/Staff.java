@@ -46,7 +46,7 @@ public class Staff implements Serializable {
     @Column(nullable = false)
     private String lastName;
 
-    @Size(min = 6)
+    @Size
     private String username;
 
     @NotNull(message = ErrorMessages.EMAIL_REQUIRED)
