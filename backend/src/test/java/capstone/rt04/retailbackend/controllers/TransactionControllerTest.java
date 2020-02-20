@@ -123,7 +123,6 @@ public class TransactionControllerTest {
                 .when()
                 .get(TRANSACTION_BASE_ROUTE + RETRIEVE_ALL_TRANSACTIONS)
                 .then().statusCode(HttpStatus.OK.value()).extract().body().jsonPath().getList(".", Transaction.class);
-
         //assertThat(pastOrders.size()).isEqualTo(2);
     }
 

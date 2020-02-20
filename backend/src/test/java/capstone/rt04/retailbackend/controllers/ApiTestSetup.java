@@ -4,6 +4,7 @@ import capstone.rt04.retailbackend.entities.*;
 import capstone.rt04.retailbackend.request.category.CategoryCreateRequest;
 import capstone.rt04.retailbackend.request.product.ProductCreateRequest;
 import capstone.rt04.retailbackend.request.productVariant.ProductVariantCreateRequest;
+import capstone.rt04.retailbackend.util.enums.SizeEnum;
 import capstone.rt04.retailbackend.util.routeconstants.StyleControllerRoutes;
 import capstone.rt04.retailbackend.util.routeconstants.TagControllerRoutes;
 import io.restassured.RestAssured;
@@ -20,6 +21,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.math.BigDecimal;
 import java.sql.Time;
+import java.util.ArrayList;
+import java.util.List;
 
 import static capstone.rt04.retailbackend.util.routeconstants.CategoryControllerRoutes.*;
 import static capstone.rt04.retailbackend.util.routeconstants.CustomerControllerRoutes.*;
@@ -107,7 +110,7 @@ public class ApiTestSetup {
 
     private void setUpProduct(){
         Category validCategory = new Category("Shoes");
-        Product validProduct = new Product("Fila Disruptor II", "Fila", BigDecimal.valueOf(89.90), BigDecimal.valueOf(39.90));
+        Product validProduct = new Product("0005", "Fila Disruptor II", "Fila", BigDecimal.valueOf(89.90), BigDecimal.valueOf(39.90));
         ProductVariant validProductVariant = new ProductVariant("SKU001", "White", null, null, null);
 
         CategoryCreateRequest categoryCreateRequest = new CategoryCreateRequest(validCategory, null);
@@ -118,7 +121,14 @@ public class ApiTestSetup {
                 then().statusCode(HttpStatus.CREATED.value()).extract().body().as(Category.class);
         categoryId = category.getCategoryId();
 
-        ProductCreateRequest productCreateRequest = new ProductCreateRequest(validProduct, categoryId);
+        List<SizeEnum> sizes = new ArrayList<>();
+        sizes.add(SizeEnum.S);
+        sizes.add(SizeEnum.M);
+        List<String> colors = new ArrayList<>();
+        colors.add("pink");
+        colors.add("gold");
+
+        ProductCreateRequest productCreateRequest = new ProductCreateRequest(validProduct, categoryId, sizes, colors);
         Product product = given().
                 contentType("application/json").
                 body(productCreateRequest).
