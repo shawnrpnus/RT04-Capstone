@@ -48,10 +48,10 @@ if (window.navigator.userAgent.includes("Chrome")) {
 }
 ;
 
-const unsubscribe = store.subscribe(() => {
-    const state = store.getState();
-    saveToLocalStorage(state);
-});
+// const unsubscribe = store.subscribe(() => {
+//     const state = store.getState();
+//     saveToLocalStorage(state);
+// });
 
 export default store;
 

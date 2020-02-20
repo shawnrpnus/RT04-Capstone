@@ -48,7 +48,7 @@ public class StoreService {
             //create product stock with qty 0 for all existing product variants
             productService.assignProductStock(null, stores, null);
         } else {
-            throw new InputDataValidationException(errorMap, "Invalid data");
+            throw new InputDataValidationException(errorMap, "Invalid data!!");
         }
         return store;
     }
@@ -120,7 +120,7 @@ public class StoreService {
                 throw new StoreUnableToUpdateException("Unable to update store as store cannot be found");
             }
         } else {
-            throw new InputDataValidationException(errorMap, "Invalid data");
+            throw new InputDataValidationException(errorMap, "Invalid data!!");
         }
     }
 

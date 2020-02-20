@@ -4,7 +4,8 @@ import { connect } from "react-redux";
 import {
   clearErrors,
   createNewStore,
-  retrieveStoreById
+  retrieveStoreById,
+  updateStore
 } from "../../../redux/actions";
 import CreateUpdateStoreRequest from "../../../models/store/CreateUpdateStoreRequest";
 import Address from "../../../models/address";
@@ -20,10 +21,11 @@ class StoreFormContainer extends Component {
     errors: PropTypes.object,
     clearErrors: PropTypes.func.isRequired,
     createNewStore: PropTypes.func,
+    updateStore: PropTypes.func,
     retrieveStoreById: PropTypes.func
   };
 
-  componentWillMount() {
+  componentDidMount() {
     const { mode } = this.props;
     if (mode === "view" || mode === "update") {
       const storeId = this.props.match.params.storeId;
@@ -62,10 +64,10 @@ class StoreFormContainer extends Component {
         this.props.createNewStore(req, this.props.history);
         break;
       case "update":
-        console.log("do update");
+        req.storeId = this.props.currentStore.storeId;
+        this.props.updateStore(req, this.props.history);
         break;
       default:
-        console.log("no mode passed");
     }
   };
 
@@ -84,8 +86,10 @@ class StoreFormContainer extends Component {
       <Container>
         <Row>
           <Col md={12}>
-            <h3 className="page-title">Store Management</h3>
-            <h3 className="page-subhead subhead">Manage your stores below.</h3>
+            <h3 style={{ "margin-bottom": "15px" }} className="page-title">
+              Store Management
+            </h3>
+            {/*<h3 className="page-subhead subhead">Manage your stores below.</h3>*/}
           </Col>
         </Row>
         <Row>
@@ -100,6 +104,7 @@ class StoreFormContainer extends Component {
                     handleSubmit={this.handleSubmit}
                     clearErrors={clearErrors}
                     errors={errors}
+                    history={this.props.history}
                   />
                 ) : currentStore !== null ? (
                   <StoreForm
@@ -108,6 +113,7 @@ class StoreFormContainer extends Component {
                     errors={errors}
                     disabled={mode === "view"}
                     currentStore={currentStore}
+                    history={this.props.history}
                   />
                 ) : (
                   <Loading loading={true} />
@@ -130,7 +136,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = {
   createNewStore, //api/storeEntity/createNewStore
   clearErrors,
-  retrieveStoreById
+  retrieveStoreById,
+  updateStore
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(StoreFormContainer);

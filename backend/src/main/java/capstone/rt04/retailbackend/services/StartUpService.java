@@ -76,7 +76,7 @@ public class StartUpService {
 
 
             Warehouse warehouse = new Warehouse();
-            Address address = new Address("Pasir Ris Drive 1", "#01-01", "S123456", "Pasir Ris Building");
+            Address address = new Address("Pasir Ris Drive 1", "#01-01", 510144, "Pasir Ris Building");
             Warehouse w = warehouseService.createWarehouse(warehouse, address);
             List<Warehouse> warehouses = warehouseService.retrieveAllWarehouseInventory();
 

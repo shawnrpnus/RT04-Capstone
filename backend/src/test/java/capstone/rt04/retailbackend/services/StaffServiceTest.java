@@ -57,7 +57,7 @@ public class StaffServiceTest {
         BigDecimal salary = new BigDecimal(1000);
         testRole = new Role(rolename,salary);
         testDepartment = new Department("ABC");
-        Address testAddress = new Address("aba", "aaa", "12345", "blah");
+        Address testAddress = new Address("aba", "aaa", 123456, "blah");
         roleRepository.save(testRole);
         departmentRepository.save(testDepartment);
         Staff testValidStaff = staffService.createNewStaff(expectedValidStaff,testAddress,testRole,testDepartment);
@@ -72,7 +72,7 @@ public class StaffServiceTest {
     public void createNewStaff() throws Exception {
 
         //Valid address
-        Address a = new Address("aba", "aaa", "12345", "blah");
+        Address a = new Address("aba", "aaa", 123456, "blah");
         Staff invalidStaff = new Staff("bob", "vance", 10, "S111111D",  "bob@Bob@com");
 
         try {

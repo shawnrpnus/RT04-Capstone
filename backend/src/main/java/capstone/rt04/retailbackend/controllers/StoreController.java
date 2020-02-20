@@ -8,6 +8,7 @@ import capstone.rt04.retailbackend.util.exceptions.product.CreateNewProductStock
 import capstone.rt04.retailbackend.util.exceptions.store.*;
 import capstone.rt04.retailbackend.util.exceptions.warehouse.WarehouseNotFoundException;
 import capstone.rt04.retailbackend.util.routeconstants.StoreControllerRoutes;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -18,6 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping(StoreControllerRoutes.STORE_BASE_ROUTE)
 @CrossOrigin(origins = {"http://localhost:3000"})
+@Slf4j
 public class StoreController {
 
     private final StoreService storeService;
@@ -38,6 +40,7 @@ public class StoreController {
         } catch (WarehouseNotFoundException ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
         } catch (Exception ex) {
+            log.error(ex.getMessage());
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -65,15 +68,13 @@ public class StoreController {
     }
 
 
-    @PutMapping(StoreControllerRoutes.UPDATE_STORE)
-    public ResponseEntity<?> updateStore(@RequestBody Store existingStore) {
+    @PostMapping(StoreControllerRoutes.UPDATE_STORE)
+    public ResponseEntity<?> updateStore(@RequestBody Store existingStore) throws InputDataValidationException {
         try {
             Store updatedStore = storeService.updateStore(existingStore);
             return new ResponseEntity<>(updatedStore, HttpStatus.OK);
         } catch (StoreUnableToUpdateException ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
-        } catch (Exception ex) {
-            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

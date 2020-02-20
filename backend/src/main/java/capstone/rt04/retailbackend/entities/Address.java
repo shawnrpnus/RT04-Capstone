@@ -13,6 +13,8 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
@@ -43,8 +45,9 @@ public class Address implements Serializable {
 
     @NotNull(message = "Postal code is required")
     @Column(nullable = false)
-    @Size(min = 1, message = "Postal code is required")
-    private String postalCode;
+    @Min(value = 100000, message = "Postal code is invalid")
+    @Max(value = 999999, message = "Postal code is invalid")
+    private Integer postalCode;
 
     private String buildingName;
 
@@ -59,7 +62,7 @@ public class Address implements Serializable {
     public Address() {
     }
 
-    public Address(@NotNull String line1, String line2, @NotNull String postalCode, String buildingName) {
+    public Address(@NotNull String line1, String line2, @NotNull Integer postalCode, String buildingName) {
         this();
         this.line1 = line1;
         this.line2 = line2;
@@ -67,7 +70,7 @@ public class Address implements Serializable {
         this.buildingName = buildingName;
     }
 
-    public Address(String line1, String line2, String postalCode, String buildingName, boolean isDefault, BigDecimal xCoordinate, BigDecimal yCoordinate) {
+    public Address(String line1, String line2, Integer postalCode, String buildingName, boolean isDefault, BigDecimal xCoordinate, BigDecimal yCoordinate) {
         this();
         this.line1 = line1;
         this.line2 = line2;
