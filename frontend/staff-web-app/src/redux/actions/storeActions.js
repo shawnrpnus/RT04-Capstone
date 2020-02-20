@@ -35,7 +35,7 @@ const createStoreError = data => ({
   errorMap: data
 });
 
-export const retrieveStoreById = storeId => {
+export const retrieveStoreById = (storeId, history) => {
   return dispatch => {
     axios
       .get(STORE_BASE_URL + "/retrieveStoreById/" + storeId)
@@ -44,6 +44,10 @@ export const retrieveStoreById = storeId => {
         dispatch(retrieveStoreSuccess(data));
       })
       .catch(err => {
+        toast.error("Store Not Found!", {
+          position: toast.POSITION.TOP_CENTER
+        });
+        history.push(`/store/viewAll`);
         dispatch(retrieveStoreError(err.response.data));
       });
   };

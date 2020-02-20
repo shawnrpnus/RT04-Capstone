@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { retrieveAllStores } from "../../../redux/actions";
+import IconButton from "@material-ui/core/IconButton";
 import { connect } from "react-redux";
 import MaterialTable from "material-table";
 import { Link } from "react-router-dom";
@@ -12,16 +13,16 @@ import {
   Clear,
   DeleteOutline,
   Edit,
-  Search,
   FirstPage,
   LastPage,
   Remove,
   SaveAlt,
+  Search,
   SearchOutlined,
+  Visibility,
   ViewColumn
 } from "@material-ui/icons";
 import withPage from "../../Layout/page/withPage";
-import Button from "reactstrap/es/Button";
 
 const tableIcons = {
   Add: AddBox,
@@ -54,7 +55,14 @@ class StoreTable extends Component {
         <div className="card__title" style={{ marginBottom: "0" }}>
           <h5 className="bold-text">All Stores</h5>
         </div>
-        <div className={"table"} style={{ width: "auto", overflowX: "scroll" }}>
+        <div
+          className="table"
+          style={{
+            width: "auto",
+            overflowX: "scroll",
+            verticalAlign: "middle"
+          }}
+        >
           {this.props.allStores ? (
             <MaterialTable
               icons={tableIcons}
@@ -67,18 +75,29 @@ class StoreTable extends Component {
                   title: "No. Reserved Changing Rooms",
                   field: "numReservedChangingRooms"
                 },
-                { title: "No. Managers", field: "numManagers" },
-                { title: "No. Assistants", field: "numAssistants" },
+                // { title: "No. Managers", field: "numManagers" },
+                // { title: "No. Assistants", field: "numAssistants" },
                 {
                   title: "Actions",
                   field: "storeId",
                   render: rowData => {
                     return (
-                      <Link to={`/store/view/${rowData.storeId}`}>
-                        <Button>View</Button>
-                      </Link>
+                      <div>
+                        <Link to={`/store/view/${rowData.storeId}`}>
+                          <IconButton>
+                            <Visibility />
+                          </IconButton>
+                        </Link>
+                        <Link to={`/store/update/${rowData.storeId}`}>
+                          <IconButton>
+                            <Edit />
+                          </IconButton>
+                        </Link>
+                      </div>
                     );
-                  }
+                  },
+                  filtering: false,
+                  sorting: false
                 }
               ]}
               data={this.props.allStores}
@@ -91,8 +110,7 @@ class StoreTable extends Component {
                 toolbar: false,
                 showTitle: false,
                 pageSizeOptions: [10, 20, 40],
-                actionsColumnIndex: -1,
-                headerStyle: {} //change header padding
+                actionsColumnIndex: -1
               }}
             />
           ) : (

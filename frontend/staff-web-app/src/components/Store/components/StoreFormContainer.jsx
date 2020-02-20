@@ -32,10 +32,10 @@ class StoreFormContainer extends Component {
   };
 
   componentDidMount() {
-    const { mode } = this.props;
+    const { mode, history } = this.props;
     if (mode === "view" || mode === "update") {
       const storeId = this.props.match.params.storeId;
-      this.props.retrieveStoreById(storeId);
+      this.props.retrieveStoreById(storeId, history);
     }
   }
 
@@ -113,7 +113,12 @@ class StoreFormContainer extends Component {
             history={this.props.history}
           />
         ) : (
-          <BounceLoader css={override} size={100} color={"#36D7B7"}loading={true} />
+          <BounceLoader
+            css={override}
+            size={100}
+            color={"#36D7B7"}
+            loading={true}
+          />
         )}
       </React.Fragment>
     );

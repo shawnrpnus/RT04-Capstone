@@ -10,6 +10,7 @@
   tbody td, th {
     border: none;
     padding: 10px;
+    vertical-align: middle;
 
     @include themify($themes) {
       color: themed('colorTextAdditional');
