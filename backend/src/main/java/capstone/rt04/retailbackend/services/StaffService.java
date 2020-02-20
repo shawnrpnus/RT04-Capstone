@@ -129,15 +129,21 @@ public class StaffService {
     }
 
     //For IT department to reset for staff
-    public void resetPassword(Long staffId) throws StaffNotFoundException{
-        Staff staff = retrieveStaffByStaffId(staffId);
+    public Staff resetPassword(Long staffId) throws StaffNotFoundException{
+        try {
+            Staff staff = retrieveStaffByStaffId(staffId);
 
-        String password = RandomStringUtils.randomAlphanumeric(12);
-        staff.setPassword(encoder.encode(password));
+            String password = RandomStringUtils.randomAlphanumeric(12);
+            staff.setPassword(encoder.encode(password));
 
-        if (Arrays.asList(environment.getActiveProfiles()).contains("dev")) {
-            //send an email to staff informing staff new password
-            sendEmail(staffId.toString(),password, "shawnroshan@gmail.com"); //TODO: to change to actual email
+            if (Arrays.asList(environment.getActiveProfiles()).contains("dev")) {
+                //send an email to staff informing staff new password
+                sendEmail(staffId.toString(), password, "shawnroshan@gmail.com"); //TODO: to change to actual email
+            }
+
+            return staff;
+        }catch (StaffNotFoundException ex){
+            throw new StaffNotFoundException("Staff does not exist!");
         }
     }
 

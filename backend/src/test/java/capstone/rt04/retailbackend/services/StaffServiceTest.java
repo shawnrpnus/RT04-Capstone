@@ -91,18 +91,22 @@ public class StaffServiceTest {
            Staff invalidStaff = staffService.createNewStaffAccount(Long.valueOf("12345"));
    }
 
+
    @Test (expected = InvalidLoginCredentialsException.class)
    public void staffLogin() throws Exception {
         //Username = ID of staff
        Staff validStaff = staffService.retrieveStaffByUsername(String.valueOf(createdStaffId));
 
-       Staff loggedInStaff = staffService.staffLogin(String.valueOf(createdStaffId), "spiderman");
+       //Correct login
+       Staff loggedInStaff = staffService.staffLogin(String.valueOf(createdStaffId), createdStaffPassword);
        assertThat(loggedInStaff.getStaffId()).isEqualTo(validStaff.getStaffId());
 
+       //Expected invalid login credentials
        staffService.staffLogin("invalidEmail@gmail.com", createdStaffPassword);
        staffService.staffLogin(validStaff.getUsername(), "wrongPassword");
    }
 
+   //Test for both invalid old password and valid old password
     @Test (expected = InvalidLoginCredentialsException.class)
     public void changeStaffPassword() throws Exception {
         //Username = ID of staff
@@ -115,6 +119,19 @@ public class StaffServiceTest {
         staffService.changeStaffPassword(validStaff.getStaffId(), createdStaffPassword, newPasswordRaw);
         validStaff = staffService.retrieveStaffByUsername(String.valueOf(createdStaffId));
         assertThat(encoder.matches(newPasswordRaw, validStaff.getPassword())).isTrue();
+    }
+
+    @Test (expected = StaffNotFoundException.class)
+    public void resetStaffPassword() throws Exception {
+        //Username = ID of staff
+        //IT keys in staffID which is equivalent to the username
+        //Test successful reset
+        Staff validStaff = staffService.retrieveStaffByUsername(String.valueOf(createdStaffId));
+        Staff staffAfterReset = staffService.resetPassword(validStaff.getStaffId());
+        assertThat(staffAfterReset.getStaffId()).isEqualTo(validStaff.getStaffId());
+
+        //Expect Staff not found exception
+        staffAfterReset = staffService.resetPassword(Long.valueOf("420"));
     }
 
 
