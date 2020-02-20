@@ -8,3 +8,7 @@ export const CREATE_STORE = "CREATE_STORE";
 export const RETRIEVE_STORE = "RETRIEVE_STORE";
 
 
+// Tag
+export const CREATE_TAG = "CREATE_TAG";
+
+
