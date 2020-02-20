@@ -4,19 +4,15 @@ import capstone.rt04.retailbackend.entities.*;
 import capstone.rt04.retailbackend.request.category.CategoryCreateRequest;
 import capstone.rt04.retailbackend.request.product.ProductCreateRequest;
 import capstone.rt04.retailbackend.request.productVariant.ProductVariantCreateRequest;
-<<<<<<< HEAD
-<<<<<<< HEAD
+
 import capstone.rt04.retailbackend.request.staff.DepartmentCreateRequest;
 import capstone.rt04.retailbackend.request.staff.RoleCreateRequest;
 import capstone.rt04.retailbackend.request.staff.StaffAccountCreateRequest;
 import capstone.rt04.retailbackend.request.staff.StaffCreateRequest;
 import capstone.rt04.retailbackend.util.enums.RoleNameEnum;
-=======
+
 import capstone.rt04.retailbackend.util.enums.SizeEnum;
->>>>>>> 30ffc280f77a3b36af3e76760e8f244c71e8fdfd
-=======
-import capstone.rt04.retailbackend.util.enums.SizeEnum;
->>>>>>> 30ffc280f77a3b36af3e76760e8f244c71e8fdfd
+
 import capstone.rt04.retailbackend.util.routeconstants.StyleControllerRoutes;
 import capstone.rt04.retailbackend.util.routeconstants.TagControllerRoutes;
 import io.restassured.RestAssured;
