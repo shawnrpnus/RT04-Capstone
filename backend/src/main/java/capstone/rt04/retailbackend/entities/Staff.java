@@ -18,6 +18,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -45,7 +46,7 @@ public class Staff implements Serializable {
     @Column(nullable = false)
     private String lastName;
 
-    @Size(min = 6)
+    @Size
     private String username;
 
     @NotNull(message = ErrorMessages.EMAIL_REQUIRED)
@@ -99,15 +100,19 @@ public class Staff implements Serializable {
     private List<Delivery> deliveries;
 
     public Staff() {
+        this.deliveries = new ArrayList<>();
+        this.repliedReviews = new ArrayList<>();
+        this.payrolls = new ArrayList<>();
+        this.advertisements = new ArrayList<>();
+        this.leaves = new ArrayList<>();
     }
 
-    public Staff(String firstName, String lastName, Integer leaveRemaining, String nric, Role role, Department department, String email) {
+    public Staff(String firstName, String lastName, Integer leaveRemaining, String nric,String email) {
+        this();
         this.firstName = firstName;
         this.lastName = lastName;
         this.leaveRemaining = leaveRemaining;
         this.nric = nric;
-        this.role = role;
-        this.department = department;
         this.email = email;
     }
     
