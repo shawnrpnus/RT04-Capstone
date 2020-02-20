@@ -280,7 +280,7 @@ public class ApiTestSetup {
                 then().statusCode(HttpStatus.CREATED.value()).extract().body().as(Department.class);
         assertThat(testDepartment.getDepartmentId()).isNotNull();
 
-        Address testAddress = new Address("aba", "aaa", "12345", "blah");
+        Address testAddress = new Address("aba", "aaa", 123456, "blah");
 
         StaffCreateRequest staffCreateRequest = new StaffCreateRequest(expectedValidStaff, testAddress, testRole, testDepartment);
 

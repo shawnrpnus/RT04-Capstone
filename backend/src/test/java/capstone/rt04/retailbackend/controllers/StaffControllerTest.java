@@ -40,7 +40,7 @@ public class StaffControllerTest extends ApiTestSetup {
     @Test
     public void createInvalidStaff() {
         //Valid address
-        Address a = new Address("aba", "aaa", "12345", "blah");
+        Address a = new Address("aba", "aaa", 123456, "blah");
         Staff invalidStaff = new Staff("bob", "vance", 10, "S111111D", "bob@Bob@com");
 
 
