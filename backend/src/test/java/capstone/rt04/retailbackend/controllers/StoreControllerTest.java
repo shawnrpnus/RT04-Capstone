@@ -24,7 +24,7 @@ public class StoreControllerTest extends ApiTestSetup {
 
     @Test
     public void CRUDStore() {
-        Store validStore = new Store(6, Time.valueOf("10:00:00"), Time.valueOf("21:00:00"), 1, 4, null);
+        Store validStore = new Store("Store 1", 6, Time.valueOf("10:00:00"), Time.valueOf("21:00:00"), 1, 4, null);
 
         //store is valid
         Store createdStore = given()

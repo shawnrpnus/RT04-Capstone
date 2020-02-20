@@ -1,9 +1,6 @@
-import React, { PureComponent } from 'react';
-import { connect } from 'react-redux';
-import { withRouter } from 'react-router-dom';
-import classNames from 'classnames';
+import React, {PureComponent} from 'react';
+import {withRouter} from 'react-router-dom';
 import * as PropTypes from 'prop-types';
-import { CustomizerProps, ThemeProps, RTLProps } from '../../shared/prop-types/ReducerProps';
 
 class MainWrapper extends PureComponent {
   static propTypes = {
@@ -15,7 +12,7 @@ class MainWrapper extends PureComponent {
 
   render() {
     const {
-      children, location
+      children
     } = this.props;
     
     return (

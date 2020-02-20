@@ -1,5 +1,5 @@
-import { PureComponent } from 'react';
-import { withRouter } from 'react-router-dom';
+import {PureComponent} from 'react';
+import {withRouter} from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 class ScrollToTop extends PureComponent {

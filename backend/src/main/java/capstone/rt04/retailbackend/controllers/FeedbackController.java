@@ -6,6 +6,8 @@ import capstone.rt04.retailbackend.services.FeedbackService;
 import capstone.rt04.retailbackend.request.customer.*;
 import capstone.rt04.retailbackend.services.ValidationService;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
+import capstone.rt04.retailbackend.util.exceptions.category.CreateNewCategoryException;
+import capstone.rt04.retailbackend.util.exceptions.feedback.CreateNewFeedbackException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import capstone.rt04.retailbackend.util.routeconstants.FeedbackControllerRoute;
@@ -32,10 +34,8 @@ public class FeedbackController {
     }
 
     @PostMapping(FeedbackControllerRoute.CREATE_NEW_FEEDBACK)
-    public ResponseEntity<?> createNewFeedback(@RequestBody ContactUs createFeedback) throws InputDataValidationException {
-        ContactUs newFeedback = feedbackService.createNewFeedback(createFeedback, createFeedback.getContactUsCategory(), createFeedback.getContent(), createFeedback.getCustomerEmail());
+    public ResponseEntity<?> createNewFeedback(@RequestBody ContactUs createFeedback) throws InputDataValidationException, CreateNewCategoryException, CreateNewFeedbackException {
+        ContactUs newFeedback = feedbackService.createNewFeedback(createFeedback);
         return new ResponseEntity<>(newFeedback, HttpStatus.CREATED);
     }
-
-
 }

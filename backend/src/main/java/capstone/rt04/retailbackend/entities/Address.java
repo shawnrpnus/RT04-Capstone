@@ -14,6 +14,7 @@ import lombok.ToString;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
@@ -33,14 +34,16 @@ public class Address implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long addressId;
 
-    @NotNull
+    @NotNull(message = "Line 1 is required")
     @Column(nullable = false)
+    @Size(min = 1, message = "Line 1 is required")
     private String line1;
 
     private String line2;
 
-    @NotNull
+    @NotNull(message = "Postal code is required")
     @Column(nullable = false)
+    @Size(min = 1, message = "Postal code is required")
     private String postalCode;
 
     private String buildingName;

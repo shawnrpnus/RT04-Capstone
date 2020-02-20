@@ -1,5 +1,5 @@
 import {applyMiddleware, compose, createStore} from 'redux';
-import { composeWithDevTools } from "redux-devtools-extension";
+import {composeWithDevTools} from "redux-devtools-extension";
 // middlewares
 import thunk from 'redux-thunk'
 // Import custom components
@@ -28,7 +28,8 @@ function loadFromLocalStorage() {
     }
 }
 
-const persistedState = loadFromLocalStorage();
+let persistedState = loadFromLocalStorage();
+persistedState = {};
 /**
  * Create a Redux store that holds the app state.
  */
