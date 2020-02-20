@@ -41,7 +41,10 @@ public class StaffServiceTest {
     protected DepartmentRepository departmentRepository;
     @Autowired
     protected RoleRepository roleRepository;
+
+    //Valid staff ID/username
     protected static Long createdStaffId;
+    //Password created for test valid staff
     protected static String createdStaffPassword;
 
 
@@ -90,6 +93,7 @@ public class StaffServiceTest {
 
    @Test (expected = InvalidLoginCredentialsException.class)
    public void staffLogin() throws Exception {
+        //Username = ID of staff
        Staff validStaff = staffService.retrieveStaffByUsername(String.valueOf(createdStaffId));
 
        Staff loggedInStaff = staffService.staffLogin(String.valueOf(createdStaffId), "spiderman");
@@ -98,6 +102,20 @@ public class StaffServiceTest {
        staffService.staffLogin("invalidEmail@gmail.com", createdStaffPassword);
        staffService.staffLogin(validStaff.getUsername(), "wrongPassword");
    }
+
+    @Test (expected = InvalidLoginCredentialsException.class)
+    public void changeStaffPassword() throws Exception {
+        //Username = ID of staff
+        Staff validStaff = staffService.retrieveStaffByUsername(String.valueOf(createdStaffId));
+        String newPasswordRaw = "password";
+
+        //Expect invalid login credentials
+        staffService.changeStaffPassword(validStaff.getStaffId(), "invalidOldPassword", newPasswordRaw);
+
+        staffService.changeStaffPassword(validStaff.getStaffId(), createdStaffPassword, newPasswordRaw);
+        validStaff = staffService.retrieveStaffByUsername(String.valueOf(createdStaffId));
+        assertThat(encoder.matches(newPasswordRaw, validStaff.getPassword())).isTrue();
+    }
 
 
     @After
