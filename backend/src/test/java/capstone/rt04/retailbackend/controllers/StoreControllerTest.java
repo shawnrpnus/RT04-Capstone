@@ -54,7 +54,7 @@ public class StoreControllerTest extends ApiTestSetup {
         Store updatedStore = given()
                 .contentType("application/json")
                 .body(existingStore)
-                .when().put(STORE_BASE_ROUTE + UPDATE_STORE)
+                .when().post(STORE_BASE_ROUTE + UPDATE_STORE)
                 .then().statusCode(HttpStatus.OK.value()).extract().body().as(Store.class);
         assertThat(updatedStore.getStoreId()).isEqualTo(createdStore.getStoreId());
 
