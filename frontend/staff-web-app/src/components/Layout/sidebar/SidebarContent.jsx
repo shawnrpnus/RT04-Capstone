@@ -1,11 +1,11 @@
-import React, { Component } from 'react';
-import * as PropTypes from 'prop-types';
-import SidebarLink from './SidebarLink';
-import SidebarCategory from './SidebarCategory';
+import React, { Component } from "react";
+import * as PropTypes from "prop-types";
+import SidebarLink from "./SidebarLink";
+import SidebarCategory from "./SidebarCategory";
 
 class SidebarContent extends Component {
   static propTypes = {
-    onClick: PropTypes.func.isRequired,
+    onClick: PropTypes.func.isRequired
   };
 
   hideSidebar = () => {
@@ -17,16 +17,38 @@ class SidebarContent extends Component {
     return (
       <div className="sidebar__content">
         <ul className="sidebar__block">
-          <SidebarLink title="Log Out" icon="exit" route="/log_in" onClick={this.hideSidebar} />
+          <SidebarLink
+            title="Log Out"
+            icon="exit"
+            route="/log_in"
+            onClick={this.hideSidebar}
+          />
           <SidebarCategory title="Stores" icon="store">
-            <SidebarLink title="Create" route="/store/edit" onClick={this.hideSidebar} />
+            <SidebarLink
+              title="Create"
+              route="/store/create"
+              onClick={this.hideSidebar}
+            />
+            <SidebarLink
+              title="View All"
+              route="/store/viewAll"
+              onClick={this.hideSidebar}
+            />
           </SidebarCategory>
           <SidebarCategory title="Products" icon="diamond">
             <SidebarLink title="Create" route="/" onClick={this.hideSidebar} />
-            <SidebarLink title="View All" route="/viewAllProduct" onClick={this.hideSidebar} />
+            <SidebarLink
+              title="View All"
+              route="/viewAllProduct"
+              onClick={this.hideSidebar}
+            />
           </SidebarCategory>
           <SidebarCategory title="Tag" icon="diamond">
-            <SidebarLink title="Create" route="/tag/edit" onClick={this.hideSidebar} />
+            <SidebarLink
+              title="Create"
+              route="/tag/edit"
+              onClick={this.hideSidebar}
+            />
           </SidebarCategory>
         </ul>
       </div>

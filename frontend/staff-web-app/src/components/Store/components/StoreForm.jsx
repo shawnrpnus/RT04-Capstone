@@ -1,7 +1,7 @@
 import React from "react";
 import "moment";
 import MomentUtils from "@date-io/moment";
-import { Grid, MenuItem, Select } from "@material-ui/core";
+import { Grid } from "@material-ui/core";
 import MaterialTextField from "../../../shared/components/Form/MaterialTextField";
 import {
   KeyboardTimePicker,
@@ -10,6 +10,13 @@ import {
 import { Button, ButtonToolbar } from "reactstrap";
 import * as PropTypes from "prop-types";
 import CreateUpdateStoreRequest from "../../../models/store/CreateUpdateStoreRequest";
+import { Link } from "react-router-dom";
+import InputAdornment from "@material-ui/core/InputAdornment";
+import axios from "axios";
+import MaterialNumberSelect from "../../../shared/components/Form/MaterialNumberSelect";
+import PencilIcon from "mdi-react/PencilIcon";
+import ContentSaveIcon from "mdi-react/ContentSaveIcon";
+import CloseCircleIcon from "mdi-react/CloseCircleIcon";
 
 let moment = require("moment");
 
@@ -28,25 +35,36 @@ class StoreForm extends React.Component {
     this.state = {
       storeName: currentStore ? currentStore.storeName : "",
       numChangingRooms: currentStore ? currentStore.numChangingRooms : "10",
-      numReservedChangingRooms: currentStore ? currentStore.numReservedChangingRooms : "5",
+      numReservedChangingRooms: currentStore
+        ? currentStore.numReservedChangingRooms
+        : "5",
       openingTime: currentStore ? currentStore.openingTime : "09:00:00",
-      closingTime: currentStore ? currentStore.closingTime: "22:00:00",
+      closingTime: currentStore ? currentStore.closingTime : "22:00:00",
       numManagers: currentStore ? currentStore.numManagers : "1",
       numAssistants: currentStore ? currentStore.numAssistants : "5",
       line1: currentStore ? currentStore.address.line1 : "",
-      line2: currentStore ? currentStore.address.line2: "",
-      buildingName: currentStore ? currentStore.address.buildingName: "",
-      postalCode: currentStore ? currentStore.address.postalCode: "",
-      openingTimeMoment: currentStore ? moment(currentStore.openingTime, "HH:mm:ss") : moment("09:00", "HH:mm"),
-      closingTimeMoment: currentStore ? moment(currentStore.closingTime, "HH:mm:ss") : moment("22:00", "HH:mm")
+      line2: currentStore ? currentStore.address.line2 : "",
+      buildingName: currentStore ? currentStore.address.buildingName : "",
+      postalCode: currentStore ? currentStore.address.postalCode : "",
+      openingTimeMoment: currentStore
+        ? moment(currentStore.openingTime, "HH:mm:ss")
+        : moment("09:00", "HH:mm"),
+      closingTimeMoment: currentStore
+        ? moment(currentStore.closingTime, "HH:mm:ss")
+        : moment("22:00", "HH:mm"),
+      customErrors: {}
     };
   }
 
   onChange = e => {
     const name = e.target.name;
     this.setState({ [name]: e.target.value }); //computed property name syntax
-    if (Object.keys(this.props.errors).length !== 0) this.props.clearErrors();
-    console.log(this.state);
+    if (Object.keys(this.props.errors).length !== 0) {
+      this.props.clearErrors();
+    }
+    if (Object.keys(this.state.customErrors).length !== 0) {
+      this.setState({ customErrors: {} });
+    }
   };
 
   handleTimeChange = (time, attr) => {
@@ -58,19 +76,59 @@ class StoreForm extends React.Component {
     });
   };
 
+  onCancel = e => {
+    this.props.history.goBack();
+  };
+
+  handlePostalCodeClick = () => {
+    console.log("postalcode");
+    const postalCode = this.state.postalCode;
+    axios.get(`https://geocode.xyz/${postalCode}?geoit=json`).then(response => {
+      const { data } = response;
+      console.log(data);
+      if (!data.error && data.standard.countryname === "Singapore") {
+        const addrLine1 = data.standard.addresst;
+        this.setState({ line1: addrLine1 });
+      } else {
+        const customErrors = {
+          postalCode: "Postal code is invalid"
+        };
+        this.setState({ customErrors: customErrors });
+      }
+    });
+  };
+
   render() {
-    const { handleSubmit, errors, disabled } = this.props;
+    const { handleSubmit, errors, disabled, currentStore } = this.props;
 
     const numberOptions = Array.from({ length: 20 }, (v, k) => k + 1);
 
+    const postalCodeProps = {
+      endAdornment: (
+        <InputAdornment position="end">
+          <Button
+            size="sm"
+            color="success"
+            outline
+            aria-label="toggle password visibility"
+            onClick={this.handlePostalCodeClick}
+            disabled={disabled}
+          >
+            Autofill
+          </Button>
+        </InputAdornment>
+      )
+    };
+
+    const hasErrors =
+      Object.keys(this.props.errors).length !== 0 ||
+      Object.keys(this.state.customErrors).length !== 0;
+
     return (
       <MuiPickersUtilsProvider utils={MomentUtils}>
-        <form
-          className="material-form"
-          onSubmit={e => handleSubmit(e, this.state)}
-        >
+        <form className="material-form">
           <Grid container spacing={3}>
-            <Grid item xs={12}>
+            <Grid item xs={12} md={6}>
               <MaterialTextField
                 fieldLabel="Store Name"
                 onChange={this.onChange}
@@ -78,16 +136,17 @@ class StoreForm extends React.Component {
                 state={this.state}
                 errors={errors}
                 disabled={disabled}
+                autoFocus={true}
               />
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={3}>
               <div className="material-form__label">Opening Time</div>
               <KeyboardTimePicker
                 className="material-form__field"
                 style={{ marginTop: 0 }}
                 margin="normal"
                 variant="dialog"
-                inputVariant="outlined"
+                inputVariant="standard"
                 value={this.state.openingTimeMoment}
                 disabled={disabled}
                 onChange={time => {
@@ -95,14 +154,14 @@ class StoreForm extends React.Component {
                 }}
               />
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={3}>
               <div className="material-form__label">Closing Time</div>
               <KeyboardTimePicker
                 className="material-form__field"
                 style={{ marginTop: 0 }}
                 margin="normal"
                 variant="dialog"
-                inputVariant="outlined"
+                inputVariant="standard"
                 value={this.state.closingTimeMoment}
                 disabled={disabled}
                 onChange={time => {
@@ -111,88 +170,67 @@ class StoreForm extends React.Component {
               />
             </Grid>
             <Grid item xs={12} md={3}>
-              <div className="material-form__label">
-                Number of changing rooms
-              </div>
-              <Select
-                name="numChangingRooms"
-                className="material-form__field"
+              <MaterialNumberSelect
                 onChange={this.onChange}
-                value={this.state.numChangingRooms}
+                state={this.state}
+                fieldLabel="Number of changing rooms"
+                fieldName="numChangingRooms"
+                optionStart={1}
+                optionEnd={20}
                 disabled={disabled}
-              >
-                {numberOptions.map(option => (
-                  <MenuItem key={`ncr-${option}`} value={option}>
-                    {option}
-                  </MenuItem>
-                ))}
-              </Select>
+              />
             </Grid>
             <Grid item xs={12} md={3}>
-              <div className="material-form__label">
-                Number of reserved changing rooms
-              </div>
-              <Select
-                name="numChangingRooms"
-                className="material-form__field"
+              <MaterialNumberSelect
                 onChange={this.onChange}
-                value={this.state.numReservedChangingRooms}
+                state={this.state}
+                fieldLabel="Number of reserved changing rooms"
+                fieldName="numReservedChangingRooms"
+                optionStart={1}
+                optionEnd={20}
                 disabled={disabled}
-              >
-                {numberOptions.map(option => (
-                  <MenuItem key={`nrcr-${option}`} value={option}>
-                    {option}
-                  </MenuItem>
-                ))}
-              </Select>
+              />
             </Grid>
             <Grid item xs={12} md={3}>
-              <div className="material-form__label">Number of managers</div>
-              <Select
-                name="numManagers"
-                className="material-form__field"
+              <MaterialNumberSelect
                 onChange={this.onChange}
-                value={this.state.numManagers}
+                state={this.state}
+                fieldLabel="Number of managers"
+                fieldName="numManagers"
+                optionStart={1}
+                optionEnd={20}
                 disabled={disabled}
-              >
-                {numberOptions.map(option => (
-                  <MenuItem key={`nm-${option}`} value={option}>
-                    {option}
-                  </MenuItem>
-                ))}
-              </Select>
+              />
             </Grid>
             <Grid item xs={12} md={3}>
-              <div className="material-form__label">Number of assistants</div>
-              <Select
-                name="numAssistants"
-                className="material-form__field"
+              <MaterialNumberSelect
                 onChange={this.onChange}
-                value={this.state.numAssistants}
+                state={this.state}
+                fieldLabel="Number of assistants"
+                fieldName="numAssistants"
+                optionStart={1}
+                optionEnd={20}
                 disabled={disabled}
-              >
-                {numberOptions.map(option => (
-                  <MenuItem key={`na-${option}`} value={option}>
-                    {option}
-                  </MenuItem>
-                ))}
-              </Select>
+              />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={6}>
+              <MaterialTextField
+                type="number"
+                fieldLabel="Postal Code"
+                onChange={this.onChange}
+                fieldName="postalCode"
+                state={this.state}
+                errors={errors}
+                disabled={disabled}
+                onBlur={this.onBlur}
+                InputProps={postalCodeProps}
+              />
+            </Grid>
+            <Grid item xs={6}>
               <MaterialTextField
                 fieldLabel="Address Line 1"
                 onChange={this.onChange}
                 fieldName="line1"
-                state={this.state}
-                errors={errors}
-                disabled={disabled}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <MaterialTextField
-                fieldLabel="Address Line 2"
-                onChange={this.onChange}
-                fieldName="line2"
                 state={this.state}
                 errors={errors}
                 disabled={disabled}
@@ -210,23 +248,46 @@ class StoreForm extends React.Component {
             </Grid>
             <Grid item xs={6}>
               <MaterialTextField
-                fieldLabel="Postal Code"
+                fieldLabel="Address Line 2"
                 onChange={this.onChange}
-                fieldName="postalCode"
+                fieldName="line2"
                 state={this.state}
                 errors={errors}
                 disabled={disabled}
               />
             </Grid>
           </Grid>
-          {!disabled ?
+          {!disabled ? (
             <ButtonToolbar className="form__button-toolbar">
-              <Button color="primary" type="submit">
-                Submit
+              <Button
+                color="primary"
+                onClick={e => handleSubmit(e, this.state)}
+                disabled={hasErrors}
+              >
+                <p>
+                  <ContentSaveIcon />
+                  Submit
+                </p>
               </Button>
-              <Button type="button">Cancel</Button>
-            </ButtonToolbar> : ""
-          }
+              <Button type="button" onClick={this.onCancel}>
+                <p>
+                  <CloseCircleIcon />
+                  Cancel
+                </p>
+              </Button>
+            </ButtonToolbar>
+          ) : (
+            <ButtonToolbar className="form__button-toolbar">
+              <Link to={`/store/update/${currentStore.storeId}`}>
+                <Button className="icon" color="primary">
+                  <p>
+                    <PencilIcon />
+                    Update
+                  </p>
+                </Button>
+              </Link>
+            </ButtonToolbar>
+          )}
         </form>
       </MuiPickersUtilsProvider>
     );

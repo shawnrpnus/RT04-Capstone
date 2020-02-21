@@ -4,14 +4,21 @@ import { connect } from "react-redux";
 import {
   clearErrors,
   createNewStore,
-  retrieveStoreById
+  retrieveStoreById,
+  updateStore
 } from "../../../redux/actions";
 import CreateUpdateStoreRequest from "../../../models/store/CreateUpdateStoreRequest";
 import Address from "../../../models/address";
 import * as PropTypes from "prop-types";
 import StoreForm from "./StoreForm";
-import { Card, CardBody, Col, Container, Row } from "reactstrap";
-import Loading from "../../../shared/components/Loading";
+import withPage from "../../Layout/page/withPage";
+import { css } from "@emotion/core";
+import { BounceLoader } from "react-spinners";
+
+const override = css`
+  display: block;
+  margin: 0 auto;
+`;
 
 class StoreFormContainer extends Component {
   static propTypes = {
@@ -20,14 +27,15 @@ class StoreFormContainer extends Component {
     errors: PropTypes.object,
     clearErrors: PropTypes.func.isRequired,
     createNewStore: PropTypes.func,
+    updateStore: PropTypes.func,
     retrieveStoreById: PropTypes.func
   };
 
-  componentWillMount() {
-    const { mode } = this.props;
+  componentDidMount() {
+    const { mode, history } = this.props;
     if (mode === "view" || mode === "update") {
       const storeId = this.props.match.params.storeId;
-      this.props.retrieveStoreById(storeId);
+      this.props.retrieveStoreById(storeId, history);
     }
   }
 
@@ -62,10 +70,10 @@ class StoreFormContainer extends Component {
         this.props.createNewStore(req, this.props.history);
         break;
       case "update":
-        console.log("do update");
+        req.storeId = this.props.currentStore.storeId;
+        this.props.updateStore(req, this.props.history);
         break;
       default:
-        console.log("no mode passed");
     }
   };
 
@@ -81,42 +89,38 @@ class StoreFormContainer extends Component {
         ? "Create New Store"
         : "";
     return (
-      <Container>
-        <Row>
-          <Col md={12}>
-            <h3 className="page-title">Store Management</h3>
-            <h3 className="page-subhead subhead">Manage your stores below.</h3>
-          </Col>
-        </Row>
-        <Row>
-          <Col md={12} lg={12}>
-            <Card>
-              <CardBody>
-                <div className="card__title">
-                  <h5 className="bold-text">{header}</h5>
-                </div>
-                {mode === "create" ? (
-                  <StoreForm
-                    handleSubmit={this.handleSubmit}
-                    clearErrors={clearErrors}
-                    errors={errors}
-                  />
-                ) : currentStore !== null ? (
-                  <StoreForm
-                    handleSubmit={this.handleSubmit}
-                    clearErrors={clearErrors}
-                    errors={errors}
-                    disabled={mode === "view"}
-                    currentStore={currentStore}
-                  />
-                ) : (
-                  <Loading loading={true} />
-                )}
-              </CardBody>
-            </Card>
-          </Col>
-        </Row>
-      </Container>
+      <React.Fragment>
+        <div className="card__title">
+          <h5 className="bold-text">{header}</h5>
+        </div>
+        {/*I the mode is create, load a blank form, otherwise, pass in the current
+                store entity object that was retrieved. If mode is just to view, disable all
+                fields, otherwise allow fields to be edited*/}
+        {mode === "create" ? (
+          <StoreForm
+            handleSubmit={this.handleSubmit}
+            clearErrors={clearErrors}
+            errors={errors}
+            history={this.props.history}
+          />
+        ) : currentStore !== null ? (
+          <StoreForm
+            handleSubmit={this.handleSubmit}
+            clearErrors={clearErrors}
+            errors={errors}
+            disabled={mode === "view"}
+            currentStore={currentStore}
+            history={this.props.history}
+          />
+        ) : (
+          <BounceLoader
+            css={override}
+            size={100}
+            color={"#36D7B7"}
+            loading={true}
+          />
+        )}
+      </React.Fragment>
     );
   }
 }
@@ -130,7 +134,11 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = {
   createNewStore, //api/storeEntity/createNewStore
   clearErrors,
-  retrieveStoreById
+  retrieveStoreById,
+  updateStore
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(StoreFormContainer);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withPage(StoreFormContainer, "Store Management"));
