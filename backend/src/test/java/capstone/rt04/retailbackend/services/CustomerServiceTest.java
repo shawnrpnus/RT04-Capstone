@@ -156,7 +156,7 @@ public class CustomerServiceTest extends ServiceTestSetup {
     public void crudShippingAddress() throws Exception {
         //create
         Customer validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
-        Address newShippingAddress = new Address("line1", null, "510149", null, false, null, null);
+        Address newShippingAddress = new Address("line1", null, 510149, null, false, null, null);
         newShippingAddress.setBilling(true);
         customerService.addShippingAddress(validCustomer.getCustomerId(), newShippingAddress);
         validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
@@ -165,7 +165,7 @@ public class CustomerServiceTest extends ServiceTestSetup {
         assertThat(validCustomer.getShippingAddresses().get(0).isBilling()).isTrue();
 
         //create another
-        Address newShippingAddress2 = new Address("line1", null, "510148", "building");
+        Address newShippingAddress2 = new Address("line1", null, 510148, "building");
         newShippingAddress2.setBilling(true);
         customerService.addShippingAddress(validCustomer.getCustomerId(), newShippingAddress2);
         validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);

@@ -1,18 +1,27 @@
 import axios from "axios";
 import * as types from "./types";
+import { toast } from "react-toastify";
 
 const STORE_BASE_URL = "/api/store";
 const jsog = require("jsog");
+
+export const clearCurrentStore = () => ({
+  type: types.CLEAR_CURRENT_STORE
+});
+
 export const createNewStore = (createStoreRequest, history) => {
   return dispatch => {
     //redux thunk passes dispatch
     axios
       .post(STORE_BASE_URL + "/createNewStore", createStoreRequest)
       .then(response => {
-        const data = jsog.decode(response);
-        console.log(data);
-        dispatch(createStoreSuccess(response.data));
-        //history.push("/storeEdit"); // TODO: update redirect path
+        const { data } = jsog.decode(response);
+        const storeId = data.storeId;
+        dispatch(createStoreSuccess(data));
+        toast.success("Store Created!", {
+          position: toast.POSITION.TOP_CENTER
+        });
+        history.push(`/store/view/${storeId}`); // TODO: update redirect path
       })
       .catch(err => {
         dispatch(createStoreError(err.response.data));
@@ -31,15 +40,19 @@ const createStoreError = data => ({
   errorMap: data
 });
 
-export const retrieveStoreById = storeId => {
+export const retrieveStoreById = (storeId, history) => {
   return dispatch => {
     axios
       .get(STORE_BASE_URL + "/retrieveStoreById/" + storeId)
       .then(response => {
-        const data = jsog.decode(response);
-        dispatch(retrieveStoreSuccess(response.data));
+        const { data } = jsog.decode(response);
+        dispatch(retrieveStoreSuccess(data));
       })
       .catch(err => {
+        toast.error("Store Not Found!", {
+          position: toast.POSITION.TOP_CENTER
+        });
+        history.push(`/store/viewAll`);
         dispatch(retrieveStoreError(err.response.data));
       });
   };
@@ -51,6 +64,94 @@ const retrieveStoreSuccess = data => ({
 });
 
 const retrieveStoreError = data => ({
+  type: types.GET_ERRORS,
+  errorMap: data
+});
+
+export const updateStore = (updateStoreRequest, history) => {
+  return dispatch => {
+    //redux thunk passes dispatch
+    axios
+      .post(STORE_BASE_URL + "/updateStore", updateStoreRequest)
+      .then(response => {
+        const { data } = jsog.decode(response);
+        const storeId = data.storeId;
+        dispatch(updateStoreSuccess(data));
+        toast.success("Store Updated!", {
+          position: toast.POSITION.TOP_CENTER
+        });
+        history.push(`/store/view/${storeId}`);
+      })
+      .catch(err => {
+        dispatch(updateStoreError(err.response.data));
+        //console.log(err.response.data);
+      });
+  };
+};
+
+const updateStoreSuccess = data => ({
+  type: types.UPDATE_STORE,
+  storeEntity: data
+});
+
+const updateStoreError = data => ({
+  type: types.GET_ERRORS,
+  errorMap: data
+});
+
+export const retrieveAllStores = () => {
+  return dispatch => {
+    axios
+      .get(STORE_BASE_URL + "/retrieveAllStores")
+      .then(response => {
+        const { data } = jsog.decode(response);
+        dispatch(retrieveAllStoresSuccess(data));
+      })
+      .catch(err => {
+        const { errorMap } = err.response.data;
+        toast.error(errorMap.message, {
+          position: toast.POSITION.TOP_CENTER
+        });
+        dispatch(retrieveAllStoresError(err.response.data));
+      });
+  };
+};
+
+const retrieveAllStoresSuccess = data => ({
+  type: types.RETRIEVE_ALL_STORES,
+  storeEntities: data
+});
+
+const retrieveAllStoresError = data => ({
+  type: types.GET_ERRORS,
+  errorMap: data
+});
+
+export const deleteStore = (storeId, history) => {
+  return dispatch => {
+    axios
+      .delete(STORE_BASE_URL + "/deleteStore/" + storeId)
+      .then(response => {
+        const { data } = jsog.decode(response);
+        toast.success("Store Deleted!", {
+          position: toast.POSITION.TOP_CENTER
+        });
+        dispatch(deleteStoreSuccess(data));
+        retrieveAllStores()(dispatch);
+        history.push(`/store/viewAll`);
+      })
+      .catch(err => {
+        dispatch(deleteStoreError(err.response.data));
+      });
+  };
+};
+
+const deleteStoreSuccess = data => ({
+  type: types.DELETE_STORE,
+  deletedStore: data
+});
+
+const deleteStoreError = data => ({
   type: types.GET_ERRORS,
   errorMap: data
 });

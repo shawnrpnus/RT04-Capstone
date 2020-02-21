@@ -1,5 +1,5 @@
-import React from 'react';
-import StoreFormContainer from './components/StoreFormContainer';
+import React from "react";
+import StoreFormContainer from "./components/StoreFormContainer";
+import StoreTable from "./components/StoreTable";
 
-
-export {StoreFormContainer};
+export { StoreFormContainer, StoreTable };

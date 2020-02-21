@@ -10,6 +10,7 @@ import capstone.rt04.retailbackend.util.enums.RoleNameEnum;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.customer.InvalidLoginCredentialsException;
 import capstone.rt04.retailbackend.util.exceptions.staff.CreateNewStaffAccountException;
+import capstone.rt04.retailbackend.util.exceptions.staff.InvalidStaffCredentialsException;
 import capstone.rt04.retailbackend.util.exceptions.staff.StaffNotFoundException;
 import org.junit.After;
 import org.junit.Before;
@@ -55,24 +56,30 @@ public class StaffServiceTest {
         //Role and department has to be created beforehand
         RoleNameEnum rolename = RoleNameEnum.valueOf("ASSISTANT");
         BigDecimal salary = new BigDecimal(1000);
-        testRole = new Role(rolename,salary);
-        testDepartment = new Department("ABC");
-        Address testAddress = new Address("aba", "aaa", "12345", "blah");
-        roleRepository.save(testRole);
-        departmentRepository.save(testDepartment);
+        testRole = staffService.createNewRole(rolename, salary);
+
+        testDepartment = staffService.createNewDepartment("ABC");
+
+        Address testAddress = new Address("aba", "aaa", 123456, "blah");
+
         Staff testValidStaff = staffService.createNewStaff(expectedValidStaff,testAddress,testRole,testDepartment);
         assertThat(testValidStaff.getStaffId()).isNotNull();
         assertThat(testValidStaff).isEqualTo(expectedValidStaff);
         createdStaffId = testValidStaff.getStaffId();
 
-        createdStaffPassword =(staffService.createNewStaffAccount(createdStaffId)).getPassword();
+        testValidStaff = staffService.createNewStaffAccount(createdStaffId);
+        assertThat(testValidStaff.getPassword()).isNotNull();
+        assertThat(testValidStaff.getUsername()).isEqualTo(String.valueOf(createdStaffId));
+        assertThat(testValidStaff.getStaffId()).isEqualTo(createdStaffId);
+        createdStaffPassword = testValidStaff.getPassword();
+        System.out.println("tHIS IS ENCODED PW:" + createdStaffPassword);
     }
 
     @Test
     public void createNewStaff() throws Exception {
 
         //Valid address
-        Address a = new Address("aba", "aaa", "12345", "blah");
+        Address a = new Address("aba", "aaa", 123456, "blah");
         Staff invalidStaff = new Staff("bob", "vance", 10, "S111111D",  "bob@Bob@com");
 
         try {
@@ -91,34 +98,49 @@ public class StaffServiceTest {
            Staff invalidStaff = staffService.createNewStaffAccount(Long.valueOf("12345"));
    }
 
+    @Test
+    public void createNewValidStaffAccount() throws Exception {
+        Staff validStaff = staffService.createNewStaffAccount(createdStaffId);
+        assertThat(validStaff.getStaffId()).isEqualTo(createdStaffId);
+    }
 
-   @Test (expected = InvalidLoginCredentialsException.class)
+
+   @Test (expected = InvalidStaffCredentialsException.class)
    public void staffLogin() throws Exception {
         //Username = ID of staff
+       //Check here that retrieveStaffByUsername works
        Staff validStaff = staffService.retrieveStaffByUsername(String.valueOf(createdStaffId));
+       assertThat(validStaff.getStaffId()).isEqualTo(createdStaffId);
 
        //Correct login
        Staff loggedInStaff = staffService.staffLogin(String.valueOf(createdStaffId), createdStaffPassword);
        assertThat(loggedInStaff.getStaffId()).isEqualTo(validStaff.getStaffId());
 
-       //Expected invalid login credentials
-       staffService.staffLogin("invalidEmail@gmail.com", createdStaffPassword);
-       staffService.staffLogin(validStaff.getUsername(), "wrongPassword");
+       //Incorrect Login
+       loggedInStaff = staffService.staffLogin("poop", createdStaffPassword);
+       loggedInStaff= staffService.staffLogin(String.valueOf(createdStaffId),"usuck");
+
+
    }
 
    //Test for both invalid old password and valid old password
-    @Test (expected = InvalidLoginCredentialsException.class)
+    @Test
     public void changeStaffPassword() throws Exception {
         //Username = ID of staff
-        Staff validStaff = staffService.retrieveStaffByUsername(String.valueOf(createdStaffId));
+        Staff validStaff = staffService.retrieveStaffByStaffId(createdStaffId);
         String newPasswordRaw = "password";
-
-        //Expect invalid login credentials
-        staffService.changeStaffPassword(validStaff.getStaffId(), "invalidOldPassword", newPasswordRaw);
 
         staffService.changeStaffPassword(validStaff.getStaffId(), createdStaffPassword, newPasswordRaw);
         validStaff = staffService.retrieveStaffByUsername(String.valueOf(createdStaffId));
         assertThat(encoder.matches(newPasswordRaw, validStaff.getPassword())).isTrue();
+
+        try {
+            staffService.changeStaffPassword(validStaff.getStaffId(), "wrongoldpassword",newPasswordRaw);
+        } catch (InvalidStaffCredentialsException ex) {
+            Map<String, String> expectedErrorMap = new HashMap<>();
+            expectedErrorMap.put("oldpw", ErrorMessages.OLD_PASSWORD_INCORRECT);
+            assertThat(ex.getErrorMap()).isEqualTo(expectedErrorMap);
+        }
     }
 
     @Test (expected = StaffNotFoundException.class)

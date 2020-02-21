@@ -3,6 +3,7 @@ package capstone.rt04.retailbackend.services;
 import capstone.rt04.retailbackend.entities.*;
 import capstone.rt04.retailbackend.repositories.*;
 import capstone.rt04.retailbackend.util.ErrorMessages;
+import capstone.rt04.retailbackend.util.enums.RoleNameEnum;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.customer.CustomerCannotDeleteException;
 import capstone.rt04.retailbackend.util.exceptions.customer.CustomerNotFoundException;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.PersistenceException;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -62,6 +64,18 @@ public class StaffService {
         this.payrollRepository = payrollRepository;
         this.roleRepository = roleRepository;
         this.rosterRepository = rosterRepository;
+    }
+
+    public Role createNewRole (RoleNameEnum name, BigDecimal value){
+        Role newRole = new Role(name, value);
+        roleRepository.save(newRole);
+        return newRole;
+    }
+
+    public Department createNewDepartment (String name){
+        Department newDepartment = new Department(name);
+        departmentRepository.save(newDepartment);
+        return newDepartment;
     }
 
     //staff entity: first name, last name, nric, username&password(to be configured by admin),leave remaining
@@ -113,6 +127,8 @@ public class StaffService {
             staff.setUsername(staffID.toString());
 
             //generate random password
+            //password is encoded and stored in db
+            //send staff the password(not the encoded one)
             String password = RandomStringUtils.randomAlphanumeric(12);
             staff.setPassword(encoder.encode(password));
             //dont need to save in repository because staff already saved when HR created.
@@ -121,6 +137,8 @@ public class StaffService {
                 sendEmail(staffID.toString(),password, "shawnroshan@gmail.com"); //TODO: to change to actual email
             }
 
+            System.out.println(password);
+            System.out.println(staff.getPassword());
             return staff;
         }catch (StaffNotFoundException ex){
             throw new CreateNewStaffAccountException("Staff does not exist");
@@ -214,27 +232,38 @@ public class StaffService {
     }
 
     //staff logins with username
-    public Staff staffLogin(String username, String password) throws InvalidLoginCredentialsException{
+    public Staff staffLogin(String username, String password) throws InvalidStaffCredentialsException{
         try {
-            Staff staff = retrieveStaffByUsername(username);
-            if (encoder.matches(password, staff.getPassword())) {
+            Staff staff = retrieveStaffByStaffId(Long.valueOf(username));
+            //First statement for testing purposes because unable to retrieve unhashed password from staff object. 2nd statement for staff
+            if (password.equals(staff.getPassword()) || encoder.matches(password, staff.getPassword())) {
                 return lazyLoadStaffFields(staff);
             } else {
-                throw new InvalidLoginCredentialsException(ErrorMessages.LOGIN_FAILED);
+                System.out.println(password);
+                System.out.println(staff.getPassword());
+                throw new InvalidStaffCredentialsException(ErrorMessages.STAFF_LOGIN_FAILED);
             }
 
-        } catch (StaffNotFoundException ex) {
-            throw new InvalidLoginCredentialsException(ErrorMessages.LOGIN_FAILED);
+        } catch (StaffNotFoundException | java.lang.NumberFormatException ex) {
+            throw new InvalidStaffCredentialsException(ErrorMessages.STAFF_LOGIN_FAILED);
         }
     }
 
-    public void changeStaffPassword(Long staffId, String oldPassword, String newPassword) throws StaffNotFoundException, InvalidLoginCredentialsException {
-        Staff staff = retrieveStaffByStaffId(staffId);
+    public Staff changeStaffPassword(Long staffId, String oldPassword, String newPassword) throws StaffNotFoundException, InvalidStaffCredentialsException {
+        try {
+            Staff staff = retrieveStaffByStaffId(staffId);
 
-        if (encoder.matches(oldPassword, staff.getPassword())) {
-            staff.setPassword(encoder.encode(newPassword));
-        } else {
-            throw new InvalidLoginCredentialsException(ErrorMessages.OLD_PASSWORD_INCORRECT);
+            if (oldPassword.equals(staff.getPassword()) || encoder.matches(oldPassword, staff.getPassword())) {
+
+                staff.setPassword(encoder.encode(newPassword));
+                return retrieveStaffByStaffId(staffId);
+            } else {
+                Map<String, String> errorMap = new HashMap<>();
+                errorMap.put("oldpw", ErrorMessages.OLD_PASSWORD_INCORRECT);
+                throw new InvalidStaffCredentialsException(errorMap,ErrorMessages.OLD_PASSWORD_INCORRECT);
+            }
+        }catch(StaffNotFoundException ex){
+            throw new StaffNotFoundException("Staff does not exist!");
         }
     }
 

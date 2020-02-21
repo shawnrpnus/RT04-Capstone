@@ -19,7 +19,6 @@ import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
 import Switch from "@material-ui/core/Switch";
 import Row from "reactstrap/es/Row";
 import * as PropTypes from "prop-types";
-import { clearErrors, createNewStore } from "../../../../redux/actions";
 import { connect } from "react-redux";
 import { retrieveProductById } from "../../../../redux/actions/productActions";
 import IconButton from "@material-ui/core/IconButton";
@@ -120,6 +119,7 @@ class ProductCard extends PureComponent {
     } = this.state;
 
     console.log(tags)
+
     return (
       <Col md={12} lg={12}>
         <Card>

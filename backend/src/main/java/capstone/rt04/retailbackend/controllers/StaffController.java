@@ -1,8 +1,6 @@
 package capstone.rt04.retailbackend.controllers;
 
-import capstone.rt04.retailbackend.entities.Customer;
-import capstone.rt04.retailbackend.entities.Staff;
-import capstone.rt04.retailbackend.entities.Store;
+import capstone.rt04.retailbackend.entities.*;
 import capstone.rt04.retailbackend.request.customer.CustomerChangePasswordRequest;
 import capstone.rt04.retailbackend.request.customer.CustomerLoginRequest;
 import capstone.rt04.retailbackend.request.customer.CustomerResetPasswordRequest;
@@ -12,10 +10,7 @@ import capstone.rt04.retailbackend.services.StaffService;
 import capstone.rt04.retailbackend.services.ValidationService;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.customer.*;
-import capstone.rt04.retailbackend.util.exceptions.staff.CreateNewStaffAccountException;
-import capstone.rt04.retailbackend.util.exceptions.staff.CreateNewStaffException;
-import capstone.rt04.retailbackend.util.exceptions.staff.StaffNotFoundException;
-import capstone.rt04.retailbackend.util.exceptions.staff.UpdateStaffDetailsException;
+import capstone.rt04.retailbackend.util.exceptions.staff.*;
 import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
 import capstone.rt04.retailbackend.util.routeconstants.CustomerControllerRoutes;
 import capstone.rt04.retailbackend.util.routeconstants.StaffControllerRoutes;
@@ -46,9 +41,24 @@ public class StaffController {
     //role and department already exist in database from the start so no need to save
     @PostMapping(StaffControllerRoutes.CREATE_NEW_STAFF)
     public ResponseEntity<?> createNewStaff(@RequestBody StaffCreateRequest staffCreateRequest) throws InputDataValidationException, CreateNewStaffException {
-        Staff newStaff = staffService.createNewStaff(staffCreateRequest.getStaff(),staffCreateRequest.getStaffAddress(),
-                staffCreateRequest.getRole(),staffCreateRequest.getDepartment());
-        return new ResponseEntity<>(newStaff, HttpStatus.CREATED);
+
+            Staff newStaff = staffService.createNewStaff(staffCreateRequest.getStaff(), staffCreateRequest.getStaffAddress(),
+                    staffCreateRequest.getRole(), staffCreateRequest.getDepartment());
+            return new ResponseEntity<>(newStaff, HttpStatus.CREATED);
+
+    }
+
+    @PostMapping(StaffControllerRoutes.CREATE_NEW_ROLE)
+    public ResponseEntity<?> createNewRole(@RequestBody RoleCreateRequest roleCreateRequest){
+        Role newRole = staffService.createNewRole(roleCreateRequest.getName(),roleCreateRequest.getSalary());
+        return new ResponseEntity<>(newRole, HttpStatus.CREATED);
+    }
+
+
+    @PostMapping(StaffControllerRoutes.CREATE_NEW_DEPARTMENT)
+    public ResponseEntity<?> createNewDepartment(@RequestBody DepartmentCreateRequest departmentCreateRequest){
+        Department newDepartment = staffService.createNewDepartment(departmentCreateRequest.getName());
+        return new ResponseEntity<>(newDepartment, HttpStatus.CREATED);
     }
 
 
@@ -56,9 +66,16 @@ public class StaffController {
     //Email will be sent to new staff containing username and password.
     //I did not include verification here
     @PostMapping(StaffControllerRoutes.CREATE_NEW_STAFF_ACCOUNT)
-    public ResponseEntity<?> createNewStaffAccount(@PathVariable Long staffID) throws CreateNewStaffAccountException {
-        Staff staff = staffService.createNewStaffAccount(staffID);
-        return new ResponseEntity<>(staff, HttpStatus.CREATED);
+    public ResponseEntity<?> createNewStaffAccount(@RequestBody StaffAccountCreateRequest staffAccountCreateRequest) throws CreateNewStaffAccountException {
+
+        try {
+            Staff staff = staffService.createNewStaffAccount(staffAccountCreateRequest.getStaffId());
+            return new ResponseEntity<>(staff, HttpStatus.CREATED);
+        } catch (CreateNewStaffAccountException ex){
+            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
+        }
+
+
     }
 
     @GetMapping(StaffControllerRoutes.RETRIEVE_STAFF_BY_ID)
@@ -96,28 +113,35 @@ public class StaffController {
     }
 
     @PostMapping(StaffControllerRoutes.LOGIN_STAFF)
-    public ResponseEntity<?> staffLogin(@RequestBody StaffLoginRequest staffLoginRequest) throws InvalidLoginCredentialsException {
-        Map<String, String> inputErrMap = validationService.generateErrorMap(staffLoginRequest);
-        if (inputErrMap != null) {
-            return new ResponseEntity<>(inputErrMap, HttpStatus.BAD_REQUEST);
+    public ResponseEntity<?> staffLogin(@RequestBody StaffLoginRequest staffLoginRequest) throws InvalidStaffCredentialsException {
+      try {
+            Staff staff = staffService.staffLogin(staffLoginRequest.getUsername(), staffLoginRequest.getPassword());
+            return new ResponseEntity<>(staff, HttpStatus.OK);
+        } catch (InvalidStaffCredentialsException ex){
+            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
         }
-
-        Staff staff = staffService.staffLogin(staffLoginRequest.getUsername(), staffLoginRequest.getPassword());
-        return new ResponseEntity<>(staff, HttpStatus.OK);
     }
 
     @PostMapping(StaffControllerRoutes.CHANGE_STAFF_PASSWORD)
-    public ResponseEntity<?> changeStaffPassword(@RequestBody StaffChangePasswordRequest staffChangePasswordRequest) throws StaffNotFoundException, InvalidLoginCredentialsException {
+    public ResponseEntity<?> changeStaffPassword(@RequestBody StaffChangePasswordRequest staffChangePasswordRequest) throws StaffNotFoundException, InvalidStaffCredentialsException {
         Map<String, String> inputErrMap = validationService.generateErrorMap(staffChangePasswordRequest);
         if (inputErrMap != null) {
             return new ResponseEntity<>(inputErrMap, HttpStatus.BAD_REQUEST);
         }
 
-        staffService.changeStaffPassword(staffChangePasswordRequest.getStaffId(),
-                staffChangePasswordRequest.getOldPassword(),
-                staffChangePasswordRequest.getNewPassword());
-        Staff staff = staffService.retrieveStaffByStaffId(staffChangePasswordRequest.getStaffId());
-        return new ResponseEntity<>(staff, HttpStatus.OK);
+        try {
+
+            staffService.changeStaffPassword(staffChangePasswordRequest.getStaffId(),
+                    staffChangePasswordRequest.getOldPassword(),
+                    staffChangePasswordRequest.getNewPassword());
+            Staff staff = staffService.retrieveStaffByStaffId(staffChangePasswordRequest.getStaffId());
+            System.out.println(staff.getPassword());
+            return new ResponseEntity<>(staff, HttpStatus.OK);
+        } catch (StaffNotFoundException ex){
+            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
+        } catch (InvalidStaffCredentialsException ex){
+            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
+        }
     }
 
     // TODO: Implement below method with actual email.
@@ -128,6 +152,12 @@ public class StaffController {
         Map<String, String> successMessage = new HashMap<>();
         successMessage.put("message","Please inform staff to check email for new password");
         return new ResponseEntity<>(successMessage, HttpStatus.OK);
+    }
+
+    @DeleteMapping(StaffControllerRoutes.DELETE_STAFF)
+    public ResponseEntity<?> deleteCustomer(@PathVariable Long staffId) throws StaffCannotDeleteException, StaffNotFoundException {
+        Staff deletedStaff = staffService.removeStaff(staffId);
+        return new ResponseEntity<>(deletedStaff, HttpStatus.OK);
     }
 
 

@@ -138,8 +138,8 @@ public class StartUpService {
         if (warehouseService.retrieveAllWarehouses().size() == 0) {
 
             Warehouse warehouse = new Warehouse();
-            Address address = new Address("Pasir Ris Drive 1", "#01-01", "S123456", "Pasir Ris Building");
-            warehouseService.createWarehouse(warehouse, address);
+            Address address = new Address("Pasir Ris Drive 1", "#01-01", 510144, "Pasir Ris Building");
+            Warehouse w = warehouseService.createWarehouse(warehouse, address);
             List<Warehouse> warehouses = warehouseService.retrieveAllWarehouseInventory();
 
             productService.assignProductStock(warehouses, null, null);
