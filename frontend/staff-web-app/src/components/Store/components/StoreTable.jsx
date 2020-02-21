@@ -117,12 +117,12 @@ class StoreTable extends Component {
               options={{
                 filtering: true,
                 sorting: true,
-                pageSize: 10,
+                pageSize: 5,
                 search: false,
                 padding: "dense",
                 toolbar: false,
                 showTitle: false,
-                pageSizeOptions: [10, 20, 40],
+                pageSizeOptions: [5, 10, 15],
                 actionsColumnIndex: -1
               }}
             />

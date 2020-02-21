@@ -31,7 +31,6 @@ class StoreForm extends React.Component {
   constructor(props) {
     super(props);
     const { currentStore } = this.props;
-    console.log(currentStore);
     this.state = {
       storeId: currentStore ? currentStore.storeId : undefined,
       storeName: currentStore ? currentStore.storeName : "",
@@ -95,7 +94,6 @@ class StoreForm extends React.Component {
 
   render() {
     const { handleSubmit, errors, disabled, currentStore } = this.props;
-
     const postalCodeProps = {
       endAdornment: (
         <InputAdornment position="end">
