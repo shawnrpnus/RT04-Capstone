@@ -3,7 +3,7 @@ import { Card, CardBody, Col } from 'reactstrap';
 import TagEditForm from "./TagEditForm";
 
 const TagEditCard = () => (
-    <Col md={12} lg={12}>
+    <Col md={12} lg={3}>
         <Card>
             <CardBody>
                 <div className="card__title">

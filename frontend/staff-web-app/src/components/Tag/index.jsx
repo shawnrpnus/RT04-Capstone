@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {Col, Container, Row} from 'reactstrap';
 import TagEditCard from './components/TagEditCard';
+import TagTable from "./components/TagTable";
 
 const TagEdit = () => (
     <Container>
@@ -12,6 +13,9 @@ const TagEdit = () => (
         </Row>
         <Row>
             <TagEditCard />
+        </Row>
+        <Row>
+            <TagTable/>
         </Row>
     </Container>
 );

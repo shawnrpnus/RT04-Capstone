@@ -13,6 +13,11 @@ export default function(state = initialState, action) {
         ...state,
         createdUpdatedTag: action.tag
       };
+    case types.RETRIEVE_ALL_TAGS:
+      return {
+        ...state,
+        allTags: action.allTags
+      };
     default:
       return state;
   }

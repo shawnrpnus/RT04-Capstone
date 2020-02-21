@@ -22,9 +22,9 @@ class TagEditForm extends Component {
         createNewTag: PropTypes.func.isRequired
     }
     constructor(props) {
-        super(props)
+        super(props);
         this.state = {
-            name: "",
+            name: ""
         }
     }
 
@@ -38,25 +38,25 @@ class TagEditForm extends Component {
     // this method makes the api calls
     handleSubmit = (e) => {
         e.preventDefault();
-        const{name} = this.state
+        const{name} = this.state;
         const req = new CreateTagRequest(name);
         
         this.props.createNewTag(req, this.props.history);
     }
 
     render() {
-        const { errors } = this.props;
+        const { errors, createdUpdatedTag } = this.props;
         console.log("HIHIHIHIHI");
         return (
             <MuiPickersUtilsProvider utils={MomentUtils}>
                 <form className="material-form" onSubmit={this.handleSubmit}>
                     <Grid container spacing={3}>
                         <Grid item xs={3}>
-                            <MaterialTextField fieldLabel="Tag Name"
-                                onChange={this.onChange}
-                                fieldName="name"
-                                state={this.state}
-                                errors={errors} />
+                            {/*<MaterialTextField fieldLabel="Tag Name"*/}
+                            {/*    onChange={this.onChange}*/}
+                            {/*    state={this.state}*/}
+                            {/*    fieldName="name"*/}
+                            {/*    errors={errors} />*/}
                         </Grid>
                         <Grid item xs={12}>
                             <ButtonToolbar className="form__button-toolbar">

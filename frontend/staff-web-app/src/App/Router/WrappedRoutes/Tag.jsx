@@ -4,6 +4,5 @@ import TagEdit from "../../../components/Tag";
 
 export default () => (
     <Switch>
-        <Route exact path="/tag/edit" component={TagEdit} />
     </Switch>
 );
