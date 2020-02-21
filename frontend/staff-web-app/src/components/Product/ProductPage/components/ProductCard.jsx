@@ -25,7 +25,7 @@ import IconButton from "@material-ui/core/IconButton";
 import CreateIcon from "@material-ui/icons/Create";
 import AddCircleRoundedIcon from "@material-ui/icons/AddCircleRounded";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
-import ProductUpdateForm from "./ProductUpdateForm"
+import ProductUpdateForm from "./ProductUpdateForm";
 
 class ProductCard extends PureComponent {
   static propTypes = {
@@ -53,22 +53,20 @@ class ProductCard extends PureComponent {
       const colourSizeMap = [];
       let colour, size, productVariantId;
 
-      this.props.currentProduct.productVariants.map(
-        (e) => {
-          colour = e.colour;
-          size = e.sizeDetails.productSize;
-          productVariantId = e.productVariantId;
+      this.props.currentProduct.productVariants.map(e => {
+        colour = e.colour;
+        size = e.sizeDetails.productSize;
+        productVariantId = e.productVariantId;
 
-          if (!displayedColours.includes(colour)) {
-            displayedColours.push(colour);
-            colourSizeMap[colour] = Object();
-            colourSizeMap[colour].sizes = Array({ size, productVariantId });
-            colourSizeMap[colour].productImages = e.productImages;
-          } else {
-            colourSizeMap[colour].sizes.push({ size, productVariantId });
-          }
+        if (!displayedColours.includes(colour)) {
+          displayedColours.push(colour);
+          colourSizeMap[colour] = Object();
+          colourSizeMap[colour].sizes = Array({ size, productVariantId });
+          colourSizeMap[colour].productImages = e.productImages;
+        } else {
+          colourSizeMap[colour].sizes.push({ size, productVariantId });
         }
-      );
+      });
       // console.log(colourSizeMap);
       // console.log(displayedColours[0]);
       this.setState({
@@ -80,8 +78,8 @@ class ProductCard extends PureComponent {
   }
 
   handleOpenProductUpdateDialog = e => {
-    this.setState({ openProductUpdateDialog: true })
-  }
+    this.setState({ openProductUpdateDialog: true });
+  };
 
   handleToggleUploadImage = e => {
     this.setState({ uploadImage: e.target.checked });
