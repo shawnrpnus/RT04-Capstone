@@ -92,9 +92,10 @@ const buildCategoryTree = categories => {
 
 const sumChildrenProducts = category => {
   let sum = 0;
-  category.childCategories.forEach(
-    child => (sum += child.products.length + sumChildrenProducts(child, sum))
-  );
+  category.childCategories.forEach(child => {
+    sum += child.products.length;
+    sum += sumChildrenProducts(child, sum);
+  });
   return sum;
 };
 

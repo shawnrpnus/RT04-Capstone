@@ -1,15 +1,16 @@
-import React from 'react';
-import { Col, Container, Row } from 'reactstrap';
-import ProductCard from './components/ProductCard';
-import RelatedItems from './components/RelatedItems';
+import React from "react";
+import { Col, Container, Row } from "reactstrap";
+import ProductCard from "./components/ProductCard";
+import RelatedItems from "./components/RelatedItems";
 
 const ProductPage = () => (
   <Container>
     <Row>
       <Col md={12}>
         <h3 className="page-title">Product Page</h3>
-        <h3 className="page-subhead subhead">Use this elements, if you want to show some hints or additional
-              information
+        <h3 className="page-subhead subhead">
+          Use this elements, if you want to show some hints or additional
+          information
         </h3>
       </Col>
     </Row>

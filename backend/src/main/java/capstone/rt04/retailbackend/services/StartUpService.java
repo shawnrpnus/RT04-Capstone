@@ -42,6 +42,16 @@ public class StartUpService {
         if (categories.size() == 0) {
             Category category = categoryService.createNewCategory(new Category("Shoes"), null);
             Category leafCategory = categoryService.createNewCategory(new Category("Sneakers"), category.getCategoryId());
+            Category men = categoryService.createNewCategory(new Category("Men"), null);
+            Category clothingmen = categoryService.createNewCategory(new Category("Clothing"), men.getCategoryId());
+            Category shirts = categoryService.createNewCategory(new Category("Shirts"), clothingmen.getCategoryId());
+            Category shorts = categoryService.createNewCategory(new Category("Shorts"), clothingmen.getCategoryId());
+            Category socks = categoryService.createNewCategory(new Category("Socks"), clothingmen.getCategoryId());
+            Category women = categoryService.createNewCategory(new Category("Women"), null);
+            Category clothingwomen = categoryService.createNewCategory(new Category("Clothing"), women.getCategoryId());
+            Category shorts2 = categoryService.createNewCategory(new Category("Shorts"), clothingwomen.getCategoryId());
+            Category dresses = categoryService.createNewCategory(new Category("Dresses"), clothingwomen.getCategoryId());
+            Category skirts = categoryService.createNewCategory(new Category("Skirts"), clothingwomen.getCategoryId());
         }
     }
 
@@ -60,6 +70,16 @@ public class StartUpService {
             colors.add("Green");
             colors.add("Red");
             Product newProduct = productService.createNewProduct(product, category.getCategoryId(), null, sizes, colors);
+
+            Product product2 = new Product("0011", "Stan Smith", "Adidas", BigDecimal.valueOf(109.90), BigDecimal.valueOf(49.90));
+            Category category2 = categoryService.retrieveCategoryByName("Shirts");
+            product2.setCategory(category2);
+            Product newProduct2 = productService.createNewProduct(product2, category2.getCategoryId(), null, sizes, colors);
+
+            Product product3 = new Product("0012", "Stan Smith", "Adidas", BigDecimal.valueOf(109.90), BigDecimal.valueOf(49.90));
+            Category category3 = categoryService.retrieveCategoryByName("Socks");
+            product3.setCategory(category);
+            Product newProduct3 = productService.createNewProduct(product3, category3.getCategoryId(), null, sizes, colors);
 
             // Product images
             ProductImage productImage1 = new ProductImage("https://i8.amplience.net/i/jpl/jd_347293_a?qlt=92&w=750&h=531&v=1&fmt=webp");
