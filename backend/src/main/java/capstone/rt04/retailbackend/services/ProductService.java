@@ -1,7 +1,10 @@
 package capstone.rt04.retailbackend.services;
 
 import capstone.rt04.retailbackend.entities.*;
-import capstone.rt04.retailbackend.repositories.*;
+import capstone.rt04.retailbackend.repositories.ProductImageRepository;
+import capstone.rt04.retailbackend.repositories.ProductRepository;
+import capstone.rt04.retailbackend.repositories.ProductStockRepository;
+import capstone.rt04.retailbackend.repositories.ProductVariantRepository;
 import capstone.rt04.retailbackend.util.enums.SizeEnum;
 import capstone.rt04.retailbackend.util.enums.SortEnum;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
@@ -13,6 +16,7 @@ import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.style.StyleNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.tag.TagNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.warehouse.WarehouseNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +26,7 @@ import java.util.*;
 
 @Service
 @Transactional
+@Slf4j
 public class ProductService {
 
     private final TagService tagService;
@@ -58,7 +63,7 @@ public class ProductService {
         this.sizeDetailsService = sizeDetailsService;
     }
 
-    public Product createNewProduct(Product product, Long categoryId, List<Long> tagIds, List<SizeEnum> sizes, List<String> colors) throws InputDataValidationException, CreateNewProductException, CategoryNotFoundException {
+    public Product createNewProduct(Product product, Long categoryId, List<Long> tagIds, List<SizeEnum> sizes, List<String> colours) throws InputDataValidationException, CreateNewProductException, CategoryNotFoundException {
 
         if (categoryId == null) {
             throw new CreateNewProductException("The new product must be associated a leaf category");
@@ -94,13 +99,15 @@ public class ProductService {
                 String sku;
                 SizeDetails sizeDetails;
 
-                for (String color : colors) {
-                    for (SizeEnum size : sizes) {
-                        sku = product.getSerialNumber() + "-" + color + "-" + size;
-                        sizeDetails = new SizeDetails(size);
-                        productVariant = new ProductVariant(sku, color, null, product, sizeDetailsService.createSizeDetails(sizeDetails));
-                        createProductVariant(productVariant, product.getProductId());
-                    }
+                for (String colour : colours) {
+                    createMultipleProductVariants(product.getProductId(),colour,sizes);
+//                    for (SizeEnum size : sizes) {
+//                        sku = product.getSerialNumber() + "-" + colour + "-" + size;
+//                        sizeDetails = new SizeDetails(size);
+//                        productVariant = new ProductVariant(sku, colour, product);
+//                        productVariant.setSizeDetails(sizeDetailsService.createSizeDetails(sizeDetails));
+//                        createProductVariant(productVariant, product.getProductId());
+//                    }
                 }
 
                 return product;
@@ -145,7 +152,7 @@ public class ProductService {
         return products;
     }
 
-    public List<Product> retrieveProductByCriteria(Category category, List<Tag> tags, List<String> colours, List<SizeDetails> sizeDetails,
+    public List<Product> retrieveProductByCriteria(Category category, List<Tag> tags, List<String> colours, List<SizeEnum> sizes,
                                                    BigDecimal minPrice, BigDecimal maxPrice, SortEnum sortEnum) {
         List<Product> products = new ArrayList<>();
         List<Product> productsByTag = null;
@@ -167,12 +174,13 @@ public class ProductService {
                 matchPriceRange = true;
 
             for (ProductVariant productVariant : product.getProductVariants()) {
+
                 if (colours != null && colours.size() > 0) {
                     if (colours.contains(productVariant.getColour())) {
                         matchColour = true;
-                        if (sizeDetails != null && sizeDetails.size() > 0) {
-                            for (SizeDetails sizeDetail : sizeDetails) {
-                                if (sizeDetail.getProductSize().equals(productVariant.getSizeDetails().getProductSize())) {
+                        if (sizes != null && sizes.size() > 0) {
+                            for (SizeEnum size : sizes) {
+                                if (size.equals(productVariant.getSizeDetails().getProductSize())) {
                                     matchSize = true;
                                     break;
                                 }
@@ -285,6 +293,8 @@ public class ProductService {
         product.setPrice(price);
     }
 
+    // TODO: Create multiple product variants without creating product
+
     public ProductVariant createProductVariant(ProductVariant productVariant, Long productId) throws ProductNotFoundException, InputDataValidationException, PersistenceException, CreateNewProductStockException, WarehouseNotFoundException, StoreNotFoundException {
 
         Product product = retrieveProductById(productId);
@@ -310,6 +320,33 @@ public class ProductService {
             throw new InputDataValidationException(errorMap, "Invalid Category");
         }
     }
+
+    public List<ProductVariant> createMultipleProductVariants(Long productId, String colour, List<SizeEnum> sizes) throws ProductNotFoundException, InputDataValidationException, CreateNewProductStockException, StoreNotFoundException, WarehouseNotFoundException {
+        Product product = retrieveProductById(productId);
+
+        List<ProductVariant> productVariants = new ArrayList<>();
+        ProductVariant productVariant;
+        String sku;
+        SizeDetails sizeDetails;
+
+        for (SizeEnum size : sizes) {
+            sku = product.getSerialNumber() + "-" + colour + "-" + size;
+            sizeDetails = new SizeDetails(size);
+            productVariant = new ProductVariant(sku, colour, product);
+            productVariant.setSizeDetails(sizeDetailsService.createSizeDetails(sizeDetails));
+            productVariants.add(createProductVariant(productVariant, product.getProductId()));
+        }
+        return productVariants;
+    }
+
+//     for (SizeEnum size : sizes) {
+//                        sku = product.getSerialNumber() + "-" + colour + "-" + size;
+//                        sizeDetails = new SizeDetails(size);
+//                        productVariant = new ProductVariant(sku, colour, product);
+//                        productVariant.setSizeDetails(sizeDetailsService.createSizeDetails(sizeDetails));
+//                        createProductVariant(productVariant, product.getProductId());
+//                    }
+
 
     public ProductVariant retrieveProductVariantById(Long productVariantId) throws ProductVariantNotFoundException {
         if (productVariantId == null) {
@@ -533,11 +570,11 @@ public class ProductService {
 
     public List<ProductImage> createProductImage(List<ProductImage> productImages, Long productVariantId) throws ProductVariantNotFoundException {
         // Uploading to Google Drive will be done at frontend
-        List<ProductImage> productImageList = retrieveProductVariantById(productVariantId).getProductImages();
+        ProductVariant productVariant = retrieveProductVariantById(productVariantId);
 
         for (ProductImage productImage : productImages) {
             productImageRepository.save(productImage);
-            productImageList.add(productImage);
+            productVariant.getProductImages().add(productImage);
         }
         return productImages;
     }

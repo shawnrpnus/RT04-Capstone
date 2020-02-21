@@ -1,20 +1,12 @@
 package capstone.rt04.retailbackend.controllers;
 
-import capstone.rt04.retailbackend.entities.*;
-import capstone.rt04.retailbackend.request.product.ProductRetrieveRequest;
+import capstone.rt04.retailbackend.entities.Customer;
+import capstone.rt04.retailbackend.entities.Transaction;
 import capstone.rt04.retailbackend.request.transaction.TransactionRetrieveRequest;
 import capstone.rt04.retailbackend.util.enums.CollectionModeEnum;
 import capstone.rt04.retailbackend.util.enums.DeliveryStatusEnum;
 import capstone.rt04.retailbackend.util.enums.SortEnum;
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.voodoodyne.jackson.jsog.JSOGRef;
-import com.voodoodyne.jackson.jsog.JSOGRefDeserializer;
 import io.restassured.RestAssured;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;
@@ -28,7 +20,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -130,12 +121,12 @@ public class TransactionControllerTest {
 
     //TODO: test got error - unresolved forward reference, could not resolve object id. tested on postman and it works
     @Test
-    public void retrievePastOrder()  {
+    public void retrievePastOrder() {
         List<Transaction> pastOrders = given()
                 .when()
                 .get(TRANSACTION_BASE_ROUTE + RETRIEVE_ALL_TRANSACTIONS)
                 .then().statusCode(HttpStatus.OK.value()).extract().body().jsonPath().getList(".", Transaction.class);
-       //assertThat(transactions.size()).isEqualTo(4);
+        //assertThat(transactions.size()).isEqualTo(4);
     }
 
     @Test

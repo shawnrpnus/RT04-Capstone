@@ -39,11 +39,9 @@ import capstone.rt04.retailbackend.repositories.DepartmentRepository;
 import capstone.rt04.retailbackend.repositories.RoleRepository;
 import static capstone.rt04.retailbackend.util.routeconstants.CustomerControllerRoutes.*;
 import static capstone.rt04.retailbackend.util.routeconstants.ProductControllerRoutes.*;
-import static capstone.rt04.retailbackend.util.routeconstants.ProductVariantControllerRoutes.CREATE_PRODUCT_VARIANT;
+import static capstone.rt04.retailbackend.util.routeconstants.ProductVariantControllerRoutes.CREATE_MULTIPLE_PRODUCT_VARIANTS;
 import static capstone.rt04.retailbackend.util.routeconstants.ProductVariantControllerRoutes.PRODUCT_VARIANT_BASE_ROUTE;
-import static capstone.rt04.retailbackend.util.routeconstants.StoreControllerRoutes.CREATE_STORE;
-import static capstone.rt04.retailbackend.util.routeconstants.StoreControllerRoutes.DELETE_STORE;
-import static capstone.rt04.retailbackend.util.routeconstants.StoreControllerRoutes.STORE_BASE_ROUTE;
+import static capstone.rt04.retailbackend.util.routeconstants.StoreControllerRoutes.*;
 import static capstone.rt04.retailbackend.util.routeconstants.TagControllerRoutes.DELETE_TAG;
 import static capstone.rt04.retailbackend.util.routeconstants.TagControllerRoutes.TAG_BASE_ROUTE;
 import static io.restassured.RestAssured.given;
@@ -76,6 +74,8 @@ public class ApiTestSetup {
     protected static String verificationCode;
     protected static Long storeId;
 
+    protected List<SizeEnum> sizes = new ArrayList<>();
+    protected List<String> colors = new ArrayList<>();
     protected static Long createdStaffId;
     protected static String VALID_STAFF_PASSWORD;
     protected static final String VALID_STAFF_EMAIL = "tonystark@gmail.com";
@@ -85,11 +85,11 @@ public class ApiTestSetup {
     @Before
     public void setUp() throws Exception {
         RestAssured.port = port;
-        setUpCustomer();
         setUpProduct();
-        setUpStyle();
         setUpTag();
         setUpStore();
+        setUpCustomer();
+        setUpStyle();
         setUpStaff();
     }
 
@@ -104,10 +104,10 @@ public class ApiTestSetup {
     }
 
     @Test
-    public void dummy(){
+    public void dummy() {
     }
 
-    private void setUpCustomer(){
+    private void setUpCustomer() {
         Customer validCustomer = new Customer("Tony", "Stark", VALID_CUST_EMAIL, VALID_CUST_PASSWORD);
         Customer createdCustomer = given().
                 contentType("application/json").
@@ -123,7 +123,7 @@ public class ApiTestSetup {
         verificationCode = createdCustomer.getVerificationCode().getCode();
     }
 
-    private void tearDownCustomer(){
+    private void tearDownCustomer() {
         Customer deletedCustomer = given().
                 pathParam("customerId", createdCustomerId).
                 when().delete(CUSTOMER_BASE_ROUTE + DELETE_CUSTOMER).
@@ -133,12 +133,13 @@ public class ApiTestSetup {
         createdCustomerId = null;
     }
 
-    private void setUpProduct(){
+    private void setUpProduct() {
         Category validCategory = new Category("Shoes");
         Product validProduct = new Product("0005", "Fila Disruptor II", "Fila", BigDecimal.valueOf(89.90), BigDecimal.valueOf(39.90));
-        ProductVariant validProductVariant = new ProductVariant("SKU001", "White", null, null, null);
+//        ProductVariant validProductVariant = new ProductVariant("SKU001", "White", null);
 
         CategoryCreateRequest categoryCreateRequest = new CategoryCreateRequest(validCategory, null);
+
         Category category = given().
                 contentType("application/json").
                 body(categoryCreateRequest).
@@ -146,12 +147,10 @@ public class ApiTestSetup {
                 then().statusCode(HttpStatus.CREATED.value()).extract().body().as(Category.class);
         categoryId = category.getCategoryId();
 
-        List<SizeEnum> sizes = new ArrayList<>();
         sizes.add(SizeEnum.S);
         sizes.add(SizeEnum.M);
-        List<String> colors = new ArrayList<>();
-        colors.add("pink");
-        colors.add("gold");
+        colors.add("White");
+        colors.add("Gold");
 
         ProductCreateRequest productCreateRequest = new ProductCreateRequest(validProduct, categoryId, sizes, colors);
         Product product = given().
@@ -161,17 +160,16 @@ public class ApiTestSetup {
                 then().statusCode(HttpStatus.CREATED.value()).extract().body().as(Product.class);
         productId = product.getProductId();
 
-        ProductVariantCreateRequest productVariantCreateRequest = new ProductVariantCreateRequest(validProductVariant, productId);
-        ProductVariant productVariant = given().
+        ProductVariantCreateRequest productVariantCreateRequest = new ProductVariantCreateRequest(productId, "Biege", sizes);
+        List<ProductVariant> productVariant = given().
                 contentType("application/json").
                 body(productVariantCreateRequest).
-                when().post(PRODUCT_VARIANT_BASE_ROUTE + CREATE_PRODUCT_VARIANT).
-                then().statusCode(HttpStatus.CREATED.value()).extract().body().as(ProductVariant.class);
-        productVariantId = productVariant.getProductVariantId();
+                when().post(PRODUCT_VARIANT_BASE_ROUTE + CREATE_MULTIPLE_PRODUCT_VARIANTS).
+                then().statusCode(HttpStatus.CREATED.value()).extract().body().jsonPath().getList(".", ProductVariant.class);
+        productVariantId = productVariant.get(0).getProductVariantId();
 
         assertThat(product.getProductId()).isNotNull();
         assertThat(product.getProductName()).isEqualTo(validProduct.getProductName());
-        assertThat(productVariant.getSKU()).isEqualTo(validProductVariant.getSKU());
     }
 
     private void setUpTag() {
@@ -189,7 +187,7 @@ public class ApiTestSetup {
         tagId2 = tag2.getTagId();
     }
 
-    private void tearDownProduct(){
+    private void tearDownProduct() {
         Product removedProduct = given().
                 pathParam("productId", productId).
                 when().delete(PRODUCT_BASE_ROUTE + DELETE_PRODUCT).
@@ -203,7 +201,7 @@ public class ApiTestSetup {
         assertThat(removedCategory.getCategoryId()).isEqualTo(categoryId);
     }
 
-    private void setUpStyle(){
+    private void setUpStyle() {
         Style validStyle = new Style("Bold");
         Style createdStyle = given()
                 .contentType("application/json")
@@ -215,7 +213,7 @@ public class ApiTestSetup {
         styleId = createdStyle.getStyleId();
     }
 
-    private void tearDownStyle(){
+    private void tearDownStyle() {
         given()
                 .pathParam("styleId", styleId)
                 .when().delete(StyleControllerRoutes.STYLE_BASE_ROUTE + StyleControllerRoutes.DELETE_STYLE)
@@ -236,7 +234,7 @@ public class ApiTestSetup {
         tagId2 = null;
     }
 
-    private void setUpStore(){
+    private void setUpStore() {
         Store validStore = new Store("Store 1", 4, 2, Time.valueOf("10:00:00"), Time.valueOf("21:00:00"), 2, 5, null);
         Store createdStore = given()
                 .contentType("application/json")
@@ -247,7 +245,7 @@ public class ApiTestSetup {
         storeId = createdStore.getStoreId();
     }
 
-    private void tearDownStore(){
+    private void tearDownStore() {
 
         Store removedStore = given().
                 pathParam("storeId", storeId).

@@ -2,7 +2,7 @@ import React, { PureComponent } from "react";
 import { Nav, NavItem, NavLink, TabContent, TabPane } from "reactstrap";
 import classnames from "classnames";
 
-export default class ProductTabs extends PureComponent {
+export default class ProductVariantForm extends PureComponent {
   constructor(props) {
     super(props);
 

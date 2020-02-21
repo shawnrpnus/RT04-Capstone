@@ -17,7 +17,6 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 /**
- *
  * @author shawn
  */
 @Entity
@@ -36,7 +35,7 @@ public class ShoppingCartItem implements Serializable {
     @NotNull
     @Column(nullable = false)
     private Integer quantity;
-    
+
     @ManyToOne
     @NotNull
     @JoinColumn(nullable = false)
@@ -44,16 +43,11 @@ public class ShoppingCartItem implements Serializable {
 
     public ShoppingCartItem() {
     }
-    
+
     public ShoppingCartItem(Integer quantity, ProductVariant productVariant) {
         this.quantity = quantity;
         this.productVariant = productVariant;
     }
-    
-    
-    
-    
-    
-    
-    
+
+
 }

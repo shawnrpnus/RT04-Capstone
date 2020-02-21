@@ -5,8 +5,10 @@ import Lightbox from 'react-images';
 
 export default class ProductGallery extends PureComponent {
   static propTypes = {
-    images: PropTypes.arrayOf(PropTypes.shape({
-      src: PropTypes.string,
+    colourSizeMap: PropTypes.arrayOf(PropTypes.shape({
+      productImages: PropTypes.arrayOf(PropTypes.shape({
+        productImageUrl: PropTypes.string
+      })),
     })).isRequired,
   };
 
@@ -61,21 +63,27 @@ export default class ProductGallery extends PureComponent {
   };
 
   render() {
-    const { images } = this.props;
+    const { selectedColour, colourSizeMap } = this.props;
+    console.log(selectedColour)
+    //
+    // console.log(this.props.colourSizeMap.imgUrl)
+    // console.log(this.props.productVariants)
+    const images = colourSizeMap[selectedColour].productImages
     const { currentImage, currentImagePreview, lightboxIsOpen } = this.state;
+    console.log(images)
     return (
       <div className="product-gallery">
         <a
           className="product-gallery__current-img"
           onClick={e => this.openLightbox(currentImage, e)}
-          href={images[currentImage].src}
+          href={images[currentImage].productImageUrl}
         >
-          <img src={images[currentImagePreview].src} alt="product-img" />
+          <img src={images[currentImagePreview].productImageUrl} alt="product-img" />
         </a>
         <div className="product_gallery__gallery">
           {images.map((img, i) => (
             <button type="button" key={i} onClick={e => this.changeImg(i, e)} className="product-gallery__img-preview">
-              <img src={img.src} alt="product-img" />
+              <img src={img.productImageUrl} alt="product-img" />
             </button>
           ))}
         </div>

@@ -7,6 +7,7 @@ import capstone.rt04.retailbackend.request.productImage.ProductImageCreateReques
 import capstone.rt04.retailbackend.request.productImage.ProductImageDeleteRequest;
 import capstone.rt04.retailbackend.request.productStock.ProductStockCreateRequest;
 import capstone.rt04.retailbackend.request.productVariant.ProductVariantCreateRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -32,17 +33,28 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
+@Slf4j
 public class ProductControllerTest extends ApiTestSetup {
 
     @Test
+    public void retrieveProductById() {
+        ProductVariant productVariant = given().
+                pathParam("productVariantId", productVariantId).
+                when().post(PRODUCT_VARIANT_BASE_ROUTE + CREATE_MULTIPLE_PRODUCT_VARIANTS).
+                then().statusCode(HttpStatus.CREATED.value()).extract().body().as(ProductVariant.class);
+
+        log.info(productVariant.toString());
+    }
+
+
+    @Test
     public void testCDProductVariant() {
-        ProductVariant validProductVariant = new ProductVariant("SKU004", "Pink", null, null, null);
-        ProductVariantCreateRequest productVariantCreateRequest = new ProductVariantCreateRequest(validProductVariant, productId);
+        ProductVariantCreateRequest productVariantCreateRequest = new ProductVariantCreateRequest(productId, "Pink", sizes);
 
         ProductVariant productVariantToCreate = given().
                 contentType("application/json").
                 body(productVariantCreateRequest).
-                when().post(PRODUCT_VARIANT_BASE_ROUTE + CREATE_PRODUCT_VARIANT).
+                when().post(PRODUCT_VARIANT_BASE_ROUTE + CREATE_MULTIPLE_PRODUCT_VARIANTS).
                 then().statusCode(HttpStatus.CREATED.value()).extract().body().as(ProductVariant.class);
 
         Long productVariantId = productVariantToCreate.getProductVariantId();
@@ -141,6 +153,7 @@ public class ProductControllerTest extends ApiTestSetup {
         List<Product> products = given().when().get(PRODUCT_BASE_ROUTE + RETRIEVE_ALL_PRODUCTS).
                 then().statusCode(HttpStatus.OK.value()).extract().body().jsonPath().getList(".", Product.class);
 
+
         ProductTagRequest productTagRequest = new ProductTagRequest(tagId1, null, null, products, true);
         given().
                 contentType("application/json").
@@ -171,7 +184,7 @@ public class ProductControllerTest extends ApiTestSetup {
                 .then().statusCode(HttpStatus.OK.value()).extract().body().jsonPath().getList(".", Product.class);
         assertThat(products.size()).isEqualTo(0);
 
-        colours.add("White");
+        productRetrieveRequest.getColours().add("White");
         products = given()
                 .contentType("application/json")
                 .body(productRetrieveRequest)

@@ -10,7 +10,6 @@ import capstone.rt04.retailbackend.util.exceptions.category.UpdateCategoryExcept
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -27,7 +26,7 @@ public class CategoryService {
         this.categoryRepository = categoryRepository;
     }
 
-    public Category createNewCategory(Category newCategory, Long parentCategoryId) throws InputDataValidationException, CreateNewCategoryException, CategoryNotFoundException {
+    public Category createNewCategory(Category newCategory, Long parentCategoryId) throws InputDataValidationException, CreateNewCategoryException {
         Map<String, String> errorMap = validationService.generateErrorMap(newCategory);
 
         if (errorMap == null) {
@@ -43,18 +42,14 @@ public class CategoryService {
 //                    throw new InputDataValidationException(errorMap, "Category already created");
 //                }
                 if (parentCategoryId != null) {
-
-
                     Category parentCategoryEntity = retrieveCategoryByCategoryId(parentCategoryId);
 
                     if (!parentCategoryEntity.getProducts().isEmpty()) {
                         throw new CreateNewCategoryException("Parent category cannot be associated with any product");
                     }
-
                     newCategory.setParentCategory(parentCategoryEntity);
                     parentCategoryEntity.getChildCategories().add(newCategory);
                 }
-
                 categoryRepository.save(newCategory);
                 return newCategory;
             } catch (Exception ex) {
@@ -97,7 +92,7 @@ public class CategoryService {
                 Category categoryToUpdate = retrieveCategoryByCategoryId(category.getCategoryId());
                 Category existingCategory = categoryRepository.findByNameAndCategoryId(category.getName(), category.getCategoryId()).orElse(null);
 
-                if(categoryToUpdate.getParentCategory() != null) {
+                if (categoryToUpdate.getParentCategory() != null) {
                     parentCategoryId = categoryToUpdate.getParentCategory().getCategoryId();
                 }
                 if (existingCategory != null) {
@@ -118,7 +113,7 @@ public class CategoryService {
                         categoryToUpdate.setParentCategory(parentCategory);
                     }
                 } else {
-                    if(categoryToUpdate.getParentCategory() != null) {
+                    if (categoryToUpdate.getParentCategory() != null) {
                         throw new CategoryNotFoundException("Category ID not provided for category to be updated");
                     }
 
@@ -132,20 +127,14 @@ public class CategoryService {
         }
     }
 
-    public Category deleteCategory(Long categoryId) throws CategoryNotFoundException , DeleteCategoryException
-    {
+    public Category deleteCategory(Long categoryId) throws CategoryNotFoundException, DeleteCategoryException {
         Category categoryToRemove = retrieveCategoryByCategoryId(categoryId);
 
-        if(!categoryToRemove.getChildCategories().isEmpty())
-        {
+        if (!categoryToRemove.getChildCategories().isEmpty()) {
             throw new DeleteCategoryException("Category ID " + categoryId + " is associated with existing sub-categories and cannot be deleted!");
-        }
-        else if(!categoryToRemove.getProducts().isEmpty())
-        {
+        } else if (!categoryToRemove.getProducts().isEmpty()) {
             throw new DeleteCategoryException("Category ID " + categoryId + " is associated with existing products and cannot be deleted!");
-        }
-        else
-        {
+        } else {
             categoryToRemove.setParentCategory(null);
 
             categoryRepository.delete(categoryToRemove);

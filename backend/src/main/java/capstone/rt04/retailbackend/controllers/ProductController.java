@@ -11,7 +11,7 @@ import capstone.rt04.retailbackend.util.exceptions.product.CreateNewProductExcep
 import capstone.rt04.retailbackend.util.exceptions.product.ProductNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.tag.TagNotFoundException;
 import capstone.rt04.retailbackend.util.routeconstants.ProductControllerRoutes;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,9 +21,9 @@ import java.util.List;
 @RestController
 @RequestMapping(ProductControllerRoutes.PRODUCT_BASE_ROUTE)
 @CrossOrigin(origins = {"http://localhost:3000"})
+@Slf4j
 public class ProductController {
 
-    @Autowired
     private final ProductService productService;
 
     public ProductController(ProductService productService) {
@@ -46,7 +46,7 @@ public class ProductController {
     public ResponseEntity<?> retrieveProductsByCriteria(@RequestBody ProductRetrieveRequest productRetrieveRequest) {
         try {
             List<Product> products = productService.retrieveProductByCriteria(productRetrieveRequest.getCategory(), productRetrieveRequest.getTags(),
-                    productRetrieveRequest.getColours(), productRetrieveRequest.getSizeDetails(),
+                    productRetrieveRequest.getColours(), productRetrieveRequest.getSizes(),
                     productRetrieveRequest.getMinPrice(), productRetrieveRequest.getMaxPrice(), productRetrieveRequest.getSortEnum());
             return new ResponseEntity<>(products, HttpStatus.OK);
         }  catch (Exception ex) {

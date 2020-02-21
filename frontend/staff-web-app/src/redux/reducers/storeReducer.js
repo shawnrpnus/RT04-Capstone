@@ -18,6 +18,7 @@ export default function(state = initialState, action) {
         ...state,
         currentStore: action.storeEntity
       };
+
     case types.UPDATE_STORE:
       return {
         ...state,

@@ -61,13 +61,10 @@ public class ProductVariant implements Serializable {
         this.productImages = new ArrayList<>();
     }
 
-    public ProductVariant(String SKU, String colour, List<ProductImage> productImages, Product product, SizeDetails sizeDetails) {
+    public ProductVariant(String SKU, String colour, Product product) {
         this();
         this.SKU = SKU;
         this.colour = colour;
-        this.productImages = productImages;
         this.product = product;
-        this.sizeDetails = sizeDetails;
     }
-
 }
