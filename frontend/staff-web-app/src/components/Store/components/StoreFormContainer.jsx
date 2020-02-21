@@ -111,6 +111,11 @@ class StoreFormContainer extends Component {
         {/*I the mode is create, load a blank form, otherwise, pass in the current
                 store entity object that was retrieved. If mode is just to view, disable all
                 fields, otherwise allow fields to be edited*/}
+
+        {/* NOTE: React's reconciliation algorithm assumes that without any information to the contrary,
+        if a custom component appears in the same place on subsequent renders, it's the same component
+        as before, so reuses the previous instance rather than creating a new one.
+        https://stackoverflow.com/questions/29074690/react-why-components-constructor-is-called-only-once*/}
         {mode === "create" ? (
           <StoreForm
             handleSubmit={this.handleSubmit}
