@@ -16,3 +16,4 @@ export const RETRIEVE_PRODUCT_BY_ID = "RETRIEVE_PRODUCT_BY_ID";
 
 // Tag
 export const CREATE_TAG = "CREATE_TAG";
+export const RETRIEVE_ALL_TAGS = "RETRIEVE_ALL_TAGS";

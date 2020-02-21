@@ -7,13 +7,13 @@ import Store from "./Store";
 import Tag from "./Tag";
 
 export default () => (
-  <div>
-    <Layout />
-    <div className="container__wrap">
-      <Route path="/store" component={Store} />
-      <Route path="/tag" component={Tag} />
-      <Route path="/viewAllProduct" component={ProductTable} />
-      <Route path="/viewProductDetails/:id" component={ProductPage} />
+    <div>
+        <Layout/>
+        <div className="container__wrap">
+            <Route path="/store" component={Store}/>
+            <Route path="/tag" component={Tag}/>
+            <Route path="/viewAllProduct" component={ProductTable}/>
+            <Route path="/viewProductDetails/:id" component={ProductPage}/>
+        </div>
     </div>
-  </div>
 );
