@@ -19,7 +19,6 @@ import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
 import Switch from "@material-ui/core/Switch";
 import Row from "reactstrap/es/Row";
 import * as PropTypes from "prop-types";
-import { clearErrors, createNewStore } from "../../../../redux/actions";
 import { connect } from "react-redux";
 import { retrieveProductById } from "../../../../redux/actions/productActions";
 
@@ -48,7 +47,7 @@ class ProductCard extends PureComponent {
   }
 
   render() {
-    console.log(this.state)
+    console.log(this.state);
     return (
       <Col md={12} lg={12}>
         <Card>
@@ -180,7 +179,7 @@ class ProductCard extends PureComponent {
   }
 }
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   currentProduct: state.product.currentProduct,
   errors: state.errors
 });
@@ -189,9 +188,6 @@ const mapDispatchToProps = {
   retrieveProductById
 };
 
-const connectedForm = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(ProductCard);
+const connectedForm = connect(mapStateToProps, mapDispatchToProps)(ProductCard);
 
 export default withRouter(connectedForm);

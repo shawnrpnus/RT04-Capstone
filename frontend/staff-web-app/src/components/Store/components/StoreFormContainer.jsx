@@ -1,12 +1,13 @@
 import React, { Component } from "react";
 import "moment";
 import { connect } from "react-redux";
+import { clearErrors } from "../../../redux/actions";
 import {
-  clearErrors,
   createNewStore,
   retrieveStoreById,
-  updateStore
-} from "../../../redux/actions";
+  updateStore,
+  clearCurrentStore
+} from "../../../redux/actions/storeActions";
 import CreateUpdateStoreRequest from "../../../models/store/CreateUpdateStoreRequest";
 import Address from "../../../models/address";
 import * as PropTypes from "prop-types";
@@ -32,10 +33,23 @@ class StoreFormContainer extends Component {
   };
 
   componentDidMount() {
+    this.checkMode();
+  }
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    console.log(this.props);
+    if (this.props.mode !== prevProps.mode) {
+      this.checkMode();
+    }
+  }
+
+  checkMode() {
     const { mode, history } = this.props;
     if (mode === "view" || mode === "update") {
       const storeId = this.props.match.params.storeId;
       this.props.retrieveStoreById(storeId, history);
+    } else if (mode === "create") {
+      this.props.clearCurrentStore();
     }
   }
 
@@ -135,7 +149,8 @@ const mapDispatchToProps = {
   createNewStore, //api/storeEntity/createNewStore
   clearErrors,
   retrieveStoreById,
-  updateStore
+  updateStore,
+  clearCurrentStore
 };
 
 export default connect(
