@@ -124,18 +124,18 @@ public class StaffService {
 
         try {
             Staff staff = retrieveStaffByStaffId(staffID);
-            staff.setUsername(staffID.toString());
+            staff.setUsername(staff.getFirstName() + staff.getLastName() + staffID.toString());
 
             //generate random password
             //password is encoded and stored in db
             //send staff the password(not the encoded one)
-            String password = RandomStringUtils.randomAlphanumeric(12);
+            String password = "password";
             staff.setPassword(encoder.encode(password));
             //dont need to save in repository because staff already saved when HR created.
-            if (Arrays.asList(environment.getActiveProfiles()).contains("dev")) {
-                //send an email to staff informing staff of username and password
-                sendEmail(staffID.toString(),password, "shawnroshan@gmail.com"); //TODO: to change to actual email
-            }
+//            if (Arrays.asList(environment.getActiveProfiles()).contains("dev")) {
+//                //send an email to staff informing staff of username and password
+//                sendEmail(staffID.toString(),password, "shawnroshan@gmail.com"); //TODO: to change to actual email
+//            }
 
             System.out.println(password);
             System.out.println(staff.getPassword());
@@ -151,13 +151,13 @@ public class StaffService {
         try {
             Staff staff = retrieveStaffByStaffId(staffId);
 
-            String password = RandomStringUtils.randomAlphanumeric(12);
+            String password = "password";
             staff.setPassword(encoder.encode(password));
 
-            if (Arrays.asList(environment.getActiveProfiles()).contains("dev")) {
-                //send an email to staff informing staff new password
-                sendEmail(staffId.toString(), password, "shawnroshan@gmail.com"); //TODO: to change to actual email
-            }
+//            if (Arrays.asList(environment.getActiveProfiles()).contains("dev")) {
+//                //send an email to staff informing staff new password
+//                sendEmail(staffId.toString(), password, "shawnroshan@gmail.com"); //TODO: to change to actual email
+//            }
 
             return staff;
         }catch (StaffNotFoundException ex){
@@ -253,13 +253,13 @@ public class StaffService {
         try {
             Staff staff = retrieveStaffByStaffId(staffId);
 
-            if (oldPassword.equals(staff.getPassword()) || encoder.matches(oldPassword, staff.getPassword())) {
+            if (encoder.matches(oldPassword, staff.getPassword())) {
 
                 staff.setPassword(encoder.encode(newPassword));
                 return retrieveStaffByStaffId(staffId);
             } else {
                 Map<String, String> errorMap = new HashMap<>();
-                errorMap.put("oldpw", ErrorMessages.OLD_PASSWORD_INCORRECT);
+                errorMap.put("password", ErrorMessages.OLD_PASSWORD_INCORRECT);
                 throw new InvalidStaffCredentialsException(errorMap,ErrorMessages.OLD_PASSWORD_INCORRECT);
             }
         }catch(StaffNotFoundException ex){

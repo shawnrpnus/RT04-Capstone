@@ -16,6 +16,9 @@ import MaterialNumberSelect from "../../../shared/components/Form/MaterialNumber
 import PencilIcon from "mdi-react/PencilIcon";
 import ContentSaveIcon from "mdi-react/ContentSaveIcon";
 import CloseCircleIcon from "mdi-react/CloseCircleIcon";
+import DeleteIcon from "mdi-react/DeleteIcon";
+import TableEyeIcon from "mdi-react/TableEyeIcon";
+import withMaterialConfirmDialog from "../../Layout/page/withMaterialConfirmDialog";
 
 let moment = require("moment");
 
@@ -31,7 +34,6 @@ class StoreForm extends React.Component {
   constructor(props) {
     super(props);
     const { currentStore } = this.props;
-    console.log(currentStore);
     this.state = {
       storeId: currentStore ? currentStore.storeId : undefined,
       storeName: currentStore ? currentStore.storeName : "",
@@ -73,6 +75,12 @@ class StoreForm extends React.Component {
     });
   };
 
+  handleDelete = storeId => {
+    this.props
+      .confirmDialog({ description: "Store will be deleted permanently" })
+      .then(() => this.props.deleteStore(storeId, this.props.history));
+  };
+
   onCancel = () => {
     this.props.history.goBack();
   };
@@ -95,7 +103,6 @@ class StoreForm extends React.Component {
 
   render() {
     const { handleSubmit, errors, disabled, currentStore } = this.props;
-
     const postalCodeProps = {
       endAdornment: (
         <InputAdornment position="end">
@@ -252,6 +259,7 @@ class StoreForm extends React.Component {
             <ButtonToolbar className="form__button-toolbar">
               <Button
                 color="primary"
+                className="icon"
                 onClick={e => handleSubmit(e, this.state)}
                 disabled={hasErrors}
               >
@@ -260,7 +268,7 @@ class StoreForm extends React.Component {
                   Submit
                 </p>
               </Button>
-              <Button type="button" onClick={this.onCancel}>
+              <Button type="button" className="icon" onClick={this.onCancel}>
                 <p>
                   <CloseCircleIcon />
                   Cancel
@@ -277,6 +285,24 @@ class StoreForm extends React.Component {
                   </p>
                 </Button>
               </Link>
+              <Button
+                className="icon"
+                color="danger"
+                onClick={() => this.handleDelete(currentStore.storeId)}
+              >
+                <p>
+                  <DeleteIcon />
+                  Delete
+                </p>
+              </Button>
+              <Link to={`/store/viewAll`}>
+                <Button className="icon">
+                  <p>
+                    <TableEyeIcon />
+                    View All
+                  </p>
+                </Button>
+              </Link>
             </ButtonToolbar>
           )}
         </form>
@@ -285,4 +311,4 @@ class StoreForm extends React.Component {
   }
 }
 
-export default StoreForm;
+export default withMaterialConfirmDialog(StoreForm);

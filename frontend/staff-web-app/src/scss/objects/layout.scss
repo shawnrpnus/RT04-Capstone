@@ -20,7 +20,7 @@
 
   @media screen and (min-width: 576px) {
     @include directify($directions) {
-      #{directed('padding-left')}: 250px;
+      #{directed('padding-left')}: 200px;
     }
   }
 }
