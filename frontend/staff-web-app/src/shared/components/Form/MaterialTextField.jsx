@@ -37,6 +37,8 @@ const MaterialTextField = props => {
 };
 
 MaterialTextField.propTypes = {
+  name: PropTypes.string.isRequired,
+  value: PropTypes.string.isRequired,
   errors: PropTypes.object.isRequired,
   onChange: PropTypes.func.isRequired,
   state: PropTypes.object.isRequired,
@@ -44,7 +46,9 @@ MaterialTextField.propTypes = {
   fieldName: PropTypes.string.isRequired,
   type: PropTypes.string,
   variant: PropTypes.string,
-  disabled: PropTypes.bool
+  disabled: PropTypes.bool,
+  autoFocus: PropTypes.bool,
+  InputProps: PropTypes.object
 };
 
 MaterialTextField.defaultProps = {

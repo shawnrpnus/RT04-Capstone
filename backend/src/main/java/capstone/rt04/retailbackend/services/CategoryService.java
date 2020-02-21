@@ -81,7 +81,7 @@ public class CategoryService {
     }
 
     public List<Category> retrieveAllCategories() {
-        return (List<Category>) categoryRepository.findAll();
+        return categoryRepository.findAllByParentCategoryIsNull();
     }
 
     public Category updateCategory(Category category, Long parentCategoryId) throws InputDataValidationException, CategoryNotFoundException, UpdateCategoryException {
