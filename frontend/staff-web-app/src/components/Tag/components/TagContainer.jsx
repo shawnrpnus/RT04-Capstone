@@ -13,14 +13,13 @@ import withPage from "../../Layout/page/withPage";
 import CreateTagRequest from "../../../models/createTagRequest";
 import * as PropTypes from "prop-types";
 import StoreForm from "../../Store/components/StoreForm";
-import {css} from "@emotion/core";
+import { css } from "@emotion/core";
 import TagTable from "./TagTable";
 
 const override = css`
   display: block;
   margin: 0 auto;
 `;
-
 
 class TagContainer extends Component {
   static propTypes = {
@@ -81,9 +80,8 @@ class TagContainer extends Component {
               errors={errors}
               history={this.props.history}
             />
-            <TagTable/>
+            <TagTable />
           </div>
-
         ) : currentTag !== null ? (
           <TagDetails /> //View One Tag Details
         ) : (

@@ -137,6 +137,7 @@ export const deleteStore = (storeId, history) => {
           position: toast.POSITION.TOP_CENTER
         });
         dispatch(deleteStoreSuccess(data));
+        retrieveAllStores()(dispatch);
         history.push(`/store/viewAll`);
       })
       .catch(err => {

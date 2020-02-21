@@ -13,8 +13,7 @@ const MaterialTextField = props => {
     variant,
     disabled,
     autoFocus,
-    InputProps,
-    defaultValue
+    InputProps
   } = props;
   //!!.obj.property returns true if property is there, false otherwise
   const customErrors = !!state.customErrors ? state.customErrors : {};
@@ -33,7 +32,6 @@ const MaterialTextField = props => {
         disabled={disabled}
         autoFocus={autoFocus}
         InputProps={InputProps}
-        defaultValue={defaultValue}
       />
     </div>
   );

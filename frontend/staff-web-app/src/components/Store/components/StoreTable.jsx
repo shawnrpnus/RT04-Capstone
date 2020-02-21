@@ -61,10 +61,11 @@ class StoreTable extends Component {
 
   handleDelete = storeId => {
     this.props.deleteStore(storeId, this.props.history);
-    this.props.retrieveAllStores();
+    //this.props.retrieveAllStores();
   };
 
   render() {
+    const data = this.props.allStores;
     return (
       <React.Fragment>
         <div className="card__title" style={{ marginBottom: "0" }}>
@@ -120,7 +121,7 @@ class StoreTable extends Component {
                   sorting: false
                 }
               ]}
-              data={this.props.allStores}
+              data={data}
               options={{
                 filtering: true,
                 sorting: true,

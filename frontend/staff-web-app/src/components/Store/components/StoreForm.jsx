@@ -34,7 +34,7 @@ class StoreForm extends React.Component {
     const { currentStore } = this.props;
     console.log(currentStore);
     this.state = {
-      storeName: "",
+      storeName: currentStore ? currentStore.storeName : "",
       numChangingRooms: currentStore ? currentStore.numChangingRooms : "10",
       numReservedChangingRooms: currentStore
         ? currentStore.numReservedChangingRooms
@@ -77,7 +77,7 @@ class StoreForm extends React.Component {
     });
   };
 
-  onCancel = e => {
+  onCancel = () => {
     this.props.history.goBack();
   };
 
@@ -136,7 +136,6 @@ class StoreForm extends React.Component {
                 errors={errors}
                 disabled={disabled}
                 autoFocus={true}
-                defaultValue={currentStore?.storeName}
               />
             </Grid>
             <Grid item xs={12} md={3}>

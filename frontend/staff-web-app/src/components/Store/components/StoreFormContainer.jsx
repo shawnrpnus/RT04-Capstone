@@ -92,8 +92,9 @@ class StoreFormContainer extends Component {
   };
 
   render() {
-    const { errors, clearErrors, mode, currentStore } = this.props;
-
+    console.log(this.props);
+    const { errors, clearErrors, mode, currentStore, location } = this.props;
+    console.log(currentStore);
     const header =
       mode === "view"
         ? "Store Information"
@@ -116,6 +117,7 @@ class StoreFormContainer extends Component {
             clearErrors={clearErrors}
             errors={errors}
             history={this.props.history}
+            key={location.pathname}
           />
         ) : currentStore !== null ? (
           <StoreForm
@@ -125,6 +127,7 @@ class StoreFormContainer extends Component {
             disabled={mode === "view"}
             currentStore={currentStore}
             history={this.props.history}
+            key={currentStore.storeId}
           />
         ) : (
           <BounceLoader
