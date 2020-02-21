@@ -8,6 +8,11 @@ export default function(state = initialState, action) {
       return action.errorMap;
     case types.CLEAR_ERRORS:
       return {};
+    case types.UPDATE_ERRORS:
+      return {
+        ...action.errorMap,
+        ...state
+      };
     default:
       return state;
   }

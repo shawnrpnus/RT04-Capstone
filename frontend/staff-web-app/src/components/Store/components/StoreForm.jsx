@@ -9,7 +9,6 @@ import {
 } from "@material-ui/pickers";
 import { Button, ButtonToolbar } from "reactstrap";
 import * as PropTypes from "prop-types";
-import CreateUpdateStoreRequest from "../../../models/store/CreateUpdateStoreRequest";
 import { Link } from "react-router-dom";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import axios from "axios";
@@ -34,6 +33,7 @@ class StoreForm extends React.Component {
     const { currentStore } = this.props;
     console.log(currentStore);
     this.state = {
+      storeId: currentStore ? currentStore.storeId : undefined,
       storeName: currentStore ? currentStore.storeName : "",
       numChangingRooms: currentStore ? currentStore.numChangingRooms : "10",
       numReservedChangingRooms: currentStore
@@ -52,8 +52,7 @@ class StoreForm extends React.Component {
         : moment("09:00", "HH:mm"),
       closingTimeMoment: currentStore
         ? moment(currentStore.closingTime, "HH:mm:ss")
-        : moment("22:00", "HH:mm"),
-      customErrors: {}
+        : moment("22:00", "HH:mm")
     };
   }
 
@@ -62,9 +61,6 @@ class StoreForm extends React.Component {
     this.setState({ [name]: e.target.value }); //computed property name syntax
     if (Object.keys(this.props.errors).length !== 0) {
       this.props.clearErrors();
-    }
-    if (Object.keys(this.state.customErrors).length !== 0) {
-      this.setState({ customErrors: {} });
     }
   };
 
@@ -82,11 +78,9 @@ class StoreForm extends React.Component {
   };
 
   handlePostalCodeClick = () => {
-    console.log("postalcode");
     const postalCode = this.state.postalCode;
     axios.get(`https://geocode.xyz/${postalCode}?geoit=json`).then(response => {
       const { data } = response;
-      console.log(data);
       if (!data.error && data.standard.countryname === "Singapore") {
         const addrLine1 = data.standard.addresst;
         this.setState({ line1: addrLine1 });
@@ -94,7 +88,7 @@ class StoreForm extends React.Component {
         const customErrors = {
           postalCode: "Postal code is invalid"
         };
-        this.setState({ customErrors: customErrors });
+        this.props.updateErrors(customErrors);
       }
     });
   };
@@ -119,9 +113,7 @@ class StoreForm extends React.Component {
       )
     };
 
-    const hasErrors =
-      Object.keys(this.props.errors).length !== 0 ||
-      Object.keys(this.state.customErrors).length !== 0;
+    const hasErrors = Object.keys(this.props.errors).length !== 0;
 
     return (
       <MuiPickersUtilsProvider utils={MomentUtils}>
@@ -212,7 +204,7 @@ class StoreForm extends React.Component {
                 disabled={disabled}
               />
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={12} md={6}>
               <MaterialTextField
                 type="number"
                 fieldLabel="Postal Code"
@@ -225,7 +217,7 @@ class StoreForm extends React.Component {
                 InputProps={postalCodeProps}
               />
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={12} md={6}>
               <MaterialTextField
                 fieldLabel="Address Line 1"
                 onChange={this.onChange}
@@ -235,7 +227,7 @@ class StoreForm extends React.Component {
                 disabled={disabled}
               />
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={12} md={6}>
               <MaterialTextField
                 fieldLabel="Building Name"
                 onChange={this.onChange}
@@ -245,7 +237,7 @@ class StoreForm extends React.Component {
                 disabled={disabled}
               />
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={12} md={6}>
               <MaterialTextField
                 fieldLabel="Address Line 2"
                 onChange={this.onChange}

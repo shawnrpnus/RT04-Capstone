@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import "moment";
 import { connect } from "react-redux";
-import { clearErrors } from "../../../redux/actions";
+import { clearErrors, updateErrors } from "../../../redux/actions";
 import {
   createNewStore,
   retrieveStoreById,
@@ -14,7 +14,7 @@ import * as PropTypes from "prop-types";
 import StoreForm from "./StoreForm";
 import withPage from "../../Layout/page/withPage";
 import { css } from "@emotion/core";
-import { BounceLoader } from "react-spinners";
+import { ClipLoader } from "react-spinners";
 
 const override = css`
   display: block;
@@ -37,9 +37,9 @@ class StoreFormContainer extends Component {
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-    console.log(this.props);
     if (this.props.mode !== prevProps.mode) {
       this.checkMode();
+      this.props.clearErrors();
     }
   }
 
@@ -48,10 +48,12 @@ class StoreFormContainer extends Component {
     if (mode === "view" || mode === "update") {
       const storeId = this.props.match.params.storeId;
       this.props.retrieveStoreById(storeId, history);
-    } else if (mode === "create") {
-      this.props.clearCurrentStore();
     }
   }
+
+  updateErrors = errorMap => {
+    this.props.updateErrors(errorMap);
+  };
 
   handleSubmit = (e, formState) => {
     e.preventDefault();
@@ -92,9 +94,15 @@ class StoreFormContainer extends Component {
   };
 
   render() {
-    console.log(this.props);
-    const { errors, clearErrors, mode, currentStore, location } = this.props;
-    console.log(currentStore);
+    const {
+      errors,
+      clearErrors,
+      mode,
+      currentStore,
+      location,
+      updateErrors
+    } = this.props;
+
     const header =
       mode === "view"
         ? "Store Information"
@@ -103,6 +111,8 @@ class StoreFormContainer extends Component {
         : mode === "create"
         ? "Create New Store"
         : "";
+
+    const routeStoreId = parseInt(this.props.match.params.storeId);
     return (
       <React.Fragment>
         <div className="card__title">
@@ -121,21 +131,23 @@ class StoreFormContainer extends Component {
             handleSubmit={this.handleSubmit}
             clearErrors={clearErrors}
             errors={errors}
+            updateErrors={updateErrors}
             history={this.props.history}
             key={location.pathname}
           />
-        ) : currentStore !== null ? (
+        ) : currentStore !== null && routeStoreId === currentStore.storeId ? (
           <StoreForm
             handleSubmit={this.handleSubmit}
             clearErrors={clearErrors}
             errors={errors}
+            updateErrors={updateErrors}
             disabled={mode === "view"}
             currentStore={currentStore}
             history={this.props.history}
             key={currentStore.storeId}
           />
         ) : (
-          <BounceLoader
+          <ClipLoader
             css={override}
             size={100}
             color={"#36D7B7"}
@@ -158,7 +170,8 @@ const mapDispatchToProps = {
   clearErrors,
   retrieveStoreById,
   updateStore,
-  clearCurrentStore
+  clearCurrentStore,
+  updateErrors
 };
 
 export default connect(

@@ -25,7 +25,7 @@ import {
 } from "@material-ui/icons";
 import withPage from "../../Layout/page/withPage";
 import { css } from "@emotion/core";
-import { BounceLoader } from "react-spinners";
+import { ClipLoader } from "react-spinners";
 import withMaterialConfirmDialog from "../../Layout/page/withMaterialConfirmDialog";
 
 const override = css`
@@ -127,7 +127,7 @@ class StoreTable extends Component {
               }}
             />
           ) : (
-            <BounceLoader
+            <ClipLoader
               css={override}
               size={100}
               color={"#36D7B7"}
