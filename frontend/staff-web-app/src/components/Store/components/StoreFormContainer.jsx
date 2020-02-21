@@ -6,7 +6,8 @@ import {
   createNewStore,
   retrieveStoreById,
   updateStore,
-  clearCurrentStore
+  clearCurrentStore,
+  deleteStore
 } from "../../../redux/actions/storeActions";
 import CreateUpdateStoreRequest from "../../../models/store/CreateUpdateStoreRequest";
 import Address from "../../../models/address";
@@ -93,6 +94,10 @@ class StoreFormContainer extends Component {
     }
   };
 
+  handleDelete = storeId => {
+    this.props.deleteStore(storeId, this.props.history);
+  };
+
   render() {
     const {
       errors,
@@ -138,13 +143,14 @@ class StoreFormContainer extends Component {
         ) : currentStore !== null && routeStoreId === currentStore.storeId ? (
           <StoreForm
             handleSubmit={this.handleSubmit}
+            deleteStore={this.handleDelete}
             clearErrors={clearErrors}
             errors={errors}
             updateErrors={updateErrors}
             disabled={mode === "view"}
             currentStore={currentStore}
             history={this.props.history}
-            key={currentStore.storeId}
+            key={`${location.pathname}-${currentStore.storeId}`}
           />
         ) : (
           <ClipLoader
@@ -171,7 +177,8 @@ const mapDispatchToProps = {
   retrieveStoreById,
   updateStore,
   clearCurrentStore,
-  updateErrors
+  updateErrors,
+  deleteStore
 };
 
 export default connect(

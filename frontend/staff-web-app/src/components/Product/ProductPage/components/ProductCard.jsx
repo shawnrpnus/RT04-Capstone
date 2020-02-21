@@ -118,7 +118,7 @@ class ProductCard extends PureComponent {
       colourSizeMap
     } = this.state;
 
-    console.log(tags)
+    console.log(tags);
 
     return (
       <Col md={12} lg={12}>
