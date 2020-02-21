@@ -1,12 +1,10 @@
 import React, { Component } from "react";
 import {
-  retrieveAllStores,
-  deleteStore
+  deleteStore,
+  retrieveAllStores
 } from "../../../redux/actions/storeActions";
-import IconButton from "@material-ui/core/IconButton";
 import { connect } from "react-redux";
 import MaterialTable from "material-table";
-import { Link } from "react-router-dom";
 import {
   AddBox,
   ArrowUpward,
@@ -14,7 +12,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Clear,
-  DeleteOutline,
+  Delete,
   Edit,
   FirstPage,
   LastPage,
@@ -22,12 +20,13 @@ import {
   SaveAlt,
   Search,
   SearchOutlined,
-  Visibility,
-  ViewColumn
+  ViewColumn,
+  Visibility
 } from "@material-ui/icons";
 import withPage from "../../Layout/page/withPage";
 import { css } from "@emotion/core";
 import { BounceLoader } from "react-spinners";
+import withMaterialConfirmDialog from "../../Layout/page/withMaterialConfirmDialog";
 
 const override = css`
   display: block;
@@ -38,7 +37,7 @@ const tableIcons = {
   Add: AddBox,
   Check: Check,
   Clear: Clear,
-  Delete: DeleteOutline,
+  Delete: Delete,
   DetailPanel: ChevronRight,
   Edit: Edit,
   Export: SaveAlt,
@@ -60,12 +59,14 @@ class StoreTable extends Component {
   }
 
   handleDelete = storeId => {
-    this.props.deleteStore(storeId, this.props.history);
-    //this.props.retrieveAllStores();
+    this.props
+      .confirmDialog({ description: "Store will be deleted permanently" })
+      .then(() => this.props.deleteStore(storeId, this.props.history));
   };
 
   render() {
     const data = this.props.allStores;
+    const { history } = this.props;
     return (
       <React.Fragment>
         <div className="card__title" style={{ marginBottom: "0" }}>
@@ -90,35 +91,26 @@ class StoreTable extends Component {
                 {
                   title: "No. Reserved Changing Rooms",
                   field: "numReservedChangingRooms"
-                },
-                // { title: "No. Managers", field: "numManagers" },
-                // { title: "No. Assistants", field: "numAssistants" },
+                }
+              ]}
+              actions={[
                 {
-                  title: "Actions",
-                  field: "storeId",
-                  render: rowData => {
-                    return (
-                      <div>
-                        <Link to={`/store/view/${rowData.storeId}`}>
-                          <IconButton>
-                            <Visibility />
-                          </IconButton>
-                        </Link>
-                        <Link to={`/store/update/${rowData.storeId}`}>
-                          <IconButton>
-                            <Edit />
-                          </IconButton>
-                        </Link>
-                        <IconButton
-                          onClick={() => this.handleDelete(rowData.storeId)}
-                        >
-                          <DeleteOutline />
-                        </IconButton>
-                      </div>
-                    );
-                  },
-                  filtering: false,
-                  sorting: false
+                  icon: Visibility,
+                  tooltip: "View More Details",
+                  onClick: (event, rowData) =>
+                    history.push(`/store/view/${rowData.storeId}`)
+                },
+                {
+                  icon: Edit,
+                  tooltip: "Update Store",
+                  onClick: (event, rowData) =>
+                    history.push(`/store/update/${rowData.storeId}`)
+                },
+                {
+                  icon: Delete,
+                  tooltip: "Delete Store",
+                  onClick: (event, rowData) =>
+                    this.handleDelete(rowData.storeId)
                 }
               ]}
               data={data}
@@ -162,4 +154,4 @@ const mapDispatchToProps = {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(withPage(StoreTable, "Store Management"));
+)(withMaterialConfirmDialog(withPage(StoreTable, "Store Management")));
