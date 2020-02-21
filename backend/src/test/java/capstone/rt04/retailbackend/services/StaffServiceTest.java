@@ -45,8 +45,9 @@ public class StaffServiceTest {
 
     //Valid staff ID/username
     protected static Long createdStaffId;
+    protected static String createdStaffUsername;
     //Password created for test valid staff
-    protected static String createdStaffPassword;
+    protected static String createdStaffPassword = "password";
 
 
     @Before
@@ -66,12 +67,12 @@ public class StaffServiceTest {
         assertThat(testValidStaff.getStaffId()).isNotNull();
         assertThat(testValidStaff).isEqualTo(expectedValidStaff);
         createdStaffId = testValidStaff.getStaffId();
+        createdStaffUsername = testValidStaff.getFirstName()+testValidStaff.getLastName()+createdStaffId.toString();
 
         testValidStaff = staffService.createNewStaffAccount(createdStaffId);
         assertThat(testValidStaff.getPassword()).isNotNull();
-        assertThat(testValidStaff.getUsername()).isEqualTo(String.valueOf(createdStaffId));
+        assertThat(testValidStaff.getUsername()).isEqualTo(createdStaffUsername);
         assertThat(testValidStaff.getStaffId()).isEqualTo(createdStaffId);
-        createdStaffPassword = testValidStaff.getPassword();
         System.out.println("tHIS IS ENCODED PW:" + createdStaffPassword);
     }
 
@@ -109,7 +110,7 @@ public class StaffServiceTest {
    public void staffLogin() throws Exception {
         //Username = ID of staff
        //Check here that retrieveStaffByUsername works
-       Staff validStaff = staffService.retrieveStaffByUsername(String.valueOf(createdStaffId));
+       Staff validStaff = staffService.retrieveStaffByUsername(createdStaffUsername);
        assertThat(validStaff.getStaffId()).isEqualTo(createdStaffId);
 
        //Correct login
@@ -128,17 +129,17 @@ public class StaffServiceTest {
     public void changeStaffPassword() throws Exception {
         //Username = ID of staff
         Staff validStaff = staffService.retrieveStaffByStaffId(createdStaffId);
-        String newPasswordRaw = "password";
+        String newPasswordRaw = "password12345";
 
         staffService.changeStaffPassword(validStaff.getStaffId(), createdStaffPassword, newPasswordRaw);
-        validStaff = staffService.retrieveStaffByUsername(String.valueOf(createdStaffId));
+        validStaff = staffService.retrieveStaffByUsername(createdStaffUsername);
         assertThat(encoder.matches(newPasswordRaw, validStaff.getPassword())).isTrue();
 
         try {
             staffService.changeStaffPassword(validStaff.getStaffId(), "wrongoldpassword",newPasswordRaw);
         } catch (InvalidStaffCredentialsException ex) {
             Map<String, String> expectedErrorMap = new HashMap<>();
-            expectedErrorMap.put("oldpw", ErrorMessages.OLD_PASSWORD_INCORRECT);
+            expectedErrorMap.put("password", ErrorMessages.OLD_PASSWORD_INCORRECT);
             assertThat(ex.getErrorMap()).isEqualTo(expectedErrorMap);
         }
     }
