@@ -1,5 +1,8 @@
 import React, { Component } from "react";
-import { retrieveAllStores } from "../../../redux/actions";
+import {
+  retrieveAllStores,
+  deleteStore
+} from "../../../redux/actions/storeActions";
 import IconButton from "@material-ui/core/IconButton";
 import { connect } from "react-redux";
 import MaterialTable from "material-table";
@@ -23,6 +26,13 @@ import {
   ViewColumn
 } from "@material-ui/icons";
 import withPage from "../../Layout/page/withPage";
+import { css } from "@emotion/core";
+import { BounceLoader } from "react-spinners";
+
+const override = css`
+  display: block;
+  margin: 0 auto;
+`;
 
 const tableIcons = {
   Add: AddBox,
@@ -49,7 +59,13 @@ class StoreTable extends Component {
     this.props.retrieveAllStores();
   }
 
+  handleDelete = storeId => {
+    this.props.deleteStore(storeId, this.props.history);
+    //this.props.retrieveAllStores();
+  };
+
   render() {
+    const data = this.props.allStores;
     return (
       <React.Fragment>
         <div className="card__title" style={{ marginBottom: "0" }}>
@@ -93,6 +109,11 @@ class StoreTable extends Component {
                             <Edit />
                           </IconButton>
                         </Link>
+                        <IconButton
+                          onClick={() => this.handleDelete(rowData.storeId)}
+                        >
+                          <DeleteOutline />
+                        </IconButton>
                       </div>
                     );
                   },
@@ -100,7 +121,7 @@ class StoreTable extends Component {
                   sorting: false
                 }
               ]}
-              data={this.props.allStores}
+              data={data}
               options={{
                 filtering: true,
                 sorting: true,
@@ -114,7 +135,12 @@ class StoreTable extends Component {
               }}
             />
           ) : (
-            ""
+            <BounceLoader
+              css={override}
+              size={100}
+              color={"#36D7B7"}
+              loading={true}
+            />
           )}
         </div>
       </React.Fragment>
@@ -128,7 +154,8 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = {
-  retrieveAllStores
+  retrieveAllStores,
+  deleteStore
 };
 
 // eslint-disable-next-line no-undef

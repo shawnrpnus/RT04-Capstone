@@ -1,6 +1,11 @@
 import axios from "axios";
-import {CREATE_TAG, GET_ERRORS, default as types, RETRIEVE_ALL_TAGS} from "./types";
-import {toast} from "react-toastify";
+import {
+  CREATE_TAG,
+  GET_ERRORS,
+  default as types,
+  RETRIEVE_ALL_TAGS
+} from "./types";
+import { toast } from "react-toastify";
 
 const TAG_BASE_URL = "/api/tag/";
 const jsog = require("jsog");
@@ -18,6 +23,7 @@ export const createNewTag = (createTagRequest, history) => {
         toast.success("Tag Created!", {
           position: toast.POSITION.TOP_CENTER
         });
+        retrieveAllTags()(dispatch);
         history.push(`/tag`);
       })
       .catch(err => {
@@ -42,12 +48,12 @@ export const retrieveAllTags = () => {
     axios
       .get(TAG_BASE_URL + "/retrieveAllTags")
       .then(response => {
-        const {data} = jsog.decode(response);
+        const { data } = jsog.decode(response);
         dispatch(retrieveAllStoresSuccess(data));
       })
       .catch(err => {
         dispatch(retrieveAllStoresError(err.response.data));
-      })
+      });
   };
 };
 
@@ -61,7 +67,6 @@ const retrieveAllStoresError = data => ({
   errorMap: data
 });
 
-
 export const updateTag = () => {
   return null;
-}
+};

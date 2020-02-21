@@ -1,12 +1,13 @@
 import React, { Component } from "react";
 import "moment";
 import { connect } from "react-redux";
+import { clearErrors } from "../../../redux/actions";
 import {
-  clearErrors,
   createNewStore,
   retrieveStoreById,
-  updateStore
-} from "../../../redux/actions";
+  updateStore,
+  clearCurrentStore
+} from "../../../redux/actions/storeActions";
 import CreateUpdateStoreRequest from "../../../models/store/CreateUpdateStoreRequest";
 import Address from "../../../models/address";
 import * as PropTypes from "prop-types";
@@ -32,10 +33,23 @@ class StoreFormContainer extends Component {
   };
 
   componentDidMount() {
+    this.checkMode();
+  }
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    console.log(this.props);
+    if (this.props.mode !== prevProps.mode) {
+      this.checkMode();
+    }
+  }
+
+  checkMode() {
     const { mode, history } = this.props;
     if (mode === "view" || mode === "update") {
       const storeId = this.props.match.params.storeId;
       this.props.retrieveStoreById(storeId, history);
+    } else if (mode === "create") {
+      this.props.clearCurrentStore();
     }
   }
 
@@ -78,8 +92,9 @@ class StoreFormContainer extends Component {
   };
 
   render() {
-    const { errors, clearErrors, mode, currentStore } = this.props;
-
+    console.log(this.props);
+    const { errors, clearErrors, mode, currentStore, location } = this.props;
+    console.log(currentStore);
     const header =
       mode === "view"
         ? "Store Information"
@@ -96,12 +111,18 @@ class StoreFormContainer extends Component {
         {/*I the mode is create, load a blank form, otherwise, pass in the current
                 store entity object that was retrieved. If mode is just to view, disable all
                 fields, otherwise allow fields to be edited*/}
+
+        {/* NOTE: React's reconciliation algorithm assumes that without any information to the contrary,
+        if a custom component appears in the same place on subsequent renders, it's the same component
+        as before, so reuses the previous instance rather than creating a new one.
+        https://stackoverflow.com/questions/29074690/react-why-components-constructor-is-called-only-once*/}
         {mode === "create" ? (
           <StoreForm
             handleSubmit={this.handleSubmit}
             clearErrors={clearErrors}
             errors={errors}
             history={this.props.history}
+            key={location.pathname}
           />
         ) : currentStore !== null ? (
           <StoreForm
@@ -111,6 +132,7 @@ class StoreFormContainer extends Component {
             disabled={mode === "view"}
             currentStore={currentStore}
             history={this.props.history}
+            key={currentStore.storeId}
           />
         ) : (
           <BounceLoader
@@ -135,7 +157,8 @@ const mapDispatchToProps = {
   createNewStore, //api/storeEntity/createNewStore
   clearErrors,
   retrieveStoreById,
-  updateStore
+  updateStore,
+  clearCurrentStore
 };
 
 export default connect(

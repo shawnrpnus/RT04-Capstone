@@ -4,6 +4,11 @@ import { toast } from "react-toastify";
 
 const STORE_BASE_URL = "/api/store";
 const jsog = require("jsog");
+
+export const clearCurrentStore = () => ({
+  type: types.CLEAR_CURRENT_STORE
+});
+
 export const createNewStore = (createStoreRequest, history) => {
   return dispatch => {
     //redux thunk passes dispatch
@@ -103,6 +108,10 @@ export const retrieveAllStores = () => {
         dispatch(retrieveAllStoresSuccess(data));
       })
       .catch(err => {
+        const { errorMap } = err.response.data;
+        toast.error(errorMap.message, {
+          position: toast.POSITION.TOP_CENTER
+        });
         dispatch(retrieveAllStoresError(err.response.data));
       });
   };
@@ -114,6 +123,35 @@ const retrieveAllStoresSuccess = data => ({
 });
 
 const retrieveAllStoresError = data => ({
+  type: types.GET_ERRORS,
+  errorMap: data
+});
+
+export const deleteStore = (storeId, history) => {
+  return dispatch => {
+    axios
+      .delete(STORE_BASE_URL + "/deleteStore/" + storeId)
+      .then(response => {
+        const { data } = jsog.decode(response);
+        toast.success("Store Deleted!", {
+          position: toast.POSITION.TOP_CENTER
+        });
+        dispatch(deleteStoreSuccess(data));
+        retrieveAllStores()(dispatch);
+        history.push(`/store/viewAll`);
+      })
+      .catch(err => {
+        dispatch(deleteStoreError(err.response.data));
+      });
+  };
+};
+
+const deleteStoreSuccess = data => ({
+  type: types.DELETE_STORE,
+  deletedStore: data
+});
+
+const deleteStoreError = data => ({
   type: types.GET_ERRORS,
   errorMap: data
 });

@@ -28,6 +28,16 @@ export default function(state = initialState, action) {
         ...state,
         allStores: action.storeEntities
       };
+    case types.DELETE_STORE:
+      return {
+        ...state,
+        currentStore: action.deletedStore
+      };
+    case types.CLEAR_CURRENT_STORE:
+      return {
+        ...state,
+        currentStore: null
+      };
     default:
       return state;
   }

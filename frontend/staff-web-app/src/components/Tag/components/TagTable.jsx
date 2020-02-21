@@ -2,15 +2,21 @@ import React, { Component, PureComponent } from "react";
 import { retrieveAllTags } from "../../../redux/actions/tagAction";
 import MaterialTable from "material-table";
 import {
-  AddBox, ArrowUpward,
-  Check, ChevronLeft,
+  AddBox,
+  ArrowUpward,
+  Check,
+  ChevronLeft,
   ChevronRight,
   Clear,
   DeleteOutline,
   Edit,
-  FirstPage, LastPage, Remove,
-  SaveAlt, Search,
-  SearchOutlined, ViewColumn
+  FirstPage,
+  LastPage,
+  Remove,
+  SaveAlt,
+  Search,
+  SearchOutlined,
+  ViewColumn
 } from "@material-ui/icons";
 import connect from "react-redux/es/connect/connect";
 
@@ -34,9 +40,7 @@ const tableIcons = {
   ViewColumn: ViewColumn
 };
 
-
 class TagTable extends Component {
-
   componentDidMount() {
     this.props.retrieveAllTags();
   }
@@ -48,21 +52,21 @@ class TagTable extends Component {
         <div className="card__title" style={{ marginBottom: "20" }}>
           <h5 className="bold-text">All Tags</h5>
         </div>
-        <div className="table"
-             style={{
-               width: "auto",
-               overflowX: "scroll",
-               verticalAlign: "middle"
-             }}>
-
+        <div
+          className="table"
+          style={{
+            width: "auto",
+            overflowX: "scroll",
+            verticalAlign: "middle"
+          }}
+        >
           {this.props.allTags ? (
             <MaterialTable
-
               icons={tableIcons}
               columns={[
-                { title: "Tag Id", field: "tagId"},
-                { title: "Name", field: "name"},
-                { title: "Products Linked", field: "products.length"}
+                { title: "Tag Id", field: "tagId" },
+                { title: "Name", field: "name" },
+                { title: "Products Linked", field: "products.length" }
               ]}
               data={this.props.allTags}
               options={{
@@ -82,7 +86,6 @@ class TagTable extends Component {
           )}
         </div>
       </React.Fragment>
-
     );
   }
 }

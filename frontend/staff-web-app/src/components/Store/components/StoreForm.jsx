@@ -26,12 +26,13 @@ class StoreForm extends React.Component {
     errors: PropTypes.object,
     clearErrors: PropTypes.func,
     disabled: PropTypes.bool,
-    currentStore: PropTypes.instanceOf(CreateUpdateStoreRequest)
+    currentStore: PropTypes.object
   };
 
   constructor(props) {
     super(props);
     const { currentStore } = this.props;
+    console.log(currentStore);
     this.state = {
       storeName: currentStore ? currentStore.storeName : "",
       numChangingRooms: currentStore ? currentStore.numChangingRooms : "10",
@@ -76,7 +77,7 @@ class StoreForm extends React.Component {
     });
   };
 
-  onCancel = e => {
+  onCancel = () => {
     this.props.history.goBack();
   };
 
@@ -100,8 +101,6 @@ class StoreForm extends React.Component {
 
   render() {
     const { handleSubmit, errors, disabled, currentStore } = this.props;
-
-    const numberOptions = Array.from({ length: 20 }, (v, k) => k + 1);
 
     const postalCodeProps = {
       endAdornment: (
