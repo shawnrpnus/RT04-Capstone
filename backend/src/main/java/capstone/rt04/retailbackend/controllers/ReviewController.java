@@ -1,11 +1,7 @@
 package capstone.rt04.retailbackend.controllers;
 
-import capstone.rt04.retailbackend.entities.Product;
 import capstone.rt04.retailbackend.entities.Review;
-import capstone.rt04.retailbackend.entities.Staff;
 import capstone.rt04.retailbackend.request.review.ReviewCreateRequest;
-import capstone.rt04.retailbackend.request.staff.StaffCreateRequest;
-import capstone.rt04.retailbackend.request.staff.StaffDetailsUpdateRequest;
 import capstone.rt04.retailbackend.response.GenericErrorResponse;
 import capstone.rt04.retailbackend.services.ReviewService;
 import capstone.rt04.retailbackend.services.ValidationService;
@@ -15,12 +11,7 @@ import capstone.rt04.retailbackend.util.exceptions.product.ProductNotFoundExcept
 import capstone.rt04.retailbackend.util.exceptions.review.CreateNewReviewException;
 import capstone.rt04.retailbackend.util.exceptions.review.ReviewNotDeletedException;
 import capstone.rt04.retailbackend.util.exceptions.review.ReviewNotFoundException;
-import capstone.rt04.retailbackend.util.exceptions.staff.CreateNewStaffException;
-import capstone.rt04.retailbackend.util.exceptions.staff.StaffCannotDeleteException;
-import capstone.rt04.retailbackend.util.exceptions.staff.StaffNotFoundException;
-import capstone.rt04.retailbackend.util.exceptions.staff.UpdateStaffDetailsException;
 import capstone.rt04.retailbackend.util.routeconstants.ReviewControllerRoutes;
-import capstone.rt04.retailbackend.util.routeconstants.StaffControllerRoutes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
