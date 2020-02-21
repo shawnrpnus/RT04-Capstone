@@ -1,4 +1,4 @@
-import React, { PureComponent, useState } from "react";
+import React, { PureComponent } from "react";
 import {
   Card,
   CardBody,
@@ -25,6 +25,7 @@ import IconButton from "@material-ui/core/IconButton";
 import CreateIcon from "@material-ui/icons/Create";
 import AddCircleRoundedIcon from "@material-ui/icons/AddCircleRounded";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
+import ProductUpdateForm from "./ProductUpdateForm"
 
 class ProductCard extends PureComponent {
   static propTypes = {
@@ -38,10 +39,8 @@ class ProductCard extends PureComponent {
     selectedColour: "",
     selectedSize: "",
     uploadImage: false,
-    index: 0,
-    typeOfColours: [],
-    sizeDetails: [],
-    colourSizeMap: []
+    colourSizeMap: [],
+    openProductUpdateDialog: false
   };
 
   componentDidMount() {
@@ -52,12 +51,10 @@ class ProductCard extends PureComponent {
     if (this.props.currentProduct !== prevState.product) {
       const displayedColours = [];
       const colourSizeMap = [];
-      let colour;
-      let size;
-      let productVariantId;
+      let colour, size, productVariantId;
 
-      const typeOfColours = this.props.currentProduct.productVariants.filter(
-        (e, index) => {
+      this.props.currentProduct.productVariants.map(
+        (e) => {
           colour = e.colour;
           size = e.sizeDetails.productSize;
           productVariantId = e.productVariantId;
@@ -67,10 +64,8 @@ class ProductCard extends PureComponent {
             colourSizeMap[colour] = Object();
             colourSizeMap[colour].sizes = Array({ size, productVariantId });
             colourSizeMap[colour].productImages = e.productImages;
-            return colour;
           } else {
             colourSizeMap[colour].sizes.push({ size, productVariantId });
-            return false;
           }
         }
       );
@@ -78,11 +73,14 @@ class ProductCard extends PureComponent {
       // console.log(displayedColours[0]);
       this.setState({
         product: this.props.currentProduct,
-        typeOfColours,
         colourSizeMap,
         selectedColour: displayedColours[0]
       });
     }
+  }
+
+  handleOpenProductUpdateDialog = e => {
+    this.setState({ openProductUpdateDialog: true })
   }
 
   handleToggleUploadImage = e => {
@@ -114,11 +112,11 @@ class ProductCard extends PureComponent {
       selectedColour,
       selectedSize,
       uploadImage,
-      typeOfColours,
-      colourSizeMap
+      colourSizeMap,
+      openProductUpdateDialog,
+      product
     } = this.state;
-
-    console.log(tags)
+    const { errors, location } = this.props;
 
     return (
       <Col md={12} lg={12}>
@@ -148,7 +146,7 @@ class ProductCard extends PureComponent {
                     </IconButton>
                   </Col>
                   <Col xs={3} md={2}>
-                    <IconButton>
+                    <IconButton onClick={this.handleOpenProductUpdateDialog}>
                       <AddCircleRoundedIcon />
                     </IconButton>
                   </Col>
@@ -231,6 +229,13 @@ class ProductCard extends PureComponent {
             </div>
           </CardBody>
         </Card>
+        <ProductUpdateForm
+          open={openProductUpdateDialog}
+          onClose={() => this.setState({ openProductUpdateDialog: false })}
+          product={product}
+          errors={errors}
+          key={productId}
+        />
       </Col>
     );
   }

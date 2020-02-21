@@ -16,14 +16,14 @@ const ProductPage = () => (
     <Row>
       <ProductCard />
     </Row>
-    <Row>
+    {/* <Row>
       <Col md={12}>
         <h3 className="page-title page-title--not-last">Related Items</h3>
       </Col>
     </Row>
     <Row>
       <RelatedItems />
-    </Row>
+    </Row> */}
   </Container>
 );
 
