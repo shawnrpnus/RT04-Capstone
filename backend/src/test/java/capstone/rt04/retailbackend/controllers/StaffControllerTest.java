@@ -3,6 +3,7 @@ package capstone.rt04.retailbackend.controllers;
 import capstone.rt04.retailbackend.entities.*;
 import capstone.rt04.retailbackend.request.customer.CustomerLoginRequest;
 import capstone.rt04.retailbackend.request.staff.StaffAccountCreateRequest;
+import capstone.rt04.retailbackend.request.staff.StaffChangePasswordRequest;
 import capstone.rt04.retailbackend.request.staff.StaffCreateRequest;
 import capstone.rt04.retailbackend.request.staff.StaffLoginRequest;
 import capstone.rt04.retailbackend.util.Constants;
@@ -19,6 +20,7 @@ import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -37,6 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles("test")
 public class StaffControllerTest extends ApiTestSetup {
 
+    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
     @Test
     public void createInvalidStaff() {
         //Valid address
@@ -104,5 +107,28 @@ public class StaffControllerTest extends ApiTestSetup {
                 .when().post(STAFF_BASE_ROUTE + LOGIN_STAFF)
                 .then().statusCode(HttpStatus.BAD_REQUEST.value());
     }
+
+    @Test
+    public void changePassword() {
+         //Valid staff ID, invalid staff old password
+        StaffChangePasswordRequest req = new StaffChangePasswordRequest(createdStaffId, "INVALID OLD PW", "NEW PW");
+        given()
+                .contentType("application/json")
+                .body(req)
+                .when().post(STAFF_BASE_ROUTE + CHANGE_STAFF_PASSWORD)
+                .then().statusCode(HttpStatus.BAD_REQUEST.value());
+
+        //Successful change
+        String newPasswordRaw = "password";
+        req =  new StaffChangePasswordRequest(createdStaffId, VALID_STAFF_PASSWORD, newPasswordRaw);
+        System.out.println("This is original:"+VALID_STAFF_PASSWORD);
+        Staff s = given()
+                .contentType("application/json")
+                .body(req)
+                .when().post(STAFF_BASE_ROUTE + CHANGE_STAFF_PASSWORD)
+                .then().statusCode(HttpStatus.OK.value()).extract().body().as(Staff.class);
+        assertThat(encoder.matches(newPasswordRaw, s.getPassword())).isTrue();
+    }
+
 
 }

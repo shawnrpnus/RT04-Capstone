@@ -113,27 +113,35 @@ public class StaffController {
     }
 
     @PostMapping(StaffControllerRoutes.LOGIN_STAFF)
-    public ResponseEntity<?> staffLogin(@RequestBody StaffLoginRequest staffLoginRequest) throws InvalidLoginCredentialsException {
+    public ResponseEntity<?> staffLogin(@RequestBody StaffLoginRequest staffLoginRequest) throws InvalidStaffCredentialsException {
       try {
             Staff staff = staffService.staffLogin(staffLoginRequest.getUsername(), staffLoginRequest.getPassword());
             return new ResponseEntity<>(staff, HttpStatus.OK);
-        } catch (InvalidLoginCredentialsException ex){
+        } catch (InvalidStaffCredentialsException ex){
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
 
     @PostMapping(StaffControllerRoutes.CHANGE_STAFF_PASSWORD)
-    public ResponseEntity<?> changeStaffPassword(@RequestBody StaffChangePasswordRequest staffChangePasswordRequest) throws StaffNotFoundException, InvalidLoginCredentialsException {
+    public ResponseEntity<?> changeStaffPassword(@RequestBody StaffChangePasswordRequest staffChangePasswordRequest) throws StaffNotFoundException, InvalidStaffCredentialsException {
         Map<String, String> inputErrMap = validationService.generateErrorMap(staffChangePasswordRequest);
         if (inputErrMap != null) {
             return new ResponseEntity<>(inputErrMap, HttpStatus.BAD_REQUEST);
         }
 
-        staffService.changeStaffPassword(staffChangePasswordRequest.getStaffId(),
-                staffChangePasswordRequest.getOldPassword(),
-                staffChangePasswordRequest.getNewPassword());
-        Staff staff = staffService.retrieveStaffByStaffId(staffChangePasswordRequest.getStaffId());
-        return new ResponseEntity<>(staff, HttpStatus.OK);
+        try {
+
+            staffService.changeStaffPassword(staffChangePasswordRequest.getStaffId(),
+                    staffChangePasswordRequest.getOldPassword(),
+                    staffChangePasswordRequest.getNewPassword());
+            Staff staff = staffService.retrieveStaffByStaffId(staffChangePasswordRequest.getStaffId());
+            System.out.println(staff.getPassword());
+            return new ResponseEntity<>(staff, HttpStatus.OK);
+        } catch (StaffNotFoundException ex){
+            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
+        } catch (InvalidStaffCredentialsException ex){
+            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
+        }
     }
 
     // TODO: Implement below method with actual email.

@@ -15,6 +15,8 @@ const MaterialTextField = props => {
     autoFocus,
     InputProps
   } = props;
+  //!!.obj.property returns true if property is there, false otherwise
+  const customErrors = !!state.customErrors ? state.customErrors : {};
   return (
     <div>
       <span className="material-form__label">{fieldLabel}</span>
@@ -24,8 +26,8 @@ const MaterialTextField = props => {
         value={state[fieldName]}
         onChange={onChange}
         variant={variant}
-        error={!!errors[fieldName] || !!state.customErrors[fieldName]}
-        helperText={errors[fieldName] || state.customErrors[fieldName]}
+        error={!!errors[fieldName] || customErrors[fieldName]}
+        helperText={errors[fieldName] || customErrors[fieldName]}
         type={type}
         disabled={disabled}
         autoFocus={autoFocus}
