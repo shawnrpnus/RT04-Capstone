@@ -27,7 +27,6 @@ import java.util.List;
 @EqualsAndHashCode
 @ToString
 @JsonIdentityInfo(generator = JSOGGenerator.class)
-
 public class Category implements Serializable {
 
     private static final long serialVersionUID = 1L;

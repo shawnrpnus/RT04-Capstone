@@ -1,8 +1,8 @@
 package capstone.rt04.retailbackend.request.product;
 
 import capstone.rt04.retailbackend.entities.Category;
-import capstone.rt04.retailbackend.entities.SizeDetails;
 import capstone.rt04.retailbackend.entities.Tag;
+import capstone.rt04.retailbackend.util.enums.SizeEnum;
 import capstone.rt04.retailbackend.util.enums.SortEnum;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,7 +25,7 @@ public class ProductRetrieveRequest {
 
     private List<String> colours;
 
-    private List<SizeDetails> sizeDetails;
+    private List<SizeEnum> sizes;
 
     @Min(value = 1)
     private BigDecimal minPrice;

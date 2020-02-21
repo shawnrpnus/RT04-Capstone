@@ -3,11 +3,10 @@ import * as types from "../actions/types";
 const initialState = {
   currentStore: null,
   allStores: null,
-  crudAction: null,
-}
+  crudAction: null
+};
 
-
-export default function (state = initialState, action) {
+export default function(state = initialState, action) {
   switch (action.type) {
     case types.CREATE_STORE:
       return {
@@ -18,7 +17,7 @@ export default function (state = initialState, action) {
       return {
         ...state,
         currentStore: action.storeEntity
-      }
+      };
     default:
       return state;
   }

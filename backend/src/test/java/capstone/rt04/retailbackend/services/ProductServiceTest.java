@@ -78,14 +78,14 @@ public class ProductServiceTest extends ServiceTestSetup {
     }
 
     @Test(expected = ProductVariantNotFoundException.class)
-    public void CDProductVariant() throws Exception {
-        ProductVariant validProductVariant = new ProductVariant("SKU005", "Black", null, null, null);
+    public void CDMultipleProductVariant() throws Exception {
+        List<ProductVariant> productVariants = new ArrayList<>(productService.createMultipleProductVariants(productId, "Black", sizes));
+        assertThat(productVariants.size()).isNotEqualTo(0);
 
-        ProductVariant productVariant = productService.createProductVariant(validProductVariant, productId);
-        assertThat(productVariant).isEqualTo(validProductVariant);
-
-        productService.deleteProductVariant(productVariant.getProductVariantId());
-        productService.retrieveProductVariantById(productVariant.getProductVariantId());
+        for(ProductVariant productVariant : productVariants) {
+            productService.deleteProductVariant(productVariant.getProductVariantId());
+        }
+        productService.retrieveProductVariantById(productVariants.get(0).getProductVariantId());
     }
 
     @Test(expected = ProductStockNotFoundException.class)
@@ -226,7 +226,8 @@ public class ProductServiceTest extends ServiceTestSetup {
         tags.remove(tag1);
         productList = productService.retrieveProductByCriteria(category, tags, colours, null, BigDecimal.ZERO, BigDecimal.valueOf(500), null);
         // No tags case - one product with 'white' tag exist
-        assertThat(productList.size()).isEqualTo(1);
+        // 2 products with same tag
+        assertThat(productList.size()).isEqualTo(2);
 
         tags.add(tag1);
         tags.add(tag2);

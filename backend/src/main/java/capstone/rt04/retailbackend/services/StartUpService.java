@@ -31,10 +31,10 @@ public class StartUpService {
     }
 
     @PostConstruct
-    public void init() throws InputDataValidationException, CreateNewCategoryException, CategoryNotFoundException, CreateNewProductException, ProductNotFoundException, ProductVariantNotFoundException, CreateNewProductStockException, CreateNewProductVariantException, WarehouseNotFoundException, StoreNotFoundException {
+    public void init() throws InputDataValidationException, CreateNewCategoryException, CategoryNotFoundException, CreateNewProductException, ProductVariantNotFoundException, CreateNewProductStockException, WarehouseNotFoundException, StoreNotFoundException {
         createCategoryIfNotFound();
         createProductIfNotFound();
-        createProductVariantAndProductStockIfNotFound();
+        createWarehouseAndStoreIfNotFound();
     }
 
     private void createCategoryIfNotFound() throws CategoryNotFoundException, CreateNewCategoryException, InputDataValidationException {
@@ -45,7 +45,7 @@ public class StartUpService {
         }
     }
 
-    private void createProductIfNotFound() throws CategoryNotFoundException, InputDataValidationException, CreateNewProductException {
+    private void createProductIfNotFound() throws CategoryNotFoundException, InputDataValidationException, CreateNewProductException, ProductVariantNotFoundException {
         List<Product> products = productService.retrieveAllProducts();
         if (products.size() == 0) {
             Product product = new Product("0010", "Stan Smith", "Adidas", BigDecimal.valueOf(109.90), BigDecimal.valueOf(49.90));
@@ -53,41 +53,98 @@ public class StartUpService {
             product.setCategory(category);
             List<SizeEnum> sizes = new ArrayList<>();
             sizes.add(SizeEnum.S);
+            sizes.add(SizeEnum.M);
+            sizes.add(SizeEnum.L);
             List<String> colors = new ArrayList<>();
-            colors.add("pink");
-            productService.createNewProduct(product, category.getCategoryId(), null, sizes, colors);
+            colors.add("Black");
+            colors.add("Green");
+            colors.add("Red");
+            Product newProduct = productService.createNewProduct(product, category.getCategoryId(), null, sizes, colors);
+
+            // Product images
+            ProductImage productImage1 = new ProductImage("https://i8.amplience.net/i/jpl/jd_347293_a?qlt=92&w=750&h=531&v=1&fmt=webp");
+            ProductImage productImage2 = new ProductImage("https://i8.amplience.net/i/jpl/jd_347293_b?qlt=92&w=750&h=531&v=1&fmt=webp");
+            ProductImage productImage3 = new ProductImage("https://i8.amplience.net/i/jpl/jd_347293_c?qlt=92&w=750&h=531&v=1&fmt=webp");
+            ProductImage productImage4 = new ProductImage("https://i8.amplience.net/i/jpl/jd_347293_d?qlt=92&w=750&h=531&v=1&fmt=webp");
+            ProductImage productImage5 = new ProductImage("https://i8.amplience.net/i/jpl/jd_347293_e?qlt=92&w=750&h=531&v=1&fmt=webp");
+            ProductImage productImage6 = new ProductImage("https://i8.amplience.net/i/jpl/jd_M20324_a?qlt=92&w=750&h=531&v=1&fmt=webp");
+            ProductImage productImage7 = new ProductImage("https://i8.amplience.net/i/jpl/jd_M20324_b?qlt=92&w=750&h=531&v=1&fmt=webp");
+            ProductImage productImage8 = new ProductImage("https://i8.amplience.net/i/jpl/jd_M20324_c?qlt=92&w=750&h=531&v=1&fmt=webp");
+            ProductImage productImage9 = new ProductImage("https://i8.amplience.net/i/jpl/jd_M20324_d?qlt=92&w=750&h=531&v=1&fmt=webp");
+            ProductImage productImage10 = new ProductImage("https://i8.amplience.net/i/jpl/jd_M20324_e?qlt=92&w=750&h=531&v=1&fmt=webp");
+            ProductImage productImage11 = new ProductImage("https://i8.amplience.net/i/jpl/jd_EE5801_a?qlt=92&w=750&h=531&v=1&fmt=webp");
+            ProductImage productImage12 = new ProductImage("https://i8.amplience.net/i/jpl/jd_EE5801_b?qlt=92&w=750&h=531&v=1&fmt=webp");
+            ProductImage productImage13 = new ProductImage("https://i8.amplience.net/i/jpl/jd_EE5801_c?qlt=92&w=750&h=531&v=1&fmt=webp");
+            ProductImage productImage14 = new ProductImage("https://i8.amplience.net/i/jpl/jd_EE5801_d?qlt=92&w=750&h=531&v=1&fmt=webp");
+            ProductImage productImage15 = new ProductImage("https://i8.amplience.net/i/jpl/jd_EE5801_e?qlt=92&w=750&h=531&v=1&fmt=webp");
+
+            List<ProductImage> blacks = new ArrayList<>();
+            blacks.add(productImage1);
+            blacks.add(productImage2);
+            blacks.add(productImage3);
+            blacks.add(productImage4);
+            blacks.add(productImage5);
+
+            List<ProductImage> greens = new ArrayList<>();
+            greens.add(productImage6);
+            greens.add(productImage7);
+            greens.add(productImage8);
+            greens.add(productImage9);
+            greens.add(productImage10);
+
+            List<ProductImage> reds = new ArrayList<>();
+            reds.add(productImage11);
+            reds.add(productImage12);
+            reds.add(productImage13);
+            reds.add(productImage14);
+            reds.add(productImage15);
+
+            Boolean blackCreated = false;
+            Boolean greenCreated = false;
+            Boolean redCreated = false;
+
+            List<ProductImage> blackProductImages= new ArrayList<>();;
+            List<ProductImage> greenProductImages = new ArrayList<>();
+            List<ProductImage> redProductImages= new ArrayList<>();;
+
+            for (ProductVariant productVariant : newProduct.getProductVariants()) {
+                if (productVariant.getColour() == "Black") {
+                    if (!blackCreated) {
+                        blackProductImages = productService.createProductImage(blacks, productVariant.getProductVariantId());
+                        blackCreated = true;
+                    } else {
+                        productVariant.getProductImages().addAll(blackProductImages);
+                    }
+                } else if (productVariant.getColour() == "Green") {
+                    if (!greenCreated) {
+                        greenProductImages = productService.createProductImage(greens, productVariant.getProductVariantId());
+                        greenCreated = true;
+                    } else {
+                        productVariant.getProductImages().addAll(greenProductImages);
+                    }
+                } else if (productVariant.getColour() == "Red") {
+                    if (!redCreated) {
+                        redProductImages = productService.createProductImage(reds, productVariant.getProductVariantId());
+                        redCreated = true;
+                    } else {
+                        productVariant.getProductImages().addAll(redProductImages);
+                    }
+                }
+            }
         }
     }
 
-    private void createProductVariantAndProductStockIfNotFound() throws ProductNotFoundException, CreateNewProductVariantException, InputDataValidationException, ProductVariantNotFoundException, CreateNewProductStockException, WarehouseNotFoundException, StoreNotFoundException {
-        List<ProductVariant> productVariants = productService.retrieveAllProductVariant();
-        if (productVariants.size() == 0) {
-
-            ProductImage productImage1 = new ProductImage("https://www.adidas.com.sg/stan-smith-shoes/M20327.html");
-            ProductImage productImage2 = new ProductImage("https://www.adidas.com.sg/stan-smith-shoes/M20325.html");
-
-            List<ProductImage> productImages1 = new ArrayList<>();
-            productImages1.add(productImage1);
-
-            List<ProductImage> productImages2 = new ArrayList<>();
-            productImages2.add(productImage2);
-
-            ProductVariant productVariant1 = new ProductVariant("SKU0001", "Black", null, null, null);
-            ProductVariant productVariant2 = new ProductVariant("SKU0002", "White", null, null, null);
-            ProductVariant pv1 = productService.createProductVariant(productVariant1, 3l);
-            ProductVariant pv2 = productService.createProductVariant(productVariant2, 3l);
-            productService.createProductImage(productImages1, pv1.getProductVariantId());
-            productService.createProductImage(productImages2, pv2.getProductVariantId());
-
+    private void createWarehouseAndStoreIfNotFound() throws InputDataValidationException, CreateNewProductStockException, WarehouseNotFoundException, StoreNotFoundException {
+        if (warehouseService.retrieveAllWarehouses().size() == 0) {
 
             Warehouse warehouse = new Warehouse();
             Address address = new Address("Pasir Ris Drive 1", "#01-01", "S123456", "Pasir Ris Building");
-            Warehouse w = warehouseService.createWarehouse(warehouse, address);
+            warehouseService.createWarehouse(warehouse, address);
             List<Warehouse> warehouses = warehouseService.retrieveAllWarehouseInventory();
 
             productService.assignProductStock(warehouses, null, null);
 
+            // TODO: Create store?
         }
-
     }
 }

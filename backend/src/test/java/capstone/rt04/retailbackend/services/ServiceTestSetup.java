@@ -1,9 +1,6 @@
 package capstone.rt04.retailbackend.services;
 
 import capstone.rt04.retailbackend.entities.*;
-import capstone.rt04.retailbackend.repositories.DepartmentRepository;
-import capstone.rt04.retailbackend.repositories.RoleRepository;
-import capstone.rt04.retailbackend.util.enums.RoleNameEnum;
 import capstone.rt04.retailbackend.util.enums.SizeEnum;
 import org.junit.After;
 import org.junit.Before;
@@ -41,12 +38,15 @@ public class ServiceTestSetup {
 
     protected static Long categoryId;
     protected static Long productId;
-    protected static Long productVariantId;
     protected static Long styleId;
+    protected static Long productVariantId;
     protected static Long productId2;
     protected static Long createdCustomerId;
     protected static Long storeId;
 
+    protected  List<SizeEnum> sizes = new ArrayList<>();
+    protected List<String> colors = new ArrayList<>();
+    protected List<ProductVariant> productVariants = new ArrayList<>();
 
     @Before
     public void beforeEachTest() throws Exception {
@@ -63,12 +63,10 @@ public class ServiceTestSetup {
         validProduct.setCategory(category);
 
         // Adding colors and sizes
-        List<SizeEnum> sizes = new ArrayList<>();
         sizes.add(SizeEnum.S);
         sizes.add(SizeEnum.M);
-        List<String> colors = new ArrayList<>();
-        colors.add("pink");
-        colors.add("gold");
+        colors.add("White");
+        colors.add("Gold");
 
         Product result = productService.createNewProduct(validProduct, category.getCategoryId(), null, sizes, colors);
         assertThat(result).isEqualTo(validProduct);
@@ -76,11 +74,12 @@ public class ServiceTestSetup {
         productId = result.getProductId();
 
         Product product = productService.retrieveProductById(productId);
-        ProductVariant validProductVariant = new ProductVariant("SKU009", "White", null, null, null);
+//        ProductVariant validProductVariant = new ProductVariant("SKU009", "White", null);
 
-        ProductVariant productVariant = productService.createProductVariant(validProductVariant, product.getProductId());
-        productVariantId = productVariant.getProductVariantId();
-        assertThat(productVariant).isEqualTo(validProductVariant);
+        productVariants = productService.createMultipleProductVariants(product.getProductId(), "Ginger", sizes);
+        assertThat(productVariants.size()).isNotEqualTo(0);
+
+        productVariantId = productVariants.get(0).getProductVariantId();
 
         Style style = styleService.createNewStyle(new Style("Bold"));
         assertThat(style.getStyleId()).isNotNull();
@@ -92,8 +91,8 @@ public class ServiceTestSetup {
         Product product2 = productService.createNewProduct(validProduct2, categoryId, null, sizes, colors);
         productId2 = product2.getProductId();
 
-        ProductVariant validProductVariant2 = new ProductVariant("SKU002", "Pink", null, null, null);
-        ProductVariant pv2 = productService.createProductVariant(validProductVariant2, product2.getProductId());
+//        ProductVariant validProductVariant2 = new ProductVariant("SKU002", "Magenta", null);
+        List<ProductVariant> productVariants2 = productService.createMultipleProductVariants(product2.getProductId(), "Magenta", sizes);
 
         // Create store
         Store expectedValidStore = new Store("Store1", 8, 4, Time.valueOf("10:00:00"), Time.valueOf("21:00:00"), 2, 6, null);
@@ -129,7 +128,6 @@ public class ServiceTestSetup {
 
         productId = null;
         categoryId = null;
-        productVariantId = null;
         styleId = null;
         createdCustomerId = null;
 

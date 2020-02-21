@@ -57,11 +57,12 @@ public class ProductVariantController {
         }
     }
 
-    @PostMapping(ProductVariantControllerRoutes.CREATE_PRODUCT_VARIANT)
-    public ResponseEntity<?> createNewProductVariant(@RequestBody ProductVariantCreateRequest productVariantCreateRequest) {
+    @PostMapping(ProductVariantControllerRoutes.CREATE_MULTIPLE_PRODUCT_VARIANTS)
+    public ResponseEntity<?> createMultipleProductVariants(@RequestBody ProductVariantCreateRequest productVariantCreateRequest) {
         try {
-            ProductVariant productVariant = productService.createProductVariant(productVariantCreateRequest.getProductVariant(), productVariantCreateRequest.getProductId());
-            return new ResponseEntity<>(productVariant, HttpStatus.CREATED);
+            List<ProductVariant> productVariants = productService.createMultipleProductVariants(productVariantCreateRequest.getProductId(), productVariantCreateRequest.getColor(),
+                    productVariantCreateRequest.getSizes());
+            return new ResponseEntity<>(productVariants, HttpStatus.CREATED);
         } catch (InputDataValidationException ex) {
             return new ResponseEntity<>(ex.getErrorMap(), HttpStatus.BAD_REQUEST);
         } catch (ProductNotFoundException ex) {

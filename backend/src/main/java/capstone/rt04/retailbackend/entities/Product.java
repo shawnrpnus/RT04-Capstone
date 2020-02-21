@@ -6,6 +6,7 @@
 package capstone.rt04.retailbackend.entities;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.voodoodyne.jackson.jsog.JSOGGenerator;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -31,7 +32,7 @@ import java.util.List;
 @EqualsAndHashCode
 @ToString(exclude = {"category", "productVariants"})
 @JsonIdentityInfo(generator = JSOGGenerator.class)
-
+@JsonDeserialize()
 public class Product implements Serializable {
 
     private static final long serialVersionUID = 1L;

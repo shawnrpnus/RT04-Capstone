@@ -8,9 +8,7 @@ package capstone.rt04.retailbackend.entities;
 import capstone.rt04.retailbackend.util.enums.CollectionModeEnum;
 import capstone.rt04.retailbackend.util.enums.DeliveryStatusEnum;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.voodoodyne.jackson.jsog.JSOGGenerator;
-import com.voodoodyne.jackson.jsog.JSOGRefDeserializer;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,11 +19,9 @@ import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
  * @author shawn
  */
 @Entity
@@ -40,40 +36,40 @@ public class Transaction implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long transactionId;
-    
+
     private Timestamp createdDateTime;
-    
+
     private CollectionModeEnum collectionMode;
-    
+
     private Integer totalQuantity;
-    
+
     private BigDecimal initialTotalPrice;
-    
+
     private BigDecimal finalTotalPrice; //after discounts etc.
-    
+
     private DeliveryStatusEnum deliveryStatus;
-    
+
     private Timestamp deliveredDateTime;
-    
+
     @ManyToOne
     private PromoCode promoCode;
 
     @ManyToOne
     private Address deliveryAddress;
-    
+
     @OneToMany(mappedBy = "transaction")
     @Size(min = 1)
     private List<TransactionLineItem> transactionLineItems;
-    
+
     @ManyToMany(mappedBy = "customerOrdersToDeliver")
     private List<Delivery> deliveries;
-    
+
     @ManyToOne(optional = false)
     private Customer customer;
-    
+
     @ManyToOne
     private Store store;
-    
+
     public Transaction() {
         this.createdDateTime = new Timestamp(System.currentTimeMillis());
     }
@@ -82,7 +78,7 @@ public class Transaction implements Serializable {
         this();
         this.customer = customer;
     }
-    
+
 }
 
 
