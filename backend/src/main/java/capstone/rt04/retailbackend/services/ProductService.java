@@ -136,6 +136,24 @@ public class ProductService {
         return products;
     }
 
+    public List<ProductDetailsResponse> retrieveProductDetailsForCategory(Long storeOrWarehouseId, Long categoryId) throws ProductNotFoundException {
+        List<ProductDetailsResponse> productDetailsResponses = retrieveProductsDetails(storeOrWarehouseId, null);
+        List<ProductDetailsResponse> result = new ArrayList<>();
+        for (ProductDetailsResponse p : productDetailsResponses){
+            Category c = p.getProduct().getCategory();
+            if (checkIfCategoryIsInside(c, categoryId)){
+                result.add(p);
+            }
+        }
+        return result;
+    }
+
+    private boolean checkIfCategoryIsInside(Category categoryToCheck, Long categoryId){
+        if (categoryToCheck.getCategoryId().equals(categoryId)) return true;
+        if (categoryToCheck.getParentCategory() == null) return false;
+        return checkIfCategoryIsInside(categoryToCheck.getParentCategory(), categoryId);
+    }
+
     public List<ProductDetailsResponse> retrieveProductsDetails(Long storeOrWarehouseId, Long productId) throws ProductNotFoundException {
         // Each product can have multiple colour
         // Each colours will have a list of sizes

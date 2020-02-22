@@ -51,19 +51,24 @@ public class ProductController {
                     productRetrieveRequest.getColours(), productRetrieveRequest.getSizes(),
                     productRetrieveRequest.getMinPrice(), productRetrieveRequest.getMaxPrice(), productRetrieveRequest.getSortEnum());
             return new ResponseEntity<>(products, HttpStatus.OK);
-        }  catch (Exception ex) {
+        } catch (Exception ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @GetMapping(ProductControllerRoutes.RETRIEVE_PRODUCTS_DETAILS)
-    public ResponseEntity<?> retrieveProductsDetails(@RequestParam(required = false) Long storeOrWarehouseId) {
+    public ResponseEntity<?> retrieveProductsDetails(@RequestParam(required = false) Long storeOrWarehouseId, @RequestParam(required = false) Long categoryId) {
         try {
-            List<ProductDetailsResponse> products = productService.retrieveProductsDetails(storeOrWarehouseId, null);
-            return new ResponseEntity<>(products, HttpStatus.OK);
+            if (categoryId != null) {
+                List<ProductDetailsResponse> products = productService.retrieveProductDetailsForCategory(storeOrWarehouseId, categoryId);
+                return new ResponseEntity<>(products, HttpStatus.OK);
+            } else {
+                List<ProductDetailsResponse> products = productService.retrieveProductsDetails(storeOrWarehouseId, null);
+                return new ResponseEntity<>(products, HttpStatus.OK);
+            }
         } catch (ProductNotFoundException ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
-        }catch (Exception ex) {
+        } catch (Exception ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -105,7 +110,7 @@ public class ProductController {
         }
     }
 
-//    @PutMapping(ProductControllerRoutes.ADD_REMOVE_PROMOCODE_TO_A_PRODUCT)
+    //    @PutMapping(ProductControllerRoutes.ADD_REMOVE_PROMOCODE_TO_A_PRODUCT)
 //    public ResponseEntity<?> addOrRemovePromoCodeToAProduct(@RequestBody ProductPromoCodeRequest productPromoCodeRequest) {
 //        try {
 //            if (productPromoCodeRequest.getIsAppend()) {

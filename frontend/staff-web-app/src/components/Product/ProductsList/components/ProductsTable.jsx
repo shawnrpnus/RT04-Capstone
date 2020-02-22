@@ -56,7 +56,7 @@ class ProductsTable extends PureComponent {
   };
 
   componentDidMount() {
-    this.props.retrieveAllProducts();
+    if (this.props.retrieveAllProducts) this.props.retrieveAllProducts();
   }
 
   handleViewProductDetails = id => {
@@ -66,7 +66,7 @@ class ProductsTable extends PureComponent {
   formatData = () => {};
 
   render() {
-    const { products, renderLoader } = this.props;
+    const { products, renderLoader, columnsToHide } = this.props;
 
     let data = [];
     if (products) {
@@ -80,6 +80,7 @@ class ProductsTable extends PureComponent {
         return {
           productId: product.productId,
           productName: product.productName,
+          serialNumber: product.serialNumber,
           cost: product.cost,
           price: product.price,
           category: product.category.name,
@@ -116,6 +117,7 @@ class ProductsTable extends PureComponent {
                   </Link>
                 )
               },
+              { title: "Serial No.", field: "serialNumber" },
               { title: "Name", field: "productName" },
               { title: "Cost", field: "cost", type: "currency" },
               { title: "Price", field: "price", type: "currency" },
@@ -134,15 +136,18 @@ class ProductsTable extends PureComponent {
               },
               {
                 title: "Category",
-                field: "category"
+                field: "category",
+                hidden:
+                  Array.isArray(columnsToHide) &&
+                  columnsToHide.includes("category")
               }
             ]}
             data={data}
             options={{
               filtering: true,
               sorting: true,
-              pageSize: 10,
-              pageSizeOptions: [10, 20, 40],
+              pageSize: 5,
+              pageSizeOptions: [5, 10, 20, 40],
               actionsColumnIndex: -1
               // headerStyle: { backgroundColor: "grey" } //change header padding
             }}
@@ -178,6 +183,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = {
   retrieveAllProducts
 };
+
+export const ProductsTableRaw = withRouter(ProductsTable);
 
 export default withRouter(
   connect(

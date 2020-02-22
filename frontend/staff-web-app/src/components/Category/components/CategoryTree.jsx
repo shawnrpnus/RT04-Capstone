@@ -8,6 +8,8 @@ import {
   getParentKeys,
   buildCategoryTree
 } from "../../../services/categoryService";
+import { Grid } from "@material-ui/core";
+import { ProductsTableRaw } from "../../Product/ProductsList/components/ProductsTable";
 
 class CategoryTree extends Component {
   constructor(props) {
@@ -33,24 +35,39 @@ class CategoryTree extends Component {
   };
 
   render() {
-    const { allCategories } = this.props;
+    const { allCategories, renderLoader, categoryProducts } = this.props;
     return (
       <React.Fragment>
         <div className="card__title">
           <h5 className="bold-text">All Categories</h5>
         </div>
         {allCategories !== null ? (
-          <Tree
-            value={buildCategoryTree(allCategories)}
-            selectionMode="single"
-            propagateSelectionUp={false}
-            propagateSelectionDown={false}
-            expandedKeys={getParentKeys(allCategories, {})}
-            selectionKeys={this.state.selectedCategoryId}
-            onSelectionChange={this.onSelectionChange}
-            filter={true}
-          />
-        ) : null}
+          <Grid container spacing={3}>
+            <Grid item xs={12} md={3}>
+              <Tree
+                value={buildCategoryTree(allCategories)}
+                selectionMode="single"
+                propagateSelectionUp={false}
+                propagateSelectionDown={false}
+                expandedKeys={getParentKeys(allCategories, {})}
+                selectionKeys={this.state.selectedCategoryId}
+                onSelectionChange={this.onSelectionChange}
+                filter={true}
+                style={{ width: "100%" }}
+              />
+            </Grid>
+            <Grid item xs={12} md={9}>
+              {categoryProducts && (
+                <ProductsTableRaw
+                  products={categoryProducts}
+                  renderLoader={renderLoader}
+                />
+              )}
+            </Grid>
+          </Grid>
+        ) : (
+          renderLoader()
+        )}
       </React.Fragment>
     );
   }
