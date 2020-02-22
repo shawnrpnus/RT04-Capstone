@@ -1,3 +1,1 @@
-export default class StaffCreateRequest {
-
-}
+export default class StaffCreateRequest {}

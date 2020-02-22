@@ -7,7 +7,4 @@ import { ClipLoader } from "react-spinners";
 import { connect } from "react-redux";
 import StaffForm from "./StaffForm";
 import { clearErrors, updateErrors } from "../../../redux/actions";
-import {
-    createNewStaff
-} from "../../../redux/actions/staffActions";
-
+import { createNewStaff } from "../../../redux/actions/staffActions";
