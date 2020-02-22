@@ -82,9 +82,9 @@ class TagTable extends Component {
     // console.log(setState);
     return (
       <React.Fragment>
-        <div className="card__title">
-          <h5 className="bold-text">All Tags</h5>
-        </div>
+        {/*<div className="card__title">*/}
+        {/*  <h5 className="bold-text">All Tags</h5>*/}
+        {/*</div>*/}
         <div
           className="table"
           style={{
@@ -94,6 +94,7 @@ class TagTable extends Component {
         >
           {this.props.allTags ? (
             <MaterialTable
+              title="All Tags"
               icons={tableIcons}
               columns={[
                 { title: "Tag Id", field: "tagId", editable: "never" },
@@ -125,10 +126,8 @@ class TagTable extends Component {
                 filtering: true,
                 sorting: true,
                 pageSize: 10,
-                search: false,
+                search: true,
                 padding: "dense",
-                toolbar: false,
-                showTitle: false,
                 pageSizeOptions: [10, 20, 40],
                 actionsColumnIndex: -1
               }}
