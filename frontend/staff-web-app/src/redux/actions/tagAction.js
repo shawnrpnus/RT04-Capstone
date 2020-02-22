@@ -78,8 +78,11 @@ export const updateTag = (updateTagRequest, history) => {
         history.push(`/tag`);
       })
       .catch(err => {
+        toast.error(err.response.data.errorMessage.toString(), {
+          position: toast.POSITION.TOP_CENTER
+        });
         dispatch(updateTagError(err.response.data));
-        //console.log(err.response.data);
+        // console.log(err.response.data);
       });
   };
 };

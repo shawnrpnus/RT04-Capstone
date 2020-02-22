@@ -25,6 +25,7 @@ import withMaterialConfirmDialog from "../../Layout/page/withMaterialConfirmDial
 import CreateUpdateTagRequest from "../../../models/CreateUpdateTagRequest";
 import {ClipLoader} from "react-spinners";
 import {css} from "@emotion/core";
+import {Promise as reject} from "q";
 
 const tableIcons = {
   Add: AddBox,
@@ -72,7 +73,7 @@ class TagTable extends Component {
   render() {
     const { history } = this.props;
     const data = this.props.allTags;
-    console.log(this.props);
+    // console.log(this.props);
     // console.log(setState);
     return (
       <React.Fragment>
@@ -100,6 +101,9 @@ class TagTable extends Component {
                   new Promise(resolve => {
                     setTimeout(() => {
                       resolve();
+                      // if(this.props.allTags.find(newData.name)) {
+                      //   reject();
+                      // }
                       if (oldData) {
                         this.handleUpdate(newData, oldData);
                       }

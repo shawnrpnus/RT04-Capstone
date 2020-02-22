@@ -66,12 +66,12 @@ public class TagService {
                 Tag existingTag = tagRepository.findByName(tag.getName()).orElse(null);
 
                 if (existingTag != null) {
-                    throw new UpdateTagException("Name of tag to be updated is duplicated!");
+                    throw new UpdateTagException("Tag Update Failed: Duplicate Name");
                 }
 
                 tagToUpdate.setName(tag.getName());
                 return tagToUpdate;
-            } catch (Exception ex) {
+            } catch (TagNotFoundException ex) {
                 throw new UpdateTagException("Error updating tag");
             }
         } else {
