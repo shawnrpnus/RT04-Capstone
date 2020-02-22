@@ -14,13 +14,6 @@ import Address from "../../../models/address";
 import * as PropTypes from "prop-types";
 import StoreForm from "./StoreForm";
 import withPage from "../../Layout/page/withPage";
-import { css } from "@emotion/core";
-import { ClipLoader } from "react-spinners";
-
-const override = css`
-  display: block;
-  margin: 0 auto;
-`;
 
 class StoreFormContainer extends Component {
   static propTypes = {
@@ -105,7 +98,8 @@ class StoreFormContainer extends Component {
       mode,
       currentStore,
       location,
-      updateErrors
+      updateErrors,
+      renderLoader
     } = this.props;
 
     const header =
@@ -153,12 +147,7 @@ class StoreFormContainer extends Component {
             key={`${location.pathname}-${currentStore.storeId}`}
           />
         ) : (
-          <ClipLoader
-            css={override}
-            size={100}
-            color={"#36D7B7"}
-            loading={true}
-          />
+          renderLoader()
         )}
       </React.Fragment>
     );

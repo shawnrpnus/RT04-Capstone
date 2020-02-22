@@ -37,8 +37,6 @@ const MaterialTextField = props => {
 };
 
 MaterialTextField.propTypes = {
-  name: PropTypes.string.isRequired,
-  value: PropTypes.string.isRequired,
   errors: PropTypes.object.isRequired,
   onChange: PropTypes.func.isRequired,
   state: PropTypes.object.isRequired,

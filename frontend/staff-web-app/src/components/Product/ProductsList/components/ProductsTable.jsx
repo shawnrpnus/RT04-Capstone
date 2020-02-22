@@ -66,7 +66,7 @@ class ProductsTable extends PureComponent {
   formatData = () => {};
 
   render() {
-    const { products } = this.props;
+    const { products, renderLoader } = this.props;
 
     let data = [];
     if (products) {
@@ -91,7 +91,7 @@ class ProductsTable extends PureComponent {
 
     return (
       <div className="table" style={{ verticalAlign: "middle" }}>
-        {products && (
+        {products ? (
           <MaterialTable
             title="All Products"
             style={{ boxShadow: "none" }}
@@ -161,6 +161,8 @@ class ProductsTable extends PureComponent {
               // })
             ]}
           />
+        ) : (
+          renderLoader()
         )}
       </div>
     );

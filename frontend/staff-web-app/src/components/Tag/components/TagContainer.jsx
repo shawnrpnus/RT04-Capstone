@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import TagDetails from "./TagDetails";
-import { BounceLoader } from "react-spinners";
 import TagForm from "./TagForm";
 import {
   createNewTag,
@@ -12,15 +11,8 @@ import connect from "react-redux/es/connect/connect";
 import withPage from "../../Layout/page/withPage";
 import CreateUpdateTagRequest from "../../../models/CreateUpdateTagRequest";
 import * as PropTypes from "prop-types";
-import StoreForm from "../../Store/components/StoreForm";
-import { css } from "@emotion/core";
 import TagTable from "./TagTable";
 import { Grid } from "@material-ui/core";
-
-const override = css`
-  display: block;
-  margin: 0 auto;
-`;
 
 class TagContainer extends Component {
   static propTypes = {
@@ -62,7 +54,7 @@ class TagContainer extends Component {
   };
 
   render() {
-    const { errors, clearErrors, mode, currentTag } = this.props;
+    const { errors, clearErrors, mode, currentTag, renderLoader } = this.props;
     const header =
       mode === "viewAll"
         ? "Tag Information"
@@ -87,19 +79,17 @@ class TagContainer extends Component {
                 />
               </Grid>
               <Grid item xs={12} md={9}>
-                <TagTable history={this.props.history} />
+                <TagTable
+                  history={this.props.history}
+                  renderLoader={renderLoader}
+                />
               </Grid>
             </Grid>
           </div>
         ) : currentTag !== null ? (
           <TagDetails /> //View One Tag Details
         ) : (
-          <BounceLoader
-            css={override}
-            size={100}
-            color={"#36D7B7"}
-            loading={true}
-          />
+          renderLoader()
         )}
       </React.Fragment>
     );
