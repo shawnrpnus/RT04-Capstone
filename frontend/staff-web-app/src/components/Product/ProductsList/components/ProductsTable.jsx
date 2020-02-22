@@ -25,6 +25,7 @@ import {
   retrieveAllProducts,
   retrieveProductsDetails
 } from "../../../../redux/actions/productActions";
+import withPage from "../../../Layout/page/withPage";
 
 const tableIcons = {
   Add: AddBox,
@@ -34,7 +35,7 @@ const tableIcons = {
   DetailPanel: ChevronRight,
   Edit: Edit,
   Export: SaveAlt,
-  Filter: FilterList,
+  Filter: Search,
   FirstPage: FirstPage,
   LastPage: LastPage,
   NextPage: ChevronRight,
@@ -58,7 +59,7 @@ class ProductsTable extends PureComponent {
   }
 
   handleViewProductDetails = id => {
-    this.props.history.push(`/viewProductDetails/${id}`);
+    this.props.history.push(`/product/viewProductDetails/${id}`);
   };
 
   formatData = () => {};
@@ -117,14 +118,7 @@ class ProductsTable extends PureComponent {
                 field: "colours",
                 render: rowData =>
                   rowData.colours.map((color, index) => {
-                    return (
-                      <FiberManualRecordIcon
-                        style={{
-                          color,
-                          fontSize: 40
-                        }}
-                      />
-                    );
+                    return <FiberManualRecordIcon style={{ color }} />;
                   })
               },
               {
@@ -138,8 +132,8 @@ class ProductsTable extends PureComponent {
               sorting: true,
               pageSize: 10,
               pageSizeOptions: [10, 20, 40],
-              actionsColumnIndex: -1,
-              headerStyle: { backgroundColor: "grey" } //change header padding
+              actionsColumnIndex: -1
+              // headerStyle: { backgroundColor: "grey" } //change header padding
             }}
             actions={[
               {
@@ -173,5 +167,5 @@ const mapDispatchToProps = {
 };
 
 export default withRouter(
-  connect(mapStateToProps, mapDispatchToProps)(ProductsTable)
+  withPage(connect(mapStateToProps, mapDispatchToProps)(ProductsTable))
 );

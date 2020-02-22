@@ -23,6 +23,22 @@ class SidebarContent extends Component {
             route="/log_in"
             onClick={this.hideSidebar}
           />
+
+          <SidebarCategory title="Staff" icon ="EmojiPeople">
+            <SidebarLink
+                title="Create"
+                route="/"
+                onClick={this.hideSidebar}
+            />
+            <SidebarLink
+                title="View All"
+                route="/"
+                onClick={this.hideSidebar}
+            />
+          </SidebarCategory>
+
+
+
           <SidebarCategory title="Stores" icon="store">
             <SidebarLink
               title="Create"
@@ -35,11 +51,14 @@ class SidebarContent extends Component {
               onClick={this.hideSidebar}
             />
           </SidebarCategory>
+
+
+
           <SidebarCategory title="Products" icon="diamond">
             <SidebarLink title="Create" route="/" onClick={this.hideSidebar} />
             <SidebarLink
               title="View All"
-              route="/viewAllProduct"
+              route="/product/viewAllProduct"
               onClick={this.hideSidebar}
             />
           </SidebarCategory>

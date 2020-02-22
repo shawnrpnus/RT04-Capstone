@@ -25,3 +25,17 @@ export const DELETE_TAG = "DELETE_TAG";
 
 // Category
 export const RETRIEVE_ALL_CATEGORIES = "RETRIEVE_ALL_CATEGORIES";
+
+// Staff
+export const CHANGE_STAFF_PASSWORD = "CHANGE_STAFF_PASSWORD";
+export const STAFF_LOGIN = "STAFF_LOGIN";
+//For HR only
+export const RETRIEVE_ALL_STAFF = "RETRIEVE_ALL_STAFF";
+export const CREATE_STAFF = "CREATE_STAFF";
+export const DELETE_STAFF = "DELETE_STAFF";
+export const RETRIEVE_STAFF = "RETRIEVE_STAFF";
+//For admin/IT only
+export const CREATE_STAFF_ACCOUNT = "CREATE_STAFF_ACCOUNT";
+export const RESET_STAFF_PASSWORD = "RESET_STAFF_PASSWORD";
+
+

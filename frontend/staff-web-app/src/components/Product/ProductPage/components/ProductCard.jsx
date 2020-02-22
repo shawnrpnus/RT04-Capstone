@@ -23,6 +23,7 @@ import IconButton from "@material-ui/core/IconButton";
 import CreateIcon from "@material-ui/icons/Create";
 import AddCircleRoundedIcon from "@material-ui/icons/AddCircleRounded";
 import ProductUpdateForm from "./ProductUpdateForm";
+import withPage from "../../../Layout/page/withPage";
 
 class ProductCard extends PureComponent {
   static propTypes = {
@@ -93,117 +94,109 @@ class ProductCard extends PureComponent {
     const { errors, location } = this.props;
 
     return (
-      <Col md={12} lg={12}>
-        <Card>
-          <CardBody>
-            <div className="product-card">
-              {colourSizeMap.length > 0 && (
-                <ProductGallery
-                  colourSizeMap={colourSizeMap}
-                  selectedColour={selectedColour}
-                />
-              )}
-              <div className="product-card__info">
-                <Row>
-                  <Col xs={5} md={8}>
-                    <h3 className="product-card__title">{productName}</h3>
-                  </Col>
-                  <Col xs={2} md={1}>
-                    <Switch
-                      checked={uploadImage}
-                      onChange={this.handleToggleUploadImage}
+      <div className="product-card">
+        {colourSizeMap.length > 0 && (
+          <ProductGallery
+            colourSizeMap={colourSizeMap}
+            selectedColour={selectedColour}
+          />
+        )}
+        <div className="product-card__info">
+          <Row>
+            <Col xs={5} md={8}>
+              <h3 className="product-card__title">{productName}</h3>
+            </Col>
+            <Col xs={2} md={1}>
+              <Switch
+                checked={uploadImage}
+                onChange={this.handleToggleUploadImage}
+              />
+            </Col>
+            <Col xs={2} md={1}>
+              <IconButton>
+                <AddCircleRoundedIcon />
+              </IconButton>
+            </Col>
+            <Col xs={3} md={2}>
+              <IconButton onClick={this.handleOpenProductUpdateDialog}>
+                <CreateIcon />
+              </IconButton>
+            </Col>
+          </Row>
+          <div className="product-card__rate">
+            <StarIcon />
+            <StarIcon />
+            <StarIcon />
+            <StarIcon />
+            <StarOutlineIcon />
+            <a className="product-card__link">See all reviews</a>
+          </div>
+          <h1 className="product-card__price">
+            ${price} <span className="product-card__old-price">$23</span>
+          </h1>
+          <p className="typography-message">{category && category.name}</p>
+          <div className="form__form-group">
+            <span className="form__form-group-label product-card__form-label">
+              Select Color
+            </span>
+            <div className="form__form-group-field">
+              {/* Product Variant .map() */}
+              {colourSizeMap &&
+                colourSizeMap.map(({ colour }, index) => {
+                  return (
+                    <FiberManualRecordIcon
+                      style={{
+                        color: colour,
+                        cursor: "pointer",
+                        fontSize: 40
+                      }}
+                      key={colour}
+                      onClick={() => this.handleSelectColour(index)}
                     />
-                  </Col>
-                  <Col xs={2} md={1}>
-                    <IconButton>
-                      <CreateIcon />
-                    </IconButton>
-                  </Col>
-                  <Col xs={3} md={2}>
-                    <IconButton onClick={this.handleOpenProductUpdateDialog}>
-                      <AddCircleRoundedIcon />
-                    </IconButton>
-                  </Col>
-                </Row>
-                <div className="product-card__rate">
-                  <StarIcon />
-                  <StarIcon />
-                  <StarIcon />
-                  <StarIcon />
-                  <StarOutlineIcon />
-                  <a className="product-card__link">See all reviews</a>
-                </div>
-                <h1 className="product-card__price">
-                  ${price} <span className="product-card__old-price">$23</span>
-                </h1>
-                <p className="typography-message">
-                  {category && category.name}
-                </p>
-                <div className="form__form-group">
-                  <span className="form__form-group-label product-card__form-label">
-                    Select Color
-                  </span>
-                  <div className="form__form-group-field">
-                    {/* Product Variant .map() */}
-                    {colourSizeMap &&
-                      colourSizeMap.map(({ colour }, index) => {
+                  );
+                })}
+            </div>
+            <span className="form__form-group-label product-card__form-label">
+              Select Size
+            </span>
+            <div className="form__form-group-field">
+              {/* Product Variant .map() */}
+              <ButtonToolbar>
+                <ButtonGroup dir="ltr">
+                  {colourSizeMap[selectedColour] &&
+                    colourSizeMap[selectedColour].sizeMaps.map(
+                      ({ size, productVariantId }) => {
+                        console.log(size, productVariantId);
                         return (
-                          <FiberManualRecordIcon
-                            style={{
-                              color: colour,
-                              cursor: "pointer",
-                              fontSize: 40
-                            }}
-                            key={colour}
-                            onClick={() => this.handleSelectColour(index)}
-                          />
+                          <Button
+                            key={size}
+                            outline
+                            value={productVariantId}
+                            onClick={this.handleSelectSize}
+                          >
+                            {size}
+                          </Button>
                         );
-                      })}
-                  </div>
-                  <span className="form__form-group-label product-card__form-label">
-                    Select Size
-                  </span>
-                  <div className="form__form-group-field">
-                    {/* Product Variant .map() */}
-                    <ButtonToolbar>
-                      <ButtonGroup dir="ltr">
-                        {colourSizeMap[selectedColour] &&
-                          colourSizeMap[selectedColour].sizeMaps.map(
-                            ({ size, productVariantId }) => {
-                              console.log(size, productVariantId);
-                              return (
-                                <Button
-                                  key={size}
-                                  outline
-                                  value={productVariantId}
-                                  onClick={this.handleSelectSize}
-                                >
-                                  {size}
-                                </Button>
-                              );
-                            }
-                          )}
-                      </ButtonGroup>
-                    </ButtonToolbar>
-                  </div>
-                </div>
-                <Row>
-                  <Col xs={0} lg={9} />
-                  <Col xs={12} lg={3}>
-                    <ButtonToolbar className="product-card__btn-toolbar">
-                      <Button color="primary">Delete</Button>
-                      {/*  <button className="product-card__wish-btn" type="button">
+                      }
+                    )}
+                </ButtonGroup>
+              </ButtonToolbar>
+            </div>
+          </div>
+          <Row>
+            <Col xs={0} lg={9} />
+            <Col xs={12} lg={3}>
+              <ButtonToolbar className="product-card__btn-toolbar">
+                <Button color="primary">Delete</Button>
+                {/*  <button className="product-card__wish-btn" type="button">
                         <HeartIcon />
                         Add to wishlist
                       </button>*/}
-                    </ButtonToolbar>
-                  </Col>
-                </Row>
-                <ProductTabs description={description} />
-              </div>
-            </div>
-          </CardBody>
-        </Card>
+              </ButtonToolbar>
+            </Col>
+          </Row>
+          <ProductTabs description={description} />
+        </div>
         <ProductUpdateForm
           open={openProductUpdateDialog}
           onClose={() => this.setState({ openProductUpdateDialog: false })}
@@ -211,7 +204,7 @@ class ProductCard extends PureComponent {
           errors={errors}
           key={productId}
         />
-      </Col>
+      </div>
     );
   }
 }
@@ -227,4 +220,4 @@ const mapDispatchToProps = {
 
 const connectedForm = connect(mapStateToProps, mapDispatchToProps)(ProductCard);
 
-export default withRouter(connectedForm);
+export default withRouter(withPage(connectedForm));
