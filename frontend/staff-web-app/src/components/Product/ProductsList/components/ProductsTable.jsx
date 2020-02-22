@@ -17,7 +17,8 @@ import {
   Remove,
   SaveAlt,
   Search,
-  ViewColumn
+  ViewColumn,
+  Visibility
 } from "@material-ui/icons";
 import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
 import PageviewOutlinedIcon from "@material-ui/icons/PageviewOutlined";
@@ -25,6 +26,7 @@ import {
   retrieveAllProducts,
   retrieveProductsDetails
 } from "../../../../redux/actions/productActions";
+import withPage from "../../../Layout/page/withPage";
 
 const tableIcons = {
   Add: AddBox,
@@ -34,7 +36,7 @@ const tableIcons = {
   DetailPanel: ChevronRight,
   Edit: Edit,
   Export: SaveAlt,
-  Filter: FilterList,
+  Filter: Search,
   FirstPage: FirstPage,
   LastPage: LastPage,
   NextPage: ChevronRight,
@@ -58,7 +60,7 @@ class ProductsTable extends PureComponent {
   }
 
   handleViewProductDetails = id => {
-    this.props.history.push(`/viewProductDetails/${id}`);
+    this.props.history.push(`/product/viewProductDetails/${id}`);
   };
 
   formatData = () => {};
@@ -88,10 +90,11 @@ class ProductsTable extends PureComponent {
     }
 
     return (
-      <div style={{ width: "auto", overflowX: "scroll" }}>
+      <div className="table" style={{ verticalAlign: "middle" }}>
         {products && (
           <MaterialTable
-            title="Basic Filtering Preview"
+            title="All Products"
+            style={{ boxShadow: "none" }}
             icons={tableIcons}
             columns={[
               {
@@ -100,7 +103,11 @@ class ProductsTable extends PureComponent {
                 render: rowData => (
                   <Link to="/viewAllProduct">
                     <img
-                      style={{ width: 36, borderRadius: "50%" }}
+                      style={{
+                        width: "100%",
+                        height: "auto",
+                        borderRadius: "10%"
+                      }}
                       src={rowData.avatar}
                       onClick={() =>
                         console.log("You saved me" + rowData.avatar)
@@ -119,10 +126,8 @@ class ProductsTable extends PureComponent {
                   rowData.colours.map((color, index) => {
                     return (
                       <FiberManualRecordIcon
-                        style={{
-                          color,
-                          fontSize: 40
-                        }}
+                        key={color + index}
+                        style={{ color }}
                       />
                     );
                   })
@@ -138,12 +143,12 @@ class ProductsTable extends PureComponent {
               sorting: true,
               pageSize: 10,
               pageSizeOptions: [10, 20, 40],
-              actionsColumnIndex: -1,
-              headerStyle: { backgroundColor: "grey" } //change header padding
+              actionsColumnIndex: -1
+              // headerStyle: { backgroundColor: "grey" } //change header padding
             }}
             actions={[
               {
-                icon: PageviewOutlinedIcon,
+                icon: Visibility,
                 tooltip: "View Product Variants",
                 onClick: (event, rowData) =>
                   this.handleViewProductDetails(rowData.productId)
@@ -173,5 +178,8 @@ const mapDispatchToProps = {
 };
 
 export default withRouter(
-  connect(mapStateToProps, mapDispatchToProps)(ProductsTable)
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )(withPage(ProductsTable, "Product Management"))
 );

@@ -28,8 +28,7 @@ class TagForm extends React.Component {
     super(props);
     const { currentTag } = this.props;
     this.state = {
-      name: "",
-      customErrors: {}
+      name: ""
     };
   }
 
@@ -37,21 +36,20 @@ class TagForm extends React.Component {
     const name = e.target.name;
     this.setState({ [name]: e.target.value }); //computed property name syntax
     if (Object.keys(this.props.errors).length !== 0) this.props.clearErrors();
-    if (Object.keys(this.state.customErrors).length !== 0) {
-      this.setState({ customErrors: {} });
-    }
+  };
+
+  clear = () => {
+    this.setState({ name: "" });
   };
 
   render() {
     const { handleSubmit, errors, currentTag } = this.props;
-    const hasErrors =
-      Object.keys(this.props.errors).length !== 0 ||
-      Object.keys(this.state.customErrors).length !== 0;
+    const hasErrors = Object.keys(this.props.errors).length !== 0;
     return (
       <MuiPickersUtilsProvider utils={MomentUtils}>
-        <form className="material-form" >
+        <form className="material-form">
           <Grid container spacing={3}>
-            <Grid item xs={3}>
+            <Grid item xs={12}>
               <MaterialTextField
                 fieldLabel="Tag Name"
                 onChange={this.onChange}
@@ -69,7 +67,9 @@ class TagForm extends React.Component {
                 >
                   Submit
                 </Button>
-                <Button type="button">Cancel</Button>
+                <Button type="button" onClick={this.clear}>
+                  Clear
+                </Button>
               </ButtonToolbar>
             </Grid>
           </Grid>

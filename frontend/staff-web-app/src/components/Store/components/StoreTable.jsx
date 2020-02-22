@@ -69,19 +69,20 @@ class StoreTable extends Component {
     const { history } = this.props;
     return (
       <React.Fragment>
-        <div className="card__title" style={{ marginBottom: "0" }}>
-          <h5 className="bold-text">All Stores</h5>
-        </div>
+        {/*<div className="card__title">*/}
+        {/*  <h5 className="bold-text">All Stores</h5>*/}
+        {/*</div>*/}
         <div
           className="table"
           style={{
             width: "auto",
-            overflowX: "scroll",
             verticalAlign: "middle"
           }}
         >
           {this.props.allStores ? (
             <MaterialTable
+              title="All Stores"
+              style={{ boxShadow: "none" }}
               icons={tableIcons}
               columns={[
                 { title: "Store Name", field: "storeName" },
@@ -118,10 +119,9 @@ class StoreTable extends Component {
                 filtering: true,
                 sorting: true,
                 pageSize: 5,
-                search: false,
+                search: true,
                 padding: "dense",
-                toolbar: false,
-                showTitle: false,
+                showTitle: true,
                 pageSizeOptions: [5, 10, 15],
                 actionsColumnIndex: -1
               }}
