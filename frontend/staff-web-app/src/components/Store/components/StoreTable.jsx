@@ -69,14 +69,13 @@ class StoreTable extends Component {
     const { history } = this.props;
     return (
       <React.Fragment>
-        <div className="card__title" style={{ marginBottom: "0" }}>
+        <div className="card__title">
           <h5 className="bold-text">All Stores</h5>
         </div>
         <div
           className="table"
           style={{
             width: "auto",
-            overflowX: "scroll",
             verticalAlign: "middle"
           }}
         >

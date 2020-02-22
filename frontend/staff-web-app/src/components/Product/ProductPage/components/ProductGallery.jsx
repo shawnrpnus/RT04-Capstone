@@ -71,7 +71,7 @@ export default class ProductGallery extends PureComponent {
 
   render() {
     const { selectedColour, colourSizeMap } = this.props;
-    console.log(colourSizeMap)
+    console.log(colourSizeMap);
 
     const images = colourSizeMap[selectedColour].productImages;
     const { currentImage, currentImagePreview, lightboxIsOpen } = this.state;
