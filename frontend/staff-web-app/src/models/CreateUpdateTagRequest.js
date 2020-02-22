@@ -1,4 +1,4 @@
-export default class CreateTagRequest {
+export default class CreateUpdateTagRequest {
     name;
 
     constructor(name) {
