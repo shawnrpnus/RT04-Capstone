@@ -60,6 +60,25 @@ const retrieveAllStaffError = data => ({
 });
 
 export const createNewStaff = (staffCreateRequest, history) => {
+<<<<<<< HEAD
+    return dispatch => {
+        //redux thunk passes dispatch
+        axios
+            .post(STAFF_BASE_URL + "/createNewStaff", staffCreateRequest)
+            .then(response => {
+                const { data } = jsog.decode(response);
+                dispatch(createStaffSuccess(data));
+                toast.success("Staff Created!", {
+                    position: toast.POSITION.TOP_CENTER
+                });
+                //history.push(`/store/view/${storeId}`); // TODO: update redirect path
+            })
+            .catch(err => {
+                dispatch(createStaffError(err.response.data));
+                //console.log(err.response.data);
+            });
+    };
+=======
   return dispatch => {
     //redux thunk passes dispatch
     axios
@@ -78,6 +97,7 @@ export const createNewStaff = (staffCreateRequest, history) => {
         //console.log(err.response.data);
       });
   };
+>>>>>>> 9dd63a077525cb0b1e6a0301247efd35ff001954
 };
 
 const createStaffSuccess = data => ({
@@ -91,6 +111,25 @@ const createStaffError = data => ({
 });
 
 export const createNewStaffAccount = (StaffAccountCreateRequest, history) => {
+<<<<<<< HEAD
+    return dispatch => {
+        //redux thunk passes dispatch
+        axios
+            .post(STAFF_BASE_URL + "/createNewStaffAccount", StaffAccountCreateRequest)
+            .then(response => {
+                const { data } = jsog.decode(response);
+                dispatch(createStaffAccountSuccess(data));
+                toast.success("Staff Account Created!", {
+                    position: toast.POSITION.TOP_CENTER
+                });
+                //history.push(`/store/view/${storeId}`); // TODO: update redirect path
+            })
+            .catch(err => {
+                dispatch(createStaffAccountError(err.response.data));
+                //console.log(err.response.data);
+            });
+    };
+=======
   return dispatch => {
     //redux thunk passes dispatch
     axios
@@ -112,6 +151,7 @@ export const createNewStaffAccount = (StaffAccountCreateRequest, history) => {
         //console.log(err.response.data);
       });
   };
+>>>>>>> 9dd63a077525cb0b1e6a0301247efd35ff001954
 };
 
 const createStaffAccountSuccess = data => ({
@@ -125,6 +165,25 @@ const createStaffAccountError = data => ({
 });
 
 export const changePassword = (StaffChangePasswordRequest, history) => {
+<<<<<<< HEAD
+    return dispatch => {
+        //redux thunk passes dispatch
+        axios
+            .post(STAFF_BASE_URL + "/changeStaffPassword", StaffChangePasswordRequest)
+            .then(response => {
+                const { data } = jsog.decode(response);
+                dispatch(changeStaffPasswordSuccess(data));
+                toast.success("Staff password changed!", {
+                    position: toast.POSITION.TOP_CENTER
+                });
+                //history.push(`/store/view/${storeId}`); // TODO: update redirect path
+            })
+            .catch(err => {
+                dispatch(changeStaffPasswordError(err.response.data));
+                //console.log(err.response.data);
+            });
+    };
+=======
   return dispatch => {
     //redux thunk passes dispatch
     axios
@@ -143,6 +202,7 @@ export const changePassword = (StaffChangePasswordRequest, history) => {
         //console.log(err.response.data);
       });
   };
+>>>>>>> 9dd63a077525cb0b1e6a0301247efd35ff001954
 };
 
 const changeStaffPasswordSuccess = data => ({
@@ -156,6 +216,25 @@ const changeStaffPasswordError = data => ({
 });
 
 export const resetPassword = (ResetStaffPasswordRequest, history) => {
+<<<<<<< HEAD
+    return dispatch => {
+        //redux thunk passes dispatch
+        axios
+            .post(STAFF_BASE_URL + "/resetStaffPassword", ResetStaffPasswordRequest)
+            .then(response => {
+                const { data } = jsog.decode(response);
+                dispatch(resetStaffPasswordSuccess(data));
+                toast.success("Staff password reset!", {
+                    position: toast.POSITION.TOP_CENTER
+                });
+                //history.push(`/store/view/${storeId}`); // TODO: update redirect path
+            })
+            .catch(err => {
+                dispatch(resetStaffPasswordError(err.response.data));
+                //console.log(err.response.data);
+            });
+    };
+=======
   return dispatch => {
     //redux thunk passes dispatch
     axios
@@ -174,6 +253,7 @@ export const resetPassword = (ResetStaffPasswordRequest, history) => {
         //console.log(err.response.data);
       });
   };
+>>>>>>> 9dd63a077525cb0b1e6a0301247efd35ff001954
 };
 
 const resetStaffPasswordSuccess = data => ({
