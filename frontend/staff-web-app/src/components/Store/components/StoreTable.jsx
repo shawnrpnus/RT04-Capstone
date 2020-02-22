@@ -25,7 +25,6 @@ import {
 } from "@material-ui/icons";
 import withPage from "../../Layout/page/withPage";
 import { css } from "@emotion/core";
-import { ClipLoader } from "react-spinners";
 import withMaterialConfirmDialog from "../../Layout/page/withMaterialConfirmDialog";
 
 const override = css`
@@ -66,7 +65,7 @@ class StoreTable extends Component {
 
   render() {
     const data = this.props.allStores;
-    const { history } = this.props;
+    const { history, renderLoader } = this.props;
     return (
       <React.Fragment>
         {/*<div className="card__title">*/}
@@ -127,12 +126,7 @@ class StoreTable extends Component {
               }}
             />
           ) : (
-            <ClipLoader
-              css={override}
-              size={100}
-              color={"#36D7B7"}
-              loading={true}
-            />
+            renderLoader()
           )}
         </div>
       </React.Fragment>

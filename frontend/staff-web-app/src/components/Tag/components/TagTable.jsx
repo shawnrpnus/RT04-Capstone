@@ -27,9 +27,7 @@ import {
 import connect from "react-redux/es/connect/connect";
 import withMaterialConfirmDialog from "../../Layout/page/withMaterialConfirmDialog";
 import CreateUpdateTagRequest from "../../../models/CreateUpdateTagRequest";
-import { ClipLoader } from "react-spinners";
 import { css } from "@emotion/core";
-import { Promise as reject } from "q";
 
 const tableIcons = {
   Add: AddBox,
@@ -76,7 +74,7 @@ class TagTable extends Component {
   };
 
   render() {
-    const { history } = this.props;
+    const { history, renderLoader } = this.props;
     const data = this.props.allTags;
     // console.log(this.props);
     // console.log(setState);
@@ -133,12 +131,7 @@ class TagTable extends Component {
               }}
             />
           ) : (
-            <ClipLoader
-              css={override}
-              size={100}
-              color={"#36D7B7"}
-              loading={true}
-            />
+            renderLoader()
           )}
         </div>
       </React.Fragment>
