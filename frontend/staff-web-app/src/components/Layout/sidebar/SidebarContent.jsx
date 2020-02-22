@@ -50,6 +50,13 @@ class SidebarContent extends Component {
               onClick={this.hideSidebar}
             />
           </SidebarCategory>
+          <SidebarCategory title="Category" icon="tree">
+            <SidebarLink
+              title="View All"
+              route="/category/viewAll"
+              onClick={this.hideSidebar}
+            />
+          </SidebarCategory>
         </ul>
       </div>
     );

@@ -51,13 +51,13 @@ public class ProductControllerTest extends ApiTestSetup {
     public void testCDProductVariant() {
         ProductVariantCreateRequest productVariantCreateRequest = new ProductVariantCreateRequest(productId, "Pink", sizes);
 
-        ProductVariant productVariantToCreate = given().
+        List<ProductVariant> productVariants = given().
                 contentType("application/json").
                 body(productVariantCreateRequest).
                 when().post(PRODUCT_VARIANT_BASE_ROUTE + CREATE_MULTIPLE_PRODUCT_VARIANTS).
-                then().statusCode(HttpStatus.CREATED.value()).extract().body().as(ProductVariant.class);
+                then().statusCode(HttpStatus.CREATED.value()).extract().body().jsonPath().getList(".", ProductVariant.class);
 
-        Long productVariantId = productVariantToCreate.getProductVariantId();
+        Long productVariantId = productVariants.get(0).getProductVariantId();
         ProductVariant productVariantToDelete = given().
                 pathParam("productVariantId", productVariantId).
                 when().delete(PRODUCT_VARIANT_BASE_ROUTE + DELETE_PRODUCT_VARIANT).
