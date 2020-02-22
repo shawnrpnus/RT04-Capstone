@@ -71,12 +71,12 @@ public class StartUpService {
             colors.add("Red");
             Product newProduct = productService.createNewProduct(product, category.getCategoryId(), null, sizes, colors);
 
-            Product product2 = new Product("0011", "Stan Smith", "Adidas", BigDecimal.valueOf(109.90), BigDecimal.valueOf(49.90));
+            Product product2 = new Product("0011", "Fila Disruptor II", "Fila", BigDecimal.valueOf(109.90), BigDecimal.valueOf(49.90));
             Category category2 = categoryService.retrieveCategoryByName("Shirts");
             product2.setCategory(category2);
             Product newProduct2 = productService.createNewProduct(product2, category2.getCategoryId(), null, sizes, colors);
 
-            Product product3 = new Product("0012", "Stan Smith", "Adidas", BigDecimal.valueOf(109.90), BigDecimal.valueOf(49.90));
+            Product product3 = new Product("0012", "Nike Air Max", "Nike", BigDecimal.valueOf(109.90), BigDecimal.valueOf(49.90));
             Category category3 = categoryService.retrieveCategoryByName("Socks");
             product3.setCategory(category);
             Product newProduct3 = productService.createNewProduct(product3, category3.getCategoryId(), null, sizes, colors);

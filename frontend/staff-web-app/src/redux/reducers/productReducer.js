@@ -1,7 +1,8 @@
 import * as types from "../actions/types";
 
 const initialState = {
-  currentProduct: null
+  currentProduct: null,
+  products: null
 };
 
 export default function(state = initialState, action) {
@@ -10,6 +11,11 @@ export default function(state = initialState, action) {
       return {
         ...state,
         currentProduct: action.product
+      };
+    case types.RETRIEVE_ALL_PRODUCTS:
+      return {
+        ...state,
+        products: action.products
       };
     default:
       return state;

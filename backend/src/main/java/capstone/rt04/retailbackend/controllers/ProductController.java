@@ -5,6 +5,7 @@ import capstone.rt04.retailbackend.request.product.ProductCreateRequest;
 import capstone.rt04.retailbackend.request.product.ProductRetrieveRequest;
 import capstone.rt04.retailbackend.request.product.ProductTagRequest;
 import capstone.rt04.retailbackend.response.GenericErrorResponse;
+import capstone.rt04.retailbackend.response.ProductDetailsResponse;
 import capstone.rt04.retailbackend.services.ProductService;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.product.CreateNewProductException;
@@ -33,8 +34,9 @@ public class ProductController {
     @GetMapping(ProductControllerRoutes.RETRIEVE_PRODUCT_BY_ID)
     public ResponseEntity<?> retrieveProductById(@PathVariable Long productId) {
         try {
-            Product product = productService.retrieveProductById(productId);
-            return new ResponseEntity<>(product, HttpStatus.OK);
+            List<ProductDetailsResponse> products = productService.retrieveProductsDetails(null, productId);
+            if (products.size() == 0) throw new ProductNotFoundException();
+            return new ResponseEntity<>(products.get(0), HttpStatus.OK);
         } catch (ProductNotFoundException ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
         } catch (Exception ex) {
@@ -50,6 +52,18 @@ public class ProductController {
                     productRetrieveRequest.getMinPrice(), productRetrieveRequest.getMaxPrice(), productRetrieveRequest.getSortEnum());
             return new ResponseEntity<>(products, HttpStatus.OK);
         }  catch (Exception ex) {
+            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping(ProductControllerRoutes.RETRIEVE_PRODUCTS_DETAILS)
+    public ResponseEntity<?> retrieveProductsDetails(@RequestParam(required = false) Long storeOrWarehouseId) {
+        try {
+            List<ProductDetailsResponse> products = productService.retrieveProductsDetails(storeOrWarehouseId, null);
+            return new ResponseEntity<>(products, HttpStatus.OK);
+        } catch (ProductNotFoundException ex) {
+            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
+        }catch (Exception ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

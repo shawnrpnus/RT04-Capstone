@@ -5,6 +5,9 @@ import capstone.rt04.retailbackend.repositories.ProductImageRepository;
 import capstone.rt04.retailbackend.repositories.ProductRepository;
 import capstone.rt04.retailbackend.repositories.ProductStockRepository;
 import capstone.rt04.retailbackend.repositories.ProductVariantRepository;
+import capstone.rt04.retailbackend.response.ColourToSizeImageMap;
+import capstone.rt04.retailbackend.response.ProductDetailsResponse;
+import capstone.rt04.retailbackend.response.SizeToProductVariantAndStockMap;
 import capstone.rt04.retailbackend.util.enums.SizeEnum;
 import capstone.rt04.retailbackend.util.enums.SortEnum;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
@@ -100,7 +103,7 @@ public class ProductService {
                 SizeDetails sizeDetails;
 
                 for (String colour : colours) {
-                    createMultipleProductVariants(product.getProductId(),colour,sizes);
+                    createMultipleProductVariants(product.getProductId(), colour, sizes);
 //                    for (SizeEnum size : sizes) {
 //                        sku = product.getSerialNumber() + "-" + colour + "-" + size;
 //                        sizeDetails = new SizeDetails(size);
@@ -131,6 +134,70 @@ public class ProductService {
         List<Product> products = productRepository.findAll();
         lazilyLoadProduct(products);
         return products;
+    }
+
+    public List<ProductDetailsResponse> retrieveProductsDetails(Long storeOrWarehouseId, Long productId) throws ProductNotFoundException {
+        // Each product can have multiple colour
+        // Each colours will have a list of sizes
+        // Every sizes of each colour will show the productVariantId and productStock
+
+        List<Product> products = new ArrayList<>();
+        if (productId != null) {
+            products.add(retrieveProductById(productId));
+        } else {
+            products = retrieveAllProducts();
+        }
+        String colour;
+        List<String> colours = new ArrayList<>();
+
+        ProductStock prodStock = new ProductStock();
+
+        ProductDetailsResponse productDetailsResponse;
+        SizeToProductVariantAndStockMap sizeToProductVariantAndStockMap;
+        ColourToSizeImageMap colourToSizeImageMap = new ColourToSizeImageMap();
+
+        List<SizeToProductVariantAndStockMap> sizeToProductVariantAndStockMaps;
+        List<ProductDetailsResponse> productDetailsResponses = new ArrayList<>();
+
+        for (Product product : products) {
+            productDetailsResponse = new ProductDetailsResponse();
+            colours.clear();
+
+            for (ProductVariant productVariant : product.getProductVariants()) {
+                // Find product stock that belongs to the specified store/ warehouse
+
+                if (storeOrWarehouseId != null) { // no need to return product stock if no store/warehouse ID provided
+                    prodStock = new ProductStock();
+                    for (ProductStock productStock : productVariant.getProductStocks()) {
+                        if (productStock.getStore().getStoreId() == storeOrWarehouseId) {
+                            prodStock = productStock;
+                            break;
+                        }
+                    }
+                }
+
+                sizeToProductVariantAndStockMap = new SizeToProductVariantAndStockMap(productVariant.getSizeDetails().getProductSize(),
+                        productVariant.getProductVariantId(), prodStock);
+
+                colour = productVariant.getColour();
+                if (!colours.contains(colour)) {
+                    colours.add(colour);
+                    sizeToProductVariantAndStockMaps = new ArrayList<>();
+                    // to make it an array
+                    sizeToProductVariantAndStockMaps.add(sizeToProductVariantAndStockMap);
+
+                    // for every new colour, add the colour to size map to product
+                    colourToSizeImageMap = new ColourToSizeImageMap(colour, productVariant.getProductImages(), sizeToProductVariantAndStockMaps);
+                    productDetailsResponse.getColourToSizeImageMaps().add(colourToSizeImageMap);
+                } else {
+                    // add a new size to the colour.
+                    colourToSizeImageMap.getSizeMaps().add(sizeToProductVariantAndStockMap);
+                }
+            }
+            productDetailsResponse.setProduct(product);
+            productDetailsResponses.add(productDetailsResponse);
+        }
+        return productDetailsResponses;
     }
 
     public Product retrieveProductById(Long productId) throws ProductNotFoundException {

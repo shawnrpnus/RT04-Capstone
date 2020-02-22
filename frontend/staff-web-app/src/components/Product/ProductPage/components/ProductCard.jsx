@@ -7,14 +7,12 @@ import {
   Button,
   ButtonGroup
 } from "reactstrap";
-import HeartIcon from "mdi-react/HeartIcon";
 import StarIcon from "mdi-react/StarIcon";
 import StarOutlineIcon from "mdi-react/StarOutlineIcon";
-import { Link, withRouter } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 import ProductGallery from "./ProductGallery";
 import images from "./imgs";
 import ProductTabs from "./ProductTabs";
-import ColorSelect from "./ColorSelect";
 import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
 import Switch from "@material-ui/core/Switch";
 import Row from "reactstrap/es/Row";
@@ -24,7 +22,6 @@ import { retrieveProductById } from "../../../../redux/actions/productActions";
 import IconButton from "@material-ui/core/IconButton";
 import CreateIcon from "@material-ui/icons/Create";
 import AddCircleRoundedIcon from "@material-ui/icons/AddCircleRounded";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
 import ProductUpdateForm from "./ProductUpdateForm";
 
 class ProductCard extends PureComponent {
@@ -36,7 +33,7 @@ class ProductCard extends PureComponent {
 
   state = {
     product: {},
-    selectedColour: "",
+    selectedColour: 0,
     selectedSize: "",
     uploadImage: false,
     colourSizeMap: [],
@@ -49,30 +46,10 @@ class ProductCard extends PureComponent {
 
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (this.props.currentProduct !== prevState.product) {
-      const displayedColours = [];
-      const colourSizeMap = [];
-      let colour, size, productVariantId;
-
-      this.props.currentProduct.productVariants.map(e => {
-        colour = e.colour;
-        size = e.sizeDetails.productSize;
-        productVariantId = e.productVariantId;
-
-        if (!displayedColours.includes(colour)) {
-          displayedColours.push(colour);
-          colourSizeMap[colour] = Object();
-          colourSizeMap[colour].sizes = Array({ size, productVariantId });
-          colourSizeMap[colour].productImages = e.productImages;
-        } else {
-          colourSizeMap[colour].sizes.push({ size, productVariantId });
-        }
-      });
-      // console.log(colourSizeMap);
-      // console.log(displayedColours[0]);
+      console.log(this.props.currentProduct.colourToSizeImageMaps);
       this.setState({
-        product: this.props.currentProduct,
-        colourSizeMap,
-        selectedColour: displayedColours[0]
+        product: this.props.currentProduct.product,
+        colourSizeMap: this.props.currentProduct.colourToSizeImageMaps
       });
     }
   }
@@ -91,7 +68,6 @@ class ProductCard extends PureComponent {
 
   handleSelectSize = async ({ target }) => {
     const { value } = target;
-    console.log(value);
     await this.setState({ selectedSize: value });
   };
 
@@ -121,7 +97,7 @@ class ProductCard extends PureComponent {
         <Card>
           <CardBody>
             <div className="product-card">
-              {productVariants && (
+              {colourSizeMap.length > 0 && (
                 <ProductGallery
                   colourSizeMap={colourSizeMap}
                   selectedColour={selectedColour}
@@ -170,7 +146,7 @@ class ProductCard extends PureComponent {
                   <div className="form__form-group-field">
                     {/* Product Variant .map() */}
                     {colourSizeMap &&
-                      Object.keys(colourSizeMap).map(colour => {
+                      colourSizeMap.map(({ colour }, index) => {
                         return (
                           <FiberManualRecordIcon
                             style={{
@@ -179,7 +155,7 @@ class ProductCard extends PureComponent {
                               fontSize: 40
                             }}
                             key={colour}
-                            onClick={() => this.handleSelectColour(colour)}
+                            onClick={() => this.handleSelectColour(index)}
                           />
                         );
                       })}
@@ -192,8 +168,9 @@ class ProductCard extends PureComponent {
                     <ButtonToolbar>
                       <ButtonGroup dir="ltr">
                         {colourSizeMap[selectedColour] &&
-                          colourSizeMap[selectedColour].sizes.map(
+                          colourSizeMap[selectedColour].sizeMaps.map(
                             ({ size, productVariantId }) => {
+                              console.log(size, productVariantId);
                               return (
                                 <Button
                                   key={size}
