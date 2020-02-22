@@ -83,7 +83,6 @@ public class ReviewService {
                 reviewToUpdate.setRating(review.getRating());
                 reviewToUpdate.setResponse(review.getResponse());
                 reviewToUpdate.setContent(review.getContent());
-                reviewRepository.save(reviewToUpdate);
                 return reviewToUpdate;
             } catch (ReviewNotFoundException ex) {
                 throw new ReviewNotUpdatedException("Error updating review.");
