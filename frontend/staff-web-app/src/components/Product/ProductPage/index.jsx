@@ -28,4 +28,4 @@ import RelatedItems from "./components/RelatedItems";
 //   </Container>
 // );
 
-export {ProductCard};
+export { ProductCard };

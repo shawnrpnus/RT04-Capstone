@@ -6,13 +6,8 @@ export default () => (
   <Switch>
     <Route
       exact
-      path="/tag"
+      path="/tag/manage"
       render={props => <TagContainer {...props} mode="viewAll" />}
-    />
-    <Route
-      exact
-      path="/tag/view/:tagId"
-      render={props => <TagContainer {...props} mode="viewOne" />}
     />
   </Switch>
 );

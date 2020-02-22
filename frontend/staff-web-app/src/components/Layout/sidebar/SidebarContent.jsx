@@ -24,20 +24,14 @@ class SidebarContent extends Component {
             onClick={this.hideSidebar}
           />
 
-          <SidebarCategory title="Staff" icon ="EmojiPeople">
+          <SidebarCategory title="Staff" icon="EmojiPeople">
+            <SidebarLink title="Create" route="/" onClick={this.hideSidebar} />
             <SidebarLink
-                title="Create"
-                route="/"
-                onClick={this.hideSidebar}
-            />
-            <SidebarLink
-                title="View All"
-                route="/"
-                onClick={this.hideSidebar}
+              title="View All"
+              route="/"
+              onClick={this.hideSidebar}
             />
           </SidebarCategory>
-
-
 
           <SidebarCategory title="Stores" icon="store">
             <SidebarLink
@@ -52,8 +46,6 @@ class SidebarContent extends Component {
             />
           </SidebarCategory>
 
-
-
           <SidebarCategory title="Products" icon="diamond">
             <SidebarLink title="Create" route="/" onClick={this.hideSidebar} />
             <SidebarLink
@@ -65,7 +57,7 @@ class SidebarContent extends Component {
           <SidebarCategory title="Tag" icon="diamond">
             <SidebarLink
               title="Create"
-              route="/tag"
+              route="/tag/manage"
               onClick={this.hideSidebar}
             />
           </SidebarCategory>
