@@ -110,7 +110,7 @@ public class StaffServiceTest {
    public void staffLogin() throws Exception {
         //Username = ID of staff
        //Check here that retrieveStaffByUsername works
-       Staff validStaff = staffService.retrieveStaffByUsername(createdStaffUsername);
+       Staff validStaff = staffService.retrieveStaffByStaffId(createdStaffId);
        assertThat(validStaff.getStaffId()).isEqualTo(createdStaffId);
 
        //Correct login
@@ -132,7 +132,7 @@ public class StaffServiceTest {
         String newPasswordRaw = "password12345";
 
         staffService.changeStaffPassword(validStaff.getStaffId(), createdStaffPassword, newPasswordRaw);
-        validStaff = staffService.retrieveStaffByUsername(createdStaffUsername);
+        validStaff = staffService.retrieveStaffByStaffId(createdStaffId);
         assertThat(encoder.matches(newPasswordRaw, validStaff.getPassword())).isTrue();
 
         try {
@@ -144,17 +144,20 @@ public class StaffServiceTest {
         }
     }
 
-    @Test (expected = StaffNotFoundException.class)
-    public void resetStaffPassword() throws Exception {
+
+    public void resetStaffPasswordSuccess() throws Exception {
         //Username = ID of staff
         //IT keys in staffID which is equivalent to the username
         //Test successful reset
-        Staff validStaff = staffService.retrieveStaffByUsername(String.valueOf(createdStaffId));
+        Staff validStaff = staffService.retrieveStaffByStaffId(createdStaffId);
         Staff staffAfterReset = staffService.resetPassword(validStaff.getStaffId());
         assertThat(staffAfterReset.getStaffId()).isEqualTo(validStaff.getStaffId());
-
+    }
+    @Test (expected = StaffNotFoundException.class)
+    public void resetStaffPasswordFail() throws Exception {
         //Expect Staff not found exception
-        staffAfterReset = staffService.resetPassword(Long.valueOf("420"));
+        Staff staffAfterReset = staffService.resetPassword(Long.valueOf("420"));
+
     }
 
 

@@ -56,10 +56,6 @@ public class ApiTestSetup {
     @LocalServerPort
     int port;
 
-    @Autowired
-    protected DepartmentRepository departmentRepository;
-    @Autowired
-    protected RoleRepository roleRepository;
 
     protected static final String VALID_CUST_EMAIL = "tonystark@gmail.com";
     protected static final String VALID_CUST_PASSWORD = "spiderman";
@@ -76,11 +72,6 @@ public class ApiTestSetup {
 
     protected List<SizeEnum> sizes = new ArrayList<>();
     protected List<String> colors = new ArrayList<>();
-    protected static Long createdStaffId;
-    protected static String VALID_STAFF_PASSWORD;
-    protected static final String VALID_STAFF_EMAIL = "tonystark@gmail.com";
-    protected static Role testRole;
-    protected static Department testDepartment;
 
     @Before
     public void setUp() throws Exception {
@@ -90,7 +81,6 @@ public class ApiTestSetup {
         setUpStore();
         setUpCustomer();
         setUpStyle();
-        setUpStaff();
     }
 
     @After
@@ -100,7 +90,6 @@ public class ApiTestSetup {
         tearDownStyle();
         tearDownTag();
         tearDownStore();
-        tearDownStaff();
     }
 
     @Test
@@ -256,63 +245,6 @@ public class ApiTestSetup {
         storeId = null;
     }
 
-    private void setUpStaff(){
-        Staff expectedValidStaff = new Staff("Bob", "Vance", 10, "S1111111D", VALID_STAFF_EMAIL);
-
-        //Role and department has to be created beforehand
-        RoleNameEnum rolename = RoleNameEnum.valueOf("ASSISTANT");
-        BigDecimal salary = new BigDecimal(1000);
-        RoleCreateRequest roleCreateRequest = new RoleCreateRequest(rolename, salary);
-        testRole = given().
-                contentType("application/json").
-                body(roleCreateRequest).
-                when().post(STAFF_BASE_ROUTE + CREATE_NEW_ROLE).
-                then().statusCode(HttpStatus.CREATED.value()).extract().body().as(Role.class);
-        assertThat(testRole.getRoleId()).isNotNull();
-
-        DepartmentCreateRequest departmentCreateRequest = new DepartmentCreateRequest("abc");
-        testDepartment = given().
-                contentType("application/json").
-                body(departmentCreateRequest).
-                when().post(STAFF_BASE_ROUTE + CREATE_NEW_DEPARTMENT).
-                then().statusCode(HttpStatus.CREATED.value()).extract().body().as(Department.class);
-        assertThat(testDepartment.getDepartmentId()).isNotNull();
-
-        Address testAddress = new Address("aba", "aaa", 123456, "blah");
-
-        StaffCreateRequest staffCreateRequest = new StaffCreateRequest(expectedValidStaff, testAddress, testRole, testDepartment);
-
-        Staff createdStaff = given().
-                contentType("application/json").
-                body(staffCreateRequest).
-                when().post(STAFF_BASE_ROUTE + CREATE_NEW_STAFF).
-                then().statusCode(HttpStatus.CREATED.value()).extract().body().as(Staff.class);
-
-        assertThat(createdStaff.getStaffId()).isNotNull();
-        createdStaffId = createdStaff.getStaffId();
-
-        StaffAccountCreateRequest req = new StaffAccountCreateRequest(createdStaffId);
-        createdStaff = given()
-                .contentType("application/json")
-                .body(req)
-                .when().post(STAFF_BASE_ROUTE + CREATE_NEW_STAFF_ACCOUNT)
-                .then().statusCode(HttpStatus.CREATED.value()).extract().body().as(Staff.class);
-        assertThat(createdStaff.getStaffId()).isEqualTo(createdStaffId);
-        VALID_STAFF_PASSWORD = createdStaff.getPassword();
-
-
-    }
-
-    private void tearDownStaff(){
-        Staff deletedStaff = given().
-                pathParam("staffId", createdStaffId).
-                when().delete(STAFF_BASE_ROUTE + DELETE_STAFF).
-                then().statusCode(HttpStatus.OK.value()).extract().body().as(Staff.class);
-
-        assertThat(deletedStaff.getStaffId().equals(createdStaffId));
-        createdStaffId = null;
-
-    }
 
 
 }

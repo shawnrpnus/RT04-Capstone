@@ -135,7 +135,6 @@ public class StaffController {
                     staffChangePasswordRequest.getOldPassword(),
                     staffChangePasswordRequest.getNewPassword());
             Staff staff = staffService.retrieveStaffByStaffId(staffChangePasswordRequest.getStaffId());
-            System.out.println(staff.getPassword());
             return new ResponseEntity<>(staff, HttpStatus.OK);
         } catch (StaffNotFoundException ex){
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
@@ -147,11 +146,13 @@ public class StaffController {
     // TODO: Implement below method with actual email.
     // For IT to reset password for staff
     @PostMapping(StaffControllerRoutes.RESET_STAFF_PASSWORD)
-    public ResponseEntity<?> resetStaffPassword(@RequestParam Long staffId) throws StaffNotFoundException {
-        staffService.resetPassword(staffId);
-        Map<String, String> successMessage = new HashMap<>();
-        successMessage.put("message","Please inform staff to check email for new password");
-        return new ResponseEntity<>(successMessage, HttpStatus.OK);
+    public ResponseEntity<?> resetStaffPassword(@RequestBody ResetStaffPasswordRequest rq) throws StaffNotFoundException {
+        try {
+            Staff staff = staffService.resetPassword(rq.getStaffId());
+            return new ResponseEntity<>(staff, HttpStatus.OK);
+        }catch (StaffNotFoundException ex){
+            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
+        }
     }
 
     @DeleteMapping(StaffControllerRoutes.DELETE_STAFF)
