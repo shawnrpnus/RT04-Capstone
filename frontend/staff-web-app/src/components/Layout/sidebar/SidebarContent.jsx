@@ -39,7 +39,7 @@ class SidebarContent extends Component {
             <SidebarLink title="Create" route="/" onClick={this.hideSidebar} />
             <SidebarLink
               title="View All"
-              route="/viewAllProduct"
+              route="/product/viewAllProduct"
               onClick={this.hideSidebar}
             />
           </SidebarCategory>
