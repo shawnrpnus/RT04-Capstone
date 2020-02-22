@@ -17,7 +17,8 @@ import {
   Remove,
   SaveAlt,
   Search,
-  ViewColumn
+  ViewColumn,
+  Visibility
 } from "@material-ui/icons";
 import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
 import PageviewOutlinedIcon from "@material-ui/icons/PageviewOutlined";
@@ -89,10 +90,11 @@ class ProductsTable extends PureComponent {
     }
 
     return (
-      <div style={{ width: "auto", overflowX: "scroll" }}>
+      <div className="table" style={{ verticalAlign: "middle" }}>
         {products && (
           <MaterialTable
-            title="Basic Filtering Preview"
+            title="All Products"
+            style={{ boxShadow: "none" }}
             icons={tableIcons}
             columns={[
               {
@@ -101,7 +103,11 @@ class ProductsTable extends PureComponent {
                 render: rowData => (
                   <Link to="/viewAllProduct">
                     <img
-                      style={{ width: 36, borderRadius: "50%" }}
+                      style={{
+                        width: "100%",
+                        height: "auto",
+                        borderRadius: "10%"
+                      }}
                       src={rowData.avatar}
                       onClick={() =>
                         console.log("You saved me" + rowData.avatar)
@@ -118,7 +124,12 @@ class ProductsTable extends PureComponent {
                 field: "colours",
                 render: rowData =>
                   rowData.colours.map((color, index) => {
-                    return <FiberManualRecordIcon style={{ color }} />;
+                    return (
+                      <FiberManualRecordIcon
+                        key={color + index}
+                        style={{ color }}
+                      />
+                    );
                   })
               },
               {
@@ -137,7 +148,7 @@ class ProductsTable extends PureComponent {
             }}
             actions={[
               {
-                icon: PageviewOutlinedIcon,
+                icon: Visibility,
                 tooltip: "View Product Variants",
                 onClick: (event, rowData) =>
                   this.handleViewProductDetails(rowData.productId)
@@ -167,5 +178,8 @@ const mapDispatchToProps = {
 };
 
 export default withRouter(
-  withPage(connect(mapStateToProps, mapDispatchToProps)(ProductsTable))
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )(withPage(ProductsTable, "Product Management"))
 );

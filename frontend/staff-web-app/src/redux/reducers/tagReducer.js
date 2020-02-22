@@ -27,7 +27,7 @@ export default function(state = initialState, action) {
       return {
         ...state,
         currentTag: action.deletedTag
-      }
+      };
     default:
       return state;
   }

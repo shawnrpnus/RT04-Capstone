@@ -24,20 +24,23 @@ class SidebarContent extends Component {
             onClick={this.hideSidebar}
           />
 
-          <SidebarCategory title="Staff" icon ="EmojiPeople">
+<<<<<<< HEAD
+          <SidebarCategory title="Staff" icon ="users">
             <SidebarLink
                 title="Create"
-                route="/"
+                route="/staff/create"
                 onClick={this.hideSidebar}
             />
+=======
+          <SidebarCategory title="Staff" icon="EmojiPeople">
+            <SidebarLink title="Create" route="/" onClick={this.hideSidebar} />
+>>>>>>> 9dd63a077525cb0b1e6a0301247efd35ff001954
             <SidebarLink
-                title="View All"
-                route="/"
-                onClick={this.hideSidebar}
+              title="View All"
+              route="/"
+              onClick={this.hideSidebar}
             />
           </SidebarCategory>
-
-
 
           <SidebarCategory title="Stores" icon="store">
             <SidebarLink
@@ -52,8 +55,6 @@ class SidebarContent extends Component {
             />
           </SidebarCategory>
 
-
-
           <SidebarCategory title="Products" icon="diamond">
             <SidebarLink title="Create" route="/" onClick={this.hideSidebar} />
             <SidebarLink
@@ -62,14 +63,14 @@ class SidebarContent extends Component {
               onClick={this.hideSidebar}
             />
           </SidebarCategory>
-          <SidebarCategory title="Tag" icon="diamond">
+          <SidebarCategory title="Tag" icon="tag">
             <SidebarLink
-              title="Create"
-              route="/tag"
+              title="Manage"
+              route="/tag/manage"
               onClick={this.hideSidebar}
             />
           </SidebarCategory>
-          <SidebarCategory title="Category" icon="tree">
+          <SidebarCategory title="Category" icon="list">
             <SidebarLink
               title="View All"
               route="/category/viewAll"

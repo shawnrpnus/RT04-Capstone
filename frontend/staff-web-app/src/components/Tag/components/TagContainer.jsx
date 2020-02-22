@@ -15,6 +15,7 @@ import * as PropTypes from "prop-types";
 import StoreForm from "../../Store/components/StoreForm";
 import { css } from "@emotion/core";
 import TagTable from "./TagTable";
+import { Grid } from "@material-ui/core";
 
 const override = css`
   display: block;
@@ -76,14 +77,19 @@ class TagContainer extends Component {
         {mode === "viewAll" ? (
           //View All, Create, Update, Delete
           <div>
-            <TagForm
-              handleSubmit={this.handleSubmit}
-              clearErrors={clearErrors}
-              errors={errors}
-              history={this.props.history}
-            />
-            <TagTable
-              history={this.props.history}/>
+            <Grid container spacing={3}>
+              <Grid item xs={12} md={3}>
+                <TagForm
+                  handleSubmit={this.handleSubmit}
+                  clearErrors={clearErrors}
+                  errors={errors}
+                  history={this.props.history}
+                />
+              </Grid>
+              <Grid item xs={12} md={9}>
+                <TagTable history={this.props.history} />
+              </Grid>
+            </Grid>
           </div>
         ) : currentTag !== null ? (
           <TagDetails /> //View One Tag Details
