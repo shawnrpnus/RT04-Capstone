@@ -14,7 +14,7 @@ import MaterialTextField from "../../../shared/components/Form/MaterialTextField
 import { Grid, MenuItem, Select } from "@material-ui/core";
 import { Button, ButtonToolbar } from "reactstrap";
 import MomentUtils from "@date-io/moment";
-import CreateTagRequest from "../../../models/createTagRequest";
+import CreateUpdateTagRequest from "../../../models/CreateUpdateTagRequest";
 
 class TagForm extends React.Component {
   static propTypes = {
@@ -49,9 +49,9 @@ class TagForm extends React.Component {
       Object.keys(this.state.customErrors).length !== 0;
     return (
       <MuiPickersUtilsProvider utils={MomentUtils}>
-        <form className="material-form">
+        <form className="material-form" >
           <Grid container spacing={3}>
-            <Grid item xs={12}>
+            <Grid item xs={3}>
               <MaterialTextField
                 fieldLabel="Tag Name"
                 onChange={this.onChange}

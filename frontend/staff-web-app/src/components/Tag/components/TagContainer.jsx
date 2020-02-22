@@ -10,7 +10,7 @@ import {
 import { clearErrors } from "../../../redux/actions";
 import connect from "react-redux/es/connect/connect";
 import withPage from "../../Layout/page/withPage";
-import CreateTagRequest from "../../../models/createTagRequest";
+import CreateUpdateTagRequest from "../../../models/CreateUpdateTagRequest";
 import * as PropTypes from "prop-types";
 import StoreForm from "../../Store/components/StoreForm";
 import { css } from "@emotion/core";
@@ -34,8 +34,8 @@ class TagContainer extends Component {
   componentDidMount() {
     const { mode, history } = this.props;
     if (mode === "viewOne") {
-      const storeId = this.props.match.params.storeId;
-      this.props.retrieveStoreById(storeId, history);
+      // const storeId = this.props.match.params.storeId;
+      // this.props.retrieveTagById(tagId, history);
     }
   }
 
@@ -43,12 +43,14 @@ class TagContainer extends Component {
   handleSubmit = (e, formState) => {
     e.preventDefault();
     const { name } = formState;
-    const req = new CreateTagRequest(name);
+    console.log(formState);
+    const req = new CreateUpdateTagRequest(name);
 
     switch (this.props.mode) {
       case "viewAll":
         this.props.createNewTag(req, this.props.history);
         this.props.retrieveAllTags();
+        formState.name = "";
         break;
       case "viewOne":
         req.tagId = this.props.currentTag.tagId;
@@ -80,7 +82,8 @@ class TagContainer extends Component {
               errors={errors}
               history={this.props.history}
             />
-            <TagTable />
+            <TagTable
+              history={this.props.history}/>
           </div>
         ) : currentTag !== null ? (
           <TagDetails /> //View One Tag Details

@@ -42,13 +42,13 @@ public class TagService {
 
                 if (existingTag != null) {
                     errorMap = new HashMap<>();
-                    errorMap.put("tag", "This tag is already created!");
+                    errorMap.put("name", "This tag is already created!");
                     throw new InputDataValidationException(errorMap, "Tag already created");
                 }
 
                 tagRepository.save(newTag);
                 return newTag;
-            } catch (Exception ex) {
+            } catch (TagNotFoundException ex) {
                 throw new CreateNewTagException("Error creating new tag: " + ex.getMessage());
             }
         } else {
@@ -63,15 +63,15 @@ public class TagService {
         if (errorMap == null) {
             try {
                 Tag tagToUpdate = retrieveTagByTagId(tag.getTagId());
-                Tag existingTag = tagRepository.findByNameAndTagId(tag.getName(), tag.getTagId()).orElse(null);
+                Tag existingTag = tagRepository.findByName(tag.getName()).orElse(null);
 
                 if (existingTag != null) {
-                    throw new UpdateTagException("Name of tag to be updated is duplicated!");
+                    throw new UpdateTagException("Tag Update Failed: Duplicate Name");
                 }
 
                 tagToUpdate.setName(tag.getName());
                 return tagToUpdate;
-            } catch (Exception ex) {
+            } catch (TagNotFoundException ex) {
                 throw new UpdateTagException("Error updating tag");
             }
         } else {

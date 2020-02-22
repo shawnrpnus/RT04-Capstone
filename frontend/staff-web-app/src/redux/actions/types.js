@@ -19,6 +19,9 @@ export const RETRIEVE_ALL_PRODUCTS = "RETRIEVE_ALL_PRODUCTS";
 // Tag
 export const CREATE_TAG = "CREATE_TAG";
 export const RETRIEVE_ALL_TAGS = "RETRIEVE_ALL_TAGS";
+export const RETRIEVE_TAG = "RETRIEVE_TAG"
+export const UPDATE_TAG = "UPDATE_TAG"
+export const DELETE_TAG = "DELETE_TAG"
 
 // Category
 export const RETRIEVE_ALL_CATEGORIES = "RETRIEVE_ALL_CATEGORIES";
