@@ -1,10 +1,5 @@
 import axios from "axios";
-import {
-  CREATE_TAG,
-  GET_ERRORS,
-  default as types,
-  RETRIEVE_ALL_TAGS
-} from "./types";
+import * as types from "./types";
 import { toast } from "react-toastify";
 
 const TAG_BASE_URL = "/api/tag/";
@@ -34,12 +29,12 @@ export const createNewTag = (createTagRequest, history) => {
 };
 
 const createTagSuccess = data => ({
-  type: CREATE_TAG,
+  type: types.CREATE_TAG,
   tag: data
 });
 
 const createTagError = data => ({
-  type: GET_ERRORS,
+  type: types.GET_ERRORS,
   errorMap: data
 });
 
@@ -49,24 +44,85 @@ export const retrieveAllTags = () => {
       .get(TAG_BASE_URL + "/retrieveAllTags")
       .then(response => {
         const { data } = jsog.decode(response);
-        dispatch(retrieveAllStoresSuccess(data));
+        dispatch(retrieveAllTagsSuccess(data));
       })
       .catch(err => {
-        dispatch(retrieveAllStoresError(err.response.data));
+        dispatch(retrieveAllTagsError(err.response.data));
       });
   };
 };
 
-const retrieveAllStoresSuccess = data => ({
-  type: RETRIEVE_ALL_TAGS,
+const retrieveAllTagsSuccess = data => ({
+  type: types.RETRIEVE_ALL_TAGS,
   allTags: data
 });
 
-const retrieveAllStoresError = data => ({
-  type: GET_ERRORS,
+const retrieveAllTagsError = data => ({
+  type: types.GET_ERRORS,
   errorMap: data
 });
 
-export const updateTag = () => {
-  return null;
+export const updateTag = (updateTagRequest, history) => {
+  return dispatch => {
+    //redux thunk passes dispatch
+    axios
+      .post(TAG_BASE_URL + "/updateTag", updateTagRequest)
+      .then(response => {
+        const { data } = jsog.decode(response);
+        const tagId = data.tagId;
+        dispatch(updateTagSuccess(data));
+        toast.success("Store Updated!", {
+          position: toast.POSITION.TOP_CENTER
+        });
+        retrieveAllTags()(dispatch);
+        history.push(`/tag`);
+      })
+      .catch(err => {
+        toast.error(err.response.data.errorMessage.toString(), {
+          position: toast.POSITION.TOP_CENTER
+        });
+        dispatch(updateTagError(err.response.data));
+        // console.log(err.response.data);
+      });
+  };
 };
+
+const updateTagSuccess = data => ({
+  type: types.UPDATE_TAG,
+  storeEntity: data
+});
+
+const updateTagError = data => ({
+  type: types.GET_ERRORS,
+  errorMap: data
+});
+
+export const deleteTag = (tagId, history) => {
+  return dispatch => {
+    axios
+      .delete(TAG_BASE_URL + "/deleteTag/" + tagId)
+      .then(response => {
+        const { data } = jsog.decode(response);
+        toast.success("Tag Deleted!", {
+          position: toast.POSITION.TOP_CENTER
+        });
+        dispatch(deleteTagSuccess(data));
+        retrieveAllTags()(dispatch);
+        history.push(`/tag`);
+      })
+      .catch(err => {
+        console.log(err);
+        dispatch(deleteTagError(err.response.data));
+      });
+  };
+};
+
+const deleteTagSuccess = data => ({
+  type: types.DELETE_TAG,
+  deletedTag: data
+});
+
+const deleteTagError = data => ({
+  type: types.GET_ERRORS,
+  errorMap: data
+});

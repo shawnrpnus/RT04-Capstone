@@ -1,22 +1,24 @@
 package capstone.rt04.retailbackend.controllers;
 
 import capstone.rt04.retailbackend.entities.*;
+import capstone.rt04.retailbackend.repositories.DepartmentRepository;
+import capstone.rt04.retailbackend.repositories.RoleRepository;
 import capstone.rt04.retailbackend.request.customer.CustomerLoginRequest;
-import capstone.rt04.retailbackend.request.staff.StaffAccountCreateRequest;
-import capstone.rt04.retailbackend.request.staff.StaffChangePasswordRequest;
-import capstone.rt04.retailbackend.request.staff.StaffCreateRequest;
-import capstone.rt04.retailbackend.request.staff.StaffLoginRequest;
+import capstone.rt04.retailbackend.request.staff.*;
 import capstone.rt04.retailbackend.util.Constants;
 import capstone.rt04.retailbackend.util.ErrorMessages;
 
 import static capstone.rt04.retailbackend.util.routeconstants.CustomerControllerRoutes.*;
 import static capstone.rt04.retailbackend.util.routeconstants.StaffControllerRoutes.*;
 
+import capstone.rt04.retailbackend.util.enums.RoleNameEnum;
 import capstone.rt04.retailbackend.util.exceptions.staff.CreateNewStaffAccountException;
+import io.restassured.RestAssured;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
@@ -24,22 +26,90 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
-
 import java.math.BigDecimal;
-
-import static capstone.rt04.retailbackend.util.routeconstants.StoreControllerRoutes.RETRIEVE_STORE_BY_ID;
-import static capstone.rt04.retailbackend.util.routeconstants.StoreControllerRoutes.STORE_BASE_ROUTE;
 import static io.restassured.RestAssured.*;
 import static org.hamcrest.Matchers.*;
-
 import static org.assertj.core.api.Assertions.assertThat;
+
 @DirtiesContext
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-public class StaffControllerTest extends ApiTestSetup {
+public class StaffControllerTest{
 
+    @LocalServerPort
+    int port;
+    protected static Role testRole;
+    protected static Department testDepartment;
+    protected static Long createdStaffId;
+    protected static String VALID_STAFF_PASSWORD;
+    protected static final String VALID_STAFF_EMAIL = "tonystark@gmail.com";
+    @Autowired
+    protected DepartmentRepository departmentRepository;
+    @Autowired
+    protected RoleRepository roleRepository;
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+
+    @Before
+    public void setUp() throws Exception {
+        RestAssured.port = port;
+        Staff expectedValidStaff = new Staff("Bob", "Vance", 10, "S1111111D", VALID_STAFF_EMAIL);
+
+        //Role and department has to be created beforehand
+        RoleNameEnum rolename = RoleNameEnum.valueOf("ASSISTANT");
+        BigDecimal salary = new BigDecimal(1000);
+        RoleCreateRequest roleCreateRequest = new RoleCreateRequest(rolename, salary);
+        testRole = given().
+                contentType("application/json").
+                body(roleCreateRequest).
+                when().post(STAFF_BASE_ROUTE + CREATE_NEW_ROLE).
+                then().statusCode(HttpStatus.CREATED.value()).extract().body().as(Role.class);
+        assertThat(testRole.getRoleId()).isNotNull();
+
+        DepartmentCreateRequest departmentCreateRequest = new DepartmentCreateRequest("abc");
+        testDepartment = given().
+                contentType("application/json").
+                body(departmentCreateRequest).
+                when().post(STAFF_BASE_ROUTE + CREATE_NEW_DEPARTMENT).
+                then().statusCode(HttpStatus.CREATED.value()).extract().body().as(Department.class);
+        assertThat(testDepartment.getDepartmentId()).isNotNull();
+
+        Address testAddress = new Address("aba", "aaa", 123456, "blah");
+
+        StaffCreateRequest staffCreateRequest = new StaffCreateRequest(expectedValidStaff, testAddress, testRole, testDepartment);
+
+        Staff createdStaff = given().
+                contentType("application/json").
+                body(staffCreateRequest).
+                when().post(STAFF_BASE_ROUTE + CREATE_NEW_STAFF).
+                then().statusCode(HttpStatus.CREATED.value()).extract().body().as(Staff.class);
+
+        assertThat(createdStaff.getStaffId()).isNotNull();
+        createdStaffId = createdStaff.getStaffId();
+
+        StaffAccountCreateRequest req = new StaffAccountCreateRequest(createdStaffId);
+        createdStaff = given()
+                .contentType("application/json")
+                .body(req)
+                .when().post(STAFF_BASE_ROUTE + CREATE_NEW_STAFF_ACCOUNT)
+                .then().statusCode(HttpStatus.CREATED.value()).extract().body().as(Staff.class);
+        assertThat(createdStaff.getStaffId()).isEqualTo(createdStaffId);
+        VALID_STAFF_PASSWORD = createdStaff.getPassword();
+        System.out.println("This is valid staff hashed password:"+ VALID_STAFF_PASSWORD);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        Staff deletedStaff = given().
+                pathParam("staffId", createdStaffId).
+                when().delete(STAFF_BASE_ROUTE + DELETE_STAFF).
+                then().statusCode(HttpStatus.OK.value()).extract().body().as(Staff.class);
+
+        assertThat(deletedStaff.getStaffId().equals(createdStaffId));
+        createdStaffId = null;
+
+    }
+
     @Test
     public void createInvalidStaff() {
         //Valid address
@@ -121,13 +191,35 @@ public class StaffControllerTest extends ApiTestSetup {
         //Successful change
         String newPasswordRaw = "password";
         req =  new StaffChangePasswordRequest(createdStaffId, VALID_STAFF_PASSWORD, newPasswordRaw);
-        System.out.println("This is original:"+VALID_STAFF_PASSWORD);
+        System.out.println("This is original hashed:"+VALID_STAFF_PASSWORD);
         Staff s = given()
                 .contentType("application/json")
                 .body(req)
                 .when().post(STAFF_BASE_ROUTE + CHANGE_STAFF_PASSWORD)
                 .then().statusCode(HttpStatus.OK.value()).extract().body().as(Staff.class);
         assertThat(encoder.matches(newPasswordRaw, s.getPassword())).isTrue();
+    }
+
+    @Test
+    public void resetPassword(){
+        //Invalid staff ID
+        ResetStaffPasswordRequest req = new ResetStaffPasswordRequest(Long.valueOf("9999"));
+        given()
+                .contentType("application/json")
+                .body(req)
+                .when().post(STAFF_BASE_ROUTE + RESET_STAFF_PASSWORD)
+                .then().statusCode(HttpStatus.NOT_FOUND.value());
+
+        //Valid staff ID, successful reset
+        req = new ResetStaffPasswordRequest(createdStaffId);
+        Staff s = given()
+                .contentType("application/json")
+                .body(req)
+                .when().post(STAFF_BASE_ROUTE + RESET_STAFF_PASSWORD)
+                .then().statusCode(HttpStatus.OK.value()).extract().body().as(Staff.class);
+        assertThat(s.getPassword()).isNotNull();
+        assertThat(encoder.matches(s.getPassword(), VALID_STAFF_PASSWORD)).isFalse();
+
     }
 
 

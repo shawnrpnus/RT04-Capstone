@@ -15,6 +15,7 @@ import lombok.ToString;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +38,7 @@ public class Tag implements Serializable {
 
     @NotNull(message = ErrorMessages.TAG_NAME_REQUIRED)
     @Column(unique = true)
+    @Size(min = 1, message = "Tag name is required")
     private String name;
 
     @ManyToMany

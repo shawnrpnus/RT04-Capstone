@@ -137,8 +137,6 @@ public class StaffService {
 //                sendEmail(staffID.toString(),password, "shawnroshan@gmail.com"); //TODO: to change to actual email
 //            }
 
-            System.out.println(password);
-            System.out.println(staff.getPassword());
             return staff;
         }catch (StaffNotFoundException ex){
             throw new CreateNewStaffAccountException("Staff does not exist");
@@ -161,6 +159,7 @@ public class StaffService {
 
             return staff;
         }catch (StaffNotFoundException ex){
+            System.out.println("STAFF DOES NOT EXIST");
             throw new StaffNotFoundException("Staff does not exist!");
         }
     }
@@ -190,13 +189,6 @@ public class StaffService {
 //        }
         Staff staff = staffRepository.findById(staffId)
                 .orElseThrow(() -> new StaffNotFoundException("Staff with id: " + staffId + " does not exist"));
-        return lazyLoadStaffFields(staff);
-    }
-
-    public Staff retrieveStaffByUsername(String username) throws StaffNotFoundException {
-        Staff staff = staffRepository.findByUsername(username)
-                .orElseThrow(() -> new StaffNotFoundException("Staff username: " + username + "does not exist!"));
-
         return lazyLoadStaffFields(staff);
     }
 
@@ -253,7 +245,7 @@ public class StaffService {
         try {
             Staff staff = retrieveStaffByStaffId(staffId);
 
-            if (encoder.matches(oldPassword, staff.getPassword())) {
+            if (encoder.matches(oldPassword,staff.getPassword()) || oldPassword.equals(staff.getPassword())) {
 
                 staff.setPassword(encoder.encode(newPassword));
                 return retrieveStaffByStaffId(staffId);

@@ -18,6 +18,16 @@ export default function(state = initialState, action) {
         ...state,
         allTags: action.allTags
       };
+    case types.UPDATE_TAG:
+      return {
+        ...state,
+        currentTag: action.tag
+      };
+    case types.DELETE_TAG:
+      return {
+        ...state,
+        currentTag: action.deletedTag
+      }
     default:
       return state;
   }
