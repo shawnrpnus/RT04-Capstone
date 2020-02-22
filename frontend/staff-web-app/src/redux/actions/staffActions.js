@@ -66,7 +66,6 @@ export const createNewStaff = (staffCreateRequest, history) => {
             .post(STAFF_BASE_URL + "/createNewStaff", staffCreateRequest)
             .then(response => {
                 const { data } = jsog.decode(response);
-                const staffId = data.staffId;
                 dispatch(createStaffSuccess(data));
                 toast.success("Staff Created!", {
                     position: toast.POSITION.TOP_CENTER
@@ -97,7 +96,6 @@ export const createNewStaffAccount = (StaffAccountCreateRequest, history) => {
             .post(STAFF_BASE_URL + "/createNewStaffAccount", StaffAccountCreateRequest)
             .then(response => {
                 const { data } = jsog.decode(response);
-                const staffId = data.staffId;
                 dispatch(createStaffAccountSuccess(data));
                 toast.success("Staff Account Created!", {
                     position: toast.POSITION.TOP_CENTER
@@ -128,7 +126,6 @@ export const changePassword = (StaffChangePasswordRequest, history) => {
             .post(STAFF_BASE_URL + "/changeStaffPassword", StaffChangePasswordRequest)
             .then(response => {
                 const { data } = jsog.decode(response);
-                const staffId = data.staffId;
                 dispatch(changeStaffPasswordSuccess(data));
                 toast.success("Staff password changed!", {
                     position: toast.POSITION.TOP_CENTER
@@ -159,7 +156,6 @@ export const resetPassword = (ResetStaffPasswordRequest, history) => {
             .post(STAFF_BASE_URL + "/resetStaffPassword", ResetStaffPasswordRequest)
             .then(response => {
                 const { data } = jsog.decode(response);
-                const staffId = data.staffId;
                 dispatch(resetStaffPasswordSuccess(data));
                 toast.success("Staff password reset!", {
                     position: toast.POSITION.TOP_CENTER
