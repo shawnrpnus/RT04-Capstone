@@ -1,6 +1,6 @@
 import React from 'react';
 import { Col, Container, Row } from 'reactstrap';
-import ProductsListTable from './components/ProductsListTable';
+import ProductsTable from './components/ProductsTable';
 
 const ProductsList = () => (
   <Container>
@@ -13,7 +13,7 @@ const ProductsList = () => (
       </Col>
     </Row>
     <Row>
-      <ProductsListTable />
+      <ProductsTable />
     </Row>
   </Container>
 );

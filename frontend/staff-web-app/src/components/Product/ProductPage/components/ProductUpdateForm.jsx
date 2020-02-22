@@ -14,7 +14,6 @@ import { retrieveAllCategoryAndTag } from "../../../../redux/actions/productActi
 import FormHelperText from "@material-ui/core/FormHelperText";
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
-const jsog = require("jsog");
 
 class ProductUpdateForm extends PureComponent {
   static propTypes = {
@@ -34,10 +33,9 @@ class ProductUpdateForm extends PureComponent {
   }
 
   async componentDidMount() {
-    const { data: response } = await retrieveAllCategoryAndTag();
-    const { categories, tags } = jsog.decode(response);
+    const response = await retrieveAllCategoryAndTag();
+    const { categories, tags } = response;
     this.setState({ categories, tagList: tags });
-    console.log(this.state);
   }
 
   onChange = ({ target: input }) => {
@@ -121,7 +119,6 @@ class ProductUpdateForm extends PureComponent {
               <MenuItem value=""></MenuItem>
               {categories &&
                 categories.map(({ name: category }) => {
-                  console.log(category);
                   return (
                     <MenuItem key={category} value={category}>
                       {category}
