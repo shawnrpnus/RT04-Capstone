@@ -82,7 +82,7 @@ class TagTable extends Component {
               }}
             />
           ) : (
-            "not"
+            ""
           )}
         </div>
       </React.Fragment>
