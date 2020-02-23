@@ -26,30 +26,21 @@ public class CategoryService {
         this.categoryRepository = categoryRepository;
     }
 
-    public Category createNewCategory(Category newCategory, Long parentCategoryId) throws InputDataValidationException, CreateNewCategoryException {
+    public Category createNewCategory(Category newCategory, Long parentCategoryId) throws InputDataValidationException, CreateNewCategoryException, CategoryNotFoundException {
         Map<String, String> errorMap = validationService.generateErrorMap(newCategory);
 
         if (errorMap == null) {
-            try {
-//                Category existingCategory = null;
-//                try {
-//                    existingCategory = retrieveCategoryByName(newCategory.getCategoryName());
-//                } catch (CategoryNotFoundException ex) {
-//                }
-//                if (existingCategory != null) {
-//                    errorMap = new HashMap<>();
-//                    errorMap.put("category", "This category is already created!");
-//                    throw new InputDataValidationException(errorMap, "Category already created");
-//                }
-                if (parentCategoryId != null) {
-                    Category parentCategoryEntity = retrieveCategoryByCategoryId(parentCategoryId);
 
-                    if (!parentCategoryEntity.getProducts().isEmpty()) {
-                        throw new CreateNewCategoryException("Parent category cannot be associated with any product");
-                    }
-                    newCategory.setParentCategory(parentCategoryEntity);
-                    parentCategoryEntity.getChildCategories().add(newCategory);
+            if (parentCategoryId != null) {
+                Category parentCategoryEntity = retrieveCategoryByCategoryId(parentCategoryId);
+
+                if (!parentCategoryEntity.getProducts().isEmpty()) {
+                    throw new CreateNewCategoryException("Parent category cannot be associated with any product");
                 }
+                newCategory.setParentCategory(parentCategoryEntity);
+                parentCategoryEntity.getChildCategories().add(newCategory);
+            }
+            try {
                 categoryRepository.save(newCategory);
                 return newCategory;
             } catch (Exception ex) {
@@ -104,11 +95,6 @@ public class CategoryService {
 
                     categoryToUpdate.setParentCategory(parentCategory);
                 }
-            } else { //update name only
-                if (categoryToUpdate.getParentCategory() != null) {
-                    throw new CategoryNotFoundException("Category ID not provided for category to be updated");
-                }
-
             }
             return categoryToUpdate;
 

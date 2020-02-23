@@ -12,6 +12,7 @@ import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.category.CategoryNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.category.CreateNewCategoryException;
 import capstone.rt04.retailbackend.util.exceptions.category.DeleteCategoryException;
+import capstone.rt04.retailbackend.util.exceptions.category.UpdateCategoryException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -67,30 +68,18 @@ public class CategoryController {
     }
 
     @PostMapping(CREATE_NEW_CATEGORY)
-    public ResponseEntity<?> createNewCategory(@RequestBody CategoryCreateRequest categoryCreateRequest) {
-        try {
-            Category newCategory = categoryService.createNewCategory(categoryCreateRequest.getCategory(),
-                    categoryCreateRequest.getParentCategoryId());
-            return new ResponseEntity<>(newCategory, HttpStatus.CREATED);
-        } catch (InputDataValidationException ex) {
-            return new ResponseEntity<>(ex.getErrorMap(), HttpStatus.BAD_REQUEST);
-        } catch (CreateNewCategoryException ex) {
-            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
-        } catch (Exception ex) {
-            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public ResponseEntity<?> createNewCategory(@RequestBody CategoryCreateRequest categoryCreateRequest) throws CategoryNotFoundException, CreateNewCategoryException, InputDataValidationException {
+        Category newCategory = categoryService.createNewCategory(categoryCreateRequest.getCategory(),
+                categoryCreateRequest.getParentCategoryId());
+        return new ResponseEntity<>(newCategory, HttpStatus.CREATED);
     }
 
-    @PutMapping(UPDATE_CATEGORY)
-    public ResponseEntity<?> updateCategory(@RequestBody CategoryUpdateRequest categoryUpdateRequest) {
-        try {
-            Category category = categoryService.updateCategory(categoryUpdateRequest.getCategory(), categoryUpdateRequest.getParentCategoryId());
-            return new ResponseEntity<>(category, HttpStatus.OK);
-        } catch (CategoryNotFoundException ex) {
-            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
-        } catch (Exception ex) {
-            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+
+    @PostMapping(UPDATE_CATEGORY)
+    public ResponseEntity<?> updateCategory(@RequestBody CategoryUpdateRequest categoryUpdateRequest) throws CategoryNotFoundException, UpdateCategoryException, InputDataValidationException {
+
+        Category category = categoryService.updateCategory(categoryUpdateRequest.getCategory(), categoryUpdateRequest.getParentCategoryId());
+        return new ResponseEntity<>(category, HttpStatus.OK);
     }
 
     @DeleteMapping(DELETE_CATEGORY)

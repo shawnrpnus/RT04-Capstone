@@ -1,4 +1,4 @@
-export class CreateCategoryRequest {
+export class CreateUpdateCategoryRequest {
   category;
   parentCategoryId;
 

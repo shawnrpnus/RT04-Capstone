@@ -4,13 +4,16 @@ import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
-import { Button } from "reactstrap";
+import { Button, ButtonToolbar } from "reactstrap";
 import MaterialTextField from "../../../shared/components/Form/MaterialTextField";
 import {
   Category,
-  CreateCategoryRequest
-} from "../../../models/category/CreateCategoryRequest";
-import { createCategory } from "../../../redux/actions/categoryActions";
+  CreateUpdateCategoryRequest
+} from "../../../models/category/CreateUpdateCategoryRequest";
+import {
+  createCategory,
+  updateCategory
+} from "../../../redux/actions/categoryActions";
 import { clearErrors } from "../../../redux/actions";
 import { connect } from "react-redux";
 
@@ -22,6 +25,7 @@ class CreateUpdateCategoryDialog extends Component {
   };
   constructor(props) {
     super(props);
+    console.log("MOUNT");
     const { selectedCategory } = this.props;
     console.log(this.props);
     // fill in name only if is updating a current category,
@@ -32,6 +36,10 @@ class CreateUpdateCategoryDialog extends Component {
       categoryId: selectedCategory ? selectedCategory.categoryId : null,
       categoryName: propsCatName ? propsCatName : ""
     };
+  }
+
+  componentWillUnmount() {
+    console.log("UNMOUNT");
   }
 
   onChange = e => {
@@ -45,17 +53,25 @@ class CreateUpdateCategoryDialog extends Component {
   handleSubmit = () => {
     const category = new Category(this.state.categoryName);
     if (this.props.mode === "createRoot") {
-      const createCategoryRequest = new CreateCategoryRequest(category, null);
+      const createCategoryRequest = new CreateUpdateCategoryRequest(
+        category,
+        null
+      );
+      this.props.createCategory(createCategoryRequest, this.props.closeDialog);
     } else if (this.props.mode === "createChild") {
-      const createCategoryRequest = new CreateCategoryRequest(
+      const createCategoryRequest = new CreateUpdateCategoryRequest(
         category,
         this.state.categoryId
       );
-      this.props.createCategory(createCategoryRequest);
-      this.props.closeDialog();
+      this.props.createCategory(createCategoryRequest, this.props.closeDialog);
     } else if (this.props.mode === "update") {
       category.categoryId = this.state.categoryId;
-      // TODO: make update request
+      const updateCategoryRequest = new CreateUpdateCategoryRequest(
+        category,
+        null
+      );
+      this.props.updateCategory(updateCategoryRequest, this.props.closeDialog);
+      // TODO: allow shifting of categories for update
     }
   };
 
@@ -88,9 +104,7 @@ class CreateUpdateCategoryDialog extends Component {
           <Button onClick={this.handleSubmit} color="primary">
             Submit
           </Button>
-          <Button onClick={closeDialog} color="primary">
-            Cancel
-          </Button>
+          <Button onClick={closeDialog}>Cancel</Button>
         </DialogActions>
       </Dialog>
     );
@@ -103,7 +117,8 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = {
   clearErrors,
-  createCategory
+  createCategory,
+  updateCategory
 };
 
 export default connect(

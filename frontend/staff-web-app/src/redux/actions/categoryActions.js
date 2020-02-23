@@ -64,7 +64,7 @@ export const deleteCategory = categoryId => {
   };
 };
 
-export const createCategory = createCategoryReq => {
+export const createCategory = (createCategoryReq, closeDialog) => {
   return dispatch => {
     axios
       .post(CATEGORY_BASE_URL + "/createNewCategory", createCategoryReq)
@@ -74,16 +74,62 @@ export const createCategory = createCategoryReq => {
         toast.success("Category created!", {
           position: toast.POSITION.TOP_CENTER
         });
+        closeDialog();
       })
       .catch(err => {
         if (!!err.response && !!err.response.data) {
           const { errorMessage } = err.response.data;
-          toast.error(errorMessage, {
-            position: toast.POSITION.TOP_CENTER
-          });
+          if (errorMessage) {
+            //not inputDataValidationException
+            toast.error(errorMessage, {
+              position: toast.POSITION.TOP_CENTER
+            });
+          } else {
+            dispatch(createCategoryError(err.response.data));
+          }
         } else {
           console.log(err);
         }
       });
   };
 };
+
+const createCategoryError = data => ({
+  type: types.GET_ERRORS,
+  errorMap: data
+});
+
+export const updateCategory = (updateCategoryReq, closeDialog) => {
+  return dispatch => {
+    axios
+      .post(CATEGORY_BASE_URL + "/updateCategory", updateCategoryReq)
+      .then(response => {
+        const { data } = jsog.decode(response);
+        retrieveAllCategories()(dispatch);
+        toast.success("Category updated!", {
+          position: toast.POSITION.TOP_CENTER
+        });
+        closeDialog();
+      })
+      .catch(err => {
+        if (!!err.response && !!err.response.data) {
+          const { errorMessage } = err.response.data;
+          if (errorMessage) {
+            //not inputDataValidationException
+            toast.error(errorMessage, {
+              position: toast.POSITION.TOP_CENTER
+            });
+          } else {
+            dispatch(updateCategoryError(err.response.data));
+          }
+        } else {
+          console.log(err);
+        }
+      });
+  };
+};
+
+const updateCategoryError = data => ({
+  type: types.GET_ERRORS,
+  errorMap: data
+});

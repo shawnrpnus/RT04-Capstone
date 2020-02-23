@@ -34,6 +34,7 @@ class StoreForm extends React.Component {
   constructor(props) {
     super(props);
     const { currentStore } = this.props;
+
     this.state = {
       storeId: currentStore ? currentStore.storeId : undefined,
       storeName: currentStore ? currentStore.storeName : "",
