@@ -1,9 +1,9 @@
 class Department {
-    departmentName;
+  departmentName;
 
-    constructor(departmentName) {
-        this.departmentName = departmentName;
-    }
+  constructor(departmentName) {
+    this.departmentName = departmentName;
+  }
 }
 
 export default Department;

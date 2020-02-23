@@ -3,7 +3,6 @@ import { Route, Switch } from "react-router-dom";
 
 import { StaffFormContainer } from "../../../components/Staff";
 
-
 export default () => (
   <Switch>
     <Route
@@ -11,6 +10,5 @@ export default () => (
       path="/staff/create"
       render={props => <StaffFormContainer {...props} mode="create" />}
     />
-
   </Switch>
 );
