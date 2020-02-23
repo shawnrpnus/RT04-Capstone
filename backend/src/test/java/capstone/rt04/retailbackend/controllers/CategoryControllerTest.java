@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.reactive.server.JsonPathAssertions;
 
 import java.util.List;
 
@@ -61,7 +60,7 @@ public class CategoryControllerTest extends ApiTestSetup {
     public void testViewAllViewOneCategory() {
         List<Category> categoryList = given().
             when()
-            .get(CATEGORY_BASE_ROUTE + RETRIEVE_ALL_CATEGORY)
+            .get(CATEGORY_BASE_ROUTE + RETRIEVE_ALL_ROOT_CATEGORIES)
             .then().statusCode(HttpStatus.OK.value()).extract().body().jsonPath().getList(".", Category.class);
         assertThat(categoryList.size()).isOne();
 

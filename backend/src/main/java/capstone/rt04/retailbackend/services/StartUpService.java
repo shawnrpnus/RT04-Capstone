@@ -46,7 +46,7 @@ public class StartUpService {
     }
 
     private void createCategoryIfNotFound() throws CategoryNotFoundException, CreateNewCategoryException, InputDataValidationException {
-        List<Category> categories = categoryService.retrieveAllCategories();
+        List<Category> categories = categoryService.retrieveAllRootCategories();
         if (categories.size() == 0) {
             Category category = categoryService.createNewCategory(new Category("Shoes"), null);
             Category leafCategory = categoryService.createNewCategory(new Category("Sneakers"), category.getCategoryId());

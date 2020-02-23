@@ -73,8 +73,12 @@ public class CategoryService {
         return category;
     }
 
-    public List<Category> retrieveAllCategories() {
+    public List<Category> retrieveAllRootCategories() {
         return categoryRepository.findAllByParentCategoryIsNull();
+    }
+
+    public List<Category> retrieveAllCategories(){
+        return categoryRepository.findAll();
     }
 
     public List<CategoryDetails> retrieveAllChildCategories() {

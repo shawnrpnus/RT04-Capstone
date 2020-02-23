@@ -5,6 +5,38 @@ import * as types from "./types";
 const CATEGORY_BASE_URL = "/api/category";
 const jsog = require("jsog");
 
+export const retrieveAllRootCategories = () => {
+  return dispatch => {
+    axios
+      .get(CATEGORY_BASE_URL + "/retrieveAllRootCategories")
+      .then(response => {
+        const { data } = jsog.decode(response);
+        dispatch(retrieveAllRootCategoriesSuccess(data));
+      })
+      .catch(err => {
+        if (!!err.response && !!err.response.data) {
+          const { errorMap } = err.response.data;
+          toast.error(errorMap.errorMessage, {
+            position: toast.POSITION.TOP_CENTER
+          });
+          dispatch(retrieveAllRootCategoriesError(err.response.data));
+        } else {
+          console.log(err);
+        }
+      });
+  };
+};
+
+const retrieveAllRootCategoriesSuccess = data => ({
+  type: types.RETRIEVE_ALL_ROOT_CATEGORIES,
+  categories: data
+});
+
+const retrieveAllRootCategoriesError = data => ({
+  type: types.GET_ERRORS,
+  errorMap: data
+});
+
 export const retrieveAllCategories = () => {
   return dispatch => {
     axios
@@ -44,7 +76,7 @@ export const deleteCategory = categoryId => {
       .then(response => {
         const { data } = jsog.decode(response);
         if (parseInt(data.categoryId) === parseInt(categoryId)) {
-          retrieveAllCategories()(dispatch);
+          retrieveAllRootCategories()(dispatch);
           toast.success("Category deleted!", {
             position: toast.POSITION.TOP_CENTER
           });
@@ -70,7 +102,7 @@ export const createCategory = (createCategoryReq, closeDialog) => {
       .post(CATEGORY_BASE_URL + "/createNewCategory", createCategoryReq)
       .then(response => {
         const { data } = jsog.decode(response);
-        retrieveAllCategories()(dispatch);
+        retrieveAllRootCategories()(dispatch);
         toast.success("Category created!", {
           position: toast.POSITION.TOP_CENTER
         });
@@ -105,7 +137,7 @@ export const updateCategory = (updateCategoryReq, closeDialog) => {
       .post(CATEGORY_BASE_URL + "/updateCategory", updateCategoryReq)
       .then(response => {
         const { data } = jsog.decode(response);
-        retrieveAllCategories()(dispatch);
+        retrieveAllRootCategories()(dispatch);
         toast.success("Category updated!", {
           position: toast.POSITION.TOP_CENTER
         });

@@ -8,16 +8,13 @@ const MaterialNumberSelect = props => {
     fieldLabel,
     fieldName,
     onChange,
-    optionStart,
-    optionEnd,
     state,
-    disabled
+    disabled,
+    objects,
+    objectFieldForValue,
+    objectFieldForKey,
+    objectFieldToDisplay
   } = props;
-
-  const numberOptions = Array.from(
-    { length: optionEnd - optionStart },
-    (v, k) => k + optionStart
-  );
 
   return (
     <React.Fragment>
@@ -29,9 +26,12 @@ const MaterialNumberSelect = props => {
         value={state[fieldName]}
         disabled={disabled}
       >
-        {numberOptions.map(option => (
-          <MenuItem key={`${fieldName}-${option}`} value={option}>
-            {option}
+        {objects.map(object => (
+          <MenuItem
+            key={`${fieldName}-${object[objectFieldForKey]}`}
+            value={object[objectFieldForValue]}
+          >
+            {object[objectFieldToDisplay]}
           </MenuItem>
         ))}
       </Select>
@@ -45,8 +45,10 @@ MaterialNumberSelect.propTypes = {
   fieldLabel: PropTypes.string.isRequired,
   fieldName: PropTypes.string.isRequired,
   disabled: PropTypes.bool,
-  optionStart: PropTypes.number.isRequired,
-  optionEnd: PropTypes.number.isRequired
+  objects: PropTypes.arrayOf(PropTypes.object),
+  objectsFieldForValue: PropTypes.string,
+  objectFieldForKey: PropTypes.string,
+  objectFieldToDisplay: PropTypes.string
 };
 
 export default MaterialNumberSelect;

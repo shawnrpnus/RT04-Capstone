@@ -59,14 +59,20 @@ public class CategoryController {
         return new ResponseEntity<>(new AllCategoryTagStyleResponse(childCategories, tags, styles), HttpStatus.OK);
     }
 
-    @GetMapping(RETRIEVE_ALL_CATEGORY)
-    public ResponseEntity<?> retrieveAllCategories() {
+    @GetMapping(RETRIEVE_ALL_ROOT_CATEGORIES)
+    public ResponseEntity<?> retrieveAllRootCategories() {
         try {
-            List<Category> categoryList = categoryService.retrieveAllCategories();
+            List<Category> categoryList = categoryService.retrieveAllRootCategories();
             return new ResponseEntity<>(categoryList, HttpStatus.OK);
         } catch (Exception ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @GetMapping(RETRIEVE_ALL_CATEGORIES)
+    public ResponseEntity<?> retrieveAllCategories() {
+        List<Category> categories = categoryService.retrieveAllCategories();
+        return new ResponseEntity<>(categories, HttpStatus.OK);
     }
 
     @GetMapping(RETRIEVE_ALL_CHILD_CATEGORY)

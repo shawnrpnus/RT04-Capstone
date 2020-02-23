@@ -2,9 +2,10 @@ import React, { Component } from "react";
 import withPage from "../../Layout/page/withPage";
 import { connect } from "react-redux";
 import {
-  retrieveAllCategories,
+  retrieveAllRootCategories,
   deleteCategory,
-  createCategory
+  createCategory,
+  retrieveAllCategories
 } from "../../../redux/actions/categoryActions";
 import { retrieveAllProducts } from "../../../redux/actions/productActions";
 import { Tree } from "primereact/tree";
@@ -33,6 +34,7 @@ class CategoryTree extends Component {
   }
 
   componentDidMount() {
+    this.props.retrieveAllRootCategories();
     this.props.retrieveAllCategories();
   }
 
@@ -62,7 +64,7 @@ class CategoryTree extends Component {
 
   render() {
     const {
-      allCategories,
+      allRootCategories,
       renderLoader,
       categoryProducts,
       deleteCategory
@@ -84,23 +86,24 @@ class CategoryTree extends Component {
 
     let selectedDialogCategory;
     if (
-      allCategories &&
+      allRootCategories &&
       this.state.selectedNodeKey &&
       this.state.dialogMode &&
       this.state.dialogMode !== "createRoot"
     ) {
       selectedDialogCategory = getCategoryInfoFromTree(
         this.state.selectedNodeKey,
-        allCategories
+        allRootCategories
       );
     }
+    if (allRootCategories) console.log(getParentKeys(allRootCategories, {}));
 
     return (
       <React.Fragment>
         <div className="card__title">
           <h5 className="bold-text">All Categories</h5>
         </div>
-        {allCategories !== null ? (
+        {allRootCategories !== null ? (
           <React.Fragment>
             {this.state.selectedNodeKey &&
             this.state.dialogOpen &&
@@ -134,10 +137,6 @@ class CategoryTree extends Component {
                     </h6>
                   </li>
                 </ul>
-                {/*<h6 className="bold-text" style={{ marginBottom: "5px" }}>*/}
-                {/*  Left click to view products <br />*/}
-                {/*  Right click for more options*/}
-                {/*</h6>*/}
                 <Button
                   size="sm"
                   style={{ width: "100%", marginBottom: "5px" }}
@@ -152,11 +151,11 @@ class CategoryTree extends Component {
                   ref={el => (this.cm = el)}
                 />
                 <Tree
-                  value={buildCategoryTree(allCategories)}
+                  value={buildCategoryTree(allRootCategories)}
                   selectionMode="single"
                   propagateSelectionUp={false}
                   propagateSelectionDown={false}
-                  expandedKeys={getParentKeys(allCategories, {})}
+                  expandedKeys={getParentKeys(allRootCategories, {})}
                   selectionKeys={this.state.selectedCategoryId}
                   onSelectionChange={this.onSelectionChange}
                   filter={true}
@@ -165,6 +164,7 @@ class CategoryTree extends Component {
                   onContextMenuSelectionChange={
                     this.onContextMenuSelectionChange
                   }
+                  key={Object.keys(getParentKeys(allRootCategories, {})).length}
                 />
               </Grid>
               <Grid item xs={12} md={9}>
@@ -188,11 +188,12 @@ class CategoryTree extends Component {
 }
 
 const mapStateToProps = state => ({
-  allCategories: state.category.allCategories,
+  allRootCategories: state.category.allRootCategories,
   categoryProducts: state.category.categoryProducts
 });
 
 const mapDispatchToProps = {
+  retrieveAllRootCategories,
   retrieveAllCategories,
   retrieveAllProducts,
   deleteCategory,
