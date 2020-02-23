@@ -2,102 +2,90 @@ package capstone.rt04.retailbackend.services;
 
 
 import capstone.rt04.retailbackend.entities.Address;
-import capstone.rt04.retailbackend.entities.ProductStock;
 import capstone.rt04.retailbackend.entities.Warehouse;
 import capstone.rt04.retailbackend.repositories.AddressRepository;
-import capstone.rt04.retailbackend.repositories.ProductRepository;
-import capstone.rt04.retailbackend.repositories.ProductStockRepository;
 import capstone.rt04.retailbackend.repositories.WarehouseRepository;
+import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
+import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.warehouse.WarehouseNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
 @Service
 @Transactional
 public class WarehouseService {
+    private final ValidationService validationService;
     private final WarehouseRepository warehouseRepository;
     private final AddressRepository addressRepository;
-    private final ValidationService validationService;
-    private final ProductStockRepository productStockRepository;
+    private final ProductService productService;
 
     public WarehouseService(WarehouseRepository warehouseRepository, AddressRepository addressRepository,
-                            ValidationService validationService, ProductStockRepository productStockRepository) {
+                            ValidationService validationService, ProductService productService) {
         this.warehouseRepository = warehouseRepository;
         this.addressRepository = addressRepository;
         this.validationService = validationService;
-        this.productStockRepository = productStockRepository;
+        this.productService = productService;
     }
 
 
-    public Warehouse createWarehouse(Warehouse warehouse, Address address) {
-        validationService.generateErrorMap(address);
+    public Warehouse createWarehouse(Warehouse warehouse, Address address) throws InputDataValidationException, StoreNotFoundException, WarehouseNotFoundException, ProductVariantNotFoundException {
+        validationService.throwExceptionIfInvalidBean(address);
+
+        // TODO: Fix the error in logic, shouldn't create. Retrieve from db using addressService instead using ID
         Address a = addressRepository.save(address);
         warehouse.setAddress(a);
         warehouseRepository.save(warehouse);
 
-        return lazyLoadWarehouseFields(warehouse);
+        productService.assignProductStock(makeList(warehouse), null,null);
+        return warehouse;
     }
-
 
 
     public Warehouse retrieveWarehouseById(Long warehouseId) throws WarehouseNotFoundException {
         if (warehouseId == null) {
             throw new WarehouseNotFoundException("Warehouse ID not provided. Please try again!");
         }
-
-        return warehouseRepository.findById(warehouseId)
+        Warehouse warehouse = warehouseRepository.findById(warehouseId)
                 .orElseThrow(() -> new WarehouseNotFoundException("Warehouse with id: " + warehouseId + " does not exist"));
-    }
-
-    //View all Warehouse inventory
-    //Retrieve Address, inStockRestoreOrders, productStocks
-    public List<Warehouse> retrieveAllWarehouseInventory() {
-
-        List<Warehouse> allWarehouse = warehouseRepository.findAll();
-
-        for (Warehouse warehouse : allWarehouse) {
-            warehouse.getAddress();
-            warehouse.getProductStocks();
-            warehouse.getInStoreRestockOrders();
-        }
-        return allWarehouse;
+        lazilyLoadWarehouse(makeList(warehouse));
+        return warehouse;
     }
 
     public List<Warehouse> retrieveAllWarehouses() {
-        return warehouseRepository.findAll();
-    }
-
-
-    //View Warehouse Inventory Details
-    public Warehouse retrieveWarehouseDetailsByID(Long warehouseId) throws WarehouseNotFoundException {
-        Warehouse warehouse = retrieveWarehouseById(warehouseId);
-        Warehouse viewWareHouse = new Warehouse();
-        viewWareHouse.setAddress(warehouse.getAddress());
-        viewWareHouse.setInStoreRestockOrders(warehouse.getInStoreRestockOrders());
-        viewWareHouse.setProductStocks(warehouse.getProductStocks());
-        return viewWareHouse;
-
+        List<Warehouse> warehouses = warehouseRepository.findAll();
+        lazilyLoadWarehouse(warehouses);
+        return warehouses;
     }
 
     public Warehouse updateWarehouse(Warehouse warehouse) throws WarehouseNotFoundException {
         Warehouse newWareHouse = retrieveWarehouseById(warehouse.getWarehouseId());
-        newWareHouse.setProductStocks(warehouse.getProductStocks());
-        newWareHouse.setAddress(warehouse.getAddress());
-        newWareHouse.setInStoreRestockOrders(warehouse.getInStoreRestockOrders());
-        newWareHouse.setWarehouseId(warehouse.getWarehouseId());
         newWareHouse.setDayOfMonth(warehouse.getDayOfMonth());
+        newWareHouse.setAddress(warehouse.getAddress());
+
+        // Shouldn't update relationship directly
+        //        newWareHouse.setProductStocks(warehouse.getProductStocks());
+        //        newWareHouse.setInStoreRestockOrders(warehouse.getInStoreRestockOrders());
 
         return newWareHouse;
     }
 
-    public Warehouse lazyLoadWarehouseFields(Warehouse warehouse) {
-        warehouse.getInStoreRestockOrders().size();
-        warehouse.getProductStocks().size();
-        warehouse.getAddress();
-        return warehouse;
+    private void lazilyLoadWarehouse(List<Warehouse> warehouses) {
+        for (Warehouse warehouse : warehouses) {
+            warehouse.getInStoreRestockOrders().size();
+            warehouse.getProductStocks().size();
+            warehouse.getAddress();
+        }
+    }
+
+    private List<Warehouse>  makeList(Warehouse warehouse) {
+        List<Warehouse> warehouses = new ArrayList<>();
+        warehouses.add(warehouse);
+        return warehouses;
     }
 
     // E1.4

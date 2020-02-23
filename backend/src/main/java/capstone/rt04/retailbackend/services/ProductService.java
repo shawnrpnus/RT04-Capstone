@@ -540,7 +540,7 @@ public class ProductService {
         if (warehouses != null) {
             for (Warehouse w : warehouses) {
                 Warehouse warehouse = warehouseService.retrieveWarehouseById(w.getWarehouseId());
-                warehouseService.lazyLoadWarehouseFields(warehouse);
+
                 for (ProductVariant productVariant : productVariants) {
                     ProductStock productStock = new ProductStock(0, 0, 0, 0);
                     productStock.setWarehouse(warehouse);
