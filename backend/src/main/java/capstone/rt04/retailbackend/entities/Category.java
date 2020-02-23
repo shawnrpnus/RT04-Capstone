@@ -14,6 +14,7 @@ import lombok.ToString;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,9 +35,10 @@ public class Category implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long categoryId;
 
-    @NotNull(message = "Category must have a name")
+    @NotNull(message = "Category name is required")
+    @Size(min = 1, message = "Category name is required")
     @Column(nullable = false)
-    private String name;
+    private String categoryName;
 
     @OneToMany(mappedBy = "category")
     private List<Product> products;
@@ -52,9 +54,9 @@ public class Category implements Serializable {
         this.childCategories = new ArrayList<>();
     }
 
-    public Category(String name) {
+    public Category(String categoryName) {
         this();
-        this.name = name;
+        this.categoryName = categoryName;
     }
 
 }

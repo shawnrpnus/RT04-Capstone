@@ -38,9 +38,9 @@ public class Store implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long storeId;
 
-    @NotNull(message = "Store name is required")
+    @NotNull(message = "Store categoryName is required")
     @Column(nullable = false)
-    @Size(min = 1, message = "Store name is required")
+    @Size(min = 1, message = "Store categoryName is required")
     private String storeName;
     
     @NotNull

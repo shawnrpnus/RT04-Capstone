@@ -14,7 +14,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { ConfirmProvider } from "material-ui-confirm";
 
 toast.configure({
-  autoClose: 3000
+  autoClose: 5000
 });
 
 function App() {
