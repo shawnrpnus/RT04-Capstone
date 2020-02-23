@@ -27,6 +27,9 @@ public class StartUpService {
     private final WarehouseService warehouseService;
     private final TagService tagService;
     private final StyleService styleService;
+    protected static Long sneakerCategoryId;
+    protected static Long shirtCategoryId;
+    protected static Long socksCategoryId;
 
     public StartUpService(ProductService productService, CategoryService categoryService, WarehouseService warehouseService, TagService tagService, StyleService styleService) {
         this.productService = productService;
@@ -46,15 +49,18 @@ public class StartUpService {
     }
 
     private void createCategoryIfNotFound() throws CategoryNotFoundException, CreateNewCategoryException, InputDataValidationException {
-        List<Category> categories = categoryService.retrieveAllCategories();
+        List<Category> categories = categoryService.retrieveAllRootCategories();
         if (categories.size() == 0) {
             Category category = categoryService.createNewCategory(new Category("Shoes"), null);
             Category leafCategory = categoryService.createNewCategory(new Category("Sneakers"), category.getCategoryId());
+            sneakerCategoryId = leafCategory.getCategoryId();
             Category men = categoryService.createNewCategory(new Category("Men"), null);
             Category clothingmen = categoryService.createNewCategory(new Category("Clothing"), men.getCategoryId());
             Category shirts = categoryService.createNewCategory(new Category("Shirts"), clothingmen.getCategoryId());
+            shirtCategoryId = shirts.getCategoryId();
             Category shorts = categoryService.createNewCategory(new Category("Shorts"), clothingmen.getCategoryId());
             Category socks = categoryService.createNewCategory(new Category("Socks"), clothingmen.getCategoryId());
+            socksCategoryId = socks.getCategoryId();
             Category women = categoryService.createNewCategory(new Category("Women"), null);
             Category clothingwomen = categoryService.createNewCategory(new Category("Clothing"), women.getCategoryId());
             Category shorts2 = categoryService.createNewCategory(new Category("Shorts"), clothingwomen.getCategoryId());
@@ -67,7 +73,7 @@ public class StartUpService {
         List<Product> products = productService.retrieveAllProducts();
         if (products.size() == 0) {
             Product product = new Product("0010", "Stan Smith", "Adidas", BigDecimal.valueOf(109.90), BigDecimal.valueOf(49.90));
-            Category category = categoryService.retrieveCategoryByName("Sneakers");
+            Category category = categoryService.retrieveCategoryByCategoryId(sneakerCategoryId); //sneakers
             product.setCategory(category);
             List<SizeEnum> sizes = new ArrayList<>();
             sizes.add(SizeEnum.S);
@@ -80,12 +86,12 @@ public class StartUpService {
             Product newProduct = productService.createNewProduct(product, category.getCategoryId(), null, sizes, colors);
 
             Product product2 = new Product("0011", "Fila Disruptor II", "Fila", BigDecimal.valueOf(109.90), BigDecimal.valueOf(49.90));
-            Category category2 = categoryService.retrieveCategoryByName("Shirts");
+            Category category2 = categoryService.retrieveCategoryByCategoryId(shirtCategoryId); //shirt
             product2.setCategory(category2);
             Product newProduct2 = productService.createNewProduct(product2, category2.getCategoryId(), null, sizes, colors);
 
             Product product3 = new Product("0012", "Nike Air Max", "Nike", BigDecimal.valueOf(109.90), BigDecimal.valueOf(49.90));
-            Category category3 = categoryService.retrieveCategoryByName("Socks");
+            Category category3 = categoryService.retrieveCategoryByCategoryId(socksCategoryId); // socks
             product3.setCategory(category);
             Product newProduct3 = productService.createNewProduct(product3, category3.getCategoryId(), null, sizes, colors);
 

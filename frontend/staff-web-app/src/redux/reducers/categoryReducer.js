@@ -1,12 +1,18 @@
 import * as types from "../actions/types";
 
 const initialState = {
-  allCategories: null,
-  categoryProducts: null
+  allRootCategories: null,
+  categoryProducts: null,
+  allCategories: null
 };
 
 export default function(state = initialState, action) {
   switch (action.type) {
+    case types.RETRIEVE_ALL_ROOT_CATEGORIES:
+      return {
+        ...state,
+        allRootCategories: action.categories
+      };
     case types.RETRIEVE_ALL_CATEGORIES:
       return {
         ...state,

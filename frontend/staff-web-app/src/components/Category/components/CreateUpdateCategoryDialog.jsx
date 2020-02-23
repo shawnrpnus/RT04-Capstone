@@ -4,14 +4,16 @@ import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
-import { Button, ButtonToolbar } from "reactstrap";
+import { Button } from "@material-ui/core";
 import MaterialTextField from "../../../shared/components/Form/MaterialTextField";
+import MaterialObjectSelect from "../../../shared/components/Form/MaterialObjectSelect";
 import {
   Category,
   CreateUpdateCategoryRequest
 } from "../../../models/category/CreateUpdateCategoryRequest";
 import {
   createCategory,
+  retrieveAllCategories,
   updateCategory
 } from "../../../redux/actions/categoryActions";
 import { clearErrors } from "../../../redux/actions";
@@ -25,21 +27,20 @@ class CreateUpdateCategoryDialog extends Component {
   };
   constructor(props) {
     super(props);
-    console.log("MOUNT");
+
     const { selectedCategory } = this.props;
-    console.log(this.props);
+    console.log(selectedCategory);
     // fill in name only if is updating a current category,
     // otherwise the category passed in as props is meant to be the parent i.e. mode == "createChild"
     const propsCatName =
       props.mode === "update" ? selectedCategory.categoryName : null;
     this.state = {
       categoryId: selectedCategory ? selectedCategory.categoryId : null,
-      categoryName: propsCatName ? propsCatName : ""
+      categoryName: propsCatName ? propsCatName : "",
+      parentCategoryId: selectedCategory
+        ? selectedCategory.parentCategory.categoryId
+        : null
     };
-  }
-
-  componentWillUnmount() {
-    console.log("UNMOUNT");
   }
 
   onChange = e => {
@@ -68,7 +69,7 @@ class CreateUpdateCategoryDialog extends Component {
       category.categoryId = this.state.categoryId;
       const updateCategoryRequest = new CreateUpdateCategoryRequest(
         category,
-        null
+        this.state.parentCategoryId
       );
       this.props.updateCategory(updateCategoryRequest, this.props.closeDialog);
       // TODO: allow shifting of categories for update
@@ -76,6 +77,7 @@ class CreateUpdateCategoryDialog extends Component {
   };
 
   render() {
+    console.log(this.state);
     const { open, closeDialog, errors, mode } = this.props;
     const dialogTitle =
       mode === "createRoot"
@@ -90,6 +92,20 @@ class CreateUpdateCategoryDialog extends Component {
         <DialogTitle>{dialogTitle}</DialogTitle>
         <DialogContent>
           <form className="material-form">
+            {mode === "update" ? (
+              <MaterialObjectSelect
+                fieldName="parentCategoryId"
+                fieldLabel="Updated Parent Category"
+                onChange={this.onChange}
+                state={this.state}
+                objects={this.props.allCategories.filter(
+                  c => c.categoryId !== this.state.categoryId
+                )}
+                objectFieldForValue="categoryId"
+                objectFieldForKey="categoryId"
+                objectFieldToDisplay="categoryName"
+              />
+            ) : null}
             <MaterialTextField
               fieldLabel="Category Name"
               onChange={this.onChange}
@@ -112,7 +128,8 @@ class CreateUpdateCategoryDialog extends Component {
 }
 
 const mapStateToProps = state => ({
-  errors: state.errors
+  errors: state.errors,
+  allCategories: state.category.allCategories
 });
 
 const mapDispatchToProps = {

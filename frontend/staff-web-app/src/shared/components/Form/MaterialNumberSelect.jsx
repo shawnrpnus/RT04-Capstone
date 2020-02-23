@@ -1,7 +1,8 @@
 import React from "react";
 import * as PropTypes from "prop-types";
-import {MenuItem, Select } from "@material-ui/core";
+import { MenuItem, Select } from "@material-ui/core";
 
+//fieldName MUST correspond to entity's attribute name AND state attribute name
 const MaterialNumberSelect = props => {
   const {
     fieldLabel,

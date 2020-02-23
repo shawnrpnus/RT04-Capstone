@@ -32,7 +32,12 @@ public class CategoryService {
         validationService.throwExceptionIfInvalidBean(newCategory);
 
         Category existingSiblingCategory = categoryRepository.findAllByCategoryNameAndParentCategory_CategoryId(newCategory.getCategoryName(), parentCategoryId).orElse(null);
+        List<Category> categories = retrieveAllCategories();
         if (existingSiblingCategory != null){
+            for(Category c : categories) {
+                System.out.println("ASDFASDF" + c.getCategoryName());
+            }
+            System.out.println(existingSiblingCategory.getCategoryName());
             throw new CreateNewCategoryException("There is already a sibling category with the same name");
         }
         if (parentCategoryId != null) {
@@ -44,21 +49,9 @@ public class CategoryService {
             newCategory.setParentCategory(parentCategoryEntity);
             parentCategoryEntity.getChildCategories().add(newCategory);
         }
-        try {
-            categoryRepository.save(newCategory);
-            return newCategory;
-        } catch (Exception ex) {
-            throw new CreateNewCategoryException("Error creating new category");
-        }
+        categoryRepository.save(newCategory);
+        return newCategory;
 
-    }
-
-    public Category retrieveCategoryByName(String name) throws CategoryNotFoundException {
-        Category category = categoryRepository.findByCategoryName(name).orElseThrow(
-                () -> new CategoryNotFoundException(("Category with name: " + name + " does not exist!")));
-
-        lazilyLoadSubCategories(category);
-        return category;
     }
 
     public Category retrieveCategoryByCategoryId(Long categoryId) throws CategoryNotFoundException {
@@ -73,8 +66,12 @@ public class CategoryService {
         return category;
     }
 
-    public List<Category> retrieveAllCategories() {
+    public List<Category> retrieveAllRootCategories() {
         return categoryRepository.findAllByParentCategoryIsNull();
+    }
+
+    public List<Category> retrieveAllCategories(){
+        return categoryRepository.findAll();
     }
 
     public List<CategoryDetails> retrieveAllChildCategories() {
