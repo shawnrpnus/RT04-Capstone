@@ -1,7 +1,7 @@
 import React from "react";
 import { Route, Switch } from "react-router-dom";
-// import {StaffFormContainer} from "../../../components/Staff/components/StaffFormContainer";
-// import {StaffAccountFormContainer} from "../../../components/Staff/components/StaffAccountFormContainer";
+// import { StaffFormContainer } from "../../../components/Staff/components/StaffFormContainer";
+// import { StaffAccountFormContainer } from "../../../components/Staff/components/StaffAccountFormContainer";
 
 export default () => (
   <Switch>
