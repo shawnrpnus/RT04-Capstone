@@ -64,12 +64,26 @@ export const deleteCategory = categoryId => {
   };
 };
 
-// const deleteCategorySuccess = data => ({
-//   type: types.DELETE_CATEGORY,
-//   categories: data
-// });
-//
-// const delteCategoryError = data => ({
-//   type: types.GET_ERRORS,
-//   errorMap: data
-// });
+export const createCategory = createCategoryReq => {
+  return dispatch => {
+    axios
+      .post(CATEGORY_BASE_URL + "/createNewCategory", createCategoryReq)
+      .then(response => {
+        const { data } = jsog.decode(response);
+        retrieveAllCategories()(dispatch);
+        toast.success("Category created!", {
+          position: toast.POSITION.TOP_CENTER
+        });
+      })
+      .catch(err => {
+        if (!!err.response && !!err.response.data) {
+          const { errorMessage } = err.response.data;
+          toast.error(errorMessage, {
+            position: toast.POSITION.TOP_CENTER
+          });
+        } else {
+          console.log(err);
+        }
+      });
+  };
+};

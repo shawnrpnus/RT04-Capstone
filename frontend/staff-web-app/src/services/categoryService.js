@@ -8,8 +8,8 @@ export const buildCategoryTree = categories => {
       return {
         key: parentCategory.categoryId,
         label: hasChildren
-          ? `${parentCategory.name} (${numProducts})`
-          : `${parentCategory.name} (${numProducts})`,
+          ? `${parentCategory.categoryName} (${numProducts})`
+          : `${parentCategory.categoryName} (${numProducts})`,
         selectable: true,
         children:
           parentCategory.childCategories.length > 0
@@ -18,6 +18,24 @@ export const buildCategoryTree = categories => {
       };
     }
   });
+};
+
+export const getCategoryInfoFromTree = (categoryIdToFind, categories) => {
+  for (let i = 0; i < categories.length; i++) {
+    const category = categories[i];
+    let hasChildren = category.childCategories.length > 0;
+    if (parseInt(category.categoryId) === parseInt(categoryIdToFind)) {
+      return category;
+    } else if (hasChildren) {
+      let result = getCategoryInfoFromTree(
+        categoryIdToFind,
+        category.childCategories
+      );
+      if (result) {
+        return result;
+      }
+    }
+  }
 };
 
 const sumChildrenProducts = category => {

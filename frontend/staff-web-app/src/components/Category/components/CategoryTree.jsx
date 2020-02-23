@@ -3,9 +3,9 @@ import withPage from "../../Layout/page/withPage";
 import { connect } from "react-redux";
 import {
   retrieveAllCategories,
-  deleteCategory
+  deleteCategory,
+  createCategory
 } from "../../../redux/actions/categoryActions";
-import { clearErrors } from "../../../redux/actions";
 import { retrieveAllProducts } from "../../../redux/actions/productActions";
 import { Tree } from "primereact/tree";
 import {
@@ -47,7 +47,6 @@ class CategoryTree extends Component {
   };
 
   onContextMenuSelectionChange = event => {
-    //console.log(event);
     this.setState({ selectedNodeKey: event.value });
   };
 
@@ -64,14 +63,12 @@ class CategoryTree extends Component {
       allCategories,
       renderLoader,
       categoryProducts,
-      deleteCategory,
-      errors,
-      clearErrors
+      deleteCategory
     } = this.props;
     const menu = [
       {
         label: "Add Child",
-        command: () => null
+        command: () => this.openDialog("createChild")
       },
       {
         label: "Update",
@@ -82,57 +79,70 @@ class CategoryTree extends Component {
         command: () => deleteCategory(this.state.selectedNodeKey)
       }
     ];
-    if (allCategories)
-      console.log(getCategoryInfoFromTree(2, allCategories, null));
+
+    let selectedDialogCategory;
+    if (allCategories && this.state.selectedNodeKey) {
+      selectedDialogCategory = getCategoryInfoFromTree(
+        this.state.selectedNodeKey,
+        allCategories
+      );
+    }
+
     return (
       <React.Fragment>
         <div className="card__title">
           <h5 className="bold-text">All Categories</h5>
         </div>
-        <CreateUpdateCategoryDialog
-          open={this.state.dialogOpen}
-          errors={errors}
-          clearErrors={clearErrors}
-          closeDialog={this.closeDialog}
-          mode={this.state.dialogMode}
-        />
         {allCategories !== null ? (
-          <Grid container spacing={3}>
-            <Grid item xs={12} md={3}>
-              <h6 style={{ marginBottom: "5px" }}>
-                Left click to view products <br />
-                Right click for more options
-              </h6>
-              <ContextMenu
-                appendTo={document.body}
-                model={menu}
-                ref={el => (this.cm = el)}
+          <React.Fragment>
+            {this.state.selectedNodeKey && this.state.dialogMode ? (
+              <CreateUpdateCategoryDialog
+                open={this.state.dialogOpen}
+                closeDialog={this.closeDialog}
+                mode={this.state.dialogMode}
+                selectedCategory={selectedDialogCategory}
+                key={`${this.state.dialogMode}-${selectedDialogCategory.categoryName}-${selectedDialogCategory.categoryId}`}
               />
-              <Tree
-                value={buildCategoryTree(allCategories)}
-                selectionMode="single"
-                propagateSelectionUp={false}
-                propagateSelectionDown={false}
-                expandedKeys={getParentKeys(allCategories, {})}
-                selectionKeys={this.state.selectedCategoryId}
-                onSelectionChange={this.onSelectionChange}
-                filter={true}
-                style={{ width: "100%" }}
-                onContextMenu={this.onContextMenu}
-                onContextMenuSelectionChange={this.onContextMenuSelectionChange}
-              />
-            </Grid>
-            <Grid item xs={12} md={9}>
-              {categoryProducts ? (
-                <ProductsTableRaw
-                  products={categoryProducts}
-                  renderLoader={renderLoader}
+            ) : null}
+            <Grid container spacing={3}>
+              <Grid item xs={12} md={3}>
+                <h6 style={{ marginBottom: "5px" }}>
+                  Left click to view products <br />
+                  Right click for more options
+                </h6>
+                <ContextMenu
+                  appendTo={document.body}
+                  model={menu}
+                  ref={el => (this.cm = el)}
                 />
-              ) : (
-                <ProductsTableRaw products={[]} renderLoader={renderLoader} />
-              )}
+                <Tree
+                  value={buildCategoryTree(allCategories)}
+                  selectionMode="single"
+                  propagateSelectionUp={false}
+                  propagateSelectionDown={false}
+                  expandedKeys={getParentKeys(allCategories, {})}
+                  selectionKeys={this.state.selectedCategoryId}
+                  onSelectionChange={this.onSelectionChange}
+                  filter={true}
+                  style={{ width: "100%" }}
+                  onContextMenu={this.onContextMenu}
+                  onContextMenuSelectionChange={
+                    this.onContextMenuSelectionChange
+                  }
+                />
+              </Grid>
+              <Grid item xs={12} md={9}>
+                {categoryProducts ? (
+                  <ProductsTableRaw
+                    products={categoryProducts}
+                    renderLoader={renderLoader}
+                  />
+                ) : (
+                  <ProductsTableRaw products={[]} renderLoader={renderLoader} />
+                )}
+              </Grid>
             </Grid>
-          </Grid>
+          </React.Fragment>
         ) : (
           renderLoader()
         )}
@@ -142,7 +152,6 @@ class CategoryTree extends Component {
 }
 
 const mapStateToProps = state => ({
-  errors: state.errors,
   allCategories: state.category.allCategories,
   categoryProducts: state.category.categoryProducts
 });
@@ -151,7 +160,7 @@ const mapDispatchToProps = {
   retrieveAllCategories,
   retrieveAllProducts,
   deleteCategory,
-  clearErrors
+  createCategory
 };
 
 export default connect(
