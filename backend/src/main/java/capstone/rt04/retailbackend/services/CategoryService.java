@@ -167,10 +167,6 @@ public class CategoryService {
             if (!child.getProducts().isEmpty()) {
                 return true;
             }
-            // no products, is leaf node
-            if (child.getChildCategories().isEmpty()) {
-                return false;
-            }
 
             return checkChildrenHaveProducts(child.getChildCategories());
         }

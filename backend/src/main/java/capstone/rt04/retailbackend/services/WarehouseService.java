@@ -9,6 +9,7 @@ import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.warehouse.WarehouseNotFoundException;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,7 +26,7 @@ public class WarehouseService {
     private final ProductService productService;
 
     public WarehouseService(WarehouseRepository warehouseRepository, AddressRepository addressRepository,
-                            ValidationService validationService, ProductService productService) {
+                            ValidationService validationService, @Lazy ProductService productService) {
         this.warehouseRepository = warehouseRepository;
         this.addressRepository = addressRepository;
         this.validationService = validationService;
