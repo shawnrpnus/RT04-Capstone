@@ -139,16 +139,16 @@ public class ProductService {
     public List<ProductDetailsResponse> retrieveProductDetailsForCategory(Long storeOrWarehouseId, Long categoryId) throws ProductNotFoundException {
         List<ProductDetailsResponse> productDetailsResponses = retrieveProductsDetails(storeOrWarehouseId, null);
         List<ProductDetailsResponse> result = new ArrayList<>();
-        for (ProductDetailsResponse p : productDetailsResponses){
+        for (ProductDetailsResponse p : productDetailsResponses) {
             Category c = p.getProduct().getCategory();
-            if (checkIfCategoryIsInside(c, categoryId)){
+            if (checkIfCategoryIsInside(c, categoryId)) {
                 result.add(p);
             }
         }
         return result;
     }
 
-    private boolean checkIfCategoryIsInside(Category categoryToCheck, Long categoryId){
+    private boolean checkIfCategoryIsInside(Category categoryToCheck, Long categoryId) {
         if (categoryToCheck.getCategoryId().equals(categoryId)) return true;
         if (categoryToCheck.getParentCategory() == null) return false;
         return checkIfCategoryIsInside(categoryToCheck.getParentCategory(), categoryId);
@@ -321,7 +321,7 @@ public class ProductService {
         }
     }
 
-    public Product updateProduct(Product newProduct) throws ProductNotFoundException, TagNotFoundException {
+    public Product updateProduct(Product newProduct) throws ProductNotFoundException, TagNotFoundException, StyleNotFoundException, CategoryNotFoundException {
 
         Product product = retrieveProductById(newProduct.getProductId());
         product.setPrice(newProduct.getPrice());
@@ -329,13 +329,17 @@ public class ProductService {
         product.setCost(newProduct.getCost());
         product.setDescription(newProduct.getDescription());
 
-        addOrRemoveTag(null, null, null, null);
+        addOrRemoveTag(null, newProduct.getProductId(), newProduct.getTags(), null);
+        addOrRemoveStyle(null, newProduct.getProductId(), newProduct.getStyles(), null);
+        changeCategoryForProduct(newProduct.getCategory().getCategoryId(), newProduct.getProductId());
 
 //        product.setProductVariants(newProduct.getProductVariants()); -> createProductVariant / deleteProductVariant
 //        product.setPromoCodes(newProduct.getPromoCodes()); -> add/remove promoCode
 //        product.setCategory(newProduct.getCategory());
 //        product.setTags(newProduct.getTags()); -> add/remove discount
-//
+//        product.setStyles();
+//        product.setDiscounts();
+//        product.setReviews();
         return product;
     }
 
@@ -594,6 +598,7 @@ public class ProductService {
         return productStock;
     }
 
+    // TODO: Verify validity
     public List<ProductStock> retrieveProductStocksByParameter(Long storeId, Long warehouseId, Long productVariantId) {
         List<ProductStock> productStocks = new ArrayList<>();
         if (storeId != null) productStocks = productStockRepository.findAllByStoreStoreId(storeId);
@@ -707,32 +712,34 @@ public class ProductService {
         Product product = retrieveProductById(productId);
         Category oldCategory = product.getCategory();
 
+        if (categoryId == oldCategory.getCategoryId()) return;
+
         oldCategory.getProducts().remove(product);
         product.setCategory(newCategory);
         newCategory.getProducts().add(product);
     }
 
-    public void addOrRemoveTag(Long tagId, Long productId, List<Tag> inputTags, List<Product> inputProducts) throws ProductNotFoundException, TagNotFoundException, TagNotFoundException, TagNotFoundException {
+    public void addOrRemoveTag(Long tagId, Long productId, List<Tag> tags, List<Product> products) throws ProductNotFoundException, TagNotFoundException, TagNotFoundException, TagNotFoundException {
         // Adding / removing tag for a list of products
         if (tagId != null) {
             Tag tag = tagService.retrieveTagByTagId(tagId);
             List<Product> tagProducts = tag.getProducts();
-            List<Product> products = new ArrayList<>();
+            List<Product> persistentInputProducts = new ArrayList<>();
 
-            for(Product product : inputProducts) {
-                products.add(retrieveProductById(product.getProductId()));
+            for (Product product : products) {
+                persistentInputProducts.add(retrieveProductById(product.getProductId()));
             }
 
-            for(Product tagProduct : tagProducts) {
-                if(products.contains(tagProduct)) {
-                    products.remove(tagProduct);
+            for (Product tagProduct : tagProducts) {
+                if (persistentInputProducts.contains(tagProduct)) {
+                    persistentInputProducts.remove(tagProduct);
                 } else {
                     tagProduct.getTags().remove(tag);
                     tag.getProducts().remove(tagProduct);
                 }
             }
 
-            for (Product product : products) {
+            for (Product product : persistentInputProducts) {
                 product.getTags().add(tag);
                 tag.getProducts().add(product);
             }
@@ -740,21 +747,21 @@ public class ProductService {
         } else if (productId != null) {
             Product product = retrieveProductById(productId);
             List<Tag> productTags = product.getTags();
-            List<Tag> tags = new ArrayList<>();
+            List<Tag> persistentInputTags = new ArrayList<>();
 
-            for(Tag tag : inputTags) {
-                tags.add(tagService.retrieveTagByTagId(tag.getTagId()));
+            for (Tag tag : tags) {
+                persistentInputTags.add(tagService.retrieveTagByTagId(tag.getTagId()));
             }
 
-            for (Tag productTag : productTags ) {
-                if (tags.contains(productTag)) {
-                    tags.remove(productTag);
+            for (Tag productTag : productTags) {
+                if (persistentInputTags.contains(productTag)) {
+                    persistentInputTags.remove(productTag);
                 } else {
                     product.getTags().remove(productTag);
                     productTag.getProducts().remove(product);
                 }
             }
-            for (Tag tag : tags) {
+            for (Tag tag : persistentInputTags) {
                 product.getTags().add(tag);
                 tag.getProducts().add(product);
             }
@@ -830,38 +837,53 @@ public class ProductService {
         }
     }
 
-    public void addOrRemoveStyle(Long styleId, Long
-            productId, List<Style> styles, List<Product> products, Boolean isAppend) throws
-            ProductNotFoundException, TagNotFoundException, TagNotFoundException, TagNotFoundException, StyleNotFoundException, StyleNotFoundException {
+    public void addOrRemoveStyle(Long styleId, Long productId, List<Style> styles, List<Product> products) throws ProductNotFoundException, TagNotFoundException, StyleNotFoundException {
         // Adding / removing style for a list of products
         if (styleId != null) {
             Style style = styleService.retrieveStyleByStyleId(styleId);
-            Product product = null;
+            List<Product> styleProducts = style.getProducts();
+            List<Product> persistentInputProducts = new ArrayList<>();
 
-            for (Product prod : products) {
-                product = retrieveProductById(prod.getProductId());
-                if (isAppend) {
-                    product.getStyles().add(style);
-                    style.getProducts().add(product);
+            for (Product product : products) {
+                // draw products from db and keep in inputProducts
+                persistentInputProducts.add(retrieveProductById(product.getProductId()));
+            }
+
+            for (Product styleProduct : styleProducts) {
+                if (persistentInputProducts.contains(styleProduct)) {
+                    persistentInputProducts.remove(styleProduct);
                 } else {
-                    product.getStyles().remove(style);
-                    style.getProducts().remove(product);
+                    styleProduct.getStyles().remove(style);
+                    style.getProducts().remove(styleProduct);
                 }
+            }
+
+            for (Product product : persistentInputProducts) {
+                product.getStyles().add(style);
+                style.getProducts().add(product);
             }
 
         } else if (productId != null) {
             Product product = retrieveProductById(productId);
-            Style style = null;
+            List<Style> productStyles = product.getStyles();
+            List<Style> persistentInputStyles = new ArrayList<>();
 
-            for (Style sty : styles) {
-                style = styleService.retrieveStyleByStyleId(sty.getStyleId());
-                if (isAppend) {
-                    product.getStyles().add(style);
-                    style.getProducts().add(product);
+            for (Style style : styles) {
+                // draw style from db and keep in inputStyles
+                persistentInputStyles.add(styleService.retrieveStyleByStyleId(style.getStyleId()));
+            }
+
+            for (Style productStyle : productStyles) {
+                if (persistentInputStyles.contains(productStyle)) {
+                    persistentInputStyles.remove(productStyle);
                 } else {
-                    product.getStyles().remove(style);
-                    style.getProducts().remove(product);
+                    product.getStyles().remove(productStyle);
+                    productStyle.getProducts().remove(product);
                 }
+            }
+            for (Style style : styles) {
+                product.getStyles().remove(style);
+                style.getProducts().remove(product);
             }
         }
     }

@@ -80,3 +80,10 @@ export const retrieveAllCategoryTagStyle = async () => {
   );
   return jsog.decode(data);
 };
+
+export const updateProduct = async () => {
+  const { data } = await axios.put(
+      PRODUCT_BASE_URL + "/updateProduct"
+  );
+  return jsog.decode(data);
+};
