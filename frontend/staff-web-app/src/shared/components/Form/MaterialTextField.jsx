@@ -2,6 +2,7 @@ import React from "react";
 import * as PropTypes from "prop-types";
 import TextField from "@material-ui/core/TextField";
 
+//fieldName MUST correspond to entity's attribute name AND state attribute name
 const MaterialTextField = props => {
   const {
     fieldLabel,
@@ -20,13 +21,13 @@ const MaterialTextField = props => {
     <div>
       <span className="material-form__label">{fieldLabel}</span>
       <TextField
-        name={fieldName}
         className="material-form__field"
+        name={fieldName}
         value={state[fieldName]}
-        onChange={onChange}
-        variant={variant}
         error={!!errors[fieldName]}
         helperText={errors[fieldName]}
+        onChange={onChange}
+        variant={variant}
         type={type}
         disabled={disabled}
         autoFocus={autoFocus}

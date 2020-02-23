@@ -7,6 +7,8 @@ import capstone.rt04.retailbackend.util.exceptions.category.CategoryNotFoundExce
 import capstone.rt04.retailbackend.util.exceptions.category.CreateNewCategoryException;
 import capstone.rt04.retailbackend.util.exceptions.product.*;
 import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.style.CreateNewStyleException;
+import capstone.rt04.retailbackend.util.exceptions.tag.CreateNewTagException;
 import capstone.rt04.retailbackend.util.exceptions.warehouse.WarehouseNotFoundException;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -23,18 +25,24 @@ public class StartUpService {
     private final ProductService productService;
     private final CategoryService categoryService;
     private final WarehouseService warehouseService;
+    private final TagService tagService;
+    private final StyleService styleService;
 
-    public StartUpService(ProductService productService, CategoryService categoryService, WarehouseService warehouseService) {
+    public StartUpService(ProductService productService, CategoryService categoryService, WarehouseService warehouseService, TagService tagService, StyleService styleService) {
         this.productService = productService;
         this.categoryService = categoryService;
         this.warehouseService = warehouseService;
+        this.tagService = tagService;
+        this.styleService = styleService;
     }
 
     @PostConstruct
-    public void init() throws InputDataValidationException, CreateNewCategoryException, CategoryNotFoundException, CreateNewProductException, ProductVariantNotFoundException, CreateNewProductStockException, WarehouseNotFoundException, StoreNotFoundException {
+    public void init() throws InputDataValidationException, CreateNewCategoryException, CategoryNotFoundException, CreateNewProductException, ProductVariantNotFoundException, CreateNewProductStockException, WarehouseNotFoundException, StoreNotFoundException, CreateNewTagException, CreateNewStyleException {
         createCategoryIfNotFound();
         createProductIfNotFound();
         createWarehouseAndStoreIfNotFound();
+        createTagIfNotFound();
+        createStyleIfNotFound();
     }
 
     private void createCategoryIfNotFound() throws CategoryNotFoundException, CreateNewCategoryException, InputDataValidationException {
@@ -154,17 +162,34 @@ public class StartUpService {
         }
     }
 
-    private void createWarehouseAndStoreIfNotFound() throws InputDataValidationException, CreateNewProductStockException, WarehouseNotFoundException, StoreNotFoundException {
+    private void createWarehouseAndStoreIfNotFound() throws InputDataValidationException, CreateNewProductStockException, WarehouseNotFoundException, StoreNotFoundException, ProductVariantNotFoundException {
         if (warehouseService.retrieveAllWarehouses().size() == 0) {
 
             Warehouse warehouse = new Warehouse();
             Address address = new Address("Pasir Ris Drive 1", "#01-01", 510144, "Pasir Ris Building");
             Warehouse w = warehouseService.createWarehouse(warehouse, address);
-            List<Warehouse> warehouses = warehouseService.retrieveAllWarehouseInventory();
+            List<Warehouse> warehouses = warehouseService.retrieveAllWarehouses();
 
             productService.assignProductStock(warehouses, null, null);
 
             // TODO: Create store?
         }
+    }
+
+    private void createTagIfNotFound() throws CreateNewTagException, InputDataValidationException {
+        if (tagService.retrieveAllTags().size() != 0) return;
+        tagService.createNewTag(new Tag("Promotion"));
+        tagService.createNewTag(new Tag("Popular"));
+        tagService.createNewTag(new Tag("Sales"));
+        tagService.createNewTag(new Tag("New Arrival"));
+    }
+
+    private void createStyleIfNotFound() throws CreateNewStyleException, InputDataValidationException {
+        if (styleService.retrieveAllStyles().size() != 0) return;
+        styleService.createNewStyle(new Style("Vintage"));
+        styleService.createNewStyle(new Style("Bohemian"));
+        styleService.createNewStyle(new Style("Chic"));
+        styleService.createNewStyle(new Style("Artsy"));
+        styleService.createNewStyle(new Style("Sophisticated"));
     }
 }

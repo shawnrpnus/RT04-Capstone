@@ -10,6 +10,8 @@ import capstone.rt04.retailbackend.services.ProductService;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.product.CreateNewProductException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.product.ProductStockNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.tag.TagNotFoundException;
 import capstone.rt04.retailbackend.util.routeconstants.ProductControllerRoutes;
 import lombok.extern.slf4j.Slf4j;
@@ -151,54 +153,22 @@ public class ProductController {
 //    }
 //
     @PutMapping(ProductControllerRoutes.ADD_REMOVE_TAG_TO_PRODUCT)
-    public ResponseEntity<?> addOrRemoveTagToAProduct(@RequestBody ProductTagRequest productTagRequest) {
-        try {
-            if (productTagRequest.getIsAppend()) {
-                productService.addOrRemoveTag(null, productTagRequest.getProductId(),
-                        productTagRequest.getTags(), null, true);
-                return new ResponseEntity<>(new GenericErrorResponse("Success!"), HttpStatus.OK);
-            } else {
-                productService.addOrRemoveTag(null, productTagRequest.getProductId(),
-                        productTagRequest.getTags(), null, false);
-                return new ResponseEntity<>(new GenericErrorResponse("Failed"), HttpStatus.OK);
-            }
-        } catch (ProductNotFoundException | TagNotFoundException ex) {
-            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
-        } catch (Exception ex) {
-            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public ResponseEntity<?> addOrRemoveTagToAProduct(@RequestBody ProductTagRequest productTagRequest) throws ProductNotFoundException, TagNotFoundException {
+        productService.addOrRemoveTag(null, productTagRequest.getProductId(),
+                productTagRequest.getTags(), null);
+        return new ResponseEntity<>(new GenericErrorResponse("Success!"), HttpStatus.OK);
     }
 
     @PutMapping(ProductControllerRoutes.ADD_REMOVE_TAG_FOR_A_LIST_OF_PRODUCTS)
-    public ResponseEntity<?> addOrRemoveTagForAListOfProducts(@RequestBody ProductTagRequest productTagRequest) {
-        try {
-            if (productTagRequest.getIsAppend()) {
-                productService.addOrRemoveTag(productTagRequest.getTagId(), null,
-                        null, productTagRequest.getProducts(), true);
-                return new ResponseEntity<>(new GenericErrorResponse("Success!"), HttpStatus.OK);
-            } else {
-                productService.addOrRemoveTag(productTagRequest.getTagId(), null,
-                        null, productTagRequest.getProducts(), false);
-                return new ResponseEntity<>(new GenericErrorResponse("Failed"), HttpStatus.OK);
-            }
-        } catch (ProductNotFoundException ex) {
-            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
-        } catch (TagNotFoundException ex) {
-            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
-        } catch (Exception ex) {
-            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public ResponseEntity<?> addOrRemoveTagForAListOfProducts(@RequestBody ProductTagRequest productTagRequest) throws ProductNotFoundException, TagNotFoundException {
+        productService.addOrRemoveTag(productTagRequest.getTagId(), null,
+                null, productTagRequest.getProducts());
+        return new ResponseEntity<>(new GenericErrorResponse("Success!"), HttpStatus.OK);
     }
 
     @DeleteMapping(ProductControllerRoutes.DELETE_PRODUCT)
-    public ResponseEntity<?> deleteProduct(@PathVariable Long productId) {
-        try {
+    public ResponseEntity<?> deleteProduct(@PathVariable Long productId) throws ProductVariantNotFoundException, ProductStockNotFoundException, ProductNotFoundException {
             Product product = productService.deleteProduct(productId);
             return new ResponseEntity<>(product, HttpStatus.OK);
-        } catch (ProductNotFoundException ex) {
-            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
-        } catch (Exception ex) {
-            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
     }
 }

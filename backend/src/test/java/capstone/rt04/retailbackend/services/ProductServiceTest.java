@@ -165,11 +165,11 @@ public class ProductServiceTest extends ServiceTestSetup {
         Tag tag = new Tag("Chic", null);
         tagService.createNewTag(tag);
 
-        productService.addOrRemoveTag(tag.getTagId(), null, null, products, true);
+        productService.addOrRemoveTag(tag.getTagId(), null, null, products);
         products = productService.retrieveAllProducts();
         assertThat(products.get(0).getTags().get(0).getTagId()).isEqualTo(tag.getTagId());
 
-        productService.addOrRemoveTag(tag.getTagId(), null, null, products, false);
+        productService.addOrRemoveTag(tag.getTagId(), null, null, new ArrayList<>());
         products = productService.retrieveAllProducts();
         assertThat(products.get(0).getTags().size()).isEqualTo(0);
 
@@ -194,7 +194,7 @@ public class ProductServiceTest extends ServiceTestSetup {
         Tag tag2 = new Tag("Urban", null);
         tagService.createNewTag(tag2);
 
-        productService.addOrRemoveTag(tag1.getTagId(), null, null, products, true);
+        productService.addOrRemoveTag(tag1.getTagId(), null, null, products);
         products = productService.retrieveAllProducts();
 
         Category category = categoryService.retrieveCategoryByCategoryId(categoryId);

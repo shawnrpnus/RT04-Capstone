@@ -2,6 +2,7 @@ package capstone.rt04.retailbackend.services;
 
 import capstone.rt04.retailbackend.entities.Category;
 import capstone.rt04.retailbackend.repositories.CategoryRepository;
+import capstone.rt04.retailbackend.response.CategoryDetails;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.category.CategoryNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.category.CreateNewCategoryException;
@@ -10,6 +11,7 @@ import capstone.rt04.retailbackend.util.exceptions.category.UpdateCategoryExcept
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -26,43 +28,34 @@ public class CategoryService {
         this.categoryRepository = categoryRepository;
     }
 
-    public Category createNewCategory(Category newCategory, Long parentCategoryId) throws InputDataValidationException, CreateNewCategoryException {
-        Map<String, String> errorMap = validationService.generateErrorMap(newCategory);
+    public Category createNewCategory(Category newCategory, Long parentCategoryId) throws InputDataValidationException, CreateNewCategoryException, CategoryNotFoundException {
+        validationService.throwExceptionIfInvalidBean(newCategory);
 
-        if (errorMap == null) {
-            try {
-//                Category existingCategory = null;
-//                try {
-//                    existingCategory = retrieveCategoryByName(newCategory.getName());
-//                } catch (CategoryNotFoundException ex) {
-//                }
-//                if (existingCategory != null) {
-//                    errorMap = new HashMap<>();
-//                    errorMap.put("category", "This category is already created!");
-//                    throw new InputDataValidationException(errorMap, "Category already created");
-//                }
-                if (parentCategoryId != null) {
-                    Category parentCategoryEntity = retrieveCategoryByCategoryId(parentCategoryId);
-
-                    if (!parentCategoryEntity.getProducts().isEmpty()) {
-                        throw new CreateNewCategoryException("Parent category cannot be associated with any product");
-                    }
-                    newCategory.setParentCategory(parentCategoryEntity);
-                    parentCategoryEntity.getChildCategories().add(newCategory);
-                }
-                categoryRepository.save(newCategory);
-                return newCategory;
-            } catch (Exception ex) {
-                throw new CreateNewCategoryException("Error creating new category");
-            }
-        } else {
-            throw new InputDataValidationException(errorMap, "Invalid Category");
+        Category existingSiblingCategory = categoryRepository.findAllByCategoryNameAndParentCategory_CategoryId(newCategory.getCategoryName(), parentCategoryId).orElse(null);
+        if (existingSiblingCategory != null){
+            throw new CreateNewCategoryException("There is already a sibling category with the same name");
         }
+        if (parentCategoryId != null) {
+            Category parentCategoryEntity = retrieveCategoryByCategoryId(parentCategoryId);
+
+            if (!parentCategoryEntity.getProducts().isEmpty()) {
+                throw new CreateNewCategoryException("Parent category cannot be associated with any product");
+            }
+            newCategory.setParentCategory(parentCategoryEntity);
+            parentCategoryEntity.getChildCategories().add(newCategory);
+        }
+        try {
+            categoryRepository.save(newCategory);
+            return newCategory;
+        } catch (Exception ex) {
+            throw new CreateNewCategoryException("Error creating new category");
+        }
+
     }
 
     public Category retrieveCategoryByName(String name) throws CategoryNotFoundException {
-        Category category = categoryRepository.findByName(name).orElseThrow(
-                () -> new CategoryNotFoundException(("Category with name " + name + " does not exist!")));
+        Category category = categoryRepository.findByCategoryName(name).orElseThrow(
+                () -> new CategoryNotFoundException(("Category with name: " + name + " does not exist!")));
 
         lazilyLoadSubCategories(category);
         return category;
@@ -84,44 +77,53 @@ public class CategoryService {
         return categoryRepository.findAllByParentCategoryIsNull();
     }
 
+    public List<CategoryDetails> retrieveAllChildCategories() {
+        List<Category> categories = categoryRepository.findAllByChildCategoriesIsNull();
+        List<CategoryDetails> categoryDetails = new ArrayList<>();
+        String leafNodeName;
+
+        for (Category category : categories) {
+            leafNodeName = generateLeafNodeName(category, "");
+            categoryDetails.add(new CategoryDetails(category, leafNodeName));
+        }
+        return categoryDetails;
+    }
+
+    public String generateLeafNodeName(Category category, String leafNodeName) {
+
+        leafNodeName += category.getCategoryName();
+        if (category.getParentCategory() != null) leafNodeName += " > ";
+
+        if (category.getParentCategory() == null) return leafNodeName;
+        leafNodeName = generateLeafNodeName(category.getParentCategory(), leafNodeName);
+
+        return leafNodeName;
+    }
+
+
     public Category updateCategory(Category category, Long parentCategoryId) throws InputDataValidationException, CategoryNotFoundException, UpdateCategoryException {
         Map<String, String> errorMap = validationService.generateErrorMap(category);
 
         if (errorMap == null) {
-            try {
-                Category categoryToUpdate = retrieveCategoryByCategoryId(category.getCategoryId());
-                Category existingCategory = categoryRepository.findByNameAndCategoryId(category.getName(), category.getCategoryId()).orElse(null);
 
-                if (categoryToUpdate.getParentCategory() != null) {
-                    parentCategoryId = categoryToUpdate.getParentCategory().getCategoryId();
-                }
-                if (existingCategory != null) {
-                    throw new UpdateCategoryException("Name of category to be updated is duplicated!");
-                }
+            Category categoryToUpdate = retrieveCategoryByCategoryId(category.getCategoryId());
 
-                categoryToUpdate.setName(category.getName());
+            categoryToUpdate.setCategoryName(category.getCategoryName());
 
-                if (parentCategoryId != null) {
-                    if (categoryToUpdate.getCategoryId().equals(parentCategoryId)) {
-                        throw new UpdateCategoryException("Category cannot be its own parent");
-                    } else if (categoryToUpdate.getParentCategory() == null || (!categoryToUpdate.getParentCategory().getCategoryId().equals(parentCategoryId))) {
-                        Category parentCategory = retrieveCategoryByCategoryId(parentCategoryId);
-                        if (!parentCategory.getProducts().isEmpty()) {
-                            throw new UpdateCategoryException("Parent category cannot have any product associated with it");
-                        }
-
-                        categoryToUpdate.setParentCategory(parentCategory);
-                    }
-                } else {
-                    if (categoryToUpdate.getParentCategory() != null) {
-                        throw new CategoryNotFoundException("Category ID not provided for category to be updated");
+            if (parentCategoryId != null) {
+                if (categoryToUpdate.getCategoryId().equals(parentCategoryId)) {
+                    throw new UpdateCategoryException("Category cannot be its own parent");
+                } else if (categoryToUpdate.getParentCategory() == null || (!categoryToUpdate.getParentCategory().getCategoryId().equals(parentCategoryId))) {
+                    Category parentCategory = retrieveCategoryByCategoryId(parentCategoryId);
+                    if (!parentCategory.getProducts().isEmpty()) {
+                        throw new UpdateCategoryException("Parent category cannot have any product associated with it");
                     }
 
+                    categoryToUpdate.setParentCategory(parentCategory);
                 }
-                return categoryToUpdate;
-            } catch (Exception ex) {
-                throw new UpdateCategoryException("Error updating category");
             }
+            return categoryToUpdate;
+
         } else {
             throw new InputDataValidationException(errorMap, "Invalid Category");
         }
@@ -130,22 +132,50 @@ public class CategoryService {
     public Category deleteCategory(Long categoryId) throws CategoryNotFoundException, DeleteCategoryException {
         Category categoryToRemove = retrieveCategoryByCategoryId(categoryId);
 
-        if (!categoryToRemove.getChildCategories().isEmpty()) {
-            throw new DeleteCategoryException("Category ID " + categoryId + " is associated with existing sub-categories and cannot be deleted!");
-        } else if (!categoryToRemove.getProducts().isEmpty()) {
-            throw new DeleteCategoryException("Category ID " + categoryId + " is associated with existing products and cannot be deleted!");
+        if (!categoryToRemove.getProducts().isEmpty() || checkChildrenHaveProducts(categoryToRemove.getChildCategories())) {
+            throw new DeleteCategoryException("Category is associated with existing products and cannot be deleted!");
         } else {
+            // category no products, and children no products
             categoryToRemove.setParentCategory(null);
-
+            if (!categoryToRemove.getChildCategories().isEmpty()) {
+                recursivelyDeleteChildren(categoryToRemove.getChildCategories());
+            }
             categoryRepository.delete(categoryToRemove);
 
             return categoryToRemove;
         }
     }
 
+    // PRE-CONDITION: already checkChildrenHaveProducts is false
+    private void recursivelyDeleteChildren(List<Category> childCategories) {
+        for (int i = 0; i < childCategories.size(); i++) {
+            Category child = childCategories.get(i);
+            if (!child.getChildCategories().isEmpty()) {
+                recursivelyDeleteChildren(child.getChildCategories());
+            }
+
+            child.getParentCategory().getChildCategories().remove(child);
+            i--;
+            child.setParentCategory(null);
+            categoryRepository.delete(child);
+        }
+    }
+
+    public boolean checkChildrenHaveProducts(List<Category> childCategories) {
+        for (Category child : childCategories) {
+            // has products
+            if (!child.getProducts().isEmpty()) {
+                return true;
+            }
+
+            return checkChildrenHaveProducts(child.getChildCategories());
+        }
+        return false;
+    }
+
     private void lazilyLoadSubCategories(Category category) {
         for (Category categoryEntity : category.getChildCategories()) {
-            categoryEntity.getName();
+            categoryEntity.getCategoryName();
             lazilyLoadSubCategories(categoryEntity);
         }
     }

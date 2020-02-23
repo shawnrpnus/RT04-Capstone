@@ -1,16 +1,21 @@
 package capstone.rt04.retailbackend.controllers;
 
 import capstone.rt04.retailbackend.entities.Category;
+import capstone.rt04.retailbackend.entities.Style;
 import capstone.rt04.retailbackend.entities.Tag;
 import capstone.rt04.retailbackend.request.category.CategoryCreateRequest;
 import capstone.rt04.retailbackend.request.category.CategoryUpdateRequest;
-import capstone.rt04.retailbackend.response.AllCategoryTagResponse;
+import capstone.rt04.retailbackend.response.AllCategoryTagStyleResponse;
+import capstone.rt04.retailbackend.response.CategoryDetails;
 import capstone.rt04.retailbackend.response.GenericErrorResponse;
 import capstone.rt04.retailbackend.services.CategoryService;
+import capstone.rt04.retailbackend.services.StyleService;
 import capstone.rt04.retailbackend.services.TagService;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.category.CategoryNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.category.CreateNewCategoryException;
+import capstone.rt04.retailbackend.util.exceptions.category.DeleteCategoryException;
+import capstone.rt04.retailbackend.util.exceptions.category.UpdateCategoryException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,10 +31,12 @@ public class CategoryController {
 
     private final CategoryService categoryService;
     private final TagService tagService;
+    private final StyleService styleService;
 
-    public CategoryController(CategoryService categoryService, TagService tagService) {
+    public CategoryController(CategoryService categoryService, TagService tagService, StyleService styleService) {
         this.categoryService = categoryService;
         this.tagService = tagService;
+        this.styleService = styleService;
     }
 
     @GetMapping(RETRIEVE_CATEGORY_BY_ID)
@@ -44,15 +51,12 @@ public class CategoryController {
         }
     }
 
-    @GetMapping(RETRIEVE_ALL_CATEGORY_AND_TAG)
-    public ResponseEntity<?> retrieveAllCategoryAndTag() {
-        try {
-            List<Category> categories = categoryService.retrieveAllCategories();
-            List<Tag> tags = tagService.retrieveAllTags();
-            return new ResponseEntity<>(new AllCategoryTagResponse(categories, tags), HttpStatus.OK);
-        }  catch (Exception ex) {
-            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    @GetMapping(RETRIEVE_ALL_CATEGORY_TAG_STLYE)
+    public ResponseEntity<?> retrieveAllCategoryTagStyle() {
+        List<CategoryDetails> childCategories = categoryService.retrieveAllChildCategories();
+        List<Tag> tags = tagService.retrieveAllTags();
+        List<Style> styles = styleService.retrieveAllStyles();
+        return new ResponseEntity<>(new AllCategoryTagStyleResponse(childCategories, tags, styles), HttpStatus.OK);
     }
 
     @GetMapping(RETRIEVE_ALL_CATEGORY)
@@ -65,42 +69,35 @@ public class CategoryController {
         }
     }
 
-    @PostMapping(CREATE_NEW_CATEGORY)
-    public ResponseEntity<?> createNewCategory(@RequestBody CategoryCreateRequest categoryCreateRequest) {
+    @GetMapping(RETRIEVE_ALL_CHILD_CATEGORY)
+    public ResponseEntity<?> retrieveAllChildCategories() {
         try {
-            Category newCategory = categoryService.createNewCategory(categoryCreateRequest.getCategory(),
-                    categoryCreateRequest.getParentCategoryId());
-            return new ResponseEntity<>(newCategory, HttpStatus.CREATED);
-        } catch (InputDataValidationException ex) {
-            return new ResponseEntity<>(ex.getErrorMap(), HttpStatus.BAD_REQUEST);
-        } catch (CreateNewCategoryException ex) {
-            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
+            List<CategoryDetails> childCategories = categoryService.retrieveAllChildCategories();
+            return new ResponseEntity<>(childCategories, HttpStatus.OK);
         } catch (Exception ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    @PutMapping(UPDATE_CATEGORY)
-    public ResponseEntity<?> updateCategory(@RequestBody CategoryUpdateRequest categoryUpdateRequest) {
-        try {
-            Category category = categoryService.updateCategory(categoryUpdateRequest.getCategory(), categoryUpdateRequest.getParentCategoryId());
-            return new ResponseEntity<>(category, HttpStatus.OK);
-        } catch (CategoryNotFoundException ex) {
-            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
-        } catch (Exception ex) {
-            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    @PostMapping(CREATE_NEW_CATEGORY)
+    public ResponseEntity<?> createNewCategory(@RequestBody CategoryCreateRequest categoryCreateRequest) throws CategoryNotFoundException, CreateNewCategoryException, InputDataValidationException {
+        Category newCategory = categoryService.createNewCategory(categoryCreateRequest.getCategory(),
+                categoryCreateRequest.getParentCategoryId());
+        return new ResponseEntity<>(newCategory, HttpStatus.CREATED);
+    }
+
+
+    @PostMapping(UPDATE_CATEGORY)
+    public ResponseEntity<?> updateCategory(@RequestBody CategoryUpdateRequest categoryUpdateRequest) throws CategoryNotFoundException, UpdateCategoryException, InputDataValidationException {
+
+        Category category = categoryService.updateCategory(categoryUpdateRequest.getCategory(), categoryUpdateRequest.getParentCategoryId());
+        return new ResponseEntity<>(category, HttpStatus.OK);
     }
 
     @DeleteMapping(DELETE_CATEGORY)
-    public ResponseEntity<?> deleteProduct(@PathVariable Long categoryId) {
-        try {
-            Category category = categoryService.deleteCategory(categoryId);
-            return new ResponseEntity<>(category, HttpStatus.OK);
-        } catch (CategoryNotFoundException ex) {
-            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
-        } catch (Exception ex) {
-            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public ResponseEntity<?> deleteCategory(@PathVariable Long categoryId) throws CategoryNotFoundException, DeleteCategoryException {
+        Category category = categoryService.deleteCategory(categoryId);
+        return new ResponseEntity<>(category, HttpStatus.OK);
+
     }
 }

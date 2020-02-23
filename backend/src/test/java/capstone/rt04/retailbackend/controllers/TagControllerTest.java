@@ -42,7 +42,7 @@ public class TagControllerTest {
                 .contentType("application/json")
                 .body(invalidTag)
                 .when().post(TagControllerRoutes.TAG_BASE_ROUTE + TagControllerRoutes.CREATE_NEW_TAG)
-                .then().statusCode(HttpStatus.BAD_REQUEST.value()).body("name", equalTo(ErrorMessages.TAG_NAME_REQUIRED));
+                .then().statusCode(HttpStatus.BAD_REQUEST.value()).body("categoryName", equalTo(ErrorMessages.TAG_NAME_REQUIRED));
 
         Tag createdTag = given()
                 .contentType("application/json")

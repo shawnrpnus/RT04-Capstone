@@ -78,8 +78,8 @@ public class StaffService {
         return newDepartment;
     }
 
-    //staff entity: first name, last name, nric, username&password(to be configured by admin),leave remaining
-    //for HR to create staff. HR supplies, first name, last name, nric, address, bank details,
+    //staff entity: first categoryName, last categoryName, nric, username&password(to be configured by admin),leave remaining
+    //for HR to create staff. HR supplies, first categoryName, last categoryName, nric, address, bank details,
     //role, department.
     public Staff createNewStaff (Staff staff,Address staffAddress, Role role, Department department) throws InputDataValidationException, CreateNewStaffException {
         validationService.throwExceptionIfInvalidBean(staff);
@@ -199,7 +199,7 @@ public class StaffService {
         return lazyLoadStaffFields(staff);
     }
 
-    //For HR to update first name, last name, NRIC, username, bank details, department , role, address
+    //For HR to update first categoryName, last categoryName, NRIC, username, bank details, department , role, address
     public Staff updateStaffDetails(Staff staff, Role role, Department department, Address address)throws UpdateStaffDetailsException, InputDataValidationException {
         validationService.throwExceptionIfInvalidBean(staff);
         validationService.throwExceptionIfInvalidBean(address);

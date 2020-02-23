@@ -59,8 +59,11 @@ public class ServiceTestSetup {
         createdCustomerId = testValidCustomer.getCustomerId();
 
         Product validProduct = new Product("0001","Fila Disruptor II", "Fila", BigDecimal.valueOf(89.90), BigDecimal.valueOf(39.90));
-        Category category = categoryService.createNewCategory(new Category("Shoes"), null);
-        validProduct.setCategory(category);
+        Category men = categoryService.createNewCategory(new Category("Men"), null);
+        Category shoes = categoryService.createNewCategory(new Category("Shoes"), men.getCategoryId());
+        Category nike = categoryService.createNewCategory(new Category("Nike"), shoes.getCategoryId());
+        Category fila = categoryService.createNewCategory(new Category("Fila"), shoes.getCategoryId());
+        validProduct.setCategory(fila);
 
         // Adding colors and sizes
         sizes.add(SizeEnum.S);
@@ -68,9 +71,9 @@ public class ServiceTestSetup {
         colors.add("White");
         colors.add("Gold");
 
-        Product result = productService.createNewProduct(validProduct, category.getCategoryId(), null, sizes, colors);
+        Product result = productService.createNewProduct(validProduct, fila.getCategoryId(), null, sizes, colors);
         assertThat(result).isEqualTo(validProduct);
-        categoryId = category.getCategoryId();
+        categoryId = fila.getCategoryId();
         productId = result.getProductId();
 
         Product product = productService.retrieveProductById(productId);
