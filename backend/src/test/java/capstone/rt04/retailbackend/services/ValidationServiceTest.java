@@ -31,7 +31,7 @@ public class ValidationServiceTest {
         Customer customer = new Customer("FirstName", "LastName", "Invalid@EmaiL@Com", "password");
 
         Map<String, String> expResult = new HashMap<>();
-        expResult.put("name", "Category must have a categoryName");
+        expResult.put("categoryName", "Category must have a categoryName");
         Map<String, String> result = validationService.generateErrorMap(entity);
         assertThat(result).isEqualTo(expResult);
 

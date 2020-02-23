@@ -29,28 +29,28 @@ public class CategoryService {
     }
 
     public Category createNewCategory(Category newCategory, Long parentCategoryId) throws InputDataValidationException, CreateNewCategoryException, CategoryNotFoundException {
-        Map<String, String> errorMap = validationService.generateErrorMap(newCategory);
+        validationService.throwExceptionIfInvalidBean(newCategory);
 
-        if (errorMap == null) {
-
-            if (parentCategoryId != null) {
-                Category parentCategoryEntity = retrieveCategoryByCategoryId(parentCategoryId);
-
-                if (!parentCategoryEntity.getProducts().isEmpty()) {
-                    throw new CreateNewCategoryException("Parent category cannot be associated with any product");
-                }
-                newCategory.setParentCategory(parentCategoryEntity);
-                parentCategoryEntity.getChildCategories().add(newCategory);
-            }
-            try {
-                categoryRepository.save(newCategory);
-                return newCategory;
-            } catch (Exception ex) {
-                throw new CreateNewCategoryException("Error creating new category");
-            }
-        } else {
-            throw new InputDataValidationException(errorMap, "Invalid Category");
+        Category existingSiblingCategory = categoryRepository.findAllByCategoryNameAndParentCategory_CategoryId(newCategory.getCategoryName(), parentCategoryId).orElse(null);
+        if (existingSiblingCategory != null){
+            throw new CreateNewCategoryException("There is already a sibling category with the same name");
         }
+        if (parentCategoryId != null) {
+            Category parentCategoryEntity = retrieveCategoryByCategoryId(parentCategoryId);
+
+            if (!parentCategoryEntity.getProducts().isEmpty()) {
+                throw new CreateNewCategoryException("Parent category cannot be associated with any product");
+            }
+            newCategory.setParentCategory(parentCategoryEntity);
+            parentCategoryEntity.getChildCategories().add(newCategory);
+        }
+        try {
+            categoryRepository.save(newCategory);
+            return newCategory;
+        } catch (Exception ex) {
+            throw new CreateNewCategoryException("Error creating new category");
+        }
+
     }
 
     public Category retrieveCategoryByName(String name) throws CategoryNotFoundException {
@@ -82,7 +82,7 @@ public class CategoryService {
         List<CategoryDetails> categoryDetails = new ArrayList<>();
         String leafNodeName;
 
-        for(Category category : categories) {
+        for (Category category : categories) {
             leafNodeName = generateLeafNodeName(category, "");
             categoryDetails.add(new CategoryDetails(category, leafNodeName));
         }
@@ -92,7 +92,7 @@ public class CategoryService {
     public String generateLeafNodeName(Category category, String leafNodeName) {
 
         leafNodeName += category.getCategoryName();
-        if (category.getParentCategory() != null)  leafNodeName += " > ";
+        if (category.getParentCategory() != null) leafNodeName += " > ";
 
         if (category.getParentCategory() == null) return leafNodeName;
         leafNodeName = generateLeafNodeName(category.getParentCategory(), leafNodeName);
