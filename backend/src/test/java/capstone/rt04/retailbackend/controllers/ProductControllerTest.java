@@ -154,7 +154,7 @@ public class ProductControllerTest extends ApiTestSetup {
                 then().statusCode(HttpStatus.OK.value()).extract().body().jsonPath().getList(".", Product.class);
 
 
-        ProductTagRequest productTagRequest = new ProductTagRequest(tagId1, null, null, products, true);
+        ProductTagRequest productTagRequest = new ProductTagRequest(tagId1, null, null, products);
         given().
                 contentType("application/json").
                 body(productTagRequest).
@@ -193,7 +193,7 @@ public class ProductControllerTest extends ApiTestSetup {
         assertThat(products.size()).isEqualTo(1);
 
         // End
-        productTagRequest = new ProductTagRequest(tagId1, null, null, products, false);
+        productTagRequest = new ProductTagRequest(tagId1, null, null, new ArrayList<>());
         given().
                 contentType("application/json").
                 body(productTagRequest).

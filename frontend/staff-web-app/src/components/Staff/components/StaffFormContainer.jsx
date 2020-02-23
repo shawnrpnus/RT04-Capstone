@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, {Component, PureComponent} from "react";
 import "moment";
 import * as PropTypes from "prop-types";
 import withPage from "../../Layout/page/withPage";

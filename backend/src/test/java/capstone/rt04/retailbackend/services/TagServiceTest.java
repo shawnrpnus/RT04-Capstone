@@ -1,7 +1,7 @@
 package capstone.rt04.retailbackend.services;
 
 import capstone.rt04.retailbackend.entities.Tag;
-import capstone.rt04.retailbackend.util.exceptions.tag.CreateNewTagException;
+import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,7 +42,7 @@ public class TagServiceTest {
         assertThat(removedTag.getTagId()).isEqualTo(validTag.getTagId());
     }
 
-    @Test(expected = CreateNewTagException.class)
+    @Test(expected = InputDataValidationException.class)
     public void createNewTag() throws Exception {
         Tag invalidTag = new Tag("dress");
         tagService.createNewTag(invalidTag);

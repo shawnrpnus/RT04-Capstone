@@ -74,9 +74,9 @@ const retrieveAllProductsError = data => ({
   errorMap: data
 });
 
-export const retrieveAllCategoryAndTag = async () => {
+export const retrieveAllCategoryTagStyle = async () => {
   const { data } = await axios.get(
-    CATEGORY_BASE_URL + "retrieveAllCategoryAndTag"
+    CATEGORY_BASE_URL + "retrieveAllCategoryTagStyle"
   );
   return jsog.decode(data);
 };

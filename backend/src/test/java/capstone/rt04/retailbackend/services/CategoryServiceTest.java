@@ -1,17 +1,13 @@
 package capstone.rt04.retailbackend.services;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.InstanceOfAssertFactories.stream;
-
-import capstone.rt04.retailbackend.entities.*;
 import capstone.rt04.retailbackend.entities.Category;
+import capstone.rt04.retailbackend.entities.Product;
 import capstone.rt04.retailbackend.util.enums.SizeEnum;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.category.CategoryNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.category.CreateNewCategoryException;
 import capstone.rt04.retailbackend.util.exceptions.category.UpdateCategoryException;
 import capstone.rt04.retailbackend.util.exceptions.product.CreateNewProductException;
-import org.hibernate.sql.Update;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,11 +22,13 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @ActiveProfiles("test")
-public class CategoryServiceTest {
+public class CategoryServiceTest extends ServiceTestSetup {
     @Autowired
     private CategoryService categoryService;
     @Autowired
@@ -53,11 +51,11 @@ public class CategoryServiceTest {
         assertThat(removedCategory.getCategoryId()).isEqualTo(validCategory.getCategoryId());
     }
 
-//    @Test(expected = CreateNewCategoryException.class)
-//    public void createDuplicateCategory() throws Exception {
-//        Category invalidCategory = new Category("MEN");
-//        categoryService.createNewCategory(invalidCategory, null);
-//    }
+    @Test(expected = CreateNewCategoryException.class)
+    public void createDuplicateCategory() throws Exception {
+        Category invalidCategory = new Category("MEN");
+        categoryService.createNewCategory(invalidCategory, null);
+    }
 
     @Test
     public void updateMostParentCategoryName() throws Exception {
@@ -92,6 +90,12 @@ public class CategoryServiceTest {
         categoryService.deleteCategory(subCategory.getCategoryId());
     }
 
+//    @Test
+//    public void generateLeafNodeName() throws Exception {
+//        Category childCategory = categoryService.retrieveCategoryByName("Fila");
+//        String string = categoryService.generateLeafNodeName(childCategory, "");
+//        System.out.println(string);
+//    }
     @Test
     public void checkChildrenHaveProducts() throws Exception{
         Category subCategory = new Category("CLOTHING");
@@ -189,6 +193,5 @@ public class CategoryServiceTest {
         Product newProduct = productService.createNewProduct(product, womenClothingDressCategory.getCategoryId(), null, sizes, colors);
 
         Category updatedCategory = categoryService.updateCategory(menClothingPantsCategory, womenClothingDressCategory.getCategoryId());
-
     }
 }

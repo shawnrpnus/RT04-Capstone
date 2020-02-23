@@ -10,10 +10,11 @@ import Select from "@material-ui/core/Select";
 import Button from "@material-ui/core/Button";
 import MenuItem from "@material-ui/core/MenuItem";
 import OutlinedInput from "@material-ui/core/OutlinedInput";
-import { retrieveAllCategoryAndTag } from "../../../../redux/actions/productActions";
+import { retrieveAllCategoryTagStyle } from "../../../../redux/actions/productActions";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 
 class ProductUpdateForm extends PureComponent {
   static propTypes = {
@@ -28,20 +29,39 @@ class ProductUpdateForm extends PureComponent {
       product: this.props.product,
       open: this.props.open,
       categories: [],
-      tagList: []
+      tagList: [],
+      styleList: []
     };
   }
 
   async componentDidMount() {
-    const response = await retrieveAllCategoryAndTag();
-    const { categories, tags } = response;
-    this.setState({ categories, tagList: tags });
+    const response = await retrieveAllCategoryTagStyle();
+    const { categories, tags, styles } = response;
+    this.setState({ categories, tagList: tags, styleList: styles });
   }
 
   onChange = ({ target: input }) => {
-    console.log(input);
     const product = { ...this.state.product };
     product[input.name] = input.value;
+    this.setState({ product });
+  };
+
+  onSelectCategory = async ({ target: input }) => {
+    if (input.name === undefined) return;
+    const product = { ...this.state.product };
+    product[input.name].categoryId = input.value;
+    await this.setState({ product });
+  };
+
+  onSelectTag = (event, tagArray) => {
+    const product = { ...this.state.product };
+    product.tags = tagArray;
+    this.setState({ product });
+  };
+
+  onSelectStyle = (event, styleArray) => {
+    const product = { ...this.state.product };
+    product.styles = styleArray;
     this.setState({ product });
   };
 
@@ -58,10 +78,11 @@ class ProductUpdateForm extends PureComponent {
       tags,
       category,
       price,
-      cost
+      cost,
+      styles
     } = this.state.product;
     const { errors, open, onClose } = this.props;
-    const { categories, tagList } = this.state;
+    const { categories, tagList, styleList } = this.state;
 
     return (
       <Dialog onClose={onClose} open={open} fullWidth maxWidth={"xs"}>
@@ -77,6 +98,19 @@ class ProductUpdateForm extends PureComponent {
               shrink: true
             }}
             onChange={this.onChange}
+          />
+          <TextField
+            label="Description"
+            name="description"
+            value={description}
+            fullWidth
+            margin="normal"
+            InputLabelProps={{
+              shrink: true
+            }}
+            onChange={this.onChange}
+            multiline
+            rowsMax={6}
           />
           <TextField
             type="number"
@@ -103,30 +137,68 @@ class ProductUpdateForm extends PureComponent {
             onChange={this.onChange}
           />
           <FormControl fullWidth style={{ margin: "3% 0" }}>
-            <InputLabel
-              required
-              InputLabelProps={{
-                shrink: true
-              }}
-            >
+            <InputLabel required shrink>
               Category
             </InputLabel>
-            <Select
-              onChange={this.handleChange}
-              name="category"
-              value={category && category.name}
-            >
-              <MenuItem value=""></MenuItem>
-              {categories &&
-                categories.map(({ name: category }) => {
+            {category && (
+              <Select
+                onClick={this.onSelectCategory}
+                name="category"
+                value={category.categoryId}
+              >
+                <MenuItem key={""} value="" />
+                {categories.map(({ category, leafNodeName }, index) => {
                   return (
-                    <MenuItem key={category} value={category}>
-                      {category}
+                    <MenuItem key={index} value={category.categoryId}>
+                      {leafNodeName}
                     </MenuItem>
                   );
                 })}
-            </Select>
+              </Select>
+            )}
           </FormControl>
+          <Autocomplete
+            style={{ margin: "3% 0" }}
+            multiple
+            id="tags"
+            options={tagList}
+            onChange={(event, value) => this.onSelectTag(event, value)}
+            getOptionLabel={option => option.name}
+            value={tags}
+            renderInput={params => (
+              <TextField
+                {...params}
+                variant="standard"
+                label="Tags"
+                placeholder="Tags"
+                fullWidth
+                InputLabelProps={{
+                  shrink: true
+                }}
+              />
+            )}
+          />
+          <Autocomplete
+            style={{ margin: "3% 0" }}
+            multiple
+            id="styles"
+            options={styleList}
+            onChange={(event, value) => this.onSelectStyle(event, value)}
+            getOptionLabel={option => option.styleName}
+            value={styles}
+            renderInput={params => (
+              <TextField
+                {...params}
+                variant="standard"
+                label="Styles"
+                placeholder="Styles"
+                fullWidth
+                InputLabelProps={{
+                  shrink: true
+                }}
+              />
+            )}
+          />
         </DialogContent>
         <DialogActions>
           <Button autoFocus onClick={onClose} color="primary">

@@ -17,5 +17,4 @@ public interface ProductRepository extends CrudRepository<Product, Long> {
 
     @Query("SELECT p FROM Product p WHERE p.category.categoryId = ?1")
     List<Product> findAllByCategoryId(Long categoryId);
-
 }

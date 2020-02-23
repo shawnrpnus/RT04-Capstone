@@ -6,8 +6,8 @@ import capstone.rt04.retailbackend.request.productStock.ProductStockReadRequest;
 import capstone.rt04.retailbackend.response.GenericErrorResponse;
 import capstone.rt04.retailbackend.services.ProductService;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
-import capstone.rt04.retailbackend.util.exceptions.product.CreateNewProductStockException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductStockNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
 import capstone.rt04.retailbackend.util.routeconstants.ProductStockControllerRoutes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,17 +50,9 @@ public class ProductStockController {
     }
 
     @PostMapping(ProductStockControllerRoutes.CREATE_PRODUCT_STOCK)
-    public ResponseEntity<?> createProductStock(@RequestBody ProductStockCreateRequest productStockCreateRequest) {
-        try {
-            ProductStock productStock = productService.createProductStock(productStockCreateRequest.getProductStock(), productStockCreateRequest.getProductVariantId());
-            return new ResponseEntity<>(productStock, HttpStatus.CREATED);
-        } catch (InputDataValidationException ex) {
-            return new ResponseEntity<>(ex.getErrorMap(), HttpStatus.BAD_REQUEST);
-        } catch (CreateNewProductStockException ex) {
-            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
-        } catch (Exception ex) {
-            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public ResponseEntity<?> createProductStock(@RequestBody ProductStockCreateRequest productStockCreateRequest) throws ProductVariantNotFoundException, InputDataValidationException {
+        ProductStock productStock = productService.createProductStock(productStockCreateRequest.getProductStock(), productStockCreateRequest.getProductVariantId());
+        return new ResponseEntity<>(productStock, HttpStatus.CREATED);
     }
 
     @PutMapping(ProductStockControllerRoutes.UPDATE_PRODUCT_STOCK)
