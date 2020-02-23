@@ -36,7 +36,7 @@ public class StaffController {
         this.validationService = validationService;
     }
 
-    //When creating new staff, HR supplies first name, last name, email, address, bank details, role and department
+    //When creating new staff, HR supplies first categoryName, last categoryName, email, address, bank details, role and department
     //Address will need to save in address repository cause it is new
     //role and department already exist in database from the start so no need to save
     @PostMapping(StaffControllerRoutes.CREATE_NEW_STAFF)
@@ -100,7 +100,7 @@ public class StaffController {
         }
     }
 
-    //For HR to update first name, last name, role, email, department, bank details and address
+    //For HR to update first categoryName, last categoryName, role, email, department, bank details and address
     @PostMapping(StaffControllerRoutes.UPDATE_STAFF)
     public ResponseEntity<?> updateStaff(@RequestBody StaffDetailsUpdateRequest staffDetailsUpdateRequest) throws StaffNotFoundException, InputDataValidationException {
         try {

@@ -11,6 +11,7 @@ import capstone.rt04.retailbackend.services.TagService;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.category.CategoryNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.category.CreateNewCategoryException;
+import capstone.rt04.retailbackend.util.exceptions.category.DeleteCategoryException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -50,7 +51,7 @@ public class CategoryController {
             List<Category> categories = categoryService.retrieveAllCategories();
             List<Tag> tags = tagService.retrieveAllTags();
             return new ResponseEntity<>(new AllCategoryTagResponse(categories, tags), HttpStatus.OK);
-        }  catch (Exception ex) {
+        } catch (Exception ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -93,14 +94,9 @@ public class CategoryController {
     }
 
     @DeleteMapping(DELETE_CATEGORY)
-    public ResponseEntity<?> deleteProduct(@PathVariable Long categoryId) {
-        try {
-            Category category = categoryService.deleteCategory(categoryId);
-            return new ResponseEntity<>(category, HttpStatus.OK);
-        } catch (CategoryNotFoundException ex) {
-            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
-        } catch (Exception ex) {
-            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public ResponseEntity<?> deleteCategory(@PathVariable Long categoryId) throws CategoryNotFoundException, DeleteCategoryException {
+        Category category = categoryService.deleteCategory(categoryId);
+        return new ResponseEntity<>(category, HttpStatus.OK);
+
     }
 }

@@ -38,7 +38,7 @@ public class Tag implements Serializable {
 
     @NotNull(message = ErrorMessages.TAG_NAME_REQUIRED)
     @Column(unique = true)
-    @Size(min = 1, message = "Tag name is required")
+    @Size(min = 1, message = "Tag categoryName is required")
     private String name;
 
     @ManyToMany

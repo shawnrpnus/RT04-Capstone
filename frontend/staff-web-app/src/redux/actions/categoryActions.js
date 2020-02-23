@@ -16,7 +16,7 @@ export const retrieveAllCategories = () => {
       .catch(err => {
         if (!!err.response && !!err.response.data) {
           const { errorMap } = err.response.data;
-          toast.error(errorMap.message, {
+          toast.error(errorMap.errorMessage, {
             position: toast.POSITION.TOP_CENTER
           });
           dispatch(retrieveAllCategoriesError(err.response.data));
@@ -36,3 +36,40 @@ const retrieveAllCategoriesError = data => ({
   type: types.GET_ERRORS,
   errorMap: data
 });
+
+export const deleteCategory = categoryId => {
+  return dispatch => {
+    axios
+      .delete(CATEGORY_BASE_URL + `/deleteCategory/${categoryId}`)
+      .then(response => {
+        const { data } = jsog.decode(response);
+        if (parseInt(data.categoryId) === parseInt(categoryId)) {
+          retrieveAllCategories()(dispatch);
+          toast.success("Category deleted!", {
+            position: toast.POSITION.TOP_CENTER
+          });
+        }
+      })
+      .catch(err => {
+        if (!!err.response && !!err.response.data) {
+          console.log(err.response);
+          const { errorMessage } = err.response.data;
+          toast.error(errorMessage, {
+            position: toast.POSITION.TOP_CENTER
+          });
+        } else {
+          console.log(err);
+        }
+      });
+  };
+};
+
+// const deleteCategorySuccess = data => ({
+//   type: types.DELETE_CATEGORY,
+//   categories: data
+// });
+//
+// const delteCategoryError = data => ({
+//   type: types.GET_ERRORS,
+//   errorMap: data
+// });

@@ -2,13 +2,8 @@ package capstone.rt04.retailbackend.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import capstone.rt04.retailbackend.entities.*;
 import capstone.rt04.retailbackend.entities.Category;
-import capstone.rt04.retailbackend.entities.Customer;
-import capstone.rt04.retailbackend.entities.Measurements;
-import capstone.rt04.retailbackend.entities.Category;
-import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
-import capstone.rt04.retailbackend.util.exceptions.category.CreateNewCategoryException;
-import capstone.rt04.retailbackend.util.exceptions.category.CreateNewCategoryException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,10 +13,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Map;
 
 
 @RunWith(SpringRunner.class)
@@ -58,15 +49,15 @@ public class CategoryServiceTest {
     public void updateMostParentCategoryName() throws Exception {
         Category updateCategory = categoryService.retrieveCategoryByName("MEN");
         String change = "WOMEN";
-        updateCategory.setName(change);
+        updateCategory.setCategoryName(change);
         categoryService.updateCategory(updateCategory, null);
         Category existingCategory = categoryService.retrieveCategoryByName("WOMEN");
-        assertThat(existingCategory.getName().compareTo(change)).isEqualTo(0);
+        assertThat(existingCategory.getCategoryName().compareTo(change)).isEqualTo(0);
 
-        existingCategory.setName("MEN");
+        existingCategory.setCategoryName("MEN");
         categoryService.updateCategory(existingCategory, null);
         Category finalCategory = categoryService.retrieveCategoryByName("MEN");
-        assertThat(finalCategory.getName().compareTo("MEN")).isEqualTo(0);
+        assertThat(finalCategory.getCategoryName().compareTo("MEN")).isEqualTo(0);
     }
 
     @Test
@@ -80,10 +71,42 @@ public class CategoryServiceTest {
 
         //Update
         Category categoryToUpdate = categoryService.retrieveCategoryByCategoryId(subCategory.getCategoryId());
-        categoryToUpdate.setName("NOT_CLOTHING");
+        categoryToUpdate.setCategoryName("NOT_CLOTHING");
         categoryService.updateCategory(categoryToUpdate, parentCategory.getCategoryId());
 
         //Delete
         categoryService.deleteCategory(subCategory.getCategoryId());
+    }
+
+    @Test
+    public void checkChildrenHaveProducts() throws Exception{
+        Category subCategory = new Category("CLOTHING");
+        Category parentCategory = categoryService.retrieveCategoryByName("MEN");
+        parentCategory.getChildCategories().add(subCategory);
+
+        boolean haveProducts = categoryService.checkChildrenHaveProducts(parentCategory.getChildCategories());
+        assertThat(haveProducts).isFalse();
+
+        subCategory.getProducts().add(new Product());
+        haveProducts = categoryService.checkChildrenHaveProducts(parentCategory.getChildCategories());
+        assertThat(haveProducts).isTrue();
+
+        subCategory.getProducts().clear();
+        Category subSubCategory = new Category("Jackets");
+        subCategory.getChildCategories().add(subSubCategory);
+        haveProducts = categoryService.checkChildrenHaveProducts(parentCategory.getChildCategories());
+        assertThat(haveProducts).isFalse();
+
+        subSubCategory.getProducts().add(new Product());
+        haveProducts = categoryService.checkChildrenHaveProducts(parentCategory.getChildCategories());
+        assertThat(haveProducts).isTrue();
+    }
+
+    @Test
+    public void testRecursiveDeleteChildren() throws Exception{
+        Category category = new Category("CLOTHING");
+        Category parentCategory = categoryService.retrieveCategoryByName("MEN");
+        Category subCategory = categoryService.createNewCategory(category, parentCategory.getCategoryId());
+        Category subSubCategory = categoryService.createNewCategory(new Category("Jackets"), subCategory.getCategoryId());
     }
 }

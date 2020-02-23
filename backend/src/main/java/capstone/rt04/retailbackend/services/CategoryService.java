@@ -33,7 +33,7 @@ public class CategoryService {
             try {
 //                Category existingCategory = null;
 //                try {
-//                    existingCategory = retrieveCategoryByName(newCategory.getName());
+//                    existingCategory = retrieveCategoryByName(newCategory.getCategoryName());
 //                } catch (CategoryNotFoundException ex) {
 //                }
 //                if (existingCategory != null) {
@@ -61,8 +61,8 @@ public class CategoryService {
     }
 
     public Category retrieveCategoryByName(String name) throws CategoryNotFoundException {
-        Category category = categoryRepository.findByName(name).orElseThrow(
-                () -> new CategoryNotFoundException(("Category with name " + name + " does not exist!")));
+        Category category = categoryRepository.findByCategoryName(name).orElseThrow(
+                () -> new CategoryNotFoundException(("Category with name: " + name + " does not exist!")));
 
         lazilyLoadSubCategories(category);
         return category;
@@ -90,7 +90,7 @@ public class CategoryService {
         if (errorMap == null) {
             try {
                 Category categoryToUpdate = retrieveCategoryByCategoryId(category.getCategoryId());
-                Category existingCategory = categoryRepository.findByNameAndCategoryId(category.getName(), category.getCategoryId()).orElse(null);
+                Category existingCategory = categoryRepository.findByCategoryNameAndCategoryId(category.getCategoryName(), category.getCategoryId()).orElse(null);
 
                 if (categoryToUpdate.getParentCategory() != null) {
                     parentCategoryId = categoryToUpdate.getParentCategory().getCategoryId();
@@ -99,7 +99,7 @@ public class CategoryService {
                     throw new UpdateCategoryException("Name of category to be updated is duplicated!");
                 }
 
-                categoryToUpdate.setName(category.getName());
+                categoryToUpdate.setCategoryName(category.getCategoryName());
 
                 if (parentCategoryId != null) {
                     if (categoryToUpdate.getCategoryId().equals(parentCategoryId)) {
@@ -130,22 +130,54 @@ public class CategoryService {
     public Category deleteCategory(Long categoryId) throws CategoryNotFoundException, DeleteCategoryException {
         Category categoryToRemove = retrieveCategoryByCategoryId(categoryId);
 
-        if (!categoryToRemove.getChildCategories().isEmpty()) {
-            throw new DeleteCategoryException("Category ID " + categoryId + " is associated with existing sub-categories and cannot be deleted!");
-        } else if (!categoryToRemove.getProducts().isEmpty()) {
-            throw new DeleteCategoryException("Category ID " + categoryId + " is associated with existing products and cannot be deleted!");
+        if (!categoryToRemove.getProducts().isEmpty() || checkChildrenHaveProducts(categoryToRemove.getChildCategories())) {
+            throw new DeleteCategoryException("Category is associated with existing products and cannot be deleted!");
         } else {
+            // category no products, and children no products
             categoryToRemove.setParentCategory(null);
-
+            if (!categoryToRemove.getChildCategories().isEmpty()) {
+                recursivelyDeleteChildren(categoryToRemove.getChildCategories());
+            }
             categoryRepository.delete(categoryToRemove);
 
             return categoryToRemove;
         }
     }
 
+    // PRE-CONDITION: already checkChildrenHaveProducts is false
+    private void recursivelyDeleteChildren(List<Category> childCategories){
+        for (int i = 0; i < childCategories.size(); i++){
+            Category child = childCategories.get(i);
+            if (!child.getChildCategories().isEmpty()){
+                recursivelyDeleteChildren(child.getChildCategories());
+            }
+
+            child.getParentCategory().getChildCategories().remove(child);
+            i--;
+            child.setParentCategory(null);
+            categoryRepository.delete(child);
+        }
+    }
+
+    public boolean checkChildrenHaveProducts(List<Category> childCategories) {
+        for (Category child : childCategories){
+            // has products
+            if (!child.getProducts().isEmpty()) {
+                return true;
+            }
+            // no products, is leaf node
+            if (child.getChildCategories().isEmpty()) {
+                return false;
+            }
+
+            return checkChildrenHaveProducts(child.getChildCategories());
+        }
+        return false;
+    }
+
     private void lazilyLoadSubCategories(Category category) {
         for (Category categoryEntity : category.getChildCategories()) {
-            categoryEntity.getName();
+            categoryEntity.getCategoryName();
             lazilyLoadSubCategories(categoryEntity);
         }
     }

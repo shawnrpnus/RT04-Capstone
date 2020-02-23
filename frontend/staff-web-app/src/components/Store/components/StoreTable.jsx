@@ -80,7 +80,7 @@ class StoreTable extends Component {
         >
           {this.props.allStores ? (
             <MaterialTable
-              title="All Stores"
+              title="Stores"
               style={{ boxShadow: "none" }}
               icons={tableIcons}
               columns={[

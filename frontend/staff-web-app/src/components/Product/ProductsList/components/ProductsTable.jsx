@@ -94,7 +94,7 @@ class ProductsTable extends PureComponent {
       <div className="table" style={{ verticalAlign: "middle" }}>
         {products ? (
           <MaterialTable
-            title="All Products"
+            title="Products"
             style={{ boxShadow: "none" }}
             icons={tableIcons}
             columns={[
