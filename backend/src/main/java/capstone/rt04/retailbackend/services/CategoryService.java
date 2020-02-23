@@ -88,40 +88,30 @@ public class CategoryService {
         Map<String, String> errorMap = validationService.generateErrorMap(category);
 
         if (errorMap == null) {
-            try {
-                Category categoryToUpdate = retrieveCategoryByCategoryId(category.getCategoryId());
-                Category existingCategory = categoryRepository.findByCategoryNameAndCategoryId(category.getCategoryName(), category.getCategoryId()).orElse(null);
 
+            Category categoryToUpdate = retrieveCategoryByCategoryId(category.getCategoryId());
+
+            categoryToUpdate.setCategoryName(category.getCategoryName());
+
+            if (parentCategoryId != null) {
+                if (categoryToUpdate.getCategoryId().equals(parentCategoryId)) {
+                    throw new UpdateCategoryException("Category cannot be its own parent");
+                } else if (categoryToUpdate.getParentCategory() == null || (!categoryToUpdate.getParentCategory().getCategoryId().equals(parentCategoryId))) {
+                    Category parentCategory = retrieveCategoryByCategoryId(parentCategoryId);
+                    if (!parentCategory.getProducts().isEmpty()) {
+                        throw new UpdateCategoryException("Parent category cannot have any product associated with it");
+                    }
+
+                    categoryToUpdate.setParentCategory(parentCategory);
+                }
+            } else { //update name only
                 if (categoryToUpdate.getParentCategory() != null) {
-                    parentCategoryId = categoryToUpdate.getParentCategory().getCategoryId();
-                }
-                if (existingCategory != null) {
-                    throw new UpdateCategoryException("Name of category to be updated is duplicated!");
+                    throw new CategoryNotFoundException("Category ID not provided for category to be updated");
                 }
 
-                categoryToUpdate.setCategoryName(category.getCategoryName());
-
-                if (parentCategoryId != null) {
-                    if (categoryToUpdate.getCategoryId().equals(parentCategoryId)) {
-                        throw new UpdateCategoryException("Category cannot be its own parent");
-                    } else if (categoryToUpdate.getParentCategory() == null || (!categoryToUpdate.getParentCategory().getCategoryId().equals(parentCategoryId))) {
-                        Category parentCategory = retrieveCategoryByCategoryId(parentCategoryId);
-                        if (!parentCategory.getProducts().isEmpty()) {
-                            throw new UpdateCategoryException("Parent category cannot have any product associated with it");
-                        }
-
-                        categoryToUpdate.setParentCategory(parentCategory);
-                    }
-                } else {
-                    if (categoryToUpdate.getParentCategory() != null) {
-                        throw new CategoryNotFoundException("Category ID not provided for category to be updated");
-                    }
-
-                }
-                return categoryToUpdate;
-            } catch (Exception ex) {
-                throw new UpdateCategoryException("Error updating category");
             }
+            return categoryToUpdate;
+
         } else {
             throw new InputDataValidationException(errorMap, "Invalid Category");
         }
@@ -145,10 +135,10 @@ public class CategoryService {
     }
 
     // PRE-CONDITION: already checkChildrenHaveProducts is false
-    private void recursivelyDeleteChildren(List<Category> childCategories){
-        for (int i = 0; i < childCategories.size(); i++){
+    private void recursivelyDeleteChildren(List<Category> childCategories) {
+        for (int i = 0; i < childCategories.size(); i++) {
             Category child = childCategories.get(i);
-            if (!child.getChildCategories().isEmpty()){
+            if (!child.getChildCategories().isEmpty()) {
                 recursivelyDeleteChildren(child.getChildCategories());
             }
 
@@ -160,7 +150,7 @@ public class CategoryService {
     }
 
     public boolean checkChildrenHaveProducts(List<Category> childCategories) {
-        for (Category child : childCategories){
+        for (Category child : childCategories) {
             // has products
             if (!child.getProducts().isEmpty()) {
                 return true;
