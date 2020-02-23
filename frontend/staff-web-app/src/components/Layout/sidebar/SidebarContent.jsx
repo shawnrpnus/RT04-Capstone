@@ -35,6 +35,7 @@ class SidebarContent extends Component {
               route="/"
               onClick={this.hideSidebar}
             />
+
           </SidebarCategory>
 
           <SidebarCategory title="Stores" icon="store">
