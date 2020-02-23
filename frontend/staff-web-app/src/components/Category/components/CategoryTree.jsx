@@ -2,7 +2,14 @@ import React, { Component } from "react";
 import withPage from "../../Layout/page/withPage";
 import { connect } from "react-redux";
 import { retrieveAllCategories } from "../../../redux/actions/categoryActions";
+import { retrieveAllProducts } from "../../../redux/actions/productActions";
 import { Tree } from "primereact/tree";
+import {
+  getParentKeys,
+  buildCategoryTree
+} from "../../../services/categoryService";
+import { Grid } from "@material-ui/core";
+import { ProductsTableRaw } from "../../Product/ProductsList/components/ProductsTable";
 
 class CategoryTree extends Component {
   constructor(props) {
@@ -23,32 +30,44 @@ class CategoryTree extends Component {
 
   onSelectionChange = e => {
     this.setState({ selectedCategoryId: e.value });
-    console.log(this.state);
+    // TODO: Update store/warehouse ID from global state / local storage
+    this.props.retrieveAllProducts(null, e.value);
   };
 
   render() {
-    const { allCategories } = this.props;
-    if (allCategories !== null) {
-      console.log(allCategories[0].childCategories);
-      console.log(sumChildrenProducts(allCategories[0]));
-    }
+    const { allCategories, renderLoader, categoryProducts } = this.props;
     return (
       <React.Fragment>
         <div className="card__title">
           <h5 className="bold-text">All Categories</h5>
         </div>
         {allCategories !== null ? (
-          <Tree
-            value={buildCategoryTree(allCategories)}
-            selectionMode="checkbox"
-            propagateSelectionUp={false}
-            propagateSelectionDown={false}
-            expandedKeys={getParentKeys(allCategories, {})}
-            selectionKeys={this.state.selectedCategoryId}
-            onSelectionChange={this.onSelectionChange}
-            filter={true}
-          />
-        ) : null}
+          <Grid container spacing={3}>
+            <Grid item xs={12} md={3}>
+              <Tree
+                value={buildCategoryTree(allCategories)}
+                selectionMode="single"
+                propagateSelectionUp={false}
+                propagateSelectionDown={false}
+                expandedKeys={getParentKeys(allCategories, {})}
+                selectionKeys={this.state.selectedCategoryId}
+                onSelectionChange={this.onSelectionChange}
+                filter={true}
+                style={{ width: "100%" }}
+              />
+            </Grid>
+            <Grid item xs={12} md={9}>
+              {categoryProducts && (
+                <ProductsTableRaw
+                  products={categoryProducts}
+                  renderLoader={renderLoader}
+                />
+              )}
+            </Grid>
+          </Grid>
+        ) : (
+          renderLoader()
+        )}
       </React.Fragment>
     );
   }
@@ -56,55 +75,16 @@ class CategoryTree extends Component {
 
 const mapStateToProps = state => ({
   errors: state.errors,
-  allCategories: state.category.allCategories
+  allCategories: state.category.allCategories,
+  categoryProducts: state.category.categoryProducts
 });
 
 const mapDispatchToProps = {
-  retrieveAllCategories
+  retrieveAllCategories,
+  retrieveAllProducts
 };
 
 export default connect(
   mapStateToProps,
   mapDispatchToProps
 )(withPage(CategoryTree, "Category Management"));
-
-const buildCategoryTree = categories => {
-  return categories.map(parentCategory => {
-    if (parentCategory !== null) {
-      let hasChildren = parentCategory.childCategories.length > 0;
-      let numProducts = hasChildren
-        ? sumChildrenProducts(parentCategory, 0)
-        : parentCategory.products.length;
-      return {
-        key: parentCategory.categoryId,
-        label: hasChildren
-          ? `${parentCategory.name} (${numProducts})`
-          : `${parentCategory.name} (${numProducts})`,
-        selectable: true,
-        children:
-          parentCategory.childCategories.length > 0
-            ? buildCategoryTree(parentCategory.childCategories)
-            : null
-      };
-    }
-  });
-};
-
-const sumChildrenProducts = category => {
-  let sum = 0;
-  category.childCategories.forEach(child => {
-    sum += child.products.length;
-    sum += sumChildrenProducts(child, sum);
-  });
-  return sum;
-};
-
-const getParentKeys = (categories, obj) => {
-  const parentKeys = obj;
-  for (let index = 0; index < categories.length; index++) {
-    if (categories[index].childCategories.length > 0)
-      parentKeys[categories[index].categoryId] = true;
-    getParentKeys(categories[index].childCategories, parentKeys);
-  }
-  return parentKeys;
-};

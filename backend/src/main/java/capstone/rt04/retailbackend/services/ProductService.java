@@ -136,6 +136,24 @@ public class ProductService {
         return products;
     }
 
+    public List<ProductDetailsResponse> retrieveProductDetailsForCategory(Long storeOrWarehouseId, Long categoryId) throws ProductNotFoundException {
+        List<ProductDetailsResponse> productDetailsResponses = retrieveProductsDetails(storeOrWarehouseId, null);
+        List<ProductDetailsResponse> result = new ArrayList<>();
+        for (ProductDetailsResponse p : productDetailsResponses){
+            Category c = p.getProduct().getCategory();
+            if (checkIfCategoryIsInside(c, categoryId)){
+                result.add(p);
+            }
+        }
+        return result;
+    }
+
+    private boolean checkIfCategoryIsInside(Category categoryToCheck, Long categoryId){
+        if (categoryToCheck.getCategoryId().equals(categoryId)) return true;
+        if (categoryToCheck.getParentCategory() == null) return false;
+        return checkIfCategoryIsInside(categoryToCheck.getParentCategory(), categoryId);
+    }
+
     public List<ProductDetailsResponse> retrieveProductsDetails(Long storeOrWarehouseId, Long productId) throws ProductNotFoundException {
         // Each product can have multiple colour
         // Each colours will have a list of sizes
@@ -303,13 +321,15 @@ public class ProductService {
         }
     }
 
-    public Product updateProduct(Product newProduct) throws ProductNotFoundException {
+    public Product updateProduct(Product newProduct) throws ProductNotFoundException, TagNotFoundException {
 
         Product product = retrieveProductById(newProduct.getProductId());
         product.setPrice(newProduct.getPrice());
         product.setProductName(newProduct.getProductName());
         product.setCost(newProduct.getCost());
         product.setDescription(newProduct.getDescription());
+
+        addOrRemoveTag(null, null, null, null);
 
 //        product.setProductVariants(newProduct.getProductVariants()); -> createProductVariant / deleteProductVariant
 //        product.setPromoCodes(newProduct.getPromoCodes()); -> add/remove promoCode
@@ -362,7 +382,7 @@ public class ProductService {
 
     // TODO: Create multiple product variants without creating product
 
-    public ProductVariant createProductVariant(ProductVariant productVariant, Long productId) throws ProductNotFoundException, InputDataValidationException, PersistenceException, CreateNewProductStockException, WarehouseNotFoundException, StoreNotFoundException {
+    public ProductVariant createProductVariant(ProductVariant productVariant, Long productId) throws ProductNotFoundException, InputDataValidationException, PersistenceException, CreateNewProductStockException, WarehouseNotFoundException, StoreNotFoundException, ProductVariantNotFoundException {
 
         Product product = retrieveProductById(productId);
         productVariant.setProduct(product);
@@ -388,7 +408,7 @@ public class ProductService {
         }
     }
 
-    public List<ProductVariant> createMultipleProductVariants(Long productId, String colour, List<SizeEnum> sizes) throws ProductNotFoundException, InputDataValidationException, CreateNewProductStockException, StoreNotFoundException, WarehouseNotFoundException {
+    public List<ProductVariant> createMultipleProductVariants(Long productId, String colour, List<SizeEnum> sizes) throws ProductNotFoundException, InputDataValidationException, CreateNewProductStockException, StoreNotFoundException, WarehouseNotFoundException, ProductVariantNotFoundException {
         Product product = retrieveProductById(productId);
 
         List<ProductVariant> productVariants = new ArrayList<>();
@@ -508,7 +528,7 @@ public class ProductService {
      *
      * @return void
      */
-    public void assignProductStock(List<Warehouse> warehouses, List<Store> stores, ProductVariant inputProductVariant) throws CreateNewProductStockException, InputDataValidationException, WarehouseNotFoundException, StoreNotFoundException {
+    public void assignProductStock(List<Warehouse> warehouses, List<Store> stores, ProductVariant inputProductVariant) throws InputDataValidationException, WarehouseNotFoundException, StoreNotFoundException, ProductVariantNotFoundException {
         List<ProductVariant> productVariants;
         if (inputProductVariant == null) {
             productVariants = retrieveAllProductVariant();
@@ -551,18 +571,14 @@ public class ProductService {
      *
      * @return productStock created
      */
-    public ProductStock createProductStock(ProductStock productStock, Long productVariantId) throws InputDataValidationException, CreateNewProductStockException {
+    public ProductStock createProductStock(ProductStock productStock, Long productVariantId) throws InputDataValidationException, ProductVariantNotFoundException {
         Map<String, String> errorMap = validationService.generateErrorMap(productStock);
         if (errorMap == null) {
-            try {
-                ProductVariant productVariant = retrieveProductVariantById(productVariantId);
-                productStock.setProductVariant(productVariant);
-                productVariant.getProductStocks().add(productStock);
-                productStockRepository.save(productStock);
-                return productStock;
-            } catch (Exception ex) {
-                throw new CreateNewProductStockException("An unexpected error has occurred: " + ex.getMessage());
-            }
+            ProductVariant productVariant = retrieveProductVariantById(productVariantId);
+            productStock.setProductVariant(productVariant);
+            productVariant.getProductStocks().add(productStock);
+            productStockRepository.save(productStock);
+            return productStock;
         } else {
             throw new InputDataValidationException(errorMap, "Invalid input data");
         }
@@ -696,36 +712,51 @@ public class ProductService {
         newCategory.getProducts().add(product);
     }
 
-    public void addOrRemoveTag(Long tagId, Long productId, List<Tag> tags, List<Product> products, Boolean isAppend) throws ProductNotFoundException, TagNotFoundException, TagNotFoundException, TagNotFoundException {
+    public void addOrRemoveTag(Long tagId, Long productId, List<Tag> inputTags, List<Product> inputProducts) throws ProductNotFoundException, TagNotFoundException, TagNotFoundException, TagNotFoundException {
         // Adding / removing tag for a list of products
         if (tagId != null) {
             Tag tag = tagService.retrieveTagByTagId(tagId);
-            Product product = null;
+            List<Product> tagProducts = tag.getProducts();
+            List<Product> products = new ArrayList<>();
 
-            for (Product prod : products) {
-                product = retrieveProductById(prod.getProductId());
-                if (isAppend) {
-                    product.getTags().add(tag);
-                    tag.getProducts().add(product);
+            for(Product product : inputProducts) {
+                products.add(retrieveProductById(product.getProductId()));
+            }
+
+            for(Product tagProduct : tagProducts) {
+                if(products.contains(tagProduct)) {
+                    products.remove(tagProduct);
                 } else {
-                    product.getTags().remove(tag);
-                    tag.getProducts().remove(product);
+                    tagProduct.getTags().remove(tag);
+                    tag.getProducts().remove(tagProduct);
                 }
+            }
+
+            for (Product product : products) {
+                product.getTags().add(tag);
+                tag.getProducts().add(product);
             }
 
         } else if (productId != null) {
             Product product = retrieveProductById(productId);
-            Tag tag = null;
+            List<Tag> productTags = product.getTags();
+            List<Tag> tags = new ArrayList<>();
 
-            for (Tag t : tags) {
-                tag = tagService.retrieveTagByTagId(t.getTagId());
-                if (isAppend) {
-                    product.getTags().add(tag);
-                    tag.getProducts().add(product);
+            for(Tag tag : inputTags) {
+                tags.add(tagService.retrieveTagByTagId(tag.getTagId()));
+            }
+
+            for (Tag productTag : productTags ) {
+                if (tags.contains(productTag)) {
+                    tags.remove(productTag);
                 } else {
-                    product.getTags().remove(tag);
-                    tag.getProducts().remove(product);
+                    product.getTags().remove(productTag);
+                    productTag.getProducts().remove(product);
                 }
+            }
+            for (Tag tag : tags) {
+                product.getTags().add(tag);
+                tag.getProducts().add(product);
             }
         }
     }

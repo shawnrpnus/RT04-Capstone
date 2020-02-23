@@ -23,6 +23,4 @@ public class ProductTagRequest {
 
     private List<Product> products;
 
-    private Boolean isAppend;
-
 }

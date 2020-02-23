@@ -47,7 +47,6 @@ class ProductCard extends PureComponent {
 
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (this.props.currentProduct !== prevState.product) {
-      console.log(this.props.currentProduct.colourToSizeImageMaps);
       this.setState({
         product: this.props.currentProduct.product,
         colourSizeMap: this.props.currentProduct.colourToSizeImageMaps
@@ -166,7 +165,6 @@ class ProductCard extends PureComponent {
                   {colourSizeMap[selectedColour] &&
                     colourSizeMap[selectedColour].sizeMaps.map(
                       ({ size, productVariantId }) => {
-                        console.log(size, productVariantId);
                         return (
                           <Button
                             key={size}

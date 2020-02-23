@@ -1,13 +1,6 @@
 package capstone.rt04.retailbackend.services;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import capstone.rt04.retailbackend.entities.Category;
-import capstone.rt04.retailbackend.entities.Customer;
-import capstone.rt04.retailbackend.entities.Measurements;
-import capstone.rt04.retailbackend.entities.Category;
-import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
-import capstone.rt04.retailbackend.util.exceptions.category.CreateNewCategoryException;
 import capstone.rt04.retailbackend.util.exceptions.category.CreateNewCategoryException;
 import org.junit.After;
 import org.junit.Before;
@@ -19,15 +12,13 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Map;
+import static org.assertj.core.api.Assertions.assertThat;
 
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @ActiveProfiles("test")
-public class CategoryServiceTest {
+public class CategoryServiceTest extends ServiceTestSetup {
     @Autowired
     private CategoryService categoryService;
 
@@ -48,11 +39,11 @@ public class CategoryServiceTest {
         assertThat(removedCategory.getCategoryId()).isEqualTo(validCategory.getCategoryId());
     }
 
-//    @Test(expected = CreateNewCategoryException.class)
-//    public void createDuplicateCategory() throws Exception {
-//        Category invalidCategory = new Category("MEN");
-//        categoryService.createNewCategory(invalidCategory, null);
-//    }
+    @Test(expected = CreateNewCategoryException.class)
+    public void createDuplicateCategory() throws Exception {
+        Category invalidCategory = new Category("MEN");
+        categoryService.createNewCategory(invalidCategory, null);
+    }
 
     @Test
     public void updateMostParentCategoryName() throws Exception {
@@ -86,4 +77,11 @@ public class CategoryServiceTest {
         //Delete
         categoryService.deleteCategory(subCategory.getCategoryId());
     }
+
+//    @Test
+//    public void generateLeafNodeName() throws Exception {
+//        Category childCategory = categoryService.retrieveCategoryByName("Fila");
+//        String string = categoryService.generateLeafNodeName(childCategory, "");
+//        System.out.println(string);
+//    }
 }

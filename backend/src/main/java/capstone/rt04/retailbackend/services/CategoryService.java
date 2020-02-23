@@ -2,6 +2,7 @@ package capstone.rt04.retailbackend.services;
 
 import capstone.rt04.retailbackend.entities.Category;
 import capstone.rt04.retailbackend.repositories.CategoryRepository;
+import capstone.rt04.retailbackend.response.CategoryDetails;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.category.CategoryNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.category.CreateNewCategoryException;
@@ -10,6 +11,7 @@ import capstone.rt04.retailbackend.util.exceptions.category.UpdateCategoryExcept
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -83,6 +85,30 @@ public class CategoryService {
     public List<Category> retrieveAllCategories() {
         return categoryRepository.findAllByParentCategoryIsNull();
     }
+
+    public List<CategoryDetails> retrieveAllChildCategories() {
+        List<Category> categories = categoryRepository.findAllByChildCategoriesIsNull();
+        List<CategoryDetails> categoryDetails = new ArrayList<>();
+        String leafNodeName;
+
+        for(Category category : categories) {
+            leafNodeName = generateLeafNodeName(category, "");
+            categoryDetails.add(new CategoryDetails(category, leafNodeName));
+        }
+        return categoryDetails;
+    }
+
+    public String generateLeafNodeName(Category category, String leafNodeName) {
+
+        leafNodeName += category.getName();
+        if (category.getParentCategory() != null)  leafNodeName += " > ";
+
+        if (category.getParentCategory() == null) return leafNodeName;
+        leafNodeName = generateLeafNodeName(category.getParentCategory(), leafNodeName);
+
+        return leafNodeName;
+    }
+
 
     public Category updateCategory(Category category, Long parentCategoryId) throws InputDataValidationException, CategoryNotFoundException, UpdateCategoryException {
         Map<String, String> errorMap = validationService.generateErrorMap(category);

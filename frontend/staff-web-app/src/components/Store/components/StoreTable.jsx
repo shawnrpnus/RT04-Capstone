@@ -122,7 +122,8 @@ class StoreTable extends Component {
                 padding: "dense",
                 showTitle: true,
                 pageSizeOptions: [5, 10, 15],
-                actionsColumnIndex: -1
+                actionsColumnIndex: -1,
+                headerStyle: { textAlign: "center" }
               }}
             />
           ) : (

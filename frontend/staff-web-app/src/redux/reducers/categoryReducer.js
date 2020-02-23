@@ -1,7 +1,8 @@
 import * as types from "../actions/types";
 
 const initialState = {
-  allCategories: null
+  allCategories: null,
+  categoryProducts: null
 };
 
 export default function(state = initialState, action) {
@@ -10,6 +11,11 @@ export default function(state = initialState, action) {
       return {
         ...state,
         allCategories: action.categories
+      };
+    case types.RETRIEVE_ALL_PRODUCTS_FOR_CATEGORY:
+      return {
+        ...state,
+        categoryProducts: action.categoryProducts
       };
     default:
       return state;

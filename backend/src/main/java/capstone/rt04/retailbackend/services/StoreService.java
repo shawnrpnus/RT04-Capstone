@@ -7,11 +7,11 @@ import capstone.rt04.retailbackend.util.enums.DeliveryStatusEnum;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.product.CreateNewProductStockException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductStockNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.store.StoreCannotDeleteException;
 import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.store.StoreUnableToUpdateException;
 import capstone.rt04.retailbackend.util.exceptions.warehouse.WarehouseNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,7 +38,7 @@ public class StoreService {
         this.inStoreRestockOrderRepository = inStoreRestockOrderRepository;
     }
 
-    public Store createNewStore(Store store) throws CreateNewProductStockException, WarehouseNotFoundException, InputDataValidationException, StoreNotFoundException {
+    public Store createNewStore(Store store) throws CreateNewProductStockException, WarehouseNotFoundException, InputDataValidationException, StoreNotFoundException, ProductVariantNotFoundException {
         Map<String, String> errorMap = validationService.generateErrorMap(store);
 
         if (errorMap == null) {

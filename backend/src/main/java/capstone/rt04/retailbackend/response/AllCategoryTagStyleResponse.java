@@ -1,6 +1,6 @@
 package capstone.rt04.retailbackend.response;
 
-import capstone.rt04.retailbackend.entities.Category;
+import capstone.rt04.retailbackend.entities.Style;
 import capstone.rt04.retailbackend.entities.Tag;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,10 +13,12 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class AllCategoryTagResponse {
+public class AllCategoryTagStyleResponse {
 
-    private List<Category> categories;
+    private List<CategoryDetails> categories;
 
     private List<Tag> tags;
+
+    private List<Style> styles;
 
 }
