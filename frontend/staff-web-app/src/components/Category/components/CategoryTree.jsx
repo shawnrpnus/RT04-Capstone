@@ -17,7 +17,8 @@ import { Grid } from "@material-ui/core";
 import { ProductsTableRaw } from "../../Product/ProductsList/components/ProductsTable";
 import { ContextMenu } from "primereact/contextmenu";
 import CreateUpdateCategoryDialog from "./CreateUpdateCategoryDialog";
-import { Button } from "reactstrap";
+import { Button, ButtonToolbar } from "reactstrap";
+import { clearErrors } from "../../../redux/actions";
 
 class CategoryTree extends Component {
   constructor(props) {
@@ -27,7 +28,7 @@ class CategoryTree extends Component {
       selectedCategoryId: null,
       selectedNodeKey: null,
       dialogOpen: false,
-      dialogMode: null
+      dialogMode: null //can be createRoot, createChild, update
     };
   }
 
@@ -56,6 +57,7 @@ class CategoryTree extends Component {
 
   closeDialog = () => {
     this.setState({ dialogOpen: false });
+    this.props.clearErrors();
   };
 
   render() {
@@ -81,7 +83,12 @@ class CategoryTree extends Component {
     ];
 
     let selectedDialogCategory;
-    if (allCategories && this.state.selectedNodeKey) {
+    if (
+      allCategories &&
+      this.state.selectedNodeKey &&
+      this.state.dialogMode &&
+      this.state.dialogMode !== "createRoot"
+    ) {
       selectedDialogCategory = getCategoryInfoFromTree(
         this.state.selectedNodeKey,
         allCategories
@@ -95,7 +102,9 @@ class CategoryTree extends Component {
         </div>
         {allCategories !== null ? (
           <React.Fragment>
-            {this.state.selectedNodeKey && this.state.dialogMode ? (
+            {this.state.selectedNodeKey &&
+            this.state.dialogOpen &&
+            selectedDialogCategory ? (
               <CreateUpdateCategoryDialog
                 open={this.state.dialogOpen}
                 closeDialog={this.closeDialog}
@@ -103,13 +112,40 @@ class CategoryTree extends Component {
                 selectedCategory={selectedDialogCategory}
                 key={`${this.state.dialogMode}-${selectedDialogCategory.categoryName}-${selectedDialogCategory.categoryId}`}
               />
+            ) : this.state.dialogOpen ? (
+              <CreateUpdateCategoryDialog
+                open={this.state.dialogOpen}
+                closeDialog={this.closeDialog}
+                mode={this.state.dialogMode}
+                key={`${this.state.dialogMode}`}
+              />
             ) : null}
             <Grid container spacing={3}>
               <Grid item xs={12} md={3}>
-                <h6 style={{ marginBottom: "5px" }}>
-                  Left click to view products <br />
-                  Right click for more options
-                </h6>
+                <ul style={{ marginBottom: "5px" }}>
+                  <li>
+                    <h6>
+                      <b>Left click</b> to view products
+                    </h6>
+                  </li>
+                  <li>
+                    <h6>
+                      <b>Right click</b> for more options
+                    </h6>
+                  </li>
+                </ul>
+                {/*<h6 className="bold-text" style={{ marginBottom: "5px" }}>*/}
+                {/*  Left click to view products <br />*/}
+                {/*  Right click for more options*/}
+                {/*</h6>*/}
+                <Button
+                  size="sm"
+                  style={{ width: "100%", marginBottom: "5px" }}
+                  onClick={() => this.openDialog("createRoot")}
+                  color="primary"
+                >
+                  Create Root Category
+                </Button>
                 <ContextMenu
                   appendTo={document.body}
                   model={menu}
@@ -160,7 +196,8 @@ const mapDispatchToProps = {
   retrieveAllCategories,
   retrieveAllProducts,
   deleteCategory,
-  createCategory
+  createCategory,
+  clearErrors
 };
 
 export default connect(

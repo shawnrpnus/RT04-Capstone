@@ -28,38 +28,29 @@ public class CategoryService {
         this.categoryRepository = categoryRepository;
     }
 
-    public Category createNewCategory(Category newCategory, Long parentCategoryId) throws InputDataValidationException, CreateNewCategoryException {
-        Map<String, String> errorMap = validationService.generateErrorMap(newCategory);
+    public Category createNewCategory(Category newCategory, Long parentCategoryId) throws InputDataValidationException, CreateNewCategoryException, CategoryNotFoundException {
+        validationService.throwExceptionIfInvalidBean(newCategory);
 
-        if (errorMap == null) {
-            try {
-//                Category existingCategory = null;
-//                try {
-//                    existingCategory = retrieveCategoryByName(newCategory.getCategoryName());
-//                } catch (CategoryNotFoundException ex) {
-//                }
-//                if (existingCategory != null) {
-//                    errorMap = new HashMap<>();
-//                    errorMap.put("category", "This category is already created!");
-//                    throw new InputDataValidationException(errorMap, "Category already created");
-//                }
-                if (parentCategoryId != null) {
-                    Category parentCategoryEntity = retrieveCategoryByCategoryId(parentCategoryId);
-
-                    if (!parentCategoryEntity.getProducts().isEmpty()) {
-                        throw new CreateNewCategoryException("Parent category cannot be associated with any product");
-                    }
-                    newCategory.setParentCategory(parentCategoryEntity);
-                    parentCategoryEntity.getChildCategories().add(newCategory);
-                }
-                categoryRepository.save(newCategory);
-                return newCategory;
-            } catch (Exception ex) {
-                throw new CreateNewCategoryException("Error creating new category");
-            }
-        } else {
-            throw new InputDataValidationException(errorMap, "Invalid Category");
+        Category existingSiblingCategory = categoryRepository.findAllByCategoryNameAndParentCategory_CategoryId(newCategory.getCategoryName(), parentCategoryId).orElse(null);
+        if (existingSiblingCategory != null){
+            throw new CreateNewCategoryException("There is already a sibling category with the same name");
         }
+        if (parentCategoryId != null) {
+            Category parentCategoryEntity = retrieveCategoryByCategoryId(parentCategoryId);
+
+            if (!parentCategoryEntity.getProducts().isEmpty()) {
+                throw new CreateNewCategoryException("Parent category cannot be associated with any product");
+            }
+            newCategory.setParentCategory(parentCategoryEntity);
+            parentCategoryEntity.getChildCategories().add(newCategory);
+        }
+        try {
+            categoryRepository.save(newCategory);
+            return newCategory;
+        } catch (Exception ex) {
+            throw new CreateNewCategoryException("Error creating new category");
+        }
+
     }
 
     public Category retrieveCategoryByName(String name) throws CategoryNotFoundException {
@@ -91,7 +82,7 @@ public class CategoryService {
         List<CategoryDetails> categoryDetails = new ArrayList<>();
         String leafNodeName;
 
-        for(Category category : categories) {
+        for (Category category : categories) {
             leafNodeName = generateLeafNodeName(category, "");
             categoryDetails.add(new CategoryDetails(category, leafNodeName));
         }
@@ -101,7 +92,7 @@ public class CategoryService {
     public String generateLeafNodeName(Category category, String leafNodeName) {
 
         leafNodeName += category.getCategoryName();
-        if (category.getParentCategory() != null)  leafNodeName += " > ";
+        if (category.getParentCategory() != null) leafNodeName += " > ";
 
         if (category.getParentCategory() == null) return leafNodeName;
         leafNodeName = generateLeafNodeName(category.getParentCategory(), leafNodeName);
@@ -130,11 +121,6 @@ public class CategoryService {
 
                     categoryToUpdate.setParentCategory(parentCategory);
                 }
-            } else { //update name only
-                if (categoryToUpdate.getParentCategory() != null) {
-                    throw new CategoryNotFoundException("Category ID not provided for category to be updated");
-                }
-
             }
             return categoryToUpdate;
 
@@ -180,10 +166,6 @@ public class CategoryService {
             // has products
             if (!child.getProducts().isEmpty()) {
                 return true;
-            }
-            // no products, is leaf node
-            if (child.getChildCategories().isEmpty()) {
-                return false;
             }
 
             return checkChildrenHaveProducts(child.getChildCategories());
