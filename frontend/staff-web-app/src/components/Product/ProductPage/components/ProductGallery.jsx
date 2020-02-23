@@ -2,6 +2,7 @@
 import React, { PureComponent } from "react";
 import PropTypes from "prop-types";
 import Lightbox from "react-images";
+const _ = require("lodash");
 
 export default class ProductGallery extends PureComponent {
   static propTypes = {
@@ -69,36 +70,65 @@ export default class ProductGallery extends PureComponent {
     this.gotoNext();
   };
 
+  showSmallBlank = () => {
+    return (
+      <div className="product-gallery__img-preview">
+        <img
+          src="/blank.png"
+          style={{ border: "1px solid black" }}
+          alt="product-img"
+        />
+      </div>
+    );
+  };
+
+  showBigBlank = () => {
+    return (
+      <div className="product-gallery__current-img">
+        <img
+          src="/blank.png"
+          style={{ border: "1px solid black" }}
+          alt="product-img"
+        />
+      </div>
+    );
+  };
+
   render() {
     const { selectedColour, colourSizeMap } = this.props;
-    console.log(colourSizeMap);
 
     const images = colourSizeMap[selectedColour].productImages;
     const { currentImage, currentImagePreview, lightboxIsOpen } = this.state;
 
     return (
       <div className="product-gallery">
-        <a
-          className="product-gallery__current-img"
-          onClick={e => this.openLightbox(currentImage, e)}
-          href={images[currentImage].productImageUrl}
-        >
-          <img
-            src={images[currentImagePreview].productImageUrl}
-            alt="product-img"
-          />
-        </a>
+        {images.length > 0 ? (
+          <a
+            className="product-gallery__current-img"
+            onClick={e => this.openLightbox(currentImage, e)}
+            href={images[currentImage].productImageUrl}
+          >
+            <img
+              src={images[currentImagePreview].productImageUrl}
+              alt="product-img"
+            />
+          </a>
+        ) : (
+          this.showBigBlank()
+        )}
         <div className="product_gallery__gallery">
-          {images.map((img, i) => (
-            <button
-              type="button"
-              key={i}
-              onClick={e => this.changeImg(i, e)}
-              className="product-gallery__img-preview"
-            >
-              <img src={img.productImageUrl} alt="product-img" />
-            </button>
-          ))}
+          {images.length > 0
+            ? images.map((img, i) => (
+                <button
+                  type="button"
+                  key={i}
+                  onClick={e => this.changeImg(i, e)}
+                  className="product-gallery__img-preview"
+                >
+                  <img src={img.productImageUrl} alt="product-img" />
+                </button>
+              ))
+            : _.times(5, () => this.showSmallBlank())}
         </div>
         {/*<Lightbox*/}
         {/*  currentImage={currentImage}*/}

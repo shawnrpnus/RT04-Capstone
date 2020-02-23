@@ -13,11 +13,13 @@ const jsog = require("jsog");
 export const retrieveProductById = productId => {
   return dispatch => {
     //redux thunk passes dispatch
+    console.log("going to retrieving and updating store");
+
     axios
       .get(PRODUCT_BASE_URL + `retrieveProductById/${productId}`)
       .then(response => {
         const { data } = jsog.decode(response);
-        // console.log(data);
+        console.log("retrieving and updating store");
         dispatch(retrieveProductByIdSuccess(data));
         //history.push("/storeEdit"); // TODO: update redirect path
       })
@@ -81,9 +83,14 @@ export const retrieveAllCategoryTagStyle = async () => {
   return jsog.decode(data);
 };
 
-export const updateProduct = async () => {
-  const { data } = await axios.put(
-      PRODUCT_BASE_URL + "/updateProduct"
-  );
-  return jsog.decode(data);
+export const updateProduct = (product, history) => {
+  return dispatch => {
+    axios.put(PRODUCT_BASE_URL + "/updateProduct", product).then(() => {
+      console.log("before retrieving and updating store");
+      retrieveProductById(product.productId)(dispatch);
+      console.log("Success")
+    }).catch(()=> {
+      console.log("Failed")
+    });
+  };
 };

@@ -44,7 +44,7 @@ const tableIcons = {
   PreviousPage: ChevronLeft,
   ResetSearch: Clear,
   Search: Search,
-  SortArrow: ArrowUpward,
+  SortArrow: () => <div />,
   ThirdStateCheck: Remove,
   ViewColumn: ViewColumn
 };
@@ -127,7 +127,9 @@ class TagTable extends Component {
                 search: true,
                 padding: "dense",
                 pageSizeOptions: [10, 20, 40],
-                actionsColumnIndex: -1
+                actionsColumnIndex: -1,
+                headerStyle: { textAlign: "center" },
+                cellStyle: { textAlign: "center" }
               }}
             />
           ) : (
