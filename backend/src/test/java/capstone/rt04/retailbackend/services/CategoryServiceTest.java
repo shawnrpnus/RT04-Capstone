@@ -6,8 +6,13 @@ import capstone.rt04.retailbackend.util.enums.SizeEnum;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.category.CategoryNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.category.CreateNewCategoryException;
+import capstone.rt04.retailbackend.util.exceptions.category.DeleteCategoryException;
 import capstone.rt04.retailbackend.util.exceptions.category.UpdateCategoryException;
 import capstone.rt04.retailbackend.util.exceptions.product.CreateNewProductException;
+import capstone.rt04.retailbackend.util.exceptions.product.ProductNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.product.ProductStockNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
+import org.hibernate.sql.Update;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,17 +41,20 @@ public class CategoryServiceTest extends ServiceTestSetup {
 
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
+    protected static Long createdCategoryId;
+
     @Before
-    public void beforeEachTest() throws Exception{
+    public void beforeEachTest() throws Exception {
         Category expectedValidCategory = new Category("MEN");
         Category testValidCategory = categoryService.createNewCategory(expectedValidCategory, null);
         assertThat(testValidCategory.getCategoryId()).isNotNull();
         assertThat(testValidCategory).isEqualTo(expectedValidCategory);
+        createdCategoryId = testValidCategory.getCategoryId();
     }
 
     @After
-    public void afterEachTest() throws Exception{
-        Category validCategory = categoryService.retrieveCategoryByName("MEN");
+    public void afterEachTest() throws Exception {
+        Category validCategory = categoryService.retrieveCategoryByCategoryId(createdCategoryId);
         Category removedCategory = categoryService.deleteCategory(validCategory.getCategoryId());
         assertThat(removedCategory.getCategoryId()).isEqualTo(validCategory.getCategoryId());
     }
@@ -59,16 +67,16 @@ public class CategoryServiceTest extends ServiceTestSetup {
 
     @Test
     public void updateMostParentCategoryName() throws Exception {
-        Category updateCategory = categoryService.retrieveCategoryByName("MEN");
+        Category updateCategory = categoryService.retrieveCategoryByCategoryId(createdCategoryId);
         String change = "WOMEN";
         updateCategory.setCategoryName(change);
         categoryService.updateCategory(updateCategory, null);
-        Category existingCategory = categoryService.retrieveCategoryByName("WOMEN");
+        Category existingCategory = categoryService.retrieveCategoryByCategoryId(createdCategoryId);
         assertThat(existingCategory.getCategoryName().compareTo(change)).isEqualTo(0);
 
         existingCategory.setCategoryName("MEN");
         categoryService.updateCategory(existingCategory, null);
-        Category finalCategory = categoryService.retrieveCategoryByName("MEN");
+        Category finalCategory = categoryService.retrieveCategoryByCategoryId(createdCategoryId);
         assertThat(finalCategory.getCategoryName().compareTo("MEN")).isEqualTo(0);
     }
 
@@ -76,7 +84,7 @@ public class CategoryServiceTest extends ServiceTestSetup {
     public void updateChildCategoryName() throws Exception {
         //Create
         Category category = new Category("CLOTHING");
-        Category parentCategory = categoryService.retrieveCategoryByName("MEN");
+        Category parentCategory = categoryService.retrieveCategoryByCategoryId(createdCategoryId);
         Category subCategory = categoryService.createNewCategory(category, parentCategory.getCategoryId());
 
         assertThat(subCategory.getParentCategory().getCategoryId().compareTo(parentCategory.getCategoryId())).isEqualTo(0);
@@ -90,16 +98,10 @@ public class CategoryServiceTest extends ServiceTestSetup {
         categoryService.deleteCategory(subCategory.getCategoryId());
     }
 
-//    @Test
-//    public void generateLeafNodeName() throws Exception {
-//        Category childCategory = categoryService.retrieveCategoryByName("Fila");
-//        String string = categoryService.generateLeafNodeName(childCategory, "");
-//        System.out.println(string);
-//    }
     @Test
-    public void checkChildrenHaveProducts() throws Exception{
+    public void checkChildrenHaveProducts() throws Exception {
         Category subCategory = new Category("CLOTHING");
-        Category parentCategory = categoryService.retrieveCategoryByName("MEN");
+        Category parentCategory = categoryService.retrieveCategoryByCategoryId(createdCategoryId);
         parentCategory.getChildCategories().add(subCategory);
 
         boolean haveProducts = categoryService.checkChildrenHaveProducts(parentCategory.getChildCategories());
@@ -121,17 +123,17 @@ public class CategoryServiceTest extends ServiceTestSetup {
     }
 
     @Test
-    public void testRecursiveDeleteChildren() throws Exception{
+    public void testRecursiveDeleteChildren() throws Exception {
         Category category = new Category("CLOTHING");
-        Category parentCategory = categoryService.retrieveCategoryByName("MEN");
+        Category parentCategory = categoryService.retrieveCategoryByCategoryId(createdCategoryId);
         Category subCategory = categoryService.createNewCategory(category, parentCategory.getCategoryId());
         Category subSubCategory = categoryService.createNewCategory(new Category("Jackets"), subCategory.getCategoryId());
     }
 
     @Test
-    public void testUpdateCategory() throws CategoryNotFoundException, InputDataValidationException, CreateNewCategoryException, UpdateCategoryException {
+    public void testUpdateCategory() throws CategoryNotFoundException, InputDataValidationException, CreateNewCategoryException, UpdateCategoryException, DeleteCategoryException {
         Category category = new Category("CLOTHING");
-        Category menCategory = categoryService.retrieveCategoryByName("MEN");
+        Category menCategory = categoryService.retrieveCategoryByCategoryId(createdCategoryId);
         Category menClothingCategory = categoryService.createNewCategory(category, menCategory.getCategoryId());
         Category category1 = new Category("PANTS");
         Category menClothingPantsCategory = categoryService.createNewCategory(category1, menClothingCategory.getCategoryId());
@@ -155,18 +157,25 @@ public class CategoryServiceTest extends ServiceTestSetup {
         //this should print
         Category c = categoryService.retrieveCategoryByCategoryId(updatedCategory.getCategoryId());
         String s = c.getCategoryName();
-        while(c.getParentCategory()!= null) {
+        while (c.getParentCategory() != null) {
             s = s.concat("<" + c.getParentCategory().getCategoryName());
             System.out.println(s);
             c = categoryService.retrieveCategoryByCategoryId(c.getParentCategory().getCategoryId());
         }
+
+        categoryService.deleteCategory(womenClothingDressCategory.getCategoryId());
+        categoryService.deleteCategory(updatedCategory.getCategoryId());
+        categoryService.deleteCategory(womenClothingCategory.getCategoryId());
+        categoryService.deleteCategory(womenCategory.getCategoryId());
+        categoryService.deleteCategory(menClothingCategory.getCategoryId());
     }
 
     //Expect error because DRESS have 1 product, and we shifting PANTS to under DRESS
     @Test(expected = UpdateCategoryException.class)
-    public void testUpdateParentCategoryWithProduct() throws CategoryNotFoundException, InputDataValidationException, CreateNewCategoryException, UpdateCategoryException, CreateNewProductException {
+    public void testUpdateParentCategoryWithProduct() throws CategoryNotFoundException, InputDataValidationException, CreateNewCategoryException, UpdateCategoryException, CreateNewProductException, DeleteCategoryException, ProductVariantNotFoundException, ProductStockNotFoundException, ProductNotFoundException {
+
         Category category = new Category("CLOTHING");
-        Category menCategory = categoryService.retrieveCategoryByName("MEN");
+        Category menCategory = categoryService.retrieveCategoryByCategoryId(createdCategoryId);
         Category menClothingCategory = categoryService.createNewCategory(category, menCategory.getCategoryId());
         Category category1 = new Category("PANTS");
         Category menClothingPantsCategory = categoryService.createNewCategory(category1, menClothingCategory.getCategoryId());
@@ -192,6 +201,19 @@ public class CategoryServiceTest extends ServiceTestSetup {
         colors.add("Red");
         Product newProduct = productService.createNewProduct(product, womenClothingDressCategory.getCategoryId(), null, sizes, colors);
 
-        Category updatedCategory = categoryService.updateCategory(menClothingPantsCategory, womenClothingDressCategory.getCategoryId());
+        try {
+            Category updatedCategory = categoryService.updateCategory(menClothingPantsCategory, womenClothingDressCategory.getCategoryId());
+        } catch (UpdateCategoryException ex) {
+            productService.deleteProduct(newProduct.getProductId());
+            categoryService.deleteCategory(womenClothingDressCategory.getCategoryId());
+            categoryService.deleteCategory(womenClothingCategory.getCategoryId());
+            categoryService.deleteCategory(womenCategory.getCategoryId());
+
+            categoryService.deleteCategory(menClothingPantsCategory.getCategoryId());
+            categoryService.deleteCategory(menClothingCategory.getCategoryId());
+
+
+            throw new UpdateCategoryException(ex.getMessage());
+        }
     }
 }
