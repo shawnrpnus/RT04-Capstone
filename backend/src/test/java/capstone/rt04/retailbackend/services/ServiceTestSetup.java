@@ -45,7 +45,8 @@ public class ServiceTestSetup {
     protected static Long storeId;
 
     protected  List<SizeEnum> sizes = new ArrayList<>();
-    protected List<String> colors = new ArrayList<>();
+    protected List<String> colours = new ArrayList<>();
+    protected List<String> colours2 = new ArrayList<>();
     protected List<ProductVariant> productVariants = new ArrayList<>();
 
     @Before
@@ -68,10 +69,12 @@ public class ServiceTestSetup {
         // Adding colors and sizes
         sizes.add(SizeEnum.S);
         sizes.add(SizeEnum.M);
-        colors.add("White");
-        colors.add("Gold");
+        colours.add("White");
+        colours.add("Gold");
+        colours2.add("Ginger");
+        colours2.add("Magenta");
 
-        Product result = productService.createNewProduct(validProduct, fila.getCategoryId(), null, sizes, colors);
+        Product result = productService.createNewProduct(validProduct, fila.getCategoryId(), null, sizes, colours);
         assertThat(result).isEqualTo(validProduct);
         categoryId = fila.getCategoryId();
         productId = result.getProductId();
@@ -79,7 +82,7 @@ public class ServiceTestSetup {
         Product product = productService.retrieveProductById(productId);
 //        ProductVariant validProductVariant = new ProductVariant("SKU009", "White", null);
 
-        productVariants = productService.createMultipleProductVariants(product.getProductId(), "Ginger", sizes);
+        productVariants = productService.createMultipleProductVariants(product.getProductId(), colours2, sizes);
         assertThat(productVariants.size()).isNotEqualTo(0);
 
         productVariantId = productVariants.get(0).getProductVariantId();
@@ -91,11 +94,11 @@ public class ServiceTestSetup {
         // 2nd product
         Product validProduct2 = new Product("0002","Adidas Alpha Bounce", "Adidas", BigDecimal.valueOf(299.90), BigDecimal.valueOf(59.90));
         validProduct.setCategory(categoryService.retrieveCategoryByCategoryId(categoryId));
-        Product product2 = productService.createNewProduct(validProduct2, categoryId, null, sizes, colors);
+        Product product2 = productService.createNewProduct(validProduct2, categoryId, null, sizes, colours);
         productId2 = product2.getProductId();
 
 //        ProductVariant validProductVariant2 = new ProductVariant("SKU002", "Magenta", null);
-        List<ProductVariant> productVariants2 = productService.createMultipleProductVariants(product2.getProductId(), "Magenta", sizes);
+        List<ProductVariant> productVariants2 = productService.createMultipleProductVariants(product2.getProductId(), colours2, sizes);
 
         // Create store
         Store expectedValidStore = new Store("Store1", 8, 4, Time.valueOf("10:00:00"), Time.valueOf("21:00:00"), 2, 6, null);

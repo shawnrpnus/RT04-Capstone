@@ -79,7 +79,7 @@ public class ProductServiceTest extends ServiceTestSetup {
 
     @Test(expected = ProductVariantNotFoundException.class)
     public void CDMultipleProductVariant() throws Exception {
-        List<ProductVariant> productVariants = new ArrayList<>(productService.createMultipleProductVariants(productId, "Black", sizes));
+        List<ProductVariant> productVariants = new ArrayList<>(productService.createMultipleProductVariants(productId, colours2, sizes));
         assertThat(productVariants.size()).isNotEqualTo(0);
 
         for(ProductVariant productVariant : productVariants) {

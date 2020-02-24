@@ -97,21 +97,7 @@ public class ProductService {
                         product.addTag(tag);
                     }
                 }
-
-                ProductVariant productVariant;
-                String sku;
-                SizeDetails sizeDetails;
-
-                for (String colour : colours) {
-                    createMultipleProductVariants(product.getProductId(), colour, sizes);
-//                    for (SizeEnum size : sizes) {
-//                        sku = product.getSerialNumber() + "-" + colour + "-" + size;
-//                        sizeDetails = new SizeDetails(size);
-//                        productVariant = new ProductVariant(sku, colour, product);
-//                        productVariant.setSizeDetails(sizeDetailsService.createSizeDetails(sizeDetails));
-//                        createProductVariant(productVariant, product.getProductId());
-//                    }
-                }
+                createMultipleProductVariants(product.getProductId(), colours, sizes);
 
                 return product;
             } catch (PersistenceException ex) {
@@ -174,7 +160,7 @@ public class ProductService {
         SizeToProductVariantAndStockMap sizeToProductVariantAndStockMap;
         ColourToSizeImageMap colourToSizeImageMap = new ColourToSizeImageMap();
 
-        List<SizeToProductVariantAndStockMap> sizeToProductVariantAndStockMaps;
+        List<SizeToProductVariantAndStockMap> sizeToProductVariantAndStockMaps = new ArrayList<>();
         List<ProductDetailsResponse> productDetailsResponses = new ArrayList<>();
 
         for (Product product : products) {
@@ -208,10 +194,25 @@ public class ProductService {
                     colourToSizeImageMap = new ColourToSizeImageMap(colour, productVariant.getProductImages(), sizeToProductVariantAndStockMaps);
                     productDetailsResponse.getColourToSizeImageMaps().add(colourToSizeImageMap);
                 } else {
-                    // add a new size to the colour.
-                    colourToSizeImageMap.getSizeMaps().add(sizeToProductVariantAndStockMap);
+                    // add a new size to the SELECTED colour.
+                    if (colourToSizeImageMap.getColour().equals(colour)) {
+                        colourToSizeImageMap.getSizeMaps().add(sizeToProductVariantAndStockMap);
+                    } else {
+                        for(ColourToSizeImageMap csMap : productDetailsResponse.getColourToSizeImageMaps()) {
+                            if ( csMap.getColour().equals(colour)) {
+                                colourToSizeImageMap = csMap;
+                                colourToSizeImageMap.getSizeMaps().add(sizeToProductVariantAndStockMap);
+                                break;
+                            }
+                        }
+                    }
                 }
             }
+
+            for(ColourToSizeImageMap csMap : productDetailsResponse.getColourToSizeImageMaps()) {
+                Collections.sort(csMap.getSizeMaps(), Comparator.comparingInt(SizeToProductVariantAndStockMap::getSizeValue));
+            }
+
             productDetailsResponse.setProduct(product);
             productDetailsResponses.add(productDetailsResponse);
         }
@@ -323,6 +324,7 @@ public class ProductService {
 
     public Product updateProduct(Product newProduct) throws ProductNotFoundException, TagNotFoundException, StyleNotFoundException, CategoryNotFoundException {
 
+        log.info(newProduct.toString());
         Product product = retrieveProductById(newProduct.getProductId());
         product.setPrice(newProduct.getPrice());
         product.setProductName(newProduct.getProductName());
@@ -412,7 +414,7 @@ public class ProductService {
         }
     }
 
-    public List<ProductVariant> createMultipleProductVariants(Long productId, String colour, List<SizeEnum> sizes) throws ProductNotFoundException, InputDataValidationException, CreateNewProductStockException, StoreNotFoundException, WarehouseNotFoundException, ProductVariantNotFoundException {
+    public List<ProductVariant> createMultipleProductVariants(Long productId, List<String> colours, List<SizeEnum> sizes) throws ProductNotFoundException, InputDataValidationException, CreateNewProductStockException, StoreNotFoundException, WarehouseNotFoundException, ProductVariantNotFoundException {
         Product product = retrieveProductById(productId);
 
         List<ProductVariant> productVariants = new ArrayList<>();
@@ -420,12 +422,14 @@ public class ProductService {
         String sku;
         SizeDetails sizeDetails;
 
-        for (SizeEnum size : sizes) {
-            sku = product.getSerialNumber() + "-" + colour + "-" + size;
-            sizeDetails = new SizeDetails(size);
-            productVariant = new ProductVariant(sku, colour, product);
-            productVariant.setSizeDetails(sizeDetailsService.createSizeDetails(sizeDetails));
-            productVariants.add(createProductVariant(productVariant, product.getProductId()));
+        for (String colour : colours) {
+            for (SizeEnum size : sizes) {
+                sku = product.getSerialNumber() + "-" + colour + "-" + size;
+                sizeDetails = new SizeDetails(size);
+                productVariant = new ProductVariant(sku, colour, product);
+                productVariant.setSizeDetails(sizeDetailsService.createSizeDetails(sizeDetails));
+                productVariants.add(createProductVariant(productVariant, product.getProductId()));
+            }
         }
         return productVariants;
     }
@@ -730,7 +734,7 @@ public class ProductService {
                 persistentInputProducts.add(retrieveProductById(product.getProductId()));
             }
 
-            for (Product tagProduct : tagProducts) {
+            for (Product tagProduct : new ArrayList<>(tagProducts)) {
                 if (persistentInputProducts.contains(tagProduct)) {
                     persistentInputProducts.remove(tagProduct);
                 } else {
@@ -753,7 +757,7 @@ public class ProductService {
                 persistentInputTags.add(tagService.retrieveTagByTagId(tag.getTagId()));
             }
 
-            for (Tag productTag : productTags) {
+            for (Tag productTag : new ArrayList<>(productTags)) {
                 if (persistentInputTags.contains(productTag)) {
                     persistentInputTags.remove(productTag);
                 } else {
@@ -849,7 +853,7 @@ public class ProductService {
                 persistentInputProducts.add(retrieveProductById(product.getProductId()));
             }
 
-            for (Product styleProduct : styleProducts) {
+            for (Product styleProduct : new ArrayList<>(styleProducts)) {
                 if (persistentInputProducts.contains(styleProduct)) {
                     persistentInputProducts.remove(styleProduct);
                 } else {
@@ -873,7 +877,7 @@ public class ProductService {
                 persistentInputStyles.add(styleService.retrieveStyleByStyleId(style.getStyleId()));
             }
 
-            for (Style productStyle : productStyles) {
+            for (Style productStyle : new ArrayList<>(productStyles)) {
                 if (persistentInputStyles.contains(productStyle)) {
                     persistentInputStyles.remove(productStyle);
                 } else {
@@ -881,9 +885,10 @@ public class ProductService {
                     productStyle.getProducts().remove(product);
                 }
             }
-            for (Style style : styles) {
-                product.getStyles().remove(style);
-                style.getProducts().remove(product);
+
+            for (Style style : persistentInputStyles) {
+                product.getStyles().add(style);
+                style.getProducts().add(product);
             }
         }
     }
