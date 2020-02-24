@@ -60,7 +60,7 @@ class ProductCard extends PureComponent {
     this.setState({ openProductUpdateDialog: true });
   };
 
-  handleOpenProductUpdateDialog = e => {
+  handleOpenCreateProductVariantDialog = e => {
     this.setState({ openCreateProductVariantDialog: true });
   };
 
@@ -121,7 +121,7 @@ class ProductCard extends PureComponent {
             <Col xs={2} md={1}>
               <IconButton>
                 <AddCircleRoundedIcon
-                  onClick={this.handleOpenProductUpdateDialog}
+                  onClick={this.handleOpenCreateProductVariantDialog}
                 />
               </IconButton>
             </Col>
@@ -215,7 +215,7 @@ class ProductCard extends PureComponent {
               });
             }}
             errors={errors}
-            key={productId}
+            key={productId + "update"}
           />
         )}
         {this.state.openCreateProductVariantDialog && (
@@ -227,7 +227,7 @@ class ProductCard extends PureComponent {
               });
             }}
             errors={errors}
-            key={productId}
+            key={productId + "add"}
           />
         )}
       </div>

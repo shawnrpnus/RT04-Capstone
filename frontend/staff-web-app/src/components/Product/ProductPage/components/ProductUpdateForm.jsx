@@ -41,7 +41,14 @@ class ProductUpdateForm extends PureComponent {
 
   async componentDidMount() {
     const response = await retrieveAllCategoryTagStyle();
-    const { categories, tags, styles } = response;
+    let { categories, tags, styles } = response;
+    // for (let i = 0; i < product.tags.length; i++) {
+    //   tags = tags.filter(tag => {
+    //     return tag.tagId !== product.tags[i].tagId;
+    //   });
+    // }
+    tags = tags.map(tag => _.pick(tag, ["tagId", "name"]));
+
     this.setState({ categories, tagList: tags, styleList: styles });
   }
 
@@ -58,10 +65,11 @@ class ProductUpdateForm extends PureComponent {
     await this.setState({ product });
   };
 
-  onSelectTag = (event, tagArray) => {
+  onSelectTag = async (event, tagArray) => {
     const product = { ...this.state.product };
+    // console.log(tagArray[0].toString() === tagArray[2].toString());
     product.tags = tagArray;
-    this.setState({ product });
+    await this.setState({ product });
   };
 
   onSelectStyle = (event, styleArray) => {
@@ -158,9 +166,6 @@ class ProductUpdateForm extends PureComponent {
                 >
                   <MenuItem key={"x"} value={product.category.categoryId} />
                   {categories.map(({ category, leafNodeName }, index) => {
-                    console.log(product.category.categoryId);
-
-                    console.log(category);
                     return (
                       <MenuItem key={index} value={category.categoryId}>
                         {leafNodeName}
@@ -176,20 +181,29 @@ class ProductUpdateForm extends PureComponent {
               id="tags"
               options={tagList}
               onChange={(event, value) => this.onSelectTag(event, value)}
-              getOptionLabel={option => option.name}
+              getOptionLabel={option => {
+                return option.name;
+              }}
+              getOptionSelected={(option, value) =>
+                option.tagId === value.tagId
+              }
               value={product.tags}
-              renderInput={params => (
-                <TextField
-                  {...params}
-                  variant="standard"
-                  label="Tags"
-                  placeholder="Tags"
-                  fullWidth
-                  InputLabelProps={{
-                    shrink: true
-                  }}
-                />
-              )}
+              filterSelectedOptions
+              renderInput={params => {
+                // console.log(params);
+                return (
+                  <TextField
+                    {...params}
+                    variant="standard"
+                    label="Tags"
+                    placeholder="Tags"
+                    fullWidth
+                    InputLabelProps={{
+                      shrink: true
+                    }}
+                  />
+                );
+              }}
             />
             <Autocomplete
               style={{ margin: "3% 0" }}
@@ -198,7 +212,11 @@ class ProductUpdateForm extends PureComponent {
               options={styleList}
               onChange={(event, value) => this.onSelectStyle(event, value)}
               getOptionLabel={option => option.styleName}
+              getOptionSelected={(option, value) =>
+                option.styleId === value.styleId
+              }
               value={product.styles}
+              filterSelectedOptions
               renderInput={params => (
                 <TextField
                   {...params}
