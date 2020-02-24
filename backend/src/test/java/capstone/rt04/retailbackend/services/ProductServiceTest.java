@@ -62,14 +62,14 @@ public class ProductServiceTest extends ServiceTestSetup {
     public void createErrorProduct() throws Exception {
         try {
             Product invalidProduct = new Product("0003", null, "Fila", BigDecimal.valueOf(89.90), BigDecimal.valueOf(39.90));
-            invalidProduct.setCategory(categoryService.retrieveCategoryByCategoryId(categoryId));
+            invalidProduct.setCategory(categoryService.retrieveCategoryByCategoryId(categoryFilaId));
             List<SizeEnum> sizes = new ArrayList<>();
             sizes.add(SizeEnum.S);
             sizes.add(SizeEnum.M);
             List<String> colors = new ArrayList<>();
             colors.add("pink");
             colors.add("gold");
-            productService.createNewProduct(invalidProduct, categoryId, null, sizes, colors);
+            productService.createNewProduct(invalidProduct, categoryFilaId, null, sizes, colors);
         } catch (InputDataValidationException ex) {
             Map<String, String> expectedErrorMap = new HashMap<>();
             expectedErrorMap.put("productName", "must not be null");
@@ -179,7 +179,7 @@ public class ProductServiceTest extends ServiceTestSetup {
 
     @Test
     public void retrieveProductByCategory() throws Exception {
-        Category category = categoryService.retrieveCategoryByCategoryId(categoryId);
+        Category category = categoryService.retrieveCategoryByCategoryId(categoryFilaId);
 
         List<Product> products = productService.retrieveProductByCategory(category);
         assertThat(products.size()).isNotEqualTo(0);
@@ -197,7 +197,7 @@ public class ProductServiceTest extends ServiceTestSetup {
         productService.addOrRemoveTag(tag1.getTagId(), null, null, products);
         products = productService.retrieveAllProducts();
 
-        Category category = categoryService.retrieveCategoryByCategoryId(categoryId);
+        Category category = categoryService.retrieveCategoryByCategoryId(categoryFilaId);
         List<Tag> tags = new ArrayList<>();
         tags.add(tag1);
         List<String> colours = new ArrayList<>();
@@ -240,5 +240,16 @@ public class ProductServiceTest extends ServiceTestSetup {
 
         tagService.deleteTag(tag1.getTagId());
         tagService.deleteTag(tag2.getTagId());
+    }
+
+    @Test
+    public void testRetrieveProductStockByStoreIdAndProductVariantId() throws Exception {
+        ProductStock productStock = productService.retrieveProductStockByStoreIdAndProductVariantId(storeId, productVariantId);
+        List<ProductStock> productStocks = productService.retrieveProductStocksByParameter(storeId, null, null);
+        for(ProductStock ps : productStocks) {
+            System.out.println(ps.getProductVariant().getProduct().getProductName() + " "
+                    + ps.getProductVariant().getColour() + " " + ps.getProductVariant().getSizeDetails().getProductSize());
+        }
+        System.out.println(productStocks.size());
     }
 }
