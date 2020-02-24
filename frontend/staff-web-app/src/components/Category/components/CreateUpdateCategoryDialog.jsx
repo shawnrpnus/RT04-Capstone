@@ -18,12 +18,16 @@ import {
 } from "../../../redux/actions/categoryActions";
 import { clearErrors } from "../../../redux/actions";
 import { connect } from "react-redux";
+import { toast } from "react-toastify";
+
+const _ = require("lodash");
 
 class CreateUpdateCategoryDialog extends Component {
   static propTypes = {
     open: PropTypes.bool.isRequired,
     closeDialog: PropTypes.func.isRequired,
-    dialogMode: PropTypes.string
+    dialogMode: PropTypes.string,
+    mode: PropTypes.oneOf(["update", "createChild", "createRoot"])
   };
   constructor(props) {
     super(props);
@@ -34,13 +38,27 @@ class CreateUpdateCategoryDialog extends Component {
     // otherwise the category passed in as props is meant to be the parent i.e. mode == "createChild"
     const propsCatName =
       props.mode === "update" ? selectedCategory.categoryName : null;
+
     this.state = {
       categoryId: selectedCategory ? selectedCategory.categoryId : null,
       categoryName: propsCatName ? propsCatName : "",
-      parentCategoryId: selectedCategory
-        ? selectedCategory.parentCategory.categoryId
-        : null
+      parentCategoryId: _.get(
+        selectedCategory,
+        "parentCategory.categoryId",
+        null
+      )
     };
+  }
+
+  componentDidMount() {
+    const { selectedCategory, mode, closeDialog } = this.props;
+    const products = _.get(selectedCategory, "products");
+    if (products && products.length > 0 && mode === "createChild") {
+      closeDialog();
+      toast.error("Parent category cannot contain products!", {
+        position: toast.POSITION.TOP_CENTER
+      });
+    }
   }
 
   onChange = e => {
@@ -99,7 +117,9 @@ class CreateUpdateCategoryDialog extends Component {
                 onChange={this.onChange}
                 state={this.state}
                 objects={this.props.allCategories.filter(
-                  c => c.categoryId !== this.state.categoryId
+                  c =>
+                    c.categoryId !== this.state.categoryId &&
+                    c.products.length === 0
                 )}
                 objectFieldForValue="categoryId"
                 objectFieldForKey="categoryId"

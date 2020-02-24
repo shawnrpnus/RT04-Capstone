@@ -17,6 +17,7 @@
     "classnames": "^2.2.6",
     "immutability-helper": "^3.0.1",
     "jsog": "^1.0.7",
+    "lodash": "^4.17.15",
     "material-table": "^1.57.2",
     "material-ui-confirm": "^2.0.4",
     "mdi-react": "^6.7.0",
