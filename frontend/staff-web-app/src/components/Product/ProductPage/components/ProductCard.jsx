@@ -25,6 +25,9 @@ import AddCircleRoundedIcon from "@material-ui/icons/AddCircleRounded";
 import ProductUpdateForm from "./ProductUpdateForm";
 import AddProductVariantForm from "./AddProductVariantForm";
 import withPage from "../../../Layout/page/withPage";
+import colourList from "../../../../scss/colours.json";
+const _ = require("lodash");
+const jsonColorList = _.keyBy(colourList, "hex");
 
 class ProductCard extends PureComponent {
   static propTypes = {
@@ -99,6 +102,7 @@ class ProductCard extends PureComponent {
     } = this.state;
     const { errors, location } = this.props;
 
+    console.log();
     return (
       <div className="product-card">
         {colourSizeMap.length > 0 && (
@@ -137,7 +141,12 @@ class ProductCard extends PureComponent {
             <StarIcon />
             <StarIcon />
             <StarOutlineIcon />
-            <a className="product-card__link">See all reviews</a>
+            <a className="product-card__link">
+              {colourSizeMap[selectedColour] &&
+                jsonColorList[
+                  _.get(colourSizeMap, `[${selectedColour}].colour`, null)
+                ].name}
+            </a>
           </div>
           <h1 className="product-card__price">
             ${price} <span className="product-card__old-price">$23</span>
