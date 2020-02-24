@@ -38,31 +38,16 @@ class AddSizeForm extends PureComponent {
       sizes: [],
       colourSizeMap: {},
       sizesAvailable: []
-      // existingColours: this.props.colours,
-      // colourList: colourList,
-      // colourSizeMap: []
     };
   }
 
   async componentDidMount() {
-    // const listOfColours = _.get(this.props, "colours", []);
-    // const colourSizeMaps = listOfColours.map((
-    //   size // a list
-    // ) => _.pick(size, ["colour", "sizeMaps"]));
-    // const listOfSizes = _.map(colourSizeMaps, "sizeMaps").map(element =>
-    //   _.map(element, "size")
-    // );
-    // const result = listOfSizes.map((e, index) => {
-    //   return { colour: listOfColours[index].colour, sizes: listOfSizes[index] };
-    // });
-    // console.log(result);
     const colourSizeMap = {
       ..._.get(this.props, `colours[${this.props.selectedColourIndex}]`)
     };
-    delete colourSizeMap.productImages;
+    // delete colourSizeMap.productImages;
     // Get { color : "Red", sizeMaps: ["S", "M", "L"]}
     colourSizeMap["sizes"] = _.map(colourSizeMap.sizeMaps, "size");
-
     // Filter out the sizes that already exist in database
     const sizesAvailable = defaultSizes.filter(
       size => !colourSizeMap["sizes"].includes(size)
@@ -76,12 +61,9 @@ class AddSizeForm extends PureComponent {
 
   onSubmit = e => {
     e.preventDefault();
-    // let { productId, colours, sizes } = { ...this.state };
-    // colours = _.map(colours, "hex");
-    // const product = { productId, colours, sizes };
-
-    console.log(this.state);
-    // this.props.createProductVariants(product);
+    const { productId, sizes, colourSizeMap } = this.state;
+    const request = { productId, sizes, colours: Array(colourSizeMap.colour) };
+    this.props.createProductVariants(request);
   };
 
   render() {
@@ -142,7 +124,11 @@ class AddSizeForm extends PureComponent {
           <Button autoFocus onClick={onClose} color="primary">
             Cancel
           </Button>
-          <Button color="primary" onClick={this.onSubmit}>
+          <Button
+            color="primary"
+            onClick={this.onSubmit}
+            disabled={sizesAvailable.length <= 0}
+          >
             Create
           </Button>
         </DialogActions>

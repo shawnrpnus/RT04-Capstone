@@ -110,6 +110,7 @@ class ProductCard extends PureComponent {
     } = this.state;
     const { errors, location } = this.props;
 
+    console.log(this.props);
     return (
       <div className="product-card">
         {colourSizeMap.length > 0 && (

@@ -94,13 +94,13 @@ export const updateProduct = (product, history) => {
   };
 };
 
-export const createProductVariants = (product, history) => {
+export const createProductVariants = (request, history) => {
   return dispatch => {
     axios
-      .post(PRODUCT_BASE_URL + "Variant/createMultipleProductVariants", product)
+      .post(PRODUCT_BASE_URL + "Variant/createMultipleProductVariants", request)
       .then(() => {
         console.log("Successfully created product variants!");
-        retrieveProductById(product.productId)(dispatch);
+        retrieveProductById(request.productId)(dispatch);
       })
       .catch(() => {
         console.log("Failed");
