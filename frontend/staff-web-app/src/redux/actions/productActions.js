@@ -85,12 +85,15 @@ export const retrieveAllCategoryTagStyle = async () => {
 
 export const updateProduct = (product, history) => {
   return dispatch => {
-    axios.put(PRODUCT_BASE_URL + "/updateProduct", product).then(() => {
-      console.log("before retrieving and updating store");
-      retrieveProductById(product.productId)(dispatch);
-      console.log("Success")
-    }).catch(()=> {
-      console.log("Failed")
-    });
+    axios
+      .put(PRODUCT_BASE_URL + "/updateProduct", product)
+      .then(() => {
+        console.log("before retrieving and updating store");
+        retrieveProductById(product.productId)(dispatch);
+        console.log("Success");
+      })
+      .catch(() => {
+        console.log("Failed");
+      });
   };
 };

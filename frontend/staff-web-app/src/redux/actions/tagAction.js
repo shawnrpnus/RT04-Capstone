@@ -19,7 +19,7 @@ export const createNewTag = (createTagRequest, history) => {
           position: toast.POSITION.TOP_CENTER
         });
         retrieveAllTags()(dispatch);
-        history.push(`/tag`);
+        history.push(`/tag/manage`);
       })
       .catch(err => {
         dispatch(createTagError(err.response.data));
@@ -75,7 +75,7 @@ export const updateTag = (updateTagRequest, history) => {
           position: toast.POSITION.TOP_CENTER
         });
         retrieveAllTags()(dispatch);
-        history.push(`/tag`);
+        history.push(`/tag/manage`);
       })
       .catch(err => {
         toast.error(err.response.data.errorMessage.toString(), {
@@ -108,7 +108,7 @@ export const deleteTag = (tagId, history) => {
         });
         dispatch(deleteTagSuccess(data));
         retrieveAllTags()(dispatch);
-        history.push(`/tag`);
+        history.push(`/tag/manage`);
       })
       .catch(err => {
         console.log(err);
