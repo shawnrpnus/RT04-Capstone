@@ -5,6 +5,9 @@ import capstone.rt04.retailbackend.entities.*;
 import capstone.rt04.retailbackend.repositories.ReservationRepository;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.customer.CustomerNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.product.ProductStockNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.reservation.CreateNewReservationException;
 import capstone.rt04.retailbackend.util.exceptions.reservation.ReservationNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
 import org.springframework.cglib.core.CollectionUtils;
@@ -41,7 +44,7 @@ public class ReservationService {
     }
 
     //dateTime must be in format 'YYYY-MM-DD hh:mm:ss'
-    public Reservation createReservationFromReservationCart(Long customerId, Long storeId, String dateTime) throws CustomerNotFoundException, StoreNotFoundException, InputDataValidationException {
+    public Reservation createReservationFromReservationCart(Long customerId, Long storeId, String dateTime) throws CustomerNotFoundException, StoreNotFoundException, InputDataValidationException, CreateNewReservationException, ProductVariantNotFoundException, ProductStockNotFoundException {
         //check between 1 and 48h in advance
         Timestamp reservationDateTime = checkReservationTiming(dateTime);
 
@@ -51,7 +54,8 @@ public class ReservationService {
 
         // TODO: check if store has stock for productVariants
         for(ProductVariant pv : productVariants) {
-            ProductStock productStock = productService.retrieveProductStockByStoreIdAndProductVariantId(storeId, pv.getProductVariantId());
+            //throw error when stock <= 0
+            checkStoreStockForProductVariant(storeId, pv.getProductVariantId());
         }
 
         Reservation reservation = new Reservation(reservationDateTime, productVariants, customer, store);
@@ -59,6 +63,10 @@ public class ReservationService {
         customer.getReservations().add(reservation);
 
         // TODO: Deduct from store's product stock
+        for(ProductVariant pv : productVariants) {
+            ProductStock productStock = productService.retrieveProductStockByStoreIdAndProductVariantId(storeId, pv.getProductVariantId());
+            productStock.setQuantity(productStock.getQuantity()-1);
+        }
 
         return reservationRepository.save(reservation);
     }
@@ -94,15 +102,22 @@ public class ReservationService {
     }
 
     // for customer to update time, store
-    public Reservation updateReservation(Long reservationId, String newReservationDateTime, Store newStore) throws ReservationNotFoundException, InputDataValidationException {
+    public Reservation updateReservation(Long reservationId, String newReservationDateTime, Store newStore) throws ReservationNotFoundException, InputDataValidationException, ProductVariantNotFoundException, StoreNotFoundException {
         Reservation reservationToUpdate = retrieveReservationByReservationId(reservationId);
-
+        Long oldStoreId = reservationToUpdate.getStore().getStoreId();
         // only can cancel if more than 15mins before
-
+        Timestamp dateTime = reservationToUpdate.getReservationDateTime();
+        long now = System.currentTimeMillis();
+        long nowPlus15Minutes = now + TimeUnit.MINUTES.toMillis(15);
+        Map<String, String> errorMap = new HashMap<>();
+        // make sure at least 15 mins before reservation
+        if(!dateTime.after(new Timestamp(nowPlus15Minutes))) {
+            errorMap.put("reservationDateTime", "Reservation cannot be cancelled less than 15 minutes before.");
+            throw new InputDataValidationException(errorMap, errorMap.toString());
+        }
 
         //cannot edit past reservations
         if (reservationToUpdate.getReservationDateTime().before(new Timestamp(System.currentTimeMillis()))){
-            Map<String, String> errorMap = new HashMap<>();
             errorMap.put("reservationDateTime", "You cannot edit past reservations");
             throw new InputDataValidationException(errorMap, errorMap.toString());
         }
@@ -110,10 +125,25 @@ public class ReservationService {
         //check between 1 and 48 hours in advance
         Timestamp newDateTime = checkReservationTiming(newReservationDateTime);
 
-        // TODO: before update store check that all are in stock
-        // TODO: Update store
-        // TODO: after update store, add to prev store stock, deduct from new store's stock
+        // TODO: before update store check that all are in stock (DONE)
+        List<ProductVariant> productVariants = reservationToUpdate.getProductVariants();
+        // TODO: check if store has stock for productVariants (DONE)
+        for(ProductVariant pv : productVariants) {
+            //throw error when stock <= 0
+            checkStoreStockForProductVariant(newStore.getStoreId(), pv.getProductVariantId());
+        }
 
+        // TODO: Update store
+        reservationToUpdate.setStore(newStore);
+        // TODO: after update store, add to prev store stock, deduct from new store's stock
+        for(ProductVariant pv : productVariants) {
+            ProductStock productStock = productService.retrieveProductStockByStoreIdAndProductVariantId(oldStoreId, pv.getProductVariantId());
+            productStock.setQuantity(productStock.getQuantity()+1);
+        }
+        for(ProductVariant pv : productVariants) {
+            ProductStock productStock = productService.retrieveProductStockByStoreIdAndProductVariantId(newStore.getStoreId(), pv.getProductVariantId());
+            productStock.setQuantity(productStock.getQuantity()-1);
+        }
         return null;
     }
 
@@ -149,6 +179,20 @@ public class ReservationService {
             throw new InputDataValidationException(errorMap, errorMap.toString());
         }
         return dateTime;
+    }
+
+    private void checkStoreStockForProductVariant(Long storeId, Long productVariantId) throws InputDataValidationException, ProductVariantNotFoundException, StoreNotFoundException {
+        Map<String, String> errorMap = new HashMap<>();
+        Store store = storeService.retrieveStoreById(storeId);
+        ProductVariant pv = productService.retrieveProductVariantById(productVariantId);
+        ProductStock productStock = productService.retrieveProductStockByStoreIdAndProductVariantId(storeId, pv.getProductVariantId());
+        if(productStock != null) {
+            if(productStock.getQuantity() <= 0) {
+                // not enough quantity, throw error
+                errorMap.put(productVariantId.toString(), "Out of stock at " + store.getStoreName());
+                throw new InputDataValidationException(errorMap, errorMap.toString());
+            }
+        }
     }
 
 }
