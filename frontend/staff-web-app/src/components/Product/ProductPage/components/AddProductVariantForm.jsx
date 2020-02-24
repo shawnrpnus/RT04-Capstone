@@ -91,13 +91,13 @@ class AddProductVariantForm extends PureComponent {
 
     return (
       <Dialog onClose={onClose} open={open} fullWidth maxWidth={"xs"}>
-        <DialogTitle>Update product </DialogTitle>
+        <DialogTitle>Create product </DialogTitle>
         {product && (
           <DialogContent>
             <Autocomplete
               style={{ margin: "3% 0" }}
               multiple
-              id="tags"
+              id="colours"
               options={colourList}
               // onChange={(event, value) => this.onSelectTag(event, value)}
               getOptionLabel={option =>
@@ -123,8 +123,8 @@ class AddProductVariantForm extends PureComponent {
                   <TextField
                     {...params}
                     variant="standard"
-                    label="Tags"
-                    placeholder="Tags"
+                    label="Colours"
+                    placeholder="colours"
                     fullWidth
                     InputLabelProps={{
                       shrink: true
