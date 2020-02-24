@@ -23,6 +23,7 @@ import IconButton from "@material-ui/core/IconButton";
 import CreateIcon from "@material-ui/icons/Create";
 import AddCircleRoundedIcon from "@material-ui/icons/AddCircleRounded";
 import ProductUpdateForm from "./ProductUpdateForm";
+import AddProductVariantForm from "./AddProductVariantForm";
 import withPage from "../../../Layout/page/withPage";
 
 class ProductCard extends PureComponent {
@@ -38,7 +39,8 @@ class ProductCard extends PureComponent {
     selectedSize: "",
     uploadImage: false,
     colourSizeMap: [],
-    openProductUpdateDialog: false
+    openProductUpdateDialog: false,
+    openCreateProductVariantDialog: false
   };
 
   componentDidMount() {
@@ -56,6 +58,10 @@ class ProductCard extends PureComponent {
 
   handleOpenProductUpdateDialog = e => {
     this.setState({ openProductUpdateDialog: true });
+  };
+
+  handleOpenCreateProductVariantDialog = e => {
+    this.setState({ openCreateProductVariantDialog: true });
   };
 
   handleToggleUploadImage = e => {
@@ -88,6 +94,7 @@ class ProductCard extends PureComponent {
       uploadImage,
       colourSizeMap,
       openProductUpdateDialog,
+      openCreateProductVariantDialog,
       product
     } = this.state;
     const { errors, location } = this.props;
@@ -113,7 +120,9 @@ class ProductCard extends PureComponent {
             </Col>
             <Col xs={2} md={1}>
               <IconButton>
-                <AddCircleRoundedIcon />
+                <AddCircleRoundedIcon
+                  onClick={this.handleOpenCreateProductVariantDialog}
+                />
               </IconButton>
             </Col>
             <Col xs={3} md={2}>
@@ -133,7 +142,9 @@ class ProductCard extends PureComponent {
           <h1 className="product-card__price">
             ${price} <span className="product-card__old-price">$23</span>
           </h1>
-          <p className="typography-message">{category && category.name}</p>
+          <p className="typography-message">
+            {category && category.categoryName}
+          </p>
           <div className="form__form-group">
             <span className="form__form-group-label product-card__form-label">
               Select Color
@@ -195,13 +206,30 @@ class ProductCard extends PureComponent {
           </Row>
           <ProductTabs description={description} />
         </div>
-        <ProductUpdateForm
-          open={openProductUpdateDialog}
-          onClose={() => this.setState({ openProductUpdateDialog: false })}
-          product={product}
-          errors={errors}
-          key={productId}
-        />
+        {this.state.openProductUpdateDialog && (
+          <ProductUpdateForm
+            open={openProductUpdateDialog}
+            onClose={() => {
+              this.setState({
+                openProductUpdateDialog: false
+              });
+            }}
+            errors={errors}
+            key={productId + "update"}
+          />
+        )}
+        {this.state.openCreateProductVariantDialog && (
+          <AddProductVariantForm
+            open={openCreateProductVariantDialog}
+            onClose={() => {
+              this.setState({
+                openCreateProductVariantDialog: false
+              });
+            }}
+            errors={errors}
+            key={productId + "add"}
+          />
+        )}
       </div>
     );
   }

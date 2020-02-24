@@ -47,7 +47,7 @@ const tableIcons = {
   PreviousPage: ChevronLeft,
   ResetSearch: Clear,
   Search: Search,
-  SortArrow: ArrowUpward,
+  SortArrow: () => <div />,
   ThirdStateCheck: Remove,
   ViewColumn: ViewColumn
 };
@@ -123,7 +123,8 @@ class StoreTable extends Component {
                 showTitle: true,
                 pageSizeOptions: [5, 10, 15],
                 actionsColumnIndex: -1,
-                headerStyle: { textAlign: "center" }
+                headerStyle: { textAlign: "center" },
+                cellStyle: { textAlign: "center" }
               }}
             />
           ) : (

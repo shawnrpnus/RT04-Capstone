@@ -4,14 +4,12 @@ import MaterialTable from "material-table";
 import { connect } from "react-redux";
 import {
   AddBox,
-  ArrowUpward,
   Check,
   ChevronLeft,
   ChevronRight,
   Clear,
   DeleteOutline,
   Edit,
-  FilterList,
   FirstPage,
   LastPage,
   Remove,
@@ -21,12 +19,9 @@ import {
   Visibility
 } from "@material-ui/icons";
 import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
-import PageviewOutlinedIcon from "@material-ui/icons/PageviewOutlined";
-import {
-  retrieveAllProducts,
-  retrieveProductsDetails
-} from "../../../../redux/actions/productActions";
+import { retrieveAllProducts } from "../../../../redux/actions/productActions";
 import withPage from "../../../Layout/page/withPage";
+import colourList from "../../../../scss/colours.json";
 
 const tableIcons = {
   Add: AddBox,
@@ -43,7 +38,7 @@ const tableIcons = {
   PreviousPage: ChevronLeft,
   ResetSearch: Clear,
   Search: Search,
-  SortArrow: ArrowUpward,
+  SortArrow: () => <div />,
   ThirdStateCheck: Remove,
   ViewColumn: ViewColumn
 };
@@ -95,6 +90,7 @@ class ProductsTable extends PureComponent {
         {products ? (
           <MaterialTable
             title="Products"
+            padding="none"
             style={{ boxShadow: "none" }}
             icons={tableIcons}
             columns={[
@@ -146,10 +142,12 @@ class ProductsTable extends PureComponent {
             options={{
               filtering: true,
               sorting: true,
+              padding: "dense",
               pageSize: 5,
               pageSizeOptions: [5, 10, 20, 40],
-              actionsColumnIndex: -1
-              // headerStyle: { backgroundColor: "grey" } //change header padding
+              actionsColumnIndex: -1,
+              headerStyle: { textAlign: "center" }, //change header padding
+              cellStyle: { textAlign: "center" }
             }}
             actions={[
               {

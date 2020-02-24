@@ -8,10 +8,12 @@ import capstone.rt04.retailbackend.response.GenericErrorResponse;
 import capstone.rt04.retailbackend.response.ProductDetailsResponse;
 import capstone.rt04.retailbackend.services.ProductService;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
+import capstone.rt04.retailbackend.util.exceptions.category.CategoryNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.product.CreateNewProductException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductStockNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.style.StyleNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.tag.TagNotFoundException;
 import capstone.rt04.retailbackend.util.routeconstants.ProductControllerRoutes;
 import lombok.extern.slf4j.Slf4j;
@@ -101,15 +103,10 @@ public class ProductController {
     }
 
     @PutMapping(ProductControllerRoutes.UPDATE_PRODUCT)
-    public ResponseEntity<?> updateProduct(@RequestBody Product newProduct) {
-        try {
-            Product product = productService.updateProduct(newProduct);
-            return new ResponseEntity<>(product, HttpStatus.OK);
-        } catch (ProductNotFoundException ex) {
-            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
-        } catch (Exception ex) {
-            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public ResponseEntity<?> updateProduct(@RequestBody Product newProduct) throws ProductNotFoundException, CategoryNotFoundException,
+            TagNotFoundException, StyleNotFoundException {
+        Product product = productService.updateProduct(newProduct);
+        return new ResponseEntity<>(product, HttpStatus.OK);
     }
 
     //    @PutMapping(ProductControllerRoutes.ADD_REMOVE_PROMOCODE_TO_A_PRODUCT)
@@ -168,7 +165,7 @@ public class ProductController {
 
     @DeleteMapping(ProductControllerRoutes.DELETE_PRODUCT)
     public ResponseEntity<?> deleteProduct(@PathVariable Long productId) throws ProductVariantNotFoundException, ProductStockNotFoundException, ProductNotFoundException {
-            Product product = productService.deleteProduct(productId);
-            return new ResponseEntity<>(product, HttpStatus.OK);
+        Product product = productService.deleteProduct(productId);
+        return new ResponseEntity<>(product, HttpStatus.OK);
     }
 }
