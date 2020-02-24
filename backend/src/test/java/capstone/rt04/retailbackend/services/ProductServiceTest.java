@@ -67,8 +67,8 @@ public class ProductServiceTest extends ServiceTestSetup {
             sizes.add(SizeEnum.S);
             sizes.add(SizeEnum.M);
             List<String> colors = new ArrayList<>();
-            colors.add("pink");
-            colors.add("gold");
+            colors.add("Aquamarine");
+            colors.add("Silver");
             productService.createNewProduct(invalidProduct, categoryFilaId, null, sizes, colors);
         } catch (InputDataValidationException ex) {
             Map<String, String> expectedErrorMap = new HashMap<>();
@@ -79,7 +79,10 @@ public class ProductServiceTest extends ServiceTestSetup {
 
     @Test(expected = ProductVariantNotFoundException.class)
     public void CDMultipleProductVariant() throws Exception {
-        List<ProductVariant> productVariants = new ArrayList<>(productService.createMultipleProductVariants(productId, colours2, sizes));
+        List<String> colors = new ArrayList<>();
+        colors.add("Ember");
+        colors.add("Snow");
+        List<ProductVariant> productVariants = new ArrayList<>(productService.createMultipleProductVariants(productId1, colors, sizes));
         assertThat(productVariants.size()).isNotEqualTo(0);
 
         for(ProductVariant productVariant : productVariants) {
