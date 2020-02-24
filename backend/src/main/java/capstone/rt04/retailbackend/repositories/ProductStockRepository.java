@@ -21,6 +21,8 @@ public interface ProductStockRepository extends CrudRepository<ProductStock, Lon
 
     List<ProductStock> findAllByProductVariantProductVariantId(Long productVariantId);
 
+    ProductStock findAllByStoreStoreIdAndProductVariantProductVariantId(Long storeId, Long productVariantId);
+
     @Query("SELECT ps FROM ProductStock ps WHERE ps.quantity <= ps.notificationLevel AND ps.warehouse.warehouseId =?1")
     List<ProductStock> findAllQuantityLessThanNotificationLevel(Long warehouseId);
 

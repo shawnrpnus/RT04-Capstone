@@ -598,6 +598,15 @@ public class ProductService {
         return productStock;
     }
 
+    public ProductStock retrieveProductStockByStoreIdAndProductVariantId(Long storeId, Long productVariantId) {
+        ProductStock productStock = null;
+        if(storeId != null && productVariantId != null) {
+            productStock = productStockRepository.findAllByStoreStoreIdAndProductVariantProductVariantId(storeId, productVariantId);
+            System.out.println("productStockID" + productStock.getProductStockId() + " " + productStock.getQuantity());
+        }
+        return productStock;
+    }
+
     // TODO: Verify validity
     public List<ProductStock> retrieveProductStocksByParameter(Long storeId, Long warehouseId, Long productVariantId) {
         List<ProductStock> productStocks = new ArrayList<>();

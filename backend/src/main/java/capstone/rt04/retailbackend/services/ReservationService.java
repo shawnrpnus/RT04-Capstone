@@ -1,10 +1,7 @@
 package capstone.rt04.retailbackend.services;
 
 
-import capstone.rt04.retailbackend.entities.Customer;
-import capstone.rt04.retailbackend.entities.ProductVariant;
-import capstone.rt04.retailbackend.entities.Reservation;
-import capstone.rt04.retailbackend.entities.Store;
+import capstone.rt04.retailbackend.entities.*;
 import capstone.rt04.retailbackend.repositories.ReservationRepository;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.customer.CustomerNotFoundException;
@@ -53,6 +50,9 @@ public class ReservationService {
         List<ProductVariant> productVariants = customer.getReservationCartItems();
 
         // TODO: check if store has stock for productVariants
+        for(ProductVariant pv : productVariants) {
+            ProductStock productStock = productService.retrieveProductStockByStoreIdAndProductVariantId(storeId, pv.getProductVariantId());
+        }
 
         Reservation reservation = new Reservation(reservationDateTime, productVariants, customer, store);
         store.getReservations().add(reservation);
