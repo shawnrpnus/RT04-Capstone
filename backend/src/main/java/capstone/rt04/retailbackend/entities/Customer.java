@@ -46,10 +46,11 @@ public class Customer implements Serializable {
     
     @NotNull(message = ErrorMessages.LAST_NAME_REQUIRED)
     @Column(nullable = false)
-    @Size(min = 1, message = ErrorMessages.FIRST_NAME_REQUIRED)
+    @Size(min = 1, message = ErrorMessages.LAST_NAME_REQUIRED)
     private String lastName;
     
     @NotNull(message = ErrorMessages.EMAIL_REQUIRED)
+    @Size(min = 1, message = ErrorMessages.EMAIL_REQUIRED)
     @Column(nullable = false, unique = true)
     @Email(message = ErrorMessages.EMAIL_INVALID)
     private String email;
