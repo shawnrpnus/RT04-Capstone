@@ -1,7 +1,7 @@
 const express = require("express");
 // const error = require("../middleware/error");
 // const admin = require("../routes/admins");
-const email = require("../../routes/email");
+const email = require("../routes/email");
 
 module.exports = function(app) {
   app.use(express.json());

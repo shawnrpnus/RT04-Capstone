@@ -6,7 +6,16 @@ import Button from "components/UI/CustomButtons/Button.js";
 import Card from "components/UI/Card/Card";
 import CardBody from "components/UI/Card/CardBody";
 import InfoArea from "components/UI/InfoArea/InfoArea";
-import { Check, Code, Email, Face, Group, Timeline } from "@material-ui/icons";
+import {
+  Check,
+  Code,
+  Email,
+  Face,
+  Group,
+  Timeline,
+  Visibility,
+  VisibilityOff
+} from "@material-ui/icons";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import Icon from "@material-ui/core/Icon";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
@@ -19,6 +28,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { clearErrors } from "redux/actions";
 import { createNewCustomer } from "redux/actions/customerActions";
 import CreateUpdateCustomerRequest from "models/customer/CreateUpdateCustomerRequest";
+import IconButton from "@material-ui/core/IconButton";
 
 const useStyles = makeStyles(signupPageStyle);
 
@@ -27,6 +37,7 @@ function RegisterPage(props) {
   const dispatch = useDispatch();
   const errors = useSelector(state => state.errors);
 
+  const [showPassword, setShowPassword] = useState(false);
   const [checked, setChecked] = useState(false);
   const [inputState, setInputState] = useState({
     firstName: "",
@@ -60,10 +71,10 @@ function RegisterPage(props) {
   const handleToggle = () => {
     setChecked(!checked);
   };
-  // React.useEffect(() => {
-  //   window.scrollTo(0, 0);
-  //   document.body.scrollTop = 0;
-  // });
+
+  const handleClickShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
 
   return (
     <div
@@ -178,7 +189,7 @@ function RegisterPage(props) {
                       <CustomTextField
                         fieldLabel="Password"
                         fieldName="password"
-                        type="password"
+                        type={showPassword ? "text" : "password"}
                         inputState={inputState}
                         onChange={onChange}
                         errors={errors}
@@ -192,6 +203,20 @@ function RegisterPage(props) {
                               <Icon className={classes.inputAdornmentIcon}>
                                 lock_outline
                               </Icon>
+                            </InputAdornment>
+                          ),
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <IconButton
+                                aria-label="toggle password visibility"
+                                onClick={handleClickShowPassword}
+                              >
+                                {showPassword ? (
+                                  <Visibility />
+                                ) : (
+                                  <VisibilityOff />
+                                )}
+                              </IconButton>
                             </InputAdornment>
                           )
                         }}

@@ -98,7 +98,7 @@ public class CustomerService {
             shoppingCartService.initializeShoppingCarts(savedCustomer.getCustomerId());
             VerificationCode vCode = generateVerificationCode(savedCustomer.getCustomerId());
             if (Arrays.asList(environment.getActiveProfiles()).contains("dev")) {
-                sendEmailVerificationLink(vCode.getCode(), savedCustomer.getEmail());
+                nodeSendEmailVerificationLink(vCode.getCode(), savedCustomer.getEmail(), savedCustomer.getFirstName(), savedCustomer.getLastName());
             }
             return lazyLoadCustomerFields(customer);
         } catch (PersistenceException | CustomerNotFoundException ex) {
@@ -271,7 +271,7 @@ public class CustomerService {
         request.put("email", email);
         request.put("fullName", fullName);
 
-        String endpoint = Constants.NODE_API_URL + "/email/sendVerificationLink";
+        String endpoint = Constants.NODE_API_URL + "/email/sendVerificationEmail";
         ResponseEntity<?> response = restTemplate.postForEntity(endpoint, request, Object.class);
 
         if (response.getStatusCode().equals(HttpStatus.OK)) {
