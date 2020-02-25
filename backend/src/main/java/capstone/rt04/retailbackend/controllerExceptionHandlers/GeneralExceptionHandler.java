@@ -63,7 +63,8 @@ public class GeneralExceptionHandler extends ResponseEntityExceptionHandler {
             CustomerNotFoundException.class, CreditCardNotFoundException.class,
             AddressNotFoundException.class, ProductVariantNotFoundException.class,
             StyleNotFoundException.class, TagNotFoundException.class, CategoryNotFoundException.class,
-            ProductNotFoundException.class, ProductStockNotFoundException.class
+            ProductNotFoundException.class, ProductStockNotFoundException.class, VerificationCodeNotFoundException.class,
+            AlreadyVerifiedException.class
     })
     public final ResponseEntity<Object> handleNotFoundExceptions(Exception ex, WebRequest req) {
         return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);

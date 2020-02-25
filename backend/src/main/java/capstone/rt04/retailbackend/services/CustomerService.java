@@ -108,9 +108,12 @@ public class CustomerService {
     }
 
     //for when customer signs up initially, email sent in create customer
-    public Customer verify(String code) throws VerificationCodeInvalidException {
+    public Customer verify(String code) throws VerificationCodeInvalidException, VerificationCodeNotFoundException, AlreadyVerifiedException {
         VerificationCode verificationCode = verificationCodeRepository.findByCode(code)
-                .orElseThrow(() -> new VerificationCodeInvalidException(ErrorMessages.VERIFICATION_CODE_INVALID));
+                .orElseThrow(() -> new VerificationCodeNotFoundException(ErrorMessages.VERIFICATION_CODE_INVALID));
+        if (verificationCode.getCustomer().isVerified()){
+            throw new AlreadyVerifiedException(ErrorMessages.ALREADY_VERIFIED);
+        }
         if (verificationCode.getExpiryDateTime().before(new Timestamp(System.currentTimeMillis()))) {
             throw new VerificationCodeInvalidException(ErrorMessages.VERIFICATION_CODE_EXPIRED);
         }

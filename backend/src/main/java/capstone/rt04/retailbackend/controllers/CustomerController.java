@@ -51,12 +51,8 @@ public class CustomerController {
 
     // 2. Customer clicks verification link --> call this API
     @GetMapping(CustomerControllerRoutes.VERIFY)
-    public ResponseEntity<?> verifyCustomer(@PathVariable String verificationCode) throws VerificationCodeInvalidException {
+    public ResponseEntity<?> verifyCustomer(@PathVariable String verificationCode) throws VerificationCodeInvalidException, VerificationCodeNotFoundException, AlreadyVerifiedException {
         Customer customer = customerService.verify(verificationCode);
-        /*
-        TODO: Redirect to success page OR the loink sent is to a front-end page, which
-         calls this API upon loading, then displays result based on the response
-         */
         return new ResponseEntity<>(customer, HttpStatus.OK);
     }
 
