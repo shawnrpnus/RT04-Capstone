@@ -60,6 +60,13 @@ public class CustomerController {
         return new ResponseEntity<>(customer, HttpStatus.OK);
     }
 
+    @PostMapping(CustomerControllerRoutes.RESEND_VERIFY_EMAIL)
+    public ResponseEntity<?> resetEmailCustomer(@RequestBody CustomerEmailRequest customerEmailRequest) throws CustomerNotFoundException, InputDataValidationException {
+        validationService.throwExceptionIfInvalidBean(customerEmailRequest);
+        customerService.nodeGenerateVerificationLinkAndSendEmail(customerEmailRequest.getEmail());
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping(CustomerControllerRoutes.GET_CUSTOMER_BY_EMAIL)
     public ResponseEntity<?> getCustomerByEmail(@RequestBody CustomerEmailRequest customerEmailRequest) throws CustomerNotFoundException {
         Customer customer = customerService.retrieveCustomerByEmail(customerEmailRequest.getEmail());

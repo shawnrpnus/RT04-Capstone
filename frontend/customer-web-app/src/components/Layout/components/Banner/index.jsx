@@ -12,6 +12,8 @@ import VerifyEmailPrompt from "components/Layout/components/Banner/components/Ve
 import VerifyEmailConfirmation from "components/Layout/components/Banner/components/VerifyEmailConfirmation";
 
 const useStyles = makeStyles(headersStyle);
+//make styles takes the style objects, converts them to css
+//useStyles returns an object of keyName(as defined in jss style): css classname
 
 export default function Banner(props) {
   const classes = useStyles();
@@ -28,22 +30,11 @@ export default function Banner(props) {
       >
         <div className={classes.container}>
           <GridContainer>
-            <GridItem
-              xs={12}
-              sm={8}
-              md={8}
-              className={classNames(
-                classes.mlAuto,
-                classes.mrAuto,
-                classes.textCenter
-              )}
-            >
-              {landingPage && <LandingPage />}
-              {verifyEmail && <VerifyEmailPrompt classes={classes} />}
-              {verifyEmailConfirmation && (
-                <VerifyEmailConfirmation classes={classes} />
-              )}
-            </GridItem>
+            {landingPage && <LandingPage />}
+            {verifyEmail && <VerifyEmailPrompt classes={classes} />}
+            {verifyEmailConfirmation && (
+              <VerifyEmailConfirmation classes={classes} />
+            )}
           </GridContainer>
         </div>
       </div>

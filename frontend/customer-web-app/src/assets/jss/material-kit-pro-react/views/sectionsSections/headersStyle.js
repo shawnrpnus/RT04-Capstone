@@ -76,6 +76,9 @@ const headersSection = theme => ({
   textCenter: {
     textAlign: "center"
   },
+  alignCenter: {
+    alignItems: "center"
+  },
   card: {
     marginTop: "60px"
   },
@@ -88,6 +91,9 @@ const headersSection = theme => ({
   },
   button: {
     margin: "0 !important"
+  },
+  marginBottomFive: {
+    margin: "0 0 5px 0"
   }
 });
 
