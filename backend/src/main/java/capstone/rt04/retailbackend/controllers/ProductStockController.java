@@ -1,5 +1,6 @@
 package capstone.rt04.retailbackend.controllers;
 
+import capstone.rt04.retailbackend.entities.Product;
 import capstone.rt04.retailbackend.entities.ProductStock;
 import capstone.rt04.retailbackend.request.productStock.ProductStockCreateRequest;
 import capstone.rt04.retailbackend.request.productStock.ProductStockReadRequest;
@@ -38,12 +39,13 @@ public class ProductStockController {
         }
     }
 
-    @GetMapping(ProductStockControllerRoutes.RETRIEVE_PRODUCT_STOCKS_BY_PARAMETER)
-    public ResponseEntity<?> retrieveProductStocksByParameter(@RequestBody ProductStockReadRequest productStockReadRequest) {
+    // Returning product with filtered result instead of product stock to allow traversing down instead of up
+    @GetMapping(ProductStockControllerRoutes.RETRIEVE_PRODUCT_STOCKS_THROUGH_PRODUCT_BY_PARAMETER)
+    public ResponseEntity<?> retrieveProductStocksThroughProductByParameter(@RequestBody ProductStockReadRequest productStockReadRequest) {
         try {
-            List<ProductStock> productStocks = productService.retrieveProductStocksByParameter(productStockReadRequest.getStoreId(),
+            List<Product> products = productService.retrieveProductStocksByParameter(productStockReadRequest.getStoreId(),
                     productStockReadRequest.getWarehouseId(), productStockReadRequest.getProductVariantId());
-            return new ResponseEntity<>(productStocks, HttpStatus.OK);
+            return new ResponseEntity<>(products, HttpStatus.OK);
         } catch (Exception ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }

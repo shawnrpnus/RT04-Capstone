@@ -65,6 +65,7 @@ class ProductsTable extends PureComponent {
   formatData = () => {};
 
   render() {
+    console.log(colourList);
     const { products, renderLoader, columnsToHide } = this.props;
 
     let data = [];

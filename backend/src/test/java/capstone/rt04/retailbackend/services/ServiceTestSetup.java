@@ -2,6 +2,7 @@ package capstone.rt04.retailbackend.services;
 
 import capstone.rt04.retailbackend.entities.*;
 import capstone.rt04.retailbackend.util.enums.SizeEnum;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,6 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @ActiveProfiles("test")
+@Slf4j
 public class ServiceTestSetup {
 
     protected static final String VALID_CUST_EMAIL = "tonystark@gmail.com";
@@ -35,6 +37,8 @@ public class ServiceTestSetup {
     protected StyleService styleService;
     @Autowired
     protected StoreService storeService;
+    @Autowired
+    protected WarehouseService warehouseService;
 
     protected static Long categoryFilaId;
     protected static Long categoryMenId;
@@ -45,7 +49,8 @@ public class ServiceTestSetup {
     protected static Long productVariantId;
     protected static Long productId2;
     protected static Long createdCustomerId;
-    protected static Long storeId;
+    protected static Long storeId1;
+    protected static Long storeId2;
 
     protected  List<SizeEnum> sizes = new ArrayList<>();
     protected List<String> colours = new ArrayList<>();
@@ -105,15 +110,22 @@ public class ServiceTestSetup {
         List<ProductVariant> productVariants2 = productService.createMultipleProductVariants(productId2, colours2, sizes);
 
         // Create store
-        Store expectedValidStore = new Store("Store1", 8, 4, Time.valueOf("10:00:00"), Time.valueOf("21:00:00"), 2, 6, null);
-        Store testValidStore = storeService.createNewStore(expectedValidStore);
-        assertThat(testValidStore.getStoreId()).isNotNull();
-        assertThat(testValidStore).isEqualTo(expectedValidStore);
-        storeId = testValidStore.getStoreId();
+        Store expectedValidStore = new Store("Store 1", 8, 4, Time.valueOf("10:00:00"), Time.valueOf("21:00:00"), 2, 6, null);
+        Store store1 = storeService.createNewStore(expectedValidStore);
+        storeId1 = store1.getStoreId();
+//
+        Store store2 = storeService.createNewStore(new Store("Store 2", 8, 4, Time.valueOf("10:00:00"), Time.valueOf("21:00:00"), 2, 6, null));
+        storeId2 = store2.getStoreId();
+
+        Warehouse warehouse = warehouseService.createWarehouse(new Warehouse(null), new Address("Pasir Ris Drive 1", "#01-01", 510144, "Pasir Ris Building"));
+
+        assertThat(store1.getStoreId()).isNotNull();
+        assertThat(store1).isEqualTo(expectedValidStore);
     }
 
     @After
     public void afterEachTest() throws Exception {
+        System.out.println("******** Starting tear down ************");
 
         Customer removedCustomer = customerService.removeCustomer(createdCustomerId);
         assertThat(removedCustomer.getCustomerId()).isEqualTo(createdCustomerId);
@@ -140,8 +152,6 @@ public class ServiceTestSetup {
         Category removedMenCategory = categoryService.deleteCategory(categoryMenId);
         assertThat(removedMenCategory.getCategoryId()).isEqualTo(categoryMenId);
 
-
-
         Style styleToRemove = styleService.retrieveStyleByStyleId(styleId);
         styleService.deleteStyle(styleToRemove.getStyleId());
         List<Style> allStyles = styleService.retrieveAllStyles();
@@ -153,14 +163,14 @@ public class ServiceTestSetup {
         createdCustomerId = null;
 
         // Remove store
-        Store storeToRemove = storeService.retrieveStoreById(storeId);
+        Store storeToRemove = storeService.retrieveStoreById(storeId1);
         Store removedStore = storeService.deleteStore(storeToRemove.getStoreId());
         assertThat(removedStore.getStoreId()).isEqualTo(storeToRemove.getStoreId());
-        storeId = null;
+        storeId1 = null;
     }
 
     @Test
     public void setup() {
-        System.out.println("Customer Product Category Style Setup");
+        System.out.println("Service Setup");
     }
 }
