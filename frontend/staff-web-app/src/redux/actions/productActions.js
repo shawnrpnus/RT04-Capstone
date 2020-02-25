@@ -6,7 +6,7 @@ import {
   RETRIEVE_PRODUCT_BY_ID,
   GET_ERRORS,
   RETRIEVE_ALL_PRODUCTS,
-  RETRIEVE_ALL_PRODUCTS_FOR_CATEGORY
+  RETRIEVE_ALL_PRODUCTS_FOR_CATEGORY, RETRIEVE_PRODUCTS_DETAILS
 } from "./types";
 
 const PRODUCT_BASE_URL = "/api/product";
@@ -71,7 +71,7 @@ const retrieveProductByIdError = data => ({
   errorMap: data
 });
 
-export const retrieveAllProducts = (storeOrWarehouseId, categoryId) => {
+export const retrieveProductsDetails = (storeOrWarehouseId, categoryId) => {
   return dispatch => {
     //redux thunk passes dispatch
     axios
@@ -81,28 +81,28 @@ export const retrieveAllProducts = (storeOrWarehouseId, categoryId) => {
       .then(response => {
         const { data } = jsog.decode(response);
         if (categoryId) {
-          dispatch(retrieveAllProductsForCategorySuccess(data));
+          dispatch(retrieveProductsDetailsForCategorySuccess(data));
         } else {
-          dispatch(retrieveAllProductsSuccess(data));
+          dispatch(retrieveProductsDetailsSuccess(data));
         }
       })
       .catch(err => {
-        dispatch(retrieveAllProductsError(err.response.data));
+        dispatch(retrieveProductsDetailsError(err.response.data));
       });
   };
 };
 
-const retrieveAllProductsSuccess = data => ({
-  type: RETRIEVE_ALL_PRODUCTS,
+const retrieveProductsDetailsSuccess = data => ({
+  type: RETRIEVE_PRODUCTS_DETAILS,
   products: data
 });
 
-const retrieveAllProductsForCategorySuccess = data => ({
+const retrieveProductsDetailsForCategorySuccess = data => ({
   type: RETRIEVE_ALL_PRODUCTS_FOR_CATEGORY,
   categoryProducts: data
 });
 
-const retrieveAllProductsError = data => ({
+const retrieveProductsDetailsError = data => ({
   type: GET_ERRORS,
   errorMap: data
 });

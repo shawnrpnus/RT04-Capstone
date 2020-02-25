@@ -1,6 +1,7 @@
 import axios from "axios";
 import * as types from "./types";
 import { toast } from "react-toastify";
+import {retrieveAllProducts, retrieveProductsDetails} from "./productActions";
 
 const TAG_BASE_URL = "/api/tag/";
 const jsog = require("jsog");
@@ -123,6 +124,38 @@ const deleteTagSuccess = data => ({
 });
 
 const deleteTagError = data => ({
+  type: types.GET_ERRORS,
+  errorMap: data
+});
+
+export const addTagToProducts = (addTagToProductRequest, history) => {
+  return dispatch => {
+    //redux thunk passes dispatch
+    axios
+      .post(TAG_BASE_URL + "addTagToProducts", addTagToProductRequest)
+      .then(response => {
+        const data = jsog.decode(response);
+        const tagId = data.tagId;
+        console.log(data);
+        dispatch(addTagToProductsSuccess(response.data));
+        toast.success("Successfully Add Tag To Products!", {
+          position: toast.POSITION.TOP_CENTER
+        });
+        retrieveProductsDetails()(dispatch);
+        history.push(`/tag/addTagToProducts`);
+      })
+      .catch(err => {
+        dispatch(addTagToProductsError(err.response.data));
+      });
+  };
+};
+
+const addTagToProductsSuccess = data => ({
+  type: types.ADD_TAG_TO_PRODUCTS,
+  tag: data
+});
+
+const addTagToProductsError = data => ({
   type: types.GET_ERRORS,
   errorMap: data
 });

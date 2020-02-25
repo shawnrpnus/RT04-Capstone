@@ -67,6 +67,11 @@ class SidebarContent extends Component {
               route="/tag/manage"
               onClick={this.hideSidebar}
             />
+            <SidebarLink
+              title="Add Tag To Products"
+              route="/tag/addTagToProducts"
+              onClick={this.hideSidebar}
+            />
           </SidebarCategory>
           <SidebarCategory title="Category" icon="list">
             <SidebarLink

@@ -110,7 +110,7 @@ class CreateUpdateCategoryDialog extends Component {
         <DialogTitle>{dialogTitle}</DialogTitle>
         <DialogContent>
           <form className="material-form">
-            {mode === "update" ? (
+            {mode === "update" && this.props.allCategories ? (
               <MaterialObjectSelect
                 fieldName="parentCategoryId"
                 fieldLabel="Updated Parent Category"

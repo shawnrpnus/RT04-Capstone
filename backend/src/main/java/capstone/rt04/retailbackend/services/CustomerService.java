@@ -11,12 +11,17 @@ import capstone.rt04.retailbackend.util.exceptions.shoppingcart.InvalidCartTypeE
 import capstone.rt04.retailbackend.util.exceptions.style.StyleNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.tomcat.util.bcel.Const;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 import javax.persistence.PersistenceException;
 import java.sql.Timestamp;
@@ -35,6 +40,7 @@ import static capstone.rt04.retailbackend.util.Constants.ONLINE_SHOPPING_CART;
 public class CustomerService {
 
     private JavaMailSender javaMailSender;
+    private RestTemplate restTemplate;
 
     private final Environment environment;
 
@@ -54,8 +60,9 @@ public class CustomerService {
 
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
-    public CustomerService(JavaMailSender javaMailSender, ValidationService validationService, ShoppingCartService shoppingCartService, ProductService productService, CustomerRepository customerRepository, ReviewRepository reviewRepository, ShoppingCartItemRepository shoppingCartItemRepository, ShoppingCartRepository shoppingCartRepository, VerificationCodeRepository verificationCodeRepository, MeasurementsRepository measurementsRepository, CreditCardRepository creditCardRepository, AddressRepository addressRepository, Environment environment, StyleService styleService) {
+    public CustomerService(JavaMailSender javaMailSender, RestTemplateBuilder builder, ValidationService validationService, ShoppingCartService shoppingCartService, ProductService productService, CustomerRepository customerRepository, ReviewRepository reviewRepository, ShoppingCartItemRepository shoppingCartItemRepository, ShoppingCartRepository shoppingCartRepository, VerificationCodeRepository verificationCodeRepository, MeasurementsRepository measurementsRepository, CreditCardRepository creditCardRepository, AddressRepository addressRepository, Environment environment, StyleService styleService) {
         this.javaMailSender = javaMailSender;
+        this.restTemplate = builder.build();
         this.validationService = validationService;
         this.shoppingCartService = shoppingCartService;
         this.productService = productService;
@@ -108,6 +115,7 @@ public class CustomerService {
             throw new VerificationCodeInvalidException(ErrorMessages.VERIFICATION_CODE_EXPIRED);
         }
         verificationCode.getCustomer().setVerified(true);
+        verificationCode.setExpiryDateTime(new Timestamp(System.currentTimeMillis())); //expire it
         return lazyLoadCustomerFields(verificationCode.getCustomer());
     }
 
@@ -130,12 +138,12 @@ public class CustomerService {
         return lazyLoadCustomerFields(customer);
     }
 
-    public List<Customer> retrieveAllCustomers(){
-         List<Customer> customers = customerRepository.findAll();
-         for (Customer c : customers){
-             lazyLoadCustomerFields(c);
-         }
-         return customers;
+    public List<Customer> retrieveAllCustomers() {
+        List<Customer> customers = customerRepository.findAll();
+        for (Customer c : customers) {
+            lazyLoadCustomerFields(c);
+        }
+        return customers;
     }
 
     public Customer retrieveCustomerByVerificationCode(String code) throws VerificationCodeInvalidException {
@@ -162,6 +170,7 @@ public class CustomerService {
         }
     }
 
+    //after customer clicks link, redirect to front-end page which call the api that calls this
     public Customer updateEmail(String code) throws CustomerNotFoundException, VerificationCodeInvalidException {
         VerificationCode verificationCode = verificationCodeRepository.findByCode(code)
                 .orElseThrow(() -> new VerificationCodeInvalidException(ErrorMessages.VERIFICATION_CODE_INVALID));
@@ -240,8 +249,36 @@ public class CustomerService {
         SimpleMailMessage msg = new SimpleMailMessage();
         msg.setTo(email);
         msg.setSubject("Activate your account");
-        msg.setText(Constants.FRONTEND_URL + "/verify/" + code);
+        msg.setText(Constants.FRONTEND_URL + "/account/verify/" + code);
         javaMailSender.send(msg);
+    }
+
+    private void nodeGenerateVerificationLinkAndSendEmail(String email) throws CustomerNotFoundException {
+        Customer customer = retrieveCustomerByEmail(email);
+        VerificationCode verificationCode = generateVerificationCode(customer.getCustomerId());
+        if (Arrays.asList(environment.getActiveProfiles()).contains("dev")) {
+            nodeSendEmailVerificationLink(verificationCode.getCode(), customer.getEmail(), customer.getFirstName(), customer.getLastName());
+        }
+    }
+
+    //link, email, fullname
+    private void nodeSendEmailVerificationLink(String code, String email, String firstName, String lastName) {
+        restTemplate = new RestTemplate();
+        Map<String, String> request = new HashMap<>();
+        String fullName = firstName + " " + lastName;
+        String link = Constants.FRONTEND_URL + "/account/verify/" + code;
+        request.put("link", link);
+        request.put("email", email);
+        request.put("fullName", fullName);
+
+        String endpoint = Constants.NODE_API_URL + "/email/sendVerificationLink";
+        ResponseEntity<?> response = restTemplate.postForEntity(endpoint, request, Object.class);
+
+        if (response.getStatusCode().equals(HttpStatus.OK)) {
+            log.info("Email sent successfully to " + email);
+        } else {
+            log.error("Error sending email to " + email);
+        }
     }
 
     //customer click forget password --> send email to customer's email
@@ -415,7 +452,7 @@ public class CustomerService {
     // ONLINE CART ONLY
     public Customer addWishlistToShoppingCart(Long customerId) throws CustomerNotFoundException, InvalidCartTypeException, ProductVariantNotFoundException {
         Customer customer = retrieveCustomerByCustomerId(customerId);
-        for (ProductVariant pv : customer.getWishlistItems()){
+        for (ProductVariant pv : customer.getWishlistItems()) {
             shoppingCartService.updateQuantityOfProductVariant(1, pv.getProductVariantId(), customerId, ONLINE_SHOPPING_CART);
         }
         customer = retrieveCustomerByCustomerId(customerId);

@@ -2,8 +2,10 @@ package capstone.rt04.retailbackend.services;
 
 import capstone.rt04.retailbackend.entities.Product;
 import capstone.rt04.retailbackend.entities.Tag;
+import capstone.rt04.retailbackend.repositories.ProductRepository;
 import capstone.rt04.retailbackend.repositories.TagRepository;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
+import capstone.rt04.retailbackend.util.exceptions.product.ProductNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.tag.CreateNewTagException;
 import capstone.rt04.retailbackend.util.exceptions.tag.DeleteTagException;
 import capstone.rt04.retailbackend.util.exceptions.tag.TagNotFoundException;
@@ -23,9 +25,12 @@ public class TagService {
 
     private final TagRepository tagRepository;
 
-    public TagService(ValidationService validationService, TagRepository tagRepository) {
+    private final ProductRepository productRepository;
+
+    public TagService(ValidationService validationService, TagRepository tagRepository, ProductRepository productRepository) {
         this.validationService = validationService;
         this.tagRepository = tagRepository;
+        this.productRepository = productRepository;
     }
 
     public Tag createNewTag(Tag newTag) throws InputDataValidationException, CreateNewTagException {
@@ -55,6 +60,17 @@ public class TagService {
             throw new InputDataValidationException(errorMap, "Invalid Tag");
         }
 
+    }
+
+    public Tag addTagToProduct(Long tagId, List<Product> products) throws TagNotFoundException, ProductNotFoundException {
+        Tag tag = retrieveTagByTagId(tagId);
+        for(Product p : products) {
+            Product retrieveProduct = productRepository.findByProductId(p.getProductId());
+            //add tag both ways is implemented in the entity
+            retrieveProduct.addTag(tag);
+        }
+
+        return tag;
     }
 
 
