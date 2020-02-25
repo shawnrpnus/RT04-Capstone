@@ -15,6 +15,8 @@ public interface ProductRepository extends CrudRepository<Product, Long> {
 
     List<Product> findAllByTagsIn(List<Tag> tags);
 
+    Product findByProductId(Long productId);
+
     @Query("SELECT p FROM Product p WHERE p.category.categoryId = ?1")
     List<Product> findAllByCategoryId(Long categoryId);
 }
