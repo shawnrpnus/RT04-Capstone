@@ -31,4 +31,5 @@ public class ErrorMessages {
     public static final String STAFF_LOGIN_FAILED = "Username or password is invalid!";
 
     public static final String USERNAME_REQUIRED = "Username is required!";
+    public static final String NRIC_REQUIRED = "NRIC is required!";
 }

@@ -4,7 +4,7 @@ import { css } from "@emotion/core";
 import { ClipLoader } from "react-spinners";
 import { connect } from "react-redux";
 import { clearErrors, updateErrors } from "../../../redux/actions";
-import { createNewStaff } from "../../../redux/actions/staffActions";
+import { createNewStaff, retrieveAllRoles } from "../../../redux/actions/staffActions";
 import Address from "../../../models/address";
 import Role from "../../../models/staff/role";
 import Department from "../../../models/staff/department";
@@ -28,7 +28,7 @@ import ContentSaveIcon from "mdi-react/ContentSaveIcon";
 import CloseCircleIcon from "mdi-react/CloseCircleIcon";
 import DeleteIcon from "mdi-react/DeleteIcon";
 import TableEyeIcon from "mdi-react/TableEyeIcon";
-import withMaterialConfirmDialog from "../../Layout/page/withMaterialConfirmDialog";
+import {retrieveAllTags} from "../../../redux/actions/tagAction";
 
 class StaffCreateForm extends Component {
     static propTypes = {
@@ -36,6 +36,10 @@ class StaffCreateForm extends Component {
         clearErrors: PropTypes.func,
         disabled: PropTypes.bool,
     };
+
+    componentDidMount() {
+        this.props.retrieveAllRoles();
+    }
 
     constructor(props) {
         super(props);
@@ -329,13 +333,15 @@ class StaffCreateForm extends Component {
 }
 //mapping global state to this component
     const mapStateToProps = state => ({
+    roles: state.staffEntity.allRoles,
     errors: state.errors
 });
 
     const mapDispatchToProps = {
     createNewStaff, //api/staffEntity/createNewStaff
     clearErrors,
-    updateErrors
+    updateErrors,
+        retrieveAllRoles,
 };
 
     export default connect(
