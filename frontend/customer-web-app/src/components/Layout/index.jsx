@@ -8,7 +8,6 @@ export default function Layout(props) {
   return (
     <div>
       <Header color="dark" fixed brand="Bsos" links={<HeaderLinks />} />
-      <Banner />
       {props.children}
       <FooterSection />
     </div>

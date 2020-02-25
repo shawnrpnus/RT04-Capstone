@@ -1,5 +1,8 @@
 import axios from "axios";
+import { toast } from "react-toastify";
+
 import {
+  CREATE_PRODUCT,
   RETRIEVE_PRODUCT_BY_ID,
   GET_ERRORS,
   RETRIEVE_ALL_PRODUCTS,
@@ -9,6 +12,37 @@ import {
 const PRODUCT_BASE_URL = "/api/product";
 const CATEGORY_BASE_URL = "/api/category";
 const jsog = require("jsog");
+
+export const createNewProduct = (createProductRequest, history) => {
+  return dispatch => {
+    //redux thunk passes dispatch
+    axios
+      .post(PRODUCT_BASE_URL + "/createNewProduct", createProductRequest)
+      .then(response => {
+        const { data } = jsog.decode(response);
+        const productId = data.productId;
+        dispatch(createProductSuccess(data));
+        toast.success("Product Created!", {
+          position: toast.POSITION.TOP_CENTER
+        });
+        // TODO: update redirect path
+      })
+      .catch(err => {
+        dispatch(createProductError(err.response.data));
+        //console.log(err.response.data);
+      });
+  };
+};
+
+const createProductSuccess = data => ({
+  type: CREATE_PRODUCT,
+  product: data
+});
+
+const createProductError = data => ({
+  type: GET_ERRORS,
+  errorMap: data
+});
 
 export const retrieveProductById = productId => {
   return dispatch => {

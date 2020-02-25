@@ -82,7 +82,7 @@ public class StaffService {
     //for HR to create staff. HR supplies, first categoryName, last categoryName, nric, address, bank details,
     //role, department.
     public Staff createNewStaff (Staff staff,Address staffAddress, Role role, Department department) throws InputDataValidationException, CreateNewStaffException {
-        validationService.throwExceptionIfInvalidBean(staff);
+      //  validationService.throwExceptionIfInvalidBean(staff);
       //  validationService.throwExceptionIfInvalidBean(staffAddress);
 
         try{
@@ -103,6 +103,8 @@ public class StaffService {
             //Set address, role and department before saving because of sql constraint
             //Address ID, role ID and department ID column cannot be empty
             addressRepository.save(staffAddress);
+            departmentRepository.save(department);
+            roleRepository.save(role);
             staff.setAddress(staffAddress);
             staff.setRole(role);
             staff.setDepartment(department);
