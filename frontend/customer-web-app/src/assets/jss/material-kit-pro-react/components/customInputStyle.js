@@ -63,7 +63,7 @@ const customInputStyle = {
   },
   formControl: {
     margin: "0 0 17px 0",
-    paddingTop: "27px",
+    paddingTop: "5px",
     position: "relative",
     "& svg,& .fab,& .far,& .fal,& .fas,& .material-icons": {
       color: grayColor[13]

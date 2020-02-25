@@ -1,14 +1,10 @@
 import React from "react";
 import { Route, Switch } from "react-router-dom";
-
-import { StaffFormContainer } from "../../../components/Staff";
+import StaffCreateForm from "../../../components/Staff/components/StaffCreateForm";
 
 export default () => (
   <Switch>
-    <Route
-      exact
-      path="/staff/create"
-      render={props => <StaffFormContainer {...props} mode="create" />}
+    <Route path="/staff/create" component={StaffCreateForm} />}
     />
   </Switch>
 );

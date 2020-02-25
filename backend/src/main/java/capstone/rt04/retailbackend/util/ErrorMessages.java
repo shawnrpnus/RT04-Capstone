@@ -5,8 +5,8 @@ public class ErrorMessages {
     public static final String EMAIL_REQUIRED = "Email is required!";
     public static final String EMAIL_TAKEN = "There is already a registered user with this email!";
 
-    public static final String FIRST_NAME_REQUIRED = "First categoryName is required!";
-    public static final String LAST_NAME_REQUIRED = "First categoryName is required!";
+    public static final String FIRST_NAME_REQUIRED = "First name is required!";
+    public static final String LAST_NAME_REQUIRED = "Last name is required!";
 
     public static final String LOGIN_FAILED = "Email or password is invalid!";
     public static final String NEW_PASSWORD_REQUIRED = "New password is required!";
