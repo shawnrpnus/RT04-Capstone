@@ -7,12 +7,19 @@ import headersStyle from "assets/jss/material-kit-pro-react/views/sectionsSectio
 import GridContainer from "components/Layout/components/Grid/GridContainer";
 import GridItem from "components/Layout/components/Grid/GridItem";
 import dg2 from "assets/img/dg2.jpg";
+import LandingPage from "components/Layout/components/Banner/components/LandingPage";
+import VerifyEmailPrompt from "components/Layout/components/Banner/components/VerifyEmailPrompt";
+import VerifyEmailConfirmation from "components/Layout/components/Banner/components/VerifyEmailConfirmation";
 
 const useStyles = makeStyles(headersStyle);
 
 export default function Banner(props) {
   const classes = useStyles();
-
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+    document.body.scrollTop = 0;
+  });
+  const { landingPage, verifyEmail, verifyEmailConfirmation } = props;
   return (
     <div>
       <div
@@ -31,24 +38,11 @@ export default function Banner(props) {
                 classes.textCenter
               )}
             >
-              <h1 className={classes.title}>Come buy our shit</h1>
-              <h4>You can reserve fitting rooms and stuff</h4>
-              <br />
-              <h6>Shop Now:</h6>
-              <div>
-                <Button color="white" simple size="lg" justIcon>
-                  <i className="fab fa-twitter" />
-                </Button>
-                <Button color="white" simple size="lg" justIcon>
-                  <i className="fab fa-facebook-square" />
-                </Button>
-                <Button color="white" simple size="lg" justIcon>
-                  <i className="fab fa-google-plus-g" />
-                </Button>
-                <Button color="white" simple size="lg" justIcon>
-                  <i className="fab fa-instagram" />
-                </Button>
-              </div>
+              {landingPage && <LandingPage />}
+              {verifyEmail && <VerifyEmailPrompt classes={classes} />}
+              {verifyEmailConfirmation && (
+                <VerifyEmailConfirmation classes={classes} />
+              )}
             </GridItem>
           </GridContainer>
         </div>

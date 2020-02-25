@@ -6,7 +6,6 @@ const Router = () => (
   <main>
     <Switch>
       <Route path="/login" />
-
       <Route path="/" component={WrappedRoutes} />
     </Switch>
   </main>
