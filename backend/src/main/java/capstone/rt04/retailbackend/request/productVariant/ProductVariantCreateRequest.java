@@ -15,7 +15,7 @@ import java.util.List;
 public class ProductVariantCreateRequest {
     private Long productId;
 
-    private String color;
+    private List<String> colours;
 
     private List<SizeEnum> sizes;
 }

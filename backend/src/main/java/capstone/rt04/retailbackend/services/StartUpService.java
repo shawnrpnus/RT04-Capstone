@@ -80,9 +80,9 @@ public class StartUpService {
             sizes.add(SizeEnum.M);
             sizes.add(SizeEnum.L);
             List<String> colors = new ArrayList<>();
-            colors.add("Black");
-            colors.add("Green");
-            colors.add("Red");
+            colors.add("#000000");
+            colors.add("#1CD3A2");
+            colors.add("#CB4154");
             Product newProduct = productService.createNewProduct(product, category.getCategoryId(), null, sizes, colors);
 
             Product product2 = new Product("0011", "Fila Disruptor II", "Fila", BigDecimal.valueOf(109.90), BigDecimal.valueOf(49.90));
@@ -142,21 +142,21 @@ public class StartUpService {
             List<ProductImage> redProductImages= new ArrayList<>();;
 
             for (ProductVariant productVariant : newProduct.getProductVariants()) {
-                if (productVariant.getColour() == "Black") {
+                if (productVariant.getColour() == "#000000") {
                     if (!blackCreated) {
                         blackProductImages = productService.createProductImage(blacks, productVariant.getProductVariantId());
                         blackCreated = true;
                     } else {
                         productVariant.getProductImages().addAll(blackProductImages);
                     }
-                } else if (productVariant.getColour() == "Green") {
+                } else if (productVariant.getColour() == "#1CD3A2") {
                     if (!greenCreated) {
                         greenProductImages = productService.createProductImage(greens, productVariant.getProductVariantId());
                         greenCreated = true;
                     } else {
                         productVariant.getProductImages().addAll(greenProductImages);
                     }
-                } else if (productVariant.getColour() == "Red") {
+                } else if (productVariant.getColour() == "#CB4154") {
                     if (!redCreated) {
                         redProductImages = productService.createProductImage(reds, productVariant.getProductVariantId());
                         redCreated = true;
