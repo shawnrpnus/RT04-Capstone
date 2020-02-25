@@ -19,7 +19,7 @@ import {
   Visibility
 } from "@material-ui/icons";
 import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
-import { retrieveAllProducts } from "../../../../redux/actions/productActions";
+import { retrieveProductsDetails } from "../../../../redux/actions/productActions";
 import withPage from "../../../Layout/page/withPage";
 import colourList from "../../../../scss/colours.json";
 const _ = require("lodash");
@@ -84,7 +84,7 @@ class ProductsTable extends PureComponent {
           serialNumber: product.serialNumber,
           cost: product.cost,
           price: product.price,
-          category: product.category.name,
+          category: product.category.categoryName,
           colours: colours,
           image: image
         };
@@ -153,22 +153,17 @@ class ProductsTable extends PureComponent {
               pageSizeOptions: [5, 10, 20, 40],
               actionsColumnIndex: -1,
               headerStyle: { textAlign: "center" }, //change header padding
-              cellStyle: { textAlign: "center" }
+              cellStyle: { textAlign: "center" },
+              selection: this.props.selectable
             }}
-            actions={[
+            actions={!this.props.selectionAction ? [
               {
                 icon: Visibility,
                 tooltip: "View Product Variants",
                 onClick: (event, rowData) =>
                   this.handleViewProductDetails(rowData.productId)
               }
-              // rowData => ({
-              //   icon: 'delete',
-              //   tooltip: 'Delete User',
-              //   onClick: (event, rowData) => confirm("You want to delete " + rowData.name),
-              //   disabled: rowData.birthYear < 2000
-              // })
-            ]}
+            ] : [this.props.selectionAction]}
           />
         ) : (
           renderLoader()
@@ -185,7 +180,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = {
-  retrieveAllProducts
+  retrieveAllProducts: retrieveProductsDetails
 };
 
 export const ProductsTableRaw = withRouter(ProductsTable);

@@ -39,12 +39,14 @@ public class Staff implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long staffId;
 
-    @NotNull
+    @NotNull (message = ErrorMessages.FIRST_NAME_REQUIRED)
     @Column(nullable = false)
+    @Size(min = 1, message = ErrorMessages.FIRST_NAME_REQUIRED )
     private String firstName;
 
-    @NotNull
+    @NotNull (message = ErrorMessages.LAST_NAME_REQUIRED)
     @Column(nullable = false)
+    @Size(min =1 , message =ErrorMessages.LAST_NAME_REQUIRED)
     private String lastName;
 
     @Size
@@ -53,6 +55,7 @@ public class Staff implements Serializable {
     @NotNull(message = ErrorMessages.EMAIL_REQUIRED)
     @Column(nullable = false, unique = true)
     @Email(message = ErrorMessages.EMAIL_INVALID)
+    @Size(min =1 , message =ErrorMessages.EMAIL_REQUIRED)
     private String email;
 
 
@@ -66,6 +69,7 @@ public class Staff implements Serializable {
 
     @NotNull
     @Column(nullable = false)
+    @Size(min =1 , message =ErrorMessages.NRIC_REQUIRED)
     private String nric;
 
     @OneToMany(mappedBy = "applicant")

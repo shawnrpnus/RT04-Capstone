@@ -22,6 +22,11 @@ export default function(state = initialState, action) {
         ...state,
         products: action.products
       };
+    case types.RETRIEVE_PRODUCTS_DETAILS:
+      return {
+        ...state,
+        products: action.products
+      };
     default:
       return state;
   }
