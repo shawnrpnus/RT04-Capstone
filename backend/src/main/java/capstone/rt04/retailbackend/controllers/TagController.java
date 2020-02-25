@@ -1,8 +1,11 @@
 package capstone.rt04.retailbackend.controllers;
 
+import capstone.rt04.retailbackend.entities.Product;
 import capstone.rt04.retailbackend.entities.Tag;
+import capstone.rt04.retailbackend.request.tag.AddTagToProductRequest;
 import capstone.rt04.retailbackend.services.TagService;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
+import capstone.rt04.retailbackend.util.exceptions.product.ProductNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.tag.CreateNewTagException;
 import capstone.rt04.retailbackend.util.exceptions.tag.DeleteTagException;
 import capstone.rt04.retailbackend.util.exceptions.tag.TagNotFoundException;
@@ -48,6 +51,12 @@ public class TagController {
     @DeleteMapping(TagControllerRoutes.DELETE_TAG)
     public ResponseEntity<?> deleteStyle(@PathVariable Long tagId) throws DeleteTagException, TagNotFoundException {
         Tag tag = tagService.deleteTag(tagId);
+        return new ResponseEntity<>(tag, HttpStatus.OK);
+    }
+
+    @PostMapping(TagControllerRoutes.ADD_TAG_TO_PRODUCTS)
+    public ResponseEntity<?> addTagToProducts(@RequestBody AddTagToProductRequest addTagToProductRequest) throws TagNotFoundException, ProductNotFoundException {
+        Tag tag = tagService.addTagToProduct(addTagToProductRequest.getTagId(), addTagToProductRequest.getProducts());
         return new ResponseEntity<>(tag, HttpStatus.OK);
     }
 
