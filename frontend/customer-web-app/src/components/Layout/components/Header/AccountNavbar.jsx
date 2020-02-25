@@ -70,7 +70,11 @@ function AccountToolTipContent(props) {
       </h4>
       <Divider />
       <List component="nav">
-        {renderAccDropdownLinks(undefined, ListItem, { button: true })}
+        {customer
+          ? renderAccDropDownLinksAfterLogin(undefined, ListItem, {
+              button: true
+            })
+          : renderAccDropdownLinks(undefined, ListItem, { button: true })}
       </List>
     </React.Fragment>
   );
@@ -112,6 +116,34 @@ const renderAccDropdownLinks = (classes, Component, componentProps) => {
       ) : (
         "Register"
       )}
+    </Link>
+  ];
+};
+
+const renderAccDropDownLinksAfterLogin = (
+  classes,
+  Component,
+  componentProps
+) => {
+  return [
+    <Link
+      key="profile"
+      to="/account/profile"
+      className={classes ? classes.dropdownLink : null}
+    >
+      {Component ? (
+        <Component {...componentProps}>My Profile</Component>
+      ) : (
+        "My Profile"
+      )}
+    </Link>,
+    <Link
+      key="logout"
+      to="/"
+      className={classes ? classes.dropdownLink : null}
+      onClick={() => localStorage.removeItem("customer")}
+    >
+      {Component ? <Component {...componentProps}>Logout</Component> : "Logout"}
     </Link>
   ];
 };
