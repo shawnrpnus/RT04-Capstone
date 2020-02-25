@@ -1,25 +1,56 @@
 import axios from "axios";
+import { toast } from "react-toastify";
+
 import {
+  CREATE_PRODUCT,
   RETRIEVE_PRODUCT_BY_ID,
   GET_ERRORS,
   RETRIEVE_ALL_PRODUCTS,
   RETRIEVE_ALL_PRODUCTS_FOR_CATEGORY
 } from "./types";
 
-const PRODUCT_BASE_URL = "/api/product/";
-const CATEGORY_BASE_URL = "/api/category/";
+const PRODUCT_BASE_URL = "/api/product";
+const CATEGORY_BASE_URL = "/api/category";
 const jsog = require("jsog");
+
+export const createNewProduct = (createProductRequest, history) => {
+  return dispatch => {
+    //redux thunk passes dispatch
+    axios
+      .post(PRODUCT_BASE_URL + "/createNewProduct", createProductRequest)
+      .then(response => {
+        const { data } = jsog.decode(response);
+        const productId = data.productId;
+        dispatch(createProductSuccess(data));
+        toast.success("Product Created!", {
+          position: toast.POSITION.TOP_CENTER
+        });
+        // TODO: update redirect path
+      })
+      .catch(err => {
+        dispatch(createProductError(err.response.data));
+        //console.log(err.response.data);
+      });
+  };
+};
+
+const createProductSuccess = data => ({
+  type: CREATE_PRODUCT,
+  product: data
+});
+
+const createProductError = data => ({
+  type: GET_ERRORS,
+  errorMap: data
+});
 
 export const retrieveProductById = productId => {
   return dispatch => {
     //redux thunk passes dispatch
-    console.log("going to retrieving and updating store");
-
     axios
-      .get(PRODUCT_BASE_URL + `retrieveProductById/${productId}`)
+      .get(PRODUCT_BASE_URL + `/retrieveProductById/${productId}`)
       .then(response => {
         const { data } = jsog.decode(response);
-        console.log("retrieving and updating store");
         dispatch(retrieveProductByIdSuccess(data));
         //history.push("/storeEdit"); // TODO: update redirect path
       })
@@ -44,7 +75,7 @@ export const retrieveAllProducts = (storeOrWarehouseId, categoryId) => {
   return dispatch => {
     //redux thunk passes dispatch
     axios
-      .get(PRODUCT_BASE_URL + `retrieveProductsDetails`, {
+      .get(PRODUCT_BASE_URL + `/retrieveProductsDetails`, {
         params: { storeOrWarehouseId, categoryId }
       })
       .then(response => {
@@ -78,7 +109,7 @@ const retrieveAllProductsError = data => ({
 
 export const retrieveAllCategoryTagStyle = async () => {
   const { data } = await axios.get(
-    CATEGORY_BASE_URL + "retrieveAllCategoryTagStyle"
+    CATEGORY_BASE_URL + "/retrieveAllCategoryTagStyle"
   );
   return jsog.decode(data);
 };
@@ -88,9 +119,22 @@ export const updateProduct = (product, history) => {
     axios
       .put(PRODUCT_BASE_URL + "/updateProduct", product)
       .then(() => {
-        console.log("before retrieving and updating store");
         retrieveProductById(product.productId)(dispatch);
         console.log("Success");
+      })
+      .catch(() => {
+        console.log("Failed");
+      });
+  };
+};
+
+export const createProductVariants = (request, history) => {
+  return dispatch => {
+    axios
+      .post(PRODUCT_BASE_URL + "Variant/createMultipleProductVariants", request)
+      .then(() => {
+        console.log("Successfully created product variants!");
+        retrieveProductById(request.productId)(dispatch);
       })
       .catch(() => {
         console.log("Failed");

@@ -22,6 +22,7 @@ import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
 import { retrieveAllProducts } from "../../../../redux/actions/productActions";
 import withPage from "../../../Layout/page/withPage";
 import colourList from "../../../../scss/colours.json";
+const _ = require("lodash");
 
 const tableIcons = {
   Add: AddBox,
@@ -42,6 +43,9 @@ const tableIcons = {
   ThirdStateCheck: Remove,
   ViewColumn: ViewColumn
 };
+
+const jsonColorNameList = _.keyBy(colourList, "name");
+const jsonColorHexList = _.keyBy(colourList, "hex");
 
 class ProductsTable extends PureComponent {
   state = {
@@ -69,8 +73,9 @@ class ProductsTable extends PureComponent {
         const { product, colourToSizeImageMaps } = e;
         let image;
         const colours = colourToSizeImageMaps.map(e => {
-          image = e.productImages[0] && e.productImages[0].productImageUrl;
-          return e.colour;
+          if (!image)
+            image = e.productImages[0] && e.productImages[0].productImageUrl;
+          return jsonColorHexList[e.colour].name;
         });
         return {
           productId: product.productId,
@@ -80,7 +85,7 @@ class ProductsTable extends PureComponent {
           price: product.price,
           category: product.category.name,
           colours: colours,
-          avatar: image
+          image: image
         };
       });
     }
@@ -95,19 +100,19 @@ class ProductsTable extends PureComponent {
             icons={tableIcons}
             columns={[
               {
-                title: "Avatar",
-                field: "avatar",
+                title: "Image",
+                field: "image",
                 render: rowData => (
-                  <Link to="/viewAllProduct">
+                  <Link to={`/product/viewProductDetails/${rowData.productId}`}>
                     <img
                       style={{
                         width: "100%",
                         height: "auto",
                         borderRadius: "10%"
                       }}
-                      src={rowData.avatar}
+                      src={rowData.image}
                       onClick={() =>
-                        console.log("You saved me" + rowData.avatar)
+                        console.log("You saved me" + rowData.image)
                       }
                     />
                   </Link>
@@ -125,7 +130,7 @@ class ProductsTable extends PureComponent {
                     return (
                       <FiberManualRecordIcon
                         key={color + index}
-                        style={{ color }}
+                        style={{ color: jsonColorNameList[color].hex }}
                       />
                     );
                   })

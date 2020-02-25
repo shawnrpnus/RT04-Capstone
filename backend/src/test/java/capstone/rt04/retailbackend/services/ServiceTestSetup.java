@@ -36,8 +36,11 @@ public class ServiceTestSetup {
     @Autowired
     protected StoreService storeService;
 
-    protected static Long categoryId;
-    protected static Long productId;
+    protected static Long categoryFilaId;
+    protected static Long categoryMenId;
+    protected static Long categoryNikeId;
+    protected static Long categoryShoesId;
+    protected static Long productId1;
     protected static Long styleId;
     protected static Long productVariantId;
     protected static Long productId2;
@@ -45,7 +48,8 @@ public class ServiceTestSetup {
     protected static Long storeId;
 
     protected  List<SizeEnum> sizes = new ArrayList<>();
-    protected List<String> colors = new ArrayList<>();
+    protected List<String> colours = new ArrayList<>();
+    protected List<String> colours2 = new ArrayList<>();
     protected List<ProductVariant> productVariants = new ArrayList<>();
 
     @Before
@@ -68,18 +72,21 @@ public class ServiceTestSetup {
         // Adding colors and sizes
         sizes.add(SizeEnum.S);
         sizes.add(SizeEnum.M);
-        colors.add("White");
-        colors.add("Gold");
+        colours.add("White");
+        colours.add("Gold");
+        colours2.add("Ginger");
+        colours2.add("Magenta");
 
-        Product result = productService.createNewProduct(validProduct, fila.getCategoryId(), null, sizes, colors);
-        assertThat(result).isEqualTo(validProduct);
-        categoryId = fila.getCategoryId();
-        productId = result.getProductId();
+        Product product1 = productService.createNewProduct(validProduct, fila.getCategoryId(), null, sizes, colours);
+        assertThat(product1).isEqualTo(validProduct);
+        categoryFilaId = fila.getCategoryId();
+        categoryMenId = men.getCategoryId();
+        categoryNikeId = nike.getCategoryId();
+        categoryShoesId = shoes.getCategoryId();
+        productId1 = product1.getProductId();
 
-        Product product = productService.retrieveProductById(productId);
-//        ProductVariant validProductVariant = new ProductVariant("SKU009", "White", null);
-
-        productVariants = productService.createMultipleProductVariants(product.getProductId(), "Ginger", sizes);
+        /* Adding colour for product1 */
+        productVariants = productService.createMultipleProductVariants(productId1, colours2, sizes);
         assertThat(productVariants.size()).isNotEqualTo(0);
 
         productVariantId = productVariants.get(0).getProductVariantId();
@@ -90,12 +97,12 @@ public class ServiceTestSetup {
 
         // 2nd product
         Product validProduct2 = new Product("0002","Adidas Alpha Bounce", "Adidas", BigDecimal.valueOf(299.90), BigDecimal.valueOf(59.90));
-        validProduct.setCategory(categoryService.retrieveCategoryByCategoryId(categoryId));
-        Product product2 = productService.createNewProduct(validProduct2, categoryId, null, sizes, colors);
-        productId2 = product2.getProductId();
+        validProduct.setCategory(categoryService.retrieveCategoryByCategoryId(categoryFilaId));
 
-//        ProductVariant validProductVariant2 = new ProductVariant("SKU002", "Magenta", null);
-        List<ProductVariant> productVariants2 = productService.createMultipleProductVariants(product2.getProductId(), "Magenta", sizes);
+        Product product2 = productService.createNewProduct(validProduct2, categoryFilaId, null, sizes, colours);
+        productId2 = product2.getProductId();
+        /* Adding colour for product2 */
+        List<ProductVariant> productVariants2 = productService.createMultipleProductVariants(productId2, colours2, sizes);
 
         // Create store
         Store expectedValidStore = new Store("Store1", 8, 4, Time.valueOf("10:00:00"), Time.valueOf("21:00:00"), 2, 6, null);
@@ -111,7 +118,7 @@ public class ServiceTestSetup {
         Customer removedCustomer = customerService.removeCustomer(createdCustomerId);
         assertThat(removedCustomer.getCustomerId()).isEqualTo(createdCustomerId);
 
-        Product productToRemove = productService.retrieveProductById(productId);
+        Product productToRemove = productService.retrieveProductById(productId1);
         Product removedProduct = productService.deleteProduct(productToRemove.getProductId()); // deletes prod variant also
         assertThat(removedProduct.getProductId()).isEqualTo(productToRemove.getProductId());
 
@@ -119,18 +126,29 @@ public class ServiceTestSetup {
         Product removedProduct2 = productService.deleteProduct(productToRemove2.getProductId());
         assertThat(removedProduct2.getProductId()).isEqualTo(productToRemove2.getProductId());
 
-        Category categoryToRemove = categoryService.retrieveCategoryByCategoryId(categoryId);
+        Category categoryToRemove = categoryService.retrieveCategoryByCategoryId(categoryFilaId);
         Long categoryId = categoryToRemove.getCategoryId();
         Category removedCategory = categoryService.deleteCategory(categoryId);
         assertThat(removedCategory.getCategoryId()).isEqualTo(categoryId);
+
+        Category removedNikeCategory = categoryService.deleteCategory(categoryNikeId);
+        assertThat(removedNikeCategory.getCategoryId()).isEqualTo(categoryNikeId);
+
+        Category removedShoesCategory = categoryService.deleteCategory(categoryShoesId);
+        assertThat(removedShoesCategory.getCategoryId()).isEqualTo(categoryShoesId);
+
+        Category removedMenCategory = categoryService.deleteCategory(categoryMenId);
+        assertThat(removedMenCategory.getCategoryId()).isEqualTo(categoryMenId);
+
+
 
         Style styleToRemove = styleService.retrieveStyleByStyleId(styleId);
         styleService.deleteStyle(styleToRemove.getStyleId());
         List<Style> allStyles = styleService.retrieveAllStyles();
         assertThat(allStyles.size()).isZero();
 
-        productId = null;
-        categoryId = null;
+        productId1 = null;
+        categoryFilaId = null;
         styleId = null;
         createdCustomerId = null;
 

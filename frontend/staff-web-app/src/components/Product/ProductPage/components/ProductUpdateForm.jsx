@@ -42,13 +42,7 @@ class ProductUpdateForm extends PureComponent {
   async componentDidMount() {
     const response = await retrieveAllCategoryTagStyle();
     let { categories, tags, styles } = response;
-    // for (let i = 0; i < product.tags.length; i++) {
-    //   tags = tags.filter(tag => {
-    //     return tag.tagId !== product.tags[i].tagId;
-    //   });
-    // }
     tags = tags.map(tag => _.pick(tag, ["tagId", "name"]));
-
     this.setState({ categories, tagList: tags, styleList: styles });
   }
 
@@ -67,7 +61,6 @@ class ProductUpdateForm extends PureComponent {
 
   onSelectTag = async (event, tagArray) => {
     const product = { ...this.state.product };
-    // console.log(tagArray[0].toString() === tagArray[2].toString());
     product.tags = tagArray;
     await this.setState({ product });
   };
@@ -96,6 +89,8 @@ class ProductUpdateForm extends PureComponent {
     this.props.updateProduct(product, this.props.history);
     this.setState({});
   };
+
+  // console.log(_.keyBy(colourList, "hex"));
 
   render() {
     const { errors, open, onClose } = this.props;
@@ -190,7 +185,6 @@ class ProductUpdateForm extends PureComponent {
               value={product.tags}
               filterSelectedOptions
               renderInput={params => {
-                // console.log(params);
                 return (
                   <TextField
                     {...params}

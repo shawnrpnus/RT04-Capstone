@@ -24,7 +24,12 @@ import CreateIcon from "@material-ui/icons/Create";
 import AddCircleRoundedIcon from "@material-ui/icons/AddCircleRounded";
 import ProductUpdateForm from "./ProductUpdateForm";
 import AddProductVariantForm from "./AddProductVariantForm";
+import AddSizeForm from "./AddSizeForm";
 import withPage from "../../../Layout/page/withPage";
+import colourList from "../../../../scss/colours.json";
+
+const _ = require("lodash");
+const jsonColorList = _.keyBy(colourList, "hex");
 
 class ProductCard extends PureComponent {
   static propTypes = {
@@ -40,7 +45,8 @@ class ProductCard extends PureComponent {
     uploadImage: false,
     colourSizeMap: [],
     openProductUpdateDialog: false,
-    openCreateProductVariantDialog: false
+    openCreateProductVariantDialog: false,
+    openAddSizeDialog: false
   };
 
   componentDidMount() {
@@ -62,6 +68,10 @@ class ProductCard extends PureComponent {
 
   handleOpenCreateProductVariantDialog = e => {
     this.setState({ openCreateProductVariantDialog: true });
+  };
+
+  handleOpenAddSizeDialog = e => {
+    this.setState({ openAddSizeDialog: true });
   };
 
   handleToggleUploadImage = e => {
@@ -95,10 +105,12 @@ class ProductCard extends PureComponent {
       colourSizeMap,
       openProductUpdateDialog,
       openCreateProductVariantDialog,
+      openAddSizeDialog,
       product
     } = this.state;
     const { errors, location } = this.props;
 
+    console.log(this.props);
     return (
       <div className="product-card">
         {colourSizeMap.length > 0 && (
@@ -109,7 +121,7 @@ class ProductCard extends PureComponent {
         )}
         <div className="product-card__info">
           <Row>
-            <Col xs={5} md={8}>
+            <Col xs={3} md={7}>
               <h3 className="product-card__title">{productName}</h3>
             </Col>
             <Col xs={2} md={1}>
@@ -117,6 +129,11 @@ class ProductCard extends PureComponent {
                 checked={uploadImage}
                 onChange={this.handleToggleUploadImage}
               />
+            </Col>
+            <Col xs={2} md={1}>
+              <IconButton>
+                <AddCircleRoundedIcon onClick={this.handleOpenAddSizeDialog} />
+              </IconButton>
             </Col>
             <Col xs={2} md={1}>
               <IconButton>
@@ -137,7 +154,12 @@ class ProductCard extends PureComponent {
             <StarIcon />
             <StarIcon />
             <StarOutlineIcon />
-            <a className="product-card__link">See all reviews</a>
+            <a className="product-card__link">
+              {colourSizeMap[selectedColour] &&
+                jsonColorList[
+                  _.get(colourSizeMap, `[${selectedColour}].colour`, null)
+                ].name}
+            </a>
           </div>
           <h1 className="product-card__price">
             ${price} <span className="product-card__old-price">$23</span>
@@ -206,7 +228,7 @@ class ProductCard extends PureComponent {
           </Row>
           <ProductTabs description={description} />
         </div>
-        {this.state.openProductUpdateDialog && (
+        {openProductUpdateDialog && (
           <ProductUpdateForm
             open={openProductUpdateDialog}
             onClose={() => {
@@ -218,7 +240,7 @@ class ProductCard extends PureComponent {
             key={productId + "update"}
           />
         )}
-        {this.state.openCreateProductVariantDialog && (
+        {openCreateProductVariantDialog && (
           <AddProductVariantForm
             open={openCreateProductVariantDialog}
             onClose={() => {
@@ -228,6 +250,19 @@ class ProductCard extends PureComponent {
             }}
             errors={errors}
             key={productId + "add"}
+          />
+        )}
+        {openAddSizeDialog && (
+          <AddSizeForm
+            open={openAddSizeDialog}
+            onClose={() => {
+              this.setState({
+                openAddSizeDialog: false
+              });
+            }}
+            errors={errors}
+            key={productId + "size"}
+            selectedColourIndex={selectedColour}
           />
         )}
       </div>

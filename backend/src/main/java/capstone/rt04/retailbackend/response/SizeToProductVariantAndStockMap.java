@@ -2,13 +2,11 @@ package capstone.rt04.retailbackend.response;
 
 import capstone.rt04.retailbackend.entities.ProductStock;
 import capstone.rt04.retailbackend.util.enums.SizeEnum;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 public class SizeToProductVariantAndStockMap {
@@ -21,4 +19,9 @@ public class SizeToProductVariantAndStockMap {
     private Long productVariantId;
 
     private ProductStock productStock;
+
+    public Integer getSizeValue() {
+        return this.size.value;
+    }
+
 }

@@ -5,8 +5,11 @@ import capstone.rt04.retailbackend.request.productVariant.ProductVariantCreateRe
 import capstone.rt04.retailbackend.response.GenericErrorResponse;
 import capstone.rt04.retailbackend.services.ProductService;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
+import capstone.rt04.retailbackend.util.exceptions.product.CreateNewProductStockException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.warehouse.WarehouseNotFoundException;
 import capstone.rt04.retailbackend.util.routeconstants.ProductVariantControllerRoutes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -58,18 +61,10 @@ public class ProductVariantController {
     }
 
     @PostMapping(ProductVariantControllerRoutes.CREATE_MULTIPLE_PRODUCT_VARIANTS)
-    public ResponseEntity<?> createMultipleProductVariants(@RequestBody ProductVariantCreateRequest productVariantCreateRequest) {
-        try {
-            List<ProductVariant> productVariants = productService.createMultipleProductVariants(productVariantCreateRequest.getProductId(), productVariantCreateRequest.getColor(),
-                    productVariantCreateRequest.getSizes());
-            return new ResponseEntity<>(productVariants, HttpStatus.CREATED);
-        } catch (InputDataValidationException ex) {
-            return new ResponseEntity<>(ex.getErrorMap(), HttpStatus.BAD_REQUEST);
-        } catch (ProductNotFoundException ex) {
-            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
-        } catch (Exception ex) {
-            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public ResponseEntity<?> createMultipleProductVariants(@RequestBody ProductVariantCreateRequest productVariantCreateRequest) throws WarehouseNotFoundException, ProductNotFoundException, ProductVariantNotFoundException, InputDataValidationException, CreateNewProductStockException, StoreNotFoundException {
+        List<ProductVariant> productVariants = productService.createMultipleProductVariants(productVariantCreateRequest.getProductId(), productVariantCreateRequest.getColours(),
+                productVariantCreateRequest.getSizes());
+        return new ResponseEntity<>(productVariants, HttpStatus.CREATED);
     }
 
     @PutMapping(ProductVariantControllerRoutes.UPDATE_PRODUCT_VARIANT)

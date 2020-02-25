@@ -4,15 +4,7 @@ import capstone.rt04.retailbackend.entities.*;
 import capstone.rt04.retailbackend.request.category.CategoryCreateRequest;
 import capstone.rt04.retailbackend.request.product.ProductCreateRequest;
 import capstone.rt04.retailbackend.request.productVariant.ProductVariantCreateRequest;
-
-import capstone.rt04.retailbackend.request.staff.DepartmentCreateRequest;
-import capstone.rt04.retailbackend.request.staff.RoleCreateRequest;
-import capstone.rt04.retailbackend.request.staff.StaffAccountCreateRequest;
-import capstone.rt04.retailbackend.request.staff.StaffCreateRequest;
-import capstone.rt04.retailbackend.util.enums.RoleNameEnum;
-
 import capstone.rt04.retailbackend.util.enums.SizeEnum;
-
 import capstone.rt04.retailbackend.util.routeconstants.StyleControllerRoutes;
 import capstone.rt04.retailbackend.util.routeconstants.TagControllerRoutes;
 import io.restassured.RestAssured;
@@ -20,7 +12,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
@@ -34,9 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static capstone.rt04.retailbackend.util.routeconstants.CategoryControllerRoutes.*;
-import static capstone.rt04.retailbackend.util.routeconstants.StaffControllerRoutes.*;
-import capstone.rt04.retailbackend.repositories.DepartmentRepository;
-import capstone.rt04.retailbackend.repositories.RoleRepository;
 import static capstone.rt04.retailbackend.util.routeconstants.CustomerControllerRoutes.*;
 import static capstone.rt04.retailbackend.util.routeconstants.ProductControllerRoutes.*;
 import static capstone.rt04.retailbackend.util.routeconstants.ProductVariantControllerRoutes.CREATE_MULTIPLE_PRODUCT_VARIANTS;
@@ -149,7 +137,7 @@ public class ApiTestSetup {
                 then().statusCode(HttpStatus.CREATED.value()).extract().body().as(Product.class);
         productId = product.getProductId();
 
-        ProductVariantCreateRequest productVariantCreateRequest = new ProductVariantCreateRequest(productId, "Biege", sizes);
+        ProductVariantCreateRequest productVariantCreateRequest = new ProductVariantCreateRequest(productId, colors, sizes);
         List<ProductVariant> productVariant = given().
                 contentType("application/json").
                 body(productVariantCreateRequest).
