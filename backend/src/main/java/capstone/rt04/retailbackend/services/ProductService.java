@@ -140,10 +140,13 @@ public class ProductService {
         return checkIfCategoryIsInside(categoryToCheck.getParentCategory(), categoryId);
     }
 
+    @Transactional(readOnly = true)
     public List<ProductDetailsResponse> retrieveProductsDetails(Long storeOrWarehouseId, Long productId) throws ProductNotFoundException {
         // Each product can have multiple colour
         // Each colours will have a list of sizes
         // Every sizes of each colour will show the productVariantId and productStock
+
+        System.out.println(storeOrWarehouseId);
 
         List<Product> products = new ArrayList<>();
         if (productId != null) {
@@ -173,8 +176,13 @@ public class ProductService {
                 if (storeOrWarehouseId != null) { // no need to return product stock if no store/warehouse ID provided
                     prodStock = new ProductStock();
                     for (ProductStock productStock : productVariant.getProductStocks()) {
-                        if (productStock.getStore().getStoreId() == storeOrWarehouseId) {
+                        if (productStock.getStore() != null && productStock.getStore().getStoreId() == storeOrWarehouseId) {
                             prodStock = productStock;
+                            System.out.println("Store: " + prodStock.getProductStockId());
+                            break;
+                        } else if (productStock.getWarehouse() != null && productStock.getWarehouse().getWarehouseId() == storeOrWarehouseId) {
+                            prodStock = productStock;
+                            System.out.println("Warehouse: " + prodStock.getProductStockId());
                             break;
                         }
                     }
