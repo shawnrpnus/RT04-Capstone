@@ -7,6 +7,11 @@ const initialState = {
 
 export default function(state = initialState, action) {
   switch (action.type) {
+  case types.CREATE_PRODUCT:
+        return {
+          ...state,
+          currentProduct: action.product
+        };
     case types.RETRIEVE_PRODUCT_BY_ID:
       return {
         ...state,
