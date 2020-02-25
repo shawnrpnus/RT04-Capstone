@@ -1,9 +1,16 @@
 import React from "react";
 import Button from "components/UI/CustomButtons/Button";
+import classNames from "classnames";
+import GridItem from "components/Layout/components/Grid/GridItem";
 
 const LandingPage = classes => {
   return (
-    <React.Fragment>
+    <GridItem
+      xs={12}
+      sm={8}
+      md={8}
+      className={classNames(classes.mlAuto, classes.mrAuto, classes.textCenter)}
+    >
       <h1 className={classes.title}>Come buy our shit</h1>
       <h4>You can reserve fitting rooms and stuff</h4>
       <br />
@@ -22,7 +29,7 @@ const LandingPage = classes => {
           <i className="fab fa-instagram" />
         </Button>
       </div>
-    </React.Fragment>
+    </GridItem>
   );
 };
 

@@ -253,7 +253,7 @@ public class CustomerService {
         javaMailSender.send(msg);
     }
 
-    private void nodeGenerateVerificationLinkAndSendEmail(String email) throws CustomerNotFoundException {
+    public void nodeGenerateVerificationLinkAndSendEmail(String email) throws CustomerNotFoundException {
         Customer customer = retrieveCustomerByEmail(email);
         VerificationCode verificationCode = generateVerificationCode(customer.getCustomerId());
         if (Arrays.asList(environment.getActiveProfiles()).contains("dev")) {

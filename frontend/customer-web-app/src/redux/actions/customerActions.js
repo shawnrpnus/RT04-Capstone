@@ -19,7 +19,7 @@ export const createNewCustomer = (createCustomerRequest, history) => {
       .post(CUSTOMER_BASE_URL + "/createNewCustomer", createCustomerRequest)
       .then(response => {
         dispatch(createCustomerSuccess(response.data));
-        history.push("/account/verifyEmail"); // TODO: update redirect path
+        history.push("/account/verifyEmail");
       })
       .catch(err => {
         dispatch(createCustomerError(err.response.data));
@@ -94,3 +94,23 @@ const verificationError = data => ({
   type: GET_ERRORS,
   errorMap: data
 });
+
+export const resendVerifyEmail = (customerEmailReq, history, emailSent) => {
+  return dispatch => {
+    axios
+      .get(CUSTOMER_BASE_URL + `/resendVerifyEmail`)
+      .then(response => {
+        dispatch(verificationSuccess(response.data));
+        emailSent();
+        history.push("/account/verifyEmail");
+      })
+      .catch(err => {
+        const errorMap = _.get(err, "response.data", null);
+        if (errorMap) {
+          dispatch(verificationError(errorMap));
+        } else {
+          console.log(err);
+        }
+      });
+  };
+};
