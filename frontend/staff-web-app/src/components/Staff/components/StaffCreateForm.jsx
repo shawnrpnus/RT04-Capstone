@@ -32,30 +32,27 @@ import withMaterialConfirmDialog from "../../Layout/page/withMaterialConfirmDial
 
 class StaffCreateForm extends Component {
     static propTypes = {
-        handleSubmit: PropTypes.func,
         errors: PropTypes.object,
         clearErrors: PropTypes.func,
         disabled: PropTypes.bool,
-        currentStaff: PropTypes.object
     };
 
     constructor(props) {
         super(props);
-        const {currentStaff} = this.props;
         this.state = {
-            staffId: currentStaff ? currentStaff.staffId : undefined,
-            firstName: currentStaff ? currentStaff.firstName : "",
-            lastName: currentStaff ? currentStaff.lastName : "",
-            email: currentStaff ? currentStaff.email : "",
-            nric: currentStaff ? currentStaff.nric : "",
-            leaveRemaining: currentStaff ? currentStaff.leaveRemaining : "",
-            departmentName: currentStaff ? currentStaff.departmentName : "",
-            roleName: currentStaff ? currentStaff.roleName : "",
-            baseSalary: currentStaff ? currentStaff.baseSalary : "",
-            line1: currentStaff ? currentStaff.address.line1 : "",
-            line2: currentStaff ? currentStaff.address.line2 : "",
-            buildingName: currentStaff ? currentStaff.address.buildingName : "",
-            postalCode: currentStaff ? currentStaff.address.postalCode : ""
+            staffId : undefined,
+            firstName: "",
+            lastName : "",
+            email: "",
+            nric: "",
+            leaveRemaining : "",
+            departmentName : "",
+            roleName : "",
+            baseSalary: "",
+            line1: "",
+            line2:  "",
+            buildingName:  "",
+            postalCode: ""
         };
     }
 
@@ -87,44 +84,24 @@ class StaffCreateForm extends Component {
         });
     };
 
-    handleSubmit = (e, formState) => {
+    handleSubmit = (e) => {
         e.preventDefault();
-        //pulling out the fields from formState
-        const {
-            firstName,
-            lastName,
-            leaveRemaining,
-            nric,
-            email,
-            roleName,
-            baseSalary,
-            departmentName,
-            line1,
-            line2,
-            buildingName,
-            postalCode
-        } = formState;
-        const newStaff = new Staff(
-            firstName,
-            lastName,
-            leaveRemaining,
-            nric,
-            email
+
+        const staff = new Staff(
+            this.state.firstName,
+            this.state.lastName,
+            this.state.leaveRemaining,
+            this.state.nric,
+            this.state.email
         );
-        const role = new Role(roleName, baseSalary);
-        const department = new Department(departmentName);
-        const address = new Address(line1, line2, postalCode, buildingName);
-        const req = new StaffCreateRequest(newStaff, role, department, address);
-        switch (this.props.mode) {
-            case "create":
+        const role = new Role(this.state.roleName, this.state.baseSalary);
+        const department = new Department(this.state.departmentName);
+        const staffAddress = new Address(this.state.line1, this.state.line2, this.state.postalCode, this.state.buildingName);
+        const req = new StaffCreateRequest(staff, role, department, staffAddress);
+
                 this.props.createNewStaff(req, this.props.history);
-                break;
-            case "update":
-                // req.staffId = this.props.currentStaff.staffId;
-                // this.props.updateStaff(req, this.props.history);
-                break;
-            default:
-        }
+
+
     };
 
     render() {
@@ -300,7 +277,7 @@ class StaffCreateForm extends Component {
                             <Button
                                 color="primary"
                                 className="icon"
-                                onClick={e => handleSubmit(e, this.state)}
+                                onClick={e => this.handleSubmit(e)}
                                 disabled={hasErrors}
                             >
                                 <p>
@@ -352,7 +329,6 @@ class StaffCreateForm extends Component {
 }
 //mapping global state to this component
     const mapStateToProps = state => ({
-    currentStaff: state.staffEntity.currentStaff,
     errors: state.errors
 });
 
