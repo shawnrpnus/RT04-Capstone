@@ -33,7 +33,7 @@ export default function(state = initialState, action) {
       return {
         ...state,
         currentTag: action.tag
-      }
+      };
     default:
       return state;
   }

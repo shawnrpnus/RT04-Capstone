@@ -10,10 +10,12 @@ const useStyles = makeStyles(headersStyle);
 
 const VerifyEmailPrompt = props => {
   const classes = useStyles();
+
   useEffect(() => {
     window.scrollTo(0, 0);
     document.body.scrollTop = 0;
   }, []);
+
   return (
     <div
       className={classes.pageHeader}

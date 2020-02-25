@@ -10,17 +10,14 @@ import {
   retrieveAllTags,
   updateTag
 } from "../../../redux/actions/tagAction";
-import {
-  Add,
-  Check
-} from "@material-ui/icons";
+import { Add, Check } from "@material-ui/icons";
 import { clearErrors } from "../../../redux/actions";
 import connect from "react-redux/es/connect/connect";
 import withPage from "../../Layout/page/withPage";
 import MaterialObjectSelect from "../../../shared/components/Form/MaterialObjectSelect";
 import MaterialTable from "material-table";
 import { ProductsTableRaw } from "../../Product/ProductsList/components/ProductsTable";
-import { retrieveProductsDetails} from "../../../redux/actions/productActions";
+import { retrieveProductsDetails } from "../../../redux/actions/productActions";
 import CreateUpdateTagRequest from "../../../models/CreateUpdateTagRequest";
 import AddTagToProductsRequest from "../../../models/tag/AddTagToProductsRequest";
 
@@ -46,7 +43,7 @@ class AddTagToProduct extends Component {
     }
   };
 
-  handleAddTagToProducts = (evt,data) => {
+  handleAddTagToProducts = (evt, data) => {
     evt.preventDefault();
     //data is the list of products selected
     const req = new AddTagToProductsRequest(this.state.tagId, data);
@@ -91,9 +88,10 @@ class AddTagToProduct extends Component {
                           .length === 0
                     )}
                     selectionAction={{
-                      tooltip: 'Add Tag To Products',
+                      tooltip: "Add Tag To Products",
                       icon: Add,
-                      onClick: (evt, data) => this.handleAddTagToProducts(evt,data)
+                      onClick: (evt, data) =>
+                        this.handleAddTagToProducts(evt, data)
                     }}
                   />
                 ) : (

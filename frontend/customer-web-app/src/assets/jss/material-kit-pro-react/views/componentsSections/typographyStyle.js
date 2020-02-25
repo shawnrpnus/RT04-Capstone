@@ -21,6 +21,11 @@ const typographyStyle = {
     minHeight: "32px",
     textDecoration: "none"
   },
+  miniTitle: {
+    ...title,
+    marginTop: "5px",
+    marginBottom: "0px"
+  },
   typo: {
     paddingLeft: "25%",
     marginBottom: "40px",

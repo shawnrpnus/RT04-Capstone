@@ -103,12 +103,8 @@ public class CustomerController {
 
 
     @PostMapping(CustomerControllerRoutes.LOGIN)
-    public ResponseEntity<?> customerLogin(@RequestBody CustomerLoginRequest customerLoginRequest) throws CustomerNotVerifiedException, InvalidLoginCredentialsException {
-        Map<String, String> inputErrMap = validationService.generateErrorMap(customerLoginRequest);
-        if (inputErrMap != null) {
-            return new ResponseEntity<>(inputErrMap, HttpStatus.BAD_REQUEST);
-        }
-
+    public ResponseEntity<?> customerLogin(@RequestBody CustomerLoginRequest customerLoginRequest) throws CustomerNotVerifiedException, InvalidLoginCredentialsException, InputDataValidationException {
+        validationService.throwExceptionIfInvalidBean(customerLoginRequest);
         Customer customer = customerService.customerLogin(customerLoginRequest.getEmail(), customerLoginRequest.getPassword());
         return new ResponseEntity<>(customer, HttpStatus.OK);
     }

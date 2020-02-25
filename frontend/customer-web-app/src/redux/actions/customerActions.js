@@ -13,6 +13,7 @@ import {
 const CUSTOMER_BASE_URL = "/api/customer";
 
 const _ = require("lodash");
+const jsog = require("jsog");
 
 export const emailSending = () => ({
   type: EMAIL_SENDING
@@ -29,7 +30,8 @@ export const createNewCustomer = (createCustomerRequest, history) => {
       .post(CUSTOMER_BASE_URL + "/createNewCustomer", createCustomerRequest)
       .then(response => {
         dispatch(emailSent());
-        dispatch(createCustomerSuccess(response.data));
+        const { data } = jsog.decode(response);
+        dispatch(createCustomerSuccess(data));
         history.push("/account/verifyEmail");
       })
       .catch(err => {
@@ -55,12 +57,18 @@ export const customerLogin = (customerLoginRequest, history) => {
     axios
       .post(CUSTOMER_BASE_URL + "/login", customerLoginRequest)
       .then(response => {
-        dispatch(customerLoginSuccess(response.data));
+        const { data } = jsog.decode(response);
+        dispatch(customerLoginSuccess(data));
         history.push("/"); // TODO: update redirect path
+        localStorage.setItem("customer", jsog.stringify(response.data));
       })
       .catch(err => {
-        dispatch(customerLoginError(err.response.data));
-        //console.log(err.response.data);
+        const errorMap = _.get(err, "response.data", null);
+        if (errorMap) {
+          dispatch(customerLoginError(errorMap));
+        } else {
+          console.log(err);
+        }
       });
   };
 };
@@ -85,7 +93,8 @@ export const verify = (verificationCode, history) => {
     axios
       .get(CUSTOMER_BASE_URL + `/verify/${verificationCode}`)
       .then(response => {
-        dispatch(verificationSuccess(response.data));
+        const { data } = jsog.decode(response);
+        dispatch(verificationSuccess(data));
       })
       .catch(err => {
         if (err.response.status === 404) {

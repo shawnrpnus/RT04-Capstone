@@ -16,11 +16,9 @@ import classNames from "classnames";
 
 function VerifyEmailFailure(props) {
   const { classes } = props;
-  console.log(classes);
   const [inputState, setInputState] = useState({
     email: ""
   });
-
   const history = useHistory();
   const dispatch = useDispatch();
   const errors = useSelector(state => state.errors);

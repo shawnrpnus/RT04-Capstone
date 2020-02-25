@@ -66,7 +66,7 @@ public class GeneralExceptionHandler extends ResponseEntityExceptionHandler {
             AddressNotFoundException.class, ProductVariantNotFoundException.class,
             StyleNotFoundException.class, TagNotFoundException.class, CategoryNotFoundException.class,
             ProductNotFoundException.class, ProductStockNotFoundException.class, WarehouseNotFoundException.class,
-            StoreNotFoundException.class
+            StoreNotFoundException.class,
             VerificationCodeNotFoundException.class,
             AlreadyVerifiedException.class
     })
