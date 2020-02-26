@@ -1,5 +1,5 @@
 /*eslint-disable*/
-import React from "react";
+import React, { useEffect } from "react";
 // nodejs library that concatenates classes
 import classNames from "classnames";
 // @material-ui/core components
@@ -36,16 +36,23 @@ import cardProfile2Square from "assets/img/faces/card-profile2-square.jpg";
 
 import profilePageStyle from "assets/jss/material-kit-pro-react/views/profilePageStyle.js";
 import AccountInfo from "components/Profile/sections/AccountInfo";
+import LoadingOverlay from "react-loading-overlay";
+import { useSelector } from "react-redux";
+import customerService from "services/customerService";
 
 const useStyles = makeStyles(profilePageStyle);
 
 export default function ProfilePage(props) {
-  const { customer } = props;
+  const classes = useStyles();
+  let { customer } = props;
+
   React.useEffect(() => {
     window.scrollTo(0, 0);
     document.body.scrollTop = 0;
-  });
-  const classes = useStyles();
+  }, []);
+
+  useEffect(() => (customer = customerService.getCustomerFromLocalStorage()));
+
   const imageClasses = classNames(
     classes.imgRaised,
     classes.imgRoundedCircle,
@@ -90,12 +97,12 @@ export default function ProfilePage(props) {
               color="primary"
               tabs={[
                 {
-                  tabButton: "My Details",
+                  tabButton: "Account",
                   tabIcon: Palette,
                   tabContent: <AccountInfo customer={customer} />
                 },
                 {
-                  tabButton: "Connections",
+                  tabButton: "Orders",
                   tabIcon: People,
                   tabContent: (
                     <div>
@@ -265,7 +272,7 @@ export default function ProfilePage(props) {
                   )
                 },
                 {
-                  tabButton: "Media",
+                  tabButton: "Personalize",
                   tabIcon: Camera,
                   tabContent: (
                     <GridContainer justify="center">

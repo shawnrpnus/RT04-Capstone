@@ -5,12 +5,7 @@ import capstone.rt04.retailbackend.repositories.*;
 import capstone.rt04.retailbackend.util.ErrorMessages;
 import capstone.rt04.retailbackend.util.enums.RoleNameEnum;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
-import capstone.rt04.retailbackend.util.exceptions.customer.CustomerCannotDeleteException;
-import capstone.rt04.retailbackend.util.exceptions.customer.CustomerNotFoundException;
-import capstone.rt04.retailbackend.util.exceptions.customer.InvalidLoginCredentialsException;
-import capstone.rt04.retailbackend.util.exceptions.customer.VerificationCodeInvalidException;
 import capstone.rt04.retailbackend.util.exceptions.staff.*;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.core.env.Environment;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -20,9 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.PersistenceException;
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 @Service
 @Transactional

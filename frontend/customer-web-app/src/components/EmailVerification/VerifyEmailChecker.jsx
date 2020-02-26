@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
-import { verify } from "redux/actions/customerActions";
+import { updateEmail, verify } from "redux/actions/customerActions";
 import { useDispatch, useSelector } from "react-redux";
-import { useHistory, useRouteMatch } from "react-router-dom";
+import { Redirect, useHistory, useRouteMatch } from "react-router-dom";
 import LoadingOverlay from "react-loading-overlay";
 import VerifyEmailConfirmation from "components/EmailVerification/VerifyEmailConfirmation";
 import VerifyEmailFailure from "components/EmailVerification/VerifyEmailFailure";
@@ -12,14 +12,18 @@ import headersStyle from "assets/jss/material-kit-pro-react/views/sectionsSectio
 
 const useStyles = makeStyles(headersStyle);
 
+const _ = require("lodash");
+
 function VerifyEmailChecker(props) {
   const classes = useStyles();
+  const { isUpdateEmail } = props;
 
   const verificationErrors = useSelector(
     state => state.customer.verificationStatus
   );
 
   const isSendingEmail = useSelector(state => state.customer.isSendingEmail);
+  const errors = useSelector(state => state.errors);
 
   const match = useRouteMatch();
   const history = useHistory();
@@ -27,7 +31,11 @@ function VerifyEmailChecker(props) {
 
   useEffect(() => {
     const verificationCode = match.params.verificationCode;
-    dispatch(verify(verificationCode, history));
+    if (isUpdateEmail) {
+      dispatch(updateEmail(verificationCode, history));
+    } else {
+      dispatch(verify(verificationCode, history));
+    }
   }, []);
 
   useEffect(() => {
@@ -35,11 +43,20 @@ function VerifyEmailChecker(props) {
     document.body.scrollTop = 0;
   }, []);
 
+  const loadingText =
+    isSendingEmail && _.isEmpty(errors)
+      ? "Sending you an email..."
+      : verificationErrors === null
+      ? "Verifying..."
+      : "";
+
   return (
     <LoadingOverlay
       spinner
-      active={isSendingEmail || verificationErrors === null}
-      text="Sending you an email..."
+      active={
+        (isSendingEmail && _.isEmpty(errors)) || verificationErrors === null
+      }
+      text={loadingText}
     >
       <div
         className={classes.pageHeader}
@@ -48,9 +65,28 @@ function VerifyEmailChecker(props) {
         <div className={classes.container}>
           <GridContainer>
             {verificationErrors === "SUCCESS" ? (
-              <VerifyEmailConfirmation classes={classes} />
+              isUpdateEmail ? (
+                <Redirect
+                  to={{
+                    pathname: "/account/login",
+                    state: { isUpdateEmail: true }
+                  }}
+                />
+              ) : (
+                <VerifyEmailConfirmation classes={classes} />
+              )
             ) : verificationErrors === "FAILURE" ? (
-              <VerifyEmailFailure classes={classes} />
+              isUpdateEmail ? (
+                <Redirect
+                  to
+                  to={{
+                    pathname: "/account/login",
+                    state: { isUpdateEmail: true, linkExpired: true }
+                  }}
+                />
+              ) : (
+                <VerifyEmailFailure classes={classes} />
+              )
             ) : null}
           </GridContainer>
         </div>

@@ -22,22 +22,59 @@ import { clearErrors } from "redux/actions";
 import IconButton from "@material-ui/core/IconButton";
 import { Visibility, VisibilityOff } from "@material-ui/icons";
 import { customerLogin } from "redux/actions/customerActions";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import { DialogContent } from "@material-ui/core";
+import Dialog from "@material-ui/core/Dialog";
+import { useLocation, useHistory } from "react-router-dom";
 
 const useStyles = makeStyles(loginPageStyle);
+const _ = require("lodash");
 
 export default function LoginPage(props) {
   const classes = useStyles();
   const dispatch = useDispatch();
+  const history = useHistory();
+  const location = useLocation();
   const errors = useSelector(state => state.errors);
   const [inputState, setInputState] = useState({
     email: "",
     password: ""
   });
   const [showPassword, setShowPassword] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [dialogText, setDialogText] = useState({
+    dialogTitle: "",
+    dialogContent: ""
+  });
 
   useEffect(() => {
     window.scrollTo(0, 0);
     document.body.scrollTop = 0;
+  }, []);
+
+  useEffect(() => {
+    // coming from clicking email update link
+    if (_.get(location, "state.isUpdateEmail")) {
+      if (_.get(location, "state.linkExpired")) {
+        setDialogText({
+          dialogTitle: "Error",
+          dialogContent:
+            "Your link has expired. Please login with your old email and request a new one."
+        });
+      } else {
+        setDialogText({
+          dialogTitle: "Success",
+          dialogContent:
+            "Your email has been updated. Please login with your new email."
+        });
+      }
+      setDialogOpen(true);
+    }
+    // so dialog doesnt show again on refresh
+    history.replace({
+      pathname: "/account/login",
+      state: {}
+    });
   }, []);
 
   const handleSubmit = () => {
@@ -181,6 +218,15 @@ export default function LoginPage(props) {
           </GridItem>
         </GridContainer>
       </div>
+      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
+        <DialogTitle id="simple-dialog-title">
+          {dialogText.dialogTitle}
+        </DialogTitle>
+        <DialogContent>
+          {dialogText.dialogContent}
+          <br />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -131,6 +131,7 @@ export const resendVerifyEmail = (customerEmailReq, history) => {
         history.push("/account/verifyEmail");
       })
       .catch(err => {
+        dispatch(emailSent());
         const errorMap = _.get(err, "response.data", null);
         if (errorMap) {
           dispatch(resendEmailError(errorMap));
@@ -179,3 +180,52 @@ const updateCustomerError = data => ({
   type: GET_ERRORS,
   errorMap: data
 });
+
+export const sendUpdateEmailLink = (req, setDialogOpen) => {
+  return dispatch => {
+    axios
+      .post(CUSTOMER_BASE_URL + "/sendUpdateEmailLink", req)
+      .then(response => {
+        dispatch(emailSent());
+        setDialogOpen(true);
+      })
+      .catch(err => {
+        dispatch(emailSent());
+        const errorMap = _.get(err, "response.data", null);
+        if (errorMap) {
+          dispatch(sendUpdateEmailLinkError(errorMap));
+        } else {
+          console.log(err.response);
+        }
+      });
+  };
+};
+
+const sendUpdateEmailLinkError = data => ({
+  type: GET_ERRORS,
+  errorMap: data
+});
+
+export const updateEmail = (verificationCode, history) => {
+  return dispatch => {
+    axios
+      .get(CUSTOMER_BASE_URL + `/updateEmail/${verificationCode}`)
+      .then(response => {
+        customerService.removeCustomerFromLocalStorage();
+        const { data } = jsog.decode(response);
+        dispatch(verificationSuccess(data));
+      })
+      .catch(err => {
+        if (err.response.status === 404) {
+          history.push("/404");
+        } else {
+          const errorMap = _.get(err, "response.data", null);
+          if (errorMap) {
+            dispatch(verificationError(errorMap));
+          } else {
+            console.log(err);
+          }
+        }
+      });
+  };
+};
