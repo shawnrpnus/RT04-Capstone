@@ -36,10 +36,8 @@ const useStyles = makeStyles(signupPageStyle);
 const _ = require("lodash");
 
 function AccountInfo(props) {
-  const { customer } = props;
   //Hooks
   const emailRef = useRef();
-  const oldPasswordRef = useRef();
   const classes = useStyles();
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
@@ -47,6 +45,7 @@ function AccountInfo(props) {
   const dispatch = useDispatch();
   const isSendingEmail = useSelector(state => state.customer.isSendingEmail);
   const errors = useSelector(state => state.errors);
+  const customer = useSelector(state => state.customer.loggedInCustomer);
 
   //State
   const [inputState, setInputState] = useState({

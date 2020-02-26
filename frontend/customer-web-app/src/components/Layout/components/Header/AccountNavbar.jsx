@@ -14,8 +14,7 @@ import typographyStyle from "assets/jss/material-kit-pro-react/views/componentsS
 import classNames from "classnames";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
-import customerService from "services/customerService";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { customerLogout } from "redux/actions/customerActions";
 const jsog = require("jsog");
 
@@ -55,8 +54,8 @@ const renderAccountTooltip = classes => {
 function AccountToolTipContent(props) {
   const headerClasses = useHeaderStyles();
   const typoClasses = useTypoStyles();
+  const customer = useSelector(state => state.customer.loggedInCustomer);
 
-  let customer = customerService.getCustomerFromLocalStorage();
   return (
     <React.Fragment>
       <h4

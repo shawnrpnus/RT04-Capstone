@@ -36,22 +36,18 @@ import cardProfile2Square from "assets/img/faces/card-profile2-square.jpg";
 
 import profilePageStyle from "assets/jss/material-kit-pro-react/views/profilePageStyle.js";
 import AccountInfo from "components/Profile/sections/AccountInfo";
-import LoadingOverlay from "react-loading-overlay";
 import { useSelector } from "react-redux";
-import customerService from "services/customerService";
 
 const useStyles = makeStyles(profilePageStyle);
 
 export default function ProfilePage(props) {
+  const customer = useSelector(state => state.customer.loggedInCustomer);
   const classes = useStyles();
-  let { customer } = props;
 
-  React.useEffect(() => {
+  useEffect(() => {
     window.scrollTo(0, 0);
     document.body.scrollTop = 0;
   }, []);
-
-  useEffect(() => (customer = customerService.getCustomerFromLocalStorage()));
 
   const imageClasses = classNames(
     classes.imgRaised,
@@ -59,6 +55,7 @@ export default function ProfilePage(props) {
     classes.imgFluid
   );
   const navImageClasses = classNames(classes.imgRounded, classes.imgGallery);
+
   return (
     <div>
       <Parallax
@@ -99,7 +96,7 @@ export default function ProfilePage(props) {
                 {
                   tabButton: "Account",
                   tabIcon: Palette,
-                  tabContent: <AccountInfo customer={customer} />
+                  tabContent: <AccountInfo />
                 },
                 {
                   tabButton: "Orders",

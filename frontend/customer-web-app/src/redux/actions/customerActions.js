@@ -9,7 +9,6 @@ import {
   VERIFY_FAILURE,
   VERIFY_SUCCESS
 } from "./types";
-import customerService from "services/customerService";
 import { UPDATE_CUSTOMER } from "redux/actions/types";
 
 const CUSTOMER_BASE_URL = "/api/customer";
@@ -39,6 +38,11 @@ const dispatchErrorMapError = (err, dispatch) => {
   }
 };
 
+const dispatchUpdatedCustomer = (customerDataRaw, dispatch) => {
+  const customer = jsog.decode(customerDataRaw);
+  dispatch(updateCustomer(customer));
+};
+
 export const createNewCustomer = (createCustomerRequest, history) => {
   return dispatch => {
     //redux thunk passes dispatch
@@ -46,8 +50,6 @@ export const createNewCustomer = (createCustomerRequest, history) => {
       .post(CUSTOMER_BASE_URL + "/createNewCustomer", createCustomerRequest)
       .then(response => {
         dispatch(emailSent());
-        const { data } = jsog.decode(response);
-        dispatch(createCustomerSuccess(data));
         history.push("/account/verifyEmail");
       })
       .catch(err => {
@@ -58,20 +60,18 @@ export const createNewCustomer = (createCustomerRequest, history) => {
   };
 };
 
-const createCustomerSuccess = data => ({
-  type: CREATE_NEW_CUSTOMER,
-  customer: data
-});
+// const createCustomerSuccess = data => ({
+//   type: CREATE_NEW_CUSTOMER,
+//   customer: data
+// });
 
 export const customerLogin = (customerLoginRequest, history) => {
   return dispatch => {
     axios
       .post(CUSTOMER_BASE_URL + "/login", customerLoginRequest)
       .then(response => {
-        const { data } = jsog.decode(response);
-        dispatch(customerLoginSuccess(data));
-        history.push("/"); // TODO: update redirect path
-        customerService.saveCustomerToLocalStorage(response.data);
+        dispatchUpdatedCustomer(response.data, dispatch);
+        history.push("/");
       })
       .catch(err => {
         dispatchErrorMapError(err, dispatch);
@@ -79,10 +79,10 @@ export const customerLogin = (customerLoginRequest, history) => {
   };
 };
 
-const customerLoginSuccess = data => ({
-  type: CUSTOMER_LOGIN,
-  customer: data
-});
+// const customerLoginSuccess = data => ({
+//   type: CUSTOMER_LOGIN,
+//   customer: data
+// });
 
 export const customerLogout = () => ({
   type: CUSTOMER_LOGOUT
@@ -96,6 +96,7 @@ export const verify = (verificationCode, history) => {
       .then(response => {
         const { data } = jsog.decode(response);
         dispatch(verificationSuccess(data));
+        dispatchUpdatedCustomer(response.data, dispatch);
       })
       .catch(err => {
         if (err.response.status === 404) {
@@ -121,30 +122,6 @@ const verificationError = () => ({
   type: VERIFY_FAILURE
 });
 
-export const updateEmail = (verificationCode, history) => {
-  return dispatch => {
-    axios
-      .get(CUSTOMER_BASE_URL + `/updateEmail/${verificationCode}`)
-      .then(response => {
-        customerService.removeCustomerFromLocalStorage();
-        const { data } = jsog.decode(response);
-        dispatch(verificationSuccess(data));
-      })
-      .catch(err => {
-        if (err.response.status === 404) {
-          history.push("/404");
-        } else {
-          const errorMap = _.get(err, "response.data", null);
-          if (errorMap) {
-            dispatch(verificationError(errorMap));
-          } else {
-            console.log(err);
-          }
-        }
-      });
-  };
-};
-
 export const resendVerifyEmail = (customerEmailReq, history) => {
   return dispatch => {
     axios
@@ -165,9 +142,7 @@ export const updateCustomerName = (updateCustomerReq, enqueueSnackbar) => {
     axios
       .post(CUSTOMER_BASE_URL + "/updateCustomer", updateCustomerReq)
       .then(response => {
-        const { data } = jsog.decode(response);
-        dispatch(updateCustomerSuccess(data));
-        customerService.saveCustomerToLocalStorage(response.data);
+        dispatchUpdatedCustomer(response.data, dispatch);
         enqueueSnackbar("Changes saved", {
           variant: "success",
           autoHideDuration: 1200
@@ -179,7 +154,7 @@ export const updateCustomerName = (updateCustomerReq, enqueueSnackbar) => {
   };
 };
 
-const updateCustomerSuccess = data => ({
+const updateCustomer = data => ({
   type: UPDATE_CUSTOMER,
   customer: data
 });
@@ -199,14 +174,37 @@ export const sendUpdateEmailLink = (req, setDialogOpen) => {
   };
 };
 
+// verify against database
+export const updateEmail = (verificationCode, history) => {
+  return dispatch => {
+    axios
+      .get(CUSTOMER_BASE_URL + `/updateEmail/${verificationCode}`)
+      .then(response => {
+        dispatch(customerLogout());
+        const { data } = jsog.decode(response);
+        dispatch(verificationSuccess(data));
+      })
+      .catch(err => {
+        if (err.response.status === 404) {
+          history.push("/404");
+        } else {
+          const errorMap = _.get(err, "response.data", null);
+          if (errorMap) {
+            dispatch(verificationError(errorMap));
+          } else {
+            console.log(err);
+          }
+        }
+      });
+  };
+};
+
 export const changePassword = (req, enqueueSnackbar, setChangingPassword) => {
   return dispatch => {
     axios
       .post(CUSTOMER_BASE_URL + `/changePassword`, req)
       .then(response => {
-        const { data } = jsog.decode(response);
-        dispatch(customerLoginSuccess(data));
-        customerService.saveCustomerToLocalStorage(response.data);
+        dispatchUpdatedCustomer(response.data, dispatch);
         enqueueSnackbar("Password updated", {
           variant: "success",
           autoHideDuration: 1200
