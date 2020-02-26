@@ -1,8 +1,14 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import GridContainer from "components/Layout/components/Grid/GridContainer";
 import CustomTextField from "components/UI/CustomInput/CustomTextField";
 import InputAdornment from "@material-ui/core/InputAdornment";
-import { Email, Face, Visibility, VisibilityOff } from "@material-ui/icons";
+import {
+  Email,
+  Face,
+  Lock,
+  Visibility,
+  VisibilityOff
+} from "@material-ui/icons";
 import { clearErrors } from "redux/actions";
 import { useDispatch, useSelector } from "react-redux";
 import signupPageStyle from "assets/jss/material-kit-pro-react/views/signupPageStyle";
@@ -10,11 +16,11 @@ import { makeStyles } from "@material-ui/core/styles";
 import Button from "components/UI/CustomButtons/Button";
 import UpdateCustomerRequest from "models/customer/UpdateCustomerRequest";
 import {
+  changePassword,
   emailSending,
   sendUpdateEmailLink,
   updateCustomerName
 } from "redux/actions/customerActions";
-import Snackbar from "@material-ui/core/Snackbar";
 import { useSnackbar } from "notistack";
 import GridItem from "components/Layout/components/Grid/GridItem";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -23,6 +29,8 @@ import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import LoadingOverlay from "react-loading-overlay";
 import { DialogContent } from "@material-ui/core";
+import ChangePasswordRequest from "models/customer/ChangePasswordRequest";
+import IconButton from "@material-ui/core/IconButton";
 
 const useStyles = makeStyles(signupPageStyle);
 const _ = require("lodash");
@@ -31,11 +39,12 @@ function AccountInfo(props) {
   const { customer } = props;
   //Hooks
   const emailRef = useRef();
+  const oldPasswordRef = useRef();
   const classes = useStyles();
-  const dispatch = useDispatch();
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
-  //Selectors
+  //Redux
+  const dispatch = useDispatch();
   const isSendingEmail = useSelector(state => state.customer.isSendingEmail);
   const errors = useSelector(state => state.errors);
 
@@ -44,13 +53,17 @@ function AccountInfo(props) {
     firstName: customer.firstName,
     lastName: customer.lastName,
     email: customer.email,
-    password: "",
-    newEmail: "" //to keep for temporary use for showing in dialog
+    oldPassword: "",
+    newPassword: "",
+    newEmail: "" //to keep for temporary use for showing in dialog,
   });
   const [changingEmail, setChangingEmail] = useState(false);
+  const [changingPassword, setChangingPassword] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [showOldPassword, setShowOldPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
 
-  //Functions
+  //Misc
   const onChange = e => {
     e.persist();
     setInputState(inputState => ({
@@ -96,6 +109,28 @@ function AccountInfo(props) {
   const handleCloseDialog = () => {
     setDialogOpen(false);
     setInputState(inputState => ({ ...inputState, email: customer.email }));
+  };
+
+  const handleChangePassword = () => {
+    const req = new ChangePasswordRequest(
+      customer.customerId,
+      inputState.oldPassword,
+      inputState.newPassword
+    );
+    dispatch(changePassword(req, enqueueSnackbar, setChangingPassword));
+    setInputState(inputState => ({
+      ...inputState,
+      oldPassword: "",
+      newPassword: ""
+    }));
+  };
+
+  const handleClickShowOldPassword = () => {
+    setShowOldPassword(!showOldPassword);
+  };
+
+  const handleClickShowNewPassword = () => {
+    setShowNewPassword(!showNewPassword);
   };
 
   return (
@@ -195,6 +230,108 @@ function AccountInfo(props) {
                     color="primary"
                   >
                     Change Email
+                  </Button>
+                )}
+              </div>
+              {changingPassword && (
+                <React.Fragment>
+                  <CustomTextField
+                    fieldLabel="Old Password"
+                    fieldName="oldPassword"
+                    type={showOldPassword ? "text" : "password"}
+                    autoFocus
+                    inputState={inputState}
+                    onChange={onChange}
+                    errors={errors}
+                    placeholder="Enter your old password..."
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment
+                          position="start"
+                          className={classes.inputAdornment}
+                        >
+                          <Lock className={classes.inputAdornmentIcon} />
+                        </InputAdornment>
+                      ),
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            aria-label="toggle password visibility"
+                            onClick={handleClickShowOldPassword}
+                          >
+                            {showOldPassword ? (
+                              <Visibility />
+                            ) : (
+                              <VisibilityOff />
+                            )}
+                          </IconButton>
+                        </InputAdornment>
+                      )
+                    }}
+                  />
+                  <CustomTextField
+                    fieldLabel="New Password"
+                    fieldName="newPassword"
+                    type={showNewPassword ? "text" : "password"}
+                    inputState={inputState}
+                    onChange={onChange}
+                    errors={errors}
+                    placeholder="Enter a new password..."
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment
+                          position="start"
+                          className={classes.inputAdornment}
+                        >
+                          <Lock className={classes.inputAdornmentIcon} />
+                        </InputAdornment>
+                      ),
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            aria-label="toggle password visibility"
+                            onClick={handleClickShowNewPassword}
+                          >
+                            {showNewPassword ? (
+                              <Visibility />
+                            ) : (
+                              <VisibilityOff />
+                            )}
+                          </IconButton>
+                        </InputAdornment>
+                      )
+                    }}
+                  />
+                </React.Fragment>
+              )}
+              <div className={classes.textCenter}>
+                {changingPassword ? (
+                  <React.Fragment>
+                    <Tooltip
+                      title="Note: Verification email will be sent to this new email"
+                      aria-label="add"
+                    >
+                      <Button
+                        onClick={handleChangePassword}
+                        round
+                        color="primary"
+                      >
+                        Submit
+                      </Button>
+                    </Tooltip>
+                    <Button onClick={() => setChangingPassword(false)} round>
+                      Cancel
+                    </Button>
+                  </React.Fragment>
+                ) : (
+                  <Button
+                    onClick={() => {
+                      setChangingPassword(true);
+                    }}
+                    round
+                    color="primary"
+                  >
+                    Change Password
                   </Button>
                 )}
               </div>

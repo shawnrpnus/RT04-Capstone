@@ -31,11 +31,16 @@ const useStyles = makeStyles(loginPageStyle);
 const _ = require("lodash");
 
 export default function LoginPage(props) {
+  //Hooks
   const classes = useStyles();
-  const dispatch = useDispatch();
   const history = useHistory();
   const location = useLocation();
+
+  //Redux
+  const dispatch = useDispatch();
   const errors = useSelector(state => state.errors);
+
+  //State
   const [inputState, setInputState] = useState({
     email: "",
     password: ""
@@ -47,6 +52,7 @@ export default function LoginPage(props) {
     dialogContent: ""
   });
 
+  //Effects
   useEffect(() => {
     window.scrollTo(0, 0);
     document.body.scrollTop = 0;
@@ -77,6 +83,7 @@ export default function LoginPage(props) {
     });
   }, []);
 
+  //Misc
   const handleSubmit = () => {
     const { email, password } = inputState;
     const req = {
@@ -99,6 +106,13 @@ export default function LoginPage(props) {
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
+  };
+
+  const handleKeyDown = event => {
+    console.log(event);
+    if (event.keyCode === 13) {
+      handleSubmit();
+    }
   };
 
   return (
@@ -201,6 +215,7 @@ export default function LoginPage(props) {
                         </InputAdornment>
                       )
                     }}
+                    onKeyDown={e => handleKeyDown(e)}
                   />
                 </CardBody>
                 <div className={classes.textCenter}>

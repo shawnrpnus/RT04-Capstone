@@ -107,11 +107,8 @@ public class CustomerController {
     }
 
     @PostMapping(CustomerControllerRoutes.CHANGE_PASSWORD)
-    public ResponseEntity<?> changePassword(@RequestBody CustomerChangePasswordRequest customerChangePasswordRequest) throws CustomerNotFoundException, InvalidLoginCredentialsException {
-        Map<String, String> inputErrMap = validationService.generateErrorMap(customerChangePasswordRequest);
-        if (inputErrMap != null) {
-            return new ResponseEntity<>(inputErrMap, HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<?> changePassword(@RequestBody CustomerChangePasswordRequest customerChangePasswordRequest) throws CustomerNotFoundException, InvalidLoginCredentialsException, InputDataValidationException {
+        validationService.throwExceptionIfInvalidBean(customerChangePasswordRequest);
 
         customerService.changePassword(customerChangePasswordRequest.getCustomerId(),
                 customerChangePasswordRequest.getOldPassword(),

@@ -15,20 +15,22 @@ const useStyles = makeStyles(headersStyle);
 const _ = require("lodash");
 
 function VerifyEmailChecker(props) {
+  //Hooks
   const classes = useStyles();
-  const { isUpdateEmail } = props;
+  const match = useRouteMatch();
+  const history = useHistory();
 
+  //Redux
+  const dispatch = useDispatch();
+  const isSendingEmail = useSelector(state => state.customer.isSendingEmail);
+  const errors = useSelector(state => state.errors);
   const verificationErrors = useSelector(
     state => state.customer.verificationStatus
   );
 
-  const isSendingEmail = useSelector(state => state.customer.isSendingEmail);
-  const errors = useSelector(state => state.errors);
+  //State
 
-  const match = useRouteMatch();
-  const history = useHistory();
-  const dispatch = useDispatch();
-
+  //Effects
   useEffect(() => {
     const verificationCode = match.params.verificationCode;
     if (isUpdateEmail) {
@@ -42,6 +44,9 @@ function VerifyEmailChecker(props) {
     window.scrollTo(0, 0);
     document.body.scrollTop = 0;
   }, []);
+
+  //Misc
+  const { isUpdateEmail } = props;
 
   const loadingText =
     isSendingEmail && _.isEmpty(errors)

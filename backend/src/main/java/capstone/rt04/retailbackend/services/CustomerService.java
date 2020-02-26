@@ -209,7 +209,9 @@ public class CustomerService {
         if (encoder.matches(oldPassword, customer.getPassword())) {
             customer.setPassword(encoder.encode(newPassword));
         } else {
-            throw new InvalidLoginCredentialsException(ErrorMessages.OLD_PASSWORD_INCORRECT);
+            Map<String, String> errorMap = new HashMap<>();
+            errorMap.put("oldPassword", ErrorMessages.OLD_PASSWORD_INCORRECT);
+            throw new InvalidLoginCredentialsException(errorMap, ErrorMessages.OLD_PASSWORD_INCORRECT);
         }
     }
 
