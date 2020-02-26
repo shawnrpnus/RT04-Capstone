@@ -2,6 +2,7 @@ import axios from "axios";
 import * as types from "./types";
 import { toast } from "react-toastify";
 import { GET_ERRORS } from "./types";
+import {retrieveAllStores} from "./storeActions";
 
 const STAFF_BASE_URL = "/api/staff";
 const jsog = require("jsog");
@@ -51,7 +52,7 @@ export const retrieveAllStaff = () => {
 
 const retrieveAllStaffSuccess = data => ({
   type: types.RETRIEVE_ALL_STAFF,
-  product: data
+  staffEntity: data
 });
 
 const retrieveAllStaffError = data => ({
@@ -232,6 +233,35 @@ const retrieveAllDepartmentsSuccess = data => ({
 });
 
 const retrieveAllDepartmentsError = data => ({
+    type: types.GET_ERRORS,
+    errorMap: data
+});
+
+export const deleteStaff = (staffId, history) => {
+    return dispatch => {
+        axios
+            .delete(STAFF_BASE_URL + "/deleteStaff/" + staffId)
+            .then(response => {
+                const { data } = jsog.decode(response);
+                toast.success("Staff Deleted!", {
+                    position: toast.POSITION.TOP_CENTER
+                });
+                dispatch(deleteStaffSuccess(data));
+                retrieveAllStaff()(dispatch);
+                history.push(`/staff/viewAll`);
+            })
+            .catch(err => {
+                dispatch(deleteStaffError(err.response.data));
+            });
+    };
+};
+
+const deleteStaffSuccess = data => ({
+    type: types.DELETE_STAFF,
+    deletedStaff: data
+});
+
+const deleteStaffError = data => ({
     type: types.GET_ERRORS,
     errorMap: data
 });
