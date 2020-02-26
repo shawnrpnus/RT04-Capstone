@@ -5,6 +5,7 @@ import capstone.rt04.retailbackend.util.enums.SizeEnum;
 import capstone.rt04.retailbackend.util.enums.SortEnum;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductImageNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.product.ProductNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductStockNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.promoCode.PromoCodeNotFoundException;
@@ -41,35 +42,18 @@ public class ProductServiceTest extends ServiceTestSetup {
     @Autowired
     private TagService tagService;
 
-//    @Before
-//    public void beforeEachTest() throws Exception {
-//
-//    }
-//
-//    @After
-//    public void afterEachTest() throws Exception {
-//
-//        Product productToRemove = productService.retrieveProductById(productId);
-//        Product removedProduct = productService.deleteProduct(productToRemove.getProductId());
-//        assertThat(removedProduct.getProductId()).isEqualTo(productToRemove.getProductId());
-//
-//        Category categoryToRemove = categoryService.retrieveCategoryByCategoryId(categoryId);
-//        Category removedCategory = categoryService.deleteCategory(categoryToRemove.getCategoryId());
-//        assertThat(removedCategory.getCategoryId()).isEqualTo(categoryId);
-//    }
-
     @Test
     public void createErrorProduct() throws Exception {
         try {
             Product invalidProduct = new Product("0003", null, "Fila", BigDecimal.valueOf(89.90), BigDecimal.valueOf(39.90));
-            invalidProduct.setCategory(categoryService.retrieveCategoryByCategoryId(categoryId));
+            invalidProduct.setCategory(categoryService.retrieveCategoryByCategoryId(categoryFilaId));
             List<SizeEnum> sizes = new ArrayList<>();
             sizes.add(SizeEnum.S);
             sizes.add(SizeEnum.M);
             List<String> colors = new ArrayList<>();
-            colors.add("pink");
-            colors.add("gold");
-            productService.createNewProduct(invalidProduct, categoryId, null, sizes, colors);
+            colors.add("Aquamarine");
+            colors.add("Silver");
+            productService.createNewProduct(invalidProduct, categoryFilaId, null, null, sizes, colors);
         } catch (InputDataValidationException ex) {
             Map<String, String> expectedErrorMap = new HashMap<>();
             expectedErrorMap.put("productName", "must not be null");
@@ -79,7 +63,10 @@ public class ProductServiceTest extends ServiceTestSetup {
 
     @Test(expected = ProductVariantNotFoundException.class)
     public void CDMultipleProductVariant() throws Exception {
-        List<ProductVariant> productVariants = new ArrayList<>(productService.createMultipleProductVariants(productId, "Black", sizes));
+        List<String> colors = new ArrayList<>();
+        colors.add("Ember");
+        colors.add("Snow");
+        List<ProductVariant> productVariants = new ArrayList<>(productService.createMultipleProductVariants(productId1, colors, sizes));
         assertThat(productVariants.size()).isNotEqualTo(0);
 
         for(ProductVariant productVariant : productVariants) {
@@ -107,7 +94,7 @@ public class ProductServiceTest extends ServiceTestSetup {
     public void CDProductImage() throws Exception {
         // Create
         ProductVariant productVariant = productService.retrieveProductVariantById(productVariantId);
-        ProductImage validProductImage = new ProductImage("https://i.ebayimg.com/images/g/af8AAOSwd9dcdYMT/s-l640.jpg");
+        ProductImage validProductImage = new ProductImage("https://i.ebayimg.com/images/g/af8AAOSwd9dcdYMT/s-l640.jpg",1);
 
         List<ProductImage> productImagesToAdd = new ArrayList<>();
         productImagesToAdd.add(validProductImage);
@@ -179,7 +166,7 @@ public class ProductServiceTest extends ServiceTestSetup {
 
     @Test
     public void retrieveProductByCategory() throws Exception {
-        Category category = categoryService.retrieveCategoryByCategoryId(categoryId);
+        Category category = categoryService.retrieveCategoryByCategoryId(categoryFilaId);
 
         List<Product> products = productService.retrieveProductByCategory(category);
         assertThat(products.size()).isNotEqualTo(0);
@@ -197,7 +184,7 @@ public class ProductServiceTest extends ServiceTestSetup {
         productService.addOrRemoveTag(tag1.getTagId(), null, null, products);
         products = productService.retrieveAllProducts();
 
-        Category category = categoryService.retrieveCategoryByCategoryId(categoryId);
+        Category category = categoryService.retrieveCategoryByCategoryId(categoryFilaId);
         List<Tag> tags = new ArrayList<>();
         tags.add(tag1);
         List<String> colours = new ArrayList<>();
@@ -240,5 +227,18 @@ public class ProductServiceTest extends ServiceTestSetup {
 
         tagService.deleteTag(tag1.getTagId());
         tagService.deleteTag(tag2.getTagId());
+    }
+
+    @Test
+    public void retrieveProductToShowProductStocks() throws ProductNotFoundException {
+        Product originalProduct;
+
+        List<Product> products = productService.retrieveProductStocksByParameter(storeId1, null, null);
+        for(Product product : products) {
+
+            for(ProductStock productStock : product.getProductVariants().get(0).getProductStocks()) {
+                System.out.println("Product stock ID of : " + productStock.getProductStockId());
+            }
+        }
     }
 }

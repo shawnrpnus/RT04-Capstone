@@ -42,9 +42,14 @@ public class StaffController {
     @PostMapping(StaffControllerRoutes.CREATE_NEW_STAFF)
     public ResponseEntity<?> createNewStaff(@RequestBody StaffCreateRequest staffCreateRequest) throws InputDataValidationException, CreateNewStaffException {
 
-            Staff newStaff = staffService.createNewStaff(staffCreateRequest.getStaff(), staffCreateRequest.getStaffAddress(),
-                    staffCreateRequest.getRole(), staffCreateRequest.getDepartment());
-            return new ResponseEntity<>(newStaff, HttpStatus.CREATED);
+            try {
+                Staff newStaff = staffService.createNewStaff(staffCreateRequest.getStaff(), staffCreateRequest.getStaffAddress(),
+                        staffCreateRequest.getRole(), staffCreateRequest.getDepartment());
+                return new ResponseEntity<>(newStaff, HttpStatus.CREATED);
+            }catch (InputDataValidationException ex) {
+                return new ResponseEntity<>(ex.getErrorMap(), HttpStatus.BAD_REQUEST);
+            }
+
 
     }
 
@@ -72,7 +77,7 @@ public class StaffController {
             Staff staff = staffService.createNewStaffAccount(staffAccountCreateRequest.getStaffId());
             return new ResponseEntity<>(staff, HttpStatus.CREATED);
         } catch (CreateNewStaffAccountException ex){
-            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new GenericErrorResponse("Staff not found!"), HttpStatus.NOT_FOUND);
         }
 
 
@@ -95,6 +100,26 @@ public class StaffController {
         try {
             List<Staff> staff = staffService.retrieveAllStaff();
             return new ResponseEntity<>(staff, HttpStatus.OK);
+        } catch (Exception ex) {
+            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping(StaffControllerRoutes.RETRIEVE_ALL_ROLES)
+    public ResponseEntity<?> retrieveAllRoles() {
+        try {
+            List<String> roles = staffService.retrieveAllRoles();
+            return new ResponseEntity<>(roles, HttpStatus.OK);
+        } catch (Exception ex) {
+            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping(StaffControllerRoutes.RETRIEVE_ALL_DEPARTMENTS)
+    public ResponseEntity<?> retrieveAllDepartments() {
+        try {
+            List<Department> departments = staffService.retrieveAllDepartments();
+            return new ResponseEntity<>(departments, HttpStatus.OK);
         } catch (Exception ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }

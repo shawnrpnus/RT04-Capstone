@@ -1,5 +1,6 @@
 package capstone.rt04.retailbackend.controllers;
 
+import capstone.rt04.retailbackend.entities.Product;
 import capstone.rt04.retailbackend.entities.ProductStock;
 import capstone.rt04.retailbackend.entities.ProductVariant;
 import capstone.rt04.retailbackend.entities.Warehouse;
@@ -32,8 +33,8 @@ public class WarehouseController {
 
     @GetMapping(WarehouseControllerRoutes.RETRIEVE_ALL_WAREHOUSE_INVENTORIES)
     public ResponseEntity<?> retrieveAllWarehouseInventories(@RequestParam Long warehouseId) {
-        List<ProductStock> productStocks = productService.retrieveProductStocksByParameter(null, warehouseId, null);
-        return new ResponseEntity<>(productStocks, HttpStatus.OK);
+        List<Product> products = productService.retrieveProductStocksByParameter(null, warehouseId, null);
+        return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
     @GetMapping(WarehouseControllerRoutes.RETRIEVE_WAREHOUSE_INVENTORY)
@@ -45,8 +46,8 @@ public class WarehouseController {
 
     @GetMapping(WarehouseControllerRoutes.RETRIEVE_WAREHOUSE_DETAILS_BY_ID)
     public ResponseEntity<?> retrieveWarehouseDetailsByID(@RequestParam Long warehouseId) {
-        List<ProductStock> productStocks = productService.retrieveProductStocksByParameter(null, warehouseId, null);
-        return new ResponseEntity<>(productStocks, HttpStatus.OK);
+        List<Product> products = productService.retrieveProductStocksByParameter(null, warehouseId, null);
+        return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
     @PostMapping(WarehouseControllerRoutes.UPDATE_WAREHOUSE)

@@ -19,9 +19,12 @@ import {
   Visibility
 } from "@material-ui/icons";
 import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
-import { retrieveAllProducts } from "../../../../redux/actions/productActions";
+import { retrieveProductsDetails } from "../../../../redux/actions/productActions";
 import withPage from "../../../Layout/page/withPage";
 import colourList from "../../../../scss/colours.json";
+import axios from "axios";
+
+const _ = require("lodash");
 
 const tableIcons = {
   Add: AddBox,
@@ -42,6 +45,9 @@ const tableIcons = {
   ThirdStateCheck: Remove,
   ViewColumn: ViewColumn
 };
+
+const jsonColorNameList = _.keyBy(colourList, "name");
+const jsonColorHexList = _.keyBy(colourList, "hex");
 
 class ProductsTable extends PureComponent {
   state = {
@@ -69,8 +75,9 @@ class ProductsTable extends PureComponent {
         const { product, colourToSizeImageMaps } = e;
         let image;
         const colours = colourToSizeImageMaps.map(e => {
-          image = e.productImages[0] && e.productImages[0].productImageUrl;
-          return e.colour;
+          if (!image)
+            image = e.productImages[0] && e.productImages[0].productImageUrl;
+          return jsonColorHexList[e.colour].name;
         });
         return {
           productId: product.productId,
@@ -78,9 +85,9 @@ class ProductsTable extends PureComponent {
           serialNumber: product.serialNumber,
           cost: product.cost,
           price: product.price,
-          category: product.category.name,
+          category: product.category.categoryName,
           colours: colours,
-          avatar: image
+          image: image
         };
       });
     }
@@ -95,19 +102,19 @@ class ProductsTable extends PureComponent {
             icons={tableIcons}
             columns={[
               {
-                title: "Avatar",
-                field: "avatar",
+                title: "Image",
+                field: "image",
                 render: rowData => (
-                  <Link to="/viewAllProduct">
+                  <Link to={`/product/viewProductDetails/${rowData.productId}`}>
                     <img
                       style={{
                         width: "100%",
                         height: "auto",
                         borderRadius: "10%"
                       }}
-                      src={rowData.avatar}
+                      src={rowData.image}
                       onClick={() =>
-                        console.log("You saved me" + rowData.avatar)
+                        console.log("You saved me" + rowData.image)
                       }
                     />
                   </Link>
@@ -125,7 +132,7 @@ class ProductsTable extends PureComponent {
                     return (
                       <FiberManualRecordIcon
                         key={color + index}
-                        style={{ color }}
+                        style={{ color: jsonColorNameList[color].hex }}
                       />
                     );
                   })
@@ -147,22 +154,21 @@ class ProductsTable extends PureComponent {
               pageSizeOptions: [5, 10, 20, 40],
               actionsColumnIndex: -1,
               headerStyle: { textAlign: "center" }, //change header padding
-              cellStyle: { textAlign: "center" }
+              cellStyle: { textAlign: "center" },
+              selection: this.props.selectable
             }}
-            actions={[
-              {
-                icon: Visibility,
-                tooltip: "View Product Variants",
-                onClick: (event, rowData) =>
-                  this.handleViewProductDetails(rowData.productId)
-              }
-              // rowData => ({
-              //   icon: 'delete',
-              //   tooltip: 'Delete User',
-              //   onClick: (event, rowData) => confirm("You want to delete " + rowData.name),
-              //   disabled: rowData.birthYear < 2000
-              // })
-            ]}
+            actions={
+              !this.props.selectionAction
+                ? [
+                    {
+                      icon: Visibility,
+                      tooltip: "View Product Variants",
+                      onClick: (event, rowData) =>
+                        this.handleViewProductDetails(rowData.productId)
+                    }
+                  ]
+                : [this.props.selectionAction]
+            }
           />
         ) : (
           renderLoader()
@@ -179,7 +185,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = {
-  retrieveAllProducts
+  retrieveAllProducts: retrieveProductsDetails
 };
 
 export const ProductsTableRaw = withRouter(ProductsTable);

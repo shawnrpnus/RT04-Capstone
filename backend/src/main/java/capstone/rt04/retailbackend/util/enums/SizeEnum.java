@@ -10,11 +10,21 @@ package capstone.rt04.retailbackend.util.enums;
  * @author shawn
  */
 public enum SizeEnum {
-    XXS,
-    XS,
-    S,
-    M,
-    L,
-    XL,
-    XXL,
+    XXS(0),
+    XS(1),
+    S(2),
+    M(3),
+    L(4),
+    XL(5),
+    XXL(6);
+
+    public final Integer value;
+
+    SizeEnum(Integer value) {
+        this.value = value;
+    }
+
+    public Integer getValue() {
+        return this.value;
+    }
 }

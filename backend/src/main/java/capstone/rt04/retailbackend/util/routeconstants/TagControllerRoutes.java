@@ -7,4 +7,6 @@ public class TagControllerRoutes {
     public static final String RETRIEVE_TAG_BY_ID = "/retrieveTagById/{tagId}";
     public static final String UPDATE_TAG = "/updateTag";
     public static final String DELETE_TAG = "/deleteTag/{tagId}";
+    public static final String ADD_TAG_TO_PRODUCTS = "/addTagToProducts";
+    public static final String DELETE_TAG_FROM_PRODUCTS = "/deleteTagFromProducts";
 }

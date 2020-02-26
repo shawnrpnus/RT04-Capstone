@@ -18,6 +18,12 @@ export default function(state = initialState, action) {
         currentStaff: action.staffEntity
       };
 
+    case types.RETRIEVE_ALL_ROLES:
+      return {
+        ...state,
+        allRoles: action.allRoles
+      };
+
     case types.CREATE_STAFF_ACCOUNT:
       return {
         ...state,
@@ -37,6 +43,11 @@ export default function(state = initialState, action) {
       return {
         ...state,
         currentStaff: action.staffEntity
+      };
+    case types.DELETE_STAFF:
+      return {
+        ...state,
+        currentStaff: action.deletedStaff
       };
     default:
       return state;

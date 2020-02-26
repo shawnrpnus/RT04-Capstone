@@ -2,8 +2,10 @@ package capstone.rt04.retailbackend.services;
 
 import capstone.rt04.retailbackend.entities.Product;
 import capstone.rt04.retailbackend.entities.Tag;
+import capstone.rt04.retailbackend.repositories.ProductRepository;
 import capstone.rt04.retailbackend.repositories.TagRepository;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
+import capstone.rt04.retailbackend.util.exceptions.product.ProductNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.tag.CreateNewTagException;
 import capstone.rt04.retailbackend.util.exceptions.tag.DeleteTagException;
 import capstone.rt04.retailbackend.util.exceptions.tag.TagNotFoundException;
@@ -23,9 +25,12 @@ public class TagService {
 
     private final TagRepository tagRepository;
 
-    public TagService(ValidationService validationService, TagRepository tagRepository) {
+    private final ProductRepository productRepository;
+
+    public TagService(ValidationService validationService, TagRepository tagRepository, ProductRepository productRepository) {
         this.validationService = validationService;
         this.tagRepository = tagRepository;
+        this.productRepository = productRepository;
     }
 
     public Tag createNewTag(Tag newTag) throws InputDataValidationException, CreateNewTagException {
@@ -57,6 +62,22 @@ public class TagService {
 
     }
 
+    public Tag addTagToProduct(Long tagId, List<Long> productIds) throws TagNotFoundException, ProductNotFoundException {
+        Tag tag = retrieveTagByTagId(tagId);
+        for(Long p : productIds) {
+            System.out.println("LONG: " + p);
+            Product retrieveProduct = productRepository.findByProductId(p);
+            //add tag both ways is implemented in the entity
+            try{
+                retrieveProduct.addTag(tag);
+            } catch(NullPointerException ex) {
+                throw new ProductNotFoundException("Product with Product ID: " + p + " not found!");
+            }
+        }
+
+        return tag;
+    }
+
 
     public Tag updateTag(Tag tag) throws InputDataValidationException, TagNotFoundException, UpdateTagException {
         Map<String, String> errorMap = validationService.generateErrorMap(tag);
@@ -86,6 +107,20 @@ public class TagService {
         }
         tagRepository.delete(tagToRemove);
         return tagToRemove;
+    }
+
+    public Tag deleteTagFromProduct(Long tagId, List<Long> productIds) throws TagNotFoundException, ProductNotFoundException {
+        Tag tag = retrieveTagByTagId(tagId);
+        for(Long p : productIds) {
+            Product retrieveProduct = productRepository.findByProductId(p);
+            try{
+                retrieveProduct.getTags().remove(tag);
+                tag.getProducts().remove(retrieveProduct);
+            } catch(NullPointerException ex) {
+                throw new ProductNotFoundException("Product with Product ID: " + p + " not found!");
+            }
+        }
+        return tag;
     }
 
     public Tag retrieveTagByName(String name) throws TagNotFoundException {

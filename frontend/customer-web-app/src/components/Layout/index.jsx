@@ -7,8 +7,7 @@ import Banner from "components/Layout/components/Banner";
 export default function Layout(props) {
   return (
     <div>
-      <Header color="dark" fixed brand="Bsos" links={<HeaderLinks />} />
-      <Banner />
+      <Header color="dark" fixed brand="Appleberry" links={<HeaderLinks />} />
       {props.children}
       <FooterSection />
     </div>

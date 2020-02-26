@@ -5,8 +5,8 @@ public class ErrorMessages {
     public static final String EMAIL_REQUIRED = "Email is required!";
     public static final String EMAIL_TAKEN = "There is already a registered user with this email!";
 
-    public static final String FIRST_NAME_REQUIRED = "First categoryName is required!";
-    public static final String LAST_NAME_REQUIRED = "First categoryName is required!";
+    public static final String FIRST_NAME_REQUIRED = "First name is required!";
+    public static final String LAST_NAME_REQUIRED = "Last name is required!";
 
     public static final String LOGIN_FAILED = "Email or password is invalid!";
     public static final String NEW_PASSWORD_REQUIRED = "New password is required!";
@@ -17,6 +17,7 @@ public class ErrorMessages {
 
     public static final String VERIFICATION_CODE_INVALID = "Invalid verification code!";
     public static final String VERIFICATION_CODE_EXPIRED = "Verification code has expired! Request for a new one";
+    public static final String ALREADY_VERIFIED = "Customer has already been verified!";
 
     public static final String PROMO_CODE_REQUIRED = "Promo code is required!";
     public static final String PRODUCTS_REQUIRED = "Products are required!";
@@ -31,4 +32,5 @@ public class ErrorMessages {
     public static final String STAFF_LOGIN_FAILED = "Username or password is invalid!";
 
     public static final String USERNAME_REQUIRED = "Username is required!";
+    public static final String NRIC_REQUIRED = "NRIC is required!";
 }

@@ -66,7 +66,7 @@ public class ProductService {
         this.sizeDetailsService = sizeDetailsService;
     }
 
-    public Product createNewProduct(Product product, Long categoryId, List<Long> tagIds, List<SizeEnum> sizes, List<String> colours) throws InputDataValidationException, CreateNewProductException, CategoryNotFoundException {
+    public Product createNewProduct(Product product, Long categoryId, List<Long> tagIds, List<Long> styleIds, List<SizeEnum> sizes, List<String> colours) throws InputDataValidationException, CreateNewProductException, CategoryNotFoundException {
 
         if (categoryId == null) {
             throw new CreateNewProductException("The new product must be associated a leaf category");
@@ -98,20 +98,13 @@ public class ProductService {
                     }
                 }
 
-                ProductVariant productVariant;
-                String sku;
-                SizeDetails sizeDetails;
-
-                for (String colour : colours) {
-                    createMultipleProductVariants(product.getProductId(), colour, sizes);
-//                    for (SizeEnum size : sizes) {
-//                        sku = product.getSerialNumber() + "-" + colour + "-" + size;
-//                        sizeDetails = new SizeDetails(size);
-//                        productVariant = new ProductVariant(sku, colour, product);
-//                        productVariant.setSizeDetails(sizeDetailsService.createSizeDetails(sizeDetails));
-//                        createProductVariant(productVariant, product.getProductId());
-//                    }
+                if (styleIds != null && (!styleIds.isEmpty())) {
+                    for (Long styleId : styleIds) {
+                        Style style = styleService.retrieveStyleByStyleId(styleId);
+                        product.addStyle(style);
+                    }
                 }
+                createMultipleProductVariants(product.getProductId(), colours, sizes);
 
                 return product;
             } catch (PersistenceException ex) {
@@ -154,10 +147,13 @@ public class ProductService {
         return checkIfCategoryIsInside(categoryToCheck.getParentCategory(), categoryId);
     }
 
+    @Transactional(readOnly = true)
     public List<ProductDetailsResponse> retrieveProductsDetails(Long storeOrWarehouseId, Long productId) throws ProductNotFoundException {
         // Each product can have multiple colour
         // Each colours will have a list of sizes
         // Every sizes of each colour will show the productVariantId and productStock
+
+        System.out.println(storeOrWarehouseId);
 
         List<Product> products = new ArrayList<>();
         if (productId != null) {
@@ -174,7 +170,7 @@ public class ProductService {
         SizeToProductVariantAndStockMap sizeToProductVariantAndStockMap;
         ColourToSizeImageMap colourToSizeImageMap = new ColourToSizeImageMap();
 
-        List<SizeToProductVariantAndStockMap> sizeToProductVariantAndStockMaps;
+        List<SizeToProductVariantAndStockMap> sizeToProductVariantAndStockMaps = new ArrayList<>();
         List<ProductDetailsResponse> productDetailsResponses = new ArrayList<>();
 
         for (Product product : products) {
@@ -187,8 +183,13 @@ public class ProductService {
                 if (storeOrWarehouseId != null) { // no need to return product stock if no store/warehouse ID provided
                     prodStock = new ProductStock();
                     for (ProductStock productStock : productVariant.getProductStocks()) {
-                        if (productStock.getStore().getStoreId() == storeOrWarehouseId) {
+                        if (productStock.getStore() != null && productStock.getStore().getStoreId() == storeOrWarehouseId) {
                             prodStock = productStock;
+                            System.out.println("Store: " + prodStock.getProductStockId());
+                            break;
+                        } else if (productStock.getWarehouse() != null && productStock.getWarehouse().getWarehouseId() == storeOrWarehouseId) {
+                            prodStock = productStock;
+                            System.out.println("Warehouse: " + prodStock.getProductStockId());
                             break;
                         }
                     }
@@ -208,10 +209,25 @@ public class ProductService {
                     colourToSizeImageMap = new ColourToSizeImageMap(colour, productVariant.getProductImages(), sizeToProductVariantAndStockMaps);
                     productDetailsResponse.getColourToSizeImageMaps().add(colourToSizeImageMap);
                 } else {
-                    // add a new size to the colour.
-                    colourToSizeImageMap.getSizeMaps().add(sizeToProductVariantAndStockMap);
+                    // add a new size to the SELECTED colour.
+                    if (colourToSizeImageMap.getColour().equals(colour)) {
+                        colourToSizeImageMap.getSizeMaps().add(sizeToProductVariantAndStockMap);
+                    } else {
+                        for (ColourToSizeImageMap csMap : productDetailsResponse.getColourToSizeImageMaps()) {
+                            if (csMap.getColour().equals(colour)) {
+                                colourToSizeImageMap = csMap;
+                                colourToSizeImageMap.getSizeMaps().add(sizeToProductVariantAndStockMap);
+                                break;
+                            }
+                        }
+                    }
                 }
             }
+
+            for (ColourToSizeImageMap csMap : productDetailsResponse.getColourToSizeImageMaps()) {
+                Collections.sort(csMap.getSizeMaps(), Comparator.comparingInt(SizeToProductVariantAndStockMap::getSizeValue));
+            }
+
             productDetailsResponse.setProduct(product);
             productDetailsResponses.add(productDetailsResponse);
         }
@@ -347,6 +363,8 @@ public class ProductService {
     {
         Product productToRemove = retrieveProductById(productId);
         productToRemove.toString();
+
+        // TODO: Clear relationship with transaction and transaction line items
 //        List<TransactionLineItem> saleTransactionLineItemEntities = saleTransactionEntityControllerLocal.retrieveSaleTransactionLineItemsByProductId(productId);
 //        List<Review> reviewEntities = reviewEntityControllerLocal.retrieveReviewsForProduct(productId);
 //        if (saleTransactionLineItemEntities.isEmpty() && reviewEntities.isEmpty()) {
@@ -355,28 +373,20 @@ public class ProductService {
         for (Tag tag : productToRemove.getTags()) {
             tag.getProducts().remove(productToRemove);
         }
-        productToRemove.getTags().clear();
+        for (Style style : productToRemove.getStyles()) {
+            style.getProducts().remove(productToRemove);
+        }
+        productToRemove.getPromoCodes().forEach(promoCode -> promoCode.getProducts().remove(productToRemove));
+        productToRemove.getDiscounts().forEach(discount -> discount.getProducts().remove(productToRemove));
 
         // TODO: Clear product variant
         List<ProductVariant> productVariants = new ArrayList<>(productToRemove.getProductVariants());
         for (ProductVariant productVariant : productVariants) {
             deleteProductVariant(productVariant.getProductVariantId());
-//            productVariant.setProduct(null);
-//            List<ProductStock> productStocks = productVariant.getProductStocks();
-//            productVariant.setProductStocks(null);
-//            productStocks.forEach(productStock -> {
-//                productStock.setProductVariant(null);
-//                productStockRepository.delete(productStock);
-//            });
-//            productVariantRepository.delete(productVariant);
-            //TODO: have to search all shoppingcartItems and remove ref to productVariant
         }
-        productRepository.delete(productToRemove);
 
+        productRepository.delete(productToRemove);
         return productToRemove;
-//        } else {
-//            throw new DeleteProductException("Product ID " + productId + " is associated with existing sale transaction line item(s) and cannot be deleted!");
-//        }
     }
 
     public void setProductPrice(Long productId, BigDecimal price) throws ProductNotFoundException {
@@ -405,14 +415,13 @@ public class ProductService {
             List<Store> stores = storeService.retrieveAllStores();
 
             assignProductStock(warehouses, stores, productVariant);
-
             return productVariant;
         } else {
             throw new InputDataValidationException(errorMap, "Invalid Category");
         }
     }
 
-    public List<ProductVariant> createMultipleProductVariants(Long productId, String colour, List<SizeEnum> sizes) throws ProductNotFoundException, InputDataValidationException, CreateNewProductStockException, StoreNotFoundException, WarehouseNotFoundException, ProductVariantNotFoundException {
+    public List<ProductVariant> createMultipleProductVariants(Long productId, List<String> colours, List<SizeEnum> sizes) throws ProductNotFoundException, InputDataValidationException, CreateNewProductStockException, StoreNotFoundException, WarehouseNotFoundException, ProductVariantNotFoundException {
         Product product = retrieveProductById(productId);
 
         List<ProductVariant> productVariants = new ArrayList<>();
@@ -420,12 +429,14 @@ public class ProductService {
         String sku;
         SizeDetails sizeDetails;
 
-        for (SizeEnum size : sizes) {
-            sku = product.getSerialNumber() + "-" + colour + "-" + size;
-            sizeDetails = new SizeDetails(size);
-            productVariant = new ProductVariant(sku, colour, product);
-            productVariant.setSizeDetails(sizeDetailsService.createSizeDetails(sizeDetails));
-            productVariants.add(createProductVariant(productVariant, product.getProductId()));
+        for (String colour : colours) {
+            for (SizeEnum size : sizes) {
+                sku = product.getSerialNumber() + "-" + colour + "-" + size;
+                sizeDetails = new SizeDetails(size);
+                productVariant = new ProductVariant(sku, colour, product);
+                productVariant.setSizeDetails(sizeDetailsService.createSizeDetails(sizeDetails));
+                productVariants.add(createProductVariant(productVariant, product.getProductId()));
+            }
         }
         return productVariants;
     }
@@ -474,7 +485,6 @@ public class ProductService {
     public List<ProductVariant> retrieveProductVariantByProduct(Long productId) {
 
         List<ProductVariant> productVariants = productVariantRepository.findAllByProduct_ProductId(productId);
-        System.out.println(productVariants);
         lazilyLoadProductVariant(productVariants);
         return productVariants;
     }
@@ -506,18 +516,19 @@ public class ProductService {
     public ProductVariant deleteProductVariant(Long productVariantId) throws ProductVariantNotFoundException, ProductStockNotFoundException {
 
         ProductVariant productVariant = retrieveProductVariantById(productVariantId);
-        productVariant.toString();
+
+        // To prevent concurrent modification
+        List<ProductStock> productStocks = new ArrayList<>(productVariant.getProductStocks());
+
+        for (ProductStock productStock : productStocks) {
+            deleteProductStock(productStock.getProductStockId());
+        }
 
         productVariant.setProductImages(null);
         productVariant.setSizeDetails(null);
         productVariant.getProduct().getProductVariants().remove(productVariant);
         productVariant.setProduct(null);
 
-        List<ProductStock> productStocks = new ArrayList<>(productVariant.getProductStocks());
-
-        for (ProductStock productStock : productStocks) {
-            deleteProductStock(productStock.getProductStockId());
-        }
         productVariantRepository.delete(productVariant);
         return productVariant;
     }
@@ -560,8 +571,8 @@ public class ProductService {
 
                 for (ProductVariant productVariant : productVariants) {
                     ProductStock productStock = new ProductStock(0, 0, 0, 0);
-                    productStock.setStore(store);
                     ProductStock newProductStock = createProductStock(productStock, productVariant.getProductVariantId());
+                    productStock.setStore(store);
                     store.getProductStocks().add(newProductStock);
                 }
             }
@@ -598,15 +609,42 @@ public class ProductService {
         return productStock;
     }
 
+    public ProductStock retrieveProductStockByStoreIdAndProductVariantId(Long storeId, Long productVariantId) {
+        ProductStock productStock = null;
+        if (storeId != null && productVariantId != null) {
+            productStock = productStockRepository.findAllByStoreStoreIdAndProductVariantProductVariantId(storeId, productVariantId);
+            System.out.println("productStockID" + productStock.getProductStockId() + " " + productStock.getQuantity());
+        }
+        return productStock;
+    }
+
     // TODO: Verify validity
-    public List<ProductStock> retrieveProductStocksByParameter(Long storeId, Long warehouseId, Long productVariantId) {
+    @Transactional(readOnly = true)
+    public List<Product> retrieveProductStocksByParameter(Long storeId, Long warehouseId, Long productVariantId) {
+
+        List<Product> products = new ArrayList<>(retrieveAllProducts());
         List<ProductStock> productStocks = new ArrayList<>();
-        if (storeId != null) productStocks = productStockRepository.findAllByStoreStoreId(storeId);
-        else if (warehouseId != null) productStocks = productStockRepository.findAllByWarehouseWarehouseId(warehouseId);
-        else if (productVariantId != null)
-            productStocks = productStockRepository.findAllByProductVariantProductVariantId(productVariantId);
-        lazilyLoadProductStock(productStocks);
-        return productStocks;
+
+        for (Product product : products) {
+            for (ProductVariant productVariant : product.getProductVariants()) {
+                productStocks = new ArrayList<>();
+
+                if (productVariant != null) {
+
+                    for (ProductStock productStock : productVariant.getProductStocks()) {
+
+                        if (productStock.getStore() != null && productStock.getStore().getStoreId().equals(storeId) ||
+                                productStock.getWarehouse() != null && productStock.getWarehouse().getWarehouseId().equals(warehouseId) ||
+                                productStock.getProductVariant() != null && productStock.getProductVariant().getProductVariantId().equals(productVariantId)) {
+                            productStocks.add(productStock);
+                        }
+                    }
+                    productVariant.setProductStocks(productStocks);
+                }
+            }
+        }
+        lazilyLoadProduct(products);
+        return products;
     }
 
     public List<ProductStock> retrieveAllProductStock() {
@@ -619,7 +657,7 @@ public class ProductService {
         for (ProductStock productStock : productStocks) {
             productStock.getWarehouse();
             productStock.getStore();
-            productStock.getProductVariant().getProductVariantId();
+            productStock.getProductVariant();
         }
         return productStocks;
     }
@@ -643,21 +681,24 @@ public class ProductService {
 
     public ProductStock deleteProductStock(Long productStockId) throws ProductStockNotFoundException {
         ProductStock productStock = retrieveProductStockById(productStockId);
-        productStock.toString();
         // TODO: Uncomment the codes when store and warehouse is done
         productStock.getProductVariant().getProductStocks().remove(productStock);
         productStock.setProductVariant(null);
-        if (productStock.getStore() != null) productStock.getStore().getProductStocks().remove(productStock);
-        productStock.setStore(null);
-//        productStock.getWarehouse().getProductStocks().remove(productStock);
-        productStock.setWarehouse(null);
 
+        if (productStock.getStore() != null) {
+            productStock.getStore().getProductStocks().remove(productStock);
+            productStock.setStore(null);
+        }
+        if (productStock.getWarehouse() != null) {
+            productStock.getWarehouse().getProductStocks().remove(productStock);
+            productStock.setWarehouse(null);
+        }
         productStockRepository.delete(productStock);
         return productStock;
     }
 
     public List<ProductImage> createProductImage(List<ProductImage> productImages, Long productVariantId) throws ProductVariantNotFoundException {
-        // Uploading to Google Drive will be done at frontend
+        // Uploading to Google Drive will be done on Node.js
         ProductVariant productVariant = retrieveProductVariantById(productVariantId);
 
         for (ProductImage productImage : productImages) {
@@ -730,7 +771,7 @@ public class ProductService {
                 persistentInputProducts.add(retrieveProductById(product.getProductId()));
             }
 
-            for (Product tagProduct : tagProducts) {
+            for (Product tagProduct : new ArrayList<>(tagProducts)) {
                 if (persistentInputProducts.contains(tagProduct)) {
                     persistentInputProducts.remove(tagProduct);
                 } else {
@@ -753,7 +794,7 @@ public class ProductService {
                 persistentInputTags.add(tagService.retrieveTagByTagId(tag.getTagId()));
             }
 
-            for (Tag productTag : productTags) {
+            for (Tag productTag : new ArrayList<>(productTags)) {
                 if (persistentInputTags.contains(productTag)) {
                     persistentInputTags.remove(productTag);
                 } else {
@@ -849,7 +890,7 @@ public class ProductService {
                 persistentInputProducts.add(retrieveProductById(product.getProductId()));
             }
 
-            for (Product styleProduct : styleProducts) {
+            for (Product styleProduct : new ArrayList<>(styleProducts)) {
                 if (persistentInputProducts.contains(styleProduct)) {
                     persistentInputProducts.remove(styleProduct);
                 } else {
@@ -873,7 +914,7 @@ public class ProductService {
                 persistentInputStyles.add(styleService.retrieveStyleByStyleId(style.getStyleId()));
             }
 
-            for (Style productStyle : productStyles) {
+            for (Style productStyle : new ArrayList<>(productStyles)) {
                 if (persistentInputStyles.contains(productStyle)) {
                     persistentInputStyles.remove(productStyle);
                 } else {
@@ -881,9 +922,10 @@ public class ProductService {
                     productStyle.getProducts().remove(product);
                 }
             }
-            for (Style style : styles) {
-                product.getStyles().remove(style);
-                style.getProducts().remove(product);
+
+            for (Style style : persistentInputStyles) {
+                product.getStyles().add(style);
+                style.getProducts().add(product);
             }
         }
     }
