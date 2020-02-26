@@ -38,7 +38,8 @@ import profilePageStyle from "assets/jss/material-kit-pro-react/views/profilePag
 
 const useStyles = makeStyles(profilePageStyle);
 
-export default function ProfilePage({ ...rest }) {
+export default function ProfilePage(props) {
+  const { customer } = props;
   React.useEffect(() => {
     window.scrollTo(0, 0);
     document.body.scrollTop = 0;
@@ -64,7 +65,9 @@ export default function ProfilePage({ ...rest }) {
               <CardHeader color="primary" signup className={classes.cardHeader}>
                 <div className={classes.profile}>
                   <div className={classes.name}>
-                    <h3 className={classes.title}>Christian Louboutin</h3>
+                    <h3
+                      className={classes.title}
+                    >{`${customer.firstName} ${customer.lastName}`}</h3>
                   </div>
                 </div>
               </CardHeader>

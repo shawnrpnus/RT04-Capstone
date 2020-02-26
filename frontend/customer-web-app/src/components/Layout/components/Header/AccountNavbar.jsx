@@ -14,6 +14,7 @@ import typographyStyle from "assets/jss/material-kit-pro-react/views/componentsS
 import classNames from "classnames";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
+import customerService from "services/customerService";
 const jsog = require("jsog");
 
 const useHeaderStyles = makeStyles(headersStyle);
@@ -53,9 +54,7 @@ function AccountToolTipContent(props) {
   const headerClasses = useHeaderStyles();
   const typoClasses = useTypoStyles();
 
-  let customer = localStorage.getItem("customer");
-  if (customer) customer = jsog.parse(customer);
-  console.log(customer);
+  let customer = customerService.getCustomerFromLocalStorage();
   return (
     <React.Fragment>
       <h4
