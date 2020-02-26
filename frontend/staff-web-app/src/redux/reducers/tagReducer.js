@@ -33,7 +33,12 @@ export default function(state = initialState, action) {
       return {
         ...state,
         currentTag: action.tag
-      };
+      }
+    case types.DELETE_TAG_FROM_PRODUCTS:
+      return {
+        ...state,
+        currentTag: action.tag
+      }
     default:
       return state;
   }

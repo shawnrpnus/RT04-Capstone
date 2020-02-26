@@ -6,11 +6,11 @@ import MaterialTextField from "../../../shared/components/Form/MaterialTextField
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import {
   addTagToProducts,
-  createNewTag,
+  createNewTag, deleteTagFromProducts,
   retrieveAllTags,
   updateTag
 } from "../../../redux/actions/tagAction";
-import { Add, Check } from "@material-ui/icons";
+import {Add, Check, Delete} from "@material-ui/icons";
 import { clearErrors } from "../../../redux/actions";
 import connect from "react-redux/es/connect/connect";
 import withPage from "../../Layout/page/withPage";
@@ -20,12 +20,20 @@ import { ProductsTableRaw } from "../../Product/ProductsList/components/Products
 import { retrieveProductsDetails } from "../../../redux/actions/productActions";
 import CreateUpdateTagRequest from "../../../models/CreateUpdateTagRequest";
 import AddTagToProductsRequest from "../../../models/tag/AddTagToProductsRequest";
+import ButtonGroup from "@material-ui/core/ButtonGroup";
+import Button from "@material-ui/core/Button";
+import Col from "reactstrap/es/Col";
+import Row from "react-data-grid/lib/Row";
+import DeleteTagFromProductsRequest from "../../../models/tag/DeleteTagFromProductsRequest";
 
 class AddTagToProduct extends Component {
   constructor(props) {
     super(props);
+    this.handleChangeAddTo = this.handleChangeAddTo.bind(this);
+    this.handleChangeViewAndDelete = this.handleChangeViewAndDelete.bind(this);
     this.state = {
-      tagId: ""
+      tagId: "",
+      mode: true
     };
   }
 
@@ -46,19 +54,60 @@ class AddTagToProduct extends Component {
   handleAddTagToProducts = (evt, data) => {
     evt.preventDefault();
     //data is the list of products selected
-    const req = new AddTagToProductsRequest(this.state.tagId, data);
+    console.log(data);
+    console.log(data[0].productId);
+    let productIds = [];
+    data.forEach(element => {
+      // console.log(element.productId);
+      productIds.push(element.productId);
+    });
+    const req = new AddTagToProductsRequest(this.state.tagId, productIds);
     this.props.addTagToProducts(req, this.props.history);
   };
+
+  handleDeleteTagFromProducts = (evt, data) => {
+    evt.preventDefault();
+    let productIds = [];
+    data.forEach(element => {
+      // console.log(element.productId);
+      productIds.push(element.productId);
+    });
+    const req = new DeleteTagFromProductsRequest(this.state.tagId, productIds);
+    this.props.deleteTagFromProducts(req, this.props.history);
+  }
+
+  handleChangeAddTo() {
+    this.setState({ mode: true });
+  }
+  handleChangeViewAndDelete() {
+    this.setState({ mode: false });
+  }
 
   render() {
     const { errors, renderLoader } = this.props;
     console.log(this.props.allProducts);
-    console.log(this.state.tagId);
-
     return (
       <React.Fragment>
         <div className="card__title">
-          <h5 className="bold-text">Add Tag To Products</h5>
+          <Grid container spacing={3}>
+            <Grid item xs={12} md={6}>
+              {this.state.mode ? (
+                <h5 className="bold-text">Add Tag To Products</h5>
+              ) : (
+                <h5 className="bold-text">Delete Tag From Products</h5>
+              )}
+            </Grid>
+            <Grid item xs={12} md={3}></Grid>
+            <Grid item xs={12} md={3}>
+              <ButtonGroup
+                color="primary"
+                aria-label="outlined primary button group"
+              >
+                <Button onClick={this.handleChangeAddTo}>Add</Button>
+                <Button onClick={this.handleChangeViewAndDelete}>View & Delete</Button>
+              </ButtonGroup>
+            </Grid>
+          </Grid>
         </div>
         <MuiPickersUtilsProvider utils={MomentUtils}>
           <form className="material-form">
@@ -77,27 +126,51 @@ class AddTagToProduct extends Component {
                   />
                 ) : null}
               </Grid>
-
-              <Grid item xs={12}>
-                {this.props.allProducts ? (
-                  <ProductsTableRaw
-                    selectable={true}
-                    products={this.props.allProducts.filter(
-                      p =>
-                        p.product.tags.filter(t => t.tagId === this.state.tagId)
-                          .length === 0
-                    )}
-                    selectionAction={{
-                      tooltip: "Add Tag To Products",
-                      icon: Add,
-                      onClick: (evt, data) =>
-                        this.handleAddTagToProducts(evt, data)
-                    }}
-                  />
-                ) : (
-                  renderLoader()
-                )}
-              </Grid>
+              {this.state.mode ? (
+                <Grid item xs={12}>
+                  {this.props.allProducts ? (
+                    <ProductsTableRaw
+                      selectable={true}
+                      products={this.props.allProducts.filter(
+                        p =>
+                          p.product.tags.filter(
+                            t => t.tagId === this.state.tagId
+                          ).length === 0
+                      )}
+                      selectionAction={{
+                        tooltip: "Add Tag To Products",
+                        icon: Add,
+                        onClick: (evt, data) =>
+                          this.handleAddTagToProducts(evt, data)
+                      }}
+                    />
+                  ) : (
+                    renderLoader()
+                  )}
+                </Grid>
+              ) : (
+                <Grid item xs={12}>
+                  {this.props.allProducts ? (
+                    <ProductsTableRaw
+                      selectable={true}
+                      products={this.props.allProducts.filter(
+                        p =>
+                          p.product.tags.filter(
+                            t => t.tagId === this.state.tagId
+                          ).length !== 0
+                      )}
+                      selectionAction={{
+                        tooltip: "Delete Tag From Products",
+                        icon: Delete,
+                        onClick: (evt, data) =>
+                          this.handleDeleteTagFromProducts(evt, data)
+                      }}
+                    />
+                  ) : (
+                    renderLoader()
+                  )}
+                </Grid>
+              )}
             </Grid>
           </form>
         </MuiPickersUtilsProvider>
@@ -117,7 +190,9 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = {
   addTagToProducts,
   retrieveAllTags,
-  retrieveProductsDetails
+  retrieveProductsDetails,
+  clearErrors,
+  deleteTagFromProducts
 };
 
 export default connect(
