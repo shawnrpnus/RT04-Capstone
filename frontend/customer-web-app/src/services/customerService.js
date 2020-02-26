@@ -15,4 +15,11 @@ const saveCustomerToLocalStorage = customer => {
   localStorage.setItem("customer", jsog.stringify(customer));
 };
 
-export default { getCustomerFromLocalStorage, saveCustomerToLocalStorage };
+const removeCustomerFromLocalStorage = () => {
+  localStorage.removeItem("customer");
+};
+export default {
+  getCustomerFromLocalStorage,
+  saveCustomerToLocalStorage,
+  removeCustomerFromLocalStorage
+};

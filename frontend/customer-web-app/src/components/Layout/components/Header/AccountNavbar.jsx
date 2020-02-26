@@ -15,6 +15,8 @@ import classNames from "classnames";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import customerService from "services/customerService";
+import { useDispatch } from "react-redux";
+import { customerLogout } from "redux/actions/customerActions";
 const jsog = require("jsog");
 
 const useHeaderStyles = makeStyles(headersStyle);
@@ -69,11 +71,14 @@ function AccountToolTipContent(props) {
       </h4>
       <Divider />
       <List component="nav">
-        {customer
-          ? renderAccDropDownLinksAfterLogin(undefined, ListItem, {
-              button: true
-            })
-          : renderAccDropdownLinks(undefined, ListItem, { button: true })}
+        {customer ? (
+          <AccDropDownLinksAfterLogin
+            Component={ListItem}
+            componentProps={{ button: true }}
+          />
+        ) : (
+          renderAccDropdownLinks(undefined, ListItem, { button: true })
+        )}
       </List>
     </React.Fragment>
   );
@@ -119,11 +124,9 @@ const renderAccDropdownLinks = (classes, Component, componentProps) => {
   ];
 };
 
-const renderAccDropDownLinksAfterLogin = (
-  classes,
-  Component,
-  componentProps
-) => {
+function AccDropDownLinksAfterLogin(props) {
+  const { classes, Component, componentProps } = props;
+  const dispatch = useDispatch();
   return [
     <Link
       key="profile"
@@ -140,12 +143,12 @@ const renderAccDropDownLinksAfterLogin = (
       key="logout"
       to="/"
       className={classes ? classes.dropdownLink : null}
-      onClick={() => localStorage.removeItem("customer")}
+      onClick={() => dispatch(customerLogout())}
     >
       {Component ? <Component {...componentProps}>Logout</Component> : "Logout"}
     </Link>
   ];
-};
+}
 
 export default AccountNavbar;
 
