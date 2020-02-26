@@ -1,5 +1,5 @@
 /*eslint-disable*/
-import React from "react";
+import React, { useEffect } from "react";
 // nodejs library that concatenates classes
 import classNames from "classnames";
 // @material-ui/core components
@@ -36,22 +36,26 @@ import cardProfile2Square from "assets/img/faces/card-profile2-square.jpg";
 
 import profilePageStyle from "assets/jss/material-kit-pro-react/views/profilePageStyle.js";
 import AccountInfo from "components/Profile/sections/AccountInfo";
+import { useSelector } from "react-redux";
 
 const useStyles = makeStyles(profilePageStyle);
 
 export default function ProfilePage(props) {
-  const { customer } = props;
-  React.useEffect(() => {
+  const customer = useSelector(state => state.customer.loggedInCustomer);
+  const classes = useStyles();
+
+  useEffect(() => {
     window.scrollTo(0, 0);
     document.body.scrollTop = 0;
-  });
-  const classes = useStyles();
+  }, []);
+
   const imageClasses = classNames(
     classes.imgRaised,
     classes.imgRoundedCircle,
     classes.imgFluid
   );
   const navImageClasses = classNames(classes.imgRounded, classes.imgGallery);
+
   return (
     <div>
       <Parallax
@@ -90,12 +94,12 @@ export default function ProfilePage(props) {
               color="primary"
               tabs={[
                 {
-                  tabButton: "My Details",
+                  tabButton: "Account",
                   tabIcon: Palette,
-                  tabContent: <AccountInfo customer={customer} />
+                  tabContent: <AccountInfo />
                 },
                 {
-                  tabButton: "Connections",
+                  tabButton: "Orders",
                   tabIcon: People,
                   tabContent: (
                     <div>
@@ -265,7 +269,7 @@ export default function ProfilePage(props) {
                   )
                 },
                 {
-                  tabButton: "Media",
+                  tabButton: "Personalize",
                   tabIcon: Camera,
                   tabContent: (
                     <GridContainer justify="center">

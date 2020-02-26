@@ -34,11 +34,15 @@ import LoadingOverlay from "react-loading-overlay";
 const useStyles = makeStyles(signupPageStyle);
 
 function RegisterPage(props) {
+  //Hooks
   const classes = useStyles();
+
+  //Redux
   const dispatch = useDispatch();
   const errors = useSelector(state => state.errors);
   const isSendingEmail = useSelector(state => state.customer.isSendingEmail);
 
+  //State
   const [showPassword, setShowPassword] = useState(false);
   const [checked, setChecked] = useState(false);
   const [inputState, setInputState] = useState({
@@ -48,6 +52,7 @@ function RegisterPage(props) {
     password: ""
   });
 
+  //Misc
   const onChange = e => {
     e.persist();
     setInputState(inputState => ({

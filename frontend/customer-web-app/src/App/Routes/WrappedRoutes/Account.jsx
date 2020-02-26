@@ -18,5 +18,10 @@ export default () => (
       path="/account/verify/:verificationCode"
       component={VerifyEmailChecker}
     />
+    <Route
+      exact
+      path="/account/updateEmail/:verificationCode"
+      render={props => <VerifyEmailChecker {...props} isUpdateEmail />}
+    />
   </Switch>
 );

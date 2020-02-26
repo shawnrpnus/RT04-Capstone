@@ -16,7 +16,7 @@ public class ErrorMessages {
     public static final String CUSTOMER_NOT_VERIFIED = "Please click the verification link in your email to activate your account";
 
     public static final String VERIFICATION_CODE_INVALID = "Invalid verification code!";
-    public static final String VERIFICATION_CODE_EXPIRED = "Verification code has expired! Request for a new one";
+    public static final String VERIFICATION_CODE_EXPIRED = "Verification code has expired!";
     public static final String ALREADY_VERIFIED = "Customer has already been verified!";
 
     public static final String PROMO_CODE_REQUIRED = "Promo code is required!";
