@@ -77,7 +77,7 @@ public class StaffController {
             Staff staff = staffService.createNewStaffAccount(staffAccountCreateRequest.getStaffId());
             return new ResponseEntity<>(staff, HttpStatus.CREATED);
         } catch (CreateNewStaffAccountException ex){
-            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new GenericErrorResponse("Staff not found!"), HttpStatus.NOT_FOUND);
         }
 
 

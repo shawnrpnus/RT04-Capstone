@@ -44,6 +44,11 @@ export default function(state = initialState, action) {
         ...state,
         currentStaff: action.staffEntity
       };
+    case types.DELETE_STAFF:
+      return {
+        ...state,
+        currentStaff: action.deletedStaff
+      };
     default:
       return state;
   }

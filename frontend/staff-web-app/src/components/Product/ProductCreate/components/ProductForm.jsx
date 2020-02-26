@@ -7,12 +7,14 @@ import MaterialTextField from "../../../../shared/components/Form/MaterialTextFi
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import * as PropTypes from "prop-types";
 import CreateProductRequest from "../../../../models/CreateProductRequest";
+import { clearErrors, updateErrors} from "../../../../redux/actions";
 import {createNewProduct, retrieveAllCategoryTagStyle} from "../../../../redux/actions/productActions";
 import withPage from "../../../Layout/page/withPage";
 import colourList from "../../../../scss/colours.json";  
 import { Button, ButtonToolbar } from "reactstrap";
 import ContentSaveIcon from "mdi-react/ContentSaveIcon";
 import CloseCircleIcon from "mdi-react/CloseCircleIcon";
+import { combineReducers } from "redux";
 const _ = require("lodash"); 
 const defaultSizes = ["XS", "S", "M", "L", "XL"];
 
@@ -114,7 +116,14 @@ class ProductForm extends React.Component {
           colors
           } = {...this.state}
         colors = _.map(colors, "hex");
-        const product = new CreateProductRequest(
+        console.log(colors.length);
+        if (price != "" && cost != "" && Number(price) <= Number(cost)) {
+          const priceError = {
+          price: "Price need to be greater than cost"
+          };
+          this.props.updateErrors(priceError);
+        } else {
+          const product = new CreateProductRequest(
             serialNumber,
             productName,
             description,
@@ -124,6 +133,7 @@ class ProductForm extends React.Component {
         const req = {product, categoryId, tagIds, styleIds, sizes, colors};
         console.log(req);
             this.props.createNewProduct(req, this.props.history);
+        }
       };
     
       
@@ -154,7 +164,6 @@ class ProductForm extends React.Component {
                     state={this.state}
                     errors={errors}
                     disabled={disabled}
-                    autoFocus={true}
                     />
               </Grid>
               <Grid item xs={12} md={4}>
@@ -174,6 +183,7 @@ class ProductForm extends React.Component {
                     fullWidth
                 />
                 )}
+                errors={errors}
             />
               </Grid>
               <Grid item xs={12} md={12}>
@@ -189,7 +199,6 @@ class ProductForm extends React.Component {
                     state={this.state}
                     errors={errors}
                     disabled={disabled}
-                    autoFocus={true}
                 />
                 </Grid>
               <Grid item xs={12} md={6}>
@@ -401,7 +410,9 @@ const mapStateToProps = state => ({
   });
   
   const mapDispatchToProps = {
-    createNewProduct 
+    createNewProduct,
+    updateErrors,
+    clearErrors 
   };
   
   export default connect(
