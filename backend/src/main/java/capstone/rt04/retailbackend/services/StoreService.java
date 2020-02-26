@@ -5,7 +5,6 @@ import capstone.rt04.retailbackend.repositories.InStoreRestockOrderRepository;
 import capstone.rt04.retailbackend.repositories.StoreRepository;
 import capstone.rt04.retailbackend.util.enums.DeliveryStatusEnum;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
-import capstone.rt04.retailbackend.util.exceptions.product.CreateNewProductStockException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductStockNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.store.StoreCannotDeleteException;
@@ -38,7 +37,7 @@ public class StoreService {
         this.inStoreRestockOrderRepository = inStoreRestockOrderRepository;
     }
 
-    public Store createNewStore(Store store) throws CreateNewProductStockException, WarehouseNotFoundException, InputDataValidationException, StoreNotFoundException, ProductVariantNotFoundException {
+    public Store createNewStore(Store store) throws WarehouseNotFoundException, InputDataValidationException, StoreNotFoundException, ProductVariantNotFoundException {
         Map<String, String> errorMap = validationService.generateErrorMap(store);
 
         if (errorMap == null) {
@@ -124,7 +123,7 @@ public class StoreService {
         }
     }
 
-    public Store deleteStore(Long storeId) throws StoreNotFoundException, StoreCannotDeleteException, ProductStockNotFoundException {
+    public Store deleteStore(Long storeId) throws StoreNotFoundException, StoreCannotDeleteException, ProductStockNotFoundException, ProductVariantNotFoundException {
         /*
         store cannot be deleted if:
         i) there are reservations unhandled

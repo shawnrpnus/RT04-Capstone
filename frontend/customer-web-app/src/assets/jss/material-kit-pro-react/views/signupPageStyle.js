@@ -15,7 +15,7 @@ const signupPageStyle = {
     ...container,
     zIndex: "2",
     position: "relative",
-    paddingTop: "20vh",
+    paddingTop: "10vh",
     color: whiteColor
   },
   pageHeader: {
@@ -60,7 +60,7 @@ const signupPageStyle = {
       hexToRgb(blackColor) +
       ", 0.2);",
     marginBottom: "100px",
-    padding: "40px 0px"
+    padding: "40px 0px 40px 0px"
   },
   cardTitle: {
     ...cardTitle,

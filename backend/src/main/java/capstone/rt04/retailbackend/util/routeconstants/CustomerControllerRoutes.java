@@ -11,6 +11,7 @@ public class CustomerControllerRoutes {
     public static final String DELETE_CUSTOMER = "/deleteCustomer/{customerId}";
     public static final String CHANGE_PASSWORD = "/changePassword";
     public static final String VERIFY = "/verify/{verificationCode}";
+    public static final String RESEND_VERIFY_EMAIL = "/resendVerifyEmail";
     public static final String SEND_RESET_PASSWORD_LINK = "/sendResetPasswordLink";
     public static final String RESET_PASSWORD_POST = "/resetPassword";
     public static final String RESET_PASSWORD_GET = "/resetPassword/{code}";

@@ -98,7 +98,7 @@ public class CustomerService {
             shoppingCartService.initializeShoppingCarts(savedCustomer.getCustomerId());
             VerificationCode vCode = generateVerificationCode(savedCustomer.getCustomerId());
             if (Arrays.asList(environment.getActiveProfiles()).contains("dev")) {
-                sendEmailVerificationLink(vCode.getCode(), savedCustomer.getEmail());
+                nodeSendEmailVerificationLink(vCode.getCode(), savedCustomer.getEmail(), savedCustomer.getFirstName(), savedCustomer.getLastName());
             }
             return lazyLoadCustomerFields(customer);
         } catch (PersistenceException | CustomerNotFoundException ex) {
@@ -108,9 +108,12 @@ public class CustomerService {
     }
 
     //for when customer signs up initially, email sent in create customer
-    public Customer verify(String code) throws VerificationCodeInvalidException {
+    public Customer verify(String code) throws VerificationCodeInvalidException, VerificationCodeNotFoundException, AlreadyVerifiedException {
         VerificationCode verificationCode = verificationCodeRepository.findByCode(code)
-                .orElseThrow(() -> new VerificationCodeInvalidException(ErrorMessages.VERIFICATION_CODE_INVALID));
+                .orElseThrow(() -> new VerificationCodeNotFoundException(ErrorMessages.VERIFICATION_CODE_INVALID));
+        if (verificationCode.getCustomer().isVerified()){
+            throw new AlreadyVerifiedException(ErrorMessages.ALREADY_VERIFIED);
+        }
         if (verificationCode.getExpiryDateTime().before(new Timestamp(System.currentTimeMillis()))) {
             throw new VerificationCodeInvalidException(ErrorMessages.VERIFICATION_CODE_EXPIRED);
         }
@@ -253,7 +256,7 @@ public class CustomerService {
         javaMailSender.send(msg);
     }
 
-    private void nodeGenerateVerificationLinkAndSendEmail(String email) throws CustomerNotFoundException {
+    public void nodeGenerateVerificationLinkAndSendEmail(String email) throws CustomerNotFoundException {
         Customer customer = retrieveCustomerByEmail(email);
         VerificationCode verificationCode = generateVerificationCode(customer.getCustomerId());
         if (Arrays.asList(environment.getActiveProfiles()).contains("dev")) {
@@ -271,7 +274,7 @@ public class CustomerService {
         request.put("email", email);
         request.put("fullName", fullName);
 
-        String endpoint = Constants.NODE_API_URL + "/email/sendVerificationLink";
+        String endpoint = Constants.NODE_API_URL + "/email/sendVerificationEmail";
         ResponseEntity<?> response = restTemplate.postForEntity(endpoint, request, Object.class);
 
         if (response.getStatusCode().equals(HttpStatus.OK)) {

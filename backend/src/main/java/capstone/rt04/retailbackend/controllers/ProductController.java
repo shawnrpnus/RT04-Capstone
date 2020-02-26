@@ -61,19 +61,13 @@ public class ProductController {
     }
 
     @GetMapping(ProductControllerRoutes.RETRIEVE_PRODUCTS_DETAILS)
-    public ResponseEntity<?> retrieveProductsDetails(@RequestParam(required = false) Long storeOrWarehouseId, @RequestParam(required = false) Long categoryId) {
-        try {
-            if (categoryId != null) {
-                List<ProductDetailsResponse> products = productService.retrieveProductDetailsForCategory(storeOrWarehouseId, categoryId);
-                return new ResponseEntity<>(products, HttpStatus.OK);
-            } else {
-                List<ProductDetailsResponse> products = productService.retrieveProductsDetails(storeOrWarehouseId, null);
-                return new ResponseEntity<>(products, HttpStatus.OK);
-            }
-        } catch (ProductNotFoundException ex) {
-            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
-        } catch (Exception ex) {
-            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseEntity<?> retrieveProductsDetails(@RequestParam(required = false) Long storeOrWarehouseId, @RequestParam(required = false) Long categoryId) throws ProductNotFoundException {
+        if (categoryId != null) {
+            List<ProductDetailsResponse> products = productService.retrieveProductDetailsForCategory(storeOrWarehouseId, categoryId);
+            return new ResponseEntity<>(products, HttpStatus.OK);
+        } else {
+            List<ProductDetailsResponse> products = productService.retrieveProductsDetails(storeOrWarehouseId, null);
+            return new ResponseEntity<>(products, HttpStatus.OK);
         }
     }
 

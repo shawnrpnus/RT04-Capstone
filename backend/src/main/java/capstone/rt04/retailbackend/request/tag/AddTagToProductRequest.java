@@ -16,5 +16,5 @@ public class AddTagToProductRequest {
 
     private Long tagId;
 
-    private List<Product> products;
+    private List<Long> productIds;
 }

@@ -1,7 +1,7 @@
 import axios from "axios";
 import * as types from "./types";
 import { toast } from "react-toastify";
-import {retrieveAllProducts, retrieveProductsDetails} from "./productActions";
+import { retrieveAllProducts, retrieveProductsDetails } from "./productActions";
 
 const TAG_BASE_URL = "/api/tag/";
 const jsog = require("jsog");
@@ -145,6 +145,7 @@ export const addTagToProducts = (addTagToProductRequest, history) => {
         history.push(`/tag/addTagToProducts`);
       })
       .catch(err => {
+        console.log(err);
         dispatch(addTagToProductsError(err.response.data));
       });
   };
@@ -156,6 +157,39 @@ const addTagToProductsSuccess = data => ({
 });
 
 const addTagToProductsError = data => ({
+  type: types.GET_ERRORS,
+  errorMap: data
+});
+
+export const deleteTagFromProducts = (deleteTagFromProductsRequest, history) => {
+  return dispatch => {
+    //redux thunk passes dispatch
+    axios
+      .post(TAG_BASE_URL + "deleteTagFromProducts", deleteTagFromProductsRequest)
+      .then(response => {
+        const data = jsog.decode(response);
+        const tagId = data.tagId;
+        console.log(data);
+        dispatch(deleteTagFromProductsSuccess(response.data));
+        toast.success("Successfully Deleted Tag From Products!", {
+          position: toast.POSITION.TOP_CENTER
+        });
+        retrieveProductsDetails()(dispatch);
+        history.push(`/tag/addTagToProducts`);
+      })
+      .catch(err => {
+        console.log(err);
+        dispatch(deleteTagFromProductsError(err.response.data));
+      });
+  };
+};
+
+const deleteTagFromProductsSuccess = data => ({
+  type: types.DELETE_TAG_FROM_PRODUCTS,
+  tag: data
+});
+
+const deleteTagFromProductsError = data => ({
   type: types.GET_ERRORS,
   errorMap: data
 });

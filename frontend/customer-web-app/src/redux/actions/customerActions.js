@@ -3,14 +3,25 @@ import {
   CREATE_NEW_CUSTOMER,
   CUSTOMER_LOGIN,
   CUSTOMER_LOGOUT,
+  EMAIL_SENDING,
+  EMAIL_SENT,
   GET_ERRORS,
-  VERIFY_ERROR,
+  VERIFY_FAILURE,
   VERIFY_SUCCESS
 } from "./types";
 
 const CUSTOMER_BASE_URL = "/api/customer";
 
 const _ = require("lodash");
+const jsog = require("jsog");
+
+export const emailSending = () => ({
+  type: EMAIL_SENDING
+});
+
+const emailSent = () => ({
+  type: EMAIL_SENT
+});
 
 export const createNewCustomer = (createCustomerRequest, history) => {
   return dispatch => {
@@ -18,10 +29,13 @@ export const createNewCustomer = (createCustomerRequest, history) => {
     axios
       .post(CUSTOMER_BASE_URL + "/createNewCustomer", createCustomerRequest)
       .then(response => {
-        dispatch(createCustomerSuccess(response.data));
-        history.push("/account/verifyEmail"); // TODO: update redirect path
+        dispatch(emailSent());
+        const { data } = jsog.decode(response);
+        dispatch(createCustomerSuccess(data));
+        history.push("/account/verifyEmail");
       })
       .catch(err => {
+        dispatch(emailSent());
         dispatch(createCustomerError(err.response.data));
         //console.log(err.response.data);
       });
@@ -43,12 +57,18 @@ export const customerLogin = (customerLoginRequest, history) => {
     axios
       .post(CUSTOMER_BASE_URL + "/login", customerLoginRequest)
       .then(response => {
-        dispatch(customerLoginSuccess(response.data));
+        const { data } = jsog.decode(response);
+        dispatch(customerLoginSuccess(data));
         history.push("/"); // TODO: update redirect path
+        localStorage.setItem("customer", jsog.stringify(response.data));
       })
       .catch(err => {
-        dispatch(customerLoginError(err.response.data));
-        //console.log(err.response.data);
+        const errorMap = _.get(err, "response.data", null);
+        if (errorMap) {
+          dispatch(customerLoginError(errorMap));
+        } else {
+          console.log(err);
+        }
       });
   };
 };
@@ -67,19 +87,25 @@ export const customerLogout = () => ({
   type: CUSTOMER_LOGOUT
 });
 
-export const verify = verificationCode => {
+// bad request(400) if expired, not found(404) if invalid, or already verified
+export const verify = (verificationCode, history) => {
   return dispatch => {
     axios
       .get(CUSTOMER_BASE_URL + `/verify/${verificationCode}`)
       .then(response => {
-        dispatch(verificationSuccess(response.data));
+        const { data } = jsog.decode(response);
+        dispatch(verificationSuccess(data));
       })
       .catch(err => {
-        const errorMap = _.get(err, "response.data", null);
-        if (errorMap) {
-          dispatch(verificationError(errorMap));
+        if (err.response.status === 404) {
+          history.push("/404");
         } else {
-          console.log(err);
+          const errorMap = _.get(err, "response.data", null);
+          if (errorMap) {
+            dispatch(verificationError(errorMap));
+          } else {
+            console.log(err);
+          }
         }
       });
   };
@@ -90,7 +116,30 @@ const verificationSuccess = data => ({
   customer: data
 });
 
-const verificationError = data => ({
+const verificationError = () => ({
+  type: VERIFY_FAILURE
+});
+
+export const resendVerifyEmail = (customerEmailReq, history) => {
+  return dispatch => {
+    axios
+      .post(CUSTOMER_BASE_URL + `/resendVerifyEmail`, customerEmailReq)
+      .then(response => {
+        dispatch(emailSent());
+        history.push("/account/verifyEmail");
+      })
+      .catch(err => {
+        const errorMap = _.get(err, "response.data", null);
+        if (errorMap) {
+          dispatch(resendEmailError(errorMap));
+        } else {
+          console.log(err);
+        }
+      });
+  };
+};
+
+const resendEmailError = data => ({
   type: GET_ERRORS,
   errorMap: data
 });

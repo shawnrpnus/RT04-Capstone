@@ -3,6 +3,7 @@ import * as PropTypes from "prop-types";
 import styles from "assets/jss/material-kit-pro-react/components/customInputStyle.js";
 import { makeStyles } from "@material-ui/core/styles";
 import { TextField } from "@material-ui/core";
+import classNames from "classnames";
 
 const useStyles = makeStyles(styles);
 
@@ -18,16 +19,19 @@ function CustomTextField(props) {
     onChange,
     disabled,
     autoFocus,
-    InputProps,
+    InputProps, //usually for input adornments
     InputLabelProps,
     variant,
     fullWidth,
-    placeholder
+    placeholder,
+    formControlClassName //to override formControl classes (mainly margins and padding)
   } = props;
 
   return (
     <TextField
-      classes={{ root: classes.formControl }}
+      classes={{
+        root: formControlClassName ? formControlClassName : classes.formControl
+      }}
       label={fieldLabel}
       name={fieldName}
       value={inputState[fieldName]}

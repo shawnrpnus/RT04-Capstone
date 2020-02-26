@@ -5,6 +5,7 @@ import capstone.rt04.retailbackend.util.enums.SizeEnum;
 import capstone.rt04.retailbackend.util.enums.SortEnum;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductImageNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.product.ProductNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductStockNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.promoCode.PromoCodeNotFoundException;
@@ -40,23 +41,6 @@ public class ProductServiceTest extends ServiceTestSetup {
     private StyleService styleService;
     @Autowired
     private TagService tagService;
-
-//    @Before
-//    public void beforeEachTest() throws Exception {
-//
-//    }
-//
-//    @After
-//    public void afterEachTest() throws Exception {
-//
-//        Product productToRemove = productService.retrieveProductById(productId);
-//        Product removedProduct = productService.deleteProduct(productToRemove.getProductId());
-//        assertThat(removedProduct.getProductId()).isEqualTo(productToRemove.getProductId());
-//
-//        Category categoryToRemove = categoryService.retrieveCategoryByCategoryId(categoryId);
-//        Category removedCategory = categoryService.deleteCategory(categoryToRemove.getCategoryId());
-//        assertThat(removedCategory.getCategoryId()).isEqualTo(categoryId);
-//    }
 
     @Test
     public void createErrorProduct() throws Exception {
@@ -110,7 +94,7 @@ public class ProductServiceTest extends ServiceTestSetup {
     public void CDProductImage() throws Exception {
         // Create
         ProductVariant productVariant = productService.retrieveProductVariantById(productVariantId);
-        ProductImage validProductImage = new ProductImage("https://i.ebayimg.com/images/g/af8AAOSwd9dcdYMT/s-l640.jpg");
+        ProductImage validProductImage = new ProductImage("https://i.ebayimg.com/images/g/af8AAOSwd9dcdYMT/s-l640.jpg",1);
 
         List<ProductImage> productImagesToAdd = new ArrayList<>();
         productImagesToAdd.add(validProductImage);
@@ -246,13 +230,15 @@ public class ProductServiceTest extends ServiceTestSetup {
     }
 
     @Test
-    public void testRetrieveProductStockByStoreIdAndProductVariantId() throws Exception {
-        ProductStock productStock = productService.retrieveProductStockByStoreIdAndProductVariantId(storeId, productVariantId);
-        List<ProductStock> productStocks = productService.retrieveProductStocksByParameter(storeId, null, null);
-        for(ProductStock ps : productStocks) {
-            System.out.println(ps.getProductVariant().getProduct().getProductName() + " "
-                    + ps.getProductVariant().getColour() + " " + ps.getProductVariant().getSizeDetails().getProductSize());
+    public void retrieveProductToShowProductStocks() throws ProductNotFoundException {
+        Product originalProduct;
+
+        List<Product> products = productService.retrieveProductStocksByParameter(storeId1, null, null);
+        for(Product product : products) {
+
+            for(ProductStock productStock : product.getProductVariants().get(0).getProductStocks()) {
+                System.out.println("Product stock ID of : " + productStock.getProductStockId());
+            }
         }
-        System.out.println(productStocks.size());
     }
 }

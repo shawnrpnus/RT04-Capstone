@@ -185,3 +185,53 @@ const resetStaffPasswordError = data => ({
   type: types.GET_ERRORS,
   errorMap: data
 });
+
+export const retrieveAllRoles = () => {
+    return dispatch => {
+        //redux thunk passes dispatch
+        axios
+            .get(STAFF_BASE_URL + `/retrieveAllRoles`)
+            .then(response => {
+                const { data } = jsog.decode(response);
+                dispatch(retrieveAllRolesSuccess(data));
+            })
+            .catch(err => {
+                dispatch(retrieveAllRolesError(err.response.data));
+            });
+    };
+};
+
+const retrieveAllRolesSuccess = data => ({
+    type: types.RETRIEVE_ALL_ROLES,
+    roles: data
+});
+
+const retrieveAllRolesError = data => ({
+    type: types.GET_ERRORS,
+    errorMap: data
+});
+
+export const retrieveAllDepartments= () => {
+    return dispatch => {
+        //redux thunk passes dispatch
+        axios
+            .get(STAFF_BASE_URL + `/retrieveAllDepartments`)
+            .then(response => {
+                const { data } = jsog.decode(response);
+                dispatch(retrieveAllDepartmentsSuccess(data));
+            })
+            .catch(err => {
+                dispatch(retrieveAllDepartmentsError(err.response.data));
+            });
+    };
+};
+
+const retrieveAllDepartmentsSuccess = data => ({
+    type: types.RETRIEVE_ALL_ROLES,
+    departments: data
+});
+
+const retrieveAllDepartmentsError = data => ({
+    type: types.GET_ERRORS,
+    errorMap: data
+});
