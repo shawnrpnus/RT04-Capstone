@@ -82,7 +82,7 @@ public class ServiceTestSetup {
         colours2.add("Ginger");
         colours2.add("Magenta");
 
-        Product product1 = productService.createNewProduct(validProduct, fila.getCategoryId(), null, sizes, colours);
+        Product product1 = productService.createNewProduct(validProduct, fila.getCategoryId(), null, null, sizes, colours);
         assertThat(product1).isEqualTo(validProduct);
         categoryFilaId = fila.getCategoryId();
         categoryMenId = men.getCategoryId();
@@ -104,7 +104,7 @@ public class ServiceTestSetup {
         Product validProduct2 = new Product("0002","Adidas Alpha Bounce", "Adidas", BigDecimal.valueOf(299.90), BigDecimal.valueOf(59.90));
         validProduct.setCategory(categoryService.retrieveCategoryByCategoryId(categoryFilaId));
 
-        Product product2 = productService.createNewProduct(validProduct2, categoryFilaId, null, sizes, colours);
+        Product product2 = productService.createNewProduct(validProduct2, categoryFilaId, null, null, sizes, colours);
         productId2 = product2.getProductId();
         /* Adding colour for product2 */
         List<ProductVariant> productVariants2 = productService.createMultipleProductVariants(productId2, colours2, sizes);
