@@ -43,10 +43,10 @@ public class StoreServiceTest extends ServiceTestSetup {
 
     @Test
     public void retrieveStoreById() throws Exception {
-        Store store = storeService.retrieveStoreById(storeId);
+        Store store = storeService.retrieveStoreById(storeId1);
         //changed from store.toString() as has lazy initialization exception
 //        System.err.println(store.getOpeningTime().toString());
-        assertThat(store.getStoreId()).isEqualTo(storeId);
+        assertThat(store.getStoreId()).isEqualTo(storeId1);
     }
     @Test
     public void retrieveAllStores() throws Exception {
@@ -56,7 +56,7 @@ public class StoreServiceTest extends ServiceTestSetup {
 
     @Test
     public void updateStore() throws Exception {
-        Store store = storeService.retrieveStoreById(storeId);
+        Store store = storeService.retrieveStoreById(storeId1);
         store.setNumAssistants(10);
         Store updatedStore = storeService.updateStore(store);
         assertThat(updatedStore.getNumAssistants()).isEqualTo(10);

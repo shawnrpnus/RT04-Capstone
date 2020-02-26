@@ -51,13 +51,16 @@ public class CustomerController {
 
     // 2. Customer clicks verification link --> call this API
     @GetMapping(CustomerControllerRoutes.VERIFY)
-    public ResponseEntity<?> verifyCustomer(@PathVariable String verificationCode) throws VerificationCodeInvalidException {
+    public ResponseEntity<?> verifyCustomer(@PathVariable String verificationCode) throws VerificationCodeInvalidException, VerificationCodeNotFoundException, AlreadyVerifiedException {
         Customer customer = customerService.verify(verificationCode);
-        /*
-        TODO: Redirect to success page OR the loink sent is to a front-end page, which
-         calls this API upon loading, then displays result based on the response
-         */
         return new ResponseEntity<>(customer, HttpStatus.OK);
+    }
+
+    @PostMapping(CustomerControllerRoutes.RESEND_VERIFY_EMAIL)
+    public ResponseEntity<?> resetEmailCustomer(@RequestBody CustomerEmailRequest customerEmailRequest) throws CustomerNotFoundException, InputDataValidationException {
+        validationService.throwExceptionIfInvalidBean(customerEmailRequest);
+        customerService.nodeGenerateVerificationLinkAndSendEmail(customerEmailRequest.getEmail());
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping(CustomerControllerRoutes.GET_CUSTOMER_BY_EMAIL)
@@ -100,12 +103,8 @@ public class CustomerController {
 
 
     @PostMapping(CustomerControllerRoutes.LOGIN)
-    public ResponseEntity<?> customerLogin(@RequestBody CustomerLoginRequest customerLoginRequest) throws CustomerNotVerifiedException, InvalidLoginCredentialsException {
-        Map<String, String> inputErrMap = validationService.generateErrorMap(customerLoginRequest);
-        if (inputErrMap != null) {
-            return new ResponseEntity<>(inputErrMap, HttpStatus.BAD_REQUEST);
-        }
-
+    public ResponseEntity<?> customerLogin(@RequestBody CustomerLoginRequest customerLoginRequest) throws CustomerNotVerifiedException, InvalidLoginCredentialsException, InputDataValidationException {
+        validationService.throwExceptionIfInvalidBean(customerLoginRequest);
         Customer customer = customerService.customerLogin(customerLoginRequest.getEmail(), customerLoginRequest.getPassword());
         return new ResponseEntity<>(customer, HttpStatus.OK);
     }

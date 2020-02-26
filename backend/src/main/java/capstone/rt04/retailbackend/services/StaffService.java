@@ -82,8 +82,8 @@ public class StaffService {
     //for HR to create staff. HR supplies, first categoryName, last categoryName, nric, address, bank details,
     //role, department.
     public Staff createNewStaff (Staff staff,Address staffAddress, Role role, Department department) throws InputDataValidationException, CreateNewStaffException {
-      //  validationService.throwExceptionIfInvalidBean(staff);
-      //  validationService.throwExceptionIfInvalidBean(staffAddress);
+      validationService.throwExceptionIfInvalidBean(staff);
+       validationService.throwExceptionIfInvalidBean(staffAddress);
 
         try{
            Staff existingStaff = null;
@@ -183,6 +183,21 @@ public class StaffService {
             staff.getAdvertisements().size();
         }
         return allStaff;
+    }
+
+    public List<String> retrieveAllRoles(){
+        List<String> allRoles = new ArrayList<String>();
+        allRoles.add("ASSISTANT");
+        allRoles.add("ASSISTANT_MANAGER");
+        allRoles.add("MANAGER");
+        allRoles.add("DIRECTOR");
+        return allRoles;
+    }
+
+    public List<Department> retrieveAllDepartments(){
+        List<Department> allDepartments = departmentRepository.findAll();
+        return allDepartments;
+
     }
 
     public Staff retrieveStaffByStaffId(Long staffId) throws StaffNotFoundException {

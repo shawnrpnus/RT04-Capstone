@@ -7,7 +7,7 @@ export default function(state = initialState, action) {
     case types.GET_ERRORS:
       return action.errorMap;
     case types.CLEAR_ERRORS:
-      return {};
+      return initialState;
     default:
       return state;
   }

@@ -22,6 +22,8 @@ import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
 import { retrieveProductsDetails } from "../../../../redux/actions/productActions";
 import withPage from "../../../Layout/page/withPage";
 import colourList from "../../../../scss/colours.json";
+import axios from "axios";
+
 const _ = require("lodash");
 
 const tableIcons = {
@@ -155,14 +157,18 @@ class ProductsTable extends PureComponent {
               cellStyle: { textAlign: "center" },
               selection: this.props.selectable
             }}
-            actions={!this.props.selectionAction ? [
-              {
-                icon: Visibility,
-                tooltip: "View Product Variants",
-                onClick: (event, rowData) =>
-                  this.handleViewProductDetails(rowData.productId)
-              }
-            ] : [this.props.selectionAction]}
+            actions={
+              !this.props.selectionAction
+                ? [
+                    {
+                      icon: Visibility,
+                      tooltip: "View Product Variants",
+                      onClick: (event, rowData) =>
+                        this.handleViewProductDetails(rowData.productId)
+                    }
+                  ]
+                : [this.props.selectionAction]
+            }
           />
         ) : (
           renderLoader()

@@ -71,7 +71,7 @@ public class ProductControllerTest extends ApiTestSetup {
     }
 
     @Test
-    public void testCDProductStock() throws Exception {
+    public void testCDProductStock() {
 
         ProductVariant productVariant = given().
                 pathParam("productVariantId", productVariantId).
@@ -104,14 +104,14 @@ public class ProductControllerTest extends ApiTestSetup {
     }
 
     @Test
-    public void testCDProductImage() throws Exception {
+    public void testCDProductImage()  {
         // Create
         ProductVariant productVariant = given().
                 pathParam("productVariantId", productVariantId).
                 when().get(PRODUCT_VARIANT_BASE_ROUTE + RETRIEVE_PRODUCT_VARIANT_BY_ID).
                 then().statusCode(HttpStatus.OK.value()).extract().body().as(ProductVariant.class);
 
-        ProductImage validProductImage = new ProductImage("https://i.ebayimg.com/images/g/af8AAOSwd9dcdYMT/s-l640.jpg");
+        ProductImage validProductImage = new ProductImage("https://i.ebayimg.com/images/g/af8AAOSwd9dcdYMT/s-l640.jpg", 1);
         List<ProductImage> productImagesToAdd = new ArrayList<>();
         productImagesToAdd.add(validProductImage);
 
@@ -148,7 +148,7 @@ public class ProductControllerTest extends ApiTestSetup {
     }
 
     @Test
-    public void addOrRemoveTagAndRetrieveByCriteria() throws Exception {
+    public void addOrRemoveTagAndRetrieveByCriteria()  {
         // Create
         List<Product> products = given().when().get(PRODUCT_BASE_ROUTE + RETRIEVE_ALL_PRODUCTS).
                 then().statusCode(HttpStatus.OK.value()).extract().body().jsonPath().getList(".", Product.class);

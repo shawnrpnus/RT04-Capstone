@@ -1,7 +1,7 @@
 import axios from "axios";
 import * as types from "./types";
 import { toast } from "react-toastify";
-import {retrieveAllProducts, retrieveProductsDetails} from "./productActions";
+import { retrieveAllProducts, retrieveProductsDetails } from "./productActions";
 
 const TAG_BASE_URL = "/api/tag/";
 const jsog = require("jsog");
