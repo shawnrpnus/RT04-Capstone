@@ -10,6 +10,7 @@ import {
   VERIFY_SUCCESS
 } from "./types";
 import customerService from "services/customerService";
+import { UPDATE_CUSTOMER } from "redux/actions/types";
 
 const CUSTOMER_BASE_URL = "/api/customer";
 
@@ -134,13 +135,47 @@ export const resendVerifyEmail = (customerEmailReq, history) => {
         if (errorMap) {
           dispatch(resendEmailError(errorMap));
         } else {
-          console.log(err);
+          console.log(err.response);
         }
       });
   };
 };
 
 const resendEmailError = data => ({
+  type: GET_ERRORS,
+  errorMap: data
+});
+
+export const updateCustomerName = (updateCustomerReq, enqueueSnackbar) => {
+  return dispatch => {
+    axios
+      .post(CUSTOMER_BASE_URL + "/updateCustomer", updateCustomerReq)
+      .then(response => {
+        const { data } = jsog.decode(response);
+        dispatch(updateCustomerSuccess(data));
+        customerService.saveCustomerToLocalStorage(response.data);
+        enqueueSnackbar("Changes saved", {
+          variant: "success",
+          autoHideDuration: 1200
+        });
+      })
+      .catch(err => {
+        const errorMap = _.get(err, "response.data", null);
+        if (errorMap) {
+          dispatch(updateCustomerError(errorMap));
+        } else {
+          console.log(err.response);
+        }
+      });
+  };
+};
+
+const updateCustomerSuccess = data => ({
+  type: UPDATE_CUSTOMER,
+  customer: data
+});
+
+const updateCustomerError = data => ({
   type: GET_ERRORS,
   errorMap: data
 });
