@@ -1,4 +1,5 @@
 import * as types from "../actions/types";
+import customerService from "services/customerService";
 
 const initialState = {
   registeredCustomer: null,
@@ -33,6 +34,7 @@ export default function(state = initialState, action) {
         verificationStatus: "FAILURE"
       };
     case types.CUSTOMER_LOGOUT:
+      customerService.removeCustomerFromLocalStorage();
       return initialState;
     case types.EMAIL_SENDING:
       return {

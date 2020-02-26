@@ -19,6 +19,10 @@ public class ProductCreateRequest {
 
     private Long categoryId;
 
+    private List<Long> tagIds;
+
+    private List<Long> styleIds;
+
     private List<SizeEnum> sizes;
 
     private List<String> colors;

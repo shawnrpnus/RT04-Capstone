@@ -14,6 +14,9 @@ import typographyStyle from "assets/jss/material-kit-pro-react/views/componentsS
 import classNames from "classnames";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
+import customerService from "services/customerService";
+import { useDispatch } from "react-redux";
+import { customerLogout } from "redux/actions/customerActions";
 const jsog = require("jsog");
 
 const useHeaderStyles = makeStyles(headersStyle);
@@ -53,9 +56,7 @@ function AccountToolTipContent(props) {
   const headerClasses = useHeaderStyles();
   const typoClasses = useTypoStyles();
 
-  let customer = localStorage.getItem("customer");
-  if (customer) customer = jsog.parse(customer);
-  console.log(customer);
+  let customer = customerService.getCustomerFromLocalStorage();
   return (
     <React.Fragment>
       <h4
@@ -70,7 +71,14 @@ function AccountToolTipContent(props) {
       </h4>
       <Divider />
       <List component="nav">
-        {renderAccDropdownLinks(undefined, ListItem, { button: true })}
+        {customer ? (
+          <AccDropDownLinksAfterLogin
+            Component={ListItem}
+            componentProps={{ button: true }}
+          />
+        ) : (
+          renderAccDropdownLinks(undefined, ListItem, { button: true })
+        )}
       </List>
     </React.Fragment>
   );
@@ -115,6 +123,32 @@ const renderAccDropdownLinks = (classes, Component, componentProps) => {
     </Link>
   ];
 };
+
+function AccDropDownLinksAfterLogin(props) {
+  const { classes, Component, componentProps } = props;
+  const dispatch = useDispatch();
+  return [
+    <Link
+      key="profile"
+      to="/account/profile"
+      className={classes ? classes.dropdownLink : null}
+    >
+      {Component ? (
+        <Component {...componentProps}>My Profile</Component>
+      ) : (
+        "My Profile"
+      )}
+    </Link>,
+    <Link
+      key="logout"
+      to="/"
+      className={classes ? classes.dropdownLink : null}
+      onClick={() => dispatch(customerLogout())}
+    >
+      {Component ? <Component {...componentProps}>Logout</Component> : "Logout"}
+    </Link>
+  ];
+}
 
 export default AccountNavbar;
 

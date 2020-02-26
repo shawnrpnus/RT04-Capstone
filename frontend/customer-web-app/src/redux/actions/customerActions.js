@@ -9,6 +9,7 @@ import {
   VERIFY_FAILURE,
   VERIFY_SUCCESS
 } from "./types";
+import customerService from "services/customerService";
 
 const CUSTOMER_BASE_URL = "/api/customer";
 
@@ -60,7 +61,7 @@ export const customerLogin = (customerLoginRequest, history) => {
         const { data } = jsog.decode(response);
         dispatch(customerLoginSuccess(data));
         history.push("/"); // TODO: update redirect path
-        localStorage.setItem("customer", jsog.stringify(response.data));
+        customerService.saveCustomerToLocalStorage(response.data);
       })
       .catch(err => {
         const errorMap = _.get(err, "response.data", null);
