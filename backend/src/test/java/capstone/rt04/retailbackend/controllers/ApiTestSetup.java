@@ -129,7 +129,7 @@ public class ApiTestSetup {
         colors.add("White");
         colors.add("Gold");
 
-        ProductCreateRequest productCreateRequest = new ProductCreateRequest(validProduct, categoryId, sizes, colors);
+        ProductCreateRequest productCreateRequest = new ProductCreateRequest(validProduct, categoryId, null, null, sizes, colors);
         Product product = given().
                 contentType("application/json").
                 body(productCreateRequest).

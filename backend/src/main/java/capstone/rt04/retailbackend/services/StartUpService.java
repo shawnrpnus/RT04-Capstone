@@ -83,17 +83,17 @@ public class StartUpService {
             colors.add("#000000");
             colors.add("#1CD3A2");
             colors.add("#CB4154");
-            Product newProduct = productService.createNewProduct(product, category.getCategoryId(), null, sizes, colors);
+            Product newProduct = productService.createNewProduct(product, category.getCategoryId(), null, null, sizes, colors);
 
             Product product2 = new Product("0011", "Fila Disruptor II", "Fila", BigDecimal.valueOf(109.90), BigDecimal.valueOf(49.90));
             Category category2 = categoryService.retrieveCategoryByCategoryId(shirtCategoryId); //shirt
             product2.setCategory(category2);
-            Product newProduct2 = productService.createNewProduct(product2, category2.getCategoryId(), null, sizes, colors);
+            Product newProduct2 = productService.createNewProduct(product2, category2.getCategoryId(), null, null, sizes, colors);
 
             Product product3 = new Product("0012", "Nike Air Max", "Nike", BigDecimal.valueOf(109.90), BigDecimal.valueOf(49.90));
             Category category3 = categoryService.retrieveCategoryByCategoryId(socksCategoryId); // socks
             product3.setCategory(category);
-            Product newProduct3 = productService.createNewProduct(product3, category3.getCategoryId(), null, sizes, colors);
+            Product newProduct3 = productService.createNewProduct(product3, category3.getCategoryId(), null, null, sizes, colors);
 
             // Product images
             ProductImage productImage1 = new ProductImage("https://i8.amplience.net/i/jpl/jd_347293_a?qlt=92&w=750&h=531&v=1&fmt=webp");

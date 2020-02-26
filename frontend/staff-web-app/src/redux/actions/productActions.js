@@ -25,10 +25,13 @@ export const createNewProduct = (createProductRequest, history) => {
         toast.success("Product Created!", {
           position: toast.POSITION.TOP_CENTER
         });
-        // TODO: update redirect path
+        history.push(`/product/viewAllProduct`);
       })
       .catch(err => {
         dispatch(createProductError(err.response.data));
+        toast.error("Unable to create product", {
+          position: toast.POSITION.TOP_CENTER
+        });
         //console.log(err.response.data);
       });
   };

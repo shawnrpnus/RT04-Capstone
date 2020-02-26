@@ -66,7 +66,7 @@ public class ProductService {
         this.sizeDetailsService = sizeDetailsService;
     }
 
-    public Product createNewProduct(Product product, Long categoryId, List<Long> tagIds, List<SizeEnum> sizes, List<String> colours) throws InputDataValidationException, CreateNewProductException, CategoryNotFoundException {
+    public Product createNewProduct(Product product, Long categoryId, List<Long> tagIds, List<Long> styleIds, List<SizeEnum> sizes, List<String> colours) throws InputDataValidationException, CreateNewProductException, CategoryNotFoundException {
 
         if (categoryId == null) {
             throw new CreateNewProductException("The new product must be associated a leaf category");
@@ -95,6 +95,13 @@ public class ProductService {
                         Tag tag = tagService.retrieveTagByTagId(tagId);
                         // addTag is implemented in the entity
                         product.addTag(tag);
+                    }
+                }
+
+                if (styleIds != null && (!styleIds.isEmpty())) {
+                    for (Long styleId : styleIds) {
+                        Style style = styleService.retrieveStyleByStyleId(styleId);
+                        product.addStyle(style);
                     }
                 }
                 createMultipleProductVariants(product.getProductId(), colours, sizes);

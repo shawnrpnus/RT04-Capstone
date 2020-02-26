@@ -1,65 +1,88 @@
 import React from "react";
 import "moment";
 import { connect } from "react-redux";
-import {Grid, TextField, InputLabel} from "@material-ui/core";
+import {Grid, TextField, Chip, TablePagination} from "@material-ui/core";
 import MaterialTable from "material-table";
 import MaterialTextField from "../../../../shared/components/Form/MaterialTextField";
-import { Select, MenuItem } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import * as PropTypes from "prop-types";
 import CreateProductRequest from "../../../../models/CreateProductRequest";
-import {createNewProduct} from "../../../../redux/actions/productActions";
+import {createNewProduct, retrieveAllCategoryTagStyle} from "../../../../redux/actions/productActions";
 import withPage from "../../../Layout/page/withPage";
-import {
-    retrieveAllTags
-  } from "../../../../redux/actions/tagAction";
-
-//need to draw sizes from the size details entity in db
-const sizes = [
-    {size: 'XS'},
-    {size: 'S'},
-    {size: 'M'},
-    {size: 'L'},
-    {size: 'XL'}
-]
+import colourList from "../../../../scss/colours.json";  
+import { Button, ButtonToolbar } from "reactstrap";
+import ContentSaveIcon from "mdi-react/ContentSaveIcon";
+import CloseCircleIcon from "mdi-react/CloseCircleIcon";
+const _ = require("lodash"); 
+const defaultSizes = ["XS", "S", "M", "L", "XL"];
 
 class ProductForm extends React.Component {
     static propTypes = {
       handleSubmit: PropTypes.func,
       errors: PropTypes.object,
       clearErrors: PropTypes.func,
-      disabled: PropTypes.bool,
-      currentProduct: PropTypes.object
+      disabled: PropTypes.bool
     };
 
-    componentDidMount() {
-        this.props.retrieveAllTags();
-        //this.props.retrieveAllCategories();
-        //this.props.retrieveSizeDetails(); 
-      }
-    
-  
     constructor(props) {
       super(props);
-      const { currentProduct } = this.props;
       this.state = {
-        productId: currentProduct ? currentProduct.productId : undefined,
-        serialNumber: currentProduct ? currentProduct.serialNumber : "",
-        productName: currentProduct ? currentProduct.productName : "",
-        description: currentProduct ? currentProduct.description : "",
-        price: currentProduct ? currentProduct.price : "",
-        cost: currentProduct ? currentProduct.cost : "",
-        tags: [], 
-        colours: [],
-        sizes: [],
-        category: ""
+        serialNumber: "",
+        productName: "",
+        description: "",
+        price: "",
+        cost: "",
+        allTags: [], 
+        tagIds: [],
+        categories: [],
+        categoryId: "",  
+        allStyles: [],
+        styleIds: [],
+        colourList: colourList,   
+        colors: [],
+        colorsToDisplay: [],
+        sizes: []
       };
     }
 
-    //category: dropdown; based on categories that are created
-    //size: chip; draw from sizedetails entities from db
-    //colour: ideally use colour picker, generate rows in table based on colour
-    //Done: setting state of tags upon change of value. need to set state for category & size
+    async componentDidMount() {
+      const response = await retrieveAllCategoryTagStyle();
+      let { categories, tags, styles } = response;
+      tags = tags.map(tag => _.pick(tag, ["tagId", "name"]));
+      this.setState({ categories, allTags: tags, allStyles: styles });
+      this.setState({sizes: defaultSizes});
+    }
+    
+    onSelectCategory = async (event, selectedCategory) => {
+      if (selectedCategory === null) return;
+      await this.setState({categoryId: selectedCategory.category.categoryId});
+      console.log(this.state.categoryId);
+    };
+
+    onSelectColour = async (event, selectedColours) => {
+      console.log(selectedColours);
+      await this.setState({ colors: selectedColours});
+      console.log(this.state.colors);
+    };
+
+    onSelectSizes = async (event, sizes) => {
+      await this.setState({ sizes });
+      console.log(this.state.sizes);
+    };
+
+    onSelectTag = async (event, tagArray) => {
+      tagArray = _.map(tagArray, "tagId");
+      await this.setState({ tagIds: tagArray});
+      console.log(this.state.tagIds);
+    };
+
+    onSelectStyle = async (event, styleArray) => {
+      styleArray = _.map(styleArray, "styleId");
+      await this.setState({ styleIds: styleArray });
+      console.log(this.state.styleIds);
+    };
+
+
 
     //for text field: serial number, name, description, price, cost
     onChange = e => {
@@ -73,58 +96,46 @@ class ProductForm extends React.Component {
       console.log(this.state.category);
     };
 
-    onSelectTag = async (event, tagArray) => {
-        await this.setState({ tags: tagArray });
-    };
-
-    onSelectSize = async (event, sizeArray) => {
-        await this.setState({ sizes: sizeArray });
-    };
-
     onCancel = () => {
       this.props.history.goBack();
     };
 
-    handleChange(event, index, values)  { 
-        this.setState({ 
-         tags: [...this.state.tags, values]
-        });
-       }
-
-    handleSubmit = (e, formState) => {
+    onSubmit = e => {
         e.preventDefault();
-        const {
+        let {serialNumber, 
+          productName, 
+          description, 
+          price, 
+          cost, 
+          categoryId,
+          tagIds,
+          styleIds,
+          sizes,
+          colors
+          } = {...this.state}
+        colors = _.map(colors, "hex");
+        const product = new CreateProductRequest(
             serialNumber,
             productName,
             description,
             price,
-            cost, 
-            tags,
-            colours
-        } = formState;
-        const req = new CreateProductRequest(
-            serialNumber,
-            productName,
-            description,
-            price,
-            cost, 
-            tags,
-            colours
+            cost
         );
+        const req = {product, categoryId, tagIds, styleIds, sizes, colors};
+        console.log(req);
             this.props.createNewProduct(req, this.props.history);
       };
     
       
       render() {
-      const { handleSubmit, errors, disabled, currentProduct, renderLoader } = this.props;
-      const data = this.state.sizes; //color
+      const { handleSubmit, errors, disabled} = this.props;
       const hasErrors = Object.keys(this.props.errors).length !== 0;
 
       return (
           <form className="material-form">
             <Grid container spacing={3}>
               <Grid item xs={12} md={4}>
-                <MaterialTextField //set value to be the last previous
+                <MaterialTextField
                   type="number"
                   fieldLabel="Serial Number" 
                   onChange={this.onChange}
@@ -149,9 +160,12 @@ class ProductForm extends React.Component {
               <Grid item xs={12} md={4}>
               <Autocomplete
                 id="tags-standard"
-                options={this.props.allTags} //all categories
-                getOptionLabel={option => option.name}
-                onChange={this.onChange}
+                options={this.state.categories}
+                getOptionLabel={option => option.leafNodeName}
+                onChange={(event, value) => this.onSelectCategory(event, value)}
+                getOptionSelected={(option, value) =>
+                  option.categoryId === value.categoryId
+                }
                 renderInput={params => (
                 <TextField
                     {...params}
@@ -182,9 +196,15 @@ class ProductForm extends React.Component {
               <Autocomplete
                 multiple
                 id="tags-standard"
-                options={this.props.allTags}
-                getOptionLabel={option => option.name}
+                options={this.state.allTags}
                 onChange={(event, value) => this.onSelectTag(event, value)}
+                getOptionLabel={option => {
+                  return option.name;
+                }}
+                getOptionSelected={(option, value) =>
+                  option.tagId === value.tagId
+                }
+                filterSelectedOptions
                 renderInput={params => (
                 <TextField
                     {...params}
@@ -198,31 +218,112 @@ class ProductForm extends React.Component {
               <Grid item xs={12} md={6}>
               <Autocomplete
                 multiple
-                id="sizes-standard"
-                options={sizes} //this.props.allSizes
-                getOptionLabel={option => option.size}
-                onChange={(event, value) => this.onSelectSize(event, value)}
+                id="tags-standard"
+                options={this.state.allStyles}
+                getOptionLabel={option => option.styleName}
+                onChange={(event, value) => this.onSelectStyle(event, value)}
+                getOptionSelected={(option, value) =>
+                  option.styleId === value.styleId
+                }
+                filterSelectedOptions
                 renderInput={params => (
                 <TextField
                     {...params}
                     variant="standard"
-                    label="Sizes"
+                    label="Styles"
                     fullWidth
                 />
                 )}
-                />
+            />
               </Grid>
+              
+              <Grid item xs={12} md={12}>
+              <Autocomplete
+              style={{ margin: "3% 0" }}
+              multiple
+              id="colours"
+              options={colourList}
+              onChange={(event, value) => this.onSelectColour(event, value)}
+              getOptionSelected={(option, value) =>
+                option.name === value.name 
+              }
+              filterSelectedOptions
+              getOptionLabel={option => {
+                return {
+                  name: option.name,
+                  hex: option.hex
+                };
+              }}
+              renderOption={option => {
+                return (
+                  <Chip
+                    style={{
+                      backgroundColor: option.hex,
+                      fontWeight: "bold",
+                      width: "100%"
+                    }}
+                    label={option.name}
+                  />
+                );
+              }}
+              renderInput={params => {
+                return (
+                  <TextField
+                    {...params}
+                    variant="standard"
+                    label="Colours"
+                    fullWidth
+                    InputLabelProps={{
+                      shrink: true
+                    }}
+                    InputProps={{
+                      ...params.InputProps,
+                      startAdornment:
+                        params.InputProps.startAdornment &&
+                        params.InputProps.startAdornment.map(element => (
+                          <Chip
+                            key={element.props.label.name}
+                            style={{
+                              backgroundColor: element.props.label.hex,
+                              fontWeight: "bold",
+                              margin: "1%"
+                            }}
+                            label={element.props.label.name}
+                            onClick={null}
+                            onDelete={element.props.onDelete}
+                          />
+                        ))
+                    }}
+                  />
+                );
+              }}
+            />
+              </Grid>
+
               <Grid item xs={12} md={6}>
-              <MaterialTextField
-                  type="number"
-                  fieldLabel="Colours"
-                  onChange={this.onChange}
-                  fieldName="colours"
-                  state={this.state}
-                  errors={errors}
-                  disabled={disabled}
-                />  
+              <Autocomplete
+              multiple
+              id="sizes"
+              options={defaultSizes}
+              onChange={(event, value) => this.onSelectSizes(event, value)}
+              getOptionLabel={option => option}
+              defaultValue={defaultSizes}
+              filterSelectedOptions
+              renderInput={params => (
+                <TextField
+                  {...params}
+                  variant="standard"
+                  label="Sizes"
+                  // placeholder="Styles"
+                  fullWidth
+                  InputLabelProps={{
+                    shrink: true
+                  }}
+                />
+              )}
+            />
               </Grid>
+             
               <Grid item xs={12} md={3}>
                 <MaterialTextField
                   type="number"
@@ -258,7 +359,7 @@ class ProductForm extends React.Component {
             <MaterialTable
               title="Upload Images"
               columns={[
-                { title: "Name", field: "name"} //change to color field
+                { title: "Colours", field: "name"} 
               ]}
               options={{
                 search: false,
@@ -266,24 +367,40 @@ class ProductForm extends React.Component {
                 sorting: false,
                 filtering: false
               }}
-              data={data}
+              data={this.state.colors}
             />
         </div>
       </React.Fragment>
-          </form>
+      <ButtonToolbar className="form__button-toolbar">
+              <Button
+                color="primary"
+                className="icon"
+                onClick={this.onSubmit} 
+                disabled={hasErrors}
+              >
+                <p>
+                  <ContentSaveIcon />
+                  Submit
+                </p>
+              </Button>
+              <Button type="button" className="icon" onClick={this.onCancel}>
+                <p>
+                  <CloseCircleIcon />
+                  Cancel
+                </p>
+              </Button>
+            </ButtonToolbar>
+      </form>
       );
     }
   }
   
 // mapping the state of 'global store' to the props of the local component
 const mapStateToProps = state => ({
-    allTags: state.tag.allTags,
-    currentProduct: state.product.currentProduct,
     errors: state.errors
   });
   
   const mapDispatchToProps = {
-    retrieveAllTags,
     createNewProduct 
   };
   

@@ -199,7 +199,7 @@ public class CategoryServiceTest extends ServiceTestSetup {
         colors.add("Black");
         colors.add("Green");
         colors.add("Red");
-        Product newProduct = productService.createNewProduct(product, womenClothingDressCategory.getCategoryId(), null, sizes, colors);
+        Product newProduct = productService.createNewProduct(product, womenClothingDressCategory.getCategoryId(), null, null, sizes, colors);
 
         try {
             Category updatedCategory = categoryService.updateCategory(menClothingPantsCategory, womenClothingDressCategory.getCategoryId());

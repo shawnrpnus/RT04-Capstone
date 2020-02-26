@@ -69,7 +69,7 @@ public class ProductServiceTest extends ServiceTestSetup {
             List<String> colors = new ArrayList<>();
             colors.add("Aquamarine");
             colors.add("Silver");
-            productService.createNewProduct(invalidProduct, categoryFilaId, null, sizes, colors);
+            productService.createNewProduct(invalidProduct, categoryFilaId, null, null, sizes, colors);
         } catch (InputDataValidationException ex) {
             Map<String, String> expectedErrorMap = new HashMap<>();
             expectedErrorMap.put("productName", "must not be null");
