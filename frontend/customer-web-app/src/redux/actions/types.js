@@ -6,6 +6,7 @@ export const VERIFY_SUCCESS = "VERIFY_SUCCESS";
 export const VERIFY_FAILURE = "VERIFY_FAILURE";
 export const EMAIL_SENDING = "EMAIL_SENDING";
 export const EMAIL_SENT = "EMAIL_SENT";
+export const UPDATE_CUSTOMER = "UPDATE_CUSTOMER";
 
 // Error
 export const GET_ERRORS = "GET_ERRORS";

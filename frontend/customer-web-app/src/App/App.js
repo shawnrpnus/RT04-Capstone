@@ -6,18 +6,21 @@ import { ConfirmProvider } from "material-ui-confirm";
 import store from "./store";
 import Routes from "./Routes";
 import { createBrowserHistory } from "history";
+import { SnackbarProvider } from "notistack";
 
 let hist = createBrowserHistory();
 
 function App() {
   return (
-    <Provider store={store}>
-      <ConfirmProvider>
-        <Router history={hist}>
-          <Routes />
-        </Router>
-      </ConfirmProvider>
-    </Provider>
+    <SnackbarProvider maxSnack={2}>
+      <Provider store={store}>
+        <ConfirmProvider>
+          <Router history={hist}>
+            <Routes />
+          </Router>
+        </ConfirmProvider>
+      </Provider>
+    </SnackbarProvider>
   );
 }
 

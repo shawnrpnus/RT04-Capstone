@@ -46,6 +46,11 @@ export default function(state = initialState, action) {
         ...state,
         isSendingEmail: false
       };
+    case types.UPDATE_CUSTOMER:
+      return {
+        ...state,
+        loggedInCustomer: action.customer
+      };
     default:
       return state;
   }

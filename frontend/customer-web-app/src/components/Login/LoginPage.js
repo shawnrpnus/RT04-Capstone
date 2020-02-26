@@ -21,7 +21,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { clearErrors } from "redux/actions";
 import IconButton from "@material-ui/core/IconButton";
 import { Visibility, VisibilityOff } from "@material-ui/icons";
-import CreateUpdateCustomerRequest from "models/customer/CreateUpdateCustomerRequest";
 import { customerLogin } from "redux/actions/customerActions";
 
 const useStyles = makeStyles(loginPageStyle);

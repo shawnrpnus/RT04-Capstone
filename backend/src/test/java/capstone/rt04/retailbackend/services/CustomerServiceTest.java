@@ -43,9 +43,7 @@ public class CustomerServiceTest extends ServiceTestSetup {
     @Test
     public void updateCustomer() throws Exception {
         Customer validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
-        validCustomer.setFirstName("Bruce");
-        validCustomer.setLastName("Wayne");
-        customerService.updateCustomerDetails(validCustomer);
+        customerService.updateCustomerDetails(validCustomer.getCustomerId(), "Bruce", "Wayne");
         Customer updatedCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
         assertThat(updatedCustomer.getFirstName()).isEqualTo(validCustomer.getFirstName());
         assertThat(updatedCustomer.getLastName()).isEqualTo(validCustomer.getLastName());

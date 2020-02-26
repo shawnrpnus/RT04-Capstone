@@ -186,11 +186,10 @@ public class CustomerService {
         return lazyLoadCustomerFields(customer);
     }
 
-    public Customer updateCustomerDetails(Customer customer) throws CustomerNotFoundException, InputDataValidationException {
-        validationService.throwExceptionIfInvalidBean(customer);
-        Customer customerToUpdate = retrieveCustomerByCustomerId(customer.getCustomerId());
-        customerToUpdate.setFirstName(customer.getFirstName());
-        customerToUpdate.setLastName(customer.getLastName());
+    public Customer updateCustomerDetails(Long customerId, String firstName, String lastName) throws CustomerNotFoundException, InputDataValidationException {
+        Customer customerToUpdate = retrieveCustomerByCustomerId(customerId);
+        customerToUpdate.setFirstName(firstName);
+        customerToUpdate.setLastName(lastName);
         return lazyLoadCustomerFields(customerToUpdate);
     }
 

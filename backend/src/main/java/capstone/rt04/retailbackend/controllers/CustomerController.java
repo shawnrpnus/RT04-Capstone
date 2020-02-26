@@ -96,8 +96,9 @@ public class CustomerController {
     }
 
     @PostMapping(CustomerControllerRoutes.UPDATE_CUSTOMER)
-    public ResponseEntity<?> updateCustomer(@RequestBody Customer customer) throws CustomerNotFoundException, InputDataValidationException {
-        Customer updatedCustomer = customerService.updateCustomerDetails(customer);
+    public ResponseEntity<?> updateCustomer(@RequestBody UpdateCustomerRequest req) throws CustomerNotFoundException, InputDataValidationException {
+        validationService.throwExceptionIfInvalidBean(req);
+        Customer updatedCustomer = customerService.updateCustomerDetails(req.getCustomerId(), req.getFirstName(), req.getLastName());
         return new ResponseEntity<>(updatedCustomer, HttpStatus.OK);
     }
 
