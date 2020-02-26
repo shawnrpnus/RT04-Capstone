@@ -13,6 +13,15 @@ const mailGenerator = new Mailgen({
     // logo: 'https://mailgen.js/img/logo.png'
   }
 });
+const transporter = Nodemailer.createTransport({
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false, // true for 465, false for other ports
+  auth: {
+    user: "rt04capstone@gmail.com", // generated ethereal user
+    pass: "retailretail" // generated ethereal password
+  }
+});
 
 // req fields: email, fullName, link
 router.post("/sendVerificationEmail", async (req, res) => {
@@ -36,16 +45,6 @@ router.post("/sendVerificationEmail", async (req, res) => {
 
   const emailBody = mailGenerator.generate(emailContent);
   const emailText = mailGenerator.generatePlaintext(emailContent);
-
-  let transporter = Nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 587,
-    secure: false, // true for 465, false for other ports
-    auth: {
-      user: "rt04capstone@gmail.com", // generated ethereal user
-      pass: "retailretail" // generated ethereal password
-    }
-  });
 
   transporter.sendMail(
     {
