@@ -23,7 +23,6 @@ import Muted from "components/UI/Typography/Muted.js";
 import Parallax from "components/UI/Parallax/Parallax.js";
 import Clearfix from "components/UI/Clearfix/Clearfix.js";
 
-import christian from "assets/img/faces/christian.jpg";
 import oluEletu from "assets/img/examples/olu-eletu.jpg";
 import clemOnojeghuo from "assets/img/examples/clem-onojeghuo.jpg";
 import cynthiaDelRio from "assets/img/examples/cynthia-del-rio.jpg";
@@ -62,11 +61,13 @@ export default function ProfilePage({ ...rest }) {
         <div className={classes.container}>
           <GridContainer justify="center">
             <GridItem xs={12} sm={12} md={6}>
-              <div className={classes.profile}>
-                <div className={classes.name}>
-                  <h3 className={classes.title}>Christian Louboutin</h3>
+              <CardHeader color="primary" signup className={classes.cardHeader}>
+                <div className={classes.profile}>
+                  <div className={classes.name}>
+                    <h3 className={classes.title}>Christian Louboutin</h3>
+                  </div>
                 </div>
-              </div>
+              </CardHeader>
             </GridItem>
           </GridContainer>
           <div className={classNames(classes.description, classes.textCenter)}>
@@ -78,6 +79,10 @@ export default function ProfilePage({ ...rest }) {
           <div className={classes.profileTabs}>
             <NavPills
               alignCenter
+              // horizontal={{
+              //   tabsGrid: { xs: 12, sm: 4, md: 2 },
+              //   contentGrid: { xs: 12, sm: 8, md: 10 }
+              // }}
               color="primary"
               tabs={[
                 {

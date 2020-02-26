@@ -41,21 +41,26 @@ const profilePageStyle = {
     textAlign: "center !important"
   },
   name: {
-    marginTop: "-80px"
+    //marginTop: "-80px"
   },
 
   main: {
     ...main
   },
   mainRaised: {
-    ...mainRaised
+    ...mainRaised,
+    "@media (max-width: 576px)": {
+      marginTop: "-85vh"
+    },
+    margin: "-80vh 30px 0px"
   },
   title: {
     ...title,
     position: "relative",
     marginTop: "30px",
     minHeight: "32px",
-    textDecoration: "none"
+    textDecoration: "none",
+    color: whiteColor
   },
   follow: {
     position: "absolute",
@@ -75,6 +80,10 @@ const profilePageStyle = {
   },
   collections: {
     marginTop: "20px"
+  },
+  cardHeader: {
+    marginLeft: "auto",
+    marginRight: "auto"
   },
   cardBody: {
     display: "flex",
@@ -97,7 +106,7 @@ const profilePageStyle = {
     }
   },
   profileTabs: {
-    marginTop: "4.284rem",
+    marginTop: "1.284rem",
     marginBottom: "50px"
   },
   card: {
@@ -140,7 +149,7 @@ const profilePageStyle = {
     position: "relative"
   },
   parallax: {
-    height: "380px",
+    // height: "300px",
     backgroundPosition: "top center"
   }
 };
