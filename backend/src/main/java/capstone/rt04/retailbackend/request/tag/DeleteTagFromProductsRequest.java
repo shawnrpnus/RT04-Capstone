@@ -1,6 +1,5 @@
 package capstone.rt04.retailbackend.request.tag;
 
-import capstone.rt04.retailbackend.entities.Product;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,7 +11,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class AddTagToProductRequest {
+public class DeleteTagFromProductsRequest {
 
     private Long tagId;
 

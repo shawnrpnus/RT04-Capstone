@@ -1,4 +1,4 @@
-export default class AddTagToProductsRequest {
+export default class DeleteTagFromProductsRequest {
   tagId;
   productIds;
 
