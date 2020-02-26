@@ -3,7 +3,8 @@ import Button from "components/UI/CustomButtons/Button";
 import classNames from "classnames";
 import GridItem from "components/Layout/components/Grid/GridItem";
 
-const LandingPage = classes => {
+function LandingPage(props) {
+  const { classes } = props;
   return (
     <GridItem
       xs={12}
@@ -31,6 +32,6 @@ const LandingPage = classes => {
       </div>
     </GridItem>
   );
-};
+}
 
 export default LandingPage;

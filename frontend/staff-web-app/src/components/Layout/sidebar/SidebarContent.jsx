@@ -32,8 +32,14 @@ class SidebarContent extends Component {
             />
             <SidebarLink
               title="View All"
-              route="/"
+              route="/staff/viewAll"
               onClick={this.hideSidebar}
+            />
+
+            <SidebarLink
+                title="Configure Staff Account"
+                route="/staff/createAccount"
+                onClick={this.hideSidebar}
             />
           </SidebarCategory>
 

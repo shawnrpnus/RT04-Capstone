@@ -62,12 +62,17 @@ public class TagService {
 
     }
 
-    public Tag addTagToProduct(Long tagId, List<Product> products) throws TagNotFoundException, ProductNotFoundException {
+    public Tag addTagToProduct(Long tagId, List<Long> productIds) throws TagNotFoundException, ProductNotFoundException {
         Tag tag = retrieveTagByTagId(tagId);
-        for(Product p : products) {
-            Product retrieveProduct = productRepository.findByProductId(p.getProductId());
+        for(Long p : productIds) {
+            System.out.println("LONG: " + p);
+            Product retrieveProduct = productRepository.findByProductId(p);
             //add tag both ways is implemented in the entity
-            retrieveProduct.addTag(tag);
+            try{
+                retrieveProduct.addTag(tag);
+            } catch(NullPointerException ex) {
+                throw new ProductNotFoundException("Product with Product ID: " + p + " not found!");
+            }
         }
 
         return tag;
@@ -102,6 +107,20 @@ public class TagService {
         }
         tagRepository.delete(tagToRemove);
         return tagToRemove;
+    }
+
+    public Tag deleteTagFromProduct(Long tagId, List<Long> productIds) throws TagNotFoundException, ProductNotFoundException {
+        Tag tag = retrieveTagByTagId(tagId);
+        for(Long p : productIds) {
+            Product retrieveProduct = productRepository.findByProductId(p);
+            try{
+                retrieveProduct.getTags().remove(tag);
+                tag.getProducts().remove(retrieveProduct);
+            } catch(NullPointerException ex) {
+                throw new ProductNotFoundException("Product with Product ID: " + p + " not found!");
+            }
+        }
+        return tag;
     }
 
     public Tag retrieveTagByName(String name) throws TagNotFoundException {

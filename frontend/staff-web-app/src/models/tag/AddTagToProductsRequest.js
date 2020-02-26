@@ -1,9 +1,9 @@
 export default class AddTagToProductsRequest {
   tagId;
-  products;
+  productIds;
 
-  constructor(tagId, products) {
+  constructor(tagId, productIds) {
     this.tagId = tagId;
-    this.products = products;
+    this.productIds = productIds;
   }
 }

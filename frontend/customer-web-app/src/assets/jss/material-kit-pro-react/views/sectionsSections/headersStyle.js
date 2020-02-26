@@ -94,6 +94,9 @@ const headersSection = theme => ({
   },
   marginBottomFive: {
     margin: "0 0 5px 0"
+  },
+  accountNavbarHeader: {
+    margin: "5px 0 0 0"
   }
 });
 
