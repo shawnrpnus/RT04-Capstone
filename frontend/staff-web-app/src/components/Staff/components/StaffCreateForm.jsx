@@ -1,7 +1,5 @@
 import React, { Component, PureComponent } from "react";
 import withPage from "../../Layout/page/withPage";
-import { css } from "@emotion/core";
-import { ClipLoader } from "react-spinners";
 import { connect } from "react-redux";
 import { clearErrors, updateErrors } from "../../../redux/actions";
 import { createNewStaff, retrieveAllRoles } from "../../../redux/actions/staffActions";
@@ -14,21 +12,18 @@ import MomentUtils from "@date-io/moment";
 import { Grid } from "@material-ui/core";
 import MaterialTextField from "../../../shared/components/Form/MaterialTextField";
 import {
-    KeyboardTimePicker,
     MuiPickersUtilsProvider
 } from "@material-ui/pickers";
 import { Button, ButtonToolbar } from "reactstrap";
 import * as PropTypes from "prop-types";
-import { Link } from "react-router-dom";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import axios from "axios";
 import MaterialNumberSelect from "../../../shared/components/Form/MaterialNumberSelect";
-import PencilIcon from "mdi-react/PencilIcon";
 import ContentSaveIcon from "mdi-react/ContentSaveIcon";
 import CloseCircleIcon from "mdi-react/CloseCircleIcon";
-import DeleteIcon from "mdi-react/DeleteIcon";
-import TableEyeIcon from "mdi-react/TableEyeIcon";
-import {retrieveAllTags} from "../../../redux/actions/tagAction";
+import InputLabel from "@material-ui/core/InputLabel";
+import Select from "@material-ui/core/Select";
+import MenuItem from "@material-ui/core/MenuItem";
 
 class StaffCreateForm extends Component {
     static propTypes = {
@@ -110,7 +105,7 @@ class StaffCreateForm extends Component {
 
     render() {
         //pulling out the fields from props
-        const {handleSubmit, errors, disabled, currentStore} = this.props;
+        const {errors, disabled} = this.props;
         const postalCodeProps = {
             endAdornment: (
                 <InputAdornment position="end">
@@ -194,15 +189,20 @@ class StaffCreateForm extends Component {
                         </Grid>
 
                         <Grid item xs={12} md={6}>
-                            <MaterialTextField
-                                fieldLabel="Role"
+                            <InputLabel id="demo-simple-select-label">Role</InputLabel>
+                            <Select
+                                labelId="demo-simple-select-label"
+                                id="demo-simple-select"
+                                value={this.state.roleName}
+
                                 onChange={this.onChange}
-                                fieldName="roleName"
-                                state={this.state}
-                                errors={errors}
-                                disabled={disabled}
-                                autoFocus={true}
-                            />
+                            >
+                                <MenuItem value={"ASSISTANT"}>Assistant</MenuItem>
+                                <MenuItem value={"ASSISTANT_MANAGER"}>Assistant Manager</MenuItem>
+                                <MenuItem value={"MANAGER"}>Manager</MenuItem>
+                                <MenuItem value={"DIRECTOR"}>Director</MenuItem>
+                            </Select>
+
                         </Grid>
 
                         <Grid item xs={12} md={6}>
@@ -276,7 +276,7 @@ class StaffCreateForm extends Component {
                             />
                         </Grid>
                     </Grid>
-                    {!disabled ? (
+
                         <ButtonToolbar className="form__button-toolbar">
                             <Button
                                 color="primary"
@@ -296,40 +296,17 @@ class StaffCreateForm extends Component {
                                 </p>
                             </Button>
                         </ButtonToolbar>
-                    ) : (
-                        <ButtonToolbar className="form__button-toolbar">
-                            <Link to={`/store/update/${currentStore.storeId}`}>
-                                <Button className="icon" color="primary">
-                                    <p>
-                                        <PencilIcon/>
-                                        Update
-                                    </p>
-                                </Button>
-                            </Link>
-                            <Button
-                                className="icon"
-                                color="danger"
-                                onClick={() => this.handleDelete(currentStore.storeId)}
-                            >
-                                <p>
-                                    <DeleteIcon/>
-                                    Delete
-                                </p>
-                            </Button>
-                            <Link to={`/store/viewAll`}>
-                                <Button className="icon">
-                                    <p>
-                                        <TableEyeIcon/>
-                                        View All
-                                    </p>
-                                </Button>
-                            </Link>
-                        </ButtonToolbar>
-                    )}
+
+
                 </form>
             </MuiPickersUtilsProvider>
+
         );
+
+
     }
+
+
 }
 //mapping global state to this component
     const mapStateToProps = state => ({
