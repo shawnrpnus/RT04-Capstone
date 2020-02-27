@@ -1,6 +1,7 @@
 package capstone.rt04.retailbackend.services;
 
 import capstone.rt04.retailbackend.entities.*;
+import capstone.rt04.retailbackend.request.product.ColourToImageUrlsMap;
 import capstone.rt04.retailbackend.util.enums.SizeEnum;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.category.CategoryNotFoundException;
@@ -78,101 +79,51 @@ public class StartUpService {
     private void createProductIfNotFound() throws CategoryNotFoundException, InputDataValidationException, CreateNewProductException, ProductVariantNotFoundException {
         List<Product> products = productService.retrieveAllProducts();
         if (products.size() == 0) {
-            Product product = new Product("0010", "Stan Smith", "Adidas", BigDecimal.valueOf(109.90), BigDecimal.valueOf(49.90));
-            Category category = categoryService.retrieveCategoryByCategoryId(sneakerCategoryId); //sneakers
-            product.setCategory(category);
+
+            // Product images
+            List<String> blackProductImageUrls = new ArrayList<>();
+            blackProductImageUrls.add("https://i8.amplience.net/i/jpl/jd_347293_a?qlt=92&w=750&h=531&v=1&fmt=webp");
+            blackProductImageUrls.add("https://i8.amplience.net/i/jpl/jd_347293_b?qlt=92&w=750&h=531&v=1&fmt=webp");
+            blackProductImageUrls.add("https://i8.amplience.net/i/jpl/jd_347293_c?qlt=92&w=750&h=531&v=1&fmt=webp");
+            blackProductImageUrls.add("https://i8.amplience.net/i/jpl/jd_347293_d?qlt=92&w=750&h=531&v=1&fmt=webp");
+            blackProductImageUrls.add("https://i8.amplience.net/i/jpl/jd_347293_e?qlt=92&w=750&h=531&v=1&fmt=webp");
+            List<String> greenProductImageUrls = new ArrayList<>();
+            greenProductImageUrls.add("https://i8.amplience.net/i/jpl/jd_M20324_a?qlt=92&w=750&h=531&v=1&fmt=webp");
+            greenProductImageUrls.add("https://i8.amplience.net/i/jpl/jd_M20324_b?qlt=92&w=750&h=531&v=1&fmt=webp");
+            greenProductImageUrls.add("https://i8.amplience.net/i/jpl/jd_M20324_c?qlt=92&w=750&h=531&v=1&fmt=webp");
+            greenProductImageUrls.add("https://i8.amplience.net/i/jpl/jd_M20324_d?qlt=92&w=750&h=531&v=1&fmt=webp");
+            greenProductImageUrls.add("https://i8.amplience.net/i/jpl/jd_M20324_e?qlt=92&w=750&h=531&v=1&fmt=webp");
+            List<String> redProductImageUrls = new ArrayList<>();
+            redProductImageUrls.add("https://i8.amplience.net/i/jpl/jd_EE5801_a?qlt=92&w=750&h=531&v=1&fmt=webp");
+            redProductImageUrls.add("https://i8.amplience.net/i/jpl/jd_EE5801_b?qlt=92&w=750&h=531&v=1&fmt=webp");
+            redProductImageUrls.add("https://i8.amplience.net/i/jpl/jd_EE5801_c?qlt=92&w=750&h=531&v=1&fmt=webp");
+            redProductImageUrls.add("https://i8.amplience.net/i/jpl/jd_EE5801_d?qlt=92&w=750&h=531&v=1&fmt=webp");
+            redProductImageUrls.add("https://i8.amplience.net/i/jpl/jd_EE5801_e?qlt=92&w=750&h=531&v=1&fmt=webp");
+
             List<SizeEnum> sizes = new ArrayList<>();
             sizes.add(SizeEnum.S);
             sizes.add(SizeEnum.M);
             sizes.add(SizeEnum.L);
-            List<String> colors = new ArrayList<>();
-            colors.add("#000000");
-            colors.add("#1CD3A2");
-            colors.add("#CB4154");
-            Product newProduct = productService.createNewProduct(product, category.getCategoryId(), null, null, sizes, colors);
+            List<ColourToImageUrlsMap> colourToImageUrlsMaps = new ArrayList<>();
+            colourToImageUrlsMaps.add(new ColourToImageUrlsMap("#000000", blackProductImageUrls));
+            colourToImageUrlsMaps.add(new ColourToImageUrlsMap("#1CD3A2", greenProductImageUrls));
+            colourToImageUrlsMaps.add(new ColourToImageUrlsMap("#CB4154", redProductImageUrls));
+
+            Category category = categoryService.retrieveCategoryByCategoryId(sneakerCategoryId); //sneakers
+
+            Product product = new Product("0010", "Stan Smith", "Adidas", BigDecimal.valueOf(109.90), BigDecimal.valueOf(49.90));
+            product.setCategory(category);
+            Product newProduct = productService.createNewProduct(product, category.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
 
             Product product2 = new Product("0011", "Fila Disruptor II", "Fila", BigDecimal.valueOf(109.90), BigDecimal.valueOf(49.90));
             Category category2 = categoryService.retrieveCategoryByCategoryId(shirtCategoryId); //shirt
             product2.setCategory(category2);
-            Product newProduct2 = productService.createNewProduct(product2, category2.getCategoryId(), null, null, sizes, colors);
+            Product newProduct2 = productService.createNewProduct(product2, category2.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
 
             Product product3 = new Product("0012", "Nike Air Max", "Nike", BigDecimal.valueOf(109.90), BigDecimal.valueOf(49.90));
             Category category3 = categoryService.retrieveCategoryByCategoryId(socksCategoryId); // socks
             product3.setCategory(category);
-            Product newProduct3 = productService.createNewProduct(product3, category3.getCategoryId(), null, null, sizes, colors);
-
-            // Product images
-            ProductImage productImage1 = new ProductImage("https://i8.amplience.net/i/jpl/jd_347293_a?qlt=92&w=750&h=531&v=1&fmt=webp", 1);
-            ProductImage productImage2 = new ProductImage("https://i8.amplience.net/i/jpl/jd_347293_b?qlt=92&w=750&h=531&v=1&fmt=webp", 2);
-            ProductImage productImage3 = new ProductImage("https://i8.amplience.net/i/jpl/jd_347293_c?qlt=92&w=750&h=531&v=1&fmt=webp", 3);
-            ProductImage productImage4 = new ProductImage("https://i8.amplience.net/i/jpl/jd_347293_d?qlt=92&w=750&h=531&v=1&fmt=webp", 4);
-            ProductImage productImage5 = new ProductImage("https://i8.amplience.net/i/jpl/jd_347293_e?qlt=92&w=750&h=531&v=1&fmt=webp", 5);
-            ProductImage productImage6 = new ProductImage("https://i8.amplience.net/i/jpl/jd_M20324_a?qlt=92&w=750&h=531&v=1&fmt=webp", 1);
-            ProductImage productImage7 = new ProductImage("https://i8.amplience.net/i/jpl/jd_M20324_b?qlt=92&w=750&h=531&v=1&fmt=webp", 2);
-            ProductImage productImage8 = new ProductImage("https://i8.amplience.net/i/jpl/jd_M20324_c?qlt=92&w=750&h=531&v=1&fmt=webp", 3);
-            ProductImage productImage9 = new ProductImage("https://i8.amplience.net/i/jpl/jd_M20324_d?qlt=92&w=750&h=531&v=1&fmt=webp", 4);
-            ProductImage productImage10 = new ProductImage("https://i8.amplience.net/i/jpl/jd_M20324_e?qlt=92&w=750&h=531&v=1&fmt=webp", 5);
-            ProductImage productImage11 = new ProductImage("https://i8.amplience.net/i/jpl/jd_EE5801_a?qlt=92&w=750&h=531&v=1&fmt=webp", 1);
-            ProductImage productImage12 = new ProductImage("https://i8.amplience.net/i/jpl/jd_EE5801_b?qlt=92&w=750&h=531&v=1&fmt=webp", 2);
-            ProductImage productImage13 = new ProductImage("https://i8.amplience.net/i/jpl/jd_EE5801_c?qlt=92&w=750&h=531&v=1&fmt=webp", 3);
-            ProductImage productImage14 = new ProductImage("https://i8.amplience.net/i/jpl/jd_EE5801_d?qlt=92&w=750&h=531&v=1&fmt=webp", 4);
-            ProductImage productImage15 = new ProductImage("https://i8.amplience.net/i/jpl/jd_EE5801_e?qlt=92&w=750&h=531&v=1&fmt=webp", 5);
-
-            List<ProductImage> blacks = new ArrayList<>();
-            blacks.add(productImage1);
-            blacks.add(productImage2);
-            blacks.add(productImage3);
-            blacks.add(productImage4);
-            blacks.add(productImage5);
-
-            List<ProductImage> greens = new ArrayList<>();
-            greens.add(productImage6);
-            greens.add(productImage7);
-            greens.add(productImage8);
-            greens.add(productImage9);
-            greens.add(productImage10);
-
-            List<ProductImage> reds = new ArrayList<>();
-            reds.add(productImage11);
-            reds.add(productImage12);
-            reds.add(productImage13);
-            reds.add(productImage14);
-            reds.add(productImage15);
-
-            Boolean blackCreated = false;
-            Boolean greenCreated = false;
-            Boolean redCreated = false;
-
-            List<ProductImage> blackProductImages = new ArrayList<>();
-            ;
-            List<ProductImage> greenProductImages = new ArrayList<>();
-            List<ProductImage> redProductImages = new ArrayList<>();
-            ;
-
-            for (ProductVariant productVariant : newProduct.getProductVariants()) {
-                if (productVariant.getColour() == "#000000") {
-                    if (!blackCreated) {
-                        blackProductImages = productService.createProductImage(blacks, productVariant.getProductVariantId());
-                        blackCreated = true;
-                    } else {
-                        productVariant.getProductImages().addAll(blackProductImages);
-                    }
-                } else if (productVariant.getColour() == "#1CD3A2") {
-                    if (!greenCreated) {
-                        greenProductImages = productService.createProductImage(greens, productVariant.getProductVariantId());
-                        greenCreated = true;
-                    } else {
-                        productVariant.getProductImages().addAll(greenProductImages);
-                    }
-                } else if (productVariant.getColour() == "#CB4154") {
-                    if (!redCreated) {
-                        redProductImages = productService.createProductImage(reds, productVariant.getProductVariantId());
-                        redCreated = true;
-                    } else {
-                        productVariant.getProductImages().addAll(redProductImages);
-                    }
-                }
-            }
+            Product newProduct3 = productService.createNewProduct(product3, category3.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
         }
     }
 

@@ -14,11 +14,16 @@ const PRODUCT_BASE_URL = "/api/product";
 const CATEGORY_BASE_URL = "/api/category";
 const jsog = require("jsog");
 
+// Send to node to upload photo
 export const createNewProduct = (createProductRequest, history) => {
   return dispatch => {
     //redux thunk passes dispatch
     axios
-      .post(PRODUCT_BASE_URL + "/createNewProduct", createProductRequest)
+      .post(
+        // "/node" + PRODUCT_BASE_URL + "/createNewProduct",
+        "http://localhost:5000/node" + PRODUCT_BASE_URL + "/createNewProduct",
+        createProductRequest
+      )
       .then(response => {
         const { data } = jsog.decode(response);
         const productId = data.productId;

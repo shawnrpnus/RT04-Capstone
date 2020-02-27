@@ -43,7 +43,7 @@ public class ProductVariant implements Serializable {
     @Column(nullable = false)
     private String colour;
         
-    @OneToMany
+    @ManyToMany
     private List<ProductImage> productImages;
     
     @ManyToOne(optional = false)

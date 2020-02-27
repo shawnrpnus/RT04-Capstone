@@ -5,6 +5,7 @@ import capstone.rt04.retailbackend.repositories.ProductImageRepository;
 import capstone.rt04.retailbackend.repositories.ProductRepository;
 import capstone.rt04.retailbackend.repositories.ProductStockRepository;
 import capstone.rt04.retailbackend.repositories.ProductVariantRepository;
+import capstone.rt04.retailbackend.request.product.ColourToImageUrlsMap;
 import capstone.rt04.retailbackend.response.ColourToSizeImageMap;
 import capstone.rt04.retailbackend.response.ProductDetailsResponse;
 import capstone.rt04.retailbackend.response.SizeToProductVariantAndStockMap;
@@ -66,7 +67,7 @@ public class ProductService {
         this.sizeDetailsService = sizeDetailsService;
     }
 
-    public Product createNewProduct(Product product, Long categoryId, List<Long> tagIds, List<Long> styleIds, List<SizeEnum> sizes, List<String> colours) throws InputDataValidationException, CreateNewProductException, CategoryNotFoundException {
+    public Product createNewProduct(Product product, Long categoryId, List<Long> tagIds, List<Long> styleIds, List<SizeEnum> sizes, List<ColourToImageUrlsMap> colourToImageUrlsMaps) throws InputDataValidationException, CreateNewProductException, CategoryNotFoundException {
 
         if (categoryId == null) {
             throw new CreateNewProductException("The new product must be associated a leaf category");
@@ -104,7 +105,7 @@ public class ProductService {
                         product.addStyle(style);
                     }
                 }
-                createMultipleProductVariants(product.getProductId(), colours, sizes);
+                createMultipleProductVariants(product.getProductId(), colourToImageUrlsMaps, sizes);
 
                 return product;
             } catch (PersistenceException ex) {
@@ -397,6 +398,7 @@ public class ProductService {
     // TODO: Create multiple product variants without creating product
 
     public ProductVariant createProductVariant(ProductVariant productVariant, Long productId) throws ProductNotFoundException, InputDataValidationException, PersistenceException, CreateNewProductStockException, WarehouseNotFoundException, StoreNotFoundException, ProductVariantNotFoundException {
+        System.out.println("Creating product variant");
 
         Product product = retrieveProductById(productId);
         productVariant.setProduct(product);
@@ -408,6 +410,7 @@ public class ProductService {
             // TODO: Create ProductImage and link to Product before saving
 
             productVariantRepository.save(productVariant);
+            System.out.println("Product variant ID: " + productVariant.getProductVariantId());
             product.getProductVariants().add(productVariant);
 
             // TODO: uncomment when warehouse and store services are done
@@ -421,34 +424,56 @@ public class ProductService {
         }
     }
 
-    public List<ProductVariant> createMultipleProductVariants(Long productId, List<String> colours, List<SizeEnum> sizes) throws ProductNotFoundException, InputDataValidationException, CreateNewProductStockException, StoreNotFoundException, WarehouseNotFoundException, ProductVariantNotFoundException {
+    public List<ProductVariant> createMultipleProductVariants(Long productId, List<ColourToImageUrlsMap> colourToImageUrlsMaps, List<SizeEnum> sizes) throws ProductNotFoundException, InputDataValidationException, CreateNewProductStockException, StoreNotFoundException, WarehouseNotFoundException, ProductVariantNotFoundException, ProductImageNotFoundException {
         Product product = retrieveProductById(productId);
 
         List<ProductVariant> productVariants = new ArrayList<>();
+        List<ProductVariant> productVariantsToAssignImages = new ArrayList<>();
+        List<ProductImage> productImages;
         ProductVariant productVariant;
-        String sku;
         SizeDetails sizeDetails;
+        Boolean imageCreated;
+        String sku, colour;
+        Integer position;
+        Long productVariantId;
+        ProductVariant pv;
 
-        for (String colour : colours) {
+        System.out.println("******* Product ID: " + productId);
+        System.out.println("Creating multiple products");
+
+        for (ColourToImageUrlsMap colourToImageUrlsMap : colourToImageUrlsMaps) {
+
+            colour = colourToImageUrlsMap.getColour();
+            productImages = new ArrayList<>();
+            position = 0;
+            imageCreated = Boolean.FALSE;
+
+            for (String imageUrl : colourToImageUrlsMap.getImageUrls()) {
+                productImages.add(new ProductImage(imageUrl, position));
+                position++;
+            }
+
             for (SizeEnum size : sizes) {
                 sku = product.getSerialNumber() + "-" + colour + "-" + size;
                 sizeDetails = new SizeDetails(size);
                 productVariant = new ProductVariant(sku, colour, product);
                 productVariant.setSizeDetails(sizeDetailsService.createSizeDetails(sizeDetails));
-                productVariants.add(createProductVariant(productVariant, product.getProductId()));
+                pv = createProductVariant(productVariant, product.getProductId());
+                productVariants.add(pv);
+                // Create and persist a ProductImage object
+                if (!imageCreated) { // -> New colour create image once
+                    productImages = createProductImage(productImages, productVariant.getProductVariantId());
+                    imageCreated = Boolean.TRUE;
+                    productVariantsToAssignImages = new ArrayList<>();
+                } else {
+                    productVariantsToAssignImages.add(pv);
+                }
             }
+            // Associate productVariant of the same colour but different sizes to the created ProductImage
+            assignProductImages(productImages, productVariantsToAssignImages);
         }
         return productVariants;
     }
-
-//     for (SizeEnum size : sizes) {
-//                        sku = product.getSerialNumber() + "-" + colour + "-" + size;
-//                        sizeDetails = new SizeDetails(size);
-//                        productVariant = new ProductVariant(sku, colour, product);
-//                        productVariant.setSizeDetails(sizeDetailsService.createSizeDetails(sizeDetails));
-//                        createProductVariant(productVariant, product.getProductId());
-//                    }
-
 
     public ProductVariant retrieveProductVariantById(Long productVariantId) throws ProductVariantNotFoundException {
         if (productVariantId == null) {
@@ -698,14 +723,21 @@ public class ProductService {
     }
 
     public List<ProductImage> createProductImage(List<ProductImage> productImages, Long productVariantId) throws ProductVariantNotFoundException {
-        // Uploading to Google Drive will be done on Node.js
         ProductVariant productVariant = retrieveProductVariantById(productVariantId);
 
         for (ProductImage productImage : productImages) {
             productImageRepository.save(productImage);
+            System.out.println("Product Image ID: " + productImage.getProductImageId());
+            System.out.println("Product Image URL: " + productImage.getProductImageUrl());
             productVariant.getProductImages().add(productImage);
         }
         return productImages;
+    }
+
+    private void assignProductImages(List<ProductImage> productImages, List<ProductVariant> productVariants) throws ProductVariantNotFoundException, ProductImageNotFoundException {
+        for (ProductVariant productVariant : productVariants) {
+            productVariant.getProductImages().addAll(productImages);
+        }
     }
 
     public ProductImage retrieveProductImageById(Long productImageId) throws ProductImageNotFoundException {

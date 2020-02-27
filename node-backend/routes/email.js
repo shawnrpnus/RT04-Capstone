@@ -1,8 +1,7 @@
-import { Router } from "express";
-
+const express = require("express");
+const router = express.Router();
 const Mailgen = require("mailgen");
 const Nodemailer = require("nodemailer");
-const router = Router();
 const mailGenerator = new Mailgen({
   theme: "default",
   product: {

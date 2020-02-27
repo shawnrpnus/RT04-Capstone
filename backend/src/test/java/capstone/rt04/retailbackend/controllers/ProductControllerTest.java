@@ -49,7 +49,7 @@ public class ProductControllerTest extends ApiTestSetup {
 
     @Test
     public void testCDProductVariant() {
-        ProductVariantCreateRequest productVariantCreateRequest = new ProductVariantCreateRequest(productId, colors, sizes);
+        ProductVariantCreateRequest productVariantCreateRequest = new ProductVariantCreateRequest(productId, colourToImageUrlsMaps, sizes);
 
         List<ProductVariant> productVariants = given().
                 contentType("application/json").

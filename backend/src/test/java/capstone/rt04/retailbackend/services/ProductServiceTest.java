@@ -1,6 +1,7 @@
 package capstone.rt04.retailbackend.services;
 
 import capstone.rt04.retailbackend.entities.*;
+import capstone.rt04.retailbackend.request.product.ColourToImageUrlsMap;
 import capstone.rt04.retailbackend.util.enums.SizeEnum;
 import capstone.rt04.retailbackend.util.enums.SortEnum;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
@@ -50,10 +51,10 @@ public class ProductServiceTest extends ServiceTestSetup {
             List<SizeEnum> sizes = new ArrayList<>();
             sizes.add(SizeEnum.S);
             sizes.add(SizeEnum.M);
-            List<String> colors = new ArrayList<>();
-            colors.add("Aquamarine");
-            colors.add("Silver");
-            productService.createNewProduct(invalidProduct, categoryFilaId, null, null, sizes, colors);
+            List<ColourToImageUrlsMap> colourToImageUrlsMaps = new ArrayList<>();
+            colourToImageUrlsMaps.add(new ColourToImageUrlsMap("Aquamarine", new ArrayList<>()));
+            colourToImageUrlsMaps.add(new ColourToImageUrlsMap("Silver", new ArrayList<>()));
+            productService.createNewProduct(invalidProduct, categoryFilaId, null, null, sizes, colourToImageUrlsMaps);
         } catch (InputDataValidationException ex) {
             Map<String, String> expectedErrorMap = new HashMap<>();
             expectedErrorMap.put("productName", "must not be null");
@@ -63,10 +64,11 @@ public class ProductServiceTest extends ServiceTestSetup {
 
     @Test(expected = ProductVariantNotFoundException.class)
     public void CDMultipleProductVariant() throws Exception {
-        List<String> colors = new ArrayList<>();
-        colors.add("Ember");
-        colors.add("Snow");
-        List<ProductVariant> productVariants = new ArrayList<>(productService.createMultipleProductVariants(productId1, colors, sizes));
+        List<ColourToImageUrlsMap> colourToImageUrlsMaps = new ArrayList<>();
+        colourToImageUrlsMaps.add(new ColourToImageUrlsMap("Ember", new ArrayList<>()));
+        colourToImageUrlsMaps.add(new ColourToImageUrlsMap("Snow", new ArrayList<>()));
+
+        List<ProductVariant> productVariants = new ArrayList<>(productService.createMultipleProductVariants(productId1, colourToImageUrlsMaps, sizes));
         assertThat(productVariants.size()).isNotEqualTo(0);
 
         for(ProductVariant productVariant : productVariants) {

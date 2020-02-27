@@ -88,8 +88,8 @@ public class CategoryService {
 
     public String generateLeafNodeName(Category category, String leafNodeName) {
 
-        leafNodeName += category.getCategoryName();
-        if (category.getParentCategory() != null) leafNodeName += " > ";
+        leafNodeName = category.getCategoryName() + leafNodeName;
+        if (category.getParentCategory() != null) leafNodeName = " > " + leafNodeName;
 
         if (category.getParentCategory() == null) return leafNodeName;
         leafNodeName = generateLeafNodeName(category.getParentCategory(), leafNodeName);
