@@ -15,6 +15,7 @@ const useStyles = makeStyles(headersStyle);
 const _ = require("lodash");
 
 function VerifyEmailChecker(props) {
+  const { isUpdateEmail } = props;
   //Hooks
   const classes = useStyles();
   const match = useRouteMatch();
@@ -24,7 +25,7 @@ function VerifyEmailChecker(props) {
   const dispatch = useDispatch();
   const isSendingEmail = useSelector(state => state.customer.isSendingEmail);
   const errors = useSelector(state => state.errors);
-  const verificationErrors = useSelector(
+  const verificationStatus = useSelector(
     state => state.customer.verificationStatus
   );
 
@@ -36,6 +37,7 @@ function VerifyEmailChecker(props) {
     if (isUpdateEmail) {
       dispatch(updateEmail(verificationCode, history));
     } else {
+      console.log("running verify");
       dispatch(verify(verificationCode, history));
     }
   }, []);
@@ -46,12 +48,10 @@ function VerifyEmailChecker(props) {
   }, []);
 
   //Misc
-  const { isUpdateEmail } = props;
-
   const loadingText =
     isSendingEmail && _.isEmpty(errors)
       ? "Sending you an email..."
-      : verificationErrors === null
+      : verificationStatus === null
       ? "Verifying..."
       : "";
 
@@ -59,7 +59,7 @@ function VerifyEmailChecker(props) {
     <LoadingOverlay
       spinner
       active={
-        (isSendingEmail && _.isEmpty(errors)) || verificationErrors === null
+        (isSendingEmail && _.isEmpty(errors)) || verificationStatus === null
       }
       text={loadingText}
     >
@@ -69,7 +69,7 @@ function VerifyEmailChecker(props) {
       >
         <div className={classes.container}>
           <GridContainer>
-            {verificationErrors === "SUCCESS" ? (
+            {verificationStatus === "SUCCESS" ? (
               isUpdateEmail ? (
                 <Redirect
                   to={{
@@ -80,7 +80,7 @@ function VerifyEmailChecker(props) {
               ) : (
                 <VerifyEmailConfirmation classes={classes} />
               )
-            ) : verificationErrors === "FAILURE" ? (
+            ) : verificationStatus === "FAILURE" ? (
               isUpdateEmail ? (
                 <Redirect
                   to
