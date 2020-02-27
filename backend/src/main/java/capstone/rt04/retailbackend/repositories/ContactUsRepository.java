@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface FeedbackRepository extends CrudRepository<ContactUs, Long> {
+public interface ContactUsRepository extends CrudRepository<ContactUs, Long> {
     Optional<ContactUs> findByContactUsId(String contactUsID);
 
 }
