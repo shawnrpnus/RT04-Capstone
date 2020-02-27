@@ -1,6 +1,7 @@
 package capstone.rt04.retailbackend.services;
 
 import capstone.rt04.retailbackend.entities.*;
+import capstone.rt04.retailbackend.request.product.ColourToImageUrlsMap;
 import capstone.rt04.retailbackend.util.enums.RoleNameEnum;
 import capstone.rt04.retailbackend.util.enums.SizeEnum;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
@@ -105,199 +106,144 @@ public class StartUpService {
     private void createProductIfNotFound() throws CategoryNotFoundException, InputDataValidationException, CreateNewProductException, ProductVariantNotFoundException {
         List<Product> products = productService.retrieveAllProducts();
         if (products.size() == 0) {
-            Product product = new Product("0010", "Stan Smith", "Adidas", BigDecimal.valueOf(109.90), BigDecimal.valueOf(49.90));
-            Category category = categoryService.retrieveCategoryByCategoryId(sneakerCategoryId); //sneakers
-            product.setCategory(category);
+
+            // Product images
+            List<String> blackProductImageUrls = new ArrayList<>();
+            blackProductImageUrls.add("https://i8.amplience.net/i/jpl/jd_347293_a?qlt=92&w=750&h=531&v=1&fmt=webp");
+            blackProductImageUrls.add("https://i8.amplience.net/i/jpl/jd_347293_b?qlt=92&w=750&h=531&v=1&fmt=webp");
+            blackProductImageUrls.add("https://i8.amplience.net/i/jpl/jd_347293_c?qlt=92&w=750&h=531&v=1&fmt=webp");
+            blackProductImageUrls.add("https://i8.amplience.net/i/jpl/jd_347293_d?qlt=92&w=750&h=531&v=1&fmt=webp");
+            blackProductImageUrls.add("https://i8.amplience.net/i/jpl/jd_347293_e?qlt=92&w=750&h=531&v=1&fmt=webp");
+            List<String> greenProductImageUrls = new ArrayList<>();
+            greenProductImageUrls.add("https://i8.amplience.net/i/jpl/jd_M20324_a?qlt=92&w=750&h=531&v=1&fmt=webp");
+            greenProductImageUrls.add("https://i8.amplience.net/i/jpl/jd_M20324_b?qlt=92&w=750&h=531&v=1&fmt=webp");
+            greenProductImageUrls.add("https://i8.amplience.net/i/jpl/jd_M20324_c?qlt=92&w=750&h=531&v=1&fmt=webp");
+            greenProductImageUrls.add("https://i8.amplience.net/i/jpl/jd_M20324_d?qlt=92&w=750&h=531&v=1&fmt=webp");
+            greenProductImageUrls.add("https://i8.amplience.net/i/jpl/jd_M20324_e?qlt=92&w=750&h=531&v=1&fmt=webp");
+            List<String> redProductImageUrls = new ArrayList<>();
+            redProductImageUrls.add("https://i8.amplience.net/i/jpl/jd_EE5801_a?qlt=92&w=750&h=531&v=1&fmt=webp");
+            redProductImageUrls.add("https://i8.amplience.net/i/jpl/jd_EE5801_b?qlt=92&w=750&h=531&v=1&fmt=webp");
+            redProductImageUrls.add("https://i8.amplience.net/i/jpl/jd_EE5801_c?qlt=92&w=750&h=531&v=1&fmt=webp");
+            redProductImageUrls.add("https://i8.amplience.net/i/jpl/jd_EE5801_d?qlt=92&w=750&h=531&v=1&fmt=webp");
+            redProductImageUrls.add("https://i8.amplience.net/i/jpl/jd_EE5801_e?qlt=92&w=750&h=531&v=1&fmt=webp");
+
             List<SizeEnum> sizes = new ArrayList<>();
             sizes.add(SizeEnum.S);
             sizes.add(SizeEnum.M);
             sizes.add(SizeEnum.L);
-            List<String> colors = new ArrayList<>();
-            colors.add("#000000");
-            colors.add("#1CD3A2");
-            colors.add("#CB4154");
+            List<ColourToImageUrlsMap> colourToImageUrlsMaps = new ArrayList<>();
+            colourToImageUrlsMaps.add(new ColourToImageUrlsMap("#000000", blackProductImageUrls));
+            colourToImageUrlsMaps.add(new ColourToImageUrlsMap("#1CD3A2", greenProductImageUrls));
+            colourToImageUrlsMaps.add(new ColourToImageUrlsMap("#CB4154", redProductImageUrls));
 
+            Category category = categoryService.retrieveCategoryByCategoryId(sneakerCategoryId); //sneakers
 
-            Product newProduct = productService.createNewProduct(product, category.getCategoryId(), null, null, sizes, colors);
+            Product product = new Product("0010", "Stan Smith", "Adidas", BigDecimal.valueOf(109.90), BigDecimal.valueOf(49.90));
+            product.setCategory(category);
+            Product newProduct = productService.createNewProduct(product, category.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
 
             Product product2 = new Product("0011", "Fila Disruptor II", "Fila", BigDecimal.valueOf(109.90), BigDecimal.valueOf(49.90));
             Category category2 = categoryService.retrieveCategoryByCategoryId(shirtCategoryId); //shirt
             product2.setCategory(category2);
-            Product newProduct2 = productService.createNewProduct(product2, category2.getCategoryId(), null, null, sizes, colors);
+            Product newProduct2 = productService.createNewProduct(product2, category2.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
 
             Product product3 = new Product("0012", "Nike Air Max", "Nike", BigDecimal.valueOf(109.90), BigDecimal.valueOf(49.90));
             Category category3 = categoryService.retrieveCategoryByCategoryId(socksCategoryId); // socks
-            product3.setCategory(category3);
-            Product newProduct3 = productService.createNewProduct(product3, category3.getCategoryId(), null, null, sizes, colors);
+            product3.setCategory(category);
+            Product newProduct3 = productService.createNewProduct(product3, category3.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
 
             Product product4 = new Product("0013", "Polo Tee", "Official Fred Perry Merchandise", BigDecimal.valueOf(109.90), BigDecimal.valueOf(49.90));
             Category category4= categoryService.retrieveCategoryByCategoryId(shirtCategoryId); //shirt
             product4.setCategory(category4);
-            Product newProduct4 = productService.createNewProduct(product4, category4.getCategoryId(), null, null, sizes, colors);
+            Product newProduct4 = productService.createNewProduct(product4, category4.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
 
             Product product5 = new Product("0014", "Burberry Skirt", "Burberry Skirt", BigDecimal.valueOf(60.00), BigDecimal.valueOf(10.00));
             Category category5= categoryService.retrieveCategoryByCategoryId(skirtsCategoryId);
             product5.setCategory(category5);
-            Product newProduct5 = productService.createNewProduct(product5, category5.getCategoryId(), null, null, sizes, colors);
+            Product newProduct5 = productService.createNewProduct(product5, category5.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
 
             Product product6 = new Product("0015", "Mickey Mouse T-Shirt", "Official Disneyland Merchandise", BigDecimal.valueOf(25.00), BigDecimal.valueOf(3.99));
             Category category6= categoryService.retrieveCategoryByCategoryId(tShirtCategoryId);
             product6.setCategory(category6);
-            Product newProduct6 = productService.createNewProduct(product6, category6.getCategoryId(), null, null, sizes, colors);
+            Product newProduct6 = productService.createNewProduct(product6, category6.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
 
             Product product7 = new Product("0016", "Maxi Skirt", "Beautiful Skirt 100% Cotton ", BigDecimal.valueOf(59.90), BigDecimal.valueOf(8.90));
-            Product newProduct7 = productService.createNewProduct(product7, category5.getCategoryId(), null, null, sizes, colors);
+            Product newProduct7 = productService.createNewProduct(product7, category5.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
 
             Product product8 = new Product("0017", "Mini Skirt", "Mini Skirt", BigDecimal.valueOf(29.90), BigDecimal.valueOf(4.59));
-            Product newProduct8 = productService.createNewProduct(product8, category5.getCategoryId(), null, null, sizes, colors);
+            Product newProduct8 = productService.createNewProduct(product8, category5.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
 
             Product product9 = new Product("0018", "Fila T-Shirt", "Fila", BigDecimal.valueOf(60.00), BigDecimal.valueOf(14.99));
-            Product newProduct9 = productService.createNewProduct(product9, category6.getCategoryId(), null, null, sizes, colors);
+            Product newProduct9 = productService.createNewProduct(product9, category6.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
 
             Product product10 = new Product("0019", "Liverpool T-Shirt", "Liverpool FC", BigDecimal.valueOf(99.00), BigDecimal.valueOf(25.00));
-            Product newProduct10 = productService.createNewProduct(product10, category6.getCategoryId(), null, null, sizes, colors);
+            Product newProduct10 = productService.createNewProduct(product10, category6.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
 
             Product product11 = new Product("0020", "Manchester United T-Shirt", "Manchester United", BigDecimal.valueOf(99.00), BigDecimal.valueOf(25.00));
-            Product newProduct11 = productService.createNewProduct(product11, category6.getCategoryId(), null, null, sizes, colors);
+            Product newProduct11 = productService.createNewProduct(product11, category6.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
 
             Product product12 = new Product("0021", "Plain Crew T-shirt", "100% Cotton", BigDecimal.valueOf(9.99), BigDecimal.valueOf(1.50));
-            Product newProduct12 = productService.createNewProduct(product12, category6.getCategoryId(), null, null, sizes, colors);
+            Product newProduct12 = productService.createNewProduct(product12, category6.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
 
             Product product13 = new Product("0022", "Long Skirt", "Long Skirt", BigDecimal.valueOf(65.90), BigDecimal.valueOf(19.90));
-            Product newProduct13 = productService.createNewProduct(product13, category5.getCategoryId(), null, null, sizes, colors);
+            Product newProduct13 = productService.createNewProduct(product13, category5.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
 
             Product product14 = new Product("0023", "Nudie Jeans", "Nudie", BigDecimal.valueOf(259.00), BigDecimal.valueOf(56.00));
             Category category7= categoryService.retrieveCategoryByCategoryId(jeansCategoryId); //jeans
             product4.setCategory(category7);
-            Product newProduct14 = productService.createNewProduct(product14, category7.getCategoryId(), null, null, sizes, colors);
+            Product newProduct14 = productService.createNewProduct(product14, category7.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
 
             Product product15 = new Product("0024", "Cheap Monday Jeans", "Beautiful Skirt", BigDecimal.valueOf(89.00), BigDecimal.valueOf(15.00));
-            Product newProduct15 = productService.createNewProduct(product15, category7.getCategoryId(), null, null, sizes, colors);
+            Product newProduct15 = productService.createNewProduct(product15, category7.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
 
             Product product16 = new Product("0025", "Avengers Socks", "Avengers", BigDecimal.valueOf(2.50), BigDecimal.valueOf(0.30));
-            Product newProduct16 = productService.createNewProduct(product16, category3.getCategoryId(), null, null, sizes, colors);
+            Product newProduct16 = productService.createNewProduct(product16, category3.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
 
             Product product17 = new Product("0026", "Striped Shirt", "Blue Stripes Shirt ", BigDecimal.valueOf(50.00), BigDecimal.valueOf(15.00));
-            Product newProduct17 = productService.createNewProduct(product17, category2.getCategoryId(), null, null, sizes, colors);
+            Product newProduct17 = productService.createNewProduct(product17, category2.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
 
             Product product18 = new Product("0027", "Abercrombie & Fitch Shirt", "A&F", BigDecimal.valueOf(99.00), BigDecimal.valueOf(12.00));
-            Product newProduct18 = productService.createNewProduct(product18, category2.getCategoryId(), null, null, sizes, colors);
+            Product newProduct18 = productService.createNewProduct(product18, category2.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
 
             Product product19 = new Product("0028", "Abercrombie & Fitch T Shirt", "A&F", BigDecimal.valueOf(45), BigDecimal.valueOf(5.00));
-            Product newProduct19 = productService.createNewProduct(product19, category6.getCategoryId(), null, null, sizes, colors);
+            Product newProduct19 = productService.createNewProduct(product19, category6.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
 
             Product product20 = new Product("0029", "Abercrombie & Fitch Jeans", "Beautiful Skirt", BigDecimal.valueOf(120.00), BigDecimal.valueOf(29.00));
-            Product newProduct20 = productService.createNewProduct(product20, category7.getCategoryId(), null, null, sizes, colors);
+            Product newProduct20 = productService.createNewProduct(product20, category7.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
 
             Product product21 = new Product("0030", "Ankle Socks", "Ankle Socks", BigDecimal.valueOf(5.00), BigDecimal.valueOf(0.50));
-            Product newProduct21 = productService.createNewProduct(product21, category3.getCategoryId(), null, null, sizes, colors);
+            Product newProduct21 = productService.createNewProduct(product21, category3.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
 
             Product product22 = new Product("0031", "Docker Bermudas", "Bermudas", BigDecimal.valueOf(45.00), BigDecimal.valueOf(8.99));
             Category category8= categoryService.retrieveCategoryByCategoryId(bermudasCategoryId);
             product22.setCategory(category8);
-            Product newProduct22 = productService.createNewProduct(product22, category8.getCategoryId(), null, null, sizes, colors);
+            Product newProduct22 = productService.createNewProduct(product22, category8.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
 
             Product product23 = new Product("0032", "Slim Fit Bermudas", "Slim Fit Skirt", BigDecimal.valueOf(29.90), BigDecimal.valueOf(10.00));
-            Product newProduct23 = productService.createNewProduct(product23, category8.getCategoryId(), null, null, sizes, colors);
+            Product newProduct23 = productService.createNewProduct(product23, category8.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
 
             Product product24 = new Product("0033", "Regular Cut Bermudas", "Regular Cut", BigDecimal.valueOf(29.90), BigDecimal.valueOf(10.00));
-            Product newProduct24 = productService.createNewProduct(product24, category8.getCategoryId(), null, null, sizes, colors);
+            Product newProduct24 = productService.createNewProduct(product24, category8.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
 
             Product product25 = new Product("0034", "Skinny Jeans", "Tight Fit", BigDecimal.valueOf(79.90), BigDecimal.valueOf(14.99));
-            Product newProduct25 = productService.createNewProduct(product25, category7.getCategoryId(), null, null, sizes, colors);
+            Product newProduct25 = productService.createNewProduct(product25, category7.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
 
             Product product26 = new Product("0035", "Parachute Dress", "Weew", BigDecimal.valueOf(59.90), BigDecimal.valueOf(14.90));
             Category category9= categoryService.retrieveCategoryByCategoryId(dressesCategoryId);
             product22.setCategory(category9);
-            Product newProduct26 = productService.createNewProduct(product26, category9.getCategoryId(), null, null, sizes, colors);
+            Product newProduct26 = productService.createNewProduct(product26, category9.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
 
             Product product27 = new Product("0036", "Long Sleeve Dress", "Long Sleeve Dress", BigDecimal.valueOf(49.90), BigDecimal.valueOf(10.90));
-            Product newProduct27 = productService.createNewProduct(product27, category9.getCategoryId(), null, null, sizes, colors);
+            Product newProduct27 = productService.createNewProduct(product27, category9.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
 
             Product product28 = new Product("0037", "Short Sleeve Dress", "Short Sleeve Skirt", BigDecimal.valueOf(35.90), BigDecimal.valueOf(8.00));
-            Product newProduct28 = productService.createNewProduct(product28, category9.getCategoryId(), null, null, sizes, colors);
+            Product newProduct28 = productService.createNewProduct(product28, category9.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
 
             Product product29 = new Product("0038", "Sleeveless Dress", "Sleeveless Dress", BigDecimal.valueOf(49.90), BigDecimal.valueOf(12.00));
-            Product newProduct29 = productService.createNewProduct(product29, category9.getCategoryId(), null, null, sizes, colors);
+            Product newProduct29 = productService.createNewProduct(product29, category9.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
 
             Product product30 = new Product("0039", "Long Sleeve Shirt", "Long sleeve ", BigDecimal.valueOf(89.90), BigDecimal.valueOf(23.00));
-            Product newProduct30 = productService.createNewProduct(product30, category2.getCategoryId(), null, null, sizes, colors);
-
-
-
-
-            // Product images
-            ProductImage productImage1 = new ProductImage("https://i8.amplience.net/i/jpl/jd_347293_a?qlt=92&w=750&h=531&v=1&fmt=webp", 1);
-            ProductImage productImage2 = new ProductImage("https://i8.amplience.net/i/jpl/jd_347293_b?qlt=92&w=750&h=531&v=1&fmt=webp", 2);
-            ProductImage productImage3 = new ProductImage("https://i8.amplience.net/i/jpl/jd_347293_c?qlt=92&w=750&h=531&v=1&fmt=webp", 3);
-            ProductImage productImage4 = new ProductImage("https://i8.amplience.net/i/jpl/jd_347293_d?qlt=92&w=750&h=531&v=1&fmt=webp", 4);
-            ProductImage productImage5 = new ProductImage("https://i8.amplience.net/i/jpl/jd_347293_e?qlt=92&w=750&h=531&v=1&fmt=webp", 5);
-            ProductImage productImage6 = new ProductImage("https://i8.amplience.net/i/jpl/jd_M20324_a?qlt=92&w=750&h=531&v=1&fmt=webp", 1);
-            ProductImage productImage7 = new ProductImage("https://i8.amplience.net/i/jpl/jd_M20324_b?qlt=92&w=750&h=531&v=1&fmt=webp", 2);
-            ProductImage productImage8 = new ProductImage("https://i8.amplience.net/i/jpl/jd_M20324_c?qlt=92&w=750&h=531&v=1&fmt=webp", 3);
-            ProductImage productImage9 = new ProductImage("https://i8.amplience.net/i/jpl/jd_M20324_d?qlt=92&w=750&h=531&v=1&fmt=webp", 4);
-            ProductImage productImage10 = new ProductImage("https://i8.amplience.net/i/jpl/jd_M20324_e?qlt=92&w=750&h=531&v=1&fmt=webp", 5);
-            ProductImage productImage11 = new ProductImage("https://i8.amplience.net/i/jpl/jd_EE5801_a?qlt=92&w=750&h=531&v=1&fmt=webp", 1);
-            ProductImage productImage12 = new ProductImage("https://i8.amplience.net/i/jpl/jd_EE5801_b?qlt=92&w=750&h=531&v=1&fmt=webp", 2);
-            ProductImage productImage13 = new ProductImage("https://i8.amplience.net/i/jpl/jd_EE5801_c?qlt=92&w=750&h=531&v=1&fmt=webp", 3);
-            ProductImage productImage14 = new ProductImage("https://i8.amplience.net/i/jpl/jd_EE5801_d?qlt=92&w=750&h=531&v=1&fmt=webp", 4);
-            ProductImage productImage15 = new ProductImage("https://i8.amplience.net/i/jpl/jd_EE5801_e?qlt=92&w=750&h=531&v=1&fmt=webp", 5);
-
-            List<ProductImage> blacks = new ArrayList<>();
-            blacks.add(productImage1);
-            blacks.add(productImage2);
-            blacks.add(productImage3);
-            blacks.add(productImage4);
-            blacks.add(productImage5);
-
-            List<ProductImage> greens = new ArrayList<>();
-            greens.add(productImage6);
-            greens.add(productImage7);
-            greens.add(productImage8);
-            greens.add(productImage9);
-            greens.add(productImage10);
-
-            List<ProductImage> reds = new ArrayList<>();
-            reds.add(productImage11);
-            reds.add(productImage12);
-            reds.add(productImage13);
-            reds.add(productImage14);
-            reds.add(productImage15);
-
-            Boolean blackCreated = false;
-            Boolean greenCreated = false;
-            Boolean redCreated = false;
-
-            List<ProductImage> blackProductImages = new ArrayList<>();
-            ;
-            List<ProductImage> greenProductImages = new ArrayList<>();
-            List<ProductImage> redProductImages = new ArrayList<>();
-            ;
-
-            for (ProductVariant productVariant : newProduct.getProductVariants()) {
-                if (productVariant.getColour() == "#000000") {
-                    if (!blackCreated) {
-                        blackProductImages = productService.createProductImage(blacks, productVariant.getProductVariantId());
-                        blackCreated = true;
-                    } else {
-                        productVariant.getProductImages().addAll(blackProductImages);
-                    }
-                } else if (productVariant.getColour() == "#1CD3A2") {
-                    if (!greenCreated) {
-                        greenProductImages = productService.createProductImage(greens, productVariant.getProductVariantId());
-                        greenCreated = true;
-                    } else {
-                        productVariant.getProductImages().addAll(greenProductImages);
-                    }
-                } else if (productVariant.getColour() == "#CB4154") {
-                    if (!redCreated) {
-                        redProductImages = productService.createProductImage(reds, productVariant.getProductVariantId());
-                        redCreated = true;
-                    } else {
-                        productVariant.getProductImages().addAll(redProductImages);
-                    }
-                }
-            }
+            Product newProduct30 = productService.createNewProduct(product30, category2.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
         }
     }
 

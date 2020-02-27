@@ -2,6 +2,7 @@ package capstone.rt04.retailbackend.controllers;
 
 import capstone.rt04.retailbackend.entities.*;
 import capstone.rt04.retailbackend.request.category.CategoryCreateRequest;
+import capstone.rt04.retailbackend.request.product.ColourToImageUrlsMap;
 import capstone.rt04.retailbackend.request.product.ProductCreateRequest;
 import capstone.rt04.retailbackend.request.productVariant.ProductVariantCreateRequest;
 import capstone.rt04.retailbackend.util.enums.SizeEnum;
@@ -59,7 +60,7 @@ public class ApiTestSetup {
     protected static Long storeId;
 
     protected List<SizeEnum> sizes = new ArrayList<>();
-    protected List<String> colors = new ArrayList<>();
+    protected List<ColourToImageUrlsMap> colourToImageUrlsMaps = new ArrayList<>();
 
     @Before
     public void setUp() throws Exception {
@@ -126,10 +127,10 @@ public class ApiTestSetup {
 
         sizes.add(SizeEnum.S);
         sizes.add(SizeEnum.M);
-        colors.add("White");
-        colors.add("Gold");
+        colourToImageUrlsMaps.add(new ColourToImageUrlsMap("White", new ArrayList<>()));
+        colourToImageUrlsMaps.add(new ColourToImageUrlsMap("Gold", new ArrayList<>()));
 
-        ProductCreateRequest productCreateRequest = new ProductCreateRequest(validProduct, categoryId, null, null, sizes, colors);
+        ProductCreateRequest productCreateRequest = new ProductCreateRequest(validProduct, categoryId, null, null, sizes, colourToImageUrlsMaps);
         Product product = given().
                 contentType("application/json").
                 body(productCreateRequest).
@@ -137,7 +138,7 @@ public class ApiTestSetup {
                 then().statusCode(HttpStatus.CREATED.value()).extract().body().as(Product.class);
         productId = product.getProductId();
 
-        ProductVariantCreateRequest productVariantCreateRequest = new ProductVariantCreateRequest(productId, colors, sizes);
+        ProductVariantCreateRequest productVariantCreateRequest = new ProductVariantCreateRequest(productId, colourToImageUrlsMaps, sizes);
         List<ProductVariant> productVariant = given().
                 contentType("application/json").
                 body(productVariantCreateRequest).

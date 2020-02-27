@@ -2,6 +2,7 @@ package capstone.rt04.retailbackend.services;
 
 import capstone.rt04.retailbackend.entities.Category;
 import capstone.rt04.retailbackend.entities.Product;
+import capstone.rt04.retailbackend.request.product.ColourToImageUrlsMap;
 import capstone.rt04.retailbackend.util.enums.SizeEnum;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.category.CategoryNotFoundException;
@@ -12,7 +13,6 @@ import capstone.rt04.retailbackend.util.exceptions.product.CreateNewProductExcep
 import capstone.rt04.retailbackend.util.exceptions.product.ProductNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductStockNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
-import org.hibernate.sql.Update;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -191,15 +191,16 @@ public class CategoryServiceTest extends ServiceTestSetup {
 
         Product product = new Product("0010", "Stan Smith", "Adidas", BigDecimal.valueOf(109.90), BigDecimal.valueOf(49.90));
         product.setCategory(womenClothingDressCategory);
+
         List<SizeEnum> sizes = new ArrayList<>();
         sizes.add(SizeEnum.S);
         sizes.add(SizeEnum.M);
         sizes.add(SizeEnum.L);
-        List<String> colors = new ArrayList<>();
-        colors.add("Black");
-        colors.add("Green");
-        colors.add("Red");
-        Product newProduct = productService.createNewProduct(product, womenClothingDressCategory.getCategoryId(), null, null, sizes, colors);
+        List<ColourToImageUrlsMap> colourToImageUrlsMaps = new ArrayList<>();
+        colourToImageUrlsMaps.add(new ColourToImageUrlsMap("Ember", new ArrayList<>()));
+        colourToImageUrlsMaps.add(new ColourToImageUrlsMap("Snow", new ArrayList<>()));
+
+        Product newProduct = productService.createNewProduct(product, womenClothingDressCategory.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
 
         try {
             Category updatedCategory = categoryService.updateCategory(menClothingPantsCategory, womenClothingDressCategory.getCategoryId());
@@ -211,7 +212,6 @@ public class CategoryServiceTest extends ServiceTestSetup {
 
             categoryService.deleteCategory(menClothingPantsCategory.getCategoryId());
             categoryService.deleteCategory(menClothingCategory.getCategoryId());
-
 
             throw new UpdateCategoryException(ex.getMessage());
         }

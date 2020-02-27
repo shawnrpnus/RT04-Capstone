@@ -1,6 +1,7 @@
 package capstone.rt04.retailbackend.services;
 
 import capstone.rt04.retailbackend.entities.*;
+import capstone.rt04.retailbackend.request.product.ColourToImageUrlsMap;
 import capstone.rt04.retailbackend.util.enums.SizeEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.After;
@@ -53,8 +54,8 @@ public class ServiceTestSetup {
     protected static Long storeId2;
 
     protected  List<SizeEnum> sizes = new ArrayList<>();
-    protected List<String> colours = new ArrayList<>();
-    protected List<String> colours2 = new ArrayList<>();
+    protected List<ColourToImageUrlsMap> colourToImageUrlsMaps = new ArrayList<>();
+    protected List<ColourToImageUrlsMap> colourToImageUrlsMaps2 = new ArrayList<>();
     protected List<ProductVariant> productVariants = new ArrayList<>();
 
     @Before
@@ -74,15 +75,16 @@ public class ServiceTestSetup {
         Category fila = categoryService.createNewCategory(new Category("Fila"), shoes.getCategoryId());
         validProduct.setCategory(fila);
 
-        // Adding colors and sizes
+        // Adding
+        // colors and sizes
         sizes.add(SizeEnum.S);
         sizes.add(SizeEnum.M);
-        colours.add("White");
-        colours.add("Gold");
-        colours2.add("Ginger");
-        colours2.add("Magenta");
+        colourToImageUrlsMaps.add(new ColourToImageUrlsMap("White", new ArrayList<>()));
+        colourToImageUrlsMaps.add(new ColourToImageUrlsMap("Gold", new ArrayList<>()));
+        colourToImageUrlsMaps2.add(new ColourToImageUrlsMap("Ginger", new ArrayList<>()));
+        colourToImageUrlsMaps2.add(new ColourToImageUrlsMap("Magenta", new ArrayList<>()));
 
-        Product product1 = productService.createNewProduct(validProduct, fila.getCategoryId(), null, null, sizes, colours);
+        Product product1 = productService.createNewProduct(validProduct, fila.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
         assertThat(product1).isEqualTo(validProduct);
         categoryFilaId = fila.getCategoryId();
         categoryMenId = men.getCategoryId();
@@ -91,7 +93,7 @@ public class ServiceTestSetup {
         productId1 = product1.getProductId();
 
         /* Adding colour for product1 */
-        productVariants = productService.createMultipleProductVariants(productId1, colours2, sizes);
+        productVariants = productService.createMultipleProductVariants(productId1, colourToImageUrlsMaps2, sizes);
         assertThat(productVariants.size()).isNotEqualTo(0);
 
         productVariantId = productVariants.get(0).getProductVariantId();
@@ -104,10 +106,10 @@ public class ServiceTestSetup {
         Product validProduct2 = new Product("0002","Adidas Alpha Bounce", "Adidas", BigDecimal.valueOf(299.90), BigDecimal.valueOf(59.90));
         validProduct.setCategory(categoryService.retrieveCategoryByCategoryId(categoryFilaId));
 
-        Product product2 = productService.createNewProduct(validProduct2, categoryFilaId, null, null, sizes, colours);
+        Product product2 = productService.createNewProduct(validProduct2, categoryFilaId, null, null, sizes, colourToImageUrlsMaps);
         productId2 = product2.getProductId();
         /* Adding colour for product2 */
-        List<ProductVariant> productVariants2 = productService.createMultipleProductVariants(productId2, colours2, sizes);
+        List<ProductVariant> productVariants2 = productService.createMultipleProductVariants(productId2, colourToImageUrlsMaps2, sizes);
 
         // Create store
         Store expectedValidStore = new Store("Store 1", 8, 4, Time.valueOf("10:00:00"), Time.valueOf("21:00:00"), 2, 6, null);
