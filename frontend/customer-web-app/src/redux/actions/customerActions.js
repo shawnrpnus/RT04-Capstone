@@ -6,6 +6,7 @@ import {
   EMAIL_SENDING,
   EMAIL_SENT,
   GET_ERRORS,
+  RESET_VERIFICATION_STATUS,
   VERIFY_FAILURE,
   VERIFY_SUCCESS
 } from "./types";
@@ -123,6 +124,10 @@ const verificationError = () => ({
   type: VERIFY_FAILURE
 });
 
+export const resetVerificationStatus = () => ({
+  type: RESET_VERIFICATION_STATUS
+});
+
 export const resendVerifyEmail = (customerEmailReq, history) => {
   return dispatch => {
     axios
@@ -160,16 +165,23 @@ const updateCustomer = data => ({
   customer: data
 });
 
-export const sendUpdateEmailLink = (req, setDialogOpen) => {
+export const sendUpdateEmailLink = (
+  req,
+  setDialogOpen,
+  resetInputState,
+  setChangingEmail
+) => {
   return dispatch => {
     axios
       .post(CUSTOMER_BASE_URL + "/sendUpdateEmailLink", req)
       .then(response => {
-        dispatch(emailSent());
+        setTimeout(() => dispatch(emailSent()), 500);
+        resetInputState();
+        setChangingEmail(false);
         setDialogOpen(true);
       })
       .catch(err => {
-        dispatch(emailSent());
+        setTimeout(() => dispatch(emailSent()), 500);
         dispatchErrorMapError(err, dispatch);
       });
   };

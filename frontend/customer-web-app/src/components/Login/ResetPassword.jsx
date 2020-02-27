@@ -4,8 +4,6 @@ import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import Icon from "@material-ui/core/Icon";
-
-import Email from "@material-ui/icons/Email";
 import GridContainer from "components/Layout/components/Grid/GridContainer.js";
 import GridItem from "components/Layout/components/Grid/GridItem.js";
 import Button from "components/UI/CustomButtons/Button.js";
@@ -21,13 +19,15 @@ import { useDispatch, useSelector } from "react-redux";
 import { clearErrors } from "redux/actions";
 import IconButton from "@material-ui/core/IconButton";
 import { Visibility, VisibilityOff } from "@material-ui/icons";
-import { customerLogin, resetPassword } from "redux/actions/customerActions";
+import {
+  resetPassword,
+  re,
+  resetVerificationStatus
+} from "redux/actions/customerActions";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import { DialogContent } from "@material-ui/core";
 import Dialog from "@material-ui/core/Dialog";
-import { useLocation, useHistory, Link, useRouteMatch } from "react-router-dom";
-import LinkM from "@material-ui/core/Link";
-import { isValidES3Identifier } from "@babel/types";
+import { useHistory, useRouteMatch } from "react-router-dom";
 
 const useStyles = makeStyles(loginPageStyle);
 const _ = require("lodash");
@@ -64,6 +64,8 @@ export default function ResetPassword(props) {
   useEffect(() => {
     window.scrollTo(0, 0);
     document.body.scrollTop = 0;
+
+    return () => dispatch(resetVerificationStatus());
   }, []);
 
   //Misc

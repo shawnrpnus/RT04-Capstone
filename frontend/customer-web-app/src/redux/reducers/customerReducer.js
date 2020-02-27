@@ -25,6 +25,11 @@ export default function(state = initialState, action) {
         ...state,
         verificationStatus: "FAILURE"
       };
+    case types.RESET_VERIFICATION_STATUS:
+      return {
+        ...state,
+        verificationStatus: null
+      };
     case types.CUSTOMER_LOGOUT:
       return initialState;
     case types.EMAIL_SENDING:

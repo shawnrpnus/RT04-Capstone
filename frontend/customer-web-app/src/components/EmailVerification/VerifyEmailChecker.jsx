@@ -1,5 +1,9 @@
 import React, { useEffect } from "react";
-import { updateEmail, verify } from "redux/actions/customerActions";
+import {
+  resetVerificationStatus,
+  updateEmail,
+  verify
+} from "redux/actions/customerActions";
 import { useDispatch, useSelector } from "react-redux";
 import { Redirect, useHistory, useRouteMatch } from "react-router-dom";
 import LoadingOverlay from "react-loading-overlay";
@@ -14,6 +18,8 @@ const useStyles = makeStyles(headersStyle);
 
 const _ = require("lodash");
 
+//Intercepts links clicked for update email and verifying email processes
+//Calls the necessary API (updateEmail/verify),then redirects to the appropriate page
 function VerifyEmailChecker(props) {
   const { isUpdateEmail, isResetPassword } = props;
   //Hooks
@@ -42,6 +48,8 @@ function VerifyEmailChecker(props) {
   useEffect(() => {
     window.scrollTo(0, 0);
     document.body.scrollTop = 0;
+
+    return () => dispatch(resetVerificationStatus());
   }, []);
 
   //Misc

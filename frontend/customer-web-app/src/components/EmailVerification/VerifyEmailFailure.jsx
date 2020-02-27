@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { verify } from "redux/actions/customerActions";
+import { emailSent, verify } from "redux/actions/customerActions";
 import { useRouteMatch, useHistory } from "react-router-dom";
 import GridContainer from "components/Layout/components/Grid/GridContainer";
 import GridItem from "components/Layout/components/Grid/GridItem";
@@ -26,6 +26,12 @@ function VerifyEmailFailure(props) {
   const [inputState, setInputState] = useState({
     email: ""
   });
+
+  //Effects
+  //Cleanup on unmount
+  useEffect(() => {
+    return () => dispatch(emailSent());
+  }, []);
 
   //Misc
   const { classes } = props;

@@ -45,9 +45,10 @@ function ForgotPassword(props) {
   const [dialogOpen, setDialogOpen] = useState(false);
 
   //Effects
-  useEffect(() => {
-    return () => dispatch(emailSent());
-  });
+  //Cleanup on unmount
+  // useEffect(() => {
+  //   return () => dispatch(emailSent());
+  // }, []);
 
   //Misc
   const onChange = e => {
