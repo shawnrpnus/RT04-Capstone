@@ -34,14 +34,18 @@ public class CategoryService {
         Category existingSiblingCategory = categoryRepository.findAllByCategoryNameAndParentCategory_CategoryId(newCategory.getCategoryName(), parentCategoryId).orElse(null);
         List<Category> categories = retrieveAllCategories();
         if (existingSiblingCategory != null){
-            for(Category c : categories) {
-                System.out.println("ASDFASDF" + c.getCategoryName());
-            }
             System.out.println(existingSiblingCategory.getCategoryName());
             throw new CreateNewCategoryException("There is already a sibling category with the same name");
         }
         if (parentCategoryId != null) {
             Category parentCategoryEntity = retrieveCategoryByCategoryId(parentCategoryId);
+
+            //Max 3 levels down
+            if (parentCategoryEntity.getParentCategory()!=null
+                    && parentCategoryEntity.getParentCategory().getParentCategory() != null
+            && parentCategoryEntity.getParentCategory().getParentCategory().getParentCategory() == null){
+                throw new CreateNewCategoryException("Category tree is limited to 3 levels");
+            }
 
             if (!parentCategoryEntity.getProducts().isEmpty()) {
                 throw new CreateNewCategoryException("Parent category cannot be associated with any product");
