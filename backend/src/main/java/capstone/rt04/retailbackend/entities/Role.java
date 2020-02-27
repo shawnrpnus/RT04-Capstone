@@ -37,17 +37,14 @@ public class Role implements Serializable {
     
     private RoleNameEnum roleName;
     
-    private BigDecimal baseSalary;
-    
     @OneToMany(mappedBy = "role")
     private List<Staff> staffList;
 
     public Role() {
     }
     
-    public Role(RoleNameEnum roleName, BigDecimal baseSalary) {
+    public Role(RoleNameEnum roleName) {
         this.roleName = roleName;
-        this.baseSalary = baseSalary;
     }
      
 }

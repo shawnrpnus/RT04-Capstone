@@ -33,4 +33,5 @@ public class ErrorMessages {
 
     public static final String USERNAME_REQUIRED = "Username is required!";
     public static final String NRIC_REQUIRED = "NRIC is required!";
+    public static final String SALARY_REQUIRED ="Salary is required!";
 }

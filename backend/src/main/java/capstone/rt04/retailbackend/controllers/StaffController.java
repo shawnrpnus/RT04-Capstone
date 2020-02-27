@@ -42,9 +42,10 @@ public class StaffController {
     @PostMapping(StaffControllerRoutes.CREATE_NEW_STAFF)
     public ResponseEntity<?> createNewStaff(@RequestBody StaffCreateRequest staffCreateRequest) throws InputDataValidationException, CreateNewStaffException {
 
+        System.out.println(staffCreateRequest.getRoleId());
             try {
                 Staff newStaff = staffService.createNewStaff(staffCreateRequest.getStaff(), staffCreateRequest.getStaffAddress(),
-                        staffCreateRequest.getRole(), staffCreateRequest.getDepartment());
+                        staffCreateRequest.getRoleId(), staffCreateRequest.getDepartmentId());
                 return new ResponseEntity<>(newStaff, HttpStatus.CREATED);
             }catch (InputDataValidationException ex) {
                 return new ResponseEntity<>(ex.getErrorMap(), HttpStatus.BAD_REQUEST);
@@ -54,16 +55,24 @@ public class StaffController {
     }
 
     @PostMapping(StaffControllerRoutes.CREATE_NEW_ROLE)
-    public ResponseEntity<?> createNewRole(@RequestBody RoleCreateRequest roleCreateRequest){
-        Role newRole = staffService.createNewRole(roleCreateRequest.getName(),roleCreateRequest.getSalary());
-        return new ResponseEntity<>(newRole, HttpStatus.CREATED);
+    public ResponseEntity<?> createNewRole(@RequestBody RoleCreateRequest roleCreateRequest) throws CreateRoleException {
+        try {
+            Role newRole = staffService.createNewRole(roleCreateRequest.getRoleName());
+            return new ResponseEntity<>(newRole, HttpStatus.CREATED);
+        }catch (CreateRoleException ex){
+            return new ResponseEntity<>(ex, HttpStatus.BAD_REQUEST);
+        }
     }
 
 
     @PostMapping(StaffControllerRoutes.CREATE_NEW_DEPARTMENT)
-    public ResponseEntity<?> createNewDepartment(@RequestBody DepartmentCreateRequest departmentCreateRequest){
-        Department newDepartment = staffService.createNewDepartment(departmentCreateRequest.getName());
-        return new ResponseEntity<>(newDepartment, HttpStatus.CREATED);
+    public ResponseEntity<?> createNewDepartment(@RequestBody DepartmentCreateRequest departmentCreateRequest) throws CreateDepartmentException{
+        try {
+            Department newDepartment = staffService.createNewDepartment(departmentCreateRequest.getDepartmentName());
+            return new ResponseEntity<>(newDepartment, HttpStatus.CREATED);
+        } catch (CreateDepartmentException ex){
+            return new ResponseEntity<>(ex, HttpStatus.BAD_REQUEST);
+        }
     }
 
 
@@ -108,7 +117,7 @@ public class StaffController {
     @GetMapping(StaffControllerRoutes.RETRIEVE_ALL_ROLES)
     public ResponseEntity<?> retrieveAllRoles() {
         try {
-            List<String> roles = staffService.retrieveAllRoles();
+            List<Role> roles = staffService.retrieveAllRoles();
             return new ResponseEntity<>(roles, HttpStatus.OK);
         } catch (Exception ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);

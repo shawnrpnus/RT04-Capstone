@@ -15,6 +15,5 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 public class RoleCreateRequest {
 
-    private RoleNameEnum name;
-    private BigDecimal salary;
+    private RoleNameEnum roleName;
 }

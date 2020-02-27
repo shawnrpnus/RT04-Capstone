@@ -52,18 +52,19 @@ public class StaffServiceTest {
 
     @Before
     public void beforeEachTest() throws Exception{
-        Staff expectedValidStaff = new Staff("Bob", "Vance", 10, "S1111111D", VALID_STAFF_EMAIL);
+        BigDecimal salary = new BigDecimal(1000);
+        Staff expectedValidStaff = new Staff("Bob", "Vance", 10, "S1111111D", VALID_STAFF_EMAIL, salary);
 
         //Role and department has to be created beforehand
         RoleNameEnum rolename = RoleNameEnum.valueOf("ASSISTANT");
-        BigDecimal salary = new BigDecimal(1000);
-        testRole = staffService.createNewRole(rolename, salary);
+
+        testRole = staffService.createNewRole(rolename);
 
         testDepartment = staffService.createNewDepartment("ABC");
 
         Address testAddress = new Address("aba", "aaa", 123456, "blah");
 
-        Staff testValidStaff = staffService.createNewStaff(expectedValidStaff,testAddress,testRole,testDepartment);
+        Staff testValidStaff = staffService.createNewStaff(expectedValidStaff,testAddress,testRole.getRoleId(),testDepartment.getDepartmentId());
         assertThat(testValidStaff.getStaffId()).isNotNull();
         assertThat(testValidStaff).isEqualTo(expectedValidStaff);
         createdStaffId = testValidStaff.getStaffId();
@@ -81,10 +82,11 @@ public class StaffServiceTest {
 
         //Valid address
         Address a = new Address("aba", "aaa", 123456, "blah");
-        Staff invalidStaff = new Staff("bob", "vance", 10, "S111111D",  "bob@Bob@com");
+        BigDecimal salary = new BigDecimal(1000);
+        Staff invalidStaff = new Staff("bob", "vance", 10, "S111111D",  "bob@Bob@com", salary);
 
         try {
-           staffService.createNewStaff(invalidStaff, a, testRole, testDepartment);
+           staffService.createNewStaff(invalidStaff, a, testRole.getRoleId(), testDepartment.getDepartmentId());
        } catch (InputDataValidationException ex) {
            Map<String, String> expectedErrorMap = new HashMap<>();
           expectedErrorMap.put("email", ErrorMessages.EMAIL_INVALID);

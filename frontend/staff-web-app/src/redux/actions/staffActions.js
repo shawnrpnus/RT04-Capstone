@@ -204,7 +204,7 @@ export const retrieveAllRoles = () => {
 
 const retrieveAllRolesSuccess = data => ({
     type: types.RETRIEVE_ALL_ROLES,
-    roles: data
+    roleEntity: data
 });
 
 const retrieveAllRolesError = data => ({
@@ -228,8 +228,8 @@ export const retrieveAllDepartments= () => {
 };
 
 const retrieveAllDepartmentsSuccess = data => ({
-    type: types.RETRIEVE_ALL_ROLES,
-    departments: data
+    type: types.RETRIEVE_ALL_DEPARTMENTS,
+    allDepartments: data
 });
 
 const retrieveAllDepartmentsError = data => ({
@@ -265,3 +265,4 @@ const deleteStaffError = data => ({
     type: types.GET_ERRORS,
     errorMap: data
 });
+

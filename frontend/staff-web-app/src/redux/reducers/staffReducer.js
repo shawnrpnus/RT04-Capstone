@@ -2,7 +2,9 @@ import * as types from "../actions/types";
 
 const initialState = {
   currentStaff: null,
-  allStaff: null
+  allStaff: null,
+  allRoles:null,
+  allDepartments:null
 };
 
 export default function(state = initialState, action) {
@@ -21,7 +23,13 @@ export default function(state = initialState, action) {
     case types.RETRIEVE_ALL_ROLES:
       return {
         ...state,
-        allRoles: action.allRoles
+        allRoles: action.roleEntity
+      };
+
+    case types.RETRIEVE_ALL_DEPARTMENTS:
+      return {
+        ...state,
+        allDepartments: action.allDepartments
       };
 
     case types.CREATE_STAFF_ACCOUNT:
@@ -44,6 +52,7 @@ export default function(state = initialState, action) {
         ...state,
         currentStaff: action.staffEntity
       };
+
     case types.DELETE_STAFF:
       return {
         ...state,
@@ -52,4 +61,5 @@ export default function(state = initialState, action) {
     default:
       return state;
   }
+
 }

@@ -14,7 +14,7 @@ public class StaffCreateRequest {
 
     private Staff staff;
     private Address staffAddress;
-    private Role role;
-    private Department department;
+    private Long roleId;
+    private Long departmentId;
 
 }
