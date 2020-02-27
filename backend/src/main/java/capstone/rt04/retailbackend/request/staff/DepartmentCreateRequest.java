@@ -11,5 +11,5 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DepartmentCreateRequest {
-    private String name;
+    private String departmentName;
 }
