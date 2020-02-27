@@ -4,8 +4,6 @@ import { connect } from "react-redux";
 import { clearErrors, updateErrors } from "../../../redux/actions";
 import { createNewStaff, retrieveAllRoles, retrieveAllDepartments } from "../../../redux/actions/staffActions";
 import Address from "../../../models/address";
-import Role from "../../../models/staff/role";
-import Department from "../../../models/staff/department";
 import Staff from "../../../models/staff/staff";
 import StaffCreateRequest from "../../../models/staff/StaffCreateRequest";
 import MomentUtils from "@date-io/moment";
