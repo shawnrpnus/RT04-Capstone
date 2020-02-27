@@ -13,16 +13,16 @@ import javax.validation.constraints.Size;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CustomerChangePasswordRequest {
+public class UpdateCustomerRequest {
 
-    @NotNull
+    @NotNull(message = "Customer Id required")
     private Long customerId;
 
-    @NotNull(message = ErrorMessages.OLD_PASSWORD_REQUIRED)
-    @Size(min=1, message = ErrorMessages.OLD_PASSWORD_REQUIRED)
-    private String oldPassword;
+    @NotNull(message = ErrorMessages.FIRST_NAME_REQUIRED)
+    @Size(min = 1, message = ErrorMessages.FIRST_NAME_REQUIRED)
+    private String firstName;
 
-    @NotNull(message = ErrorMessages.NEW_PASSWORD_REQUIRED)
-    @Size(min=1, message = ErrorMessages.NEW_PASSWORD_REQUIRED)
-    private String newPassword;
+    @NotNull(message = ErrorMessages.LAST_NAME_REQUIRED)
+    @Size(min = 1, message = ErrorMessages.LAST_NAME_REQUIRED)
+    private String lastName;
 }

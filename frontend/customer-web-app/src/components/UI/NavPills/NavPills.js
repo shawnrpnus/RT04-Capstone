@@ -78,7 +78,11 @@ export default function NavPills(props) {
       >
         {tabs.map((prop, key) => {
           return (
-            <div className={classes.tabContent} key={key}>
+            <div
+              className={classes.tabContent}
+              key={key}
+              style={key !== active ? { display: "none" } : {}}
+            >
               {prop.tabContent}
             </div>
           );

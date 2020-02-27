@@ -24,7 +24,8 @@ function CustomTextField(props) {
     variant,
     fullWidth,
     placeholder,
-    formControlClassName //to override formControl classes (mainly margins and padding)
+    formControlClassName, //to override formControl classes (mainly margins and padding)
+    ...rest
   } = props;
 
   return (
@@ -49,6 +50,7 @@ function CustomTextField(props) {
       InputLabelProps={InputLabelProps}
       fullWidth={fullWidth}
       placeholder={placeholder}
+      {...rest}
     />
   );
 }

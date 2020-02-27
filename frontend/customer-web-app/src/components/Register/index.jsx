@@ -27,18 +27,22 @@ import CustomTextField from "components/UI/CustomInput/CustomTextField";
 import { useDispatch, useSelector } from "react-redux";
 import { clearErrors } from "redux/actions";
 import { createNewCustomer, emailSending } from "redux/actions/customerActions";
-import CreateUpdateCustomerRequest from "models/customer/CreateUpdateCustomerRequest";
+import CreateCustomerRequest from "models/customer/CreateCustomerRequest";
 import IconButton from "@material-ui/core/IconButton";
 import LoadingOverlay from "react-loading-overlay";
 
 const useStyles = makeStyles(signupPageStyle);
 
 function RegisterPage(props) {
+  //Hooks
   const classes = useStyles();
+
+  //Redux
   const dispatch = useDispatch();
   const errors = useSelector(state => state.errors);
   const isSendingEmail = useSelector(state => state.customer.isSendingEmail);
 
+  //State
   const [showPassword, setShowPassword] = useState(false);
   const [checked, setChecked] = useState(false);
   const [inputState, setInputState] = useState({
@@ -48,6 +52,7 @@ function RegisterPage(props) {
     password: ""
   });
 
+  //Misc
   const onChange = e => {
     e.persist();
     setInputState(inputState => ({
@@ -61,12 +66,7 @@ function RegisterPage(props) {
 
   const handleSubmit = () => {
     const { firstName, lastName, email, password } = inputState;
-    const req = new CreateUpdateCustomerRequest(
-      firstName,
-      lastName,
-      email,
-      password
-    );
+    const req = new CreateCustomerRequest(firstName, lastName, email, password);
     dispatch(emailSending());
     dispatch(createNewCustomer(req, props.history));
   };

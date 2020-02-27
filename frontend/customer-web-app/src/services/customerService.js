@@ -11,8 +11,8 @@ const getCustomerFromLocalStorage = () => {
 };
 
 // customer is the object BEFORE jsog.decode
-const saveCustomerToLocalStorage = customer => {
-  localStorage.setItem("customer", jsog.stringify(customer));
+const saveCustomerToLocalStorage = customerObj => {
+  localStorage.setItem("customer", jsog.stringify(customerObj));
 };
 
 const removeCustomerFromLocalStorage = () => {

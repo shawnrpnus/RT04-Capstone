@@ -1,4 +1,4 @@
-export default class CreateUpdateCustomerRequest {
+export default class CreateCustomerRequest {
   firstName;
   lastName;
   email;

@@ -51,7 +51,7 @@ public class CustomerController {
 
     // 2. Customer clicks verification link --> call this API
     @GetMapping(CustomerControllerRoutes.VERIFY)
-    public ResponseEntity<?> verifyCustomer(@PathVariable String verificationCode) throws VerificationCodeInvalidException, VerificationCodeNotFoundException, AlreadyVerifiedException {
+    public ResponseEntity<?> verifyCustomer(@PathVariable String verificationCode) throws VerificationCodeExpiredException, VerificationCodeNotFoundException, AlreadyVerifiedException {
         Customer customer = customerService.verify(verificationCode);
         return new ResponseEntity<>(customer, HttpStatus.OK);
     }
@@ -70,15 +70,16 @@ public class CustomerController {
     }
 
     @GetMapping(CustomerControllerRoutes.GET_CUSTOMER_FROM_CODE)
-    public ResponseEntity<?> getCustomerFromCode(@PathVariable String code) throws VerificationCodeInvalidException {
+    public ResponseEntity<?> getCustomerFromCode(@PathVariable String code) throws VerificationCodeExpiredException {
         Customer customer = customerService.retrieveCustomerByVerificationCode(code);
         return new ResponseEntity<>(customer, HttpStatus.OK);
     }
 
     // 1. Customer clicks update email --> enters new email --> click send link --> call this API
     @PostMapping(CustomerControllerRoutes.SEND_UPDATE_EMAIL_LINK)
-    public ResponseEntity<?> sendUpdateEmailLink(@RequestParam Long customerId, @RequestParam String newEmail) throws CustomerNotFoundException {
-        customerService.sendUpdateEmailLink(customerId, newEmail);
+    public ResponseEntity<?> sendUpdateEmailLink(@RequestBody SendUpdateEmailLinkRequest req) throws CustomerNotFoundException, InputDataValidationException {
+        validationService.throwExceptionIfInvalidBean(req);
+        customerService.sendUpdateEmailLink(req.getCustomerId(), req.getNewEmail());
         Map<String, String> successMessage = new HashMap<>();
         successMessage.put("message","Please check your email for the link to reset your password");
         return new ResponseEntity<>(successMessage, HttpStatus.OK);
@@ -86,21 +87,17 @@ public class CustomerController {
 
     // 2. Customer checks email --> clicks on link --> call this API --> redirect to success page
     @GetMapping(CustomerControllerRoutes.UPDATE_EMAIL)
-    public ResponseEntity<?> updateEmailLinkClicked(@PathVariable String code) throws CustomerNotFoundException, VerificationCodeInvalidException {
+    public ResponseEntity<?> updateEmailLinkClicked(@PathVariable String code) throws CustomerNotFoundException, VerificationCodeExpiredException, VerificationCodeNotFoundException {
         Customer customer =customerService.updateEmail(code);
-        /*
-        TODO: Redirect to success page OR the link sent is to a client page, which
-         calls this API upon loading, then displays result based on the response
-         */
         return new ResponseEntity<>(customer, HttpStatus.OK);
     }
 
     @PostMapping(CustomerControllerRoutes.UPDATE_CUSTOMER)
-    public ResponseEntity<?> updateCustomer(@RequestBody Customer customer) throws CustomerNotFoundException, InputDataValidationException {
-        Customer updatedCustomer = customerService.updateCustomerDetails(customer);
+    public ResponseEntity<?> updateCustomer(@RequestBody UpdateCustomerRequest req) throws CustomerNotFoundException, InputDataValidationException {
+        validationService.throwExceptionIfInvalidBean(req);
+        Customer updatedCustomer = customerService.updateCustomerDetails(req.getCustomerId(), req.getFirstName(), req.getLastName());
         return new ResponseEntity<>(updatedCustomer, HttpStatus.OK);
     }
-
 
     @PostMapping(CustomerControllerRoutes.LOGIN)
     public ResponseEntity<?> customerLogin(@RequestBody CustomerLoginRequest customerLoginRequest) throws CustomerNotVerifiedException, InvalidLoginCredentialsException, InputDataValidationException {
@@ -110,11 +107,8 @@ public class CustomerController {
     }
 
     @PostMapping(CustomerControllerRoutes.CHANGE_PASSWORD)
-    public ResponseEntity<?> changePassword(@RequestBody CustomerChangePasswordRequest customerChangePasswordRequest) throws CustomerNotFoundException, InvalidLoginCredentialsException {
-        Map<String, String> inputErrMap = validationService.generateErrorMap(customerChangePasswordRequest);
-        if (inputErrMap != null) {
-            return new ResponseEntity<>(inputErrMap, HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<?> changePassword(@RequestBody CustomerChangePasswordRequest customerChangePasswordRequest) throws CustomerNotFoundException, InvalidLoginCredentialsException, InputDataValidationException {
+        validationService.throwExceptionIfInvalidBean(customerChangePasswordRequest);
 
         customerService.changePassword(customerChangePasswordRequest.getCustomerId(),
                 customerChangePasswordRequest.getOldPassword(),
@@ -144,7 +138,7 @@ public class CustomerController {
 
     // Client enters new password, clicks submit --> call this api
     @PostMapping(CustomerControllerRoutes.RESET_PASSWORD_POST)
-    public ResponseEntity<?> resetPassword(@RequestBody CustomerResetPasswordRequest customerResetPasswordRequest) throws CustomerNotFoundException, VerificationCodeInvalidException {
+    public ResponseEntity<?> resetPassword(@RequestBody CustomerResetPasswordRequest customerResetPasswordRequest) throws CustomerNotFoundException, VerificationCodeExpiredException {
         Map<String, String> inputErrMap = validationService.generateErrorMap(customerResetPasswordRequest);
         if (inputErrMap != null) {
             return new ResponseEntity<>(inputErrMap, HttpStatus.BAD_REQUEST);
