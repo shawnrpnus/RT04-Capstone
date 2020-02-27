@@ -15,7 +15,7 @@ const useStyles = makeStyles(headersStyle);
 const _ = require("lodash");
 
 function VerifyEmailChecker(props) {
-  const { isUpdateEmail } = props;
+  const { isUpdateEmail, isResetPassword } = props;
   //Hooks
   const classes = useStyles();
   const match = useRouteMatch();
@@ -29,15 +29,12 @@ function VerifyEmailChecker(props) {
     state => state.customer.verificationStatus
   );
 
-  //State
-
+  const verificationCode = match.params.verificationCode;
   //Effects
   useEffect(() => {
-    const verificationCode = match.params.verificationCode;
     if (isUpdateEmail) {
       dispatch(updateEmail(verificationCode, history));
     } else {
-      console.log("running verify");
       dispatch(verify(verificationCode, history));
     }
   }, []);
@@ -83,7 +80,6 @@ function VerifyEmailChecker(props) {
             ) : verificationStatus === "FAILURE" ? (
               isUpdateEmail ? (
                 <Redirect
-                  to
                   to={{
                     pathname: "/account/login",
                     state: { isUpdateEmail: true, linkExpired: true }

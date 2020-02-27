@@ -20,7 +20,7 @@ export const emailSending = () => ({
   type: EMAIL_SENDING
 });
 
-const emailSent = () => ({
+export const emailSent = () => ({
   type: EMAIL_SENT
 });
 
@@ -96,7 +96,7 @@ export const verify = (verificationCode, history) => {
       .then(response => {
         console.log("VERIFY SUCCESS");
         const { data } = jsog.decode(response);
-        dispatch(verificationSuccess(data));
+        dispatch(verificationSuccess());
         dispatchUpdatedCustomer(response.data, dispatch);
       })
       .catch(err => {
@@ -115,9 +115,8 @@ export const verify = (verificationCode, history) => {
   };
 };
 
-const verificationSuccess = data => ({
-  type: VERIFY_SUCCESS,
-  customer: data
+const verificationSuccess = () => ({
+  type: VERIFY_SUCCESS
 });
 
 const verificationError = () => ({
@@ -183,8 +182,7 @@ export const updateEmail = (verificationCode, history) => {
       .get(CUSTOMER_BASE_URL + `/updateEmail/${verificationCode}`)
       .then(response => {
         dispatch(customerLogout());
-        const { data } = jsog.decode(response);
-        dispatch(verificationSuccess(data));
+        dispatch(verificationSuccess());
       })
       .catch(err => {
         if (err.response.status === 404) {
@@ -215,6 +213,55 @@ export const changePassword = (req, enqueueSnackbar, setChangingPassword) => {
       })
       .catch(err => {
         dispatchErrorMapError(err, dispatch);
+      });
+  };
+};
+
+export const sendResetPasswordLink = (req, setDialogOpen) => {
+  return dispatch => {
+    axios
+      .post(CUSTOMER_BASE_URL + "/sendResetPasswordLink", req)
+      .then(response => {
+        dispatch(emailSent());
+        setDialogOpen(true);
+      })
+      .catch(err => {
+        dispatch(emailSent());
+        dispatchErrorMapError(err, dispatch);
+      });
+  };
+};
+
+export const resetPassword = (req, setDialogOpen, setDialogText) => {
+  return dispatch => {
+    axios
+      .post(CUSTOMER_BASE_URL + "/resetPassword", req)
+      .then(response => {
+        setDialogText({
+          dialogTitle: "Success",
+          dialogContent:
+            "Your password has been updated. Please login with your new password."
+        });
+        setDialogOpen(true);
+        dispatch(verificationSuccess());
+      })
+      .catch(err => {
+        const errorMap = _.get(err, "response.data", null);
+        if (
+          errorMap.hasOwnProperty("newPassword") ||
+          errorMap.hasOwnProperty("confirmNewPassword")
+        ) {
+          //input field errors
+          dispatchErrorMapError(err, dispatch);
+        } else {
+          //not input field errors
+          setDialogText({
+            dialogTitle: "Error",
+            dialogContent: "Your link has expired. Please request a new link."
+          });
+          setDialogOpen(true);
+        }
+        dispatch(verificationError());
       });
   };
 };
