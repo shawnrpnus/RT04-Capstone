@@ -1,22 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { verify } from "redux/actions/customerActions";
-import { useRouteMatch, useHistory } from "react-router-dom";
+import React from "react";
 import GridItem from "components/Layout/components/Grid/GridItem";
 
 import classNames from "classnames";
 
 function VerifyEmailConfirmation(props) {
   const { classes } = props;
-
-  const match = useRouteMatch();
-  const history = useHistory();
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    const verificationCode = match.params.verificationCode;
-    dispatch(verify(verificationCode, history));
-  }, []);
 
   return (
     <React.Fragment>

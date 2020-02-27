@@ -12,8 +12,8 @@ function LandingPage(props) {
       md={8}
       className={classNames(classes.mlAuto, classes.mrAuto, classes.textCenter)}
     >
-      <h1 className={classes.title}>Fashion. Re-imagine.</h1>
-      <h4>You can reserve fitting rooms and stuff</h4>
+      <h1 className={classes.title}>Fashion. Re-imagined.</h1>
+      <h4>Reservations. Personalization. Convenience.</h4>
       <br />
       <h6>Shop Now:</h6>
       <div>

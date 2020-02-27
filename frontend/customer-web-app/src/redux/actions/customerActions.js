@@ -94,12 +94,14 @@ export const verify = (verificationCode, history) => {
     axios
       .get(CUSTOMER_BASE_URL + `/verify/${verificationCode}`)
       .then(response => {
+        console.log("VERIFY SUCCESS");
         const { data } = jsog.decode(response);
         dispatch(verificationSuccess(data));
         dispatchUpdatedCustomer(response.data, dispatch);
       })
       .catch(err => {
         if (err.response.status === 404) {
+          console.log(err.response);
           history.push("/404");
         } else {
           const errorMap = _.get(err, "response.data", null);
