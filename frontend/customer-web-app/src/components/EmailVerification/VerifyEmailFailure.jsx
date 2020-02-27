@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { verify } from "redux/actions/customerActions";
+import { emailSent, verify } from "redux/actions/customerActions";
 import { useRouteMatch, useHistory } from "react-router-dom";
 import GridContainer from "components/Layout/components/Grid/GridContainer";
 import GridItem from "components/Layout/components/Grid/GridItem";
@@ -15,13 +15,26 @@ import { resendVerifyEmail, emailSending } from "redux/actions/customerActions";
 import classNames from "classnames";
 
 function VerifyEmailFailure(props) {
-  const { classes } = props;
+  //Hooks
+  const history = useHistory();
+
+  //Redux
+  const dispatch = useDispatch();
+  const errors = useSelector(state => state.errors);
+
+  //State
   const [inputState, setInputState] = useState({
     email: ""
   });
-  const history = useHistory();
-  const dispatch = useDispatch();
-  const errors = useSelector(state => state.errors);
+
+  //Effects
+  //Cleanup on unmount
+  useEffect(() => {
+    return () => dispatch(emailSent());
+  }, []);
+
+  //Misc
+  const { classes } = props;
 
   const onChange = e => {
     e.persist();

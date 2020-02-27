@@ -1,7 +1,11 @@
 import React, { useEffect } from "react";
-import { verify } from "redux/actions/customerActions";
+import {
+  resetVerificationStatus,
+  updateEmail,
+  verify
+} from "redux/actions/customerActions";
 import { useDispatch, useSelector } from "react-redux";
-import { useHistory, useRouteMatch } from "react-router-dom";
+import { Redirect, useHistory, useRouteMatch } from "react-router-dom";
 import LoadingOverlay from "react-loading-overlay";
 import VerifyEmailConfirmation from "components/EmailVerification/VerifyEmailConfirmation";
 import VerifyEmailFailure from "components/EmailVerification/VerifyEmailFailure";
@@ -12,34 +16,57 @@ import headersStyle from "assets/jss/material-kit-pro-react/views/sectionsSectio
 
 const useStyles = makeStyles(headersStyle);
 
-function VerifyEmailChecker(props) {
-  const classes = useStyles();
+const _ = require("lodash");
 
-  const verificationErrors = useSelector(
+//Intercepts links clicked for update email and verifying email processes
+//Calls the necessary API (updateEmail/verify),then redirects to the appropriate page
+function VerifyEmailChecker(props) {
+  const { isUpdateEmail, isResetPassword } = props;
+  //Hooks
+  const classes = useStyles();
+  const match = useRouteMatch();
+  const history = useHistory();
+
+  //Redux
+  const dispatch = useDispatch();
+  const isSendingEmail = useSelector(state => state.customer.isSendingEmail);
+  const errors = useSelector(state => state.errors);
+  const verificationStatus = useSelector(
     state => state.customer.verificationStatus
   );
 
-  const isSendingEmail = useSelector(state => state.customer.isSendingEmail);
-
-  const match = useRouteMatch();
-  const history = useHistory();
-  const dispatch = useDispatch();
-
+  const verificationCode = match.params.verificationCode;
+  //Effects
   useEffect(() => {
-    const verificationCode = match.params.verificationCode;
-    dispatch(verify(verificationCode, history));
+    if (isUpdateEmail) {
+      dispatch(updateEmail(verificationCode, history));
+    } else {
+      dispatch(verify(verificationCode, history));
+    }
   }, []);
 
   useEffect(() => {
     window.scrollTo(0, 0);
     document.body.scrollTop = 0;
+
+    return () => dispatch(resetVerificationStatus());
   }, []);
+
+  //Misc
+  const loadingText =
+    isSendingEmail && _.isEmpty(errors)
+      ? "Sending you an email..."
+      : verificationStatus === null
+      ? "Verifying..."
+      : "";
 
   return (
     <LoadingOverlay
       spinner
-      active={isSendingEmail || verificationErrors === null}
-      text="Sending you an email..."
+      active={
+        (isSendingEmail && _.isEmpty(errors)) || verificationStatus === null
+      }
+      text={loadingText}
     >
       <div
         className={classes.pageHeader}
@@ -47,10 +74,28 @@ function VerifyEmailChecker(props) {
       >
         <div className={classes.container}>
           <GridContainer>
-            {verificationErrors === "SUCCESS" ? (
-              <VerifyEmailConfirmation classes={classes} />
-            ) : verificationErrors === "FAILURE" ? (
-              <VerifyEmailFailure classes={classes} />
+            {verificationStatus === "SUCCESS" ? (
+              isUpdateEmail ? (
+                <Redirect
+                  to={{
+                    pathname: "/account/login",
+                    state: { isUpdateEmail: true }
+                  }}
+                />
+              ) : (
+                <VerifyEmailConfirmation classes={classes} />
+              )
+            ) : verificationStatus === "FAILURE" ? (
+              isUpdateEmail ? (
+                <Redirect
+                  to={{
+                    pathname: "/account/login",
+                    state: { isUpdateEmail: true, linkExpired: true }
+                  }}
+                />
+              ) : (
+                <VerifyEmailFailure classes={classes} />
+              )
             ) : null}
           </GridContainer>
         </div>

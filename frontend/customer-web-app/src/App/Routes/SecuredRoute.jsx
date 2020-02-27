@@ -1,11 +1,10 @@
 import React from "react";
 import { Redirect, Route } from "react-router-dom";
-import customerService from "services/customerService";
+import { useSelector } from "react-redux";
 
 const SecuredRoute = ({ component: Component, ...rest }) => {
   let authenticated = false;
-
-  let customer = customerService.getCustomerFromLocalStorage();
+  let customer = useSelector(state => state.customer.loggedInCustomer);
 
   if (customer) authenticated = true;
 

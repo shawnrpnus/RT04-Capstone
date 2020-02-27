@@ -107,7 +107,7 @@ public class CustomerServiceTest extends ServiceTestSetup {
 
         String newPassword = "password123";
 
-        customerService.resetPassword(validCustomer.getCustomerId(), vCode.getCode(), newPassword);
+        customerService.resetPassword(vCode.getCode(), newPassword, newPassword);
 
         validCustomer =  customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
 

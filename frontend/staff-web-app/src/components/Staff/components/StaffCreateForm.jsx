@@ -2,14 +2,12 @@ import React, { Component, PureComponent } from "react";
 import withPage from "../../Layout/page/withPage";
 import { connect } from "react-redux";
 import { clearErrors, updateErrors } from "../../../redux/actions";
-import { createNewStaff, retrieveAllRoles } from "../../../redux/actions/staffActions";
+import { createNewStaff, retrieveAllRoles, retrieveAllDepartments } from "../../../redux/actions/staffActions";
 import Address from "../../../models/address";
-import Role from "../../../models/staff/role";
-import Department from "../../../models/staff/department";
 import Staff from "../../../models/staff/staff";
 import StaffCreateRequest from "../../../models/staff/StaffCreateRequest";
 import MomentUtils from "@date-io/moment";
-import { Grid } from "@material-ui/core";
+import {Grid, TextField} from "@material-ui/core";
 import MaterialTextField from "../../../shared/components/Form/MaterialTextField";
 import {
     MuiPickersUtilsProvider
@@ -24,6 +22,8 @@ import CloseCircleIcon from "mdi-react/CloseCircleIcon";
 import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import {retrieveAllCategoryTagStyle} from "../../../redux/actions/productActions";
 
 class StaffCreateForm extends Component {
     static propTypes = {
@@ -34,7 +34,22 @@ class StaffCreateForm extends Component {
 
     componentDidMount() {
         this.props.retrieveAllRoles();
+        this.props.retrieveAllDepartments();
+
     }
+
+
+    onSelectRole =  (event, selectedRole) => {
+        if (selectedRole === null) return;
+        console.log(selectedRole.roleId);
+        this.setState({roleId: selectedRole.roleId});
+    };
+
+    onSelectDepartment =  (event, selectedDepartment) => {
+        if (selectedDepartment === null) return;
+        console.log(selectedDepartment);
+        this.setState({departmentId: selectedDepartment.departmentId});
+    };
 
     constructor(props) {
         super(props);
@@ -45,9 +60,9 @@ class StaffCreateForm extends Component {
             email: "",
             nric: "",
             leaveRemaining : "",
-            departmentName : "",
-            roleName : "",
-            baseSalary: "",
+            departmentId : "",
+            roleId : "",
+            salary: "",
             line1: "",
             line2:  "",
             buildingName:  "",
@@ -57,9 +72,11 @@ class StaffCreateForm extends Component {
 
     onChange = e => {
         const name = e.target.name;
+        console.log(e);
         this.setState({[name]: e.target.value}); //computed property name syntax
         if (Object.keys(this.props.errors).length !== 0) {
             this.props.clearErrors();
+
         }
     };
 
@@ -91,12 +108,12 @@ class StaffCreateForm extends Component {
             this.state.lastName,
             this.state.leaveRemaining,
             this.state.nric,
-            this.state.email
+            this.state.email,
+            this.state.salary
         );
-        const role = new Role(this.state.roleName, this.state.baseSalary);
-        const department = new Department(this.state.departmentName);
+
         const staffAddress = new Address(this.state.line1, this.state.line2, this.state.postalCode, this.state.buildingName);
-        const req = new StaffCreateRequest(staff, role, department, staffAddress);
+        const req = new StaffCreateRequest(staff, this.roleId, this.departmentId, staffAddress);
 
                 this.props.createNewStaff(req, this.props.history);
 
@@ -104,6 +121,7 @@ class StaffCreateForm extends Component {
     };
 
     render() {
+
         //pulling out the fields from props
         const {errors, disabled} = this.props;
         const postalCodeProps = {
@@ -177,39 +195,54 @@ class StaffCreateForm extends Component {
                         </Grid>
 
                         <Grid item xs={12} md={6}>
-                            <MaterialTextField
-                                fieldLabel="Department"
-                                onChange={this.onChange}
-                                fieldName="departmentName"
-                                state={this.state}
+                            <Autocomplete
+                                id="tags-standard"
+                                options={this.props.allDepartments}
+                                getOptionLabel={option => option.departmentName}
+                                onChange={(event, value) => this.onSelectDepartment(event, value)}
+                                getOptionSelected={(option, value) =>
+                                    option.departmentId === value.departmentId
+                                }
+                                renderInput={params => (
+                                    <TextField
+                                        {...params}
+                                        variant="standard"
+                                        label="Department"
+                                        fullWidth
+                                    />
+                                )}
                                 errors={errors}
-                                disabled={disabled}
-                                autoFocus={true}
                             />
                         </Grid>
 
                         <Grid item xs={12} md={6}>
-                            <InputLabel id="demo-simple-select-label">Role</InputLabel>
-                            <Select
-                                labelId="demo-simple-select-label"
-                                id="demo-simple-select"
-                                value={this.state.roleName}
+                            <Autocomplete
+                                id="tags-standard"
+                                options={this.props.allRoles}
+                                getOptionLabel={option => option.roleName}
+                                onChange={(event, value) => this.onSelectRole(event, value)}
+                                getOptionSelected={(option, value) =>
+                                    option.roleId === value.roleId
 
-                                onChange={this.onChange}
-                            >
-                                <MenuItem value={"ASSISTANT"}>Assistant</MenuItem>
-                                <MenuItem value={"ASSISTANT_MANAGER"}>Assistant Manager</MenuItem>
-                                <MenuItem value={"MANAGER"}>Manager</MenuItem>
-                                <MenuItem value={"DIRECTOR"}>Director</MenuItem>
-                            </Select>
+                                }
+                                renderInput={params => (
+                                    <TextField
+                                        {...params}
+                                        variant="standard"
+                                        label="Role"
+                                        fullWidth
+                                    />
+                                )}
+                                errors={errors}
+                            />
 
                         </Grid>
 
                         <Grid item xs={12} md={6}>
                             <MaterialTextField
-                                fieldLabel="Base Salary"
+                                fieldLabel="Salary"
                                 onChange={this.onChange}
-                                fieldName="baseSalary"
+                                fieldName="salary"
                                 state={this.state}
                                 errors={errors}
                                 disabled={disabled}
@@ -310,7 +343,8 @@ class StaffCreateForm extends Component {
 }
 //mapping global state to this component
     const mapStateToProps = state => ({
-    roles: state.staffEntity.allRoles,
+    allRoles: state.staffEntity.allRoles,
+        allDepartments: state.staffEntity.allDepartments,
     errors: state.errors
 });
 
@@ -319,6 +353,7 @@ class StaffCreateForm extends Component {
     clearErrors,
     updateErrors,
         retrieveAllRoles,
+        retrieveAllDepartments
 };
 
     export default connect(

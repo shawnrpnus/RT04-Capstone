@@ -9,12 +9,12 @@ package capstone.rt04.retailbackend.util.exceptions.customer;
  *
  * @author shawn
  */
-public class VerificationCodeInvalidException extends Exception {
+public class VerificationCodeExpiredException extends Exception {
 
-    public VerificationCodeInvalidException() {
+    public VerificationCodeExpiredException() {
     }
 
-    public VerificationCodeInvalidException(String msg) {
+    public VerificationCodeExpiredException(String msg) {
         super(msg);
     }
 }

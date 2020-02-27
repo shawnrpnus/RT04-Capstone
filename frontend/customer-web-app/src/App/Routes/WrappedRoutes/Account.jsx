@@ -6,6 +6,8 @@ import VerifyEmailPrompt from "components/EmailVerification/VerifyEmailPrompt";
 import LoginPage from "components/Login/LoginPage";
 import ProfilePage from "components/Profile/ProfilePage";
 import SecuredRoute from "App/Routes/SecuredRoute";
+import ForgotPassword from "components/Login/ForgotPassword";
+import ResetPassword from "components/Login/ResetPassword";
 
 export default () => (
   <Switch>
@@ -17,6 +19,17 @@ export default () => (
       exact
       path="/account/verify/:verificationCode"
       component={VerifyEmailChecker}
+    />
+    <Route
+      exact
+      path="/account/updateEmail/:verificationCode"
+      render={props => <VerifyEmailChecker {...props} isUpdateEmail />}
+    />
+    <Route exact path="/account/forgotPassword" component={ForgotPassword} />
+    <Route
+      exact
+      path="/account/resetPassword/:verificationCode"
+      component={ResetPassword}
     />
   </Switch>
 );

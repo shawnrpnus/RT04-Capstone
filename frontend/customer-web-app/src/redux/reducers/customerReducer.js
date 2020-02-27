@@ -1,8 +1,6 @@
 import * as types from "../actions/types";
-import customerService from "services/customerService";
 
 const initialState = {
-  registeredCustomer: null,
   loggedInCustomer: null,
   isSendingEmail: false,
   verificationStatus: null
@@ -11,21 +9,15 @@ const initialState = {
 export default function(state = initialState, action) {
   switch (action.type) {
     case types.CREATE_NEW_CUSTOMER:
-      return {
-        ...state,
-        registeredCustomer: action.customer
-      };
+      return state;
     case types.CUSTOMER_LOGIN:
       return {
         ...state,
-        registeredCustomer: {},
         loggedInCustomer: action.customer
       };
     case types.VERIFY_SUCCESS:
       return {
         ...state,
-        registeredCustomer: {},
-        loggedInCustomer: action.customer,
         verificationStatus: "SUCCESS"
       };
     case types.VERIFY_FAILURE:
@@ -33,8 +25,12 @@ export default function(state = initialState, action) {
         ...state,
         verificationStatus: "FAILURE"
       };
+    case types.RESET_VERIFICATION_STATUS:
+      return {
+        ...state,
+        verificationStatus: null
+      };
     case types.CUSTOMER_LOGOUT:
-      customerService.removeCustomerFromLocalStorage();
       return initialState;
     case types.EMAIL_SENDING:
       return {

@@ -74,15 +74,18 @@ public class GeneralExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler({
-            InvalidLoginCredentialsException.class, CustomerNotVerifiedException.class
-    })
-    public final ResponseEntity<Object> handleUnauthorizedExceptions(Exception ex, WebRequest req) {
-        return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.UNAUTHORIZED);
+    @ExceptionHandler
+    public final ResponseEntity<Object> handleInvalidLogin(InvalidLoginCredentialsException ex, WebRequest req) {
+        return new ResponseEntity<>(ex.getErrorMap(), HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler
+    public final ResponseEntity<Object> handleCustomerNotVerified(CustomerNotVerifiedException ex, WebRequest req) {
+        return new ResponseEntity<>(ex.getErrorMap(), HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler({
-            VerificationCodeInvalidException.class,
+            VerificationCodeExpiredException.class,
             InvalidCartTypeException.class
     })
     public final ResponseEntity<Object> handleBadRequestExceptions(Exception ex, WebRequest req) {

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import GridContainer from "components/Layout/components/Grid/GridContainer";
 import GridItem from "components/Layout/components/Grid/GridItem";
 import Button from "components/UI/CustomButtons/Button.js";
@@ -26,7 +26,11 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import CustomTextField from "components/UI/CustomInput/CustomTextField";
 import { useDispatch, useSelector } from "react-redux";
 import { clearErrors } from "redux/actions";
-import { createNewCustomer, emailSending } from "redux/actions/customerActions";
+import {
+  createNewCustomer,
+  emailSending,
+  emailSent
+} from "redux/actions/customerActions";
 import CreateCustomerRequest from "models/customer/CreateCustomerRequest";
 import IconButton from "@material-ui/core/IconButton";
 import LoadingOverlay from "react-loading-overlay";
@@ -34,11 +38,15 @@ import LoadingOverlay from "react-loading-overlay";
 const useStyles = makeStyles(signupPageStyle);
 
 function RegisterPage(props) {
+  //Hooks
   const classes = useStyles();
+
+  //Redux
   const dispatch = useDispatch();
   const errors = useSelector(state => state.errors);
   const isSendingEmail = useSelector(state => state.customer.isSendingEmail);
 
+  //State
   const [showPassword, setShowPassword] = useState(false);
   const [checked, setChecked] = useState(false);
   const [inputState, setInputState] = useState({
@@ -48,6 +56,13 @@ function RegisterPage(props) {
     password: ""
   });
 
+  //Effects
+  //Cleanup on unmount
+  useEffect(() => {
+    return () => dispatch(emailSent());
+  }, []);
+
+  //Misc
   const onChange = e => {
     e.persist();
     setInputState(inputState => ({

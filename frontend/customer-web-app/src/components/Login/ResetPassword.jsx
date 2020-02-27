@@ -4,8 +4,6 @@ import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import Icon from "@material-ui/core/Icon";
-
-import Email from "@material-ui/icons/Email";
 import GridContainer from "components/Layout/components/Grid/GridContainer.js";
 import GridItem from "components/Layout/components/Grid/GridItem.js";
 import Button from "components/UI/CustomButtons/Button.js";
@@ -21,30 +19,39 @@ import { useDispatch, useSelector } from "react-redux";
 import { clearErrors } from "redux/actions";
 import IconButton from "@material-ui/core/IconButton";
 import { Visibility, VisibilityOff } from "@material-ui/icons";
-import { customerLogin } from "redux/actions/customerActions";
+import {
+  resetPassword,
+  re,
+  resetVerificationStatus
+} from "redux/actions/customerActions";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import { DialogContent } from "@material-ui/core";
 import Dialog from "@material-ui/core/Dialog";
-import { useLocation, useHistory, Link } from "react-router-dom";
-import LinkM from "@material-ui/core/Link";
+import { useHistory, useRouteMatch } from "react-router-dom";
 
 const useStyles = makeStyles(loginPageStyle);
 const _ = require("lodash");
 
-export default function LoginPage(props) {
+export default function ResetPassword(props) {
   //Hooks
   const classes = useStyles();
   const history = useHistory();
-  const location = useLocation();
+  const match = useRouteMatch();
+  if (!match.params.verificationCode) {
+    history.push("/404");
+  }
 
   //Redux
   const dispatch = useDispatch();
   const errors = useSelector(state => state.errors);
+  const verificationStatus = useSelector(
+    state => state.customer.verificationStatus
+  );
 
   //State
   const [inputState, setInputState] = useState({
-    email: "",
-    password: ""
+    newPassword: "",
+    confirmNewPassword: ""
   });
   const [showPassword, setShowPassword] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -57,41 +64,21 @@ export default function LoginPage(props) {
   useEffect(() => {
     window.scrollTo(0, 0);
     document.body.scrollTop = 0;
-  }, []);
 
-  useEffect(() => {
-    // coming from clicking email update link
-    if (_.get(location, "state.isUpdateEmail")) {
-      if (_.get(location, "state.linkExpired")) {
-        setDialogText({
-          dialogTitle: "Error",
-          dialogContent:
-            "Your link has expired. Please login with your old email and request a new one."
-        });
-      } else {
-        setDialogText({
-          dialogTitle: "Success",
-          dialogContent:
-            "Your email has been updated. Please login with your new email."
-        });
-      }
-      setDialogOpen(true);
-    }
-    // so dialog doesnt show again on refresh
-    history.replace({
-      pathname: "/account/login",
-      state: {}
-    });
+    return () => dispatch(resetVerificationStatus());
   }, []);
 
   //Misc
   const handleSubmit = () => {
-    const { email, password } = inputState;
+    const verificationCode = match.params.verificationCode;
     const req = {
-      email: email,
-      password: password
+      verificationCode: verificationCode,
+      newPassword: inputState.newPassword,
+      confirmNewPassword: inputState.confirmNewPassword
     };
-    dispatch(customerLogin(req, props.history));
+    //on success, set dialog open, show message, redirect to login
+    //failure, link expired/invalid -> redirect to forget password,
+    dispatch(resetPassword(req, setDialogOpen, setDialogText));
   };
 
   const onChange = e => {
@@ -110,9 +97,16 @@ export default function LoginPage(props) {
   };
 
   const handleKeyDown = event => {
-    console.log(event);
     if (event.keyCode === 13) {
       handleSubmit();
+    }
+  };
+
+  const handleDialogClose = () => {
+    if (verificationStatus === "SUCCESS") {
+      history.push("/account/login");
+    } else if (verificationStatus === "FAILURE") {
+      history.push("/account/forgotPassword");
     }
   };
 
@@ -135,65 +129,17 @@ export default function LoginPage(props) {
                   signup
                   className={classes.cardHeader}
                 >
-                  <h4 className={classes.cardTitle}>Login</h4>
-                  <div className={classes.socialLine}>
-                    <Button
-                      justIcon
-                      color="transparent"
-                      className={classes.iconButtons}
-                      onClick={e => e.preventDefault()}
-                    >
-                      <i className="fab fa-twitter" />
-                    </Button>
-                    <Button
-                      justIcon
-                      color="transparent"
-                      className={classes.iconButtons}
-                      onClick={e => e.preventDefault()}
-                    >
-                      <i className="fab fa-facebook" />
-                    </Button>
-                    <Button
-                      justIcon
-                      color="transparent"
-                      className={classes.iconButtons}
-                      onClick={e => e.preventDefault()}
-                    >
-                      <i className="fab fa-google-plus-g" />
-                    </Button>
-                  </div>
+                  <h4 className={classes.cardTitle}>Reset password</h4>
                 </CardHeader>
-                <p className={classes.description + " " + classes.textCenter}>
-                  Or Be Classical
-                </p>
                 <CardBody signup>
                   <CustomTextField
-                    fieldLabel="Email"
-                    fieldName="email"
-                    fullWidth
-                    inputState={inputState}
-                    onChange={onChange}
-                    errors={errors}
-                    placeholder="Enter your email..."
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment
-                          position="start"
-                          className={classes.inputAdornment}
-                        >
-                          <Email className={classes.inputIconsColor} />
-                        </InputAdornment>
-                      )
-                    }}
-                  />
-                  <CustomTextField
-                    fieldLabel="Password"
-                    fieldName="password"
+                    fieldLabel="New Password"
+                    fieldName="newPassword"
                     type={showPassword ? "text" : "password"}
                     inputState={inputState}
                     onChange={onChange}
                     errors={errors}
-                    placeholder="Enter your password..."
+                    placeholder="Enter your new password..."
                     InputProps={{
                       startAdornment: (
                         <InputAdornment
@@ -218,14 +164,38 @@ export default function LoginPage(props) {
                     }}
                     onKeyDown={e => handleKeyDown(e)}
                   />
-
-                  <LinkM
-                    component={Link}
-                    to="/account/forgotPassword"
-                    color="inherit"
-                  >
-                    Forgot your password?
-                  </LinkM>
+                  <CustomTextField
+                    fieldLabel="Confirm New Password"
+                    fieldName="confirmNewPassword"
+                    type={showPassword ? "text" : "password"}
+                    inputState={inputState}
+                    onChange={onChange}
+                    errors={errors}
+                    placeholder="Confirm your new password..."
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment
+                          position="start"
+                          className={classes.inputAdornment}
+                        >
+                          <Icon className={classes.inputIconsColor}>
+                            lock_outline
+                          </Icon>
+                        </InputAdornment>
+                      ),
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            aria-label="toggle password visibility"
+                            onClick={handleClickShowPassword}
+                          >
+                            {showPassword ? <Visibility /> : <VisibilityOff />}
+                          </IconButton>
+                        </InputAdornment>
+                      )
+                    }}
+                    onKeyDown={e => handleKeyDown(e)}
+                  />
                 </CardBody>
                 <div className={classes.textCenter}>
                   <Button
@@ -234,7 +204,7 @@ export default function LoginPage(props) {
                     color="primary"
                     size="lg"
                   >
-                    Log in
+                    Reset Password
                   </Button>
                 </div>
               </form>
@@ -242,7 +212,7 @@ export default function LoginPage(props) {
           </GridItem>
         </GridContainer>
       </div>
-      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
+      <Dialog open={dialogOpen} onClose={handleDialogClose}>
         <DialogTitle id="simple-dialog-title">
           {dialogText.dialogTitle}
         </DialogTitle>

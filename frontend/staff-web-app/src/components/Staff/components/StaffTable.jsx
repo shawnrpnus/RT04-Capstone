@@ -62,6 +62,7 @@ class StaffTable extends Component {
 
     render() {
         const data = this.props.allStaff;
+        console.log(data);
         const { history, renderLoader } = this.props;
         return (
             <React.Fragment>
@@ -81,6 +82,7 @@ class StaffTable extends Component {
                             style={{ boxShadow: "none" }}
                             icons={tableIcons}
                             columns={[
+                                { title: "ID", field: "staffId" },
                                 { title: "First Name", field: "firstName" },
                                 { title: "Last Name", field: "lastName" },
                                 { title: "Email", field: "email" },
