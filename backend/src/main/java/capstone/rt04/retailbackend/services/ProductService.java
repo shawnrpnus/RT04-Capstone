@@ -186,11 +186,9 @@ public class ProductService {
                     for (ProductStock productStock : productVariant.getProductStocks()) {
                         if (productStock.getStore() != null && productStock.getStore().getStoreId() == storeOrWarehouseId) {
                             prodStock = productStock;
-                            System.out.println("Store: " + prodStock.getProductStockId());
                             break;
                         } else if (productStock.getWarehouse() != null && productStock.getWarehouse().getWarehouseId() == storeOrWarehouseId) {
                             prodStock = productStock;
-                            System.out.println("Warehouse: " + prodStock.getProductStockId());
                             break;
                         }
                     }
@@ -398,8 +396,6 @@ public class ProductService {
     // TODO: Create multiple product variants without creating product
 
     public ProductVariant createProductVariant(ProductVariant productVariant, Long productId) throws ProductNotFoundException, InputDataValidationException, PersistenceException, CreateNewProductStockException, WarehouseNotFoundException, StoreNotFoundException, ProductVariantNotFoundException {
-        System.out.println("Creating product variant");
-
         Product product = retrieveProductById(productId);
         productVariant.setProduct(product);
         productVariant.toString();
@@ -410,7 +406,6 @@ public class ProductService {
             // TODO: Create ProductImage and link to Product before saving
 
             productVariantRepository.save(productVariant);
-            System.out.println("Product variant ID: " + productVariant.getProductVariantId());
             product.getProductVariants().add(productVariant);
 
             // TODO: uncomment when warehouse and store services are done
@@ -435,11 +430,6 @@ public class ProductService {
         Boolean imageCreated;
         String sku, colour;
         Integer position;
-        Long productVariantId;
-        ProductVariant pv;
-
-        System.out.println("******* Product ID: " + productId);
-        System.out.println("Creating multiple products");
 
         for (ColourToImageUrlsMap colourToImageUrlsMap : colourToImageUrlsMaps) {
 
@@ -458,15 +448,16 @@ public class ProductService {
                 sizeDetails = new SizeDetails(size);
                 productVariant = new ProductVariant(sku, colour, product);
                 productVariant.setSizeDetails(sizeDetailsService.createSizeDetails(sizeDetails));
-                pv = createProductVariant(productVariant, product.getProductId());
-                productVariants.add(pv);
+                productVariant = createProductVariant(productVariant, product.getProductId());
+
+                productVariants.add(productVariant);
                 // Create and persist a ProductImage object
                 if (!imageCreated) { // -> New colour create image once
                     productImages = createProductImage(productImages, productVariant.getProductVariantId());
                     imageCreated = Boolean.TRUE;
                     productVariantsToAssignImages = new ArrayList<>();
                 } else {
-                    productVariantsToAssignImages.add(pv);
+                    productVariantsToAssignImages.add(productVariant);
                 }
             }
             // Associate productVariant of the same colour but different sizes to the created ProductImage
@@ -638,7 +629,6 @@ public class ProductService {
         ProductStock productStock = null;
         if (storeId != null && productVariantId != null) {
             productStock = productStockRepository.findAllByStoreStoreIdAndProductVariantProductVariantId(storeId, productVariantId);
-            System.out.println("productStockID" + productStock.getProductStockId() + " " + productStock.getQuantity());
         }
         return productStock;
     }
@@ -727,8 +717,6 @@ public class ProductService {
 
         for (ProductImage productImage : productImages) {
             productImageRepository.save(productImage);
-            System.out.println("Product Image ID: " + productImage.getProductImageId());
-            System.out.println("Product Image URL: " + productImage.getProductImageUrl());
             productVariant.getProductImages().add(productImage);
         }
         return productImages;

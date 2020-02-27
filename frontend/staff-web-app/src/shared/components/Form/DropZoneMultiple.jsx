@@ -28,6 +28,8 @@ class DropZoneMultipleField extends PureComponent {
   onDrop = (files, event) => {
     const { onChange, handleOnDrop, selectedColour } = this.props;
 
+    files = files.slice(0, 5);
+
     onChange(
       files.map(fl =>
         Object.assign(fl, {
@@ -63,9 +65,6 @@ class DropZoneMultipleField extends PureComponent {
           accept="image/jpeg, image/png"
           name={name}
           onDrop={(filesToUpload, rejectedFiles, event) => {
-            console.log(filesToUpload);
-            console.log(event);
-
             this.onDrop(
               value ? value.concat(filesToUpload) : filesToUpload,
               event
@@ -77,7 +76,8 @@ class DropZoneMultipleField extends PureComponent {
               <div {...getRootProps()} className="dropzone__input">
                 {(!files || files.length === 0) && (
                   <div className="dropzone__drop-here">
-                    <span className="lnr lnr-upload" /> Drop file here to upload
+                    <span className="lnr lnr-upload" /> Drop at most 5 files
+                    here to upload
                   </div>
                 )}
                 <input {...getInputProps()} multiple />
