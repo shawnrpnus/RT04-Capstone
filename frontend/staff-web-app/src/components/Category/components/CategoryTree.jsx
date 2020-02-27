@@ -96,7 +96,6 @@ class CategoryTree extends Component {
         allRootCategories
       );
     }
-    if (allRootCategories) console.log(getParentKeys(allRootCategories, {}));
 
     return (
       <React.Fragment>

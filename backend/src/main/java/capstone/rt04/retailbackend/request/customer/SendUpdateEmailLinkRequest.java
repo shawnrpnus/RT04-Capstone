@@ -22,5 +22,5 @@ public class SendUpdateEmailLinkRequest {
     @NotNull(message = ErrorMessages.EMAIL_REQUIRED)
     @Size(min = 1, message = ErrorMessages.EMAIL_REQUIRED)
     @Email
-    private String newEmail;
+    private String email;
 }

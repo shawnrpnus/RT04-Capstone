@@ -79,7 +79,7 @@ public class CustomerController {
     @PostMapping(CustomerControllerRoutes.SEND_UPDATE_EMAIL_LINK)
     public ResponseEntity<?> sendUpdateEmailLink(@RequestBody SendUpdateEmailLinkRequest req) throws CustomerNotFoundException, InputDataValidationException {
         validationService.throwExceptionIfInvalidBean(req);
-        customerService.sendUpdateEmailLink(req.getCustomerId(), req.getNewEmail());
+        customerService.sendUpdateEmailLink(req.getCustomerId(), req.getEmail());
         Map<String, String> successMessage = new HashMap<>();
         successMessage.put("message", "Please check your email for the link to reset your password");
         return new ResponseEntity<>(successMessage, HttpStatus.OK);
