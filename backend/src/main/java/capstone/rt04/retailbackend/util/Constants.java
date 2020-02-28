@@ -6,4 +6,6 @@ public class Constants {
 
     public static final String IN_STORE_SHOPPING_CART = "instore";
     public static final String ONLINE_SHOPPING_CART = "online";
+
+    public static final String SECRET_KEY = "THISISSECRET";
 }

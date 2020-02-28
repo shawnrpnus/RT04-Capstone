@@ -50,7 +50,10 @@ const createProductError = data => ({
   errorMap: data
 });
 
-export const retrieveProductById = productId => {
+export const retrieveProductById = (
+  productId,
+  handleCloseProductUpdateDialog
+) => {
   return dispatch => {
     //redux thunk passes dispatch
     axios
@@ -58,11 +61,14 @@ export const retrieveProductById = productId => {
       .then(response => {
         const { data } = jsog.decode(response);
         dispatch(retrieveProductByIdSuccess(data));
-        //history.push("/storeEdit"); // TODO: update redirect path
+      })
+      .then(() => {
+        if (handleCloseProductUpdateDialog) {
+          handleCloseProductUpdateDialog();
+        }
       })
       .catch(err => {
         dispatch(retrieveProductByIdError(err.response.data));
-        //console.log(err.response.data);
       });
   };
 };
@@ -120,15 +126,18 @@ export const retrieveAllCategoryTagStyle = async () => {
   return jsog.decode(data);
 };
 
-export const updateProduct = (product, history) => {
+export const updateProduct = (product, handleCloseProductUpdateDialog) => {
   return dispatch => {
     axios
       .put(PRODUCT_BASE_URL + "/updateProduct", product)
       .then(() => {
-        retrieveProductById(product.productId)(dispatch);
-        console.log("Success");
+        retrieveProductById(
+          product.productId,
+          handleCloseProductUpdateDialog()
+        )(dispatch);
       })
-      .catch(() => {
+      .catch(err => {
+        console.log(err);
         console.log("Failed");
       });
   };
@@ -141,6 +150,41 @@ export const createProductVariants = (request, history) => {
       .then(() => {
         console.log("Successfully created product variants!");
         retrieveProductById(request.productId)(dispatch);
+      })
+      .catch(() => {
+        console.log("Failed");
+      });
+  };
+};
+
+export const updateProductVariantImages = (request, productId) => {
+  return dispatch => {
+    axios
+      .put(
+        "http://localhost:5000/node" +
+          PRODUCT_BASE_URL +
+          "/updateProductVariantImages",
+        request
+      )
+      .then(response => {
+        console.log(response);
+        retrieveProductById(productId)(dispatch);
+      })
+      .catch(() => {
+        console.log("Failed");
+      });
+  };
+};
+
+export const deleteProductVariant = (productVariantId, productId) => {
+  return dispatch => {
+    axios
+      .delete(
+        PRODUCT_BASE_URL + `Variant/deleteProductVariant/${productVariantId}`
+      )
+      .then(response => {
+        console.log(response);
+        retrieveProductById(productId)(dispatch);
       })
       .catch(() => {
         console.log("Failed");

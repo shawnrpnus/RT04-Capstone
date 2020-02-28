@@ -37,7 +37,6 @@ public class WarehouseService {
     public Warehouse createWarehouse(Warehouse warehouse, Address address) throws InputDataValidationException, StoreNotFoundException, WarehouseNotFoundException, ProductVariantNotFoundException {
         validationService.throwExceptionIfInvalidBean(address);
 
-        // TODO: Fix the error in logic, shouldn't create. Retrieve from db using addressService instead using ID
         Address a = addressRepository.save(address);
         warehouse.setAddress(a);
         warehouseRepository.save(warehouse);

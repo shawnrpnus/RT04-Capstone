@@ -3,9 +3,11 @@ package capstone.rt04.retailbackend.controllers;
 import capstone.rt04.retailbackend.entities.ProductImage;
 import capstone.rt04.retailbackend.request.productImage.ProductImageCreateRequest;
 import capstone.rt04.retailbackend.request.productImage.ProductImageDeleteRequest;
+import capstone.rt04.retailbackend.request.productImage.ProductImageUpdateRequest;
 import capstone.rt04.retailbackend.response.GenericErrorResponse;
 import capstone.rt04.retailbackend.services.ProductService;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductImageNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.product.ProductNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -62,22 +64,17 @@ public class ProductImageController {
     }
 
     @PutMapping(UPDATE_PRODUCT_IMAGE)
-    public ResponseEntity<?> updateProductImage(@RequestBody ProductImage productImage) {
-        try {
-            ProductImage newProductImage = productService.updateProductImage(productImage);
-            return new ResponseEntity<>(newProductImage, HttpStatus.OK);
-        } catch (ProductImageNotFoundException ex) {
-            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
-        } catch (Exception ex) {
-            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public ResponseEntity<?> updateProductVariantImages(@RequestBody ProductImageUpdateRequest productImageUpdateRequest) throws ProductNotFoundException,
+            ProductVariantNotFoundException, ProductImageNotFoundException {
+
+            List<String> imageUrls = productService.updateProductVariantImages(productImageUpdateRequest.getProductId(),
+                    productImageUpdateRequest.getColour(), productImageUpdateRequest.getImageUrls());
+            return new ResponseEntity<>(imageUrls, HttpStatus.OK);
     }
 
     @DeleteMapping(DELETE_PRODUCT_IMAGES)
     public ResponseEntity<?> deleteProductImage(@RequestBody ProductImageDeleteRequest productImageDeleteRequest) {
         try {
-            System.out.println(productImageDeleteRequest.getProductVariantId());
-            System.out.println(productImageDeleteRequest.getProductImages().size());
             List<ProductImage> productImages = productService.deleteProductImage(productImageDeleteRequest.getProductImages(),
                     productImageDeleteRequest.getProductVariantId());
             return new ResponseEntity<>(productImages, HttpStatus.OK);

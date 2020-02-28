@@ -40,7 +40,7 @@ public class ProductStockController {
 
     // Returning product with filtered result instead of product stock to allow traversing down instead of up
     @GetMapping(ProductStockControllerRoutes.RETRIEVE_PRODUCT_STOCKS_THROUGH_PRODUCT_BY_PARAMETER)
-    public ResponseEntity<?> retrievefProductStocksThroughProductByParameter(@RequestParam(required = false) Long warehouseId,
+    public ResponseEntity<?> retrieveProductStocksThroughProductByParameter(@RequestParam(required = false) Long warehouseId,
                                                                             @RequestParam(required = false) Long storeId,
                                                                             @RequestParam(required = false) Long productVariantId) {
         try {

@@ -17,6 +17,8 @@ public class ProductDetailsResponse {
 
     private Product product;
 
+    private String leafNodeName;
+
     private List<ColourToSizeImageMap> colourToSizeImageMaps = new ArrayList<>();
 
 }
