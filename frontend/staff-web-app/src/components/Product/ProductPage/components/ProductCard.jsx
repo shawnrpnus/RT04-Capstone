@@ -11,9 +11,9 @@ import StarIcon from "mdi-react/StarIcon";
 import StarOutlineIcon from "mdi-react/StarOutlineIcon";
 import { withRouter } from "react-router-dom";
 import ProductGallery from "./ProductGallery";
-import images from "./imgs";
 import ProductTabs from "./ProductTabs";
 import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
+import Tooltip from "@material-ui/core/Tooltip";
 import Switch from "@material-ui/core/Switch";
 import Row from "reactstrap/es/Row";
 import * as PropTypes from "prop-types";
@@ -130,21 +130,37 @@ class ProductCard extends PureComponent {
               />
             </Col>
             <Col xs={2} md={1}>
-              <IconButton>
-                <AddCircleRoundedIcon onClick={this.handleOpenAddSizeDialog} />
-              </IconButton>
+              <Tooltip
+                title={
+                  <span style={{ fontSize: 15 }}>
+                    Create product variant for selected colour
+                  </span>
+                }
+              >
+                <IconButton onClick={this.handleOpenAddSizeDialog}>
+                  <AddCircleRoundedIcon style={{ fontSize: 40 }} />
+                </IconButton>
+              </Tooltip>
             </Col>
             <Col xs={2} md={1}>
-              <IconButton>
-                <AddCircleRoundedIcon
-                  onClick={this.handleOpenCreateProductVariantDialog}
-                />
-              </IconButton>
+              <Tooltip
+                title={
+                  <span style={{ fontSize: 15 }}>Create product variant</span>
+                }
+              >
+                <IconButton onClick={this.handleOpenCreateProductVariantDialog}>
+                  <AddCircleRoundedIcon style={{ fontSize: 40 }} />
+                </IconButton>
+              </Tooltip>
             </Col>
             <Col xs={3} md={2}>
-              <IconButton onClick={this.handleOpenProductUpdateDialog}>
-                <CreateIcon />
-              </IconButton>
+              <Tooltip
+                title={<span style={{ fontSize: 15 }}>Update product</span>}
+              >
+                <IconButton onClick={this.handleOpenProductUpdateDialog}>
+                  <CreateIcon style={{ fontSize: 40 }} />
+                </IconButton>
+              </Tooltip>
             </Col>
           </Row>
           <div className="product-card__rate">

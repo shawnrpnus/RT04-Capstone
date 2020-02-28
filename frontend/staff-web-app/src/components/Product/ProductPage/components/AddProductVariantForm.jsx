@@ -77,7 +77,7 @@ class AddProductVariantForm extends PureComponent {
 
     return (
       <Dialog onClose={onClose} open={open} fullWidth maxWidth={"xs"}>
-        <DialogTitle>Create product </DialogTitle>
+        <DialogTitle>Create product variants </DialogTitle>
         {product && (
           <DialogContent>
             <Autocomplete

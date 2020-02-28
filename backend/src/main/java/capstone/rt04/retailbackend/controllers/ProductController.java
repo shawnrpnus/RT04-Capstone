@@ -9,10 +9,7 @@ import capstone.rt04.retailbackend.response.ProductDetailsResponse;
 import capstone.rt04.retailbackend.services.ProductService;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.category.CategoryNotFoundException;
-import capstone.rt04.retailbackend.util.exceptions.product.CreateNewProductException;
-import capstone.rt04.retailbackend.util.exceptions.product.ProductNotFoundException;
-import capstone.rt04.retailbackend.util.exceptions.product.ProductStockNotFoundException;
-import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.product.*;
 import capstone.rt04.retailbackend.util.exceptions.style.StyleNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.tag.TagNotFoundException;
 import capstone.rt04.retailbackend.util.routeconstants.ProductControllerRoutes;
@@ -159,7 +156,7 @@ public class ProductController {
     }
 
     @DeleteMapping(ProductControllerRoutes.DELETE_PRODUCT)
-    public ResponseEntity<?> deleteProduct(@PathVariable Long productId) throws ProductVariantNotFoundException, ProductStockNotFoundException, ProductNotFoundException {
+    public ResponseEntity<?> deleteProduct(@PathVariable Long productId) throws ProductVariantNotFoundException, ProductStockNotFoundException, ProductNotFoundException, DeleteProductVariantException {
         Product product = productService.deleteProduct(productId);
         return new ResponseEntity<>(product, HttpStatus.OK);
     }

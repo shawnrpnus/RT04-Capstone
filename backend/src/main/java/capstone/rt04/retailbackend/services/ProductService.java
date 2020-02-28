@@ -42,6 +42,7 @@ public class ProductService {
     private final StoreService storeService;
     private final WarehouseService warehouseService;
     private final SizeDetailsService sizeDetailsService;
+    private final TransactionService transactionService;
 
     private final ProductRepository productRepository;
     private final ProductImageRepository productImageRepository;
@@ -51,7 +52,7 @@ public class ProductService {
     public ProductService(ValidationService validationService, TagService tagService, CategoryService categoryService, StyleService styleService,
                           StoreService storeService, ProductRepository productRepository, ProductVariantRepository productVariantRepository,
                           ProductStockRepository productStockRepository, ProductImageRepository productImageRepository, DiscountService discountService,
-                          PromoCodeService promoCodeService, WarehouseService warehouseService, SizeDetailsService sizeDetailsService) {
+                          PromoCodeService promoCodeService, WarehouseService warehouseService, SizeDetailsService sizeDetailsService, TransactionService transactionService) {
         this.validationService = validationService;
         this.tagService = tagService;
         this.categoryService = categoryService;
@@ -65,6 +66,7 @@ public class ProductService {
         this.promoCodeService = promoCodeService;
         this.warehouseService = warehouseService;
         this.sizeDetailsService = sizeDetailsService;
+        this.transactionService = transactionService;
     }
 
     public Product createNewProduct(Product product, Long categoryId, List<Long> tagIds, List<Long> styleIds, List<SizeEnum> sizes, List<ColourToImageUrlsMap> colourToImageUrlsMaps) throws InputDataValidationException, CreateNewProductException, CategoryNotFoundException {
@@ -72,8 +74,6 @@ public class ProductService {
         if (categoryId == null) {
             throw new CreateNewProductException("The new product must be associated a leaf category");
         }
-
-        // TODO: Generate product variant for each of the selected sizes and colours (also generate product stock for each of the generate product variant)
 
         Category category = categoryService.retrieveCategoryByCategoryId(categoryId);
         product.setCategory(category);
@@ -358,42 +358,25 @@ public class ProductService {
         return product;
     }
 
-    public Product deleteProduct(Long productId) throws ProductNotFoundException, ProductVariantNotFoundException, ProductStockNotFoundException//, DeleteProductException
+    public Product deleteProduct(Long productId) throws ProductNotFoundException, ProductVariantNotFoundException, ProductStockNotFoundException, DeleteProductVariantException//, DeleteProductException
     {
         Product productToRemove = retrieveProductById(productId);
-        productToRemove.toString();
 
-        // TODO: Clear relationship with transaction and transaction line items
-//        List<TransactionLineItem> saleTransactionLineItemEntities = saleTransactionEntityControllerLocal.retrieveSaleTransactionLineItemsByProductId(productId);
-//        List<Review> reviewEntities = reviewEntityControllerLocal.retrieveReviewsForProduct(productId);
-//        if (saleTransactionLineItemEntities.isEmpty() && reviewEntities.isEmpty()) {
-        productToRemove.getCategory().getProducts().remove(productToRemove);
-
-        for (Tag tag : productToRemove.getTags()) {
-            tag.getProducts().remove(productToRemove);
-        }
-        for (Style style : productToRemove.getStyles()) {
-            style.getProducts().remove(productToRemove);
-        }
-        productToRemove.getPromoCodes().forEach(promoCode -> promoCode.getProducts().remove(productToRemove));
-        productToRemove.getDiscounts().forEach(discount -> discount.getProducts().remove(productToRemove));
-
-        // TODO: Clear product variant
+        // Clear product variant
         List<ProductVariant> productVariants = new ArrayList<>(productToRemove.getProductVariants());
         for (ProductVariant productVariant : productVariants) {
             deleteProductVariant(productVariant.getProductVariantId());
         }
 
+        productToRemove.getCategory().getProducts().remove(productToRemove);
+        productToRemove.getTags().forEach(tag -> tag.getProducts().remove(productToRemove));
+        productToRemove.getStyles().forEach(style -> style.getProducts().remove(productToRemove));
+        productToRemove.getPromoCodes().forEach(promoCode -> promoCode.getProducts().remove(productToRemove));
+        productToRemove.getDiscounts().forEach(discount -> discount.getProducts().remove(productToRemove));
+
         productRepository.delete(productToRemove);
         return productToRemove;
     }
-
-    public void setProductPrice(Long productId, BigDecimal price) throws ProductNotFoundException {
-        Product product = retrieveProductById(productId);
-        product.setPrice(price);
-    }
-
-    // TODO: Create multiple product variants without creating product
 
     public ProductVariant createProductVariant(ProductVariant productVariant, Long productId) throws ProductNotFoundException, InputDataValidationException, PersistenceException, CreateNewProductStockException, WarehouseNotFoundException, StoreNotFoundException, ProductVariantNotFoundException {
         Product product = retrieveProductById(productId);
@@ -403,12 +386,9 @@ public class ProductService {
         Map<String, String> errorMap = validationService.generateErrorMap(productVariant);
 
         if (errorMap == null) {
-            // TODO: Create ProductImage and link to Product before saving
-
             productVariantRepository.save(productVariant);
             product.getProductVariants().add(productVariant);
 
-            // TODO: uncomment when warehouse and store services are done
             List<Warehouse> warehouses = warehouseService.retrieveAllWarehouses();
             List<Store> stores = storeService.retrieveAllStores();
 
@@ -529,10 +509,17 @@ public class ProductService {
         return productVariant;
     }
 
-    public ProductVariant deleteProductVariant(Long productVariantId) throws ProductVariantNotFoundException, ProductStockNotFoundException {
+    public ProductVariant deleteProductVariant(Long productVariantId) throws ProductVariantNotFoundException, ProductStockNotFoundException, DeleteProductVariantException {
 
         ProductVariant productVariant = retrieveProductVariantById(productVariantId);
 
+        for(Transaction transaction : transactionService.retrievePastOrders()) {
+            for(TransactionLineItem transactionLineItem : transaction.getTransactionLineItems()) {
+                if (transactionLineItem.getProductVariant().getProductVariantId().equals(productVariantId)) {
+                    throw new DeleteProductVariantException("Transaction line item tied to product");
+                }
+            }
+        }
         // To prevent concurrent modification
         List<ProductStock> productStocks = new ArrayList<>(productVariant.getProductStocks());
 
@@ -548,8 +535,6 @@ public class ProductService {
         productVariantRepository.delete(productVariant);
         return productVariant;
     }
-
-    // TODO : Call this method in createWarehouse / createStore
 
     /**
      * Scenarios:
@@ -633,7 +618,6 @@ public class ProductService {
         return productStock;
     }
 
-    // TODO: Verify validity
     @Transactional(readOnly = true)
     public List<Product> retrieveProductStocksByParameter(Long storeId, Long warehouseId, Long productVariantId) {
 
@@ -696,7 +680,6 @@ public class ProductService {
 
     public ProductStock deleteProductStock(Long productStockId) throws ProductStockNotFoundException {
         ProductStock productStock = retrieveProductStockById(productStockId);
-        // TODO: Uncomment the codes when store and warehouse is done
         productStock.getProductVariant().getProductStocks().remove(productStock);
         productStock.setProductVariant(null);
 

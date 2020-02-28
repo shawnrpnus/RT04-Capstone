@@ -76,7 +76,7 @@ class AddSizeForm extends PureComponent {
 
     return (
       <Dialog onClose={onClose} open={open} fullWidth maxWidth={"xs"}>
-        <DialogTitle>Create product variant for selected product</DialogTitle>
+        <DialogTitle>Create product variant for selected colour</DialogTitle>
         {product && (
           <DialogContent
             style={{

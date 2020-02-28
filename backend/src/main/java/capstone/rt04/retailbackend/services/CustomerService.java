@@ -2,6 +2,7 @@ package capstone.rt04.retailbackend.services;
 
 import capstone.rt04.retailbackend.entities.*;
 import capstone.rt04.retailbackend.repositories.*;
+import capstone.rt04.retailbackend.util.AES;
 import capstone.rt04.retailbackend.util.Constants;
 import capstone.rt04.retailbackend.util.ErrorMessages;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
@@ -9,14 +10,12 @@ import capstone.rt04.retailbackend.util.exceptions.customer.*;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.shoppingcart.InvalidCartTypeException;
 import capstone.rt04.retailbackend.util.exceptions.style.StyleNotFoundException;
-import jdk.internal.util.xml.impl.Input;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -29,6 +28,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static capstone.rt04.retailbackend.util.Constants.ONLINE_SHOPPING_CART;
+import static capstone.rt04.retailbackend.util.Constants.SECRET_KEY;
 
 /**
  * @author shawn
@@ -275,13 +275,13 @@ public class CustomerService {
     //customer inputs new password at that link
     //on front-end, make api call by extracting the code from the link
     public void resetPassword(String code, String newPassword, String confirmNewPassword) throws VerificationCodeExpiredException, VerificationCodeNotFoundException, InputDataValidationException {
-        if (!newPassword.equals(confirmNewPassword)){
+        if (!newPassword.equals(confirmNewPassword)) {
             Map<String, String> errorMap = new HashMap<>();
             errorMap.put("newPassword", ErrorMessages.PASSWORDS_MUST_MATCH);
             errorMap.put("confirmNewPassword", ErrorMessages.PASSWORDS_MUST_MATCH);
             throw new InputDataValidationException(errorMap, ErrorMessages.PASSWORDS_MUST_MATCH);
         }
-        VerificationCode vCode =  verificationCodeRepository.findByCode(code)
+        VerificationCode vCode = verificationCodeRepository.findByCode(code)
                 .orElseThrow(() -> new VerificationCodeNotFoundException(ErrorMessages.VERIFICATION_CODE_INVALID));
         Customer customer = vCode.getCustomer();
         if (code.equals(customer.getVerificationCode().getCode())) {
@@ -325,6 +325,8 @@ public class CustomerService {
 
     public Customer addCreditCard(Long customerId, CreditCard creditCard) throws CustomerNotFoundException {
         Customer customer = retrieveCustomerByCustomerId(customerId);
+        creditCard.setNumber(AES.encrypt(creditCard.getNumber(), SECRET_KEY));
+        creditCard.setCvv(AES.encrypt(creditCard.getCvv(), SECRET_KEY));
         creditCardRepository.save(creditCard);
         customer.addCreditCard(creditCard);
         return lazyLoadCustomerFields(customer);
