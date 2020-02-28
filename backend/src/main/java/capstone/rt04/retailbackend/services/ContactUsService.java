@@ -2,6 +2,7 @@ package capstone.rt04.retailbackend.services;
 
 import capstone.rt04.retailbackend.repositories.*;
 import capstone.rt04.retailbackend.entities.ContactUs;
+import capstone.rt04.retailbackend.util.enums.ContactUsCategoryEnum;
 import capstone.rt04.retailbackend.util.exceptions.contactUs.CreateNewContactUsException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;

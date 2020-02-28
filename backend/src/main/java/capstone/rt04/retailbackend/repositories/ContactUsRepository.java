@@ -1,6 +1,7 @@
 package capstone.rt04.retailbackend.repositories;
 
 import capstone.rt04.retailbackend.entities.ContactUs;
+import capstone.rt04.retailbackend.util.enums.ContactUsCategoryEnum;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 

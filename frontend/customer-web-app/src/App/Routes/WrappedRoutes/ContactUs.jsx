@@ -1,10 +1,11 @@
 import React from "react";
-import Switch from "@material-ui/core/Switch";
-import Route from "react-router-dom/es/Route";
+
+import { Route, Switch } from "react-router-dom";
+import ContactUsTicket from "../../../components/ContactUs/ContactUsTicket";
 
 export default () => (
   <Switch>
-    <Route exact path="/account/login" component={LoginPage} />
+    <Route exact path="/contactUs/ticket" component={ContactUsTicket} />
 
   </Switch>
 );

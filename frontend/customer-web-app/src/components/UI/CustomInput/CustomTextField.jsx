@@ -11,21 +11,21 @@ function CustomTextField(props) {
   const classes = useStyles();
 
   const {
-    fieldLabel,
-    fieldName,
-    type,
-    inputState,
-    errors,
-    onChange,
-    disabled,
-    autoFocus,
-    InputProps, //usually for input adornments
-    InputLabelProps,
-    variant,
-    fullWidth,
-    placeholder,
+    fieldLabel, // whats displayed as label
+    fieldName, // this must match inputState.fieldName and follow entity attributes naming
+    type, //default is "text", set to "password" for pw fields
+    inputState, // inputState follows {fieldName: value} format
+    errors, //errors should be passed from redux store (is the errorMap sent by backend)
+    onChange, // onChange function defined in component
+    disabled, //whether input field is disabled
+    autoFocus, //focuses the field on first mount
+    InputProps, //usually for input adornments (icons in the field)
+    InputLabelProps, //props for input label, usually can ignore
+    variant, //variant of input field e.g. standard/outlined/filled, usually ignore
+    fullWidth, //text field takes up full width of parent container
+    placeholder, //initial placeholder when text field is empty
     formControlClassName, //to override formControl classes (mainly margins and padding)
-    ...rest
+    ...rest //other props e.g. inputRef
   } = props;
 
   return (

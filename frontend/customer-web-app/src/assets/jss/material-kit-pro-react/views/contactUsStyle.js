@@ -17,6 +17,10 @@ const contactUsStyle = {
     ...container,
     maxWidth: "970px !important"
   },
+  mainRaisedCustom: {
+    ...mainRaised,
+    marginTop: "0"
+  },
   contactContent: {
     paddingBottom: "40px",
     paddingTop: "40px"
