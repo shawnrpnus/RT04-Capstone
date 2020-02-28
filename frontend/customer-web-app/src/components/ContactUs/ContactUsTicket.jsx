@@ -22,8 +22,17 @@ import { useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { clearErrors } from "../../redux/actions";
-import { retrieveAllContactUsCategoryEnum } from "../../redux/actions/contactUsAction";
+import {
+  createNewContactUs,
+  retrieveAllContactUsCategoryEnum
+} from "../../redux/actions/contactUsAction";
 import CustomDropdown from "../UI/CustomDropdown/CustomDropdown";
+import CreateCustomerRequest from "../../models/customer/CreateCustomerRequest";
+import {
+  createNewCustomer,
+  emailSending
+} from "../../redux/actions/customerActions";
+import CreateContactUsRequest from "../../models/contactus/CreateContactUsRequest";
 
 const useStyles = makeStyles(contactUsStyle);
 const _ = require("lodash");
@@ -43,7 +52,12 @@ function ContactUsTicket(props) {
 
   //State
   const [inputState, setInputState] = useState({
-    allContactUsCategoryEnum: []
+    allContactUsCategoryEnum: [],
+    contactUsCategory: "Enquiry Type",
+    customerEmail: "",
+    content: "",
+    firstName: "",
+    lastName: ""
   });
 
   const onChange = e => {
@@ -58,7 +72,31 @@ function ContactUsTicket(props) {
   };
 
   const onClick = e => {
-    console.log(e);
+    setInputState(inputState => ({
+      ...inputState,
+      contactUsCategory: e}));
+    if (Object.keys(errors).length !== 0) {
+      dispatch(clearErrors());
+    }
+  };
+
+  const handleSubmit = () => {
+    const {
+      contactUsCategory,
+      customerEmail,
+      content,
+      firstName,
+      lastName
+    } = inputState;
+    console.log(inputState);
+    const req = new CreateContactUsRequest(
+      contactUsCategory,
+      content,
+      customerEmail,
+      firstName,
+      lastName
+    );
+    dispatch(createNewContactUs(req, props.history));
   };
 
   React.useEffect(() => {
@@ -84,7 +122,7 @@ function ContactUsTicket(props) {
                   <form>
                     <CustomTextField
                       fieldLabel="Email"
-                      fieldName="email"
+                      fieldName="customerEmail"
                       fullWidth
                       inputState={inputState}
                       onChange={onChange}
@@ -101,9 +139,47 @@ function ContactUsTicket(props) {
                         )
                       }}
                     />
+                    <CustomTextField
+                      fieldLabel="First Name"
+                      fieldName="firstName"
+                      fullWidth
+                      inputState={inputState}
+                      onChange={onChange}
+                      errors={errors}
+                      placeholder="John"
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment
+                            position="start"
+                            className={classes.inputAdornment}
+                          >
+                            <Face className={classes.inputIconsColor} />
+                          </InputAdornment>
+                        )
+                      }}
+                    />
+                    <CustomTextField
+                      fieldLabel="Last Name"
+                      fieldName="lastName"
+                      fullWidth
+                      inputState={inputState}
+                      onChange={onChange}
+                      errors={errors}
+                      placeholder="Tan"
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment
+                            position="start"
+                            className={classes.inputAdornment}
+                          >
+                            <Face className={classes.inputIconsColor} />
+                          </InputAdornment>
+                        )
+                      }}
+                    />
                     <CustomDropdown
+                      buttonText={inputState.contactUsCategory}
                       dropdownList={enums}
-                      dropdownHeader="ENQUIRY TYPE"
                       onClick={onClick}
                     />
                     <CustomTextField
@@ -126,7 +202,7 @@ function ContactUsTicket(props) {
                       }}
                     />
                     <div className={classes.textCenter}>
-                      <Button color="primary" round>
+                      <Button color="primary" round onClick={handleSubmit}>
                         Contact us
                       </Button>
                     </div>

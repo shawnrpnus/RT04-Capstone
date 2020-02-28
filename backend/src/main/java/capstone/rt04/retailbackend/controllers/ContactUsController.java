@@ -1,6 +1,7 @@
 package capstone.rt04.retailbackend.controllers;
 
 import capstone.rt04.retailbackend.entities.*;
+import capstone.rt04.retailbackend.request.contactUs.CreateNewContactUsRequest;
 import capstone.rt04.retailbackend.services.ContactUsService;
 import capstone.rt04.retailbackend.services.ValidationService;
 import capstone.rt04.retailbackend.util.enums.ContactUsCategoryEnum;
@@ -38,7 +39,9 @@ public class ContactUsController {
 
 
     @PostMapping(ContactUsControllerRoute.CREATE_NEW_CONTACT_US)
-    public ResponseEntity<?> createNewContactUs(@RequestBody ContactUs createContactUs) throws InputDataValidationException, CreateNewCategoryException, CreateNewContactUsException {
+    public ResponseEntity<?> createNewContactUs(@RequestBody CreateNewContactUsRequest createNewContactUsRequest) throws InputDataValidationException, CreateNewCategoryException, CreateNewContactUsException {
+
+        ContactUs createContactUs = new ContactUs(ContactUsCategoryEnum.valueOf(createNewContactUsRequest.getContactUsCategory()), createNewContactUsRequest.getContent(), createNewContactUsRequest.getCustomerEmail(), createNewContactUsRequest.getFirstName(), createNewContactUsRequest.getLastName());
         ContactUs newContactUs = contactUsService.createNewContactUs(createContactUs);
         return new ResponseEntity<>(newContactUs, HttpStatus.CREATED);
     }

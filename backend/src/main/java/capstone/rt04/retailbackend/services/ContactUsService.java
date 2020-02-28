@@ -30,18 +30,23 @@ public class ContactUsService {
 
     }
 
-    public ContactUs createNewContactUs(ContactUs contactUs) throws CreateNewContactUsException, InputDataValidationException {
+    public ContactUs createNewContactUs(ContactUs contactUs) throws InputDataValidationException {
         Map<String, String> errorMap = validationService.generateErrorMap(contactUs);
 
-        if (contactUs.getCustomerEmail() == null) {
-            errorMap = new HashMap<>();
-            errorMap.put("customerEmail", "Please do not leave Blank");
-            throw new InputDataValidationException(errorMap, "Please do not leave Blank");
-        } else {
+//        if (contactUs.getCustomerEmail() == null) {
+//            errorMap = new HashMap<>();
+//            errorMap.put("customerEmail", "Please do not leave Blank");
+//            throw new InputDataValidationException(errorMap, "Please do not leave Blank");
+//        } else {
+//            contactUsRepository.save(contactUs);
+//        }
+        if(errorMap == null) {
             contactUsRepository.save(contactUs);
+            return contactUs;
+        } else {
+            throw new InputDataValidationException(errorMap, "Invalid Form");
         }
 
-        return contactUs;
     }
 
     private void sendContactUsNotification(String contactUsEmail, long contactUsId) {

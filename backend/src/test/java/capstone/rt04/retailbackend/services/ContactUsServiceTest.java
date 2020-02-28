@@ -26,7 +26,7 @@ public class ContactUsServiceTest {
     @Test
     public void createNewCustomer() throws Exception{
 
-        ContactUs errorContactUs = new ContactUs(COMPLAINT,"Help", "" );
+        ContactUs errorContactUs = new ContactUs(COMPLAINT,"Help", "", "Lil", "Pumpy");
         try {
             contactUsService.createNewContactUs(errorContactUs);
         } catch (InputDataValidationException ex) {

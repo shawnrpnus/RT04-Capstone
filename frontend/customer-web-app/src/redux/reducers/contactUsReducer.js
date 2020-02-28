@@ -13,7 +13,11 @@ export default function(state = initialState, action) {
         ...state,
         allContactUsCategoryEnum: action.allContactUsCategoryEnum
       };
-
+    case types.CONTACT_US_SUCCESS:
+      return {
+        ...state,
+        currentContactUs: action.currentContactUs
+      }
     default:
       return state;
   }

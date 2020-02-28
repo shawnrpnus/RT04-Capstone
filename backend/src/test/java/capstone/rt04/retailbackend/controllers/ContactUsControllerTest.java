@@ -25,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ContactUsControllerTest extends ApiTestSetup{
     @Test
     public void createBadContactUs(){
-        ContactUs badContactUs = new ContactUs(COMPLAINT, "help", "");
+        ContactUs badContactUs = new ContactUs(COMPLAINT, "help", "", "Lil", "Pump");
 
         ContactUs createdContactUs = given().
                 contentType("application/json").
