@@ -128,6 +128,11 @@ public class StaffService {
 
         try {
             Staff staff = retrieveStaffByStaffId(staffID);
+            if(staff.getUsername()!=null){
+                Map<String, String> errorMap = new HashMap<>();
+                errorMap.put("staffId", ErrorMessages.STAFF_ACCOUNT_ALREADY_CONFIGURED);
+                throw new CreateNewStaffAccountException(errorMap, ErrorMessages.STAFF_ACCOUNT_ALREADY_CONFIGURED);
+            }
             staff.setUsername(staff.getFirstName() + staff.getLastName() + staffID.toString());
 
             //generate random password
@@ -143,7 +148,9 @@ public class StaffService {
 
             return staff;
         }catch (StaffNotFoundException ex){
-            throw new CreateNewStaffAccountException("Staff does not exist");
+            Map<String, String> errorMap = new HashMap<>();
+            errorMap.put("staffId", ErrorMessages.STAFF_DOES_NOT_EXIST);
+            throw new CreateNewStaffAccountException(errorMap, ErrorMessages.STAFF_DOES_NOT_EXIST);
         }
 
     }
@@ -163,7 +170,6 @@ public class StaffService {
 
             return staff;
         }catch (StaffNotFoundException ex){
-            System.out.println("STAFF DOES NOT EXIST");
             throw new StaffNotFoundException("Staff does not exist!");
         }
     }

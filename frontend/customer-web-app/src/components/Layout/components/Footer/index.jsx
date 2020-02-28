@@ -16,6 +16,7 @@ import face5 from "assets/img/faces/marc.jpg";
 import face6 from "assets/img/faces/kendall.jpg";
 import face7 from "assets/img/faces/card-profile5-square.jpg";
 import face8 from "assets/img/faces/card-profile2-square.jpg";
+import { Link } from "react-router-dom";
 
 const useStyles = makeStyles(styles);
 
@@ -66,12 +67,10 @@ export default function FooterSection() {
                 </a>
               </ListItem>
               <ListItem className={classes.inlineBlock}>
-                <a
-                  href="#pablo"
-                  className={classes.block}
-                  onClick={e => e.preventDefault()}
-                >
-                  Contact Us
+                <a className={classes.block}>
+                  <Link key="contactUs" to="/contactUs/ticket">
+                    Contact Us
+                  </Link>
                 </a>
               </ListItem>
             </List>

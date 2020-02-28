@@ -47,7 +47,7 @@ class ProductForm extends React.Component {
       allStyles: [],
       styleIds: [],
       colours: [],
-      coloursToImageUrlsMaps: [],
+      colourToImageUrlsMaps: [],
       sizes: []
     };
   }
@@ -67,11 +67,11 @@ class ProductForm extends React.Component {
   };
 
   onSelectColour = async (event, selectedColours) => {
-    const coloursToImageUrlsMaps = selectedColours.map(
+    const colourToImageUrlsMaps = selectedColours.map(
       colour => new ColourToImagesMap(colour.hex, [])
     );
     // console.log(selectedColours);
-    await this.setState({ colours: selectedColours, coloursToImageUrlsMaps });
+    await this.setState({ colours: selectedColours, colourToImageUrlsMaps });
     // console.log(this.state.colours);
   };
 
@@ -110,17 +110,17 @@ class ProductForm extends React.Component {
 
   handleOnDrop = (files, selectedColour) => {
     const coloursToImageUrlsMap = new ColourToImagesMap(selectedColour, files);
-    let coloursToImageUrlsMaps = [...this.state.coloursToImageUrlsMaps];
+    let colourToImageUrlsMaps = [...this.state.colourToImageUrlsMaps];
 
     const index = _.findIndex(
-      coloursToImageUrlsMaps,
+      colourToImageUrlsMaps,
       _.matchesProperty("colour", selectedColour)
     );
 
     // If got existing, replace
-    coloursToImageUrlsMaps[index] = coloursToImageUrlsMap;
+    colourToImageUrlsMaps[index] = coloursToImageUrlsMap;
 
-    this.setState({ coloursToImageUrlsMaps });
+    this.setState({ colourToImageUrlsMaps });
   };
 
   onSubmit = e => {
@@ -135,7 +135,7 @@ class ProductForm extends React.Component {
       tagIds,
       styleIds,
       sizes,
-      coloursToImageUrlsMaps
+      colourToImageUrlsMaps
     } = this.state;
     const product = new CreateProductRequest(
       serialNumber,
@@ -150,16 +150,19 @@ class ProductForm extends React.Component {
       tagIds,
       styleIds,
       sizes,
-      coloursToImageUrlsMaps
+      colourToImageUrlsMaps
     };
 
     const form = new FormData();
-    coloursToImageUrlsMaps.map(({ colour, files }, index) => {
+    colourToImageUrlsMaps.map(({ colour, files }, index) => {
       files.map(file => {
         form.append(index, file);
       });
     });
-    this.props.createNewProduct(form, this.props.history);
+    form.append("request", JSON.stringify(req));
+    // console.log(form);
+    // console.log(req);
+    console.log(this.props.createNewProduct(form, this.props.history));
   };
 
   render() {

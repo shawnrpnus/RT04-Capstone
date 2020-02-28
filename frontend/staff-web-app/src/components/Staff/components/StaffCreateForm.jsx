@@ -119,8 +119,8 @@ class StaffCreateForm extends Component {
     );
     const req = new StaffCreateRequest(
       staff,
-      this.roleId,
-      this.departmentId,
+      this.state.roleId,
+      this.state.departmentId,
       staffAddress
     );
 
