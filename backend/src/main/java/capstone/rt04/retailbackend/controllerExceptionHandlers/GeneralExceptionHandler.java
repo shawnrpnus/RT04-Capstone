@@ -7,6 +7,7 @@ import capstone.rt04.retailbackend.util.exceptions.category.CreateNewCategoryExc
 import capstone.rt04.retailbackend.util.exceptions.category.DeleteCategoryException;
 import capstone.rt04.retailbackend.util.exceptions.category.UpdateCategoryException;
 import capstone.rt04.retailbackend.util.exceptions.customer.*;
+import capstone.rt04.retailbackend.util.exceptions.product.ProductImageNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductStockNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
@@ -66,9 +67,8 @@ public class GeneralExceptionHandler extends ResponseEntityExceptionHandler {
             AddressNotFoundException.class, ProductVariantNotFoundException.class,
             StyleNotFoundException.class, TagNotFoundException.class, CategoryNotFoundException.class,
             ProductNotFoundException.class, ProductStockNotFoundException.class, WarehouseNotFoundException.class,
-            StoreNotFoundException.class,
-            VerificationCodeNotFoundException.class,
-            AlreadyVerifiedException.class
+            StoreNotFoundException.class, VerificationCodeNotFoundException.class, AlreadyVerifiedException.class,
+            ProductImageNotFoundException.class
     })
     public final ResponseEntity<Object> handleNotFoundExceptions(Exception ex, WebRequest req) {
         return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);

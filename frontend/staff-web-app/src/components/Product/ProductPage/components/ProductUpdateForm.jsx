@@ -86,7 +86,7 @@ class ProductUpdateForm extends PureComponent {
     product.category = _.pick(product.category, ["categoryId"]);
     product.tags = product.tags.map(tag => _.pick(tag, ["tagId"]));
     product.styles = product.styles.map(style => _.pick(style, ["styleId"]));
-    this.props.updateProduct(product, this.props.history);
+    this.props.updateProduct(product, this.props.onClose);
     this.setState({});
   };
 

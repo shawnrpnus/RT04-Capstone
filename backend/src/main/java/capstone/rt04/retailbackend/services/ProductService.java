@@ -154,8 +154,6 @@ public class ProductService {
         // Each colours will have a list of sizes
         // Every sizes of each colour will show the productVariantId and productStock
 
-        System.out.println(storeOrWarehouseId);
-
         List<Product> products = new ArrayList<>();
         if (productId != null) {
             products.add(retrieveProductById(productId));
@@ -513,8 +511,8 @@ public class ProductService {
 
         ProductVariant productVariant = retrieveProductVariantById(productVariantId);
 
-        for(Transaction transaction : transactionService.retrievePastOrders()) {
-            for(TransactionLineItem transactionLineItem : transaction.getTransactionLineItems()) {
+        for (Transaction transaction : transactionService.retrievePastOrders()) {
+            for (TransactionLineItem transactionLineItem : transaction.getTransactionLineItems()) {
                 if (transactionLineItem.getProductVariant().getProductVariantId().equals(productVariantId)) {
                     throw new DeleteProductVariantException("Transaction line item tied to product");
                 }
@@ -698,6 +696,10 @@ public class ProductService {
     public List<ProductImage> createProductImage(List<ProductImage> productImages, Long productVariantId) throws ProductVariantNotFoundException {
         ProductVariant productVariant = retrieveProductVariantById(productVariantId);
 
+        if (productVariant.getProductImages() != null && productVariant.getProductImages().size() > 0) {
+            productVariant.getProductImages().clear();
+        }
+
         for (ProductImage productImage : productImages) {
             productImageRepository.save(productImage);
             productVariant.getProductImages().add(productImage);
@@ -727,10 +729,32 @@ public class ProductService {
         return productImages;
     }
 
-    public ProductImage updateProductImage(ProductImage newProductImage) throws ProductImageNotFoundException {
-        ProductImage productImage = retrieveProductImageById(newProductImage.getProductImageId());
-        productImage.setProductImageUrl(newProductImage.getProductImageUrl());
-        return productImage;
+    public  List<String>  updateProductVariantImages(Long productId, String colour, List<String> imageUrls) throws ProductImageNotFoundException, ProductNotFoundException, ProductVariantNotFoundException {
+        Product product = retrieveProductById(productId);
+
+        List<ProductVariant> productVariantsToAssignImages = new ArrayList<>();
+        List<ProductImage> productImages = new ArrayList<>();
+        Boolean imageCreated = Boolean.FALSE;
+        Integer position = 0;
+
+        for (String imageUrl : imageUrls) {
+            productImages.add(new ProductImage(imageUrl, position));
+            position++;
+        }
+
+        for (ProductVariant productVariant : product.getProductVariants()) {
+            if (productVariant.getColour().equals(colour)) {
+                if (!imageCreated) {
+                    productImages = createProductImage(productImages, productVariant.getProductVariantId());
+                    imageCreated = Boolean.TRUE;
+                } else {
+                    productVariantsToAssignImages.add(productVariant);
+                }
+            }
+        }
+        // Associate productVariant of that matches the input colour but different sizes to the updated ProductImage
+        assignProductImages(productImages, productVariantsToAssignImages);
+        return imageUrls;
     }
 
     public List<ProductImage> deleteProductImage(List<ProductImage> productImages, Long productVariantId) throws ProductImageNotFoundException, ProductVariantNotFoundException {

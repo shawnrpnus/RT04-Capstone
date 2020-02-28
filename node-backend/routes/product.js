@@ -110,4 +110,47 @@ router.post(
   }
 );
 
+router.put(
+  "/updateProductVariantImages",
+  [upload.fields([{ name: "images", maxCount: 5 }])],
+  async (req, res) => {
+    const request = JSON.parse(req.body.request);
+    request.imageUrls = [];
+
+    const images = req.files.images;
+
+    images.map(({ originalname }, index) => {
+      cloudinary.uploader
+        .upload(`./uploads/${originalname}`, {
+          public_id: originalname,
+          width: 500,
+          height: 500,
+          crop: "fit"
+          // tags: "basic_sample",
+          // effect: "saturation:-70"
+        })
+        .then(image => {
+          request.imageUrls.push(image.secure_url);
+          if (index === images.length - 1) {
+            console.log(request);
+            axios
+              .put(
+                process.env.SPRING_API_URL + "/productImage/updateProductImage",
+                request
+              )
+              .then(response => {
+                return res.send(request);
+              })
+              .catch(err => {
+                return res.status(400).send(err);
+              });
+          }
+        })
+        .catch(err => {
+          res.status(400).send(err);
+        });
+    });
+  }
+);
+
 module.exports = router;
