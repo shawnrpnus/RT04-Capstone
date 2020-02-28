@@ -153,7 +153,8 @@ export const sendUpdateEmailLink = (
   req,
   setDialogOpen,
   resetInputState,
-  setChangingEmail
+  setChangingEmail,
+  enqueueSnackbar
 ) => {
   return dispatch => {
     axios
@@ -166,7 +167,16 @@ export const sendUpdateEmailLink = (
       })
       .catch(err => {
         setTimeout(() => dispatch(emailSent()), 500);
-        dispatchErrorMapError(err, dispatch);
+        resetInputState();
+        setChangingEmail(false);
+        if (_.get(err, "response.data.email")) {
+          dispatchErrorMapError(err, dispatch);
+        } else {
+          enqueueSnackbar("Error sending email", {
+            variant: "error",
+            autoHideDuration: 1200
+          });
+        }
       });
   };
 };

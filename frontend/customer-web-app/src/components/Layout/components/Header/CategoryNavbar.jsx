@@ -48,7 +48,7 @@ function RenderCategoryToolTip(props) {
   return (
     <React.Fragment>
       <HtmlTooltip
-        open={category.categoryName === "Men"}
+        // open={category.categoryName === "Men"}
         title={<CategoryToolTipContent rootCategory={category} />}
         interactive
       >
@@ -70,6 +70,7 @@ function CategoryToolTipContent(props) {
       <GridContainer>
         {subCategories.map(c => (
           <SubCategoryColumn
+            key={c.categoryId}
             rootCategory={rootCategory}
             subCategory={c}
             numSubCategories={numSubCategories}
@@ -104,6 +105,7 @@ function SubCategoryColumn(props) {
       <List>
         {leafCategories.map(c => (
           <Link
+            key={c.categoryId}
             to={`/shop/${rootCategory.categoryName}/${subCategory.categoryName}/${c.categoryName}`}
           >
             <ListItem button disableGutters>
