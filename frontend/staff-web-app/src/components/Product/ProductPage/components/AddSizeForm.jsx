@@ -62,7 +62,11 @@ class AddSizeForm extends PureComponent {
   onSubmit = e => {
     e.preventDefault();
     const { productId, sizes, colourSizeMap } = this.state;
-    const request = { productId, sizes, colours: Array(colourSizeMap.colour) };
+    const colourToImageUrlsMaps = Array(colourSizeMap.colour).map(colour => ({
+      colour,
+      imageUrls: []
+    }));
+    const request = { productId, sizes, colourToImageUrlsMaps };
     this.props.createProductVariants(request);
   };
 

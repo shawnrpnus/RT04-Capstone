@@ -25,5 +25,5 @@ public class ProductCreateRequest {
 
     private List<SizeEnum> sizes;
 
-    private List<String> colors;
+    private List<ColourToImageUrlsMap> colourToImageUrlsMaps;
 }

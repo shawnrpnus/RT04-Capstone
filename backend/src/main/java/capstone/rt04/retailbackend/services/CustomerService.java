@@ -9,6 +9,7 @@ import capstone.rt04.retailbackend.util.exceptions.customer.*;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.shoppingcart.InvalidCartTypeException;
 import capstone.rt04.retailbackend.util.exceptions.style.StyleNotFoundException;
+import jdk.internal.util.xml.impl.Input;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -273,27 +274,32 @@ public class CustomerService {
     //give link /api/customer/resetpassword/948273h1fadnenfjns
     //customer inputs new password at that link
     //on front-end, make api call by extracting the code from the link
-    public void resetPassword(Long customerId, String code, String newPassword) throws CustomerNotFoundException, VerificationCodeExpiredException {
-        Customer customer = retrieveCustomerByCustomerId(customerId);
-
+    public void resetPassword(String code, String newPassword, String confirmNewPassword) throws VerificationCodeExpiredException, VerificationCodeNotFoundException, InputDataValidationException {
+        if (!newPassword.equals(confirmNewPassword)){
+            Map<String, String> errorMap = new HashMap<>();
+            errorMap.put("newPassword", ErrorMessages.PASSWORDS_MUST_MATCH);
+            errorMap.put("confirmNewPassword", ErrorMessages.PASSWORDS_MUST_MATCH);
+            throw new InputDataValidationException(errorMap, ErrorMessages.PASSWORDS_MUST_MATCH);
+        }
+        VerificationCode vCode =  verificationCodeRepository.findByCode(code)
+                .orElseThrow(() -> new VerificationCodeNotFoundException(ErrorMessages.VERIFICATION_CODE_INVALID));
+        Customer customer = vCode.getCustomer();
         if (code.equals(customer.getVerificationCode().getCode())) {
             if (customer.getVerificationCode().getExpiryDateTime().before(new Timestamp(System.currentTimeMillis()))) {
                 throw new VerificationCodeExpiredException(ErrorMessages.VERIFICATION_CODE_EXPIRED);
             }
+            vCode.setExpiryDateTime(new Timestamp(System.currentTimeMillis())); //expire it
             customer.setPassword(encoder.encode(newPassword));
-        } else {
-            throw new VerificationCodeExpiredException(ErrorMessages.VERIFICATION_CODE_INVALID);
         }
     }
 
     // TODO: Update with actual link
-    public void sendResetPasswordLink(Long customerId) throws CustomerNotFoundException {
-        VerificationCode vCode = generateVerificationCode(customerId);
-        SimpleMailMessage msg = new SimpleMailMessage();
-        msg.setTo(vCode.getCustomer().getEmail());
-        msg.setSubject("Reset your password");
-        msg.setText(Constants.FRONTEND_URL + "/resetPassword/" + vCode.getCode());
-        javaMailSender.send(msg);
+    public void sendResetPasswordLink(String email) throws CustomerNotFoundException {
+        Customer customer = retrieveCustomerByEmail(email);
+        VerificationCode vCode = generateVerificationCode(customer.getCustomerId());
+        nodeSendEmailVerificationLink("/account/resetPassword/", vCode.getCode(),
+                vCode.getCustomer().getEmail(), vCode.getCustomer().getFirstName(),
+                vCode.getCustomer().getLastName());
     }
 
     public Customer updateMeasurements(Long customerId, Measurements measurements) throws InputDataValidationException, CustomerNotFoundException {

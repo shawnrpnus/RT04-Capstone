@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import GridContainer from "components/Layout/components/Grid/GridContainer";
 import CustomTextField from "components/UI/CustomInput/CustomTextField";
 import InputAdornment from "@material-ui/core/InputAdornment";
@@ -18,6 +18,7 @@ import UpdateCustomerRequest from "models/customer/UpdateCustomerRequest";
 import {
   changePassword,
   emailSending,
+  emailSent,
   sendUpdateEmailLink,
   updateCustomerName
 } from "redux/actions/customerActions";
@@ -62,6 +63,12 @@ function AccountInfo(props) {
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
 
+  //Effects
+  //Cleanup on unmount
+  useEffect(() => {
+    return () => dispatch(emailSent());
+  }, []);
+
   //Misc
   const onChange = e => {
     e.persist();
@@ -83,26 +90,35 @@ function AccountInfo(props) {
     dispatch(updateCustomerName(req, enqueueSnackbar));
   };
 
+  const resetInputState = () => {
+    setInputState(prevInputState => ({
+      ...prevInputState,
+      email: customer.email,
+      newEmail: prevInputState.email
+    }));
+  };
+
   const handleUpdateEmail = () => {
     if (inputState.email !== customer.email) {
       const req = new SendUpdateEmailLinkRequest(
         customer.customerId,
         inputState.email
       );
-      setInputState(prevInputState => ({
-        ...prevInputState,
-        email: customer.email,
-        newEmail: prevInputState.email
-      }));
-      dispatch(sendUpdateEmailLink(req, setDialogOpen));
-      dispatch(emailSending());
+      dispatch(
+        sendUpdateEmailLink(
+          req,
+          setDialogOpen,
+          resetInputState,
+          setChangingEmail
+        )
+      );
+      setTimeout(() => dispatch(emailSending()), 500);
     } else {
       enqueueSnackbar("Email is the same", {
         variant: "error",
         autoHideDuration: 1200
       });
     }
-    setChangingEmail(false);
   };
 
   const handleCloseDialog = () => {
@@ -203,7 +219,7 @@ function AccountInfo(props) {
                 }}
               />
               <div className={classes.textCenter}>
-                {changingEmail ? (
+                {changingEmail || !_.isEmpty(errors) ? (
                   <React.Fragment>
                     <Tooltip
                       title="Note: Verification email will be sent to this new email"
@@ -213,7 +229,14 @@ function AccountInfo(props) {
                         Submit
                       </Button>
                     </Tooltip>
-                    <Button onClick={() => setChangingEmail(false)} round>
+                    <Button
+                      onClick={() => {
+                        setChangingEmail(false);
+                        resetInputState();
+                        dispatch(clearErrors());
+                      }}
+                      round
+                    >
                       Cancel
                     </Button>
                   </React.Fragment>
@@ -318,7 +341,14 @@ function AccountInfo(props) {
                         Submit
                       </Button>
                     </Tooltip>
-                    <Button onClick={() => setChangingPassword(false)} round>
+                    <Button
+                      onClick={() => {
+                        setChangingPassword(false);
+                        resetInputState();
+                        dispatch(clearErrors());
+                      }}
+                      round
+                    >
                       Cancel
                     </Button>
                   </React.Fragment>

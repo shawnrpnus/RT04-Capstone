@@ -13,8 +13,6 @@ import org.springframework.stereotype.Component;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -51,11 +49,11 @@ public class TimerService {
             for (ProductStock p : productStocks) {
                 //instantaneous reordering
                 p.setQuantity(p.getReorderQuantity() + p.getQuantity());
-                log.info("is quantity updated: " + p.getQuantity());
+//                log.info("is quantity updated: " + p.getQuantity());
                 productService.updateProductStock(p);
             }
         }
-        log.info("donee");
+//        log.info("donee");
     }
 
     @Scheduled(fixedRate = intervalDay, initialDelay = 10000)

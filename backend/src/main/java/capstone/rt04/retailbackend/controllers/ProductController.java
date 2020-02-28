@@ -85,7 +85,8 @@ public class ProductController {
     public ResponseEntity<?> createProduct(@RequestBody ProductCreateRequest productCreateRequest) {
         try {
             Product newProduct = productService.createNewProduct(productCreateRequest.getProduct(),
-                    productCreateRequest.getCategoryId(), productCreateRequest.getTagIds(), productCreateRequest.getStyleIds(), productCreateRequest.getSizes(), productCreateRequest.getColors());
+                    productCreateRequest.getCategoryId(), productCreateRequest.getTagIds(), productCreateRequest.getStyleIds(),
+                    productCreateRequest.getSizes(), productCreateRequest.getColourToImageUrlsMaps());
             return new ResponseEntity<>(newProduct, HttpStatus.CREATED);
         } catch (InputDataValidationException ex) {
             return new ResponseEntity<>(ex.getErrorMap(), HttpStatus.BAD_REQUEST);

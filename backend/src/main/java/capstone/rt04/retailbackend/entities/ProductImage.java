@@ -35,6 +35,7 @@ public class ProductImage implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long productImageId;
 
+    @NotNull(message = "Product image URL must be provided")
     private String productImageUrl;
 
     @NotNull(message = "The position of the image must be specified")

@@ -22,6 +22,7 @@ public class SizeDetailsService {
     public SizeDetails createSizeDetails(SizeDetails sizeDetails) throws InputDataValidationException {
         validationService.throwExceptionIfInvalidBean(sizeDetails);
         sizeDetailsRepository.save(sizeDetails);
+        System.out.println("Size ID: " + sizeDetails.getSizeDetailsId());
         return sizeDetails;
     }
 }

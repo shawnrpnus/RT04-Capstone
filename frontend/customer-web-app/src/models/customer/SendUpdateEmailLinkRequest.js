@@ -1,9 +1,9 @@
 export default class SendUpdateEmailLinkRequest {
   customerId;
-  newEmail;
+  email;
 
-  constructor(customerId, newEmail) {
+  constructor(customerId, email) {
     this.customerId = customerId;
-    this.newEmail = newEmail;
+    this.email = email;
   }
 }

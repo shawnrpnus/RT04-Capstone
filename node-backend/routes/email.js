@@ -1,8 +1,7 @@
-import { Router } from "express";
-
+const express = require("express");
+const router = express.Router();
 const Mailgen = require("mailgen");
 const Nodemailer = require("nodemailer");
-const router = Router();
 const mailGenerator = new Mailgen({
   theme: "default",
   product: {
@@ -11,6 +10,15 @@ const mailGenerator = new Mailgen({
     link: "http://localhost:3000"
     // Optional product logo
     // logo: 'https://mailgen.js/img/logo.png'
+  }
+});
+const transporter = Nodemailer.createTransport({
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false, // true for 465, false for other ports
+  auth: {
+    user: "rt04capstone@gmail.com", // generated ethereal user
+    pass: "retailretail" // generated ethereal password
   }
 });
 
@@ -36,16 +44,6 @@ router.post("/sendVerificationEmail", async (req, res) => {
 
   const emailBody = mailGenerator.generate(emailContent);
   const emailText = mailGenerator.generatePlaintext(emailContent);
-
-  let transporter = Nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 587,
-    secure: false, // true for 465, false for other ports
-    auth: {
-      user: "rt04capstone@gmail.com", // generated ethereal user
-      pass: "retailretail" // generated ethereal password
-    }
-  });
 
   transporter.sendMail(
     {

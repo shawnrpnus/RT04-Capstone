@@ -18,14 +18,17 @@ export default function(state = initialState, action) {
     case types.VERIFY_SUCCESS:
       return {
         ...state,
-        registeredCustomer: {},
-        loggedInCustomer: action.customer,
         verificationStatus: "SUCCESS"
       };
     case types.VERIFY_FAILURE:
       return {
         ...state,
         verificationStatus: "FAILURE"
+      };
+    case types.RESET_VERIFICATION_STATUS:
+      return {
+        ...state,
+        verificationStatus: null
       };
     case types.CUSTOMER_LOGOUT:
       return initialState;

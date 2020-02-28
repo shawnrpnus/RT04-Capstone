@@ -79,16 +79,16 @@ public class CustomerController {
     @PostMapping(CustomerControllerRoutes.SEND_UPDATE_EMAIL_LINK)
     public ResponseEntity<?> sendUpdateEmailLink(@RequestBody SendUpdateEmailLinkRequest req) throws CustomerNotFoundException, InputDataValidationException {
         validationService.throwExceptionIfInvalidBean(req);
-        customerService.sendUpdateEmailLink(req.getCustomerId(), req.getNewEmail());
+        customerService.sendUpdateEmailLink(req.getCustomerId(), req.getEmail());
         Map<String, String> successMessage = new HashMap<>();
-        successMessage.put("message","Please check your email for the link to reset your password");
+        successMessage.put("message", "Please check your email for the link to reset your password");
         return new ResponseEntity<>(successMessage, HttpStatus.OK);
     }
 
     // 2. Customer checks email --> clicks on link --> call this API --> redirect to success page
     @GetMapping(CustomerControllerRoutes.UPDATE_EMAIL)
     public ResponseEntity<?> updateEmailLinkClicked(@PathVariable String code) throws CustomerNotFoundException, VerificationCodeExpiredException, VerificationCodeNotFoundException {
-        Customer customer =customerService.updateEmail(code);
+        Customer customer = customerService.updateEmail(code);
         return new ResponseEntity<>(customer, HttpStatus.OK);
     }
 
@@ -121,33 +121,22 @@ public class CustomerController {
     // TODO: Implement below 2 methods with actual email and redirection etc.
     // Client clicks button to reset password --> call this API --> send email
     @PostMapping(CustomerControllerRoutes.SEND_RESET_PASSWORD_LINK)
-    public ResponseEntity<?> sendresetPasswordLink(@RequestParam Long customerId) throws CustomerNotFoundException {
-        customerService.sendResetPasswordLink(customerId);
+    public ResponseEntity<?> sendresetPasswordLink(@RequestBody CustomerEmailRequest req) throws CustomerNotFoundException {
+        customerService.sendResetPasswordLink(req.getEmail());
         Map<String, String> successMessage = new HashMap<>();
-        successMessage.put("message","Please check your email for the link to reset your password");
+        successMessage.put("message", "Please check your email for the link to reset your password");
         return new ResponseEntity<>(successMessage, HttpStatus.OK);
-    }
-
-    // Client clicks email link --> call this api --> redirect to page with form to enter new password
-    @GetMapping(CustomerControllerRoutes.RESET_PASSWORD_GET)
-    public ResponseEntity<?> resetPasswordLinkClicked(@PathVariable String code){
-        /*TODO: Redirect to client page, client will use code to get customer info
-        *  OR email link sent will go straight to client page with the code info, then call getCustomerFromCode API*/
-        return new ResponseEntity<>(null, HttpStatus.OK);
     }
 
     // Client enters new password, clicks submit --> call this api
     @PostMapping(CustomerControllerRoutes.RESET_PASSWORD_POST)
-    public ResponseEntity<?> resetPassword(@RequestBody CustomerResetPasswordRequest customerResetPasswordRequest) throws CustomerNotFoundException, VerificationCodeExpiredException {
-        Map<String, String> inputErrMap = validationService.generateErrorMap(customerResetPasswordRequest);
-        if (inputErrMap != null) {
-            return new ResponseEntity<>(inputErrMap, HttpStatus.BAD_REQUEST);
-        }
-        customerService.resetPassword(customerResetPasswordRequest.getCustomerId(),
-                customerResetPasswordRequest.getVerificationCode(),
-                customerResetPasswordRequest.getNewPassword());
-        Customer customer = customerService.retrieveCustomerByCustomerId(customerResetPasswordRequest.getCustomerId());
-        return new ResponseEntity<>(customer, HttpStatus.OK);
+    public ResponseEntity<?> resetPassword(@RequestBody CustomerResetPasswordRequest customerResetPasswordRequest) throws CustomerNotFoundException, VerificationCodeExpiredException, VerificationCodeNotFoundException, InputDataValidationException {
+        validationService.throwExceptionIfInvalidBean(customerResetPasswordRequest);
+        customerService.resetPassword(customerResetPasswordRequest.getVerificationCode(),
+                customerResetPasswordRequest.getNewPassword(), customerResetPasswordRequest.getConfirmNewPassword());
+        Map<String, String> successMessage = new HashMap<>();
+        successMessage.put("message", "Please check your email for the link to reset your password");
+        return new ResponseEntity<>(successMessage, HttpStatus.OK);
     }
 
     @PostMapping(CustomerControllerRoutes.UPDATE_MEASUREMENTS)

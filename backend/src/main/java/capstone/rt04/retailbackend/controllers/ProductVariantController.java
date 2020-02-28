@@ -6,6 +6,7 @@ import capstone.rt04.retailbackend.response.GenericErrorResponse;
 import capstone.rt04.retailbackend.services.ProductService;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.product.CreateNewProductStockException;
+import capstone.rt04.retailbackend.util.exceptions.product.ProductImageNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
@@ -61,8 +62,8 @@ public class ProductVariantController {
     }
 
     @PostMapping(ProductVariantControllerRoutes.CREATE_MULTIPLE_PRODUCT_VARIANTS)
-    public ResponseEntity<?> createMultipleProductVariants(@RequestBody ProductVariantCreateRequest productVariantCreateRequest) throws WarehouseNotFoundException, ProductNotFoundException, ProductVariantNotFoundException, InputDataValidationException, CreateNewProductStockException, StoreNotFoundException {
-        List<ProductVariant> productVariants = productService.createMultipleProductVariants(productVariantCreateRequest.getProductId(), productVariantCreateRequest.getColours(),
+    public ResponseEntity<?> createMultipleProductVariants(@RequestBody ProductVariantCreateRequest productVariantCreateRequest) throws WarehouseNotFoundException, ProductNotFoundException, ProductVariantNotFoundException, InputDataValidationException, CreateNewProductStockException, StoreNotFoundException, ProductImageNotFoundException {
+        List<ProductVariant> productVariants = productService.createMultipleProductVariants(productVariantCreateRequest.getProductId(), productVariantCreateRequest.getColourToImageUrlsMaps(),
                 productVariantCreateRequest.getSizes());
         return new ResponseEntity<>(productVariants, HttpStatus.CREATED);
     }

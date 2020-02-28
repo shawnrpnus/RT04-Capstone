@@ -13,6 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.management.relation.RoleNotFoundException;
 import javax.persistence.PersistenceException;
 import java.math.BigDecimal;
 import java.util.*;
@@ -59,22 +60,27 @@ public class StaffService {
         this.rosterRepository = rosterRepository;
     }
 
-    public Role createNewRole (RoleNameEnum name, BigDecimal value){
-        Role newRole = new Role(name, value);
-        roleRepository.save(newRole);
-        return newRole;
+    public Role createNewRole (RoleNameEnum name) throws CreateRoleException{
+
+            Role newRole = new Role(name);
+            Role r = roleRepository.save(newRole);
+            return r;
+
+
     }
 
-    public Department createNewDepartment (String name){
-        Department newDepartment = new Department(name);
-        departmentRepository.save(newDepartment);
-        return newDepartment;
+    public Department createNewDepartment (String name) throws CreateDepartmentException {
+
+            Department newDepartment = new Department(name);
+            Department d = departmentRepository.save(newDepartment);
+            return d;
+
     }
 
     //staff entity: first categoryName, last categoryName, nric, username&password(to be configured by admin),leave remaining
     //for HR to create staff. HR supplies, first categoryName, last categoryName, nric, address, bank details,
     //role, department.
-    public Staff createNewStaff (Staff staff,Address staffAddress, Role role, Department department) throws InputDataValidationException, CreateNewStaffException {
+    public Staff createNewStaff (Staff staff,Address staffAddress, Long roleId,Long departmentId)throws InputDataValidationException, CreateNewStaffException {
       validationService.throwExceptionIfInvalidBean(staff);
        validationService.throwExceptionIfInvalidBean(staffAddress);
 
@@ -96,18 +102,21 @@ public class StaffService {
             //Set address, role and department before saving because of sql constraint
             //Address ID, role ID and department ID column cannot be empty
             addressRepository.save(staffAddress);
-            departmentRepository.save(department);
-            roleRepository.save(role);
+            Role r = roleRepository.findById(roleId)
+                    .orElseThrow(() -> new RoleNotFoundException("Role does not exist"));
+            Department d = departmentRepository.findById(departmentId)
+                    .orElseThrow(() -> new DepartmentNotFoundException("Department does not exist"));
+
             staff.setAddress(staffAddress);
-            staff.setRole(role);
-            staff.setDepartment(department);
+            staff.setRole(r);
+            staff.setDepartment(d);
             Staff savedStaff = staffRepository.save(staff);
 
             return lazyLoadStaffFields(savedStaff);
 
 
-        } catch (PersistenceException ex) {
-            throw new CreateNewStaffException("Error creating new staff");
+        } catch (PersistenceException | RoleNotFoundException | DepartmentNotFoundException ex) {
+            throw new CreateNewStaffException(ex.getMessage());
         }
     }
 
@@ -119,6 +128,11 @@ public class StaffService {
 
         try {
             Staff staff = retrieveStaffByStaffId(staffID);
+            if(staff.getUsername()!=null){
+                Map<String, String> errorMap = new HashMap<>();
+                errorMap.put("staffId", ErrorMessages.STAFF_ACCOUNT_ALREADY_CONFIGURED);
+                throw new CreateNewStaffAccountException(errorMap, ErrorMessages.STAFF_ACCOUNT_ALREADY_CONFIGURED);
+            }
             staff.setUsername(staff.getFirstName() + staff.getLastName() + staffID.toString());
 
             //generate random password
@@ -134,7 +148,9 @@ public class StaffService {
 
             return staff;
         }catch (StaffNotFoundException ex){
-            throw new CreateNewStaffAccountException("Staff does not exist");
+            Map<String, String> errorMap = new HashMap<>();
+            errorMap.put("staffId", ErrorMessages.STAFF_DOES_NOT_EXIST);
+            throw new CreateNewStaffAccountException(errorMap, ErrorMessages.STAFF_DOES_NOT_EXIST);
         }
 
     }
@@ -154,7 +170,6 @@ public class StaffService {
 
             return staff;
         }catch (StaffNotFoundException ex){
-            System.out.println("STAFF DOES NOT EXIST");
             throw new StaffNotFoundException("Staff does not exist!");
         }
     }
@@ -178,15 +193,10 @@ public class StaffService {
         return allStaff;
     }
 
-    public List<String> retrieveAllRoles(){
-        List<String> allRoles = new ArrayList<String>();
-        allRoles.add("ASSISTANT");
-        allRoles.add("ASSISTANT_MANAGER");
-        allRoles.add("MANAGER");
-        allRoles.add("DIRECTOR");
-        return allRoles;
-    }
-
+    public List<Role>retrieveAllRoles(){
+        List<Role>allRoles = roleRepository.findAll();
+return allRoles;
+}
     public List<Department> retrieveAllDepartments(){
         List<Department> allDepartments = departmentRepository.findAll();
         return allDepartments;
