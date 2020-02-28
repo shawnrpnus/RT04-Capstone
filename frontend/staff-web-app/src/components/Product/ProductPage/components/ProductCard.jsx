@@ -226,10 +226,7 @@ class ProductCard extends PureComponent {
               </ButtonToolbar>
             </Col>
           </Row>
-          <ProductTabs 
-            description={description} 
-            tags={tags}
-            styles={styles}/>
+          <ProductTabs description={description} tags={tags} styles={styles} />
         </div>
         {openProductUpdateDialog && (
           <ProductUpdateForm

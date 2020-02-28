@@ -1,6 +1,5 @@
 import * as types from "../actions/types";
 
-
 const initialState = {
   allContactUsCategoryEnum: [],
   currentContactUs: null
@@ -17,7 +16,7 @@ export default function(state = initialState, action) {
       return {
         ...state,
         currentContactUs: action.currentContactUs
-      }
+      };
     default:
       return state;
   }
