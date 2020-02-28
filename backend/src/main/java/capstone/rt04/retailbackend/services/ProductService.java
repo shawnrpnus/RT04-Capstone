@@ -225,6 +225,7 @@ public class ProductService {
                 Collections.sort(csMap.getSizeMaps(), Comparator.comparingInt(SizeToProductVariantAndStockMap::getSizeValue));
             }
 
+            productDetailsResponse.setLeafNodeName(categoryService.generateLeafNodeName(product.getCategory(), ""));
             productDetailsResponse.setProduct(product);
             productDetailsResponses.add(productDetailsResponse);
         }

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 // nodejs library that concatenates classes
 import classNames from "classnames";
@@ -17,12 +17,15 @@ import Menu from "@material-ui/icons/Menu";
 import Close from "@material-ui/icons/Close";
 // core components
 import styles from "assets/jss/material-kit-pro-react/components/headerStyle.js";
+import { useDispatch } from "react-redux";
+import { retrieveAllRootCategories } from "redux/actions/categoryActions";
 
 const useStyles = makeStyles(styles);
 
 export default function Header(props) {
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const classes = useStyles();
+  const dispatch = useDispatch();
   React.useEffect(() => {
     if (props.changeColorOnScroll) {
       window.addEventListener("scroll", headerColorChange);
@@ -33,6 +36,7 @@ export default function Header(props) {
       }
     };
   });
+
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };

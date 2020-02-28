@@ -130,11 +130,10 @@ class ProductCard extends PureComponent {
       openProductUpdateDialog,
       openCreateProductVariantDialog,
       openAddSizeDialog,
-      openUpdateImageDialog,
-      product
+      openUpdateImageDialog
     } = this.state;
-    const { errors, location } = this.props;
-    console.log(this.state);
+    const { errors, location, currentProduct } = this.props;
+    const leafNodeName = _.get(currentProduct, "leafNodeName");
 
     const variants = _.keyBy(
       _.get(this.props, "currentProduct.product.productVariants"),
@@ -227,9 +226,7 @@ class ProductCard extends PureComponent {
                 ${price}{" "}
                 <span className="product-card__old-price">${cost}</span>
               </h1>
-              <h4 className="product-card__category">
-                {category && category.categoryName}
-              </h4>
+              <h4 className="product-card__category">{leafNodeName}</h4>
               <div className="form__form-group">
                 <span className="product-card__form-label">Select Color</span>
                 <div className="form__form-group-field">
@@ -292,19 +289,6 @@ class ProductCard extends PureComponent {
                   </ButtonToolbar>
                 </div>
               </div>
-              {/* <Row>
-            <Col xs={0} lg={9} />
-            <Col xs={12} lg={3}>
-              <ButtonToolbar className="product-card__btn-toolbar">
-          
-
-                 <button className="product-card__wish-btn" type="button">
-                        <HeartIcon />
-                        Add to wishlist
-                      </button>
-              </ButtonToolbar>
-            </Col>
-          </Row> */}
               <ProductTabs
                 description={description}
                 tags={tags}

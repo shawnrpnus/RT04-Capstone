@@ -74,7 +74,8 @@ function ContactUsTicket(props) {
   const onClick = e => {
     setInputState(inputState => ({
       ...inputState,
-      contactUsCategory: e}));
+      contactUsCategory: e
+    }));
     if (Object.keys(errors).length !== 0) {
       dispatch(clearErrors());
     }

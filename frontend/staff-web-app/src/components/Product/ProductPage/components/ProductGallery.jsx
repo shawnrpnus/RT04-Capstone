@@ -70,9 +70,9 @@ export default class ProductGallery extends PureComponent {
     this.gotoNext();
   };
 
-  showSmallBlank = () => {
+  showSmallBlank = n => {
     return (
-      <div className="product-gallery__img-preview">
+      <div key={n} className="product-gallery__img-preview">
         <img
           src="/blank.png"
           style={{ border: "1px solid black" }}
@@ -128,7 +128,7 @@ export default class ProductGallery extends PureComponent {
                   <img src={img.productImageUrl} alt="product-img" />
                 </button>
               ))
-            : _.times(5, () => this.showSmallBlank())}
+            : _.times(5, n => this.showSmallBlank(n))}
         </div>
         {/*<Lightbox*/}
         {/*  currentImage={currentImage}*/}

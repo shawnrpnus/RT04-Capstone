@@ -13,7 +13,6 @@ export default () => (
       <Route exact path="/404" component={ErrorPage} />
       <Route path="/account" component={Account} />
       <Route path="/contactUs" component={ContactUs} />
-
     </Layout>
   </div>
 );

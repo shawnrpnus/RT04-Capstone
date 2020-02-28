@@ -57,6 +57,7 @@ export default function LoginPage(props) {
   useEffect(() => {
     window.scrollTo(0, 0);
     document.body.scrollTop = 0;
+    dispatch(clearErrors());
   }, []);
 
   useEffect(() => {

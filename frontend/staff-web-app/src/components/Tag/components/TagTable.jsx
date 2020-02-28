@@ -66,7 +66,6 @@ class TagTable extends Component {
   };
 
   handleUpdate = (name, tagId, oldName) => {
-
     if (name !== oldName) {
       const req = new CreateUpdateTagRequest(name);
       req.tagId = tagId;
@@ -80,10 +79,12 @@ class TagTable extends Component {
     // console.log(this.props);
     // console.log(setState);
 
-    if (this.props.allTags){
+    if (this.props.allTags) {
       this.props.allTags.forEach(tag => {
-        tag.products = (Array.isArray(tag.products)) ? tag.products.length : tag.products
-      })
+        tag.products = Array.isArray(tag.products)
+          ? tag.products.length
+          : tag.products;
+      });
     }
     return (
       <React.Fragment>
@@ -118,10 +119,10 @@ class TagTable extends Component {
                 }
               ]}
               editable={{
-                onRowUpdate: ({name}, {tagId,name:oldName}) =>
+                onRowUpdate: ({ name }, { tagId, name: oldName }) =>
                   new Promise(resolve => {
                     if (tagId) {
-                      this.handleUpdate(name, tagId,oldName);
+                      this.handleUpdate(name, tagId, oldName);
                       resolve();
                     }
                   })
