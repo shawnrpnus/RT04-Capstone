@@ -171,14 +171,14 @@ public class CustomerControllerTest extends ApiTestSetup {
 
     @Test
     public void resetPassword() {
-        CustomerResetPasswordRequest badReq = new CustomerResetPasswordRequest(createdCustomerId, "abcdef", "newPassword");
+        CustomerResetPasswordRequest badReq = new CustomerResetPasswordRequest("abcdef", "newPassword", "newPassword");
         given()
                 .contentType("application/json")
                 .body(badReq)
                 .when().post(CUSTOMER_BASE_ROUTE + RESET_PASSWORD_POST)
                 .then().statusCode(HttpStatus.BAD_REQUEST.value());
 
-        CustomerResetPasswordRequest req = new CustomerResetPasswordRequest(createdCustomerId, verificationCode, "newPassword");
+        CustomerResetPasswordRequest req = new CustomerResetPasswordRequest(verificationCode, "newPassword", "newPassword");
         Customer customer = given()
                 .contentType("application/json")
                 .body(req)

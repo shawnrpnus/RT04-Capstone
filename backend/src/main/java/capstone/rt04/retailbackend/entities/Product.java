@@ -30,7 +30,7 @@ import java.util.List;
 @Getter
 @Setter
 @EqualsAndHashCode
-@ToString(exclude = {"category", "productVariants"})
+@ToString(exclude = {"category"})
 @JsonIdentityInfo(generator = JSOGGenerator.class)
 @JsonDeserialize()
 public class Product implements Serializable {
@@ -46,6 +46,7 @@ public class Product implements Serializable {
 
     @NotNull
     @Column(nullable = false)
+    @Size(min = 0)
     private String productName;
 
     @NotNull
@@ -116,6 +117,22 @@ public class Product implements Serializable {
                 if(!tag.getProducts().contains(this))
                 {
                     tag.getProducts().add(this);
+                }
+            }
+        }
+    }
+
+    public void addStyle(Style style)
+    {
+        if(style != null)
+        {
+            if(!this.styles.contains(style))
+            {
+                this.styles.add(style);
+
+                if(!style.getProducts().contains(this))
+                {
+                    style.getProducts().add(this);
                 }
             }
         }

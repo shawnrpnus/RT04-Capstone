@@ -15,7 +15,7 @@ const signupPageStyle = {
     ...container,
     zIndex: "2",
     position: "relative",
-    paddingTop: "20vh",
+    paddingTop: "10vh",
     color: whiteColor
   },
   pageHeader: {
@@ -60,7 +60,7 @@ const signupPageStyle = {
       hexToRgb(blackColor) +
       ", 0.2);",
     marginBottom: "100px",
-    padding: "40px 0px"
+    padding: "40px 0px 40px 0px"
   },
   cardTitle: {
     ...cardTitle,
@@ -137,6 +137,19 @@ const signupPageStyle = {
     height: "18px",
     top: "3px",
     position: "relative"
+  },
+  note: {
+    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+    bottom: "10px",
+    color: grayColor[21],
+    display: "block",
+    fontWeight: "400",
+    fontSize: "13px",
+    lineHeight: "13px",
+    left: "0",
+    marginLeft: "20px",
+    position: "absolute",
+    width: "260px"
   }
 };
 

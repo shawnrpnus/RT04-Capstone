@@ -7,7 +7,7 @@ import {
   createCategory,
   retrieveAllCategories
 } from "../../../redux/actions/categoryActions";
-import { retrieveAllProducts } from "../../../redux/actions/productActions";
+import { retrieveProductsDetails } from "../../../redux/actions/productActions";
 import { Tree } from "primereact/tree";
 import {
   getParentKeys,
@@ -96,7 +96,6 @@ class CategoryTree extends Component {
         allRootCategories
       );
     }
-    if (allRootCategories) console.log(getParentKeys(allRootCategories, {}));
 
     return (
       <React.Fragment>
@@ -195,7 +194,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = {
   retrieveAllRootCategories,
   retrieveAllCategories,
-  retrieveAllProducts,
+  retrieveAllProducts: retrieveProductsDetails,
   deleteCategory,
   createCategory,
   clearErrors

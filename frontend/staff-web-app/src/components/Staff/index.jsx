@@ -1,4 +1,5 @@
 import React from "react";
-import StaffFormContainer from "./components/StaffFormContainer";
+import StaffCreateForm from "./components/StaffCreateForm";
+import StaffAccountCreateForm from "./components/StaffAccountCreateForm";
 
-export { StaffFormContainer };
+export { StaffCreateForm, StaffAccountCreateForm};

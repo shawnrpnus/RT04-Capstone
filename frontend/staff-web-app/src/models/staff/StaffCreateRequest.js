@@ -1,13 +1,13 @@
 export default class StaffCreateRequest {
-  newStaff;
-  role;
-  department;
-  address;
+  staff;
+  staffAddress;
+  roleId;
+  departmentId;
 
-  constructor(newStaff, role, department, address) {
-    this.newStaff = newStaff;
-    this.role = role;
-    this.department = department;
-    this.address = address;
+  constructor(staff, roleId, departmentId, staffAddress) {
+    this.staff = staff;
+    this.staffAddress = staffAddress;
+    this.roleId = roleId;
+    this.departmentId = departmentId;
   }
 }

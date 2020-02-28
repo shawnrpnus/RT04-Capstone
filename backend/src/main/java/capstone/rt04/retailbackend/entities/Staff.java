@@ -18,6 +18,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,12 +40,14 @@ public class Staff implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long staffId;
 
-    @NotNull
+    @NotNull (message = ErrorMessages.FIRST_NAME_REQUIRED)
     @Column(nullable = false)
+    @Size(min = 1, message = ErrorMessages.FIRST_NAME_REQUIRED )
     private String firstName;
 
-    @NotNull
+    @NotNull (message = ErrorMessages.LAST_NAME_REQUIRED)
     @Column(nullable = false)
+    @Size(min =1 , message =ErrorMessages.LAST_NAME_REQUIRED)
     private String lastName;
 
     @Size
@@ -53,6 +56,7 @@ public class Staff implements Serializable {
     @NotNull(message = ErrorMessages.EMAIL_REQUIRED)
     @Column(nullable = false, unique = true)
     @Email(message = ErrorMessages.EMAIL_INVALID)
+    @Size(min =1 , message =ErrorMessages.EMAIL_REQUIRED)
     private String email;
 
 
@@ -66,7 +70,12 @@ public class Staff implements Serializable {
 
     @NotNull
     @Column(nullable = false)
+    @Size(min =1 , message =ErrorMessages.NRIC_REQUIRED)
     private String nric;
+
+    @NotNull (message =ErrorMessages.SALARY_REQUIRED)
+    @Column(nullable = false)
+    private BigDecimal salary;
 
     @OneToMany(mappedBy = "applicant")
     private List<StaffLeave> leaves;
@@ -108,13 +117,14 @@ public class Staff implements Serializable {
         this.leaves = new ArrayList<>();
     }
 
-    public Staff(String firstName, String lastName, Integer leaveRemaining, String nric,String email) {
+    public Staff(String firstName, String lastName, Integer leaveRemaining, String nric, String email, BigDecimal salary) {
         this();
         this.firstName = firstName;
         this.lastName = lastName;
         this.leaveRemaining = leaveRemaining;
         this.nric = nric;
         this.email = email;
+        this.salary = salary;
     }
 
 

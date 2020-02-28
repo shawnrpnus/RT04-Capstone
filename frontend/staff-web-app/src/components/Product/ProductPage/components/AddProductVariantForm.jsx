@@ -32,17 +32,13 @@ class AddProductVariantForm extends PureComponent {
     this.state = {
       productId: _.get(this.props.product, "productId"),
       colours: [],
-      sizes: [],
+      sizes: defaultSizes,
       product: this.props.product,
       existingColours: this.props.colours,
       colourList: colourList,
       colourSizeMap: []
     };
   }
-
-  onSelectColour = async (event, colours) => {
-    await this.setState({ colours });
-  };
 
   async componentDidMount() {
     let colourList = [...this.state.colourList];
@@ -54,6 +50,10 @@ class AddProductVariantForm extends PureComponent {
     await this.setState({ colourList });
   }
 
+  onSelectColour = async (event, colours) => {
+    await this.setState({ colours });
+  };
+
   onSelectSizes = async (event, sizes) => {
     await this.setState({ sizes });
   };
@@ -62,9 +62,12 @@ class AddProductVariantForm extends PureComponent {
     e.preventDefault();
     let { productId, colours, sizes } = { ...this.state };
     colours = _.map(colours, "hex");
-    const product = { productId, colours, sizes };
-
-    this.props.createProductVariants(product);
+    const colourToImageUrlsMaps = colours.map(colour => ({
+      colour,
+      imageUrls: []
+    }));
+    const request = { productId, colourToImageUrlsMaps, sizes };
+    this.props.createProductVariants(request);
   };
 
   render() {
@@ -72,11 +75,9 @@ class AddProductVariantForm extends PureComponent {
     const { colourList, colours, sizes } = this.state;
     const error = sizes.length <= 0 || colours.length <= 0;
 
-    console.log(this.props.colours);
-
     return (
       <Dialog onClose={onClose} open={open} fullWidth maxWidth={"xs"}>
-        <DialogTitle>Create product </DialogTitle>
+        <DialogTitle>Add new colours</DialogTitle>
         {product && (
           <DialogContent>
             <Autocomplete

@@ -1,6 +1,10 @@
 import React, { PureComponent } from "react";
 import { Nav, NavItem, NavLink, TabContent, TabPane } from "reactstrap";
 import classnames from "classnames";
+import Chip from "@material-ui/core/Chip";
+import Typography from "@material-ui/core/Typography";
+
+const _ = require("lodash");
 
 export default class ProductTabs extends PureComponent {
   constructor(props) {
@@ -23,6 +27,28 @@ export default class ProductTabs extends PureComponent {
   render() {
     const { activeTab } = this.state;
     const { description } = this.props;
+    var tags = "No Tags selected yet";
+
+    if (
+      this.props.tags != undefined &&
+      Object.keys(this.props.tags).length > 0
+    ) {
+      tags = this.props.tags.map(function(value, i) {
+        return <Chip style={{ margin: "0 10px" }} label={value.name} />;
+      });
+    }
+
+    var styles = "No Styles selected yet";
+
+    if (
+      this.props.styles != undefined &&
+      Object.keys(this.props.styles).length > 0
+    ) {
+      styles = this.props.styles.map(function(value, i) {
+        return <Chip style={{ margin: "0 10px" }} label={value.styleName} />;
+      });
+    }
+
     return (
       <div className="tabs">
         <Nav tabs>
@@ -43,7 +69,7 @@ export default class ProductTabs extends PureComponent {
                 this.toggle("2");
               }}
             >
-              Delivery
+              Tags
             </NavLink>
           </NavItem>
           <NavItem>
@@ -53,28 +79,16 @@ export default class ProductTabs extends PureComponent {
                 this.toggle("3");
               }}
             >
-              Refounds
+              Styles
             </NavLink>
           </NavItem>
         </Nav>
         <TabContent activeTab={activeTab} className="typography-message">
           <TabPane tabId="1">
-            <p>{description}</p>
+            <Typography>{description}</Typography>
           </TabPane>
-          <TabPane tabId="2">
-            <p>
-              Direction has strangers now believing. Respect enjoyed gay far
-              exposed parlors towards. Enjoyment use tolerably dependent
-              listening men. No peculiar in handsome together unlocked do by.
-            </p>
-          </TabPane>
-          <TabPane tabId="3">
-            <p>
-              Direction has strangers now believing. Respect enjoyed gay far
-              exposed parlors towards. Enjoyment use tolerably dependent
-              listening men. No peculiar in handsome together unlocked do by.
-            </p>
-          </TabPane>
+          <TabPane tabId="2">{tags}</TabPane>
+          <TabPane tabId="3">{styles}</TabPane>
         </TabContent>
       </div>
     );

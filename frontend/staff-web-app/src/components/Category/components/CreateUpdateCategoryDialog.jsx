@@ -59,6 +59,12 @@ class CreateUpdateCategoryDialog extends Component {
         position: toast.POSITION.TOP_CENTER
       });
     }
+    if (_.get(selectedCategory, "parentCategory.parentCategory")) {
+      closeDialog();
+      toast.error("Category tree is limited to 3 levels", {
+        position: toast.POSITION.TOP_CENTER
+      });
+    }
   }
 
   onChange = e => {
@@ -110,7 +116,7 @@ class CreateUpdateCategoryDialog extends Component {
         <DialogTitle>{dialogTitle}</DialogTitle>
         <DialogContent>
           <form className="material-form">
-            {mode === "update" ? (
+            {mode === "update" && this.props.allCategories ? (
               <MaterialObjectSelect
                 fieldName="parentCategoryId"
                 fieldLabel="Updated Parent Category"

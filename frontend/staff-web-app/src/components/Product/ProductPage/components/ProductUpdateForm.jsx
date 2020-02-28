@@ -86,7 +86,7 @@ class ProductUpdateForm extends PureComponent {
     product.category = _.pick(product.category, ["categoryId"]);
     product.tags = product.tags.map(tag => _.pick(tag, ["tagId"]));
     product.styles = product.styles.map(style => _.pick(style, ["styleId"]));
-    this.props.updateProduct(product, this.props.history);
+    this.props.updateProduct(product, this.props.onClose);
     this.setState({});
   };
 
@@ -95,6 +95,24 @@ class ProductUpdateForm extends PureComponent {
   render() {
     const { errors, open, onClose } = this.props;
     const { categories, tagList, styleList, product } = this.state;
+    let error = false;
+    if (this.state.product) {
+      const {
+        productName,
+        description,
+        price,
+        cost,
+        category
+      } = this.state.product;
+      error =
+        tagList.length <= 0 ||
+        styleList.length <= 0 ||
+        !productName ||
+        !description ||
+        !price ||
+        !cost ||
+        !category;
+    }
 
     return (
       <Dialog onClose={onClose} open={open} fullWidth maxWidth={"xs"}>
@@ -230,7 +248,7 @@ class ProductUpdateForm extends PureComponent {
           <Button autoFocus onClick={onClose} color="primary">
             Cancel
           </Button>
-          <Button color="primary" onClick={this.onSubmit}>
+          <Button color="primary" onClick={this.onSubmit} disabled={error}>
             Update
           </Button>
         </DialogActions>

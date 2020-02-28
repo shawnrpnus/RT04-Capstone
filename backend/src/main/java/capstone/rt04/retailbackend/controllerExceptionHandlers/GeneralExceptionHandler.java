@@ -7,10 +7,12 @@ import capstone.rt04.retailbackend.util.exceptions.category.CreateNewCategoryExc
 import capstone.rt04.retailbackend.util.exceptions.category.DeleteCategoryException;
 import capstone.rt04.retailbackend.util.exceptions.category.UpdateCategoryException;
 import capstone.rt04.retailbackend.util.exceptions.customer.*;
+import capstone.rt04.retailbackend.util.exceptions.product.ProductImageNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductStockNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.shoppingcart.InvalidCartTypeException;
+import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.style.CreateNewStyleException;
 import capstone.rt04.retailbackend.util.exceptions.style.DeleteStyleException;
 import capstone.rt04.retailbackend.util.exceptions.style.StyleNotFoundException;
@@ -19,6 +21,7 @@ import capstone.rt04.retailbackend.util.exceptions.tag.CreateNewTagException;
 import capstone.rt04.retailbackend.util.exceptions.tag.DeleteTagException;
 import capstone.rt04.retailbackend.util.exceptions.tag.TagNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.tag.UpdateTagException;
+import capstone.rt04.retailbackend.util.exceptions.warehouse.WarehouseNotFoundException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -63,21 +66,26 @@ public class GeneralExceptionHandler extends ResponseEntityExceptionHandler {
             CustomerNotFoundException.class, CreditCardNotFoundException.class,
             AddressNotFoundException.class, ProductVariantNotFoundException.class,
             StyleNotFoundException.class, TagNotFoundException.class, CategoryNotFoundException.class,
-            ProductNotFoundException.class, ProductStockNotFoundException.class
+            ProductNotFoundException.class, ProductStockNotFoundException.class, WarehouseNotFoundException.class,
+            StoreNotFoundException.class, VerificationCodeNotFoundException.class, AlreadyVerifiedException.class,
+            ProductImageNotFoundException.class
     })
     public final ResponseEntity<Object> handleNotFoundExceptions(Exception ex, WebRequest req) {
         return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler({
-            InvalidLoginCredentialsException.class, CustomerNotVerifiedException.class
-    })
-    public final ResponseEntity<Object> handleUnauthorizedExceptions(Exception ex, WebRequest req) {
-        return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.UNAUTHORIZED);
+    @ExceptionHandler
+    public final ResponseEntity<Object> handleInvalidLogin(InvalidLoginCredentialsException ex, WebRequest req) {
+        return new ResponseEntity<>(ex.getErrorMap(), HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler
+    public final ResponseEntity<Object> handleCustomerNotVerified(CustomerNotVerifiedException ex, WebRequest req) {
+        return new ResponseEntity<>(ex.getErrorMap(), HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler({
-            VerificationCodeInvalidException.class,
+            VerificationCodeExpiredException.class,
             InvalidCartTypeException.class
     })
     public final ResponseEntity<Object> handleBadRequestExceptions(Exception ex, WebRequest req) {

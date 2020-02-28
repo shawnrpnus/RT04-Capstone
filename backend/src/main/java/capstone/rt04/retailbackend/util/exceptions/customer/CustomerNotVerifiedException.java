@@ -5,25 +5,29 @@
  */
 package capstone.rt04.retailbackend.util.exceptions.customer;
 
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.Map;
+
 /**
  *
  * @author shawn
  */
+@Getter
+@Setter
 public class CustomerNotVerifiedException extends Exception {
 
-    /**
-     * Creates a new instance of <code>CustomerCannotDeleteException</code>
-     * without detail message.
-     */
+    Map<String, String> errorMap;
+
     public CustomerNotVerifiedException() {
     }
 
-    /**
-     * Constructs an instance of <code>CustomerCannotDeleteException</code> with
-     * the specified detail message.
-     *
-     * @param msg the detail message.
-     */
+    public CustomerNotVerifiedException(Map<String, String> errorMap, String message) {
+        super(message);
+        this.errorMap = errorMap;
+    }
+
     public CustomerNotVerifiedException(String msg) {
         super(msg);
     }

@@ -16,10 +16,10 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 /**
- *
  * @author shawn
  */
 @Entity
@@ -34,14 +34,19 @@ public class ProductImage implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long productImageId;
-    
+
+    @NotNull(message = "Product image URL must be provided")
     private String productImageUrl;
+
+    @NotNull(message = "The position of the image must be specified")
+    private Integer position;
 
     public ProductImage() {
     }
 
-    public ProductImage(String productImageUrl) {
+    public ProductImage(String productImageUrl, Integer position) {
         this.productImageUrl = productImageUrl;
+        this.position = position;
     }
-  
+
 }

@@ -32,7 +32,13 @@ class SidebarContent extends Component {
             />
             <SidebarLink
               title="View All"
-              route="/"
+              route="/staff/viewAll"
+              onClick={this.hideSidebar}
+            />
+
+            <SidebarLink
+              title="Configure Staff Account"
+              route="/staff/createAccount"
               onClick={this.hideSidebar}
             />
           </SidebarCategory>
@@ -51,10 +57,11 @@ class SidebarContent extends Component {
           </SidebarCategory>
 
           <SidebarCategory title="Products" icon="diamond">
-          <SidebarLink 
-              title="Create" 
-              route="/product/createProduct" 
-              onClick={this.hideSidebar} />
+            <SidebarLink
+              title="Create"
+              route="/product/createProduct"
+              onClick={this.hideSidebar}
+            />
             <SidebarLink
               title="View All"
               route="/product/viewAllProduct"
@@ -63,8 +70,13 @@ class SidebarContent extends Component {
           </SidebarCategory>
           <SidebarCategory title="Tag" icon="tag">
             <SidebarLink
-              title="Manage"
+              title="Create"
               route="/tag/manage"
+              onClick={this.hideSidebar}
+            />
+            <SidebarLink
+              title="Manage"
+              route="/tag/addTagToProducts"
               onClick={this.hideSidebar}
             />
           </SidebarCategory>

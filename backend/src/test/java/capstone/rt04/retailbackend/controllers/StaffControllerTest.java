@@ -27,6 +27,8 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import java.math.BigDecimal;
+import java.util.List;
+
 import static io.restassured.RestAssured.*;
 import static org.hamcrest.Matchers.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -53,12 +55,12 @@ public class StaffControllerTest{
     @Before
     public void setUp() throws Exception {
         RestAssured.port = port;
-        Staff expectedValidStaff = new Staff("Bob", "Vance", 10, "S1111111D", VALID_STAFF_EMAIL);
+        Staff expectedValidStaff = new Staff("Bob", "Vance", 10, "S1111111D", VALID_STAFF_EMAIL,BigDecimal.valueOf(10000));
 
         //Role and department has to be created beforehand
         RoleNameEnum rolename = RoleNameEnum.valueOf("ASSISTANT");
         BigDecimal salary = new BigDecimal(1000);
-        RoleCreateRequest roleCreateRequest = new RoleCreateRequest(rolename, salary);
+        RoleCreateRequest roleCreateRequest = new RoleCreateRequest(rolename);
         testRole = given().
                 contentType("application/json").
                 body(roleCreateRequest).
@@ -76,7 +78,7 @@ public class StaffControllerTest{
 
         Address testAddress = new Address("aba", "aaa", 123456, "blah");
 
-        StaffCreateRequest staffCreateRequest = new StaffCreateRequest(expectedValidStaff, testAddress, testRole, testDepartment);
+        StaffCreateRequest staffCreateRequest = new StaffCreateRequest(expectedValidStaff, testAddress, testRole.getRoleId(), testDepartment.getDepartmentId());
 
         Staff createdStaff = given().
                 contentType("application/json").
@@ -114,10 +116,10 @@ public class StaffControllerTest{
     public void createInvalidStaff() {
         //Valid address
         Address a = new Address("aba", "aaa", 123456, "blah");
-        Staff invalidStaff = new Staff("bob", "vance", 10, "S111111D", "bob@Bob@com");
+        Staff invalidStaff = new Staff("bob", "vance", 10, "S111111D", "bob@Bob@com",BigDecimal.valueOf(10000));
 
 
-        StaffCreateRequest staffCreateRequest = new StaffCreateRequest(invalidStaff, a, testRole, testDepartment);
+        StaffCreateRequest staffCreateRequest = new StaffCreateRequest(invalidStaff, a, testRole.getRoleId(), testDepartment.getDepartmentId());
 
         given().
                 contentType("application/json").
@@ -221,6 +223,9 @@ public class StaffControllerTest{
         assertThat(encoder.matches(s.getPassword(), VALID_STAFF_PASSWORD)).isFalse();
 
     }
+
+
+
 
 
 }

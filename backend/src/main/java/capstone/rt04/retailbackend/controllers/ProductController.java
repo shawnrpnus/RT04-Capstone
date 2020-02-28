@@ -9,10 +9,7 @@ import capstone.rt04.retailbackend.response.ProductDetailsResponse;
 import capstone.rt04.retailbackend.services.ProductService;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.category.CategoryNotFoundException;
-import capstone.rt04.retailbackend.util.exceptions.product.CreateNewProductException;
-import capstone.rt04.retailbackend.util.exceptions.product.ProductNotFoundException;
-import capstone.rt04.retailbackend.util.exceptions.product.ProductStockNotFoundException;
-import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.product.*;
 import capstone.rt04.retailbackend.util.exceptions.style.StyleNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.tag.TagNotFoundException;
 import capstone.rt04.retailbackend.util.routeconstants.ProductControllerRoutes;
@@ -61,19 +58,13 @@ public class ProductController {
     }
 
     @GetMapping(ProductControllerRoutes.RETRIEVE_PRODUCTS_DETAILS)
-    public ResponseEntity<?> retrieveProductsDetails(@RequestParam(required = false) Long storeOrWarehouseId, @RequestParam(required = false) Long categoryId) {
-        try {
-            if (categoryId != null) {
-                List<ProductDetailsResponse> products = productService.retrieveProductDetailsForCategory(storeOrWarehouseId, categoryId);
-                return new ResponseEntity<>(products, HttpStatus.OK);
-            } else {
-                List<ProductDetailsResponse> products = productService.retrieveProductsDetails(storeOrWarehouseId, null);
-                return new ResponseEntity<>(products, HttpStatus.OK);
-            }
-        } catch (ProductNotFoundException ex) {
-            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
-        } catch (Exception ex) {
-            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseEntity<?> retrieveProductsDetails(@RequestParam(required = false) Long storeOrWarehouseId, @RequestParam(required = false) Long categoryId) throws ProductNotFoundException {
+        if (categoryId != null) {
+            List<ProductDetailsResponse> products = productService.retrieveProductDetailsForCategory(storeOrWarehouseId, categoryId);
+            return new ResponseEntity<>(products, HttpStatus.OK);
+        } else {
+            List<ProductDetailsResponse> products = productService.retrieveProductsDetails(storeOrWarehouseId, null);
+            return new ResponseEntity<>(products, HttpStatus.OK);
         }
     }
 
@@ -91,7 +82,8 @@ public class ProductController {
     public ResponseEntity<?> createProduct(@RequestBody ProductCreateRequest productCreateRequest) {
         try {
             Product newProduct = productService.createNewProduct(productCreateRequest.getProduct(),
-                    productCreateRequest.getCategoryId(), null, productCreateRequest.getSizes(), productCreateRequest.getColors());
+                    productCreateRequest.getCategoryId(), productCreateRequest.getTagIds(), productCreateRequest.getStyleIds(),
+                    productCreateRequest.getSizes(), productCreateRequest.getColourToImageUrlsMaps());
             return new ResponseEntity<>(newProduct, HttpStatus.CREATED);
         } catch (InputDataValidationException ex) {
             return new ResponseEntity<>(ex.getErrorMap(), HttpStatus.BAD_REQUEST);
@@ -164,7 +156,7 @@ public class ProductController {
     }
 
     @DeleteMapping(ProductControllerRoutes.DELETE_PRODUCT)
-    public ResponseEntity<?> deleteProduct(@PathVariable Long productId) throws ProductVariantNotFoundException, ProductStockNotFoundException, ProductNotFoundException {
+    public ResponseEntity<?> deleteProduct(@PathVariable Long productId) throws ProductVariantNotFoundException, ProductStockNotFoundException, ProductNotFoundException, DeleteProductVariantException {
         Product product = productService.deleteProduct(productId);
         return new ResponseEntity<>(product, HttpStatus.OK);
     }

@@ -45,7 +45,6 @@ class AddSizeForm extends PureComponent {
     const colourSizeMap = {
       ..._.get(this.props, `colours[${this.props.selectedColourIndex}]`)
     };
-    // delete colourSizeMap.productImages;
     // Get { color : "Red", sizeMaps: ["S", "M", "L"]}
     colourSizeMap["sizes"] = _.map(colourSizeMap.sizeMaps, "size");
     // Filter out the sizes that already exist in database
@@ -62,7 +61,11 @@ class AddSizeForm extends PureComponent {
   onSubmit = e => {
     e.preventDefault();
     const { productId, sizes, colourSizeMap } = this.state;
-    const request = { productId, sizes, colours: Array(colourSizeMap.colour) };
+    const colourToImageUrlsMaps = Array(colourSizeMap.colour).map(colour => ({
+      colour,
+      imageUrls: []
+    }));
+    const request = { productId, sizes, colourToImageUrlsMaps };
     this.props.createProductVariants(request);
   };
 
@@ -72,7 +75,7 @@ class AddSizeForm extends PureComponent {
 
     return (
       <Dialog onClose={onClose} open={open} fullWidth maxWidth={"xs"}>
-        <DialogTitle>Create product variant for selected product</DialogTitle>
+        <DialogTitle>Add sizes for</DialogTitle>
         {product && (
           <DialogContent
             style={{

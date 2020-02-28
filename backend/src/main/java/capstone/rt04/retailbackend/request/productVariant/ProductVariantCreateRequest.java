@@ -1,5 +1,6 @@
 package capstone.rt04.retailbackend.request.productVariant;
 
+import capstone.rt04.retailbackend.request.product.ColourToImageUrlsMap;
 import capstone.rt04.retailbackend.util.enums.SizeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,7 +16,7 @@ import java.util.List;
 public class ProductVariantCreateRequest {
     private Long productId;
 
-    private List<String> colours;
+    private List<ColourToImageUrlsMap> colourToImageUrlsMaps;
 
     private List<SizeEnum> sizes;
 }
