@@ -23,7 +23,13 @@ import { retrieveProductsDetails } from "../../../redux/actions/productActions";
 import withPage from "../../Layout/page/withPage";
 import colourList from "../../../scss/colours.json";
 import makeStyles from "@material-ui/core/styles/makeStyles";
-
+import Dialog from "@material-ui/core/Dialog";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import { Col, Row } from "reactstrap";
+import Select from "@material-ui/core/Select";
+import MenuItem from "@material-ui/core/MenuItem";
 const _ = require("lodash");
 
 const tableIcons = {
@@ -49,143 +55,140 @@ const tableIcons = {
 const jsonColorNameList = _.keyBy(colourList, "name");
 const jsonColorHexList = _.keyBy(colourList, "hex");
 
-// const classes = useStyles();
-// const useStyles = makeStyles(theme => ({
-//     container: {
-//         display: 'flex',
-//         flexWrap: 'wrap',
-//     },
-//     formControl: {
-//         margin: theme.spacing(1),
-//         minWidth: 120,
-//     },
-// }));
-//
-// const [open, setOpen] = React.useState(false);
-// const [Quantity, setQty] = React.useState('');
-//
-// const handleChange = event => {
-//     setQty(Number(event.target.value) || '');
-// };
-//
-// const handleClickOpen = () => {
-//     setOpen(true);
-// };
-//
-// const handleClose = () => {
-//     setOpen(false);
-// };
-
 class ProductsStockDetails extends PureComponent {
-  state = {
-    id: "",
-    redirect: false,
-    productStock: []
-  };
-
-  componentDidMount() {
-    if (this.props.retrieveProductsDetails)
-      this.props.retrieveProductsDetails();
+  constructor(props) {
+    super(props);
+    this.state = {
+      productId: this.props.selectedProductId,
+      colourToSizeImageMaps: null,
+      selectedProductVariant: 0,
+      productStock: []
+    };
   }
 
-  handleUpdateProductStock = id => {
-    this.props.history.push(`/productStock/updateProductStock/${id}`);
+  componentDidMount = () => {
+    const { products, selectedProductId } = { ...this.props };
+    // // Getting product, leafNodeName, colourToSizeImageMaps
+    const product = _.find(products, {
+      product: { productId: selectedProductId }
+    });
+    const colourToSizeImageMaps = product.colourToSizeImageMaps;
+    const defaultColour = colourToSizeImageMaps[0].colour;
+    this.setState({
+      colourToSizeImageMaps,
+      selectedProductVariant: defaultColour
+    });
   };
 
-  componentDidUpdate(prevProps, prevState, snapshot) {
-    if (this.props.currentProduct !== prevState.product) {
-      this.setState({
-        product: this.props.currentProduct.product,
-        colourSizeMap: this.props.currentProduct.colourToSizeImageMaps
-      });
-    }
-  }
-
-  handleOpenProductStockUpdateDialog = e => {
-    this.setState({ openProductStockUpdateDialog: true });
+  onSelectColour = ({ target: input }) => {
+    const selectedProductVariant = input.value;
+    this.setState({ selectedProductVariant });
   };
-
-  //formatData = () => {};
 
   render() {
-    const { productStock, renderLoader, columnsToHide } = this.props;
-    const { openProductStockUpdateDialog } = this.state;
-
+    const { renderLoader, onClose, open } = this.props;
+    const { colourToSizeImageMaps, selectedProductVariant } = this.state;
+    let list;
     let data = [];
-    if (productStock) {
-      data = productStock.map(e => {
-        const { product, colourToSizeImageMaps } = e;
-        let image;
-        const colours = colourToSizeImageMaps.map(e => {
-          if (!image)
-            image = e.productImages[0] && e.productImages[0].productImageUrl;
-          return jsonColorHexList[e.colour].name;
-        });
+
+    if (colourToSizeImageMaps) {
+      list = _.keyBy([...colourToSizeImageMaps], "colour");
+
+      data = list[selectedProductVariant].sizeMaps.map((e, index) => {
         return {
-          productName: product.productName,
-          sku: product.sku,
-          colours: colours,
-          sizes: product.sizes
+          sku: e.productStock.productVariant.sku,
+          size: e.size,
+          currentStock: e.productStock.quantity,
+          productStockId: e.productStock.productStockId,
+          sizeMapIndex: index,
+          colour: selectedProductVariant
         };
       });
     }
 
     return (
       // call retrieve product details and pass in warehouse/store id
-      <div className="table" style={{ verticalAlign: "middle" }}>
-        {productStock ? (
-          <MaterialTable
-            title="Product Stock Details"
-            padding="none"
-            style={{ boxShadow: "none" }}
-            icons={tableIcons}
-            columns={[
-              { title: "SKU", field: "sku" },
-              { title: "Name", field: "productName" },
-              {
-                title: "Colours",
-                field: "colours",
-                render: rowData =>
-                  rowData.colours.map((color, index) => {
+      <Dialog onClose={onClose} open={open} fullWidth maxWidth={"md"}>
+        <DialogTitle>Product stock details</DialogTitle>
+        <DialogContent
+          style={{
+            textAlign: "center",
+            justifyContent: "center",
+            alignItems: "center"
+          }}
+        >
+          <Row>
+            <Col md={8}></Col>{" "}
+            <Col md={4}>
+              <Select
+                value={selectedProductVariant}
+                onChange={this.onSelectColour}
+              >
+                {colourToSizeImageMaps &&
+                  colourToSizeImageMaps.map(e => {
+                    const colour = e.colour;
                     return (
-                      <FiberManualRecordIcon
-                        key={color + index}
-                        style={{ color: jsonColorNameList[color].hex }}
-                      />
+                      <MenuItem key={colour} value={colour}>
+                        <FiberManualRecordIcon
+                          style={{ color: colour, fontSize: 20 }}
+                        />
+                      </MenuItem>
                     );
-                  })
-              }
-            ]}
-            data={data}
-            options={{
-              filtering: true,
-              sorting: true,
-              padding: "dense",
-              pageSize: 5,
-              pageSizeOptions: [5, 10, 20, 40],
-              actionsColumnIndex: -1,
-              headerStyle: { textAlign: "center" }, //change header padding
-              cellStyle: { textAlign: "center" }
-            }}
-            actions={[
-              {
-                icon: Edit,
-                tooltip: "Update Product Stock",
-                onClick: (event, rowData) =>
-                  this.handleOpenProductStockUpdateDialog(rowData.id)
-              }
-              // rowData => ({
-              //   icon: 'delete',
-              //   tooltip: 'Delete User',
-              //   onClick: (event, rowData) => confirm("You want to delete " + rowData.name),
-              //   disabled: rowData.birthYear < 2000
-              // })
-            ]}
-          />
-        ) : (
-          renderLoader()
-        )}
-      </div>
+                  })}
+              </Select>
+            </Col>
+          </Row>
+
+          <div className="table" style={{ verticalAlign: "middle" }}>
+            {colourToSizeImageMaps ? (
+              <MaterialTable
+                title="Product Stock Details"
+                padding="none"
+                style={{ boxShadow: "none" }}
+                icons={tableIcons}
+                columns={[
+                  { title: "SKU", field: "sku", editable: "never" },
+                  { title: "Size", field: "size", editable: "never" },
+                  {
+                    title: "Current stock",
+                    field: "currentStock"
+                  }
+                ]}
+                data={data}
+                options={{
+                  filtering: true,
+                  sorting: true,
+                  padding: "dense",
+                  pageSize: 5,
+                  pageSizeOptions: [5, 10],
+                  actionsColumnIndex: -1,
+                  headerStyle: { textAlign: "center" }, //change header padding
+                  cellStyle: { textAlign: "center" }
+                }}
+                editable={{
+                  onRowUpdate: (newData, oldData) =>
+                    new Promise((resolve, reject) => {
+                      let colourToSizeImageMaps = {
+                        ...this.state.colourToSizeImageMaps
+                      };
+                      colourToSizeImageMaps = _.keyBy(
+                        colourToSizeImageMaps,
+                        "colour"
+                      );
+                      colourToSizeImageMaps[oldData.colour].sizeMaps[
+                        oldData.sizeMapIndex
+                      ].productStock.quantity = Number(newData.currentStock);
+                      colourToSizeImageMaps = _.toArray(colourToSizeImageMaps);
+                      this.setState({ colourToSizeImageMaps }, () => resolve());
+                    })
+                }}
+              />
+            ) : (
+              renderLoader()
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     );
   }
 }
@@ -196,11 +199,7 @@ const mapStateToProps = state => ({
   errors: state.errors
 });
 
-const mapDispatchToProps = {
-  retrieveProductsDetails
-};
-
-export const ProductsTableRaw = withRouter(ProductsStockDetails);
+const mapDispatchToProps = {};
 
 export default withRouter(
   connect(
