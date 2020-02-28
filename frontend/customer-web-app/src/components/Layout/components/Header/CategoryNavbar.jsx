@@ -16,19 +16,21 @@ import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import { useDispatch, useSelector } from "react-redux";
 import { customerLogout } from "redux/actions/customerActions";
+import GridItem from "components/Layout/components/Grid/GridItem";
+import GridContainer from "components/Layout/components/Grid/GridContainer";
 const jsog = require("jsog");
 
 const useHeaderStyles = makeStyles(headersStyle);
 const useTypoStyles = makeStyles(typographyStyle);
 
-// Responsive component
-function AccountNavbar(props) {
+// Responsive component, receives category prop from HeaderLinks
+function CategoryNavbar(props) {
   const classes = useHeaderStyles();
-  const { dropdownHoverColor } = props;
+  const { dropdownHoverColor, category } = props;
   return (
     <React.Fragment>
       <Hidden smDown className={classes.hidden}>
-        <RenderAccountToolTip classes={classes} />
+        <RenderCategoryToolTip classes={classes} category={category} />
       </Hidden>
       <Hidden mdUp className={classes.hidden}>
         <RenderAccountDropdownDrawer
@@ -41,13 +43,17 @@ function AccountNavbar(props) {
 }
 
 // Renders the button that when hovered, activates the tooltip
-function RenderAccountToolTip(props) {
-  const { classes } = props;
+function RenderCategoryToolTip(props) {
+  const { classes, category } = props;
   return (
     <React.Fragment>
-      <HtmlTooltip title={<AccountToolTipContent />} interactive>
+      <HtmlTooltip
+        open={category.categoryName === "Men"}
+        title={<CategoryToolTipContent rootCategory={category} />}
+        interactive
+      >
         <Button className={classes.navLink} round color="transparent">
-          <AccountCircle />
+          {category.categoryName}
         </Button>
       </HtmlTooltip>
     </React.Fragment>
@@ -55,35 +61,58 @@ function RenderAccountToolTip(props) {
 }
 
 // Renders tooltip content after hovering button
-function AccountToolTipContent(props) {
-  const headerClasses = useHeaderStyles();
-  const typoClasses = useTypoStyles();
-  const customer = useSelector(state => state.customer.loggedInCustomer);
-
+function CategoryToolTipContent(props) {
+  const { rootCategory } = props; // 2nd level categories
+  const subCategories = rootCategory.childCategories;
+  const numSubCategories = subCategories.length;
   return (
     <React.Fragment>
-      <h4
-        className={classNames(
-          headerClasses.mlAuto,
-          headerClasses.mrAuto,
-          headerClasses.textCenter,
-          typoClasses.miniTitle
-        )}
-      >
-        Welcome{customer ? `, ${customer.firstName}` : ""}
-      </h4>
-      <Divider />
-      <List component="nav">
-        {customer ? (
-          <AccDropDownLinksAfterLogin
-            Component={ListItem}
-            componentProps={{ button: true }}
+      <GridContainer>
+        {subCategories.map(c => (
+          <SubCategoryColumn
+            rootCategory={rootCategory}
+            subCategory={c}
+            numSubCategories={numSubCategories}
           />
-        ) : (
-          renderAccDropdownLinks(undefined, ListItem, { button: true })
-        )}
-      </List>
+        ))}
+      </GridContainer>
     </React.Fragment>
+  );
+}
+
+function SubCategoryColumn(props) {
+  const { subCategory, rootCategory } = props;
+  const leafCategories = subCategory.childCategories;
+  const headerClasses = useHeaderStyles();
+  const typoClasses = useTypoStyles();
+  return (
+    <GridItem md>
+      <Link
+        to={`/shop/${rootCategory.categoryName}/${subCategory.categoryName}`}
+      >
+        <h5
+          className={classNames(
+            headerClasses.mlAuto,
+            headerClasses.mrAuto,
+            typoClasses.miniTitle
+          )}
+        >
+          {subCategory.categoryName}
+        </h5>
+      </Link>
+      <Divider />
+      <List>
+        {leafCategories.map(c => (
+          <Link
+            to={`/shop/${rootCategory.categoryName}/${subCategory.categoryName}/${c.categoryName}`}
+          >
+            <ListItem button disableGutters>
+              {c.categoryName}
+            </ListItem>
+          </Link>
+        ))}
+      </List>
+    </GridItem>
   );
 }
 
@@ -156,17 +185,17 @@ function AccDropDownLinksAfterLogin(props) {
   ];
 }
 
-export default AccountNavbar;
+export default CategoryNavbar;
 
 // Styling of tooltip content
 const HtmlTooltip = withStyles(theme => ({
   tooltip: {
     backgroundColor: "#f5f5f9",
     color: "rgba(0, 0, 0, 0.87)",
-    maxWidth: "100%",
+    maxWidth: "100vw",
     fontSize: theme.typography.pxToRem(14),
     border: "1px solid #dadde9",
-    width: "200px",
-    padding: "0"
+    minWidth: "200px",
+    padding: "10px"
   }
 }))(Tooltip);

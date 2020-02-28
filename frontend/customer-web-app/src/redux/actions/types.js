@@ -12,3 +12,6 @@ export const UPDATE_CUSTOMER = "UPDATE_CUSTOMER";
 // Error
 export const GET_ERRORS = "GET_ERRORS";
 export const CLEAR_ERRORS = "CLEAR_ERRORS";
+
+//Category
+export const RETRIEVE_ROOT_CATEGORIES = "RETRIEVE_ROOT_CATEGORIES";
