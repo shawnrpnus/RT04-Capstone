@@ -5,6 +5,7 @@
  */
 package capstone.rt04.retailbackend.entities;
 
+import capstone.rt04.retailbackend.util.ErrorMessages;
 import capstone.rt04.retailbackend.util.enums.ContactUsCategoryEnum;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.voodoodyne.jackson.jsog.JSOGGenerator;
@@ -43,7 +44,16 @@ public class ContactUs implements Serializable {
     @Size(max = 1337)
     private String content;
 
-    @NotNull
+    @NotNull(message = ErrorMessages.FIRST_NAME_REQUIRED)
+    @Column(nullable = false)
+    private String firstName;
+
+    @NotNull(message = ErrorMessages.LAST_NAME_REQUIRED)
+    @Column(nullable = false)
+    @Size(max = 20)
+    private String lastName;
+
+    @NotNull(message = ErrorMessages.EMAIL_REQUIRED)
     @Column(nullable = false)
     private String customerEmail;
 
@@ -53,11 +63,13 @@ public class ContactUs implements Serializable {
         this.acknowledged = false;
     }
 
-    public ContactUs(ContactUsCategoryEnum contactUsCategory, String content, String customerEmail) {
+    public ContactUs(ContactUsCategoryEnum contactUsCategory, String content, String customerEmail, String firstName, String lastName) {
         this();
         this.contactUsCategory = contactUsCategory;
         this.content = content;
         this.customerEmail = customerEmail;
+        this.firstName = firstName;
+        this.lastName = lastName;
     }
 
 

@@ -21,10 +21,10 @@ import { retrieveProductsDetails } from "../../../redux/actions/productActions";
 import CreateUpdateTagRequest from "../../../models/CreateUpdateTagRequest";
 import AddTagToProductsRequest from "../../../models/tag/AddTagToProductsRequest";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
-import Button from "@material-ui/core/Button";
 import Col from "reactstrap/es/Col";
 import Row from "react-data-grid/lib/Row";
 import DeleteTagFromProductsRequest from "../../../models/tag/DeleteTagFromProductsRequest";
+import Button from "@material-ui/core/Button";
 
 class AddTagToProduct extends Component {
   constructor(props) {
@@ -97,14 +97,13 @@ class AddTagToProduct extends Component {
                 <h5 className="bold-text">Delete Tag From Products</h5>
               )}
             </Grid>
-            <Grid item xs={12} md={3}></Grid>
-            <Grid item xs={12} md={3}>
+            <Grid item xs={12} md={4}></Grid>
+            <Grid item xs={12} md={2}>
               <ButtonGroup
                 color="primary"
-                aria-label="outlined primary button group"
               >
-                <Button onClick={this.handleChangeAddTo}>Add</Button>
-                <Button onClick={this.handleChangeViewAndDelete}>View & Delete</Button>
+                <Button onClick={this.handleChangeAddTo} variant={this.state.mode ? "contained" : "outlined"}>Add</Button>
+                <Button onClick={this.handleChangeViewAndDelete} variant={this.state.mode ? "outlined" : "contained"}>Delete</Button>
               </ButtonGroup>
             </Grid>
           </Grid>
@@ -112,7 +111,7 @@ class AddTagToProduct extends Component {
         <MuiPickersUtilsProvider utils={MomentUtils}>
           <form className="material-form">
             <Grid container spacing={3}>
-              <Grid item xs={12} md={6}>
+              <Grid item xs={12} md={2}>
                 {this.props.allTags ? (
                   <MaterialObjectSelect
                     fieldName="tagId"

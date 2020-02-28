@@ -65,10 +65,11 @@ class TagTable extends Component {
       .then(() => this.props.deleteTag(tagId, this.props.history));
   };
 
-  handleUpdate = (newData, oldData) => {
-    if (newData.name !== oldData.name) {
-      const req = new CreateUpdateTagRequest(newData.name);
-      req.tagId = oldData.tagId;
+  handleUpdate = (name, tagId, oldName) => {
+
+    if (name !== oldName) {
+      const req = new CreateUpdateTagRequest(name);
+      req.tagId = tagId;
       this.props.updateTag(req, this.props.history);
     }
   };
@@ -78,6 +79,12 @@ class TagTable extends Component {
     const data = this.props.allTags;
     // console.log(this.props);
     // console.log(setState);
+
+    if (this.props.allTags){
+      this.props.allTags.forEach(tag => {
+        tag.products = (Array.isArray(tag.products)) ? tag.products.length : tag.products
+      })
+    }
     return (
       <React.Fragment>
         {/*<div className="card__title">*/}
@@ -99,7 +106,7 @@ class TagTable extends Component {
                 { title: "Name", field: "name" },
                 {
                   title: "Products Linked",
-                  field: "products.length",
+                  field: "products",
                   editable: "never"
                 }
               ]}
@@ -111,10 +118,10 @@ class TagTable extends Component {
                 }
               ]}
               editable={{
-                onRowUpdate: (newData, oldData) =>
+                onRowUpdate: ({name}, {tagId,name:oldName}) =>
                   new Promise(resolve => {
-                    if (oldData) {
-                      this.handleUpdate(newData, oldData);
+                    if (tagId) {
+                      this.handleUpdate(name, tagId,oldName);
                       resolve();
                     }
                   })

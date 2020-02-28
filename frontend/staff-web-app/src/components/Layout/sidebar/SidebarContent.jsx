@@ -70,12 +70,12 @@ class SidebarContent extends Component {
           </SidebarCategory>
           <SidebarCategory title="Tag" icon="tag">
             <SidebarLink
-              title="Manage"
+              title="Create"
               route="/tag/manage"
               onClick={this.hideSidebar}
             />
             <SidebarLink
-              title="Add Tag To Products"
+              title="Manage"
               route="/tag/addTagToProducts"
               onClick={this.hideSidebar}
             />
