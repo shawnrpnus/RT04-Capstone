@@ -22,6 +22,7 @@ import colourList from "../../../scss/colours";
 import MaterialTable from "material-table";
 import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
 import withPage from "../../Layout/page/withPage";
+import ProductsStockDetails from "./ProductsStockDetails";
 
 const _ = require("lodash");
 
@@ -50,24 +51,28 @@ const jsonColorHexList = _.keyBy(colourList, "hex");
 
 class ProductsStockTable extends PureComponent {
   state = {
-    id: "",
     redirect: false,
-    products: []
+    products: [],
+    selectedProductId: "",
+    openProductStocksDetailsDialogue: false
   };
 
   componentDidMount() {
-    this.props.retrieveProductsDetails();
+    this.props.retrieveProductsDetails(1308);
   }
 
-  handleViewProductStocksDetails = id => {
-    this.props.history.push(`/productStock/viewProductStocksDetails/${id}`);
+  handleViewProductStocksDetails = productId => {
+    this.setState({
+      selectedProductId: productId,
+      openProductStocksDetailsDialogue: true
+    });
   };
 
   formatData = () => {};
 
   render() {
     const { products, renderLoader, columnsToHide } = this.props;
-    console.log(this.props);
+    const { openProductStocksDetailsDialogue, selectedProductId } = this.state;
 
     let data = [];
     if (products) {
@@ -91,9 +96,6 @@ class ProductsStockTable extends PureComponent {
         };
       });
     }
-
-    console.log(this.state);
-    console.log(this.props);
 
     return (
       <div className="table" style={{ verticalAlign: "middle" }}>
@@ -179,6 +181,16 @@ class ProductsStockTable extends PureComponent {
         ) : (
           renderLoader()
         )}
+        {openProductStocksDetailsDialogue && (
+          <ProductsStockDetails
+            open={openProductStocksDetailsDialogue}
+            onClose={() => {
+              this.setState({ openProductStocksDetailsDialogue: false });
+            }}
+            key={selectedProductId}
+            selectedProductId={selectedProductId}
+          />
+        )}
       </div>
     );
   }
@@ -193,8 +205,6 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = {
   retrieveProductsDetails
 };
-
-export const ProductsTableRaw = withRouter(ProductsStockTable);
 
 export default withRouter(
   connect(

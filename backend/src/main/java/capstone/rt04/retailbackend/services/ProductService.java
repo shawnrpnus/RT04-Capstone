@@ -182,10 +182,10 @@ public class ProductService {
                 if (storeOrWarehouseId != null) { // no need to return product stock if no store/warehouse ID provided
                     prodStock = new ProductStock();
                     for (ProductStock productStock : productVariant.getProductStocks()) {
-                        if (productStock.getStore() != null && productStock.getStore().getStoreId() == storeOrWarehouseId) {
+                        if (productStock.getStore() != null && productStock.getStore().getStoreId().equals(storeOrWarehouseId)) {
                             prodStock = productStock;
                             break;
-                        } else if (productStock.getWarehouse() != null && productStock.getWarehouse().getWarehouseId() == storeOrWarehouseId) {
+                        } else if (productStock.getWarehouse() != null && productStock.getWarehouse().getWarehouseId().equals(storeOrWarehouseId)) {
                             prodStock = productStock;
                             break;
                         }
