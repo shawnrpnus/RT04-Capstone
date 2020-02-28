@@ -1,8 +1,7 @@
 export default class UpdateProductStockRequest {
-    stockQty;
+  stockQty;
 
-    constructor(stockQty) {
-        this.stockQty = stockQty;
-    }
+  constructor(stockQty) {
+    this.stockQty = stockQty;
+  }
 }
-

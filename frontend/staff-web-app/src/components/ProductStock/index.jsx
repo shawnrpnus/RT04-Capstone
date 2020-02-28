@@ -1,5 +1,5 @@
-import React from 'react';
-import { Col, Container, Row } from 'reactstrap';
+import React from "react";
+import { Col, Container, Row } from "reactstrap";
 import ProductsStockTable from "./component/ProductsStockTable";
 import ProductsStockDetails from "./component/ProductsStockDetails";
 //import ProductStockContainer from "./components/ProductStockContainer";
@@ -20,4 +20,4 @@ import ProductsStockDetails from "./component/ProductsStockDetails";
 //     </Container>
 // );
 
-export {ProductsStockTable, ProductsStockDetails};
+export { ProductsStockTable, ProductsStockDetails };

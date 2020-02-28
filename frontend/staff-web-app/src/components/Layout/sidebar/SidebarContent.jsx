@@ -89,9 +89,9 @@ class SidebarContent extends Component {
           </SidebarCategory>
           <SidebarCategory title="Product Stocks" icon="list">
             <SidebarLink
-                title="View All"
-                route="/productStock/viewAll"
-                onClick={this.hideSidebar}
+              title="View All"
+              route="/productStock/viewAll"
+              onClick={this.hideSidebar}
             />
           </SidebarCategory>
         </ul>
