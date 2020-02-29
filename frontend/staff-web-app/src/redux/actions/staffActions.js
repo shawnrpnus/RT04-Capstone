@@ -266,8 +266,6 @@ const deleteStaffError = data => ({
 });
 
 export const staffLogin = (staffLoginRequest, history) => {
-    return dispatch => {
-                toast.success("You are logged in!", {
 
 
   return dispatch => {
@@ -277,6 +275,7 @@ export const staffLogin = (staffLoginRequest, history) => {
       .then(response => {
         const { data } = jsog.decode(response);
         const staffId = data.staffId;
+        dispatch(loginStaffSuccess(data));
         toast.success("You are logged in!", {
           position: toast.POSITION.TOP_CENTER
         });
@@ -286,10 +285,10 @@ export const staffLogin = (staffLoginRequest, history) => {
         dispatch(loginStaffError(err.response.data));
         //console.log(err.response.data);
       });
+  };
 
 };
 const loginStaffSuccess = data => ({
-    type: types.STAFF_LOGIN,
   type: types.STAFF_LOGIN,
   staff: data
 });
