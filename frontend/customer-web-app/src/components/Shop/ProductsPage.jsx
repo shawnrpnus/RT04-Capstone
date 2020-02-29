@@ -22,6 +22,7 @@ import Drawer from "@material-ui/core/Drawer";
 import FilterBar from "components/Shop/FilterBar";
 import { SwipeableDrawer } from "@material-ui/core";
 import { retrieveAllTags } from "redux/actions/tagActions";
+import { FilterList } from "@material-ui/icons";
 
 const _ = require("lodash");
 
@@ -132,7 +133,7 @@ export default function ProductPage(props) {
         className={classes.floatingFilter}
         onClick={() => setFilterDrawerOpen(true)}
       >
-        <EditIcon />
+        <FilterList />
         Refine
       </Fab>
       <div className={classNames(classes.main, classes.mainRaised)}>
@@ -148,7 +149,7 @@ export default function ProductPage(props) {
                 className={classes.filterDrawer}
                 classes={{ paper: classes.filterDrawer }}
               >
-                {allTags && !_.isEmpty(colours) && rootCategories && (
+                {allTags && rootCategories && (
                   <FilterBar
                     allTags={allTags}
                     allColours={colours}
