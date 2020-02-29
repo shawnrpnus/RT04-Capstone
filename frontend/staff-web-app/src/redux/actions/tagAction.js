@@ -161,11 +161,17 @@ const addTagToProductsError = data => ({
   errorMap: data
 });
 
-export const deleteTagFromProducts = (deleteTagFromProductsRequest, history) => {
+export const deleteTagFromProducts = (
+  deleteTagFromProductsRequest,
+  history
+) => {
   return dispatch => {
     //redux thunk passes dispatch
     axios
-      .post(TAG_BASE_URL + "deleteTagFromProducts", deleteTagFromProductsRequest)
+      .post(
+        TAG_BASE_URL + "deleteTagFromProducts",
+        deleteTagFromProductsRequest
+      )
       .then(response => {
         const data = jsog.decode(response);
         const tagId = data.tagId;

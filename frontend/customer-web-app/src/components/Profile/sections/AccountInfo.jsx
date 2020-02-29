@@ -109,7 +109,8 @@ function AccountInfo(props) {
           req,
           setDialogOpen,
           resetInputState,
-          setChangingEmail
+          setChangingEmail,
+          enqueueSnackbar
         )
       );
       setTimeout(() => dispatch(emailSending()), 500);
@@ -219,7 +220,7 @@ function AccountInfo(props) {
                 }}
               />
               <div className={classes.textCenter}>
-                {changingEmail || !_.isEmpty(errors) ? (
+                {changingEmail || _.get(errors, "email") ? (
                   <React.Fragment>
                     <Tooltip
                       title="Note: Verification email will be sent to this new email"

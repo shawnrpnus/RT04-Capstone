@@ -28,17 +28,21 @@ function AccountNavbar(props) {
   return (
     <React.Fragment>
       <Hidden smDown className={classes.hidden}>
-        {renderAccountTooltip(classes)}
+        <RenderAccountToolTip classes={classes} />
       </Hidden>
       <Hidden mdUp className={classes.hidden}>
-        {renderAccountDropdownDrawer(dropdownHoverColor, classes)}
+        <RenderAccountDropdownDrawer
+          dropdownHoverColor={dropdownHoverColor}
+          classes={classes}
+        />
       </Hidden>
     </React.Fragment>
   );
 }
 
 // Renders the button that when hovered, activates the tooltip
-const renderAccountTooltip = classes => {
+function RenderAccountToolTip(props) {
+  const { classes } = props;
   return (
     <React.Fragment>
       <HtmlTooltip title={<AccountToolTipContent />} interactive>
@@ -48,7 +52,7 @@ const renderAccountTooltip = classes => {
       </HtmlTooltip>
     </React.Fragment>
   );
-};
+}
 
 // Renders tooltip content after hovering button
 function AccountToolTipContent(props) {
@@ -84,20 +88,23 @@ function AccountToolTipContent(props) {
 }
 
 // Renders dropdown menu when the drawer in responsive mode (smDown)
-const renderAccountDropdownDrawer = (dropdownHoverColor, classes) => (
-  <CustomDropdown
-    noLiPadding
-    navDropdown
-    hoverColor={dropdownHoverColor}
-    buttonText="Account"
-    buttonProps={{
-      className: classes.navLink,
-      color: "transparent"
-    }}
-    buttonIcon={AccountCircle}
-    dropdownList={renderAccDropdownLinks(classes)}
-  />
-);
+function RenderAccountDropdownDrawer(props) {
+  const { dropdownHoverColor, classes } = props;
+  return (
+    <CustomDropdown
+      noLiPadding
+      navDropdown
+      hoverColor={dropdownHoverColor}
+      buttonText="Account"
+      buttonProps={{
+        className: classes.navLink,
+        color: "transparent"
+      }}
+      buttonIcon={AccountCircle}
+      dropdownList={renderAccDropdownLinks(classes)}
+    />
+  );
+}
 
 // Standard links in tooltip and drawer
 const renderAccDropdownLinks = (classes, Component, componentProps) => {
@@ -154,11 +161,12 @@ export default AccountNavbar;
 // Styling of tooltip content
 const HtmlTooltip = withStyles(theme => ({
   tooltip: {
-    backgroundColor: "#f5f5f9",
-    color: "rgba(0, 0, 0, 0.87)",
+    backgroundColor: "white",
+    // color: "rgba(0, 0, 0, 0.87)",
     maxWidth: "100%",
     fontSize: theme.typography.pxToRem(14),
-    border: "1px solid #dadde9",
+    border: "1px solid #F0F0F0",
+    borderRadius: "0",
     width: "200px",
     padding: "0"
   }

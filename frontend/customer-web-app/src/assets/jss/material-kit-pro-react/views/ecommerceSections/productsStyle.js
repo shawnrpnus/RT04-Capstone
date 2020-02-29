@@ -1,20 +1,40 @@
 import {
-  section,
-  container,
   cardTitle,
   coloredShadow,
+  container,
+  grayColor,
   mlAuto,
   mrAuto,
-  grayColor
+  section,
+  main,
+  whiteColor,
+  mainRaised,
+  title
 } from "assets/jss/material-kit-pro-react.js";
 
 import customCheckboxRadioSwitch from "assets/jss/material-kit-pro-react/customCheckboxRadioSwitchStyle.js";
 
 import tooltipsStyle from "assets/jss/material-kit-pro-react/tooltipsStyle.js";
+import imagesStyles from "assets/jss/material-kit-pro-react/imagesStyles";
 
 const styles = {
   ...customCheckboxRadioSwitch,
   ...tooltipsStyle,
+  main,
+  title,
+  ...imagesStyles,
+  mainRaised: {
+    ...mainRaised,
+    margin: "-60px 30px 0px",
+    "@media (max-width: 576px)": {
+      marginTop: "0px"
+    }
+  },
+  brand: {
+    "& h1, & h4": {
+      color: whiteColor
+    }
+  },
   checkRoot: {
     padding: "14px",
     "&:hover": {
@@ -26,7 +46,7 @@ const styles = {
   mrAuto,
   cardTitle: {
     ...cardTitle,
-    textAlign: "center",
+    textAlign: "left",
     marginBottom: "0px !important"
   },
   cardDescription: {
@@ -34,7 +54,8 @@ const styles = {
     textAlign: "center"
   },
   container: {
-    ...container
+    ...container,
+    zIndex: "2"
   },
   description: {
     color: grayColor[0]
@@ -47,8 +68,10 @@ const styles = {
     display: "inline-flex"
   },
   price: {
-    fontSize: "18px",
-    color: grayColor[22]
+    ...cardTitle,
+    color: grayColor[22],
+    textAlign: "right",
+    marginBottom: "0px !important"
   },
   pullRight: {
     float: "right"
@@ -92,7 +115,48 @@ const styles = {
     paddingRight: "15px"
   },
   textLeft: {
-    textAlign: "left"
+    textAlign: "left",
+    marginTop: "2px"
+  },
+  textCenter: {
+    textAlign: "center"
+  },
+  cardBodyPlain: {
+    padding: "0",
+    marginLeft: "3px",
+    marginRight: "3px"
+  },
+  sizeChip: {
+    borderRadius: "0",
+    height: "20px",
+    width: "30px "
+  },
+  heartIconBtn: {
+    float: "right",
+    position: "relative",
+    bottom: "40px",
+    right: "5px",
+    marginBottom: "-40px",
+    padding: "6px",
+    backgroundColor: "white",
+    "&:hover": {
+      backgroundColor: "white"
+    }
+  },
+  labelSmall: {
+    padding: "0"
+  },
+  floatingFilter: {
+    zIndex: "5",
+    margin: 0,
+    top: "auto",
+    left: 20,
+    bottom: 20,
+    right: "auto",
+    position: "fixed"
+  },
+  filterDrawer: {
+    width: "300px"
   }
 };
 

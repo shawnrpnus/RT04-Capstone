@@ -1,5 +1,5 @@
 /* eslint-disable */
-import React from "react";
+import React, { useEffect } from "react";
 // nodejs library to set properties for components
 import * as PropTypes from "prop-types";
 // react components for routing our app without refresh
@@ -28,6 +28,9 @@ import Hidden from "@material-ui/core/Hidden";
 import AccountNavbar from "components/Layout/components/Header/AccountNavbar";
 import Tooltip from "@material-ui/core/Tooltip";
 import { withStyles } from "@material-ui/core";
+import CategoryNavbar from "components/Layout/components/Header/CategoryNavbar";
+import { useDispatch, useSelector } from "react-redux";
+import { retrieveAllRootCategories } from "redux/actions/categoryActions";
 
 const useStyles = makeStyles(styles);
 
@@ -42,6 +45,11 @@ const HtmlTooltip = withStyles(theme => ({
 }))(Tooltip);
 
 export default function HeaderLinks(props) {
+  const rootCategories = useSelector(state => state.category.rootCategories);
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(retrieveAllRootCategories());
+  }, []);
   const easeInOutQuad = (t, b, c, d) => {
     t /= d / 2;
     if (t < 1) return (c / 2) * t * t + b;
@@ -85,34 +93,12 @@ export default function HeaderLinks(props) {
   return (
     <React.Fragment>
       <List className={classes.list + " " + classes.mrAuto}>
-        <ListItem className={classes.listItem}>
-          <CustomDropdown
-            noLiPadding
-            navDropdown
-            hoverColor={dropdownHoverColor}
-            buttonText="Men"
-            buttonProps={{
-              className: classes.navLink,
-              color: "transparent"
-            }}
-            buttonIcon={Apps}
-            dropdownList={[]}
-          />
-        </ListItem>
-        <ListItem className={classes.listItem}>
-          <CustomDropdown
-            noLiPadding
-            navDropdown
-            hoverColor={dropdownHoverColor}
-            buttonText="Women"
-            buttonProps={{
-              className: classes.navLink,
-              color: "transparent"
-            }}
-            buttonIcon={ViewDay}
-            dropdownList={[]}
-          />
-        </ListItem>
+        {rootCategories &&
+          rootCategories.map(rc => (
+            <ListItem key={rc.categoryId} className={classes.listItem}>
+              <CategoryNavbar category={rc} />
+            </ListItem>
+          ))}
         <ListItem className={classes.listItem}>
           <CustomDropdown
             noLiPadding

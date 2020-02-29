@@ -6,6 +6,7 @@ import Tag from "./Tag";
 import Category from "./Category";
 import Product from "./Product";
 import Staff from "./Staff";
+import ProductStock from "./ProductStock";
 
 export default () => (
   <div>
@@ -16,6 +17,7 @@ export default () => (
       <Route path="/tag" component={Tag} />
       <Route path="/product" component={Product} />
       <Route path="/staff" component={Staff} />
+      <Route path="/productStock" component={ProductStock} />
     </div>
   </div>
 );

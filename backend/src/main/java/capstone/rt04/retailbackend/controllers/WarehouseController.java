@@ -33,7 +33,7 @@ public class WarehouseController {
 
     @GetMapping(WarehouseControllerRoutes.RETRIEVE_ALL_WAREHOUSE_INVENTORIES)
     public ResponseEntity<?> retrieveAllWarehouseInventories(@RequestParam Long warehouseId) {
-        List<Product> products = productService.retrieveProductStocksByParameter(null, warehouseId, null);
+        List<Product> products = productService.retrieveProductStocksThroughProductByParameter(null, warehouseId, null);
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
@@ -46,7 +46,7 @@ public class WarehouseController {
 
     @GetMapping(WarehouseControllerRoutes.RETRIEVE_WAREHOUSE_DETAILS_BY_ID)
     public ResponseEntity<?> retrieveWarehouseDetailsByID(@RequestParam Long warehouseId) {
-        List<Product> products = productService.retrieveProductStocksByParameter(null, warehouseId, null);
+        List<Product> products = productService.retrieveProductStocksThroughProductByParameter(null, warehouseId, null);
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
 

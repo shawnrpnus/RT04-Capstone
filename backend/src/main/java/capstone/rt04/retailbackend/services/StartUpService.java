@@ -1,6 +1,8 @@
 package capstone.rt04.retailbackend.services;
 
 import capstone.rt04.retailbackend.entities.*;
+import capstone.rt04.retailbackend.repositories.AddressRepository;
+import capstone.rt04.retailbackend.repositories.SizeDetailsRepository;
 import capstone.rt04.retailbackend.request.product.ColourToImageUrlsMap;
 import capstone.rt04.retailbackend.util.enums.RoleNameEnum;
 import capstone.rt04.retailbackend.util.enums.SizeEnum;
@@ -37,6 +39,10 @@ public class StartUpService {
     private final StyleService styleService;
     private final StoreService storeService;
     private final StaffService staffService;
+    private final SizeDetailsService sizeDetailsService;
+
+    private final AddressRepository addressRepository;
+    private final SizeDetailsRepository sizeDetailsRepository;
 
     private static Long sneakerCategoryId;
     private static Long shirtCategoryId;
@@ -48,7 +54,7 @@ public class StartUpService {
     private static Long bermudasCategoryId;
 
 
-    public StartUpService(ProductService productService, CategoryService categoryService, WarehouseService warehouseService, TagService tagService, StyleService styleService, StoreService storeService, StaffService staffService) {
+    public StartUpService(ProductService productService, CategoryService categoryService, WarehouseService warehouseService, TagService tagService, StyleService styleService, StoreService storeService, StaffService staffService, SizeDetailsService sizeDetailsService, AddressRepository addressRepository, SizeDetailsRepository sizeDetailsRepository) {
         this.productService = productService;
         this.categoryService = categoryService;
         this.warehouseService = warehouseService;
@@ -56,16 +62,20 @@ public class StartUpService {
         this.styleService = styleService;
         this.storeService = storeService;
         this.staffService = staffService;
+        this.sizeDetailsService = sizeDetailsService;
+        this.addressRepository = addressRepository;
+        this.sizeDetailsRepository = sizeDetailsRepository;
     }
 
     @PostConstruct
     public void init() throws InputDataValidationException, CreateNewCategoryException, CategoryNotFoundException, CreateNewProductException, ProductVariantNotFoundException, CreateNewProductStockException, WarehouseNotFoundException, StoreNotFoundException, CreateNewTagException, CreateNewStyleException, CreateNewStaffException, CreateRoleException, CreateDepartmentException {
         createCategoryIfNotFound();
-        createProductIfNotFound();
+        createStaffIfNotFound();
+        createSizeDetailsIfNotFound();
         createWarehouseAndStoreIfNotFound();
+        createProductIfNotFound();
         createTagIfNotFound();
         createStyleIfNotFound();
-        createStaffIfNotFound();
     }
 
     private void createCategoryIfNotFound() throws CategoryNotFoundException, CreateNewCategoryException, InputDataValidationException {
@@ -96,8 +106,6 @@ public class StartUpService {
             jeansCategoryId = jeans.getCategoryId();
             Category bermudas = categoryService.createNewCategory(new Category("Bermudas"), clothingmen.getCategoryId());
             bermudasCategoryId = bermudas.getCategoryId();
-
-
 
 
         }
@@ -153,17 +161,17 @@ public class StartUpService {
             Product newProduct3 = productService.createNewProduct(product3, category3.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
 
             Product product4 = new Product("0013", "Polo Tee", "Official Fred Perry Merchandise", BigDecimal.valueOf(109.90), BigDecimal.valueOf(49.90));
-            Category category4= categoryService.retrieveCategoryByCategoryId(shirtCategoryId); //shirt
+            Category category4 = categoryService.retrieveCategoryByCategoryId(shirtCategoryId); //shirt
             product4.setCategory(category4);
             Product newProduct4 = productService.createNewProduct(product4, category4.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
 
             Product product5 = new Product("0014", "Burberry Skirt", "Burberry Skirt", BigDecimal.valueOf(60.00), BigDecimal.valueOf(10.00));
-            Category category5= categoryService.retrieveCategoryByCategoryId(skirtsCategoryId);
+            Category category5 = categoryService.retrieveCategoryByCategoryId(skirtsCategoryId);
             product5.setCategory(category5);
             Product newProduct5 = productService.createNewProduct(product5, category5.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
 
             Product product6 = new Product("0015", "Mickey Mouse T-Shirt", "Official Disneyland Merchandise", BigDecimal.valueOf(25.00), BigDecimal.valueOf(3.99));
-            Category category6= categoryService.retrieveCategoryByCategoryId(tShirtCategoryId);
+            Category category6 = categoryService.retrieveCategoryByCategoryId(tShirtCategoryId);
             product6.setCategory(category6);
             Product newProduct6 = productService.createNewProduct(product6, category6.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
 
@@ -189,7 +197,7 @@ public class StartUpService {
             Product newProduct13 = productService.createNewProduct(product13, category5.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
 
             Product product14 = new Product("0023", "Nudie Jeans", "Nudie", BigDecimal.valueOf(259.00), BigDecimal.valueOf(56.00));
-            Category category7= categoryService.retrieveCategoryByCategoryId(jeansCategoryId); //jeans
+            Category category7 = categoryService.retrieveCategoryByCategoryId(jeansCategoryId); //jeans
             product4.setCategory(category7);
             Product newProduct14 = productService.createNewProduct(product14, category7.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
 
@@ -215,7 +223,7 @@ public class StartUpService {
             Product newProduct21 = productService.createNewProduct(product21, category3.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
 
             Product product22 = new Product("0031", "Docker Bermudas", "Bermudas", BigDecimal.valueOf(45.00), BigDecimal.valueOf(8.99));
-            Category category8= categoryService.retrieveCategoryByCategoryId(bermudasCategoryId);
+            Category category8 = categoryService.retrieveCategoryByCategoryId(bermudasCategoryId);
             product22.setCategory(category8);
             Product newProduct22 = productService.createNewProduct(product22, category8.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
 
@@ -229,7 +237,7 @@ public class StartUpService {
             Product newProduct25 = productService.createNewProduct(product25, category7.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
 
             Product product26 = new Product("0035", "Parachute Dress", "Weew", BigDecimal.valueOf(59.90), BigDecimal.valueOf(14.90));
-            Category category9= categoryService.retrieveCategoryByCategoryId(dressesCategoryId);
+            Category category9 = categoryService.retrieveCategoryByCategoryId(dressesCategoryId);
             product22.setCategory(category9);
             Product newProduct26 = productService.createNewProduct(product26, category9.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
 
@@ -255,10 +263,12 @@ public class StartUpService {
             List<Warehouse> warehouses = warehouseService.retrieveAllWarehouses();
 
             storeService.createNewStore(new Store("Store 1", 8, 4,
-                    Time.valueOf("10:00:00"), Time.valueOf("21:00:00"), 2, 6, null));
+                    Time.valueOf("10:00:00"), Time.valueOf("21:00:00"), 2, 6,
+                    new Address("310 Orchard Rd", "", 238864, "Apricot N' Nut - Tang Plaza")));
 
             storeService.createNewStore(new Store("Store 2", 5, 2,
-                    Time.valueOf("10:00:00"), Time.valueOf("21:00:00"), 1, 3, null));
+                    Time.valueOf("10:00:00"), Time.valueOf("21:00:00"), 1, 3,
+                    new Address("270 Orchard Rd", "", 238857, "Apricot N' Nut - Orchard")));
             List<Store> stores = storeService.retrieveAllStores();
 
             productService.assignProductStock(warehouses, stores, null);
@@ -297,21 +307,21 @@ public class StartUpService {
         Role role4 = staffService.createNewRole(RoleNameEnum.DIRECTOR);
 
 
-        Staff staff = new Staff("Geogre", "Lee", 2, "116c", "geogrelee@gmail.com",BigDecimal.valueOf(10000) );
-        Address a1 = new Address ("2E Hong San Walk","#03-08",612140,"Palm Garden");
-        Staff newStaff = staffService.createNewStaff(staff, a1,role1.getRoleId(),departmentHR.getDepartmentId());
+        Staff staff = new Staff("Geogre", "Lee", 2, "116c", "geogrelee@gmail.com", BigDecimal.valueOf(10000));
+        Address a1 = new Address("2E Hong San Walk", "#03-08", 612140, "Palm Garden");
+        Staff newStaff = staffService.createNewStaff(staff, a1, role1.getRoleId(), departmentHR.getDepartmentId());
 
-        Staff staff2 = new Staff("Annabel", "Tan", 13, "213C", "annabeltwe@gmail.com",BigDecimal.valueOf(10000) );
-        Address a2 = new Address ("Block 235 Chua Chu Kang Ave 2","#15-234",689051,"-");
-        Staff newStaff2 = staffService.createNewStaff(staff2, a2,role2.getRoleId(),departmentIT.getDepartmentId());
+        Staff staff2 = new Staff("Annabel", "Tan", 13, "213C", "annabeltwe@gmail.com", BigDecimal.valueOf(10000));
+        Address a2 = new Address("Block 235 Chua Chu Kang Ave 2", "#15-234", 689051, "-");
+        Staff newStaff2 = staffService.createNewStaff(staff2, a2, role2.getRoleId(), departmentIT.getDepartmentId());
 
-        Staff staff3 = new Staff("Yi Lin", "Cai", 1, "131Z", "Caiyl@gmail.com",BigDecimal.valueOf(10000) );
-        Address a3 =  new Address ("Block 234 Bishan South","#30-08",321140,"Palm Garden");
+        Staff staff3 = new Staff("Yi Lin", "Cai", 1, "131Z", "Caiyl@gmail.com", BigDecimal.valueOf(10000));
+        Address a3 = new Address("Block 234 Bishan South", "#30-08", 321140, "Palm Garden");
         Staff newStaff3 = staffService.createNewStaff(staff3, a3, role1.getRoleId(), departmentHR.getDepartmentId());
 
 
-        Staff staff4 = new Staff("Gerard", "Ng", 20, "971C", "rayquaza@gmail.com",BigDecimal.valueOf(10000) );
-        Address a4 =  new Address ("Block 130 Taman Jurong","#15-02",231334,"-");
+        Staff staff4 = new Staff("Gerard", "Ng", 20, "971C", "rayquaza@gmail.com", BigDecimal.valueOf(10000));
+        Address a4 = new Address("Block 130 Taman Jurong", "#15-02", 231334, "-");
         Staff newStaff4 = staffService.createNewStaff(staff4, a4, role1.getRoleId(), departmentIT.getDepartmentId());
 
 
@@ -422,5 +432,18 @@ public class StartUpService {
 //        staff30.setAddress(new Address ("Block 1 Bukit Gombak Road","#23-18",313150,"-"));
 //        Staff newStaff30 = staffService.createNewStaff(staff30, staff30.getAddress(), role2, departmentRetail);
 
+    }
+
+    private void createSizeDetailsIfNotFound() {
+        if (sizeDetailsService.retrieveAllSizeDetails().size() == 0) {
+            SizeDetails xs = new SizeDetails(SizeEnum.XS);
+            sizeDetailsRepository.save(xs);
+
+            System.out.println(sizeDetailsService.retrieveSizeDetailsByEnum("XS"));
+            sizeDetailsRepository.save(new SizeDetails(SizeEnum.S));
+            sizeDetailsRepository.save(new SizeDetails(SizeEnum.M));
+            sizeDetailsRepository.save(new SizeDetails(SizeEnum.L));
+            sizeDetailsRepository.save(new SizeDetails(SizeEnum.XL));
+        }
     }
 }

@@ -26,15 +26,14 @@ import {
   createNewContactUs,
   retrieveAllContactUsCategoryEnum
 } from "../../redux/actions/contactUsAction";
-import CustomDropdown from "../UI/CustomDropdown/CustomDropdown";
-import CreateCustomerRequest from "../../models/customer/CreateCustomerRequest";
-import {
-  createNewCustomer,
-  emailSending
-} from "../../redux/actions/customerActions";
 import CreateContactUsRequest from "../../models/contactus/CreateContactUsRequest";
+import InputLabel from "@material-ui/core/InputLabel";
+import Select from "@material-ui/core/Select";
+import MenuItem from "@material-ui/core/MenuItem";
+import customSelectStyle from "../../assets/jss/material-kit-pro-react/customSelectStyle";
 
 const useStyles = makeStyles(contactUsStyle);
+const useClassy = makeStyles(customSelectStyle);
 const _ = require("lodash");
 
 function ContactUsTicket(props) {
@@ -42,6 +41,7 @@ function ContactUsTicket(props) {
   const classes = useStyles();
   const history = useHistory();
   const location = useLocation();
+  const classy = useClassy();
 
   //Redux
   const dispatch = useDispatch();
@@ -53,7 +53,7 @@ function ContactUsTicket(props) {
   //State
   const [inputState, setInputState] = useState({
     allContactUsCategoryEnum: [],
-    contactUsCategory: "Enquiry Type",
+    contactUsCategory: "",
     customerEmail: "",
     content: "",
     firstName: "",
@@ -62,19 +62,11 @@ function ContactUsTicket(props) {
 
   const onChange = e => {
     e.persist();
+    console.log(e);
     setInputState(inputState => ({
       ...inputState,
       [e.target.name]: e.target.value
     }));
-    if (Object.keys(errors).length !== 0) {
-      dispatch(clearErrors());
-    }
-  };
-
-  const onClick = e => {
-    setInputState(inputState => ({
-      ...inputState,
-      contactUsCategory: e}));
     if (Object.keys(errors).length !== 0) {
       dispatch(clearErrors());
     }
@@ -89,6 +81,9 @@ function ContactUsTicket(props) {
       lastName
     } = inputState;
     console.log(inputState);
+    if (contactUsCategory === "Enquiry Type") {
+      console.log("insideEnquiry");
+    }
     const req = new CreateContactUsRequest(
       contactUsCategory,
       content,
@@ -177,12 +172,40 @@ function ContactUsTicket(props) {
                         )
                       }}
                     />
-                    <CustomDropdown
-                      buttonText={inputState.contactUsCategory}
-                      dropdownList={enums}
-                      onClick={onClick}
-                    />
+                    <InputLabel
+                      htmlFor="simple-select"
+                      className={classy.selectLabel}
+                    >
+                      Enquiry Type
+                    </InputLabel>
+                    <Select
+                      style={{ minWidth: 120 }}
+                      defaultValue=""
+                      MenuProps={{
+                        className: classes.selectMenu
+                      }}
+                      classes={{
+                        select: classes.select
+                      }}
+                      onChange={onChange}
+                      name="contactUsCategory"
+                    >
+                      {enums.map(function(item, i) {
+                        return (
+                          <MenuItem
+                            classes={{
+                              root: classy.selectMenuItem,
+                              selected: classy.selectMenuItemSelected
+                            }}
+                            value={item}
+                          >
+                            {item}
+                          </MenuItem>
+                        );
+                      })}
+                    </Select>
                     <CustomTextField
+                      style={{ marginTop: 20 }}
                       fieldLabel="Content"
                       fieldName="content"
                       fullWidth
@@ -195,7 +218,7 @@ function ContactUsTicket(props) {
                           <InputAdornment
                             position="start"
                             className={classes.inputAdornment}
-                          ></InputAdornment>
+                          />
                         ),
                         multiline: true,
                         rows: 6

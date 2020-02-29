@@ -59,7 +59,10 @@ class CreateUpdateCategoryDialog extends Component {
         position: toast.POSITION.TOP_CENTER
       });
     }
-    if (_.get(selectedCategory, "parentCategory.parentCategory")) {
+    if (
+      _.get(selectedCategory, "parentCategory.parentCategory") &&
+      mode === "createChild"
+    ) {
       closeDialog();
       toast.error("Category tree is limited to 3 levels", {
         position: toast.POSITION.TOP_CENTER
@@ -96,7 +99,6 @@ class CreateUpdateCategoryDialog extends Component {
         this.state.parentCategoryId
       );
       this.props.updateCategory(updateCategoryRequest, this.props.closeDialog);
-      // TODO: allow shifting of categories for update
     }
   };
 

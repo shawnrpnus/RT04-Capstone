@@ -1,15 +1,16 @@
-@import '~react-datepicker/dist/react-datepicker.css';
-@import '~rc-time-picker/assets/index.css';
+@import "~react-datepicker/dist/react-datepicker.css";
+@import "~rc-time-picker/assets/index.css";
 
 .form {
   display: flex;
   flex-wrap: wrap;
   @include directify($directions) {
-    text-align: directed('left');
-    direction: directed('direction');
+    text-align: directed("left");
+    direction: directed("direction");
   }
 
-  input, textarea {
+  input,
+  textarea {
     width: 100%;
     padding: 5px 10px;
     font-size: 12px;
@@ -33,25 +34,25 @@
     }
 
     @include themify($themes) {
-      border: 1px solid themed('colorFieldsBorder');
-      color: themed('colorText');
+      border: 1px solid themed("colorFieldsBorder");
+      color: themed("colorText");
     }
 
     &[disabled] {
-
       @include themify($themes) {
-        background: themed('colorBackgroundBody');
+        background: themed("colorBackgroundBody");
       }
 
-      &:focus, &:active {
-
+      &:focus,
+      &:active {
         @include themify($themes) {
-          border-color: themed('colorBorder');
+          border-color: themed("colorBorder");
         }
       }
     }
 
-    &:focus, &:active {
+    &:focus,
+    &:active {
       outline: none;
       border-color: $color-accent;
     }
@@ -62,7 +63,6 @@
   }
 
   &.form--horizontal {
-
     .form__form-group {
       display: flex;
       flex-wrap: wrap;
@@ -110,7 +110,6 @@
     }
 
     @media screen and (min-width: 480px) {
-
       .form__form-group-label {
         width: 120px;
       }
@@ -123,7 +122,8 @@
         }
       }
 
-      .form__form-group-description, .form__button-toolbar {
+      .form__form-group-description,
+      .form__button-toolbar {
         @include directify($directions) {
           #{directed('margin-left')}: 140px;
         }
@@ -194,7 +194,6 @@
 }
 
 .form__form-group--address {
-
   input:last-child {
     @include directify($directions) {
       #{directed('margin-left')}: 15px;
@@ -208,8 +207,10 @@
   display: flex;
   margin: auto;
   @include directify($directions) {
-    direction: #{directed('direction')};
+    direction: #{directed("direction")};
   }
+  margin-top: 5px;
+  margin-bottom: 5px;
 }
 
 .form__form-group-label {
@@ -217,7 +218,7 @@
   display: inline-block;
 
   @include themify($themes) {
-    color: themed('colorText');
+    color: themed("colorText");
   }
 
   span {
@@ -232,8 +233,8 @@
   transition: all 0.3s;
 
   @include themify($themes) {
-    background: themed('colorFieldsBorder');
-    border: 1px solid themed('colorFieldsBorder');
+    background: themed("colorFieldsBorder");
+    border: 1px solid themed("colorFieldsBorder");
   }
 
   svg {
@@ -254,7 +255,6 @@
 }
 
 .form__form-group-file {
-
   label {
     border-radius: 2px;
     line-height: 18px;
@@ -265,14 +265,13 @@
     text-align: center;
 
     @include themify($themes) {
-      border: 1px solid themed('colorFieldsBorder');
-      color: themed('colorText');
+      border: 1px solid themed("colorFieldsBorder");
+      color: themed("colorText");
     }
 
     &:hover {
-
       @include themify($themes) {
-        background: themed('colorFieldsBorder');
+        background: themed("colorFieldsBorder");
       }
     }
   }
@@ -293,8 +292,8 @@
   height: 32px;
 
   @include themify($themes) {
-    background: themed('colorFieldsBorder');
-    border: 1px solid themed('colorFieldsBorder');
+    background: themed("colorFieldsBorder");
+    border: 1px solid themed("colorFieldsBorder");
   }
 
   svg {
@@ -315,9 +314,8 @@
 .form__button-toolbar {
   margin-top: 20px;
   @include directify($directions) {
-    direction: #{directed('direction')};
+    direction: #{directed("direction")};
   }
-
 }
 
 .form__form-group-input-wrap {
@@ -334,7 +332,6 @@
 }
 
 .form__form-group-input-wrap--error-above {
-
   .form__form-group-error {
     position: absolute;
     margin: 0;
@@ -347,7 +344,7 @@
     border-radius: 3px;
 
     &:after {
-      content: '';
+      content: "";
       position: absolute;
       @include directify($directions) {
         #{directed('right')}: 10px;
@@ -448,10 +445,9 @@
     }
   }
 }
- 
+
 .form--color-picker {
   @media screen and (max-width: 767px) {
-    justify-content:  space-between;
+    justify-content: space-between;
   }
 }
-

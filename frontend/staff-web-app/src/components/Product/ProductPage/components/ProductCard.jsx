@@ -11,22 +11,30 @@ import StarIcon from "mdi-react/StarIcon";
 import StarOutlineIcon from "mdi-react/StarOutlineIcon";
 import { withRouter } from "react-router-dom";
 import ProductGallery from "./ProductGallery";
-import images from "./imgs";
 import ProductTabs from "./ProductTabs";
 import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
-import Switch from "@material-ui/core/Switch";
+import Tooltip from "@material-ui/core/Tooltip";
+import DeleteIcon from "@material-ui/icons/Delete";
+import ImageIcon from "@material-ui/icons/Image";
 import Row from "reactstrap/es/Row";
 import * as PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { retrieveProductById } from "../../../../redux/actions/productActions";
+import {
+  retrieveProductById,
+  deleteProductVariant
+} from "../../../../redux/actions/productActions";
 import IconButton from "@material-ui/core/IconButton";
 import CreateIcon from "@material-ui/icons/Create";
+import BuildIcon from "@material-ui/icons/Build";
 import AddCircleRoundedIcon from "@material-ui/icons/AddCircleRounded";
 import ProductUpdateForm from "./ProductUpdateForm";
 import AddProductVariantForm from "./AddProductVariantForm";
 import AddSizeForm from "./AddSizeForm";
+import UpdateImageForm from "./UpdateImageForm";
 import withPage from "../../../Layout/page/withPage";
 import colourList from "../../../../scss/colours.json";
+import Typography from "@material-ui/core/Typography";
+import withMaterialConfirmDialog from "./../../../Layout/page/withMaterialConfirmDialog";
 
 const _ = require("lodash");
 const jsonColorList = _.keyBy(colourList, "hex");
@@ -42,11 +50,12 @@ class ProductCard extends PureComponent {
     product: {},
     selectedColour: 0,
     selectedSize: "",
-    uploadImage: false,
     colourSizeMap: [],
     openProductUpdateDialog: false,
     openCreateProductVariantDialog: false,
-    openAddSizeDialog: false
+    openAddSizeDialog: false,
+    openUpdateImageDialog: false,
+    productVariants: []
   };
 
   componentDidMount() {
@@ -66,6 +75,10 @@ class ProductCard extends PureComponent {
     this.setState({ openProductUpdateDialog: true });
   };
 
+  handleCloseProductUpdateDialog = () => {
+    this.setState({ openProductUpdateDialog: false });
+  };
+
   handleOpenCreateProductVariantDialog = e => {
     this.setState({ openCreateProductVariantDialog: true });
   };
@@ -74,17 +87,27 @@ class ProductCard extends PureComponent {
     this.setState({ openAddSizeDialog: true });
   };
 
-  handleToggleUploadImage = e => {
-    this.setState({ uploadImage: e.target.checked });
+  handleOpenUpdateImageDialog = e => {
+    this.setState({ openUpdateImageDialog: true });
   };
 
   handleSelectColour = colour => {
-    this.setState({ selectedColour: colour });
+    this.setState({ selectedColour: colour, selectedSize: null });
   };
 
-  handleSelectSize = async ({ target }) => {
-    const { value } = target;
-    await this.setState({ selectedSize: value });
+  handleSelectSize = ({ target, currentTarget }) => {
+    const { value } = currentTarget;
+    this.setState({ selectedSize: value });
+  };
+
+  handleDeleteProductVariant = () => {
+    const { selectedSize, product } = this.state;
+
+    this.props
+      .confirmDialog({ description: "Selected product will be deleted" })
+      .then(() =>
+        this.props.deleteProductVariant(selectedSize, product.productId)
+      );
   };
 
   render() {
@@ -97,148 +120,190 @@ class ProductCard extends PureComponent {
       styles,
       serialNumber,
       productId,
-      description
+      description,
+      cost
     } = this.state.product;
     const {
       selectedColour,
       selectedSize,
-      uploadImage,
       colourSizeMap,
       openProductUpdateDialog,
       openCreateProductVariantDialog,
       openAddSizeDialog,
-      product
+      openUpdateImageDialog
     } = this.state;
-    const { errors, location } = this.props;
+    const { errors, location, currentProduct } = this.props;
+    const leafNodeName = _.get(currentProduct, "leafNodeName");
+
+    const variants = _.keyBy(
+      _.get(this.props, "currentProduct.product.productVariants"),
+      "productVariantId"
+    );
 
     return (
-      <div className="product-card">
-        {colourSizeMap.length > 0 && (
-          <ProductGallery
-            colourSizeMap={colourSizeMap}
-            selectedColour={selectedColour}
-          />
-        )}
-        <div className="product-card__info">
-          <Row>
-            <Col xs={3} md={7}>
-              <h3 className="product-card__title">{productName}</h3>
-            </Col>
-            <Col xs={2} md={1}>
-              <Switch
+      <div>
+        {colourSizeMap.length > 0 ? (
+          <div className="product-card">
+            <ProductGallery
+              colourSizeMap={colourSizeMap}
+              selectedColour={selectedColour}
+            />
+            <div className="product-card__info">
+              <Row>
+                <Col xs={12} md={6}>
+                  <h3 className="product-card__title">
+                    {productName}{" "}
+                    {variants[selectedSize] && variants[selectedSize].sku}
+                  </h3>
+                </Col>
+                <Col xs={2} md={1}>
+                  {selectedSize && (
+                    <Tooltip
+                      title={<span style={{ fontSize: 15 }}>Delete size</span>}
+                    >
+                      <IconButton onClick={this.handleDeleteProductVariant}>
+                        <DeleteIcon style={{ fontSize: 40 }} />
+                      </IconButton>
+                    </Tooltip>
+                  )}
+                </Col>
+
+                <Col xs={2} md={1}>
+                  <Tooltip
+                    title={<span style={{ fontSize: 15 }}>Update images</span>}
+                  >
+                    <IconButton onClick={this.handleOpenUpdateImageDialog}>
+                      <ImageIcon style={{ fontSize: 40 }} />
+                    </IconButton>
+                  </Tooltip>
+                  {/* <Switch
                 checked={uploadImage}
                 onChange={this.handleToggleUploadImage}
+              /> */}
+                </Col>
+                <Col xs={2} md={1}>
+                  <Tooltip
+                    title={<span style={{ fontSize: 15 }}>Add sizes</span>}
+                  >
+                    <IconButton onClick={this.handleOpenAddSizeDialog}>
+                      <AddCircleRoundedIcon style={{ fontSize: 40 }} />
+                    </IconButton>
+                  </Tooltip>
+                </Col>
+                <Col xs={2} md={1}>
+                  <Tooltip
+                    title={
+                      <span style={{ fontSize: 15 }}>Add new colours</span>
+                    }
+                  >
+                    <IconButton
+                      onClick={this.handleOpenCreateProductVariantDialog}
+                    >
+                      <CreateIcon style={{ fontSize: 40 }} />
+                    </IconButton>
+                  </Tooltip>
+                </Col>
+                <Col xs={3} md={2}>
+                  <Tooltip
+                    title={<span style={{ fontSize: 15 }}>Update product</span>}
+                  >
+                    <IconButton onClick={this.handleOpenProductUpdateDialog}>
+                      <BuildIcon style={{ fontSize: 40 }} />
+                    </IconButton>
+                  </Tooltip>
+                </Col>
+              </Row>
+              <div className="product-card__rate">
+                <StarIcon />
+                <StarIcon />
+                <StarIcon />
+                <StarIcon />
+                <StarOutlineIcon />
+                <a className="product-card__link"></a>
+              </div>
+
+              <h1 className="product-card__price">
+                ${price}{" "}
+                <span className="product-card__old-price">${cost}</span>
+              </h1>
+              <h4 className="product-card__category">{leafNodeName}</h4>
+              <div className="form__form-group">
+                <span className="product-card__form-label">Select Color</span>
+                <div className="form__form-group-field">
+                  {/* Product Variant .map() */}
+                  {colourSizeMap &&
+                    colourSizeMap.map(({ colour }, index) => {
+                      return (
+                        <FiberManualRecordIcon
+                          style={{
+                            color: colour,
+                            cursor: "pointer",
+                            fontSize: 40
+                          }}
+                          key={colour}
+                          onClick={() => this.handleSelectColour(index)}
+                        />
+                      );
+                    })}
+                  <Typography
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      marginLeft: 10,
+                      fontSize: 20
+                    }}
+                  >
+                    {colourSizeMap[selectedColour] &&
+                      jsonColorList[
+                        _.get(colourSizeMap, `[${selectedColour}].colour`, null)
+                      ].name}
+                  </Typography>
+                </div>
+                <span className="product-card__form-label">Select Size</span>
+                <div className="form__form-group-field">
+                  {/* Product Variant .map() */}
+                  <ButtonToolbar>
+                    <ButtonGroup>
+                      {colourSizeMap[selectedColour].sizeMaps.map(
+                        ({ size, productVariantId }, index) => {
+                          const active =
+                            selectedSize &&
+                            selectedSize.toString() ===
+                              productVariantId.toString();
+                          return (
+                            <Button
+                              key={productVariantId}
+                              outline
+                              active={active}
+                              value={productVariantId}
+                              onClick={this.handleSelectSize}
+                            >
+                              <Typography style={{ color: "inherit" }}>
+                                {size}
+                              </Typography>
+                            </Button>
+                          );
+                        }
+                      )}
+                    </ButtonGroup>
+                  </ButtonToolbar>
+                </div>
+              </div>
+              <ProductTabs
+                description={description}
+                tags={tags}
+                styles={styles}
               />
-            </Col>
-            <Col xs={2} md={1}>
-              <IconButton>
-                <AddCircleRoundedIcon onClick={this.handleOpenAddSizeDialog} />
-              </IconButton>
-            </Col>
-            <Col xs={2} md={1}>
-              <IconButton>
-                <AddCircleRoundedIcon
-                  onClick={this.handleOpenCreateProductVariantDialog}
-                />
-              </IconButton>
-            </Col>
-            <Col xs={3} md={2}>
-              <IconButton onClick={this.handleOpenProductUpdateDialog}>
-                <CreateIcon />
-              </IconButton>
-            </Col>
-          </Row>
-          <div className="product-card__rate">
-            <StarIcon />
-            <StarIcon />
-            <StarIcon />
-            <StarIcon />
-            <StarOutlineIcon />
-            <a className="product-card__link">
-              {colourSizeMap[selectedColour] &&
-                jsonColorList[
-                  _.get(colourSizeMap, `[${selectedColour}].colour`, null)
-                ].name}
-            </a>
-          </div>
-          <h1 className="product-card__price">
-            ${price} <span className="product-card__old-price">$23</span>
-          </h1>
-          <p className="typography-message">
-            {category && category.categoryName}
-          </p>
-          <div className="form__form-group">
-            <span className="form__form-group-label product-card__form-label">
-              Select Color
-            </span>
-            <div className="form__form-group-field">
-              {/* Product Variant .map() */}
-              {colourSizeMap &&
-                colourSizeMap.map(({ colour }, index) => {
-                  return (
-                    <FiberManualRecordIcon
-                      style={{
-                        color: colour,
-                        cursor: "pointer",
-                        fontSize: 40
-                      }}
-                      key={colour}
-                      onClick={() => this.handleSelectColour(index)}
-                    />
-                  );
-                })}
-            </div>
-            <span className="form__form-group-label product-card__form-label">
-              Select Size
-            </span>
-            <div className="form__form-group-field">
-              {/* Product Variant .map() */}
-              <ButtonToolbar>
-                <ButtonGroup dir="ltr">
-                  {colourSizeMap[selectedColour] &&
-                    colourSizeMap[selectedColour].sizeMaps.map(
-                      ({ size, productVariantId }) => {
-                        return (
-                          <Button
-                            key={size}
-                            outline
-                            value={productVariantId}
-                            onClick={this.handleSelectSize}
-                          >
-                            {size}
-                          </Button>
-                        );
-                      }
-                    )}
-                </ButtonGroup>
-              </ButtonToolbar>
             </div>
           </div>
-          <Row>
-            <Col xs={0} lg={9} />
-            <Col xs={12} lg={3}>
-              <ButtonToolbar className="product-card__btn-toolbar">
-                <Button color="primary">Delete</Button>
-                {/*  <button className="product-card__wish-btn" type="button">
-                        <HeartIcon />
-                        Add to wishlist
-                      </button>*/}
-              </ButtonToolbar>
-            </Col>
-          </Row>
-          <ProductTabs 
-            description={description} 
-            tags={tags}
-            styles={styles}/>
-        </div>
+        ) : (
+          this.props.renderLoader()
+        )}
+
         {openProductUpdateDialog && (
           <ProductUpdateForm
             open={openProductUpdateDialog}
-            onClose={() => {
-              this.setState({
-                openProductUpdateDialog: false
-              });
-            }}
+            onClose={this.handleCloseProductUpdateDialog}
             errors={errors}
             key={productId + "update"}
           />
@@ -268,6 +333,17 @@ class ProductCard extends PureComponent {
             selectedColourIndex={selectedColour}
           />
         )}
+        {openUpdateImageDialog && (
+          <UpdateImageForm
+            open={openUpdateImageDialog}
+            onClose={() => {
+              this.setState({ openUpdateImageDialog: false });
+            }}
+            errors={errors}
+            key={productId + "image"}
+            selectedColourIndex={selectedColour}
+          />
+        )}
       </div>
     );
   }
@@ -279,9 +355,10 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = {
-  retrieveProductById
+  retrieveProductById,
+  deleteProductVariant
 };
 
 const connectedForm = connect(mapStateToProps, mapDispatchToProps)(ProductCard);
 
-export default withRouter(withPage(connectedForm));
+export default withRouter(withMaterialConfirmDialog(withPage(connectedForm)));
