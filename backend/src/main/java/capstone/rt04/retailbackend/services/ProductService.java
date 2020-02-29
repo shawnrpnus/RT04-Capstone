@@ -424,9 +424,9 @@ public class ProductService {
 
             for (SizeEnum size : sizes) {
                 sku = product.getSerialNumber() + "-" + colour + "-" + size;
-                sizeDetails = new SizeDetails(size);
                 productVariant = new ProductVariant(sku, colour, product);
-                productVariant.setSizeDetails(sizeDetailsService.createSizeDetails(sizeDetails));
+                SizeDetails sizeDetails1 = sizeDetailsService.retrieveSizeDetailsByEnum(size.toString());
+                productVariant.setSizeDetails(sizeDetails1);
                 productVariant = createProductVariant(productVariant, product.getProductId());
 
                 productVariants.add(productVariant);
@@ -439,6 +439,7 @@ public class ProductService {
                     productVariantsToAssignImages.add(productVariant);
                 }
             }
+
             // Associate productVariant of the same colour but different sizes to the created ProductImage
             assignProductImages(productImages, productVariantsToAssignImages);
         }
