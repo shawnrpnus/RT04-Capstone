@@ -3,8 +3,8 @@ import * as types from "../actions/types";
 const initialState = {
   currentStaff: null,
   allStaff: null,
-  allRoles:null,
-  allDepartments:null
+  allRoles: null,
+  allDepartments: null
 };
 
 export default function(state = initialState, action) {
@@ -61,5 +61,4 @@ export default function(state = initialState, action) {
     default:
       return state;
   }
-
 }
