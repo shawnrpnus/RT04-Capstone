@@ -424,9 +424,9 @@ public class        ProductService {
 
             for (SizeEnum size : sizes) {
                 sku = product.getSerialNumber() + "-" + colour + "-" + size;
-                sizeDetails = new SizeDetails(size);
                 productVariant = new ProductVariant(sku, colour, product);
-                productVariant.setSizeDetails(sizeDetailsService.createSizeDetails(sizeDetails));
+                SizeDetails sizeDetails1 = sizeDetailsService.retrieveSizeDetailsByEnum(size.toString());
+                productVariant.setSizeDetails(sizeDetails1);
                 productVariant = createProductVariant(productVariant, product.getProductId());
 
                 productVariants.add(productVariant);
@@ -439,6 +439,7 @@ public class        ProductService {
                     productVariantsToAssignImages.add(productVariant);
                 }
             }
+
             // Associate productVariant of the same colour but different sizes to the created ProductImage
             assignProductImages(productImages, productVariantsToAssignImages);
         }
@@ -618,7 +619,7 @@ public class        ProductService {
     }
 
     @Transactional(readOnly = true)
-    public List<Product> retrieveProductStocksByParameter(Long storeId, Long warehouseId, Long productVariantId) {
+    public List<Product> retrieveProductStocksThroughProductByParameter(Long storeId, Long warehouseId, Long productVariantId) {
 
         List<Product> products = new ArrayList<>(retrieveAllProducts());
         List<ProductStock> productStocks = new ArrayList<>();
@@ -643,6 +644,22 @@ public class        ProductService {
         }
         lazilyLoadProduct(products);
         return products;
+    }
+
+    @Transactional(readOnly = true)
+    public List<ProductStock> retrieveProductStocksByParameter(Long storeId, Long warehouseId, Long productVariantId) {
+        List<ProductStock> originalProductStocks = retrieveAllProductStock();
+        List<ProductStock> productStocks = new ArrayList<>();
+
+        for(ProductStock productStock : originalProductStocks) {
+            if (productStock.getStore() != null && productStock.getStore().getStoreId().equals(storeId) ||
+                    productStock.getWarehouse() != null && productStock.getWarehouse().getWarehouseId().equals(warehouseId) ||
+                    productStock.getProductVariant() != null && productStock.getProductVariant().getProductVariantId().equals(productVariantId)) {
+                productStocks.add(productStock);
+            }
+        }
+        lazilyLoadProductStock(productStocks);
+        return productStocks;
     }
 
     public List<ProductStock> retrieveAllProductStock() {

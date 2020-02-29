@@ -30,6 +30,9 @@ import DialogContent from "@material-ui/core/DialogContent";
 import { Col, Row } from "reactstrap";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
+import CreateUpdateTagRequest from "../../../models/CreateUpdateTagRequest";
+import UpdateProductStockRequest from "../../../models/productStock/UpdateProductStockRequest";
+import { updateProductStockQty } from "../../../redux/actions/productStockActions";
 const _ = require("lodash");
 
 const tableIcons = {
@@ -66,6 +69,15 @@ class ProductsStockDetails extends PureComponent {
     };
   }
 
+  handleUpdate = (productStockId, currentStock, oldStock) => {
+    console.log(productStockId, currentStock, oldStock);
+    if (currentStock !== oldStock) {
+      const req = new UpdateProductStockRequest(productStockId, currentStock);
+      console.log(req);
+      this.props.updateProductStockQty(req, this.props.history);
+    }
+  };
+
   componentDidMount = () => {
     const { products, selectedProductId } = { ...this.props };
     // // Getting product, leafNodeName, colourToSizeImageMaps
@@ -79,6 +91,11 @@ class ProductsStockDetails extends PureComponent {
       selectedProductVariant: defaultColour
     });
   };
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    console.log(prevProps);
+    console.log(prevState);
+  }
 
   onSelectColour = ({ target: input }) => {
     const selectedProductVariant = input.value;
@@ -94,6 +111,7 @@ class ProductsStockDetails extends PureComponent {
     if (colourToSizeImageMaps) {
       list = _.keyBy([...colourToSizeImageMaps], "colour");
 
+      console.log(list);
       data = list[selectedProductVariant].sizeMaps.map((e, index) => {
         return {
           sku: e.productStock.productVariant.sku,
@@ -168,18 +186,14 @@ class ProductsStockDetails extends PureComponent {
                 editable={{
                   onRowUpdate: (newData, oldData) =>
                     new Promise((resolve, reject) => {
-                      let colourToSizeImageMaps = {
-                        ...this.state.colourToSizeImageMaps
-                      };
-                      colourToSizeImageMaps = _.keyBy(
-                        colourToSizeImageMaps,
-                        "colour"
+                      const { productStockId, currentStock } = newData;
+                      const { currentStock: oldStock } = oldData;
+                      this.handleUpdate(
+                        productStockId,
+                        Number(currentStock),
+                        Number(oldStock)
                       );
-                      colourToSizeImageMaps[oldData.colour].sizeMaps[
-                        oldData.sizeMapIndex
-                      ].productStock.quantity = Number(newData.currentStock);
-                      colourToSizeImageMaps = _.toArray(colourToSizeImageMaps);
-                      this.setState({ colourToSizeImageMaps }, () => resolve());
+                      resolve();
                     })
                 }}
               />
@@ -199,7 +213,9 @@ const mapStateToProps = state => ({
   errors: state.errors
 });
 
-const mapDispatchToProps = {};
+const mapDispatchToProps = {
+  updateProductStockQty
+};
 
 export default withRouter(
   connect(

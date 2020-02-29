@@ -2,6 +2,7 @@ package capstone.rt04.retailbackend.services;
 
 import capstone.rt04.retailbackend.entities.*;
 import capstone.rt04.retailbackend.repositories.AddressRepository;
+import capstone.rt04.retailbackend.repositories.SizeDetailsRepository;
 import capstone.rt04.retailbackend.request.product.ColourToImageUrlsMap;
 import capstone.rt04.retailbackend.util.enums.RoleNameEnum;
 import capstone.rt04.retailbackend.util.enums.SizeEnum;
@@ -38,8 +39,10 @@ public class StartUpService {
     private final StyleService styleService;
     private final StoreService storeService;
     private final StaffService staffService;
+    private final SizeDetailsService sizeDetailsService;
 
     private final AddressRepository addressRepository;
+    private final SizeDetailsRepository sizeDetailsRepository;
 
     private static Long sneakerCategoryId;
     private static Long shirtCategoryId;
@@ -51,7 +54,7 @@ public class StartUpService {
     private static Long bermudasCategoryId;
 
 
-    public StartUpService(ProductService productService, CategoryService categoryService, WarehouseService warehouseService, TagService tagService, StyleService styleService, StoreService storeService, StaffService staffService, AddressRepository addressRepository) {
+    public StartUpService(ProductService productService, CategoryService categoryService, WarehouseService warehouseService, TagService tagService, StyleService styleService, StoreService storeService, StaffService staffService, SizeDetailsService sizeDetailsService, AddressRepository addressRepository, SizeDetailsRepository sizeDetailsRepository) {
         this.productService = productService;
         this.categoryService = categoryService;
         this.warehouseService = warehouseService;
@@ -59,17 +62,20 @@ public class StartUpService {
         this.styleService = styleService;
         this.storeService = storeService;
         this.staffService = staffService;
+        this.sizeDetailsService = sizeDetailsService;
         this.addressRepository = addressRepository;
+        this.sizeDetailsRepository = sizeDetailsRepository;
     }
 
     @PostConstruct
     public void init() throws InputDataValidationException, CreateNewCategoryException, CategoryNotFoundException, CreateNewProductException, ProductVariantNotFoundException, CreateNewProductStockException, WarehouseNotFoundException, StoreNotFoundException, CreateNewTagException, CreateNewStyleException, CreateNewStaffException, CreateRoleException, CreateDepartmentException {
         createCategoryIfNotFound();
-        createProductIfNotFound();
+        createStaffIfNotFound();
+        createSizeDetailsIfNotFound();
         createWarehouseAndStoreIfNotFound();
+        createProductIfNotFound();
         createTagIfNotFound();
         createStyleIfNotFound();
-        createStaffIfNotFound();
     }
 
     private void createCategoryIfNotFound() throws CategoryNotFoundException, CreateNewCategoryException, InputDataValidationException {
@@ -426,5 +432,18 @@ public class StartUpService {
 //        staff30.setAddress(new Address ("Block 1 Bukit Gombak Road","#23-18",313150,"-"));
 //        Staff newStaff30 = staffService.createNewStaff(staff30, staff30.getAddress(), role2, departmentRetail);
 
+    }
+
+    private void createSizeDetailsIfNotFound() {
+        if (sizeDetailsService.retrieveAllSizeDetails().size() == 0) {
+            SizeDetails xs = new SizeDetails(SizeEnum.XS);
+            sizeDetailsRepository.save(xs);
+
+            System.out.println(sizeDetailsService.retrieveSizeDetailsByEnum("XS"));
+            sizeDetailsRepository.save(new SizeDetails(SizeEnum.S));
+            sizeDetailsRepository.save(new SizeDetails(SizeEnum.M));
+            sizeDetailsRepository.save(new SizeDetails(SizeEnum.L));
+            sizeDetailsRepository.save(new SizeDetails(SizeEnum.XL));
+        }
     }
 }

@@ -45,13 +45,28 @@ public class ProductStockController {
                                                                             @RequestParam(required = false) Long storeId,
                                                                             @RequestParam(required = false) Long productVariantId) {
         try {
-            List<Product> products = productService.retrieveProductStocksByParameter(storeId,
+            List<Product> products = productService.retrieveProductStocksThroughProductByParameter(storeId,
                     warehouseId, productVariantId);
             return new ResponseEntity<>(products, HttpStatus.OK);
         } catch (Exception ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @GetMapping(ProductStockControllerRoutes.RETRIEVE_PRODUCT_STOCKS_BY_PARAMETER)
+    public ResponseEntity<?> retrieveProductStocksByParameter(@RequestParam(required = false) Long warehouseId,
+                                                                            @RequestParam(required = false) Long storeId,
+                                                                            @RequestParam(required = false) Long productVariantId) {
+        try {
+            List<ProductStock> productStocks = productService.retrieveProductStocksByParameter(storeId,
+                    warehouseId, productVariantId);
+            return new ResponseEntity<>(productStocks, HttpStatus.OK);
+        } catch (Exception ex) {
+            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
 
     @PostMapping(ProductStockControllerRoutes.CREATE_PRODUCT_STOCK)
     public ResponseEntity<?> createProductStock(@RequestBody ProductStockCreateRequest productStockCreateRequest) throws ProductVariantNotFoundException, InputDataValidationException {
@@ -73,7 +88,7 @@ public class ProductStockController {
 
     @PutMapping(ProductStockControllerRoutes.UPDATE_PRODUCT_STOCK_QTY)
     public ResponseEntity<?> updateProductStockQty(@RequestBody ProductStockQtyUpdateRequest productStockQtyUpdateRequest) throws ProductStockNotFoundException {
-        ProductStock updateProductStock = productService.updateProductStockQty(productStockQtyUpdateRequest.getProductStockId(), productStockQtyUpdateRequest.getQty());
+        ProductStock updateProductStock = productService.updateProductStockQty(productStockQtyUpdateRequest.getProductStockId(), productStockQtyUpdateRequest.getQuantity());
         return new ResponseEntity<>(updateProductStock, HttpStatus.OK);
     }
 
