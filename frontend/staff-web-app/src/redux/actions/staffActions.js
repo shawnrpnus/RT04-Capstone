@@ -266,31 +266,30 @@ const deleteStaffError = data => ({
 });
 
 export const staffLogin = (staffLoginRequest, history) => {
+
+
     return dispatch => {
+        //redux thunk passes dispatch
+        axios
+            .post(STAFF_BASE_URL + "/loginStaff", staffLoginRequest)
+            .then(response => {
+                const {data} = jsog.decode(response);
+                const staffId = data.staffId;
                 toast.success("You are logged in!", {
+                    position: toast.POSITION.TOP_CENTER
+                });
+                //history.push(`/store/view/${storeId}`); // TODO: update redirect path
+            })
+            .catch(err => {
+                dispatch(loginStaffError(err.response.data));
+                //console.log(err.response.data);
+            });
 
-
-  return dispatch => {
-    //redux thunk passes dispatch
-    axios
-      .post(STAFF_BASE_URL + "/loginStaff", staffLoginRequest)
-      .then(response => {
-        const { data } = jsog.decode(response);
-        const staffId = data.staffId;
-        toast.success("You are logged in!", {
-          position: toast.POSITION.TOP_CENTER
-        });
-        //history.push(`/store/view/${storeId}`); // TODO: update redirect path
-      })
-      .catch(err => {
-        dispatch(loginStaffError(err.response.data));
-        //console.log(err.response.data);
-      });
-
+    };
 };
 const loginStaffSuccess = data => ({
     type: types.STAFF_LOGIN,
-  type: types.STAFF_LOGIN,
+
   staff: data
 });
 

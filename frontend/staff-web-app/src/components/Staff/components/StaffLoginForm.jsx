@@ -7,6 +7,7 @@ import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import MomentUtils from "@date-io/moment";
 import { Button } from "reactstrap";
 import {clearErrors, updateErrors} from "../../../redux/actions";
+import StaffLoginRequest from "../../../models/staff/StaffLoginRequest";
 
 const _ = require("lodash");
 
