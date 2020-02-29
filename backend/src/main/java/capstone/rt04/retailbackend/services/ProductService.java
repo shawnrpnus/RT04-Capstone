@@ -164,10 +164,10 @@ public class ProductService {
         List<Product> products = new ArrayList<>();
         if (productId != null) {
             products.add(retrieveProductById(productId));
-        } else if (storeOrWarehouseId != null) {
-            products = retrieveAllProducts();
         } else if (filteredProducts != null && filteredProducts.size() > 0) {
             products = filteredProducts;
+        } else {
+            products = retrieveAllProducts();
         }
 
         String colour;
