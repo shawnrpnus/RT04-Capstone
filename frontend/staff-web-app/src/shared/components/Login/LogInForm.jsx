@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { Component, PureComponent } from 'react';
 import { Field, reduxForm, Form } from 'redux-form';
 import { connect } from 'react-redux';
 import EyeIcon from 'mdi-react/EyeIcon';
@@ -8,12 +8,19 @@ import { Link } from 'react-router-dom';
 import * as PropTypes from 'prop-types';
 import { Alert, Button } from 'reactstrap';
 import renderCheckBoxField from '../Form/CheckBox';
+import axios from "axios";
+import {staffLogin} from "../../../redux/actions/staffActions";
+import StaffLoginRequest from "../../../models/staff/StaffLoginRequest";
+import {clearErrors, updateErrors} from "../../../redux/actions";
+import MaterialTextField from "../Form/MaterialTextField";
+import TextField from "@material-ui/core/TextField";
 
-class LogInForm extends PureComponent {
+class LogInForm extends Component {
   static propTypes = {
     handleSubmit: PropTypes.func.isRequired,
     errorMessage: PropTypes.string,
     errorMsg: PropTypes.string,
+    errors: PropTypes.object,
     fieldUser: PropTypes.string,
     typeFieldUser: PropTypes.string,
     form: PropTypes.string.isRequired,
@@ -24,11 +31,14 @@ class LogInForm extends PureComponent {
     errorMsg: '',
     fieldUser: 'Username',
     typeFieldUser: 'text',
-  }
+  };
 
-  constructor() {
-    super();
+
+  constructor(props) {
+    super(props);
     this.state = {
+      username : "",
+      password : "",
       showPassword: false,
     };
 
@@ -39,6 +49,26 @@ class LogInForm extends PureComponent {
     e.preventDefault();
     this.setState(prevState => ({ showPassword: !prevState.showPassword }));
   }
+
+  onChange = e => {
+    const name = e.target.name;
+
+    console.log(name);
+    console.log(e.target.value);
+    console.log(e);
+    this.setState({ [name]: e.target.value }); //computed property name syntax
+    console.log()
+    if (Object.keys(this.props.errors).length !== 0) {
+      this.props.clearErrors();
+    }
+  };
+
+  handleSubmit = e => {
+    e.preventDefault();
+
+    const req = new StaffLoginRequest(this.state.username, this.state.password);
+    this.props.staffLogin(req,this.props.history);
+  };
 
   render() {
     const {
@@ -63,8 +93,11 @@ class LogInForm extends PureComponent {
             <Field
               name="username"
               component="input"
-              type={typeFieldUser}
-              placeholder={fieldUser}
+              value={this.state.username}
+              onChange={this.onChange}
+              errors={this.props.errors}
+              // type={typeFieldUser}
+              placeholder="Username"
             />
           </div>
         </div>
@@ -111,15 +144,23 @@ class LogInForm extends PureComponent {
               )
           }
 
-          <Link className="btn btn-outline-primary account__btn" to="/register">Create
-            Account
-          </Link>
         </div>
       </Form>
     );
   }
 }
 
-export default connect(state => ({
-  errorMsg: state.user.error,
-}))(reduxForm()(LogInForm));
+//mapping global state to this component
+const mapStateToProps = state => ({
+  loggedInStaff: state.staffEntity.loggedInStaff,
+  errors: state.errors
+});
+
+const mapDispatchToProps = {
+  staffLogin
+};
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(reduxForm( {form: "login_form"})(LogInForm));

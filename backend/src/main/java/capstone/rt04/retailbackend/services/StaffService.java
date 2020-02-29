@@ -5,6 +5,7 @@ import capstone.rt04.retailbackend.repositories.*;
 import capstone.rt04.retailbackend.util.ErrorMessages;
 import capstone.rt04.retailbackend.util.enums.RoleNameEnum;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
+import capstone.rt04.retailbackend.util.exceptions.customer.CustomerNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.staff.*;
 import org.springframework.core.env.Environment;
 import org.springframework.mail.SimpleMailMessage;
@@ -243,21 +244,33 @@ return allRoles;
 
     }
 
+    public Staff retrieveStaffByUsername(String username) throws StaffNotFoundException {
+
+        Staff staff = staffRepository.findByUsername(username)
+                .orElseThrow(() -> new StaffNotFoundException("Staff username: " + username + "does not exist!"));
+
+        return lazyLoadStaffFields(staff);
+    }
+
     //staff logins with username
     public Staff staffLogin(String username, String password) throws InvalidStaffCredentialsException{
         try {
-            Staff staff = retrieveStaffByStaffId(Long.valueOf(username));
+            Staff staff = retrieveStaffByUsername(username);
             //First statement for testing purposes because unable to retrieve unhashed password from staff object. 2nd statement for staff
             if (password.equals(staff.getPassword()) || encoder.matches(password, staff.getPassword())) {
                 return lazyLoadStaffFields(staff);
             } else {
                 System.out.println(password);
                 System.out.println(staff.getPassword());
-                throw new InvalidStaffCredentialsException(ErrorMessages.STAFF_LOGIN_FAILED);
+                Map<String, String> errorMap = new HashMap<>();
+                errorMap.put("password", ErrorMessages.INCORRECT_PASSWORD);
+                throw new InvalidStaffCredentialsException(errorMap,ErrorMessages.STAFF_LOGIN_FAILED);
             }
 
         } catch (StaffNotFoundException | java.lang.NumberFormatException ex) {
-            throw new InvalidStaffCredentialsException(ErrorMessages.STAFF_LOGIN_FAILED);
+            Map<String, String> errorMap = new HashMap<>();
+            errorMap.put("username", ErrorMessages.INCORRECT_USERNAME);
+            throw new InvalidStaffCredentialsException(errorMap,ErrorMessages.STAFF_LOGIN_FAILED);
         }
     }
 
