@@ -172,6 +172,9 @@ public class ProductService {
             products = retrieveAllProducts();
         }
 
+        // Arrange based on latest new products
+        Collections.sort(products, Comparator.comparing(Product::getProductId).reversed());
+
         String colour;
         List<String> colours = new ArrayList<>();
 
@@ -262,14 +265,6 @@ public class ProductService {
         List<Product> products = new ArrayList<>();
         List<Product> productsByTag = null;
 
-        System.out.println(categoryId);
-        System.out.println(tags);
-        System.out.println(colours);
-        System.out.println(sizes);
-        System.out.println(minPrice);
-        System.out.println(maxPrice);
-        System.out.println(sortEnum);
-
         if (tags == null || tags.size() == 0) {
             productsByTag = productRepository.findAll();
         } else {
@@ -329,7 +324,6 @@ public class ProductService {
                     }
                 }
             }
-            System.out.println("matchColour " + matchColour + " matchSize " + matchSize + " matchPriceRange " + matchPriceRange + " matchCategory " + matchCategory);
             if (matchColour && matchSize && matchPriceRange && matchCategory) {
                 products.add(product);
             }

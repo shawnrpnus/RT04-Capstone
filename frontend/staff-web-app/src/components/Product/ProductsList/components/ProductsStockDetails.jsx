@@ -19,15 +19,15 @@ import {
   Visibility
 } from "@material-ui/icons";
 import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
-import withPage from "../../Layout/page/withPage";
+import withPage from "../../../Layout/page/withPage";
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
 import { Col, Row } from "reactstrap";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
-import UpdateProductStockRequest from "../../../models/productStock/UpdateProductStockRequest";
-import { updateProductStockQty } from "../../../redux/actions/productStockActions";
+import UpdateProductStockRequest from "../../../../models/productStock/UpdateProductStockRequest";
+import { updateProductStockQty } from "../../../../redux/actions/productStockActions";
 import { toast } from "react-toastify";
 
 const _ = require("lodash");
@@ -59,7 +59,8 @@ class ProductsStockDetails extends PureComponent {
       productId: this.props.selectedProductId,
       colourToSizeImageMaps: null,
       selectedProductVariant: 0,
-      productStock: []
+      productStock: [],
+      isLoading: false
     };
   }
 
@@ -67,6 +68,7 @@ class ProductsStockDetails extends PureComponent {
     if (currentStock !== oldStock) {
       const req = new UpdateProductStockRequest(productStockId, currentStock);
       this.props.updateProductStockQty(req, this.props.history);
+      this.setState({ isLoading: true });
     }
   };
 
@@ -86,10 +88,19 @@ class ProductsStockDetails extends PureComponent {
     });
     const colourToSizeImageMaps = product.colourToSizeImageMaps;
     const defaultColour = colourToSizeImageMaps[0].colour;
-    this.setState({
-      colourToSizeImageMaps,
-      selectedProductVariant: defaultColour
-    });
+    this.setState(
+      {
+        colourToSizeImageMaps,
+        selectedProductVariant: defaultColour,
+        isLoading: false
+      },
+      () => {
+        if (showToast)
+          toast.success("Product stock quantity updated!", {
+            position: toast.POSITION.TOP_CENTER
+          });
+      }
+    );
   };
 
   onSelectColour = ({ target: input }) => {
@@ -99,7 +110,11 @@ class ProductsStockDetails extends PureComponent {
 
   render() {
     const { renderLoader, onClose, open } = this.props;
-    const { colourToSizeImageMaps, selectedProductVariant } = this.state;
+    const {
+      colourToSizeImageMaps,
+      selectedProductVariant,
+      isLoading
+    } = this.state;
     let list;
     let data = [];
 
@@ -123,6 +138,7 @@ class ProductsStockDetails extends PureComponent {
       // call retrieve product details and pass in warehouse/store id
       <Dialog onClose={onClose} open={open} fullWidth maxWidth={"md"}>
         <DialogTitle>Product stock details</DialogTitle>
+
         <DialogContent
           style={{
             textAlign: "center",

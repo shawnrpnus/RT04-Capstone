@@ -183,7 +183,7 @@ class ProductsStockTable extends PureComponent {
         ) : (
           renderLoader()
         )}
-        {openProductStocksDetailsDialogue && (
+        {/* {openProductStocksDetailsDialogue && (
           <ProductsStockDetails
             open={openProductStocksDetailsDialogue}
             onClose={() => {
@@ -192,7 +192,7 @@ class ProductsStockTable extends PureComponent {
             key={selectedProductId}
             selectedProductId={selectedProductId}
           />
-        )}
+        )} */}
       </div>
     );
   }
