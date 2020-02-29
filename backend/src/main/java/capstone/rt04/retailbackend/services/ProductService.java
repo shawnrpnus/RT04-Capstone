@@ -164,7 +164,9 @@ public class ProductService {
         List<Product> products = new ArrayList<>();
         if (productId != null) {
             products.add(retrieveProductById(productId));
-        } else if (filteredProducts != null && filteredProducts.size() > 0) {
+        } else if (filteredProducts != null && filteredProducts.size() == 0) {
+            // skip
+        } else if (filteredProducts != null) {
             products = filteredProducts;
         } else {
             products = retrieveAllProducts();
@@ -260,6 +262,14 @@ public class ProductService {
         List<Product> products = new ArrayList<>();
         List<Product> productsByTag = null;
 
+        System.out.println(categoryId);
+        System.out.println(tags);
+        System.out.println(colours);
+        System.out.println(sizes);
+        System.out.println(minPrice);
+        System.out.println(maxPrice);
+        System.out.println(sortEnum);
+
         if (tags == null || tags.size() == 0) {
             productsByTag = productRepository.findAll();
         } else {
@@ -307,8 +317,19 @@ public class ProductService {
                     }
                 } else {
                     matchColour = true;
+                    if (sizes != null && sizes.size() > 0) {
+                        for (SizeEnum size : sizes) {
+                            if (size.equals(productVariant.getSizeDetails().getProductSize())) {
+                                matchSize = true;
+                                break;
+                            }
+                        }
+                    } else {
+                        matchSize = true;
+                    }
                 }
             }
+            System.out.println("matchColour " + matchColour + " matchSize " + matchSize + " matchPriceRange " + matchPriceRange + " matchCategory " + matchCategory);
             if (matchColour && matchSize && matchPriceRange && matchCategory) {
                 products.add(product);
             }
@@ -326,6 +347,8 @@ public class ProductService {
             // Latest arrival
             Collections.sort(products, Comparator.comparing(Product::getProductId).reversed());
         }
+
+        System.out.println(products.size());
 
         lazilyLoadProduct(products);
         return products;
@@ -358,7 +381,8 @@ public class ProductService {
         }
     }
 
-    public Product updateProduct(Product newProduct) throws ProductNotFoundException, TagNotFoundException, StyleNotFoundException, CategoryNotFoundException {
+    public Product updateProduct(Product newProduct) throws
+            ProductNotFoundException, TagNotFoundException, StyleNotFoundException, CategoryNotFoundException {
 
         Product product = retrieveProductById(newProduct.getProductId());
         product.setPrice(newProduct.getPrice());
@@ -380,7 +404,8 @@ public class ProductService {
         return product;
     }
 
-    public Product deleteProduct(Long productId) throws ProductNotFoundException, ProductVariantNotFoundException, ProductStockNotFoundException, DeleteProductVariantException//, DeleteProductException
+    public Product deleteProduct(Long productId) throws
+            ProductNotFoundException, ProductVariantNotFoundException, ProductStockNotFoundException, DeleteProductVariantException//, DeleteProductException
     {
         Product productToRemove = retrieveProductById(productId);
 
@@ -400,7 +425,8 @@ public class ProductService {
         return productToRemove;
     }
 
-    public ProductVariant createProductVariant(ProductVariant productVariant, Long productId) throws ProductNotFoundException, InputDataValidationException, PersistenceException, CreateNewProductStockException, WarehouseNotFoundException, StoreNotFoundException, ProductVariantNotFoundException {
+    public ProductVariant createProductVariant(ProductVariant productVariant, Long productId) throws
+            ProductNotFoundException, InputDataValidationException, PersistenceException, CreateNewProductStockException, WarehouseNotFoundException, StoreNotFoundException, ProductVariantNotFoundException {
         Product product = retrieveProductById(productId);
         productVariant.setProduct(product);
         productVariant.toString();
@@ -421,7 +447,9 @@ public class ProductService {
         }
     }
 
-    public List<ProductVariant> createMultipleProductVariants(Long productId, List<ColourToImageUrlsMap> colourToImageUrlsMaps, List<SizeEnum> sizes) throws ProductNotFoundException, InputDataValidationException, CreateNewProductStockException, StoreNotFoundException, WarehouseNotFoundException, ProductVariantNotFoundException, ProductImageNotFoundException {
+    public List<ProductVariant> createMultipleProductVariants(Long
+                                                                      productId, List<ColourToImageUrlsMap> colourToImageUrlsMaps, List<SizeEnum> sizes) throws
+            ProductNotFoundException, InputDataValidationException, CreateNewProductStockException, StoreNotFoundException, WarehouseNotFoundException, ProductVariantNotFoundException, ProductImageNotFoundException {
         Product product = retrieveProductById(productId);
 
         List<ProductVariant> productVariants = new ArrayList<>();
@@ -525,14 +553,16 @@ public class ProductService {
         return productVariants;
     }
 
-    public ProductVariant updateProductVariant(ProductVariant newProductVariant) throws ProductVariantNotFoundException {
+    public ProductVariant updateProductVariant(ProductVariant newProductVariant) throws
+            ProductVariantNotFoundException {
         ProductVariant productVariant = retrieveProductVariantById(newProductVariant.getProductVariantId());
         productVariant.setColour(newProductVariant.getColour());
         productVariant.setSKU(newProductVariant.getSKU());
         return productVariant;
     }
 
-    public ProductVariant deleteProductVariant(Long productVariantId) throws ProductVariantNotFoundException, ProductStockNotFoundException, DeleteProductVariantException {
+    public ProductVariant deleteProductVariant(Long productVariantId) throws
+            ProductVariantNotFoundException, ProductStockNotFoundException, DeleteProductVariantException {
 
         ProductVariant productVariant = retrieveProductVariantById(productVariantId);
 
@@ -567,7 +597,9 @@ public class ProductService {
      *
      * @return void
      */
-    public void assignProductStock(List<Warehouse> warehouses, List<Store> stores, ProductVariant inputProductVariant) throws InputDataValidationException, WarehouseNotFoundException, StoreNotFoundException, ProductVariantNotFoundException {
+    public void assignProductStock(List<Warehouse> warehouses, List<Store> stores, ProductVariant
+            inputProductVariant) throws
+            InputDataValidationException, WarehouseNotFoundException, StoreNotFoundException, ProductVariantNotFoundException {
         List<ProductVariant> productVariants;
         if (inputProductVariant == null) {
             productVariants = retrieveAllProductVariant();
@@ -610,7 +642,8 @@ public class ProductService {
      *
      * @return productStock created
      */
-    public ProductStock createProductStock(ProductStock productStock, Long productVariantId) throws InputDataValidationException, ProductVariantNotFoundException {
+    public ProductStock createProductStock(ProductStock productStock, Long productVariantId) throws
+            InputDataValidationException, ProductVariantNotFoundException {
         Map<String, String> errorMap = validationService.generateErrorMap(productStock);
         if (errorMap == null) {
             ProductVariant productVariant = retrieveProductVariantById(productVariantId);
@@ -642,7 +675,8 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public List<Product> retrieveProductStocksThroughProductByParameter(Long storeId, Long warehouseId, Long productVariantId) {
+    public List<Product> retrieveProductStocksThroughProductByParameter(Long storeId, Long warehouseId, Long
+            productVariantId) {
 
         List<Product> products = new ArrayList<>(retrieveAllProducts());
         List<ProductStock> productStocks = new ArrayList<>();
@@ -670,7 +704,8 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public List<ProductStock> retrieveProductStocksByParameter(Long storeId, Long warehouseId, Long productVariantId) {
+    public List<ProductStock> retrieveProductStocksByParameter(Long storeId, Long warehouseId, Long
+            productVariantId) {
         List<ProductStock> originalProductStocks = retrieveAllProductStock();
         List<ProductStock> productStocks = new ArrayList<>();
 
@@ -717,7 +752,8 @@ public class ProductService {
         return productStock;
     }
 
-    public ProductStock updateProductStockQty(Long productStockId, Integer qty) throws ProductStockNotFoundException {
+    public ProductStock updateProductStockQty(Long productStockId, Integer qty) throws
+            ProductStockNotFoundException {
         ProductStock productStock = retrieveProductStockById(productStockId);
         productStock.setQuantity(qty);
         return productStock;
@@ -740,7 +776,8 @@ public class ProductService {
         return productStock;
     }
 
-    public List<ProductImage> createProductImage(List<ProductImage> productImages, Long productVariantId) throws ProductVariantNotFoundException {
+    public List<ProductImage> createProductImage(List<ProductImage> productImages, Long productVariantId) throws
+            ProductVariantNotFoundException {
         ProductVariant productVariant = retrieveProductVariantById(productVariantId);
 
         if (productVariant.getProductImages() != null && productVariant.getProductImages().size() > 0) {
@@ -754,7 +791,8 @@ public class ProductService {
         return productImages;
     }
 
-    private void assignProductImages(List<ProductImage> productImages, List<ProductVariant> productVariants) throws ProductVariantNotFoundException, ProductImageNotFoundException {
+    private void assignProductImages(List<ProductImage> productImages, List<ProductVariant> productVariants) throws
+            ProductVariantNotFoundException, ProductImageNotFoundException {
         for (ProductVariant productVariant : productVariants) {
             productVariant.getProductImages().addAll(productImages);
         }
@@ -766,7 +804,8 @@ public class ProductService {
         return productImage;
     }
 
-    public List<ProductImage> retrieveProductImageByProductVariant(Long productVariantId) throws ProductImageNotFoundException, ProductVariantNotFoundException {
+    public List<ProductImage> retrieveProductImageByProductVariant(Long productVariantId) throws
+            ProductImageNotFoundException, ProductVariantNotFoundException {
         ProductVariant productVariant = retrieveProductVariantById(productVariantId);
         List<Long> productImageIds = new ArrayList<>();
         for (ProductImage productImage : productVariant.getProductImages()) {
@@ -776,7 +815,8 @@ public class ProductService {
         return productImages;
     }
 
-    public List<String> updateProductVariantImages(Long productId, String colour, List<String> imageUrls) throws ProductImageNotFoundException, ProductNotFoundException, ProductVariantNotFoundException {
+    public List<String> updateProductVariantImages(Long productId, String colour, List<String> imageUrls) throws
+            ProductImageNotFoundException, ProductNotFoundException, ProductVariantNotFoundException {
         Product product = retrieveProductById(productId);
 
         List<ProductVariant> productVariantsToAssignImages = new ArrayList<>();
@@ -804,7 +844,8 @@ public class ProductService {
         return imageUrls;
     }
 
-    public List<ProductImage> deleteProductImage(List<ProductImage> productImages, Long productVariantId) throws ProductImageNotFoundException, ProductVariantNotFoundException {
+    public List<ProductImage> deleteProductImage(List<ProductImage> productImages, Long productVariantId) throws
+            ProductImageNotFoundException, ProductVariantNotFoundException {
         ProductVariant productVariant = retrieveProductVariantById(productVariantId);
 
         List<ProductImage> deletedProductImages = new ArrayList<>();
@@ -822,7 +863,8 @@ public class ProductService {
     /**
      * List of update operations for relationships of Product
      */
-    public void changeCategoryForProduct(Long categoryId, Long productId) throws CategoryNotFoundException, ProductNotFoundException {
+    public void changeCategoryForProduct(Long categoryId, Long productId) throws
+            CategoryNotFoundException, ProductNotFoundException {
         Category newCategory = categoryService.retrieveCategoryByCategoryId(categoryId);
         Product product = retrieveProductById(productId);
         Category oldCategory = product.getCategory();
@@ -834,7 +876,8 @@ public class ProductService {
         newCategory.getProducts().add(product);
     }
 
-    public void addOrRemoveTag(Long tagId, Long productId, List<Tag> tags, List<Product> products) throws ProductNotFoundException, TagNotFoundException, TagNotFoundException, TagNotFoundException {
+    public void addOrRemoveTag(Long tagId, Long productId, List<Tag> tags, List<Product> products) throws
+            ProductNotFoundException, TagNotFoundException, TagNotFoundException, TagNotFoundException {
         // Adding / removing tag for a list of products
         if (tagId != null) {
             Tag tag = tagService.retrieveTagByTagId(tagId);
@@ -883,7 +926,9 @@ public class ProductService {
         }
     }
 
-    public void addOrRemovePromoCode(Long promoCodeId, Long productId, List<PromoCode> promoCodes, List<Product> products, Boolean isAppend) throws PromoCodeNotFoundException, ProductNotFoundException, PromoCodeNotFoundException, PromoCodeNotFoundException, PromoCodeNotFoundException {
+    public void addOrRemovePromoCode(Long promoCodeId, Long
+            productId, List<PromoCode> promoCodes, List<Product> products, Boolean isAppend) throws
+            PromoCodeNotFoundException, ProductNotFoundException, PromoCodeNotFoundException, PromoCodeNotFoundException, PromoCodeNotFoundException {
         // Adding / removing promoCode for a list of products
         if (promoCodeId != null) {
             PromoCode promoCode = promoCodeService.retrievePromoCodeById(promoCodeId);
@@ -918,7 +963,9 @@ public class ProductService {
         }
     }
 
-    public void addOrRemoveDiscount(Long discountId, Long productId, List<Discount> discounts, List<Product> products, Boolean isAppend) throws ProductNotFoundException, DiscountNotFoundException, DiscountNotFoundException, DiscountNotFoundException, DiscountNotFoundException {
+    public void addOrRemoveDiscount(Long discountId, Long
+            productId, List<Discount> discounts, List<Product> products, Boolean isAppend) throws
+            ProductNotFoundException, DiscountNotFoundException, DiscountNotFoundException, DiscountNotFoundException, DiscountNotFoundException {
         // Adding / removing discount for a list of products
         if (discountId != null) {
             Discount discount = discountService.retrieveDiscountById(discountId);
@@ -952,7 +999,8 @@ public class ProductService {
         }
     }
 
-    public void addOrRemoveStyle(Long styleId, Long productId, List<Style> styles, List<Product> products) throws ProductNotFoundException, TagNotFoundException, StyleNotFoundException {
+    public void addOrRemoveStyle(Long styleId, Long productId, List<Style> styles, List<Product> products) throws
+            ProductNotFoundException, TagNotFoundException, StyleNotFoundException {
         // Adding / removing style for a list of products
         if (styleId != null) {
             Style style = styleService.retrieveStyleByStyleId(styleId);
