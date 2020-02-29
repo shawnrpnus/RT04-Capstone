@@ -148,19 +148,17 @@ export default function ProductPage(props) {
                 className={classes.filterDrawer}
                 classes={{ paper: classes.filterDrawer }}
               >
-                {allTags &&
-                  !_.isEmpty(colours) &&
-                  rootCategories(
-                    <FilterBar
-                      allTags={allTags}
-                      allColours={colours}
-                      categoryId={getCategoryIdFromPath(
-                        rootCategoryName,
-                        subCategoryName,
-                        leafCategoryName
-                      )}
-                    />
-                  )}
+                {allTags && !_.isEmpty(colours) && rootCategories && (
+                  <FilterBar
+                    allTags={allTags}
+                    allColours={colours}
+                    categoryId={getCategoryIdFromPath(
+                      rootCategoryName,
+                      subCategoryName,
+                      leafCategoryName
+                    )}
+                  />
+                )}
               </Drawer>
               <GridItem md={12} sm={9}>
                 <GridContainer>

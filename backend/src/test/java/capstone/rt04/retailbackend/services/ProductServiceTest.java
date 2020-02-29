@@ -193,27 +193,27 @@ public class ProductServiceTest extends ServiceTestSetup {
         colours.add("White");
         colours.add("Pink");
 
-        List<Product> productList = productService.retrieveProductByCriteria(category, tags, colours, null, BigDecimal.ZERO, BigDecimal.valueOf(300), null);
+        List<Product> productList = productService.retrieveProductByCriteria(category.getCategoryId(), tags, colours, null, BigDecimal.ZERO, BigDecimal.valueOf(300), null);
         assertThat(productList.size()).isNotEqualTo(0);
         assertThat(productList.get(0).getProductName()).isEqualTo("Adidas Alpha Bounce");
 
-        productList = productService.retrieveProductByCriteria(category, tags, colours, null, BigDecimal.ZERO, BigDecimal.valueOf(300), SortEnum.PRICE_HIGH_TO_LOW);
+        productList = productService.retrieveProductByCriteria(category.getCategoryId(), tags, colours, null, BigDecimal.ZERO, BigDecimal.valueOf(300), SortEnum.PRICE_HIGH_TO_LOW);
         assertThat(productList.get(0).getProductName()).isEqualTo("Adidas Alpha Bounce");
 
-        productList = productService.retrieveProductByCriteria(category, tags, colours, null, BigDecimal.ZERO, BigDecimal.valueOf(300), SortEnum.PRICE_LOW_TO_HIGH);
+        productList = productService.retrieveProductByCriteria(category.getCategoryId(), tags, colours, null, BigDecimal.ZERO, BigDecimal.valueOf(300), SortEnum.PRICE_LOW_TO_HIGH);
         assertThat(productList.get(0).getProductName()).isEqualTo("Fila Disruptor II");
 
         colours.remove("White");
         colours.remove("Pink");
         colours.add("Red");
-        productList = productService.retrieveProductByCriteria(category, tags, colours, null, BigDecimal.ZERO, BigDecimal.valueOf(300), null);
+        productList = productService.retrieveProductByCriteria(category.getCategoryId(), tags, colours, null, BigDecimal.ZERO, BigDecimal.valueOf(300), null);
         // Product does not have Red tag
         assertThat(productList.size()).isEqualTo(0);
         colours.remove("Red");
 
         colours.add("White");
         tags.remove(tag1);
-        productList = productService.retrieveProductByCriteria(category, tags, colours, null, BigDecimal.ZERO, BigDecimal.valueOf(500), null);
+        productList = productService.retrieveProductByCriteria(category.getCategoryId(), tags, colours, null, BigDecimal.ZERO, BigDecimal.valueOf(500), null);
         // No tags case - one product with 'white' tag exist
         // 2 products with same tag
         assertThat(productList.size()).isEqualTo(2);
@@ -223,7 +223,7 @@ public class ProductServiceTest extends ServiceTestSetup {
         colours.add("White");
         colours.add("Pink");
         colours.add("Red");
-        productList = productService.retrieveProductByCriteria(category, tags, colours, null, BigDecimal.valueOf(500), BigDecimal.valueOf(300), null);
+        productList = productService.retrieveProductByCriteria(category.getCategoryId(), tags, colours, null, BigDecimal.valueOf(500), BigDecimal.valueOf(300), null);
         // Wrong min price
          assertThat(productList.size()).isEqualTo(0);
 

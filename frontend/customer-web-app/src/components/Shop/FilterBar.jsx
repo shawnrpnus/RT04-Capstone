@@ -124,8 +124,8 @@ function FilterBar(props) {
       maxPrice,
       sortEnum
     );
-    console.log(req);
-    //dispatch(filterProducts(req));
+
+    dispatch(filterProducts(req));
   };
 
   return (

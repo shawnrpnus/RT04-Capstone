@@ -148,10 +148,10 @@ public class ProductService {
         return checkIfCategoryIsInside(categoryToCheck.getParentCategory(), categoryId);
     }
 
-    public List<ProductDetailsResponse> retrieveProductsDetailsByCriteria(Category category, List<Tag> tags, List<String> colours, List<SizeEnum> sizes,
+    public List<ProductDetailsResponse> retrieveProductsDetailsByCriteria(Long categoryId, List<Tag> tags, List<String> colours, List<SizeEnum> sizes,
                                                                           BigDecimal minPrice, BigDecimal maxPrice, SortEnum sortEnum) throws ProductNotFoundException {
 
-        List<Product> filteredProducts = retrieveProductByCriteria(category, tags, colours, sizes, minPrice, maxPrice, sortEnum);
+        List<Product> filteredProducts = retrieveProductByCriteria(categoryId, tags, colours, sizes, minPrice, maxPrice, sortEnum);
 
         return retrieveProductsDetails(null, null, filteredProducts);
     }
@@ -255,7 +255,7 @@ public class ProductService {
         return product;
     }
 
-    public List<Product> retrieveProductByCriteria(Category category, List<Tag> tags, List<String> colours, List<SizeEnum> sizes,
+    public List<Product> retrieveProductByCriteria(Long categoryId, List<Tag> tags, List<String> colours, List<SizeEnum> sizes,
                                                    BigDecimal minPrice, BigDecimal maxPrice, SortEnum sortEnum) {
         List<Product> products = new ArrayList<>();
         List<Product> productsByTag = null;
@@ -274,7 +274,7 @@ public class ProductService {
             matchColour = false;
             matchCategory = false;
 
-            if (checkIfCategoryIsInside(product.getCategory(), category.getCategoryId())) {
+            if (checkIfCategoryIsInside(product.getCategory(), categoryId)) {
                 matchCategory = true;
             }
 

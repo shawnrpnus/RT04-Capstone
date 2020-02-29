@@ -64,9 +64,9 @@ public class ProductController {
         }
     }
 
-    @GetMapping(ProductControllerRoutes.RETRIEVE_PRODUCTS_DETAILS_BY_CRITERIA)
+    @PostMapping(ProductControllerRoutes.RETRIEVE_PRODUCTS_DETAILS_BY_CRITERIA)
     public ResponseEntity<?> retrieveProductsDetailsByCriteria(@RequestBody ProductRetrieveRequest productRetrieveRequest) throws ProductNotFoundException {
-            List<ProductDetailsResponse> products = productService.retrieveProductsDetailsByCriteria(productRetrieveRequest.getCategory(),
+            List<ProductDetailsResponse> products = productService.retrieveProductsDetailsByCriteria(productRetrieveRequest.getCategoryId(),
                     productRetrieveRequest.getTags(), productRetrieveRequest.getColours(),productRetrieveRequest.getSizes(),
                     productRetrieveRequest.getMinPrice(), productRetrieveRequest.getMaxPrice(),
                     productRetrieveRequest.getSortEnum());
