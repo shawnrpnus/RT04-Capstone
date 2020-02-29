@@ -58,9 +58,7 @@ export const updateProductStockQty = (updateProductStockRequest, history) => {
         // dispatch(updateProductStockQtySuccess(data));
 
         retrieveProductsDetails(1043)(dispatch);
-        toast.success("Product stock quantity updated!", {
-          position: toast.POSITION.TOP_CENTER
-        });
+
         // history.push(`/productStock/update/${productStockId}`);
       })
       .catch(err => {

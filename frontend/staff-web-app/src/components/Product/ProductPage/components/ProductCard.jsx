@@ -1,12 +1,6 @@
 import React, { PureComponent } from "react";
-import {
-  Card,
-  CardBody,
-  Col,
-  ButtonToolbar,
-  Button,
-  ButtonGroup
-} from "reactstrap";
+import { Redirect } from "react-router-dom";
+import { Col, ButtonToolbar, Button, ButtonGroup } from "reactstrap";
 import StarIcon from "mdi-react/StarIcon";
 import StarOutlineIcon from "mdi-react/StarOutlineIcon";
 import { withRouter } from "react-router-dom";
