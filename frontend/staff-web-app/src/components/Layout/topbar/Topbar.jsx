@@ -7,16 +7,18 @@ import TopbarMail from './TopbarMail';
 import TopbarNotification from './TopbarNotification';
 import TopbarSearch from './TopbarSearch';
 import { UserProps } from '../../../shared/prop-types/ReducerProps';
+import {useSelector} from "react-redux";
 
 class Topbar extends PureComponent {
   static propTypes = {
     changeMobileSidebarVisibility: PropTypes.func.isRequired,
     changeSidebarVisibility: PropTypes.func.isRequired,
-    user: PropTypes.object.isRequired
+    loggedInStaff: PropTypes.object
   };
 
   render() {
     const { changeMobileSidebarVisibility, changeSidebarVisibility, user } = this.props;
+
 
     return (
       <div className="topbar">
@@ -32,7 +34,7 @@ class Topbar extends PureComponent {
             <TopbarSearch />
             <TopbarNotification />
             <TopbarMail new />
-            {/*<TopbarProfile user={user} />*/}
+            <TopbarProfile loggedInStaff={this.props.loggedInStaff} />
           </div>
         </div>
       </div>

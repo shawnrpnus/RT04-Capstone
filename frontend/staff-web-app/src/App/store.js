@@ -8,9 +8,12 @@ import rootReducer from "../redux/reducers";
 const middleware = [thunk];
 const initialState = {};
 
+const jsog = require("jsog");
+const _ = require("lodash");
+
 function saveToLocalStorage(state) {
   try {
-    const serializedState = JSON.stringify(state);
+    const serializedState = jsog.stringify(state);
     localStorage.setItem("state", serializedState);
   } catch (e) {
     console.log(e);
@@ -21,7 +24,7 @@ function loadFromLocalStorage() {
   try {
     const serializedState = localStorage.getItem("state");
     if (serializedState === null) return initialState;
-    return JSON.parse(serializedState);
+    return jsog.parse(serializedState);
   } catch (e) {
     console.log(e);
     return undefined;
@@ -29,26 +32,30 @@ function loadFromLocalStorage() {
 }
 
 let persistedState = loadFromLocalStorage();
-persistedState = {};
+
 /**
  * Create a Redux storeEntity that holds the app state.
  */
 let store = createStore(
-  rootReducer,
-  persistedState,
-  compose(applyMiddleware(...middleware))
+    rootReducer,
+    persistedState,
+    compose(applyMiddleware(...middleware))
 );
 
 if (window.navigator.userAgent.includes("Chrome")) {
   store = createStore(
-    rootReducer,
-    persistedState,
-    composeWithDevTools(applyMiddleware(...middleware))
+      rootReducer,
+      persistedState,
+      composeWithDevTools(applyMiddleware(...middleware))
   );
 }
-// const unsubscribe = store.subscribe(() => {
-//     const state = store.getState();
-//     saveToLocalStorage(state);
-// });
+
+const unsubscribe = store.subscribe(() => {
+  saveToLocalStorage({
+    staffEntity: {
+      loggedInStaff: _.get(store.getState(), "staffEntity.loggedInStaff")
+    }
+  });
+});
 
 export default store;

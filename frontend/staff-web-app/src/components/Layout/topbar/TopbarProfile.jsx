@@ -3,18 +3,18 @@ import DownIcon from 'mdi-react/ChevronDownIcon';
 import { Collapse } from 'reactstrap';
 import TopbarMenuLink from './TopbarMenuLink';
 import { UserProps, AuthOProps } from '../../../shared/prop-types/ReducerProps';
+import * as PropTypes from "prop-types";
 
-const Ava = `${process.env.PUBLIC_URL}/img/ava.png`;
+
 
 class TopbarProfile extends PureComponent {
   static propTypes = {
-    user: UserProps.isRequired,
-    auth0: AuthOProps.isRequired,
-  }
+    loggedInStaff: PropTypes.object.isRequired
+  };
 
 
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       collapse: false,
     };
@@ -22,27 +22,24 @@ class TopbarProfile extends PureComponent {
 
   toggle = () => {
     this.setState(prevState => ({ collapse: !prevState.collapse }));
+    console.log(this.props.loggedInStaff);
   };
 
   logout = () => {
     localStorage.removeItem('easydev');
-  }
+  };
 
   render() {
-    const { user, auth0 } = this.props;
+    const { loggedInStaff} = this.props;
     const { collapse } = this.state;
 
     return (
       <div className="topbar__profile">
         <button className="topbar__avatar" type="button" onClick={this.toggle}>
-          <img
-            className="topbar__avatar-img"
-            src={(auth0.user && auth0.user.picture) || user.avatar || Ava}
-            alt="avatar"
-          />
+          {loggedInStaff &&
           <p className="topbar__avatar-name">
-            { auth0.loading ? 'Loading...' : (auth0.user && auth0.user.name) || user.fullName}
-          </p>
+            {loggedInStaff.firstName} {loggedInStaff.lastName}
+          </p> }
           <DownIcon className="topbar__icon" />
         </button>
         {collapse && <button className="topbar__back" type="button" onClick={this.toggle} />}
@@ -54,52 +51,10 @@ class TopbarProfile extends PureComponent {
               path="/account/profile"
               onClick={this.toggle}
             />
-            <TopbarMenuLink
-              title="Calendar"
-              icon="calendar-full"
-              path="/default_pages/calendar"
-              onClick={this.toggle}
-            />
-            <TopbarMenuLink
-              title="Tasks"
-              icon="list"
-              path="/todo"
-              onClick={this.toggle}
-            />
-            <TopbarMenuLink
-              title="Inbox"
-              icon="inbox"
-              path="/mail"
-              onClick={this.toggle}
-            />
-            <div className="topbar__menu-divider" />
-            <TopbarMenuLink
-              title="Account Settings"
-              icon="cog"
-              path="/account/profile"
-              onClick={this.toggle}
-            />
-            <TopbarMenuLink
-              title="Lock Screen"
-              icon="lock"
-              path="/lock_screen"
-              onClick={this.toggle}
-            />
-            {auth0.isAuthenticated && (
-              <TopbarMenuLink
-                title="Log Out Auth0"
-                icon="exit"
-                path="/log_in"
-                onClick={auth0.logout}
-              />
-            )
-            }
-            <TopbarMenuLink
-              title="Log Out"
-              icon="exit"
-              path="/log_in"
-              onClick={this.logout}
-            />
+
+
+
+
           </div>
         </Collapse>
       </div>

@@ -6,8 +6,12 @@ import MaterialTextField from "../../../shared/components/Form/MaterialTextField
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import MomentUtils from "@date-io/moment";
 import { Button } from "reactstrap";
+import {clearErrors, updateErrors} from "../../../redux/actions";
 import StaffLoginRequest from "../../../models/staff/StaffLoginRequest";
-import { clearErrors, updateErrors } from "../../../redux/actions";
+
+const _ = require("lodash");
+
+
 
 class StaffLoginForm extends Component {
   static propTypes = {

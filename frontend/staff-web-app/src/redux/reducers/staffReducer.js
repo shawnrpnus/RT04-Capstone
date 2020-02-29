@@ -67,6 +67,12 @@ export default function(state = initialState, action) {
         loggedInStaff: action.staff
       };
 
+    case types.UPDATE_STAFF:
+      return {
+        ...state,
+        loggedInStaff: action.staff
+      };
+
     default:
       return state;
   }

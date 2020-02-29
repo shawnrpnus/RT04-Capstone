@@ -1,7 +1,7 @@
 /* eslint-disable no-return-assign */
 import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
-import { connect } from "react-redux";
+import {connect, useSelector} from "react-redux";
 import * as PropTypes from "prop-types";
 import classNames from "classnames";
 import NotificationSystem from "rc-notification";
@@ -36,8 +36,7 @@ class Layout extends Component {
   };
 
   componentDidMount() {
-    // NotificationSystem.newInstance({style: {top: 65}}, n => notification = n);
-    // setTimeout(() => showNotification(), 700);
+
   }
 
   componentWillUnmount() {
@@ -66,7 +65,7 @@ class Layout extends Component {
         <Topbar
           changeMobileSidebarVisibility={this.changeMobileSidebarVisibility}
           changeSidebarVisibility={this.changeSidebarVisibility}
-          user={{}}
+          loggedInStaff={this.props.loggedInStaff}
         />
         <Sidebar
           sidebar={sidebar}
@@ -78,7 +77,8 @@ class Layout extends Component {
 }
 
 const mapStateToProps = state => ({
-  sidebar: state.sidebar
+  sidebar: state.sidebar,
+  loggedInStaff: state.staffEntity.loggedInStaff
 });
 
 export default withRouter(connect(mapStateToProps)(Layout));
