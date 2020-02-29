@@ -90,12 +90,14 @@ class ProductsStockTable extends PureComponent {
           serialNumber: product.serialNumber,
           cost: product.cost,
           price: product.price,
-          category: product.category.name,
+          category: product.category.categoryName,
           colours: colours,
           image: image
         };
       });
     }
+
+    console.log(this.props)
 
     return (
       <div className="table" style={{ verticalAlign: "middle" }}>

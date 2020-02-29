@@ -14,5 +14,5 @@ public class ProductStockQtyUpdateRequest {
 
     private Long productStockId;
 
-    private Integer qty;
+    private Integer quantity;
 }

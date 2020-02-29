@@ -73,7 +73,7 @@ public class ProductStockController {
 
     @PutMapping(ProductStockControllerRoutes.UPDATE_PRODUCT_STOCK_QTY)
     public ResponseEntity<?> updateProductStockQty(@RequestBody ProductStockQtyUpdateRequest productStockQtyUpdateRequest) throws ProductStockNotFoundException {
-        ProductStock updateProductStock = productService.updateProductStockQty(productStockQtyUpdateRequest.getProductStockId(), productStockQtyUpdateRequest.getQty());
+        ProductStock updateProductStock = productService.updateProductStockQty(productStockQtyUpdateRequest.getProductStockId(), productStockQtyUpdateRequest.getQuantity());
         return new ResponseEntity<>(updateProductStock, HttpStatus.OK);
     }
 
