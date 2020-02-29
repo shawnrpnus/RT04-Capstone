@@ -30,13 +30,13 @@ const cardHeaderStyle = {
     position: "relative",
     padding: "0",
     zIndex: "1",
-    marginLeft: "15px",
-    marginRight: "15px",
+    marginLeft: "0px",
+    marginRight: "0px",
     marginTop: "-30px",
     borderRadius: "6px",
     "& img": {
       width: "100%",
-      borderRadius: "6px",
+      borderRadius: "0px",
       pointerEvents: "none",
       boxShadow:
         "0 5px 15px -8px rgba(" +

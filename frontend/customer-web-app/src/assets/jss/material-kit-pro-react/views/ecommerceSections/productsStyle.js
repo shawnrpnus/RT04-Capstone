@@ -114,15 +114,28 @@ const styles = {
   },
   cardBodyPlain: {
     padding: "0",
-    marginLeft: "18px",
-    marginRight: "18px"
+    marginLeft: "3px",
+    marginRight: "3px"
   },
   sizeChip: {
     borderRadius: "0",
-    height: "20px"
+    height: "20px",
+    width: "30px "
   },
-  heartChip: {
-    height: "20px"
+  heartIconBtn: {
+    float: "right",
+    position: "relative",
+    bottom: "40px",
+    right: "5px",
+    marginBottom: "-40px",
+    padding: "6px",
+    backgroundColor: "white",
+    "&:hover": {
+      backgroundColor: "white"
+    }
+  },
+  labelSmall: {
+    padding: "0"
   }
 };
 
