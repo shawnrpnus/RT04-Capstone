@@ -1,17 +1,17 @@
-import React, { Component, PureComponent } from 'react';
-import { Field, reduxForm, Form } from 'redux-form';
-import { connect } from 'react-redux';
-import EyeIcon from 'mdi-react/EyeIcon';
-import KeyVariantIcon from 'mdi-react/KeyVariantIcon';
-import AccountOutlineIcon from 'mdi-react/AccountOutlineIcon';
-import { Link } from 'react-router-dom';
-import * as PropTypes from 'prop-types';
-import { Alert, Button } from 'reactstrap';
-import renderCheckBoxField from '../Form/CheckBox';
+import React, { Component, PureComponent } from "react";
+import { Field, reduxForm, Form } from "redux-form";
+import { connect } from "react-redux";
+import EyeIcon from "mdi-react/EyeIcon";
+import KeyVariantIcon from "mdi-react/KeyVariantIcon";
+import AccountOutlineIcon from "mdi-react/AccountOutlineIcon";
+import { Link } from "react-router-dom";
+import * as PropTypes from "prop-types";
+import { Alert, Button } from "reactstrap";
+import renderCheckBoxField from "../Form/CheckBox";
 import axios from "axios";
-import {staffLogin} from "../../../redux/actions/staffActions";
+import { staffLogin } from "../../../redux/actions/staffActions";
 import StaffLoginRequest from "../../../models/staff/StaffLoginRequest";
-import {clearErrors, updateErrors} from "../../../redux/actions";
+import { clearErrors, updateErrors } from "../../../redux/actions";
 import MaterialTextField from "../Form/MaterialTextField";
 import TextField from "@material-ui/core/TextField";
 
@@ -23,23 +23,22 @@ class LogInForm extends Component {
     errors: PropTypes.object,
     fieldUser: PropTypes.string,
     typeFieldUser: PropTypes.string,
-    form: PropTypes.string.isRequired,
+    form: PropTypes.string.isRequired
   };
 
   static defaultProps = {
-    errorMessage: '',
-    errorMsg: '',
-    fieldUser: 'Username',
-    typeFieldUser: 'text',
+    errorMessage: "",
+    errorMsg: "",
+    fieldUser: "Username",
+    typeFieldUser: "text"
   };
-
 
   constructor(props) {
     super(props);
     this.state = {
-      username : "",
-      password : "",
-      showPassword: false,
+      username: "",
+      password: "",
+      showPassword: false
     };
 
     this.showPassword = this.showPassword.bind(this);
@@ -57,7 +56,7 @@ class LogInForm extends Component {
     console.log(e.target.value);
     console.log(e);
     this.setState({ [name]: e.target.value }); //computed property name syntax
-    console.log()
+    console.log();
     if (Object.keys(this.props.errors).length !== 0) {
       this.props.clearErrors();
     }
@@ -67,20 +66,22 @@ class LogInForm extends Component {
     e.preventDefault();
 
     const req = new StaffLoginRequest(this.state.username, this.state.password);
-    this.props.staffLogin(req,this.props.history);
+    this.props.staffLogin(req, this.props.history);
   };
 
   render() {
     const {
-      handleSubmit, errorMessage, errorMsg, fieldUser, typeFieldUser, form,
+      handleSubmit,
+      errorMessage,
+      errorMsg,
+      fieldUser,
+      typeFieldUser,
+      form
     } = this.props;
     const { showPassword } = this.state;
     return (
       <Form className="form login-form" onSubmit={handleSubmit}>
-        <Alert
-          color="danger"
-          isOpen={!!errorMessage || !!errorMsg}
-        >
+        <Alert color="danger" isOpen={!!errorMessage || !!errorMsg}>
           {errorMessage}
           {errorMsg}
         </Alert>
@@ -110,14 +111,17 @@ class LogInForm extends Component {
             <Field
               name="password"
               component="input"
-              type={showPassword ? 'text' : 'password'}
+              type={showPassword ? "text" : "password"}
               placeholder="Password"
             />
             <button
               type="button"
-              className={`form__form-group-button${showPassword ? ' active' : ''}`}
+              className={`form__form-group-button${
+                showPassword ? " active" : ""
+              }`}
               onClick={e => this.showPassword(e)}
-            ><EyeIcon />
+            >
+              <EyeIcon />
             </button>
             <div className="account__forgot-password">
               <a href="/">Forgot a password?</a>
@@ -134,16 +138,18 @@ class LogInForm extends Component {
           </div>
         </div>
         <div className="account__btns">
-          {
-            form === 'modal_login'
-              ? <Button className="account__btn" submit="true" color="primary">Sign In</Button>
-              : (
-                <Link className="account__btn btn btn-primary" to="/dashboard_default">
-                  Sign In
-                </Link>
-              )
-          }
-
+          {form === "modal_login" ? (
+            <Button className="account__btn" submit="true" color="primary">
+              Sign In
+            </Button>
+          ) : (
+            <Link
+              className="account__btn btn btn-primary"
+              to="/dashboard_default"
+            >
+              Sign In
+            </Link>
+          )}
         </div>
       </Form>
     );
@@ -161,6 +167,6 @@ const mapDispatchToProps = {
 };
 
 export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(reduxForm( {form: "login_form"})(LogInForm));
+  mapStateToProps,
+  mapDispatchToProps
+)(reduxForm({ form: "login_form" })(LogInForm));

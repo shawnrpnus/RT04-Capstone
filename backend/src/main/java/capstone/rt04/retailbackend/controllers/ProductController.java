@@ -35,7 +35,7 @@ public class ProductController {
     @GetMapping(ProductControllerRoutes.RETRIEVE_PRODUCT_BY_ID)
     public ResponseEntity<?> retrieveProductById(@PathVariable Long productId) {
         try {
-            List<ProductDetailsResponse> products = productService.retrieveProductsDetails(null, productId);
+            List<ProductDetailsResponse> products = productService.retrieveProductsDetails(null, productId, null);
             if (products.size() == 0) throw new ProductNotFoundException();
             return new ResponseEntity<>(products.get(0), HttpStatus.OK);
         } catch (ProductNotFoundException ex) {
@@ -45,17 +45,13 @@ public class ProductController {
         }
     }
 
-    @GetMapping(ProductControllerRoutes.RETRIEVE_PRODUCTS_BY_CRITERIA)
-    public ResponseEntity<?> retrieveProductsByCriteria(@RequestBody ProductRetrieveRequest productRetrieveRequest) {
-        try {
-            List<Product> products = productService.retrieveProductByCriteria(productRetrieveRequest.getCategory(), productRetrieveRequest.getTags(),
-                    productRetrieveRequest.getColours(), productRetrieveRequest.getSizes(),
-                    productRetrieveRequest.getMinPrice(), productRetrieveRequest.getMaxPrice(), productRetrieveRequest.getSortEnum());
-            return new ResponseEntity<>(products, HttpStatus.OK);
-        } catch (Exception ex) {
-            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+//    @GetMapping(ProductControllerRoutes.RETRIEVE_PRODUCTS_BY_CRITERIA)
+//    public ResponseEntity<?> retrieveProductsByCriteria(@RequestBody ProductRetrieveRequest productRetrieveRequest) {
+//            List<Product> products = productService.retrieveProductByCriteria(productRetrieveRequest.getCategory(), productRetrieveRequest.getTags(),
+//                    productRetrieveRequest.getColours(), productRetrieveRequest.getSizes(),
+//                    productRetrieveRequest.getMinPrice(), productRetrieveRequest.getMaxPrice(), productRetrieveRequest.getSortEnum());
+//            return new ResponseEntity<>(products, HttpStatus.OK);
+//    }
 
     @GetMapping(ProductControllerRoutes.RETRIEVE_PRODUCTS_DETAILS)
     public ResponseEntity<?> retrieveProductsDetails(@RequestParam(required = false) Long storeOrWarehouseId, @RequestParam(required = false) Long categoryId) throws ProductNotFoundException {
@@ -63,9 +59,18 @@ public class ProductController {
             List<ProductDetailsResponse> products = productService.retrieveProductDetailsForCategory(storeOrWarehouseId, categoryId);
             return new ResponseEntity<>(products, HttpStatus.OK);
         } else {
-            List<ProductDetailsResponse> products = productService.retrieveProductsDetails(storeOrWarehouseId, null);
+            List<ProductDetailsResponse> products = productService.retrieveProductsDetails(storeOrWarehouseId, null, null);
             return new ResponseEntity<>(products, HttpStatus.OK);
         }
+    }
+
+    @PostMapping(ProductControllerRoutes.RETRIEVE_PRODUCTS_DETAILS_BY_CRITERIA)
+    public ResponseEntity<?> retrieveProductsDetailsByCriteria(@RequestBody ProductRetrieveRequest productRetrieveRequest) throws ProductNotFoundException {
+            List<ProductDetailsResponse> products = productService.retrieveProductsDetailsByCriteria(productRetrieveRequest.getCategoryId(),
+                    productRetrieveRequest.getTags(), productRetrieveRequest.getColours(),productRetrieveRequest.getSizes(),
+                    productRetrieveRequest.getMinPrice(), productRetrieveRequest.getMaxPrice(),
+                    productRetrieveRequest.getSortEnum());
+            return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
     @GetMapping(ProductControllerRoutes.RETRIEVE_ALL_PRODUCTS)

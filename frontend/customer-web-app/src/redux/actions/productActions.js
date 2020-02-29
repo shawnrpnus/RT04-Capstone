@@ -13,8 +13,7 @@ export const retrieveProductsDetails = (storeOrWarehouseId, categoryId) => {
         params: { storeOrWarehouseId, categoryId }
       })
       .then(response => {
-        const { data } = jsog.decode(response);
-        dispatch(displayProductDetails(data));
+        updateDisplayedProducts(response.data, dispatch);
       })
       .catch(err => {
         dispatchErrorMapError(err, dispatch);
@@ -26,3 +25,21 @@ const displayProductDetails = data => ({
   type: DISPLAY_PRODUCTS,
   products: data
 });
+
+const updateDisplayedProducts = (responseData, dispatch) => {
+  const data = jsog.decode(responseData);
+  dispatch(displayProductDetails(data));
+};
+
+export const filterProducts = req => {
+  return dispatch => {
+    axios
+      .post(PRODUCT_BASE_URL + "/retrieveProductsDetailsByCriteria", req)
+      .then(response => {
+        updateDisplayedProducts(response.data, dispatch);
+      })
+      .catch(err => {
+        dispatchErrorMapError(err, dispatch);
+      });
+  };
+};
