@@ -12,6 +12,10 @@ import ProductPage from "components/Shop/ProductsPage";
 
 export default () => (
   <Switch>
-    <Route exact path="/shop" component={ProductPage} />
+    <Route
+      exact
+      path="/shop/:rootCategoryName/:subCategoryName/:leafCategoryName?"
+      component={ProductPage}
+    />
   </Switch>
 );
