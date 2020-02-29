@@ -1,9 +1,9 @@
 import axios from "axios";
 import * as types from "./types";
-import {emailSent} from "./customerActions";
-import {EMAIL_SENT} from "./types";
-import {CONTACT_US_SUCCESS} from "./types";
-import {GET_ERRORS} from "./types";
+import { emailSent } from "./customerActions";
+import { EMAIL_SENT } from "./types";
+import { CONTACT_US_SUCCESS } from "./types";
+import { GET_ERRORS } from "./types";
 
 const CONTACT_US_BASE_URL = "/api/contactUs";
 
@@ -18,7 +18,6 @@ const dispatchErrorMapError = (err, dispatch) => {
     console.log(err);
   }
 };
-
 
 const errorMapError = data => ({
   type: GET_ERRORS,
@@ -67,8 +66,7 @@ export const createNewContactUs = (createContactUsRequest, history) => {
   };
 };
 
-export const contactUsSuccess = (data) => ({
+export const contactUsSuccess = data => ({
   type: CONTACT_US_SUCCESS,
   currentContactUs: data
 });
-

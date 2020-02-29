@@ -1,7 +1,9 @@
 import React, { PureComponent } from "react";
 import { Nav, NavItem, NavLink, TabContent, TabPane } from "reactstrap";
 import classnames from "classnames";
-import { Chip } from "@material-ui/core"; 
+import Chip from "@material-ui/core/Chip";
+import Typography from "@material-ui/core/Typography";
+
 const _ = require("lodash");
 
 export default class ProductTabs extends PureComponent {
@@ -25,26 +27,27 @@ export default class ProductTabs extends PureComponent {
   render() {
     const { activeTab } = this.state;
     const { description } = this.props;
-    var tags = "No Tags selected yet"
-    
-    if(this.props.tags != undefined && Object.keys(this.props.tags).length>0) {
-       tags = this.props.tags.map(function(value, i){
-        return <Chip
-                style={{margin: 10}}
-                label={value.name}/>
+    var tags = "No Tags selected yet";
+
+    if (
+      this.props.tags != undefined &&
+      Object.keys(this.props.tags).length > 0
+    ) {
+      tags = this.props.tags.map(function(value, i) {
+        return <Chip style={{ margin: "0 10px" }} label={value.name} />;
       });
     }
 
-    var styles = "No Styles selected yet"
-    
-    if(this.props.styles != undefined && Object.keys(this.props.styles).length>0) {
-       styles = this.props.styles.map(function(value, i){
-        return <Chip
-                style={{margin: 10}}
-                label={value.styleName}/>
+    var styles = "No Styles selected yet";
+
+    if (
+      this.props.styles != undefined &&
+      Object.keys(this.props.styles).length > 0
+    ) {
+      styles = this.props.styles.map(function(value, i) {
+        return <Chip style={{ margin: "0 10px" }} label={value.styleName} />;
       });
     }
-
 
     return (
       <div className="tabs">
@@ -82,18 +85,10 @@ export default class ProductTabs extends PureComponent {
         </Nav>
         <TabContent activeTab={activeTab} className="typography-message">
           <TabPane tabId="1">
-            <p>{description}</p>
+            <Typography>{description}</Typography>
           </TabPane>
-          <TabPane tabId="2">
-            <p>
-              {tags}         
-            </p>
-          </TabPane>
-          <TabPane tabId="3">
-            <p>
-              {styles}  
-            </p>
-          </TabPane>
+          <TabPane tabId="2">{tags}</TabPane>
+          <TabPane tabId="3">{styles}</TabPane>
         </TabContent>
       </div>
     );

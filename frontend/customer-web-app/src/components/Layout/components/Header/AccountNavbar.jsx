@@ -28,17 +28,21 @@ function AccountNavbar(props) {
   return (
     <React.Fragment>
       <Hidden smDown className={classes.hidden}>
-        {renderAccountTooltip(classes)}
+        <RenderAccountToolTip classes={classes} />
       </Hidden>
       <Hidden mdUp className={classes.hidden}>
-        {renderAccountDropdownDrawer(dropdownHoverColor, classes)}
+        <RenderAccountDropdownDrawer
+          dropdownHoverColor={dropdownHoverColor}
+          classes={classes}
+        />
       </Hidden>
     </React.Fragment>
   );
 }
 
 // Renders the button that when hovered, activates the tooltip
-const renderAccountTooltip = classes => {
+function RenderAccountToolTip(props) {
+  const { classes } = props;
   return (
     <React.Fragment>
       <HtmlTooltip title={<AccountToolTipContent />} interactive>
@@ -48,7 +52,7 @@ const renderAccountTooltip = classes => {
       </HtmlTooltip>
     </React.Fragment>
   );
-};
+}
 
 // Renders tooltip content after hovering button
 function AccountToolTipContent(props) {
@@ -84,20 +88,23 @@ function AccountToolTipContent(props) {
 }
 
 // Renders dropdown menu when the drawer in responsive mode (smDown)
-const renderAccountDropdownDrawer = (dropdownHoverColor, classes) => (
-  <CustomDropdown
-    noLiPadding
-    navDropdown
-    hoverColor={dropdownHoverColor}
-    buttonText="Account"
-    buttonProps={{
-      className: classes.navLink,
-      color: "transparent"
-    }}
-    buttonIcon={AccountCircle}
-    dropdownList={renderAccDropdownLinks(classes)}
-  />
-);
+function RenderAccountDropdownDrawer(props) {
+  const { dropdownHoverColor, classes } = props;
+  return (
+    <CustomDropdown
+      noLiPadding
+      navDropdown
+      hoverColor={dropdownHoverColor}
+      buttonText="Account"
+      buttonProps={{
+        className: classes.navLink,
+        color: "transparent"
+      }}
+      buttonIcon={AccountCircle}
+      dropdownList={renderAccDropdownLinks(classes)}
+    />
+  );
+}
 
 // Standard links in tooltip and drawer
 const renderAccDropdownLinks = (classes, Component, componentProps) => {

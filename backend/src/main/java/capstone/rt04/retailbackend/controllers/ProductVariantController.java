@@ -5,10 +5,7 @@ import capstone.rt04.retailbackend.request.productVariant.ProductVariantCreateRe
 import capstone.rt04.retailbackend.response.GenericErrorResponse;
 import capstone.rt04.retailbackend.services.ProductService;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
-import capstone.rt04.retailbackend.util.exceptions.product.CreateNewProductStockException;
-import capstone.rt04.retailbackend.util.exceptions.product.ProductImageNotFoundException;
-import capstone.rt04.retailbackend.util.exceptions.product.ProductNotFoundException;
-import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.product.*;
 import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.warehouse.WarehouseNotFoundException;
 import capstone.rt04.retailbackend.util.routeconstants.ProductVariantControllerRoutes;
@@ -81,14 +78,8 @@ public class ProductVariantController {
     }
 
     @DeleteMapping(ProductVariantControllerRoutes.DELETE_PRODUCT_VARIANT)
-    public ResponseEntity<?> deleteProductVariant(@PathVariable Long productVariantId) {
-        try {
+    public ResponseEntity<?> deleteProductVariant(@PathVariable Long productVariantId) throws ProductVariantNotFoundException, ProductStockNotFoundException, DeleteProductVariantException {
             ProductVariant productVariant = productService.deleteProductVariant(productVariantId);
             return new ResponseEntity<>(productVariant, HttpStatus.OK);
-        } catch (ProductVariantNotFoundException ex) {
-            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
-        } catch (Exception ex) {
-            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
     }
 }

@@ -9,10 +9,7 @@ import capstone.rt04.retailbackend.util.exceptions.category.CategoryNotFoundExce
 import capstone.rt04.retailbackend.util.exceptions.category.CreateNewCategoryException;
 import capstone.rt04.retailbackend.util.exceptions.category.DeleteCategoryException;
 import capstone.rt04.retailbackend.util.exceptions.category.UpdateCategoryException;
-import capstone.rt04.retailbackend.util.exceptions.product.CreateNewProductException;
-import capstone.rt04.retailbackend.util.exceptions.product.ProductNotFoundException;
-import capstone.rt04.retailbackend.util.exceptions.product.ProductStockNotFoundException;
-import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.product.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -172,7 +169,7 @@ public class CategoryServiceTest extends ServiceTestSetup {
 
     //Expect error because DRESS have 1 product, and we shifting PANTS to under DRESS
     @Test(expected = UpdateCategoryException.class)
-    public void testUpdateParentCategoryWithProduct() throws CategoryNotFoundException, InputDataValidationException, CreateNewCategoryException, UpdateCategoryException, CreateNewProductException, DeleteCategoryException, ProductVariantNotFoundException, ProductStockNotFoundException, ProductNotFoundException {
+    public void testUpdateParentCategoryWithProduct() throws CategoryNotFoundException, InputDataValidationException, CreateNewCategoryException, UpdateCategoryException, CreateNewProductException, DeleteCategoryException, ProductVariantNotFoundException, ProductStockNotFoundException, ProductNotFoundException, DeleteProductVariantException {
 
         Category category = new Category("CLOTHING");
         Category menCategory = categoryService.retrieveCategoryByCategoryId(createdCategoryId);

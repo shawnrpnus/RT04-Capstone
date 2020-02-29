@@ -1,16 +1,14 @@
 import axios from "axios";
 import {
-  CREATE_NEW_CUSTOMER,
-  CUSTOMER_LOGIN,
   CUSTOMER_LOGOUT,
   EMAIL_SENDING,
   EMAIL_SENT,
-  GET_ERRORS,
   RESET_VERIFICATION_STATUS,
   VERIFY_FAILURE,
   VERIFY_SUCCESS
 } from "./types";
 import { UPDATE_CUSTOMER } from "redux/actions/types";
+import { dispatchErrorMapError } from "redux/actions/index";
 
 const CUSTOMER_BASE_URL = "/api/customer";
 
@@ -24,20 +22,6 @@ export const emailSending = () => ({
 export const emailSent = () => ({
   type: EMAIL_SENT
 });
-
-const errorMapError = data => ({
-  type: GET_ERRORS,
-  errorMap: data
-});
-
-const dispatchErrorMapError = (err, dispatch) => {
-  const errorMap = _.get(err, "response.data", null);
-  if (errorMap) {
-    dispatch(errorMapError(errorMap));
-  } else {
-    console.log(err);
-  }
-};
 
 const dispatchUpdatedCustomer = (customerDataRaw, dispatch) => {
   const customer = jsog.decode(customerDataRaw);
@@ -169,7 +153,8 @@ export const sendUpdateEmailLink = (
   req,
   setDialogOpen,
   resetInputState,
-  setChangingEmail
+  setChangingEmail,
+  enqueueSnackbar
 ) => {
   return dispatch => {
     axios
@@ -182,7 +167,16 @@ export const sendUpdateEmailLink = (
       })
       .catch(err => {
         setTimeout(() => dispatch(emailSent()), 500);
-        dispatchErrorMapError(err, dispatch);
+        resetInputState();
+        setChangingEmail(false);
+        if (_.get(err, "response.data.email")) {
+          dispatchErrorMapError(err, dispatch);
+        } else {
+          enqueueSnackbar("Error sending email", {
+            variant: "error",
+            autoHideDuration: 1200
+          });
+        }
       });
   };
 };

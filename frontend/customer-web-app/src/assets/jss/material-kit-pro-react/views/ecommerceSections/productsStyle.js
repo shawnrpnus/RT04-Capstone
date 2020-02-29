@@ -1,20 +1,32 @@
 import {
-  section,
-  container,
   cardTitle,
   coloredShadow,
+  container,
+  grayColor,
   mlAuto,
   mrAuto,
-  grayColor
+  section,
+  main,
+  mainRaised
 } from "assets/jss/material-kit-pro-react.js";
 
 import customCheckboxRadioSwitch from "assets/jss/material-kit-pro-react/customCheckboxRadioSwitchStyle.js";
 
 import tooltipsStyle from "assets/jss/material-kit-pro-react/tooltipsStyle.js";
+import imagesStyles from "assets/jss/material-kit-pro-react/imagesStyles";
 
 const styles = {
   ...customCheckboxRadioSwitch,
   ...tooltipsStyle,
+  main,
+  ...imagesStyles,
+  mainRaised: {
+    ...mainRaised,
+    margin: "0px 30px 0px",
+    "@media (max-width: 576px)": {
+      marginTop: "0px"
+    }
+  },
   checkRoot: {
     padding: "14px",
     "&:hover": {
@@ -26,7 +38,7 @@ const styles = {
   mrAuto,
   cardTitle: {
     ...cardTitle,
-    textAlign: "center",
+    textAlign: "left",
     marginBottom: "0px !important"
   },
   cardDescription: {
@@ -47,8 +59,10 @@ const styles = {
     display: "inline-flex"
   },
   price: {
-    fontSize: "18px",
-    color: grayColor[22]
+    ...cardTitle,
+    color: grayColor[22],
+    textAlign: "right",
+    marginBottom: "0px !important"
   },
   pullRight: {
     float: "right"
@@ -92,7 +106,23 @@ const styles = {
     paddingRight: "15px"
   },
   textLeft: {
-    textAlign: "left"
+    textAlign: "left",
+    marginTop: "2px"
+  },
+  textCenter: {
+    textAlign: "center"
+  },
+  cardBodyPlain: {
+    padding: "0",
+    marginLeft: "18px",
+    marginRight: "18px"
+  },
+  sizeChip: {
+    borderRadius: "0",
+    height: "20px"
+  },
+  heartChip: {
+    height: "20px"
   }
 };
 

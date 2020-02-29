@@ -50,7 +50,7 @@
 
 .product-card__title {
   @include directify($directions) {
-    text-align: directed('left');
+    text-align: directed("left");
   }
   font-weight: 700;
   margin-bottom: 10px;
@@ -85,14 +85,22 @@
 .product-card__price {
   margin-bottom: 25px;
   @include directify($directions) {
-    text-align: directed('left');
+    text-align: directed("left");
   }
 }
 
 .product-card__old-price {
   font-size: 24px;
   color: $color-additional;
-  text-decoration: line-through;
+  // text-decoration: line-through;
+}
+
+.product-card__category {
+  margin-bottom: 25px;
+  @include directify($directions) {
+    text-align: directed("left");
+  }
+  font-style: italic;
 }
 
 .product-card__form {
@@ -101,4 +109,5 @@
 
 .product-card__form-label {
   font-weight: 500;
+  font-size: 14px;
 }

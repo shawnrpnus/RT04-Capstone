@@ -6,11 +6,12 @@ import MaterialTextField from "../../../shared/components/Form/MaterialTextField
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import {
   addTagToProducts,
-  createNewTag, deleteTagFromProducts,
+  createNewTag,
+  deleteTagFromProducts,
   retrieveAllTags,
   updateTag
 } from "../../../redux/actions/tagAction";
-import {Add, Check, Delete} from "@material-ui/icons";
+import { Add, Check, Delete } from "@material-ui/icons";
 import { clearErrors } from "../../../redux/actions";
 import connect from "react-redux/es/connect/connect";
 import withPage from "../../Layout/page/withPage";
@@ -74,7 +75,7 @@ class AddTagToProduct extends Component {
     });
     const req = new DeleteTagFromProductsRequest(this.state.tagId, productIds);
     this.props.deleteTagFromProducts(req, this.props.history);
-  }
+  };
 
   handleChangeAddTo() {
     this.setState({ mode: true });
@@ -99,11 +100,19 @@ class AddTagToProduct extends Component {
             </Grid>
             <Grid item xs={12} md={4}></Grid>
             <Grid item xs={12} md={2}>
-              <ButtonGroup
-                color="primary"
-              >
-                <Button onClick={this.handleChangeAddTo} variant={this.state.mode ? "contained" : "outlined"}>Add</Button>
-                <Button onClick={this.handleChangeViewAndDelete} variant={this.state.mode ? "outlined" : "contained"}>Delete</Button>
+              <ButtonGroup color="primary">
+                <Button
+                  onClick={this.handleChangeAddTo}
+                  variant={this.state.mode ? "contained" : "outlined"}
+                >
+                  Add
+                </Button>
+                <Button
+                  onClick={this.handleChangeViewAndDelete}
+                  variant={this.state.mode ? "outlined" : "contained"}
+                >
+                  Delete
+                </Button>
               </ButtonGroup>
             </Grid>
           </Grid>

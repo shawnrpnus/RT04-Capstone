@@ -17,7 +17,6 @@ import { Button, ButtonToolbar, Card, CardBody } from "reactstrap";
 import ContentSaveIcon from "mdi-react/ContentSaveIcon";
 import CloseCircleIcon from "mdi-react/CloseCircleIcon";
 import renderDropZoneMultipleField from "./../../../../shared/components/Form/DropZoneMultiple";
-import { DropFiles } from "../../../Form/FormDropzone";
 import { Field, reduxForm } from "redux-form";
 import ColourToImagesMap from "./../../../../models/product/ColourToImagesMap";
 
@@ -460,6 +459,6 @@ export default connect(
   mapDispatchToProps
 )(
   reduxForm({
-    form: "drop_files_form" // a unique identifier for this form
+    form: "create_product_images_form" // a unique identifier for this form
   })(withPage(ProductForm, "Create Product"))
 );

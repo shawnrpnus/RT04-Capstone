@@ -72,7 +72,6 @@ function ContactUsTicket(props) {
     }
   };
 
-
   const handleSubmit = () => {
     const {
       contactUsCategory,

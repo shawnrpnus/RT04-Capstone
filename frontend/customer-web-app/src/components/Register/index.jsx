@@ -59,6 +59,7 @@ function RegisterPage(props) {
   //Effects
   //Cleanup on unmount
   useEffect(() => {
+    dispatch(clearErrors());
     return () => dispatch(emailSent());
   }, []);
 
