@@ -166,13 +166,13 @@ public class ProductServiceTest extends ServiceTestSetup {
         tagService.retrieveTagByTagId(tag.getTagId());
     }
 
-    @Test
-    public void retrieveProductByCategory() throws Exception {
-        Category category = categoryService.retrieveCategoryByCategoryId(categoryFilaId);
-
-        List<Product> products = productService.retrieveProductByCategory(category);
-        assertThat(products.size()).isNotEqualTo(0);
-    }
+//    @Test
+//    public void retrieveProductByCategory() throws Exception {
+//        Category category = categoryService.retrieveCategoryByCategoryId(categoryFilaId);
+//
+//        List<Product> products = productService.retrieveProductByCategory(category);
+//        assertThat(products.size()).isNotEqualTo(0);
+//    }
 
 
     @Test
