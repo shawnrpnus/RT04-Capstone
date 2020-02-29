@@ -7,7 +7,9 @@ import {
   mrAuto,
   section,
   main,
-  mainRaised
+  whiteColor,
+  mainRaised,
+  title
 } from "assets/jss/material-kit-pro-react.js";
 
 import customCheckboxRadioSwitch from "assets/jss/material-kit-pro-react/customCheckboxRadioSwitchStyle.js";
@@ -19,12 +21,18 @@ const styles = {
   ...customCheckboxRadioSwitch,
   ...tooltipsStyle,
   main,
+  title,
   ...imagesStyles,
   mainRaised: {
     ...mainRaised,
-    margin: "0px 30px 0px",
+    margin: "-60px 30px 0px",
     "@media (max-width: 576px)": {
       marginTop: "0px"
+    }
+  },
+  brand: {
+    "& h1, & h4": {
+      color: whiteColor
     }
   },
   checkRoot: {
@@ -46,7 +54,8 @@ const styles = {
     textAlign: "center"
   },
   container: {
-    ...container
+    ...container,
+    zIndex: "2"
   },
   description: {
     color: grayColor[0]
@@ -136,6 +145,18 @@ const styles = {
   },
   labelSmall: {
     padding: "0"
+  },
+  floatingFilter: {
+    zIndex: "5",
+    margin: 0,
+    top: "auto",
+    left: 20,
+    bottom: 20,
+    right: "auto",
+    position: "fixed"
+  },
+  filterDrawer: {
+    width: "300px"
   }
 };
 

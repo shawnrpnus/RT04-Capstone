@@ -447,7 +447,7 @@ html:not([dir="rtl"]) .noUi-horizontal .noUi-origin {
 .noUi-state-drag * {
   cursor: inherit !important; }
 
-/* Slider size and handle placement;
+/* nouiSlider size and handle placement;
 */
 .noUi-horizontal {
   height: 2px;
@@ -1452,7 +1452,7 @@ td.rdtYear:hover {
   list-style-type: none;
   text-align: center; }
 
-/* Slider */
+/* nouiSlider */
 .slick-slider {
   position: relative;
   display: block;
