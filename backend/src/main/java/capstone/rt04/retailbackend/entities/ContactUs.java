@@ -15,6 +15,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
@@ -42,19 +43,23 @@ public class ContactUs implements Serializable {
     @NotNull
     @Column(nullable = false, columnDefinition = "VARCHAR(1337)")
     @Size(max = 1337)
+    @NotEmpty
     private String content;
 
     @NotNull(message = ErrorMessages.FIRST_NAME_REQUIRED)
     @Column(nullable = false)
+    @NotEmpty(message = ErrorMessages.FIRST_NAME_REQUIRED)
     private String firstName;
 
     @NotNull(message = ErrorMessages.LAST_NAME_REQUIRED)
+    @NotEmpty(message = ErrorMessages.LAST_NAME_REQUIRED)
     @Column(nullable = false)
     @Size(max = 20)
     private String lastName;
 
     @NotNull(message = ErrorMessages.EMAIL_REQUIRED)
     @Column(nullable = false)
+    @NotEmpty(message = ErrorMessages.EMAIL_REQUIRED)
     private String customerEmail;
 
     private boolean acknowledged;

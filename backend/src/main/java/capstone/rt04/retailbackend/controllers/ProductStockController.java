@@ -3,6 +3,7 @@ package capstone.rt04.retailbackend.controllers;
 import capstone.rt04.retailbackend.entities.Product;
 import capstone.rt04.retailbackend.entities.ProductStock;
 import capstone.rt04.retailbackend.request.productStock.ProductStockCreateRequest;
+import capstone.rt04.retailbackend.request.productStock.ProductStockQtyUpdateRequest;
 import capstone.rt04.retailbackend.response.GenericErrorResponse;
 import capstone.rt04.retailbackend.services.ProductService;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
@@ -68,6 +69,12 @@ public class ProductStockController {
         } catch (Exception ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @PutMapping(ProductStockControllerRoutes.UPDATE_PRODUCT_STOCK_QTY)
+    public ResponseEntity<?> updateProductStockQty(@RequestBody ProductStockQtyUpdateRequest productStockQtyUpdateRequest) throws ProductStockNotFoundException {
+        ProductStock updateProductStock = productService.updateProductStockQty(productStockQtyUpdateRequest.getProductStockId(), productStockQtyUpdateRequest.getQty());
+        return new ResponseEntity<>(updateProductStock, HttpStatus.OK);
     }
 
     @DeleteMapping(ProductStockControllerRoutes.DELETE_PRODUCT_STOCK)
