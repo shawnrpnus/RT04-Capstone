@@ -279,7 +279,7 @@ export const staffLogin = (staffLoginRequest, history) => {
                 toast.success("You are logged in!", {
                     position: toast.POSITION.TOP_CENTER
                 });
-                //history.push(`/store/view/${storeId}`); // TODO: update redirect path
+                history.push(`/`); // TODO: update redirect path
             })
             .catch(err => {
                 dispatch(loginStaffError(err.response.data));

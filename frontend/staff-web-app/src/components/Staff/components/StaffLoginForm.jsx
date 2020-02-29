@@ -9,6 +9,7 @@ import {Button} from "reactstrap";
 import StaffLoginRequest from "../../../models/staff/StaffLoginRequest";
 import {clearErrors, updateErrors} from "../../../redux/actions";
 
+const _ = require("lodash");
 
 class StaffLoginForm extends Component {
 
