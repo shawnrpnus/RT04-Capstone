@@ -3,7 +3,6 @@ import * as types from "./types";
 import { toast } from "react-toastify";
 import { GET_ERRORS } from "./types";
 
-
 const STAFF_BASE_URL = "/api/staff";
 const jsog = require("jsog");
 
@@ -266,33 +265,32 @@ const deleteStaffError = data => ({
   errorMap: data
 });
 
-
 export const staffLogin = (staffLoginRequest, history) => {
-    return dispatch => {
-        //redux thunk passes dispatch
-        axios
-            .post(STAFF_BASE_URL + "/loginStaff", staffLoginRequest)
-            .then(response => {
-                const { data } = jsog.decode(response);
-                const staffId = data.staffId;
-                dispatch(loginStaffSuccess(data));
-                toast.success("You are logged in!", {
-                    position: toast.POSITION.TOP_CENTER
-                });
-                //history.push(`/store/view/${storeId}`); // TODO: update redirect path
-            })
-            .catch(err => {
-                dispatch(loginStaffError(err.response.data));
-                //console.log(err.response.data);
-            });
-    };
+  return dispatch => {
+    //redux thunk passes dispatch
+    axios
+      .post(STAFF_BASE_URL + "/loginStaff", staffLoginRequest)
+      .then(response => {
+        const { data } = jsog.decode(response);
+        const staffId = data.staffId;
+        dispatch(loginStaffSuccess(data));
+        toast.success("You are logged in!", {
+          position: toast.POSITION.TOP_CENTER
+        });
+        //history.push(`/store/view/${storeId}`); // TODO: update redirect path
+      })
+      .catch(err => {
+        dispatch(loginStaffError(err.response.data));
+        //console.log(err.response.data);
+      });
+  };
 };
 const loginStaffSuccess = data => ({
-    type: types.STAFF_LOGIN,
-    staff: data
+  type: types.STAFF_LOGIN,
+  staff: data
 });
 
 const loginStaffError = data => ({
-    type: types.GET_ERRORS,
-    errorMap: data
+  type: types.GET_ERRORS,
+  errorMap: data
 });

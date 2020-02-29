@@ -18,6 +18,9 @@ import FormControl from "@material-ui/core/FormControl";
 import Fab from "@material-ui/core/Fab";
 import { Publish, RotateLeft } from "@material-ui/icons";
 import Link from "@material-ui/core/Link";
+import FilterProductRequest from "models/product/FilterProductRequest";
+import { useDispatch } from "react-redux";
+import { filterProducts } from "redux/actions/productActions";
 
 const _ = require("lodash");
 const useStyles = makeStyles(styles);
@@ -26,7 +29,9 @@ const useSelectStyles = makeStyles(selectStyles);
 function FilterBar(props) {
   const classes = useStyles();
   const selectClasses = useSelectStyles();
-  const { allTags, allColours } = props;
+  const { allTags, allColours, categoryId } = props;
+
+  const dispatch = useDispatch();
 
   const keyByAllTags = _.keyBy(allTags, "name");
   const tagNames = Object.keys(keyByAllTags);
@@ -99,7 +104,28 @@ function FilterBar(props) {
   };
 
   const handleSubmit = () => {
-    console.log("yay");
+    const tags = [];
+    allTags.forEach(tag => {
+      if (checkedTags[tag.name]) {
+        tags.push(_.pick(tag, ["tagId", "name"]));
+      }
+    });
+    const colours = allColours.filter(colour => checkedColours[colour]);
+    const sizes = allSizes.filter(size => checkedSizes[size]);
+    const minPrice = priceRange[0];
+    const maxPrice = priceRange[1];
+    const sortEnum = sortingMap[selectedSort];
+    const req = new FilterProductRequest(
+      categoryId,
+      tags,
+      colours,
+      sizes,
+      minPrice,
+      maxPrice,
+      sortEnum
+    );
+    console.log(req);
+    //dispatch(filterProducts(req));
   };
 
   return (

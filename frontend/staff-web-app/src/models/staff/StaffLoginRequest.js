@@ -1,9 +1,9 @@
 export default class StaffLoginRequest {
-    username;
-    password;
+  username;
+  password;
 
-    constructor(username,password) {
-        this.username = username;
-        this.password = password;
-    }
+  constructor(username, password) {
+    this.username = username;
+    this.password = password;
+  }
 }

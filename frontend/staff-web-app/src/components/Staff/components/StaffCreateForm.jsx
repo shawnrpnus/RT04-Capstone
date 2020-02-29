@@ -95,8 +95,6 @@ class StaffCreateForm extends Component {
     });
   };
 
-
-
   handleSubmit = e => {
     e.preventDefault();
 
@@ -149,8 +147,6 @@ class StaffCreateForm extends Component {
 
     return (
       <MuiPickersUtilsProvider utils={MomentUtils}>
-
-
         <form className="material-form">
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
