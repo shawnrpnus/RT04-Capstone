@@ -37,16 +37,16 @@ let persistedState = loadFromLocalStorage();
  * Create a Redux storeEntity that holds the app state.
  */
 let store = createStore(
-    rootReducer,
-    persistedState,
-    compose(applyMiddleware(...middleware))
+  rootReducer,
+  persistedState,
+  compose(applyMiddleware(...middleware))
 );
 
 if (window.navigator.userAgent.includes("Chrome")) {
   store = createStore(
-      rootReducer,
-      persistedState,
-      composeWithDevTools(applyMiddleware(...middleware))
+    rootReducer,
+    persistedState,
+    composeWithDevTools(applyMiddleware(...middleware))
   );
 }
 

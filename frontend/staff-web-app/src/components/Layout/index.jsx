@@ -1,7 +1,7 @@
 /* eslint-disable no-return-assign */
 import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
-import {connect, useSelector} from "react-redux";
+import { connect, useSelector } from "react-redux";
 import * as PropTypes from "prop-types";
 import classNames from "classnames";
 import NotificationSystem from "rc-notification";
@@ -35,9 +35,7 @@ class Layout extends Component {
     sidebar: SidebarProps.isRequired
   };
 
-  componentDidMount() {
-
-  }
+  componentDidMount() {}
 
   componentWillUnmount() {
     //notification.destroy();

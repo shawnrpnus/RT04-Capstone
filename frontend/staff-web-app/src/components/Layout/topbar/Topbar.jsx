@@ -1,13 +1,13 @@
-import React, { PureComponent } from 'react';
-import { Link } from 'react-router-dom';
-import * as PropTypes from 'prop-types';
-import TopbarSidebarButton from './TopbarSidebarButton';
-import TopbarProfile from './TopbarProfile';
-import TopbarMail from './TopbarMail';
-import TopbarNotification from './TopbarNotification';
-import TopbarSearch from './TopbarSearch';
-import { UserProps } from '../../../shared/prop-types/ReducerProps';
-import {useSelector} from "react-redux";
+import React, { PureComponent } from "react";
+import { Link } from "react-router-dom";
+import * as PropTypes from "prop-types";
+import TopbarSidebarButton from "./TopbarSidebarButton";
+import TopbarProfile from "./TopbarProfile";
+import TopbarMail from "./TopbarMail";
+import TopbarNotification from "./TopbarNotification";
+import TopbarSearch from "./TopbarSearch";
+import { UserProps } from "../../../shared/prop-types/ReducerProps";
+import { useSelector } from "react-redux";
 
 class Topbar extends PureComponent {
   static propTypes = {
@@ -17,8 +17,11 @@ class Topbar extends PureComponent {
   };
 
   render() {
-    const { changeMobileSidebarVisibility, changeSidebarVisibility, user } = this.props;
-
+    const {
+      changeMobileSidebarVisibility,
+      changeSidebarVisibility,
+      user
+    } = this.props;
 
     return (
       <div className="topbar">
