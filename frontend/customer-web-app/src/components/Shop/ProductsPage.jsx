@@ -21,6 +21,7 @@ import EditIcon from "@material-ui/icons/Edit";
 import Drawer from "@material-ui/core/Drawer";
 import FilterBar from "components/Shop/FilterBar";
 import { SwipeableDrawer } from "@material-ui/core";
+import { retrieveAllTags } from "redux/actions/tagActions";
 
 const _ = require("lodash");
 
@@ -37,6 +38,7 @@ export default function ProductPage(props) {
     state => state.product.displayedProductDetails
   );
   const rootCategories = useSelector(state => state.category.rootCategories);
+  const allTags = useSelector(state => state.tag.allTags);
 
   //State
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
@@ -57,6 +59,10 @@ export default function ProductPage(props) {
     }
   }, [rootCategories, rootCategoryName, subCategoryName, leafCategoryName]);
 
+  useEffect(() => {
+    dispatch(retrieveAllTags());
+  }, []);
+
   const getCategoryIdFromPath = (
     rootCategoryName,
     subCategoryName,
@@ -75,10 +81,14 @@ export default function ProductPage(props) {
     }
   };
 
+  const colours = [];
   const productDataList = productDetails
     ? productDetails.map(productDetail => {
         const { product, colourToSizeImageMaps } = productDetail;
         const colourToImageAndSizes = colourToSizeImageMaps.map(csiMap => {
+          if (!colours.includes(csiMap.colour)) {
+            colours.push(csiMap.colour);
+          }
           return {
             colour: csiMap.colour,
             image: _.get(csiMap, "productImages[0].productImageUrl"),
@@ -91,7 +101,7 @@ export default function ProductPage(props) {
         };
       })
     : [];
-
+  console.log(colours);
   const secondWord = leafCategoryName ? leafCategoryName : subCategoryName;
   return (
     <div>
@@ -123,7 +133,7 @@ export default function ProductPage(props) {
         onClick={() => setFilterDrawerOpen(true)}
       >
         <EditIcon />
-        Filter
+        Refine
       </Fab>
       <div className={classNames(classes.main, classes.mainRaised)}>
         <div className={classes.section}>
@@ -138,7 +148,9 @@ export default function ProductPage(props) {
                 className={classes.filterDrawer}
                 classes={{ paper: classes.filterDrawer }}
               >
-                <FilterBar />
+                {allTags && !_.isEmpty(colours) && (
+                  <FilterBar allTags={allTags} allColours={colours} />
+                )}
               </Drawer>
               <GridItem md={12} sm={9}>
                 <GridContainer>
