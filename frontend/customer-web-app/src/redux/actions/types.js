@@ -9,6 +9,9 @@ export const EMAIL_SENDING = "EMAIL_SENDING";
 export const EMAIL_SENT = "EMAIL_SENT";
 export const UPDATE_CUSTOMER = "UPDATE_CUSTOMER";
 
+//Address
+export const UPDATE_SHIPPING_ADDRESS_SUCCESS = "UPDATE_SHIPPING_ADDRESS_SUCCESS";
+
 // Error
 export const GET_ERRORS = "GET_ERRORS";
 export const CLEAR_ERRORS = "CLEAR_ERRORS";

@@ -3,7 +3,7 @@ import {
   CUSTOMER_LOGOUT,
   EMAIL_SENDING,
   EMAIL_SENT,
-  RESET_VERIFICATION_STATUS,
+  RESET_VERIFICATION_STATUS, UPDATE_SHIPPING_ADDRESS_SUCCESS,
   VERIFY_FAILURE,
   VERIFY_SUCCESS
 } from "./types";
@@ -271,3 +271,25 @@ export const resetPassword = (req, setDialogOpen, setDialogText) => {
       });
   };
 };
+
+export const updateShippingAddress = (updateShippingAddressRequest, history) => {
+  return dispatch => {
+    //redux thunk passes dispatch
+    axios
+      .post(CUSTOMER_BASE_URL + "/updateShippingAddress", updateShippingAddressRequest)
+      .then(response => {
+        const { data } = jsog.decode(response);
+        dispatch(updateShippingAddressSuccess(data));
+        history.push("/account/address");
+      })
+      .catch(err => {
+        dispatchErrorMapError(err, dispatch);
+        console.log(err.response.data);
+      });
+  };
+};
+
+export const updateShippingAddressSuccess = data => ({
+  type: UPDATE_SHIPPING_ADDRESS_SUCCESS,
+  loggedInCustomer: data
+});

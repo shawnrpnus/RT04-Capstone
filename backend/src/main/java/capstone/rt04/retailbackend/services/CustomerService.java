@@ -392,7 +392,7 @@ public class CustomerService {
         throw new AddressNotFoundException("Address id: " + addressId + " not found for customer id: " + customerId);
     }
 
-    public Address updateShippingAddress(Long customerId, Address newShippingAddress) throws CustomerNotFoundException, AddressNotFoundException, InputDataValidationException {
+    public Customer updateShippingAddress(Long customerId, Address newShippingAddress) throws CustomerNotFoundException, AddressNotFoundException, InputDataValidationException {
         validationService.throwExceptionIfInvalidBean(newShippingAddress);
         Address addressToUpdate = getShippingAddress(customerId, newShippingAddress.getAddressId());
         addressToUpdate.setBuildingName(newShippingAddress.getBuildingName());
@@ -411,7 +411,8 @@ public class CustomerService {
         addressToUpdate.setPostalCode(newShippingAddress.getPostalCode());
         addressToUpdate.setXCoordinate(newShippingAddress.getXCoordinate());
         addressToUpdate.setYCoordinate(newShippingAddress.getYCoordinate());
-        return addressToUpdate;
+        Customer customer = retrieveCustomerByCustomerId(customerId);
+        return customer;
     }
 
     public Customer deleteShippingAddress(Long customerId, Long shippingAddressId) throws CustomerNotFoundException, AddressNotFoundException {
