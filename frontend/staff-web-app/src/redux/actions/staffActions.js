@@ -2,11 +2,7 @@ import axios from "axios";
 import * as types from "./types";
 import { toast } from "react-toastify";
 import { GET_ERRORS } from "./types";
-<<<<<<< HEAD
-const _ = require("lodash");
-=======
-import { retrieveAllStores } from "./storeActions";
->>>>>>> 4bb07f438c9f88551a8666d6f6c44a82004b2b0f
+
 
 const STAFF_BASE_URL = "/api/staff";
 const jsog = require("jsog");
@@ -269,7 +265,7 @@ const deleteStaffError = data => ({
   type: types.GET_ERRORS,
   errorMap: data
 });
-<<<<<<< HEAD
+
 
 export const staffLogin = (staffLoginRequest, history) => {
     return dispatch => {
@@ -300,5 +296,3 @@ const loginStaffError = data => ({
     type: types.GET_ERRORS,
     errorMap: data
 });
-=======
->>>>>>> 4bb07f438c9f88551a8666d6f6c44a82004b2b0f
