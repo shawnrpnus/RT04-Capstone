@@ -3,9 +3,14 @@ import * as types from "../actions/types";
 const initialState = {
   currentStaff: null,
   allStaff: null,
+<<<<<<< HEAD
   allRoles:null,
   allDepartments:null,
   loggedInStaff:null
+=======
+  allRoles: null,
+  allDepartments: null
+>>>>>>> 4bb07f438c9f88551a8666d6f6c44a82004b2b0f
 };
 
 export default function(state = initialState, action) {
