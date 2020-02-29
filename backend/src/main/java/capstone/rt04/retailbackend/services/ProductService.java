@@ -31,7 +31,7 @@ import java.util.*;
 @Service
 @Transactional
 @Slf4j
-public class        ProductService {
+public class ProductService {
 
     private final TagService tagService;
     private final CategoryService categoryService;
@@ -131,7 +131,7 @@ public class        ProductService {
     }
 
     public List<ProductDetailsResponse> retrieveProductDetailsForCategory(Long storeOrWarehouseId, Long categoryId) throws ProductNotFoundException {
-        List<ProductDetailsResponse> productDetailsResponses = retrieveProductsDetails(storeOrWarehouseId, null);
+        List<ProductDetailsResponse> productDetailsResponses = retrieveProductsDetails(storeOrWarehouseId, null, null);
         List<ProductDetailsResponse> result = new ArrayList<>();
         for (ProductDetailsResponse p : productDetailsResponses) {
             Category c = p.getProduct().getCategory();
@@ -148,18 +148,28 @@ public class        ProductService {
         return checkIfCategoryIsInside(categoryToCheck.getParentCategory(), categoryId);
     }
 
+    public List<ProductDetailsResponse> retrieveProductsDetailsByCriteria(Category category, List<Tag> tags, List<String> colours, List<SizeEnum> sizes,
+                                                                          BigDecimal minPrice, BigDecimal maxPrice, SortEnum sortEnum) throws ProductNotFoundException {
+
+        List<Product> filteredProducts = retrieveProductByCriteria(category, tags, colours, sizes, minPrice, maxPrice, sortEnum);
+
+        return retrieveProductsDetails(null, null, filteredProducts);
+    }
+
     @Transactional(readOnly = true)
-    public List<ProductDetailsResponse> retrieveProductsDetails(Long storeOrWarehouseId, Long productId) throws ProductNotFoundException {
+    public List<ProductDetailsResponse> retrieveProductsDetails(Long storeOrWarehouseId, Long productId, List<Product> filteredProducts) throws ProductNotFoundException {
         // Each product can have multiple colour
         // Each colours will have a list of sizes
         // Every sizes of each colour will show the productVariantId and productStock
-
         List<Product> products = new ArrayList<>();
         if (productId != null) {
             products.add(retrieveProductById(productId));
-        } else {
+        } else if (storeOrWarehouseId != null) {
             products = retrieveAllProducts();
+        } else if (filteredProducts != null && filteredProducts.size() > 0) {
+            products = filteredProducts;
         }
+
         String colour;
         List<String> colours = new ArrayList<>();
 
@@ -245,29 +255,36 @@ public class        ProductService {
         return product;
     }
 
-    public List<Product> retrieveProductByCategory(Category category) {
-        List<Product> products = productRepository.findAllByCategoryId(category.getCategoryId());
-        lazilyLoadProduct(products);
-        return products;
-    }
-
     public List<Product> retrieveProductByCriteria(Category category, List<Tag> tags, List<String> colours, List<SizeEnum> sizes,
                                                    BigDecimal minPrice, BigDecimal maxPrice, SortEnum sortEnum) {
         List<Product> products = new ArrayList<>();
         List<Product> productsByTag = null;
 
         if (tags == null || tags.size() == 0) {
-            productsByTag = productRepository.findAllByCategoryId(category.getCategoryId());
+            productsByTag = productRepository.findAll();
         } else {
             productsByTag = productRepository.findAllByTagsIn(tags);
         }
 
-        Boolean matchColour, matchSize, matchPriceRange;
+        Boolean matchColour, matchSize, matchPriceRange, matchCategory, matchTag;
 
         for (Product product : productsByTag) {
             matchSize = false;
             matchPriceRange = false;
             matchColour = false;
+            matchCategory = false;
+
+            if (checkIfCategoryIsInside(product.getCategory(), category.getCategoryId())) {
+                matchCategory = true;
+            }
+
+//            for (Tag tag : product.getTags()) {
+//                for(Tag inputTag : tags) {
+//                    if (inputTag.getTagId().equals(tag.getTagId())) matchTag = true;
+//                    break;
+//                }
+//                if(matchTag) break;
+//            }
 
             if (product.getPrice().compareTo(minPrice) >= 0 && product.getPrice().compareTo(maxPrice) <= 0)
                 matchPriceRange = true;
@@ -292,7 +309,7 @@ public class        ProductService {
                     matchColour = true;
                 }
             }
-            if (matchColour && matchSize && matchPriceRange) {
+            if (matchColour && matchSize && matchPriceRange && matchCategory) {
                 products.add(product);
             }
         }
@@ -301,18 +318,24 @@ public class        ProductService {
             Collections.sort(products, Comparator.comparing(Product::getPrice));
         } else if (sortEnum == SortEnum.PRICE_HIGH_TO_LOW) {
             Collections.sort(products, Comparator.comparing(Product::getPrice).reversed());
-//            products.sort((Product product1, Product product2)->product2.getPrice().compareTo(product1.getPrice()));
 //        } else if (sortEnum == SortEnum.RATING_HIGH_TO_LOW) {
 //            // Find average
 //        } else if (sortEnum == SortEnum.RATING_LOW_TO_HIGH) {
 //            // Find average
         } else {
+            // Latest arrival
             Collections.sort(products, Comparator.comparing(Product::getProductId).reversed());
         }
 
         lazilyLoadProduct(products);
         return products;
     }
+
+//    public List<Product> retrieveProductByCategory(Category category) {
+//        List<Product> products = productRepository.findAllByCategoryId(category.getCategoryId());
+//        lazilyLoadProduct(products);
+//        return products;
+//    }
 
     public List<Product> retrieveListOfProductsById(List<Long> productIds) throws ProductNotFoundException {
         if (productIds == null) {
@@ -651,7 +674,7 @@ public class        ProductService {
         List<ProductStock> originalProductStocks = retrieveAllProductStock();
         List<ProductStock> productStocks = new ArrayList<>();
 
-        for(ProductStock productStock : originalProductStocks) {
+        for (ProductStock productStock : originalProductStocks) {
             if (productStock.getStore() != null && productStock.getStore().getStoreId().equals(storeId) ||
                     productStock.getWarehouse() != null && productStock.getWarehouse().getWarehouseId().equals(warehouseId) ||
                     productStock.getProductVariant() != null && productStock.getProductVariant().getProductVariantId().equals(productVariantId)) {
@@ -694,7 +717,7 @@ public class        ProductService {
         return productStock;
     }
 
-    public ProductStock updateProductStockQty (Long productStockId, Integer qty) throws ProductStockNotFoundException {
+    public ProductStock updateProductStockQty(Long productStockId, Integer qty) throws ProductStockNotFoundException {
         ProductStock productStock = retrieveProductStockById(productStockId);
         productStock.setQuantity(qty);
         return productStock;
@@ -753,7 +776,7 @@ public class        ProductService {
         return productImages;
     }
 
-    public  List<String>  updateProductVariantImages(Long productId, String colour, List<String> imageUrls) throws ProductImageNotFoundException, ProductNotFoundException, ProductVariantNotFoundException {
+    public List<String> updateProductVariantImages(Long productId, String colour, List<String> imageUrls) throws ProductImageNotFoundException, ProductNotFoundException, ProductVariantNotFoundException {
         Product product = retrieveProductById(productId);
 
         List<ProductVariant> productVariantsToAssignImages = new ArrayList<>();
