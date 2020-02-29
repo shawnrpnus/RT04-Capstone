@@ -31,7 +31,7 @@ import java.util.*;
 @Service
 @Transactional
 @Slf4j
-public class ProductService {
+public class        ProductService {
 
     private final TagService tagService;
     private final CategoryService categoryService;
@@ -674,6 +674,12 @@ public class ProductService {
         productStock.setNotificationLevel(newProductStock.getNotificationLevel());
         productStock.setQRcode(newProductStock.getQRcode());
         productStock.setReorderQuantity(newProductStock.getReorderQuantity());
+        return productStock;
+    }
+
+    public ProductStock updateProductStockQty (Long productStockId, Integer qty) throws ProductStockNotFoundException {
+        ProductStock productStock = retrieveProductStockById(productStockId);
+        productStock.setQuantity(qty);
         return productStock;
     }
 
