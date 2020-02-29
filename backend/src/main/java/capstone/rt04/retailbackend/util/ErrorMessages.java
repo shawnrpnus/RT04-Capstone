@@ -16,6 +16,7 @@ public class ErrorMessages {
     public static final String OLD_PASSWORD_INCORRECT = "Old password is incorrect!";
     public static final String OLD_PASSWORD_REQUIRED = "Old password is required!";
     public static final String PASSWORD_REQUIRED = "Password is required!";
+    public static final String USERNAME_REQUIRED = "Username is required!";
     public static final String CUSTOMER_NOT_VERIFIED = "Please click the verification link in your email to activate your account";
 
     public static final String VERIFICATION_CODE_INVALID = "Invalid verification code!";
@@ -34,9 +35,11 @@ public class ErrorMessages {
     public static final String NRIC_TAKEN = "There is already a staff with this NRIC!" ;
     public static final String STAFF_LOGIN_FAILED = "Username or password is invalid!";
 
-    public static final String USERNAME_REQUIRED = "Username is required!";
+
     public static final String NRIC_REQUIRED = "NRIC is required!";
     public static final String SALARY_REQUIRED ="Salary is required!";
     public static final String STAFF_ACCOUNT_ALREADY_CONFIGURED ="An account has already been configured for this staff!";
     public static final String STAFF_DOES_NOT_EXIST = "Staff does not exist!";
+    public static final String INCORRECT_PASSWORD = "Password is wrong!";
+    public static final String INCORRECT_USERNAME = "Username is wrong!";
 }
