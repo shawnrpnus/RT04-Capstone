@@ -235,7 +235,7 @@ public class ProductServiceTest extends ServiceTestSetup {
     public void retrieveProductToShowProductStocks() throws ProductNotFoundException {
         Product originalProduct;
 
-        List<Product> products = productService.retrieveProductStocksByParameter(storeId1, null, null);
+        List<Product> products = productService.retrieveProductStocksThroughProductByParameter(storeId1, null, null);
         for(Product product : products) {
 
             for(ProductStock productStock : product.getProductVariants().get(0).getProductStocks()) {

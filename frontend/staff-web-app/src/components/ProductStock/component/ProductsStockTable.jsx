@@ -58,7 +58,7 @@ class ProductsStockTable extends PureComponent {
   };
 
   componentDidMount() {
-    this.props.retrieveProductsDetails(1308);
+    this.props.retrieveProductsDetails(1043);
   }
 
   handleViewProductStocksDetails = productId => {
@@ -97,7 +97,7 @@ class ProductsStockTable extends PureComponent {
       });
     }
 
-    console.log(this.props)
+    console.log(this.props);
 
     return (
       <div className="table" style={{ verticalAlign: "middle" }}>

@@ -70,10 +70,10 @@ class ProductsStockDetails extends PureComponent {
   }
 
   handleUpdate = (productStockId, currentStock, oldStock) => {
-    console.log(productStockId, currentStock, oldStock)
+    console.log(productStockId, currentStock, oldStock);
     if (currentStock !== oldStock) {
       const req = new UpdateProductStockRequest(productStockId, currentStock);
-      console.log(req)
+      console.log(req);
       this.props.updateProductStockQty(req, this.props.history);
     }
   };
@@ -93,8 +93,8 @@ class ProductsStockDetails extends PureComponent {
   };
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-    console.log(prevProps)
-    console.log(prevState)
+    console.log(prevProps);
+    console.log(prevState);
   }
 
   onSelectColour = ({ target: input }) => {
@@ -111,6 +111,7 @@ class ProductsStockDetails extends PureComponent {
     if (colourToSizeImageMaps) {
       list = _.keyBy([...colourToSizeImageMaps], "colour");
 
+      console.log(list);
       data = list[selectedProductVariant].sizeMaps.map((e, index) => {
         return {
           sku: e.productStock.productVariant.sku,
@@ -186,8 +187,12 @@ class ProductsStockDetails extends PureComponent {
                   onRowUpdate: (newData, oldData) =>
                     new Promise((resolve, reject) => {
                       const { productStockId, currentStock } = newData;
-                      const { currentStock : oldStock } = oldData;
-                      this.handleUpdate(productStockId, Number(currentStock), Number(oldStock));
+                      const { currentStock: oldStock } = oldData;
+                      this.handleUpdate(
+                        productStockId,
+                        Number(currentStock),
+                        Number(oldStock)
+                      );
                       resolve();
                     })
                 }}

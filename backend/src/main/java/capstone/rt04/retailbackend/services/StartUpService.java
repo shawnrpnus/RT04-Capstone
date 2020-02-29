@@ -70,12 +70,12 @@ public class StartUpService {
     @PostConstruct
     public void init() throws InputDataValidationException, CreateNewCategoryException, CategoryNotFoundException, CreateNewProductException, ProductVariantNotFoundException, CreateNewProductStockException, WarehouseNotFoundException, StoreNotFoundException, CreateNewTagException, CreateNewStyleException, CreateNewStaffException, CreateRoleException, CreateDepartmentException {
         createCategoryIfNotFound();
+        createStaffIfNotFound();
         createSizeDetailsIfNotFound();
-        createProductIfNotFound();
         createWarehouseAndStoreIfNotFound();
+        createProductIfNotFound();
         createTagIfNotFound();
         createStyleIfNotFound();
-        createStaffIfNotFound();
     }
 
     private void createCategoryIfNotFound() throws CategoryNotFoundException, CreateNewCategoryException, InputDataValidationException {

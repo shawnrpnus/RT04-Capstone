@@ -619,7 +619,7 @@ public class        ProductService {
     }
 
     @Transactional(readOnly = true)
-    public List<Product> retrieveProductStocksByParameter(Long storeId, Long warehouseId, Long productVariantId) {
+    public List<Product> retrieveProductStocksThroughProductByParameter(Long storeId, Long warehouseId, Long productVariantId) {
 
         List<Product> products = new ArrayList<>(retrieveAllProducts());
         List<ProductStock> productStocks = new ArrayList<>();
@@ -644,6 +644,22 @@ public class        ProductService {
         }
         lazilyLoadProduct(products);
         return products;
+    }
+
+    @Transactional(readOnly = true)
+    public List<ProductStock> retrieveProductStocksByParameter(Long storeId, Long warehouseId, Long productVariantId) {
+        List<ProductStock> originalProductStocks = retrieveAllProductStock();
+        List<ProductStock> productStocks = new ArrayList<>();
+
+        for(ProductStock productStock : originalProductStocks) {
+            if (productStock.getStore() != null && productStock.getStore().getStoreId().equals(storeId) ||
+                    productStock.getWarehouse() != null && productStock.getWarehouse().getWarehouseId().equals(warehouseId) ||
+                    productStock.getProductVariant() != null && productStock.getProductVariant().getProductVariantId().equals(productVariantId)) {
+                productStocks.add(productStock);
+            }
+        }
+        lazilyLoadProductStock(productStocks);
+        return productStocks;
     }
 
     public List<ProductStock> retrieveAllProductStock() {
