@@ -1,9 +1,10 @@
 import axios from "axios";
 import {
+  ADD_SHIPPING_ADDRESS_SUCCESS,
   CUSTOMER_LOGOUT,
   EMAIL_SENDING,
   EMAIL_SENT,
-  RESET_VERIFICATION_STATUS,
+  RESET_VERIFICATION_STATUS, UPDATE_SHIPPING_ADDRESS_SUCCESS,
   VERIFY_FAILURE,
   VERIFY_SUCCESS
 } from "./types";
@@ -272,6 +273,23 @@ export const resetPassword = (req, setDialogOpen, setDialogText) => {
   };
 };
 
+export const updateShippingAddress = (updateShippingAddressRequest, history) => {
+  return dispatch => {
+    //redux thunk passes dispatch
+    axios
+      .post(CUSTOMER_BASE_URL + "/updateShippingAddress", updateShippingAddressRequest)
+      .then(response => {
+        const {data} = jsog.decode(response);
+        dispatch(updateShippingAddressSuccess(data));
+        history.push("/account/address");
+      })
+      .catch(err => {
+        dispatchErrorMapError(err, dispatch);
+        // console.log(err.response.data);
+      });
+  }
+};
+
 export const addMeasurements = (req, enqueueSnackbar, setAddMeasurements) => {
   return dispatch => {
     //redux thunk passes dispatch
@@ -291,6 +309,37 @@ export const addMeasurements = (req, enqueueSnackbar, setAddMeasurements) => {
       });
   };
 };
+
+export const updateShippingAddressSuccess = data => ({
+  type: UPDATE_SHIPPING_ADDRESS_SUCCESS,
+  loggedInCustomer: data
+});
+
+export const addShippingAddressDetails = (addUpdateAddressRequest, enqueueSnackbar, history) => {
+  return dispatch => {
+    //redux thunk passes dispatch
+    axios
+      .post(CUSTOMER_BASE_URL + "/addShippingAddress", addUpdateAddressRequest)
+      .then(response => {
+        const { data } = jsog.decode(response);
+        dispatch(addShippingAddressSuccess(data));
+        enqueueSnackbar("New Address Added", {
+          variant: "success",
+          autoHideDuration: 1200
+        });
+        history.push("/account/profile");
+      })
+      .catch(err => {
+        dispatchErrorMapError(err, dispatch);
+        // console.log(err.response.data);
+      });
+  };
+};
+
+export const addShippingAddressSuccess = data => ({
+  type: ADD_SHIPPING_ADDRESS_SUCCESS,
+  loggedInCustomer: data
+});
 
 export const updateMeasurements = (
   req,

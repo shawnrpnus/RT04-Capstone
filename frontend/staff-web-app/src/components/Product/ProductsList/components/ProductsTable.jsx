@@ -57,6 +57,7 @@ class ProductsTable extends PureComponent {
   };
 
   componentDidMount() {
+    // TODO: Retrieve store ID from cookie to input as argument
     if (this.props.retrieveAllProducts) this.props.retrieveAllProducts();
   }
 
@@ -99,6 +100,8 @@ class ProductsTable extends PureComponent {
         };
       });
     }
+
+    console.log(products);
 
     return (
       <div className="table" style={{ verticalAlign: "middle" }}>

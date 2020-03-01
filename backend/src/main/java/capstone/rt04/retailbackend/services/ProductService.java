@@ -198,7 +198,6 @@ public class ProductService {
                  ** By default return warehouse stock if no store ID provided
                  */
                 prodStock = new ProductStock();
-
                 for (ProductStock productStock : productVariant.getProductStocks()) {
                     if (productStock.getStore() != null && productStock.getStore().getStoreId().equals(storeOrWarehouseId)) {
                         prodStock = productStock;

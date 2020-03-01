@@ -56,9 +56,7 @@ export const updateProductStockQty = (updateProductStockRequest, history) => {
         const { data } = jsog.decode(response);
         // const productStockId = data.productStockId;
         // dispatch(updateProductStockQtySuccess(data));
-
-        retrieveProductsDetails(1043)(dispatch);
-
+        retrieveProductsDetails()(dispatch);
         // history.push(`/productStock/update/${productStockId}`);
       })
       .catch(err => {

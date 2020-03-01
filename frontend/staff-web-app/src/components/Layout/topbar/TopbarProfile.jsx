@@ -62,7 +62,7 @@ class TopbarProfile extends PureComponent {
             <TopbarMenuLink
               title="My Profile"
               icon="user"
-              path="/account/profile"
+              path="/staff/viewProfile"
               onClick={this.toggle}
             />
             <TopbarMenuLink

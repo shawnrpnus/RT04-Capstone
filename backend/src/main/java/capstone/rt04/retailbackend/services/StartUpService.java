@@ -132,23 +132,21 @@ public class StartUpService {
 
             // Product images
             List<String> blackProductImageUrls = new ArrayList<>();
-            blackProductImageUrls.add("https://i8.amplience.net/i/jpl/jd_347293_a?qlt=92&w=750&h=531&v=1&fmt=webp");
-            blackProductImageUrls.add("https://i8.amplience.net/i/jpl/jd_347293_b?qlt=92&w=750&h=531&v=1&fmt=webp");
-            blackProductImageUrls.add("https://i8.amplience.net/i/jpl/jd_347293_c?qlt=92&w=750&h=531&v=1&fmt=webp");
-            blackProductImageUrls.add("https://i8.amplience.net/i/jpl/jd_347293_d?qlt=92&w=750&h=531&v=1&fmt=webp");
-            blackProductImageUrls.add("https://i8.amplience.net/i/jpl/jd_347293_e?qlt=92&w=750&h=531&v=1&fmt=webp");
+            blackProductImageUrls.add("https://pomelofashion.imgix.net/img/p/1/9/1/1/9/7/191197.jpg?auto=compress,format&fm=webp,jpg,png&w=700&q=75");
+            blackProductImageUrls.add("https://pomelofashion.imgix.net/img/p/1/9/1/1/9/8/191198.jpg?auto=compress,format&fm=webp,jpg,png&w=700&q=75");
+            blackProductImageUrls.add("https://pomelofashion.imgix.net/img/p/1/9/1/1/9/9/191199.jpg?auto=compress,format&fm=webp,jpg,png&w=700&q=75");
+            blackProductImageUrls.add("https://pomelofashion.imgix.net/img/p/1/9/1/2/0/0/191200.jpg?auto=compress,format&fm=webp,jpg,png&w=700&q=75");
+            blackProductImageUrls.add("https://pomelofashion.imgix.net/img/p/1/9/1/2/0/2/191202.jpg?auto=compress,format&fm=webp,jpg,png&w=700&q=75");
             List<String> greenProductImageUrls = new ArrayList<>();
-            greenProductImageUrls.add("https://i8.amplience.net/i/jpl/jd_M20324_a?qlt=92&w=750&h=531&v=1&fmt=webp");
-            greenProductImageUrls.add("https://i8.amplience.net/i/jpl/jd_M20324_b?qlt=92&w=750&h=531&v=1&fmt=webp");
-            greenProductImageUrls.add("https://i8.amplience.net/i/jpl/jd_M20324_c?qlt=92&w=750&h=531&v=1&fmt=webp");
-            greenProductImageUrls.add("https://i8.amplience.net/i/jpl/jd_M20324_d?qlt=92&w=750&h=531&v=1&fmt=webp");
-            greenProductImageUrls.add("https://i8.amplience.net/i/jpl/jd_M20324_e?qlt=92&w=750&h=531&v=1&fmt=webp");
+            greenProductImageUrls.add("https://dynamic.zacdn.com/u6MpVzFyd-4OxjGzbjVILD_d5T0=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/abercrombie-fitch-1031-4285121-1.jpg");
+            greenProductImageUrls.add("https://dynamic.zacdn.com/hpRn190IaUIwXyrcPDPfx1n0t4s=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/abercrombie-fitch-1031-4285121-2.jpg");
+            greenProductImageUrls.add("https://dynamic.zacdn.com/1q4vDr8_Y52JMQYAXNzGgMPNiac=/fit-in/692x1000/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/abercrombie-fitch-1032-4285121-3.jpg");
+            greenProductImageUrls.add("https://dynamic.zacdn.com/lOfHo7SbZtfcFdYuOfzfweyU9DQ=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/abercrombie-fitch-1032-4285121-4.jpg");
             List<String> redProductImageUrls = new ArrayList<>();
-            redProductImageUrls.add("https://i8.amplience.net/i/jpl/jd_EE5801_a?qlt=92&w=750&h=531&v=1&fmt=webp");
-            redProductImageUrls.add("https://i8.amplience.net/i/jpl/jd_EE5801_b?qlt=92&w=750&h=531&v=1&fmt=webp");
-            redProductImageUrls.add("https://i8.amplience.net/i/jpl/jd_EE5801_c?qlt=92&w=750&h=531&v=1&fmt=webp");
-            redProductImageUrls.add("https://i8.amplience.net/i/jpl/jd_EE5801_d?qlt=92&w=750&h=531&v=1&fmt=webp");
-            redProductImageUrls.add("https://i8.amplience.net/i/jpl/jd_EE5801_e?qlt=92&w=750&h=531&v=1&fmt=webp");
+            redProductImageUrls.add("https://images.asos-media.com/products/columbia-klamath-range-ii-half-zip-fleece-in-black/13080944-1-black?$XXL$&wid=513&fit=constrain");
+            redProductImageUrls.add("https://images.asos-media.com/products/columbia-klamath-range-ii-half-zip-fleece-in-black/13080944-2?$XXL$&wid=513&fit=constrain");
+            redProductImageUrls.add("https://images.asos-media.com/products/columbia-klamath-range-ii-half-zip-fleece-in-black/13080944-3?$XXL$&wid=513&fit=constrain");
+            redProductImageUrls.add("https://images.asos-media.com/products/columbia-klamath-range-ii-half-zip-fleece-in-black/13080944-4?$XXL$&wid=513&fit=constrain");
 
             List<SizeEnum> sizes = new ArrayList<>();
             sizes.add(SizeEnum.S);
@@ -464,12 +462,13 @@ public class StartUpService {
         }
     }
 
-    private void createCustomerIfNotFound() throws InputDataValidationException, CreateNewCustomerException {
+    private void createCustomerIfNotFound() throws InputDataValidationException, CreateNewCustomerException, CustomerNotFoundException {
         if (customerService.retrieveAllCustomers().size() == 0) {
             Customer customer = customerService.createNewCustomer(new Customer("Lila", "Facchini",
                     "lila@gmail.com", "password"));
-            customer.setVerified(true);
             customerId = customer.getCustomerId();
+            customerService.retrieveCustomerByCustomerId(customerId);
+            customer.setVerified(true);
         }
     }
 
