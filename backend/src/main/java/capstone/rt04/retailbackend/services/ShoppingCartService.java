@@ -13,7 +13,6 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,21 +38,26 @@ public class ShoppingCartService {
         this.shoppingCartItemRepository = shoppingCartItemRepository;
     }
 
+
     public void initializeShoppingCarts(Long customerId) throws CustomerNotFoundException {
         Customer customer = customerService.retrieveCustomerByCustomerId(customerId);
 
+        // In-store
         ShoppingCart inStoreShoppingCart = new ShoppingCart();
         inStoreShoppingCart = shoppingCartRepository.save(inStoreShoppingCart);
         customer.setInStoreShoppingCart(inStoreShoppingCart);
 
+        // Online
         ShoppingCart onlineShoppingCart = new ShoppingCart();
         onlineShoppingCart = shoppingCartRepository.save(onlineShoppingCart);
         customer.setOnlineShoppingCart(onlineShoppingCart);
     }
 
     private ShoppingCartItem createShoppingCartItem(Integer quantity, Long productVariantId) throws ProductVariantNotFoundException {
+        System.out.println("Creating cart item");
         ProductVariant productVariant = productService.retrieveProductVariantById(productVariantId);
         ShoppingCartItem shoppingCartItem = new ShoppingCartItem(quantity, productVariant);
+        System.out.println(shoppingCartItem);
         return shoppingCartItemRepository.save(shoppingCartItem);
     }
 
@@ -85,6 +89,7 @@ public class ShoppingCartService {
         shoppingCart.getShoppingCartItems().add(shoppingCartItem);
         shoppingCart.setLastUpdated(new Timestamp(System.currentTimeMillis()));
         shoppingCart.calculateAndSetInitialTotal();
+        System.out.println(shoppingCart);
         Customer customer = customerService.retrieveCustomerByCustomerId(customerId);
         return customerService.lazyLoadCustomerFields(customer);
     }
@@ -115,6 +120,10 @@ public class ShoppingCartService {
         }
     }
 
+    // For init checking
+    public List<ShoppingCartItem> initRetrieveAllShoppingCartItem() {
+        return (List<ShoppingCartItem>) shoppingCartItemRepository.findAll();
+    }
 
 
 }

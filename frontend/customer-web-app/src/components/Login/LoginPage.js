@@ -111,7 +111,6 @@ export default function LoginPage(props) {
   };
 
   const handleKeyDown = event => {
-    console.log(event);
     if (event.keyCode === 13) {
       handleSubmit();
     }

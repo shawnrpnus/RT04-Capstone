@@ -57,7 +57,7 @@ class ProductsTable extends PureComponent {
   };
 
   componentDidMount() {
-    if (this.props.retrieveAllProducts) this.props.retrieveAllProducts(1043);
+    if (this.props.retrieveAllProducts) this.props.retrieveAllProducts();
   }
 
   handleViewProductDetails = id => {
