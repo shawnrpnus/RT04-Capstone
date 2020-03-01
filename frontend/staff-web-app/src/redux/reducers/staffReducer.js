@@ -7,10 +7,9 @@ const initialState = {
   allRoles: null,
   allDepartments: null,
   loggedInStaff: null,
-  currentRole:null,
-  currentDepartment:null,
-  currentAddress:null
-
+  currentRole: null,
+  currentDepartment: null,
+  currentAddress: null
 };
 
 export default function(state = initialState, action) {
@@ -73,7 +72,6 @@ export default function(state = initialState, action) {
 
     case types.STAFF_LOGOUT:
       return initialState;
-
 
     case types.UPDATE_STAFF:
       return {

@@ -273,7 +273,7 @@ export const staffLogin = (staffLoginRequest, history) => {
       .then(response => {
         const { data } = jsog.decode(response);
         const staffId = data.staffId;
-          dispatch(loginStaffSuccess(data));
+        dispatch(loginStaffSuccess(data));
         toast.success("You are logged in!", {
           position: toast.POSITION.TOP_CENTER
         });
@@ -297,5 +297,5 @@ const loginStaffError = data => ({
 });
 
 export const staffLogout = () => ({
-    type: types.STAFF_LOGOUT
+  type: types.STAFF_LOGOUT
 });

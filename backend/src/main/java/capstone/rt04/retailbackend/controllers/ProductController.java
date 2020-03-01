@@ -246,6 +246,8 @@ public class ProductController {
                             spvsMap.getProductStock().getProductVariant().setProductStocks(null);
                             spvsMap.getProductStock().getProductVariant().setProductImages(null);
                             spvsMap.getProductStock().getProductVariant().setProduct(null);
+                            spvsMap.getProductStock().getProductVariant().setSizeDetails(null);
+                            spvsMap.getProductStock().setWarehouse(null);
                         }
                     }
                 }

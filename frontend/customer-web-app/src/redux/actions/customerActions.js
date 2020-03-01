@@ -4,7 +4,8 @@ import {
   CUSTOMER_LOGOUT,
   EMAIL_SENDING,
   EMAIL_SENT,
-  RESET_VERIFICATION_STATUS, UPDATE_SHIPPING_ADDRESS_SUCCESS,
+  RESET_VERIFICATION_STATUS,
+  UPDATE_SHIPPING_ADDRESS_SUCCESS,
   VERIFY_FAILURE,
   VERIFY_SUCCESS
 } from "./types";
@@ -273,13 +274,19 @@ export const resetPassword = (req, setDialogOpen, setDialogText) => {
   };
 };
 
-export const updateShippingAddress = (updateShippingAddressRequest, history) => {
+export const updateShippingAddress = (
+  updateShippingAddressRequest,
+  history
+) => {
   return dispatch => {
     //redux thunk passes dispatch
     axios
-      .post(CUSTOMER_BASE_URL + "/updateShippingAddress", updateShippingAddressRequest)
+      .post(
+        CUSTOMER_BASE_URL + "/updateShippingAddress",
+        updateShippingAddressRequest
+      )
       .then(response => {
-        const {data} = jsog.decode(response);
+        const { data } = jsog.decode(response);
         dispatch(updateShippingAddressSuccess(data));
         history.push("/account/address");
       })
@@ -287,7 +294,7 @@ export const updateShippingAddress = (updateShippingAddressRequest, history) => 
         dispatchErrorMapError(err, dispatch);
         // console.log(err.response.data);
       });
-  }
+  };
 };
 
 export const addMeasurements = (req, enqueueSnackbar, setAddMeasurements) => {
@@ -315,7 +322,11 @@ export const updateShippingAddressSuccess = data => ({
   loggedInCustomer: data
 });
 
-export const addShippingAddressDetails = (addUpdateAddressRequest, enqueueSnackbar, history) => {
+export const addShippingAddressDetails = (
+  addUpdateAddressRequest,
+  enqueueSnackbar,
+  history
+) => {
   return dispatch => {
     //redux thunk passes dispatch
     axios

@@ -12,7 +12,13 @@ let hist = createBrowserHistory();
 
 function App() {
   return (
-    <SnackbarProvider maxSnack={2}>
+    <SnackbarProvider
+      maxSnack={2}
+      anchorOrigin={{
+        vertical: "top",
+        horizontal: "center"
+      }}
+    >
       <Provider store={store}>
         <ConfirmProvider>
           <Router history={hist}>

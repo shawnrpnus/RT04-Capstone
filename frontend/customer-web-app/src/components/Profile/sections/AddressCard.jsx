@@ -13,13 +13,13 @@ import Switch from "@material-ui/core/Switch";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import customCheckboxRadioSwitch from "../../../assets/jss/material-kit-pro-react/customCheckboxRadioSwitchStyle";
 import Checkbox from "@material-ui/core/Checkbox";
-import {Check, Update} from "@material-ui/icons";
+import { Check, Update } from "@material-ui/icons";
 import GridContainer from "../../Layout/components/Grid/GridContainer";
 import Grid from "@material-ui/core/Grid";
 import GridItem from "../../Layout/components/Grid/GridItem";
-import {clearErrors} from "../../../redux/actions";
+import { clearErrors } from "../../../redux/actions";
 import AddUpdateAddressRequest from "../../../models/customer/AddUpdateAddressRequest";
-import {updateShippingAddress} from "../../../redux/actions/customerActions";
+import { updateShippingAddress } from "../../../redux/actions/customerActions";
 
 const style = {
   cardTitle,
@@ -36,23 +36,20 @@ export default function AddressCard(props) {
   const unsortedShippingAddresses = useSelector(
     state => state.customer.loggedInCustomer.shippingAddresses
   );
-  const shippingAddresses = unsortedShippingAddresses.sort((a,b) => {
+  const shippingAddresses = unsortedShippingAddresses.sort((a, b) => {
     const result = b.default - a.default + b.billing - a.billing;
     if (b.default) return 1;
     if (a.default) return -1;
-    if (result == 0 && b.default && !a.default){
-      return 1
+    if (result == 0 && b.default && !a.default) {
+      return 1;
     } else {
       return result;
     }
   });
 
-  const currCustomer = useSelector(
-    state => state.customer.loggedInCustomer
-  );
+  const currCustomer = useSelector(state => state.customer.loggedInCustomer);
 
   const errors = useSelector(state => state.errors);
-
 
   //State
   const [inputState, setInputState] = useState({
@@ -66,11 +63,11 @@ export default function AddressCard(props) {
     // console.log(e);
     console.log(i);
 
-    if(e.target.value === "shipping") {
+    if (e.target.value === "shipping") {
       i.item.default = e.target.checked;
       e.target.checked = false;
     }
-    if(e.target.value === "billing") {
+    if (e.target.value === "billing") {
       i.item.billing = e.target.checked;
       e.target.checked = false;
     }
@@ -86,24 +83,31 @@ export default function AddressCard(props) {
 
   const classes = useStyles();
   return (
-    <Card style={{ width: "25rem", marginTop: "0", boxShadow: "none"}}>
+    <Card style={{ width: "25rem", marginTop: "0", boxShadow: "none" }}>
       {shippingAddresses.map(function(item, i) {
         // console.log(item.default); //array[0]
         //console.log(i); //index
         return (
-          <CardBody style={{border: ".5px solid #e8e7e7", boxShadow: "0 2px 4px 0 rgba(155,155,155,.2)", marginBottom:"30px"}} key={item.addressId}>
+          <CardBody
+            style={{
+              border: ".5px solid #e8e7e7",
+              boxShadow: "0 2px 4px 0 rgba(155,155,155,.2)",
+              marginBottom: "30px"
+            }}
+            key={item.addressId}
+          >
             <GridContainer>
               <GridItem xs={12} sm={10} md={10}>
                 <h4 className={classes.cardTitle}>
                   {(() => {
-                    if(item.default && item.billing) {
-                      return "Shipping & Billing Address"
+                    if (item.default && item.billing) {
+                      return "Shipping & Billing Address";
                     } else if (item.default && !item.billing) {
-                      return "Shipping Address"
+                      return "Shipping Address";
                     } else if (!item.default && item.billing) {
-                      return "Billing Address"
+                      return "Billing Address";
                     } else {
-                      return "Other Address"
+                      return "Other Address";
                     }
                   })()}
                   {/*{item.default && item.billing ? "Shipping & Billing Address": ""}*/}
@@ -121,7 +125,7 @@ export default function AddressCard(props) {
               </GridItem>
 
               <GridItem xs={12} sm={2} md={2}>
-                <br/>
+                <br />
                 Edit
               </GridItem>
 
@@ -132,7 +136,7 @@ export default function AddressCard(props) {
                   <FormControlLabel
                     control={
                       <Switch
-                        onChange={(e) => onChange(e, {item})}
+                        onChange={e => onChange(e, { item })}
                         value="shipping"
                         classes={{
                           switchBase: classes.switchBase,
@@ -155,7 +159,7 @@ export default function AddressCard(props) {
                   <FormControlLabel
                     control={
                       <Switch
-                        onChange={(e) => onChange(e, {item})}
+                        onChange={e => onChange(e, { item })}
                         value="billing"
                         classes={{
                           switchBase: classes.switchBase,
@@ -173,8 +177,6 @@ export default function AddressCard(props) {
                 )}
               </GridItem>
             </GridContainer>
-
-
           </CardBody>
         );
       })}
