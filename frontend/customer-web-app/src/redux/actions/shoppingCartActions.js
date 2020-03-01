@@ -7,7 +7,10 @@ const CUSTOMER_BASE_URL = "/api/customer";
 const _ = require("lodash");
 const jsog = require("jsog");
 
-export const updateShoppingCart = (updateShoppingCartRequest, history) => {
+export const updateShoppingCart = (
+  updateShoppingCartRequest,
+  enqueueSnackbar
+) => {
   return dispatch => {
     //redux thunk passes dispatch
     axios
@@ -17,6 +20,10 @@ export const updateShoppingCart = (updateShoppingCartRequest, history) => {
       )
       .then(response => {
         handleUpdateShoppingCart(response.data, dispatch);
+        enqueueSnackbar("Item Added!", {
+          variant: "success",
+          autoHideDuration: 1200
+        });
       })
       .catch(err => {
         dispatchErrorMapError(err, dispatch);

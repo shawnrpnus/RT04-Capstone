@@ -12,6 +12,12 @@ import { ShoppingCart } from "@material-ui/icons";
 import productStyle from "assets/jss/material-kit-pro-react/views/productStyle.js";
 import { makeStyles } from "@material-ui/core/styles";
 import colours from "assets/colours";
+import Tooltip from "@material-ui/core/Tooltip";
+import Chip from "@material-ui/core/Chip";
+import { useDispatch, useSelector } from "react-redux";
+import { updateShoppingCart } from "redux/actions/shoppingCartActions";
+import UpdateShoppingCartRequest from "models/ShoppingCart/UpdateShoppingCartRequest";
+import { useSnackbar } from "notistack";
 
 const _ = require("lodash");
 const useStyles = makeStyles(productStyle);
@@ -19,9 +25,8 @@ const useStyles = makeStyles(productStyle);
 function ProductDetailsCard(props) {
   const colorNames = _.keyBy(colours, "hex");
   const classes = useStyles();
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const { productDetail } = props;
-
-  const [activeColourIndex, setActiveColourIndex] = useState(0);
 
   const extractProductInformation = productDetail => {
     if (!productDetail) return {};
@@ -60,14 +65,49 @@ function ProductDetailsCard(props) {
     colourAndSizeToVariantAndStockMap
   } = extractProductInformation(productDetail);
 
+  const [activeColourIndex, setActiveColourIndex] = useState(0);
   const [selectedColour, setSelectedColour] = React.useState(
     colourToImageAndSizes[activeColourIndex].colour
   );
-  const [selectedSize, setSelectedSize] = React.useState(
-    colourToImageAndSizes[activeColourIndex].sizes[0]
-  );
+  const [selectedSize, setSelectedSize] = React.useState("None");
 
-  console.log(colourAndSizeToVariantAndStockMap);
+  const dispatch = useDispatch();
+  const customer = useSelector(state => state.customer.loggedInCustomer);
+
+  const addToShoppingCart = () => {
+    if (selectedSize === "None") {
+      enqueueSnackbar("Please select a size", {
+        variant: "error",
+        autoHideDuration: 1200
+      });
+      return;
+    }
+    const productVariantId = _.get(
+      colourAndSizeToVariantAndStockMap,
+      `${selectedColour}.${selectedSize}.productVariantId`
+    );
+    const shoppingCartItems = customer.onlineShoppingCart.shoppingCartItems;
+    const prodVariantIdToCartItem = _.keyBy(
+      shoppingCartItems,
+      "productVariant.productVariantId"
+    );
+    let quantity = 1;
+    if (prodVariantIdToCartItem.hasOwnProperty(productVariantId)) {
+      quantity = prodVariantIdToCartItem[productVariantId].quantity + 1;
+    }
+    console.log(prodVariantIdToCartItem);
+    console.log(quantity);
+    const customerId = customer.customerId;
+    const cartType = "online";
+    const req = new UpdateShoppingCartRequest(
+      quantity,
+      productVariantId,
+      customerId,
+      cartType
+    );
+    dispatch(updateShoppingCart(req, enqueueSnackbar));
+  };
+
   return (
     <React.Fragment>
       <GridContainer>
@@ -83,20 +123,20 @@ function ProductDetailsCard(props) {
           <h2 className={classes.title}>{product.productName}</h2>
           <h3 className={classes.mainPrice}>${product.price}</h3>
           <Accordion
-            active={0}
+            active={[0]}
             activeColor="rose"
             collapses={[
               {
                 title: "Description",
-                content: <p>{product.description}</p>
-              },
-              {
-                title: "Stock Information",
                 content: (
-                  <p>{`Stock: ${_.get(
-                    colourAndSizeToVariantAndStockMap,
-                    `${selectedColour}.${selectedSize}.productStock.quantity`
-                  )}`}</p>
+                  <p>
+                    {product.description}
+                    <br />
+                    <br />
+                    {product.tags.map(tag => (
+                      <Chip label={tag.name} style={{ marginRight: "3px" }} />
+                    ))}
+                  </p>
                 )
               }
             ]}
@@ -142,42 +182,55 @@ function ProductDetailsCard(props) {
               <h6>Selected: {selectedSize}</h6>
               {colourToImageAndSizes[activeColourIndex].sizes.map(
                 (size, index) => {
+                  const stock = _.get(
+                    colourAndSizeToVariantAndStockMap,
+                    `${selectedColour}.${size}.productStock.quantity`
+                  );
+                  const hasStock = stock > 0;
                   return (
-                    <svg
-                      key={size + index}
-                      width="40"
-                      style={{ margin: "0 2px", cursor: "pointer" }}
-                      height="40"
-                      onClick={() => setSelectedSize(size)}
-                    >
-                      <rect
+                    <Tooltip title={hasStock ? "In stock" : "Out of stock"}>
+                      <svg
+                        key={size + index}
                         width="40"
+                        style={{
+                          margin: "0 2px",
+                          cursor: hasStock ? "pointer" : "default"
+                        }}
                         height="40"
-                        style={{
-                          fill: "white",
-                          strokeWidth: selectedSize === size ? 4 : 1,
-                          stroke: selectedSize === size ? "black" : "grey"
-                        }}
-                      />
-                      <text
-                        x="50%"
-                        y="50%"
-                        style={{
-                          dominantBaseline: "middle",
-                          textAnchor: "middle",
-                          fontWeight: "bold"
-                        }}
+                        onClick={
+                          hasStock ? () => setSelectedSize(size) : () => {}
+                        }
                       >
-                        {size}
-                      </text>
-                    </svg>
+                        <rect
+                          width="40"
+                          height="40"
+                          style={{
+                            fill: hasStock ? "white" : "grey",
+                            pointerEvents: hasStock ? "click" : "none",
+                            strokeWidth: selectedSize === size ? 4 : 1,
+                            stroke: selectedSize === size ? "black" : "grey"
+                          }}
+                        />
+                        <text
+                          x="50%"
+                          y="50%"
+                          style={{
+                            dominantBaseline: "middle",
+                            textAnchor: "middle",
+                            fontWeight: "bold"
+                          }}
+                        >
+                          {size}
+                        </text>
+                      </svg>
+                    </Tooltip>
                   );
                 }
               )}
             </GridItem>
           </GridContainer>
           <GridContainer className={classes.pullRight}>
-            <Button round color="rose">
+            <Button round color="rose" onClick={addToShoppingCart}>
               Add to Cart &nbsp; <ShoppingCart />
             </Button>
           </GridContainer>
