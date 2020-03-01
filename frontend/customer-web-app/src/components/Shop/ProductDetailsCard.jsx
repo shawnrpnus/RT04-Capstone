@@ -12,6 +12,8 @@ import { ShoppingCart } from "@material-ui/icons";
 import productStyle from "assets/jss/material-kit-pro-react/views/productStyle.js";
 import { makeStyles } from "@material-ui/core/styles";
 import colours from "assets/colours";
+import Tooltip from "@material-ui/core/Tooltip";
+import Chip from "@material-ui/core/Chip";
 
 const _ = require("lodash");
 const useStyles = makeStyles(productStyle);
@@ -63,11 +65,8 @@ function ProductDetailsCard(props) {
   const [selectedColour, setSelectedColour] = React.useState(
     colourToImageAndSizes[activeColourIndex].colour
   );
-  const [selectedSize, setSelectedSize] = React.useState(
-    colourToImageAndSizes[activeColourIndex].sizes[0]
-  );
+  const [selectedSize, setSelectedSize] = React.useState("None");
 
-  console.log(colourAndSizeToVariantAndStockMap);
   return (
     <React.Fragment>
       <GridContainer>
@@ -83,20 +82,20 @@ function ProductDetailsCard(props) {
           <h2 className={classes.title}>{product.productName}</h2>
           <h3 className={classes.mainPrice}>${product.price}</h3>
           <Accordion
-            active={0}
+            active={[0]}
             activeColor="rose"
             collapses={[
               {
                 title: "Description",
-                content: <p>{product.description}</p>
-              },
-              {
-                title: "Stock Information",
                 content: (
-                  <p>{`Stock: ${_.get(
-                    colourAndSizeToVariantAndStockMap,
-                    `${selectedColour}.${selectedSize}.productStock.quantity`
-                  )}`}</p>
+                  <p>
+                    {product.description}
+                    <br />
+                    <br />
+                    {product.tags.map(tag => (
+                      <Chip label={tag.name} style={{ marginRight: "3px" }} />
+                    ))}
+                  </p>
                 )
               }
             ]}
@@ -142,35 +141,48 @@ function ProductDetailsCard(props) {
               <h6>Selected: {selectedSize}</h6>
               {colourToImageAndSizes[activeColourIndex].sizes.map(
                 (size, index) => {
+                  const stock = _.get(
+                    colourAndSizeToVariantAndStockMap,
+                    `${selectedColour}.${size}.productStock.quantity`
+                  );
+                  const hasStock = stock > 0;
                   return (
-                    <svg
-                      key={size + index}
-                      width="40"
-                      style={{ margin: "0 2px", cursor: "pointer" }}
-                      height="40"
-                      onClick={() => setSelectedSize(size)}
-                    >
-                      <rect
+                    <Tooltip title={hasStock ? "In stock" : "Out of stock"}>
+                      <svg
+                        key={size + index}
                         width="40"
+                        style={{
+                          margin: "0 2px",
+                          cursor: hasStock ? "pointer" : "default"
+                        }}
                         height="40"
-                        style={{
-                          fill: "white",
-                          strokeWidth: selectedSize === size ? 4 : 1,
-                          stroke: selectedSize === size ? "black" : "grey"
-                        }}
-                      />
-                      <text
-                        x="50%"
-                        y="50%"
-                        style={{
-                          dominantBaseline: "middle",
-                          textAnchor: "middle",
-                          fontWeight: "bold"
-                        }}
+                        onClick={
+                          hasStock ? () => setSelectedSize(size) : () => {}
+                        }
                       >
-                        {size}
-                      </text>
-                    </svg>
+                        <rect
+                          width="40"
+                          height="40"
+                          style={{
+                            fill: hasStock ? "white" : "grey",
+                            pointerEvents: hasStock ? "click" : "none",
+                            strokeWidth: selectedSize === size ? 4 : 1,
+                            stroke: selectedSize === size ? "black" : "grey"
+                          }}
+                        />
+                        <text
+                          x="50%"
+                          y="50%"
+                          style={{
+                            dominantBaseline: "middle",
+                            textAnchor: "middle",
+                            fontWeight: "bold"
+                          }}
+                        >
+                          {size}
+                        </text>
+                      </svg>
+                    </Tooltip>
                   );
                 }
               )}
