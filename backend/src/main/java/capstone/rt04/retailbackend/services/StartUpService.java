@@ -61,6 +61,9 @@ public class StartUpService {
     private static Long bermudasCategoryId;
 
     private Long customerId;
+    private Long productVariantId26;
+    private Long productVariantId27;
+    private Long productVariantId28;
     private Long productVariantId29;
     private Long productVariantId30;
 
@@ -253,12 +256,15 @@ public class StartUpService {
             Category category9 = categoryService.retrieveCategoryByCategoryId(dressesCategoryId);
             product22.setCategory(category9);
             Product newProduct26 = productService.createNewProduct(product26, category9.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
+            productVariantId26 = newProduct26.getProductVariants().get(0).getProductVariantId();
 
             Product product27 = new Product("0036", "Long Sleeve Dress", "Long Sleeve Dress", BigDecimal.valueOf(49.90), BigDecimal.valueOf(10.90));
             Product newProduct27 = productService.createNewProduct(product27, category9.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
+            productVariantId27 = newProduct27.getProductVariants().get(0).getProductVariantId();
 
             Product product28 = new Product("0037", "Short Sleeve Dress", "Short Sleeve Skirt", BigDecimal.valueOf(35.90), BigDecimal.valueOf(8.00));
             Product newProduct28 = productService.createNewProduct(product28, category9.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
+            productVariantId28 = newProduct28.getProductVariants().get(0).getProductVariantId();
 
             Product product29 = new Product("0038", "Sleeveless Dress", "Sleeveless Dress", BigDecimal.valueOf(49.90), BigDecimal.valueOf(12.00));
             Product newProduct29 = productService.createNewProduct(product29, category9.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
@@ -474,7 +480,10 @@ public class StartUpService {
 
     private void initializeShoppingCartIfNotFound() throws ProductVariantNotFoundException, CustomerNotFoundException, InvalidCartTypeException {
         if (shoppingCartService.initRetrieveAllShoppingCartItem().size() == 0) {
-            shoppingCartService.updateQuantityOfProductVariant(2, productVariantId29, customerId, ONLINE_SHOPPING_CART);
+            shoppingCartService.updateQuantityOfProductVariant(2, productVariantId26, customerId, ONLINE_SHOPPING_CART);
+            shoppingCartService.updateQuantityOfProductVariant(3, productVariantId27, customerId, ONLINE_SHOPPING_CART);
+            shoppingCartService.updateQuantityOfProductVariant(3, productVariantId28, customerId, ONLINE_SHOPPING_CART);
+            shoppingCartService.updateQuantityOfProductVariant(3, productVariantId29, customerId, ONLINE_SHOPPING_CART);
             shoppingCartService.updateQuantityOfProductVariant(3, productVariantId30, customerId, ONLINE_SHOPPING_CART);
         }
     }
