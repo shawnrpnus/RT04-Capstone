@@ -16,6 +16,10 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.DecimalMax;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
@@ -35,15 +39,30 @@ public class Measurements implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long measurementsId;
-    
+
+    @NotNull(message = "Shoulder measurement is required")
+    @DecimalMin(value="35", message = "Shoulder measurement does not fall within valid range")
+    @DecimalMax(value="55", message = "Shoulder measurement does not fall within valid range")
     private BigDecimal shoulder;
-    
+
+    @NotNull(message = "Waist measurement is required")
+    @DecimalMin(value="60", message = "Waist measurement does not fall within valid range")
+    @DecimalMax(value="120", message = "Waist measurement does not fall within valid range")
     private BigDecimal waist;
 
+    @NotNull(message = "Chest measurement is required")
+    @DecimalMin(value="60", message = "Chest measurement does not fall within valid range")
+    @DecimalMax(value="150", message = "Chest measurement does not fall within valid range")
     private BigDecimal chest;
-    
+
+    @NotNull(message = "Hip measurement is required")
+    @DecimalMin(value="60", message = "Hip measurement does not fall within valid range")
+    @DecimalMax(value="150", message = "Hip measurement does not fall within valid range")
     private BigDecimal hip;
-    
+
+    @NotNull(message = "Height measurement is required")
+    @DecimalMin(value="140", message = "Height measurement does not fall within valid range")
+    @DecimalMax(value="200", message = "Height measurement does not fall within valid range")
     private BigDecimal height;
 
     public Measurements() {

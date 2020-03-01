@@ -14,5 +14,6 @@ public class ProductControllerRoutes {
     public static final String ADD_REMOVE_TAG_TO_PRODUCT = "/addOrRemoveTagToAProduct";
     public static final String ADD_REMOVE_TAG_FOR_A_LIST_OF_PRODUCTS = "/addOrRemoveTagForAListOfProducts";
     public static final String DELETE_PRODUCT = "/deleteProduct/{productId}";
+    public static final String UPDATE_ALGOLIA = "/updateAlgolia";
 
 }

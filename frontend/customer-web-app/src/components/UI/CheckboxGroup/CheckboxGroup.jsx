@@ -11,7 +11,7 @@ function CheckboxGroup(props) {
   const classes = useStyles();
 
   //checkedState is one of: coloursCheckedState, sizesCheckedState, tagsCheckedState
-  const { list, checkedState, handleChange } = props;
+  const { list, checkedState, handleChange, isColours } = props;
 
   return (
     <React.Fragment>
@@ -21,26 +21,36 @@ function CheckboxGroup(props) {
             classes.checkboxAndRadio + " " + classes.checkboxAndRadioHorizontal
           }
         >
-          {list.map((label, index) => (
-            <FormControlLabel
-              key={`${label}-${index}`}
-              control={
-                <Checkbox
-                  tabIndex={-1}
-                  onChange={handleChange(`${label}`)}
-                  checked={checkedState[label]}
-                  checkedIcon={<Check className={classes.checkedIcon} />}
-                  icon={<Check className={classes.uncheckedIcon} />}
-                  classes={{
-                    checked: classes.checked,
-                    root: classes.checkRoot
-                  }}
-                />
-              }
-              classes={{ label: classes.label }}
-              label={label}
-            />
-          ))}
+          {list.map((label, index) => {
+            let fieldLabel = label;
+            if (isColours) {
+              fieldLabel = (
+                <svg width="30" height="20" style={{ marginRight: "3px" }}>
+                  <rect width="30" height="20" style={{ fill: label }} />
+                </svg>
+              );
+            }
+            return (
+              <FormControlLabel
+                key={`${label}-${index}`}
+                control={
+                  <Checkbox
+                    tabIndex={-1}
+                    onChange={handleChange(`${label}`)}
+                    checked={checkedState[label]}
+                    checkedIcon={<Check className={classes.checkedIcon} />}
+                    icon={<Check className={classes.uncheckedIcon} />}
+                    classes={{
+                      checked: classes.checked,
+                      root: classes.checkRoot
+                    }}
+                  />
+                }
+                classes={{ label: classes.label + " " + classes.labelText }}
+                label={fieldLabel}
+              />
+            );
+          })}
         </div>
       </div>
     </React.Fragment>

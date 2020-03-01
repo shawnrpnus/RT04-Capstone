@@ -3,6 +3,7 @@ package capstone.rt04.retailbackend.controllers;
 import capstone.rt04.retailbackend.entities.Product;
 import capstone.rt04.retailbackend.entities.ProductVariant;
 import capstone.rt04.retailbackend.entities.Tag;
+import capstone.rt04.retailbackend.request.algolia.AlgoliaProductDetailsResponse;
 import capstone.rt04.retailbackend.request.product.ProductCreateRequest;
 import capstone.rt04.retailbackend.request.product.ProductRetrieveRequest;
 import capstone.rt04.retailbackend.request.product.ProductTagRequest;
@@ -17,11 +18,14 @@ import capstone.rt04.retailbackend.util.exceptions.product.*;
 import capstone.rt04.retailbackend.util.exceptions.style.StyleNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.tag.TagNotFoundException;
 import capstone.rt04.retailbackend.util.routeconstants.ProductControllerRoutes;
+import com.algolia.search.SearchIndex;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -31,6 +35,9 @@ import java.util.List;
 public class ProductController {
 
     private final ProductService productService;
+
+    @Autowired
+    private SearchIndex<AlgoliaProductDetailsResponse> index;
 
     public ProductController(ProductService productService) {
         this.productService = productService;
@@ -178,6 +185,30 @@ public class ProductController {
         Product product = productService.deleteProduct(productId);
         clearSingleProductRelationship(product);
         return new ResponseEntity<>(product, HttpStatus.OK);
+    }
+
+    @GetMapping(ProductControllerRoutes.UPDATE_ALGOLIA)
+    public ResponseEntity<?> updateAlgolia() throws ProductNotFoundException {
+        List<ProductDetailsResponse> PDRs = productService.retrieveProductsDetails(null, null, null);
+
+        clearPdrRelationships(PDRs, false);
+
+        List<AlgoliaProductDetailsResponse> aPDRs = new ArrayList<>();
+
+        for (ProductDetailsResponse PDR : PDRs){
+            AlgoliaProductDetailsResponse aPDR = new AlgoliaProductDetailsResponse();
+            aPDR.setObjectID(PDR.getProduct().getProductId());
+            aPDR.setProduct(PDR.getProduct());
+            aPDR.setColourToSizeImageMaps(PDR.getColourToSizeImageMaps());
+            aPDR.setLeafNodeName(PDR.getLeafNodeName());
+            aPDRs.add(aPDR);
+        }
+
+// Sync version
+        index.replaceAllObjects(aPDRs, true);
+        log.info("Algolia index updated");
+
+        return new ResponseEntity<>("Aloglia index updated", HttpStatus.OK);
     }
 
     private void clearSingleProductRelationship(Product product){

@@ -17,7 +17,7 @@ public class CustomerControllerRoutes {
     public static final String RESET_PASSWORD_GET = "/resetPassword/{code}";
     public static final String GET_CUSTOMER_FROM_CODE = "/getCustomerFromCode/{code}";
     public static final String UPDATE_MEASUREMENTS = "/updateMeasurements";
-    public static final String DELETE_MEASUREMENTS = "/deleteMeasurements";
+    public static final String DELETE_MEASUREMENTS = "/deleteMeasurements/{customerId}";
     public static final String ADD_CREDIT_CARD = "/addCreditCard";
     public static final String REMOVE_CREDIT_CARD = "/removeCreditCard";
     public static final String ADD_SHIPPING_ADDRESS = "/addShippingAddress";

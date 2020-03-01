@@ -10,11 +10,9 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import TextField from "@material-ui/core/TextField";
 import GridContainer from "components/Layout/components/Grid/GridContainer";
 import GridItem from "components/Layout/components/Grid/GridItem";
-
-const searchClient = algoliasearch(
-  "0B4ODLCUAM",
-  "c8154cb9be7f12cf578f5a7bfdd937b3"
-);
+import HeaderLinks from "components/Layout/components/Header/HeaderLinks";
+import { Link } from "react-router-dom";
+import { searchClient } from "components/Algolia/config";
 
 const AgAutocomplete = () => {
   return (
@@ -58,21 +56,23 @@ const SearchResult = props => {
   const { product, colourToSizeImageMaps } = productDetails;
   const { productImages } = colourToSizeImageMaps[0];
   return (
-    <GridContainer>
-      <GridItem xs={4}>
-        <img
-          height="auto"
-          width="100%"
-          src={productImages[0].productImageUrl}
-          alt="ProdImage"
-        />
-      </GridItem>
-      <GridItem xs={8}>
-        <GridContainer>
-          <GridItem xs={12}>{product.productName}</GridItem>
-          <GridItem>${product.price}</GridItem>
-        </GridContainer>
-      </GridItem>
-    </GridContainer>
+    <Link to={`/product/${product.productName}`}>
+      <GridContainer>
+        <GridItem xs={4}>
+          <img
+            height="auto"
+            width="100%"
+            src={productImages[0].productImageUrl}
+            alt="ProdImage"
+          />
+        </GridItem>
+        <GridItem xs={8}>
+          <GridContainer>
+            <GridItem xs={12}>{product.productName}</GridItem>
+            <GridItem>${product.price}</GridItem>
+          </GridContainer>
+        </GridItem>
+      </GridContainer>
+    </Link>
   );
 };
