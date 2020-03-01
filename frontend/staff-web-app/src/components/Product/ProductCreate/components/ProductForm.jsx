@@ -155,13 +155,12 @@ class ProductForm extends React.Component {
     const form = new FormData();
     colourToImageUrlsMaps.map(({ colour, files }, index) => {
       files.map(file => {
+        console.log(file);
         form.append(index, file);
       });
     });
     form.append("request", JSON.stringify(req));
-    // console.log(form);
-    // console.log(req);
-    console.log(this.props.createNewProduct(form, this.props.history));
+    this.props.createNewProduct(form, this.props.history);
   };
 
   render() {

@@ -277,6 +277,7 @@ function FilterBar(props) {
                     list={allColours}
                     checkedState={checkedColours}
                     handleChange={handleCheckColour}
+                    isColours={true}
                   />
                 )
               },

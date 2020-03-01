@@ -41,6 +41,7 @@ class ProductUpdateForm extends PureComponent {
 
   async componentDidMount() {
     const response = await retrieveAllCategoryTagStyle();
+    console.log(response);
     let { categories, tags, styles } = response;
     tags = tags.map(tag => _.pick(tag, ["tagId", "name"]));
     this.setState({ categories, tagList: tags, styleList: styles });

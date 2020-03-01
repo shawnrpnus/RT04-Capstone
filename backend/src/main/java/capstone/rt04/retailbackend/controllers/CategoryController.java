@@ -58,6 +58,9 @@ public class CategoryController {
         List<CategoryDetails> childCategories = categoryService.retrieveAllChildCategories();
         List<Tag> tags = tagService.retrieveAllTags();
         List<Style> styles = styleService.retrieveAllStyles();
+        clearCategoryDetailsRelationships(childCategories);
+        clearStyleRelationships(styles);
+        clearTagRelationships(tags);
         return new ResponseEntity<>(new AllCategoryTagStyleResponse(childCategories, tags, styles), HttpStatus.OK);
     }
 
@@ -115,7 +118,25 @@ public class CategoryController {
         Category category = categoryService.deleteCategory(categoryId);
         clearCategoryRelationships(category);
         return new ResponseEntity<>(category, HttpStatus.OK);
+    }
 
+    public void clearTagRelationships(List<Tag> tags) {
+        tags.forEach(tag -> tag.setProducts(null));
+    }
+
+    public void clearStyleRelationships(List<Style> styles) {
+        styles.forEach(style -> {
+            style.setCustomers(null);
+            style.setProducts(null);
+        });
+    }
+
+    public void clearCategoryDetailsRelationships(List<CategoryDetails> categoryDetails) {
+        categoryDetails.forEach(categoryDetail -> {
+            categoryDetail.getCategory().setParentCategory(null);
+            categoryDetail.getCategory().setChildCategories(null);
+            categoryDetail.getCategory().setProducts(null);
+        });
     }
 
 

@@ -38,21 +38,26 @@ public class ShoppingCartService {
         this.shoppingCartItemRepository = shoppingCartItemRepository;
     }
 
+
     public void initializeShoppingCarts(Long customerId) throws CustomerNotFoundException {
         Customer customer = customerService.retrieveCustomerByCustomerId(customerId);
 
+        // In-store
         ShoppingCart inStoreShoppingCart = new ShoppingCart();
         inStoreShoppingCart = shoppingCartRepository.save(inStoreShoppingCart);
         customer.setInStoreShoppingCart(inStoreShoppingCart);
 
+        // Online
         ShoppingCart onlineShoppingCart = new ShoppingCart();
         onlineShoppingCart = shoppingCartRepository.save(onlineShoppingCart);
         customer.setOnlineShoppingCart(onlineShoppingCart);
     }
 
     private ShoppingCartItem createShoppingCartItem(Integer quantity, Long productVariantId) throws ProductVariantNotFoundException {
+        System.out.println("Creating cart item");
         ProductVariant productVariant = productService.retrieveProductVariantById(productVariantId);
         ShoppingCartItem shoppingCartItem = new ShoppingCartItem(quantity, productVariant);
+        System.out.println(shoppingCartItem);
         return shoppingCartItemRepository.save(shoppingCartItem);
     }
 
@@ -64,14 +69,16 @@ public class ShoppingCartService {
             if (shoppingCartItem.getProductVariant().getProductVariantId().equals(productVariantId)) {
                 if (quantity > 0) { //set to whatever input quantity
                     shoppingCartItem.setQuantity(quantity);
-                    Customer customer = customerService.retrieveCustomerByCustomerId(customerId);
                     shoppingCart.setLastUpdated(new Timestamp(System.currentTimeMillis()));
+                    shoppingCart.calculateAndSetInitialTotal();
+                    Customer customer = customerService.retrieveCustomerByCustomerId(customerId);
                     return customerService.lazyLoadCustomerFields(customer);
                 } else if (quantity == 0){ // delete
                     shoppingCartItem.setProductVariant(null);
                     shoppingCart.getShoppingCartItems().remove(shoppingCartItem);
                     shoppingCartItemRepository.delete(shoppingCartItem);
                     shoppingCart.setLastUpdated(new Timestamp(System.currentTimeMillis()));
+                    shoppingCart.calculateAndSetInitialTotal();
                     Customer customer = customerService.retrieveCustomerByCustomerId(customerId);
                     return customerService.lazyLoadCustomerFields(customer);
                 }
@@ -81,6 +88,8 @@ public class ShoppingCartService {
         ShoppingCartItem shoppingCartItem = createShoppingCartItem(quantity, productVariantId);
         shoppingCart.getShoppingCartItems().add(shoppingCartItem);
         shoppingCart.setLastUpdated(new Timestamp(System.currentTimeMillis()));
+        shoppingCart.calculateAndSetInitialTotal();
+        System.out.println(shoppingCart);
         Customer customer = customerService.retrieveCustomerByCustomerId(customerId);
         return customerService.lazyLoadCustomerFields(customer);
     }
@@ -89,6 +98,7 @@ public class ShoppingCartService {
         ShoppingCart shoppingCart = getShoppingCart(customerId, cartType);
         List<ShoppingCartItem> shoppingCartItems = shoppingCart.getShoppingCartItems();
         shoppingCart.setShoppingCartItems(new ArrayList<>());
+        shoppingCart.calculateAndSetInitialTotal();
         Customer customer = customerService.retrieveCustomerByCustomerId(customerId);
         for (ShoppingCartItem shoppingCartItem : shoppingCartItems){
             shoppingCartItem.setProductVariant(null);
@@ -110,6 +120,10 @@ public class ShoppingCartService {
         }
     }
 
+    // For init checking
+    public List<ShoppingCartItem> initRetrieveAllShoppingCartItem() {
+        return (List<ShoppingCartItem>) shoppingCartItemRepository.findAll();
+    }
 
 
 }

@@ -60,6 +60,7 @@ public class ProductStockController {
         try {
             List<ProductStock> productStocks = productService.retrieveProductStocksByParameter(storeId,
                     warehouseId, productVariantId);
+            clearProductStockRelationship(productStocks);
             return new ResponseEntity<>(productStocks, HttpStatus.OK);
         } catch (Exception ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -101,6 +102,20 @@ public class ProductStockController {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
         } catch (Exception ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    private void clearProductStockRelationship(List<ProductStock> productStocks) {
+        for( ProductStock productStock:  productStocks) {
+            productStock.getProductVariant().setProductStocks(null);
+            Product product = productStock.getProductVariant().getProduct();
+            product.setProductVariants(null);
+            product.setDiscounts(null);
+            product.setPromoCodes(null);
+            product.setTags(null);
+            product.setCategory(null);
+            product.setReviews(null);
+            product.setStyles(null);
         }
     }
 }

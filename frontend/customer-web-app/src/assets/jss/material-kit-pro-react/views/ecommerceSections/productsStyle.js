@@ -16,6 +16,7 @@ import customCheckboxRadioSwitch from "assets/jss/material-kit-pro-react/customC
 
 import tooltipsStyle from "assets/jss/material-kit-pro-react/tooltipsStyle.js";
 import imagesStyles from "assets/jss/material-kit-pro-react/imagesStyles";
+import { blackColor } from "assets/jss/material-kit-pro-react";
 
 const styles = {
   ...customCheckboxRadioSwitch,
@@ -107,7 +108,7 @@ const styles = {
     maxHeight: "273px",
     overflowY: "scroll",
     "&  label": {
-      display: "block"
+      display: "flex"
     }
   },
   priceSlider: {
@@ -172,6 +173,9 @@ const styles = {
   },
   filterDrawer: {
     width: "300px"
+  },
+  labelText: {
+    color: blackColor
   }
 };
 
