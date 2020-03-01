@@ -152,7 +152,7 @@ public class StaffController {
             Staff staff = staffService.staffLogin(staffLoginRequest.getUsername(), staffLoginRequest.getPassword());
             return new ResponseEntity<>(staff, HttpStatus.OK);
         } catch (InvalidStaffCredentialsException ex){
-            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(ex.getErrorMap(), HttpStatus.BAD_REQUEST);
         }
     }
 

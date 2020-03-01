@@ -40,6 +40,7 @@ public class StartUpService {
     private final StoreService storeService;
     private final StaffService staffService;
     private final SizeDetailsService sizeDetailsService;
+    private final ShoppingCartService shoppingCartService;
 
     private final AddressRepository addressRepository;
     private final SizeDetailsRepository sizeDetailsRepository;
@@ -53,8 +54,10 @@ public class StartUpService {
     private static Long jeansCategoryId;
     private static Long bermudasCategoryId;
 
+    private Long productVariantId;
 
-    public StartUpService(ProductService productService, CategoryService categoryService, WarehouseService warehouseService, TagService tagService, StyleService styleService, StoreService storeService, StaffService staffService, SizeDetailsService sizeDetailsService, AddressRepository addressRepository, SizeDetailsRepository sizeDetailsRepository) {
+
+    public StartUpService(ProductService productService, CategoryService categoryService, WarehouseService warehouseService, TagService tagService, StyleService styleService, StoreService storeService, StaffService staffService, SizeDetailsService sizeDetailsService, ShoppingCartService shoppingCartService, AddressRepository addressRepository, SizeDetailsRepository sizeDetailsRepository) {
         this.productService = productService;
         this.categoryService = categoryService;
         this.warehouseService = warehouseService;
@@ -63,6 +66,7 @@ public class StartUpService {
         this.storeService = storeService;
         this.staffService = staffService;
         this.sizeDetailsService = sizeDetailsService;
+        this.shoppingCartService = shoppingCartService;
         this.addressRepository = addressRepository;
         this.sizeDetailsRepository = sizeDetailsRepository;
     }
@@ -76,6 +80,7 @@ public class StartUpService {
         createProductIfNotFound();
         createTagIfNotFound();
         createStyleIfNotFound();
+        initializeShoppingCartIfNotFound();
     }
 
     private void createCategoryIfNotFound() throws CategoryNotFoundException, CreateNewCategoryException, InputDataValidationException {
@@ -252,6 +257,8 @@ public class StartUpService {
 
             Product product30 = new Product("0039", "Long Sleeve Shirt", "Long sleeve ", BigDecimal.valueOf(89.90), BigDecimal.valueOf(23.00));
             Product newProduct30 = productService.createNewProduct(product30, category2.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
+
+            productVariantId = newProduct30.getProductVariants().get(0).getProductVariantId();
         }
     }
 
@@ -445,5 +452,9 @@ public class StartUpService {
             sizeDetailsRepository.save(new SizeDetails(SizeEnum.L));
             sizeDetailsRepository.save(new SizeDetails(SizeEnum.XL));
         }
+    }
+
+    private void initializeShoppingCartIfNotFound() throws ProductVariantNotFoundException {
+//        shoppingCartService.createShoppingCartItem(2, productVariantId);
     }
 }

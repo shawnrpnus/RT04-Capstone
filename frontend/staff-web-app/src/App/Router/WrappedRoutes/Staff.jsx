@@ -8,6 +8,6 @@ export default () => (
   <Switch>
     <Route path="/staff/create" component={StaffCreateForm} />
     <Route path="/staff/createAccount" component={StaffAccountCreateForm} />
-      <Route path="/staff/viewAll" component={StaffTable} />
+    <Route path="/staff/viewAll" component={StaffTable} />
   </Switch>
 );

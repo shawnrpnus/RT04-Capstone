@@ -19,7 +19,7 @@ import java.util.List;
 @NoArgsConstructor
 public class ProductRetrieveRequest {
 
-    private Category category;
+    private Long categoryId;
 
     private List<Tag> tags;
 

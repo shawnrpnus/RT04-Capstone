@@ -21,11 +21,7 @@ import axios from "axios";
 import MaterialNumberSelect from "../../../shared/components/Form/MaterialNumberSelect";
 import ContentSaveIcon from "mdi-react/ContentSaveIcon";
 import CloseCircleIcon from "mdi-react/CloseCircleIcon";
-import InputLabel from "@material-ui/core/InputLabel";
-import Select from "@material-ui/core/Select";
-import MenuItem from "@material-ui/core/MenuItem";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import { retrieveAllCategoryTagStyle } from "../../../redux/actions/productActions";
 
 class StaffCreateForm extends Component {
   static propTypes = {

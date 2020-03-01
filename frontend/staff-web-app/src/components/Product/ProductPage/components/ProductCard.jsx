@@ -1,12 +1,6 @@
 import React, { PureComponent } from "react";
-import {
-  Card,
-  CardBody,
-  Col,
-  ButtonToolbar,
-  Button,
-  ButtonGroup
-} from "reactstrap";
+import { Redirect } from "react-router-dom";
+import { Col, ButtonToolbar, Button, ButtonGroup } from "reactstrap";
 import StarIcon from "mdi-react/StarIcon";
 import StarOutlineIcon from "mdi-react/StarOutlineIcon";
 import { withRouter } from "react-router-dom";
@@ -35,6 +29,7 @@ import withPage from "../../../Layout/page/withPage";
 import colourList from "../../../../scss/colours.json";
 import Typography from "@material-ui/core/Typography";
 import withMaterialConfirmDialog from "./../../../Layout/page/withMaterialConfirmDialog";
+import axios from "axios";
 
 const _ = require("lodash");
 const jsonColorList = _.keyBy(colourList, "hex");

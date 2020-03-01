@@ -49,6 +49,12 @@ const styles = {
     textAlign: "left",
     marginBottom: "0px !important"
   },
+  reset: {
+    ...cardTitle,
+    marginBottom: "0px !important",
+    marginTop: "0px !important",
+    color: "inherit !important"
+  },
   cardDescription: {
     color: grayColor[0],
     textAlign: "center"
@@ -151,6 +157,15 @@ const styles = {
     margin: 0,
     top: "auto",
     left: 20,
+    bottom: 20,
+    right: "auto",
+    position: "fixed"
+  },
+  floatingFilterDrawer: {
+    zIndex: "5",
+    margin: 0,
+    top: "auto",
+    left: 175,
     bottom: 20,
     right: "auto",
     position: "fixed"

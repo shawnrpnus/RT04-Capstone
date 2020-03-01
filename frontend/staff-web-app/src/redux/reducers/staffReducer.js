@@ -3,8 +3,10 @@ import * as types from "../actions/types";
 const initialState = {
   currentStaff: null,
   allStaff: null,
+
   allRoles: null,
-  allDepartments: null
+  allDepartments: null,
+  loggedInStaff: null
 };
 
 export default function(state = initialState, action) {
@@ -58,6 +60,19 @@ export default function(state = initialState, action) {
         ...state,
         currentStaff: action.deletedStaff
       };
+
+    case types.STAFF_LOGIN:
+      return {
+        ...state,
+        loggedInStaff: action.staff
+      };
+
+    case types.UPDATE_STAFF:
+      return {
+        ...state,
+        loggedInStaff: action.staff
+      };
+
     default:
       return state;
   }

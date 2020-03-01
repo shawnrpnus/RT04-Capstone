@@ -12,10 +12,6 @@ public class InvalidStaffCredentialsException extends Exception {
     public InvalidStaffCredentialsException() {
     }
 
-    public InvalidStaffCredentialsException( String message) {
-        super(message);
-    }
-
     public InvalidStaffCredentialsException(Map<String, String> errorMap, String message) {
         super(message);
         this.errorMap = errorMap;
