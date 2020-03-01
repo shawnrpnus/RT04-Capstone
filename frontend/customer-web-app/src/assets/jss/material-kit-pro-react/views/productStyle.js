@@ -108,7 +108,7 @@ const productStyle = {
     }
   },
   pickSize: {
-    marginTop: "50px"
+    marginTop: "0px"
   },
   pullRight: {
     float: "right"

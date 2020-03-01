@@ -11,28 +11,26 @@ import Button from "components/UI/CustomButtons/Button";
 import { ShoppingCart } from "@material-ui/icons";
 import productStyle from "assets/jss/material-kit-pro-react/views/productStyle.js";
 import { makeStyles } from "@material-ui/core/styles";
+import colours from "assets/colours";
 
 const _ = require("lodash");
 const useStyles = makeStyles(productStyle);
 
 function ProductDetailsCard(props) {
+  const colorNames = _.keyBy(colours, "hex");
   const classes = useStyles();
   const { productDetail } = props;
-  const [colorSelect, setColorSelect] = React.useState("0");
-  const [sizeSelect, setSizeSelect] = React.useState("0");
+
   const [activeColourIndex, setActiveColourIndex] = useState(0);
 
   const extractProductInformation = productDetail => {
-    // const colours = [];
+    if (!productDetail) return {};
     const { product, colourToSizeImageMaps } = productDetail;
 
     // below used to link image set to colour clicked by mapping this list of objects to
     // colour boxes and the image set + size boxes
     const colourAndSizeToVariantAndStockMap = {};
     const colourToImageAndSizes = colourToSizeImageMaps.map(csiMap => {
-      // if (!colours.includes(csiMap.colour)) {
-      //   colours.push(csiMap.colour);
-      // }
       colourAndSizeToVariantAndStockMap[csiMap.colour] = _.keyBy(
         csiMap.sizeMaps,
         "size"
@@ -62,136 +60,129 @@ function ProductDetailsCard(props) {
     colourAndSizeToVariantAndStockMap
   } = extractProductInformation(productDetail);
 
+  const [selectedColour, setSelectedColour] = React.useState(
+    colourToImageAndSizes[activeColourIndex].colour
+  );
+  const [selectedSize, setSelectedSize] = React.useState(
+    colourToImageAndSizes[activeColourIndex].sizes[0]
+  );
+
   console.log(colourAndSizeToVariantAndStockMap);
   return (
     <React.Fragment>
-      <div className={classes.productPage}>
-        <GridContainer>
-          <GridItem md={6} sm={6}>
-            <ImageGallery
-              showFullscreenButton={false}
-              showPlayButton={false}
-              startIndex={3}
-              items={colourToImageAndSizes[activeColourIndex].imageSet}
-            />
-          </GridItem>
-          <GridItem md={6} sm={6}>
-            <h2 className={classes.title}>{product.productName}</h2>
-            <h3 className={classes.mainPrice}>${product.price}</h3>
-            <Accordion
-              active={0}
-              activeColor="rose"
-              collapses={[
-                {
-                  title: "Description",
-                  content: <p>{product.description}</p>
+      <GridContainer>
+        <GridItem md={6} sm={6}>
+          <ImageGallery
+            showFullscreenButton={false}
+            showPlayButton={false}
+            startIndex={3}
+            items={colourToImageAndSizes[activeColourIndex].imageSet}
+          />
+        </GridItem>
+        <GridItem md={6} sm={6}>
+          <h2 className={classes.title}>{product.productName}</h2>
+          <h3 className={classes.mainPrice}>${product.price}</h3>
+          <Accordion
+            active={0}
+            activeColor="rose"
+            collapses={[
+              {
+                title: "Description",
+                content: <p>{product.description}</p>
+              },
+              {
+                title: "Stock Information",
+                content: (
+                  <p>{`Stock: ${_.get(
+                    colourAndSizeToVariantAndStockMap,
+                    `${selectedColour}.${selectedSize}.productStock.quantity`
+                  )}`}</p>
+                )
+              }
+            ]}
+          />
+          <GridContainer className={classes.pickSize}>
+            <GridItem md={6} sm={6}>
+              <h5>Select color</h5>
+              <h6>Selected: {colorNames[selectedColour].name}</h6>
+              {colourToImageAndSizes.map((cis, index) => {
+                return (
+                  <svg
+                    key={cis.colour + index}
+                    width="40"
+                    style={{ margin: "0 2px", cursor: "pointer" }}
+                    height="40"
+                    onClick={() => {
+                      setSelectedColour(cis.colour);
+                      setActiveColourIndex(index);
+                    }}
+                  >
+                    <rect
+                      width="40"
+                      height="40"
+                      style={{
+                        fill: "white",
+                        strokeWidth: activeColourIndex === index ? 4 : 1,
+                        stroke: activeColourIndex === index ? "black" : "grey"
+                      }}
+                    />
+                    <rect
+                      x="4"
+                      y="4"
+                      width="32"
+                      height="32"
+                      style={{ fill: cis.colour }}
+                    />
+                  </svg>
+                );
+              })}
+            </GridItem>
+            <GridItem md={6} sm={6}>
+              <h5>Select size</h5>
+              <h6>Selected: {selectedSize}</h6>
+              {colourToImageAndSizes[activeColourIndex].sizes.map(
+                (size, index) => {
+                  return (
+                    <svg
+                      key={size + index}
+                      width="40"
+                      style={{ margin: "0 2px", cursor: "pointer" }}
+                      height="40"
+                      onClick={() => setSelectedSize(size)}
+                    >
+                      <rect
+                        width="40"
+                        height="40"
+                        style={{
+                          fill: "white",
+                          strokeWidth: selectedSize === size ? 4 : 1,
+                          stroke: selectedSize === size ? "black" : "grey"
+                        }}
+                      />
+                      <text
+                        x="50%"
+                        y="50%"
+                        style={{
+                          dominantBaseline: "middle",
+                          textAnchor: "middle",
+                          fontWeight: "bold"
+                        }}
+                      >
+                        {size}
+                      </text>
+                    </svg>
+                  );
                 }
-              ]}
-            />
-            <GridContainer className={classes.pickSize}>
-              <GridItem md={6} sm={6}>
-                <label>Select color</label>
-                <FormControl fullWidth className={classes.selectFormControl}>
-                  <Select
-                    MenuProps={{
-                      className: classes.selectMenu
-                    }}
-                    classes={{
-                      select: classes.select
-                    }}
-                    value={colorSelect}
-                    onChange={event => setColorSelect(event.target.value)}
-                    inputProps={{
-                      name: "colorSelect",
-                      id: "color-select"
-                    }}
-                  >
-                    <MenuItem
-                      classes={{
-                        root: classes.selectMenuItem,
-                        selected: classes.selectMenuItemSelected
-                      }}
-                      value="0"
-                    >
-                      Rose
-                    </MenuItem>
-                    <MenuItem
-                      classes={{
-                        root: classes.selectMenuItem,
-                        selected: classes.selectMenuItemSelected
-                      }}
-                      value="1"
-                    >
-                      Gray
-                    </MenuItem>
-                    <MenuItem
-                      classes={{
-                        root: classes.selectMenuItem,
-                        selected: classes.selectMenuItemSelected
-                      }}
-                      value="2"
-                    >
-                      White
-                    </MenuItem>
-                  </Select>
-                </FormControl>
-              </GridItem>
-              <GridItem md={6} sm={6}>
-                <label>Select size</label>
-                <FormControl fullWidth className={classes.selectFormControl}>
-                  <Select
-                    MenuProps={{
-                      className: classes.selectMenu
-                    }}
-                    classes={{
-                      select: classes.select
-                    }}
-                    value={sizeSelect}
-                    onChange={event => setSizeSelect(event.target.value)}
-                    inputProps={{
-                      name: "sizeSelect",
-                      id: "size-select"
-                    }}
-                  >
-                    <MenuItem
-                      classes={{
-                        root: classes.selectMenuItem,
-                        selected: classes.selectMenuItemSelected
-                      }}
-                      value="0"
-                    >
-                      Small
-                    </MenuItem>
-                    <MenuItem
-                      classes={{
-                        root: classes.selectMenuItem,
-                        selected: classes.selectMenuItemSelected
-                      }}
-                      value="1"
-                    >
-                      Medium
-                    </MenuItem>
-                    <MenuItem
-                      classes={{
-                        root: classes.selectMenuItem,
-                        selected: classes.selectMenuItemSelected
-                      }}
-                      value="2"
-                    >
-                      Large
-                    </MenuItem>
-                  </Select>
-                </FormControl>
-              </GridItem>
-            </GridContainer>
-            <GridContainer className={classes.pullRight}>
-              <Button round color="rose">
-                Add to Cart &nbsp; <ShoppingCart />
-              </Button>
-            </GridContainer>
-          </GridItem>
-        </GridContainer>
-      </div>
+              )}
+            </GridItem>
+          </GridContainer>
+          <GridContainer className={classes.pullRight}>
+            <Button round color="rose">
+              Add to Cart &nbsp; <ShoppingCart />
+            </Button>
+          </GridContainer>
+        </GridItem>
+      </GridContainer>
     </React.Fragment>
   );
 }

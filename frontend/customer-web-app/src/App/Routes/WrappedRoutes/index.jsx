@@ -17,9 +17,9 @@ export default () => (
       <Route path="/contactUs" component={ContactUs} />
       <Route path="/shop" component={Product} />
       <Route path="/shoppingCart" component={ShoppingCart} />
-      <Route path="*">
-        <Redirect to="/" />
-      </Route>
+      {/*<Route path="*">*/}
+      {/*  <Redirect to="/" />*/}
+      {/*</Route>*/}
     </Layout>
   </div>
 );
