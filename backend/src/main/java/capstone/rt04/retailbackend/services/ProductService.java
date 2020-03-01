@@ -193,16 +193,19 @@ public class ProductService {
             for (ProductVariant productVariant : product.getProductVariants()) {
                 // Find product stock that belongs to the specified store/ warehouse
 
-                if (storeOrWarehouseId != null) { // no need to return product stock if no store/warehouse ID provided
-                    prodStock = new ProductStock();
-                    for (ProductStock productStock : productVariant.getProductStocks()) {
-                        if (productStock.getStore() != null && productStock.getStore().getStoreId().equals(storeOrWarehouseId)) {
-                            prodStock = productStock;
-                            break;
-                        } else if (productStock.getWarehouse() != null && productStock.getWarehouse().getWarehouseId().equals(storeOrWarehouseId)) {
-                            prodStock = productStock;
-                            break;
-                        }
+                /**
+                 ** storeOrWarehouseId === storeId
+                 ** By default return warehouse stock if no store ID provided
+                 */
+                prodStock = new ProductStock();
+
+                for (ProductStock productStock : productVariant.getProductStocks()) {
+                    if (productStock.getStore() != null && productStock.getStore().getStoreId().equals(storeOrWarehouseId)) {
+                        prodStock = productStock;
+                        break;
+                    } else if (productStock.getWarehouse() != null && storeOrWarehouseId == null) {
+                        prodStock = productStock;
+                        break;
                     }
                 }
 

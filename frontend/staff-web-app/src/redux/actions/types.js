@@ -36,6 +36,7 @@ export const DELETE_CATEGORY = "DELETE_CATEGORY";
 // Staff
 export const CHANGE_STAFF_PASSWORD = "CHANGE_STAFF_PASSWORD";
 export const STAFF_LOGIN = "STAFF_LOGIN";
+export const STAFF_LOGOUT = "STAFF_LOGOUT";
 export const UPDATE_STAFF = "UPDATE_STAFF";
 //For HR only
 export const RETRIEVE_ALL_STAFF = "RETRIEVE_ALL_STAFF";

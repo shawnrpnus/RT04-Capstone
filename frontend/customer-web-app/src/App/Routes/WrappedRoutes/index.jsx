@@ -5,6 +5,7 @@ import Account from "./Account";
 import Banner from "components/Layout/components/Banner";
 import ErrorPage from "components/Layout/components/Error/ErrorPage";
 import ContactUs from "./ContactUs";
+import ShoppingCart from "./ShoppingCart";
 import Product from "App/Routes/WrappedRoutes/Product";
 
 export default () => (
@@ -15,6 +16,10 @@ export default () => (
       <Route path="/account" component={Account} />
       <Route path="/contactUs" component={ContactUs} />
       <Route path="/shop" component={Product} />
+      <Route path="/shoppingCart" component={ShoppingCart} />
+      <Route path="*">
+        <Redirect to="/" />
+      </Route>
     </Layout>
   </div>
 );

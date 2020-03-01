@@ -2,8 +2,17 @@ import React, { PureComponent } from "react";
 import DownIcon from "mdi-react/ChevronDownIcon";
 import { Collapse } from "reactstrap";
 import TopbarMenuLink from "./TopbarMenuLink";
+import {
+  createNewStaff,
+  retrieveAllDepartments,
+  retrieveAllRoles,
+  staffLogout
+} from "../../../redux/actions/staffActions";
 import { UserProps, AuthOProps } from "../../../shared/prop-types/ReducerProps";
 import * as PropTypes from "prop-types";
+import { connect } from "react-redux";
+import {clearErrors, updateErrors} from "../../../redux/actions";
+import {useDispatch} from "react-redux";
 
 class TopbarProfile extends PureComponent {
   static propTypes = {
@@ -23,7 +32,7 @@ class TopbarProfile extends PureComponent {
   };
 
   logout = () => {
-    localStorage.removeItem("easydev");
+    this.props.staffLogout();
   };
 
   render() {
@@ -31,6 +40,7 @@ class TopbarProfile extends PureComponent {
     const { collapse } = this.state;
 
     return (
+
       <div className="topbar__profile">
         <button className="topbar__avatar" type="button" onClick={this.toggle}>
           {loggedInStaff && (
@@ -55,6 +65,12 @@ class TopbarProfile extends PureComponent {
               path="/account/profile"
               onClick={this.toggle}
             />
+            <TopbarMenuLink
+                title="Logout"
+                icon="exit"
+                path="/login"
+                onClick={this.logout}
+            />
           </div>
         </Collapse>
       </div>
@@ -62,4 +78,16 @@ class TopbarProfile extends PureComponent {
   }
 }
 
-export default TopbarProfile;
+//mapping global state to this component
+const mapStateToProps = state => ({
+ loggedInStaff : state.staffEntity.loggedInStaff
+});
+
+const mapDispatchToProps = {
+  staffLogout //api/staffEntity/createNewStaff
+};
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(TopbarProfile);
