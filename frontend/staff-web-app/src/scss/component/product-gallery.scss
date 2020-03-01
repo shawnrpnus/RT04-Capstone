@@ -5,7 +5,7 @@
 
 .product-gallery__current-img {
   max-width: 440px;
-  height: 440px;
+  height: 80%;
   display: flex;
   justify-content: center;
   overflow: hidden;
@@ -17,7 +17,7 @@
   }
 
   @include themify($themes) {
-    border: 1px solid themed('colorBorder');
+    border: 1px solid themed("colorBorder");
   }
 
   img {
@@ -47,7 +47,7 @@
   background: transparent;
 
   @include themify($themes) {
-    border: 1px solid themed('colorBorder');
+    border: 1px solid themed("colorBorder");
   }
 
   &:last-child {
@@ -63,7 +63,7 @@
 
   img {
     height: 80px;
-    
+
     @media screen and (max-width: 568px) {
       height: 60px;
     }
@@ -71,7 +71,6 @@
 }
 
 @media screen and (max-width: 1199px) {
-
   .product-gallery {
     margin: auto;
   }

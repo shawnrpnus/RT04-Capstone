@@ -1,5 +1,6 @@
 /*eslint-disable*/
 import React, { useEffect, useState } from "react";
+import { useHistory, useLocation } from "react-router-dom";
 // nodejs library that concatenates classes
 import classNames from "classnames";
 // @material-ui/core components
@@ -7,15 +8,19 @@ import { makeStyles } from "@material-ui/core/styles";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import Tooltip from "@material-ui/core/Tooltip";
+import Grid from "@material-ui/core/Grid";
+import CancelIcon from "@material-ui/icons/Cancel";
+
 // @material-ui/icons
 import Favorite from "@material-ui/icons/Favorite";
 import Close from "@material-ui/icons/Close";
 import Remove from "@material-ui/icons/Remove";
 import Add from "@material-ui/icons/Add";
 import KeyboardArrowRight from "@material-ui/icons/KeyboardArrowRight";
+
 // redux
-import { useHistory, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+
 // core components
 import Parallax from "components/UI/Parallax/Parallax.js";
 import GridContainer from "components/Layout/components/Grid/GridContainer.js";
@@ -32,27 +37,28 @@ const useStyles = makeStyles(shoppingCartStyle);
 import product1 from "assets/img/product1.jpg";
 import product2 from "assets/img/product2.jpg";
 import product3 from "assets/img/product3.jpg";
+import { IconButton } from "@material-ui/core";
 
 export default function ShoppingCartPage() {
+  const classes = useStyles();
+  // Redux dispatch to call actions
+  const dispatch = useDispatch();
+  // Redux mapping state to props
+  const errors = useSelector(state => state.errors);
+  const customer = useSelector(state => state.customer.loggedInCustomer);
+
+  // Updating shopping cart information
   useEffect(() => {
     window.scrollTo(0, 0);
     document.body.scrollTop = 0;
-  });
-
-  // Redux dispatch to call actions
-  const dispatch = useDispatch();
-
-  // Redux mapping state to props
-  const errors = useSelector(state => state.errors);
-  const customer = useSelector(state => state.customer);
+  }, [customer]);
 
   console.log(customer);
 
-  const [onlineShoppingCart, setOnlineShoppingCart] = useState(
-    _.get(customer, "onlineShoppingCart", [])
+  const [shoppingCartItems, setShoppingCartItems] = useState(
+    _.get(customer, "onlineShoppingCart.shoppingCartItems", [])
   );
 
-  const classes = useStyles();
   return (
     <div>
       <Parallax
@@ -81,44 +87,65 @@ export default function ShoppingCartPage() {
           <Card plain>
             <CardBody plain>
               <h3 className={classes.cardTitle}>Shopping Cart</h3>
-              {onlineShoppingCart && (
-                <Card>
-                  <GridContainer>
-                    {/* Photo */}
-                    <GridItem md={2}>
-                      <img src={product1} />
-                    </GridItem>
-                    {/* Name */}
-                    <GridItem md={2}>
-                      <p>Name</p>
-                    </GridItem>
-                    {/* Colour */}
-                    <GridItem md={1}>
-                      <p>Colour</p>
-                    </GridItem>
-                    {/* Size */}
-                    <GridItem md={1}>
-                      <p>Size</p>
-                    </GridItem>
-                    {/* Price */}
-                    <GridItem md={1}>
-                      <p>Price</p>
-                    </GridItem>
-                    {/* Quantity */}
-                    <GridItem md={2}>
-                      <p>Quantity</p>
-                    </GridItem>
-                    {/* Amount */}
-                    <GridItem md={2}>
-                      <p>Amount</p>
-                    </GridItem>
-                    {/* Action */}
-                    <GridItem md={1}>
-                      <p>Action</p>
-                    </GridItem>
-                  </GridContainer>
-                </Card>
-              )}
+              {shoppingCartItems.map(cartItem => {
+                console.log(cartItem);
+                const {
+                  productImages,
+                  product,
+                  sizeDetails,
+                  colour
+                } = cartItem.productVariant;
+                const { quantity } = cartItem;
+                return (
+                  <Card>
+                    <GridContainer
+                      alignItems="center"
+                      style={{ textAlign: "center" }}
+                    >
+                      {/* Photo */}
+                      <Grid md={2}>
+                        {/* Modified CSS */}
+                        <div className={classes.imgContainer}>
+                          <img
+                            className={classes.img}
+                            src={productImages[1].productImageUrl}
+                          />
+                        </div>
+                      </Grid>
+                      {/* Name */}
+                      <GridItem md={2}>
+                        <p>{product.productName}</p>
+                      </GridItem>
+                      {/* Colour */}
+                      <GridItem md={1}>
+                        <p>{colour}</p>
+                      </GridItem>
+                      {/* Size */}
+                      <GridItem md={1}>
+                        <p>{sizeDetails.productSize}</p>
+                      </GridItem>
+                      {/* Price */}
+                      <GridItem md={1}>
+                        <p>${product.price}</p>
+                      </GridItem>
+                      {/* Quantity */}
+                      <GridItem md={3}>
+                        <p>{quantity}</p>
+                      </GridItem>
+                      {/* Amount */}
+                      <GridItem md={1}>
+                        <p>${(product.price * quantity).toFixed(2)}</p>
+                      </GridItem>
+                      {/* Action */}
+                      <GridItem md={1}>
+                        <IconButton style={{ marginTop: "-15%" }}>
+                          <CancelIcon style={{ color: "red" }} />
+                        </IconButton>
+                      </GridItem>
+                    </GridContainer>
+                  </Card>
+                );
+              })}
               {/* <Table
                 tableHead={[
                   "",

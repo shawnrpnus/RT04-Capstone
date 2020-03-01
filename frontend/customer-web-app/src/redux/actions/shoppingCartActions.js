@@ -24,6 +24,7 @@ export const updateShoppingCart = (updateShoppingCartRequest, history) => {
   };
 };
 
+// Customer reducer
 const updateShoppingCartThroughCustomer = data => ({
   type: UPDATE_SHOPPING_CART_SUCCESS,
   customer: data

@@ -58,7 +58,7 @@ class ProductsStockTable extends PureComponent {
   };
 
   componentDidMount() {
-    this.props.retrieveProductsDetails(1043);
+    this.props.retrieveProductsDetails();
   }
 
   handleViewProductStocksDetails = productId => {
