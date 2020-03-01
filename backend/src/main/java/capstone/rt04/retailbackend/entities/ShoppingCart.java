@@ -53,6 +53,17 @@ public class ShoppingCart implements Serializable {
         this.finalTotalAmount = BigDecimal.ZERO;
         this.shoppingCartItems = new ArrayList<>();
     }
+
+    public void calculateAndSetInitialTotal(){
+        BigDecimal total = BigDecimal.ZERO;
+        for (ShoppingCartItem item : this.getShoppingCartItems()){
+            Integer quantity = item.getQuantity();
+            BigDecimal unitPrice = item.getProductVariant().getProduct().getPrice();
+            BigDecimal subTotal = unitPrice.multiply(new BigDecimal(quantity));
+            total = total.add(subTotal);
+        }
+        this.setInitialTotalAmount(total);
+    }
     
     
 
