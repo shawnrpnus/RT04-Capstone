@@ -1,7 +1,8 @@
 export default class UpdateProductStockRequest {
-  stockQty;
-
-  constructor(stockQty) {
-    this.stockQty = stockQty;
+  quantity;
+  productStockId;
+  constructor(productStockId, quantity) {
+    this.productStockId = productStockId;
+    this.quantity = quantity;
   }
 }

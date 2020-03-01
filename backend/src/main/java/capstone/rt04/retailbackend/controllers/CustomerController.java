@@ -148,7 +148,9 @@ public class CustomerController {
     }
 
     @PostMapping(CustomerControllerRoutes.DELETE_MEASUREMENTS)
-    public ResponseEntity<?> deleteMeasurements(@RequestParam Long customerId) throws CustomerNotFoundException {
+    public ResponseEntity<?> deleteMeasurements(@PathVariable Long customerId) throws CustomerNotFoundException {
+        System.out.println("Deleting");
+        System.out.println(customerId);
         Customer customer = customerService.deleteMeasurements(customerId);
         return new ResponseEntity<>(customer, HttpStatus.OK);
     }

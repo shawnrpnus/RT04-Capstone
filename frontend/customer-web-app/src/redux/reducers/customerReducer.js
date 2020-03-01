@@ -57,6 +57,11 @@ export default function(state = initialState, action) {
         ...state,
         loggedInCustomer: action.loggedInCustomer
       }
+    case types.UPDATE_SHOPPING_CART_SUCCESS:
+      return {
+        ...state,
+        loggedInCustomer: action.customer
+      };
     default:
       return state;
   }

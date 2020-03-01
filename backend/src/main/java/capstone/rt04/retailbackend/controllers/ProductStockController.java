@@ -3,6 +3,7 @@ package capstone.rt04.retailbackend.controllers;
 import capstone.rt04.retailbackend.entities.Product;
 import capstone.rt04.retailbackend.entities.ProductStock;
 import capstone.rt04.retailbackend.request.productStock.ProductStockCreateRequest;
+import capstone.rt04.retailbackend.request.productStock.ProductStockQtyUpdateRequest;
 import capstone.rt04.retailbackend.response.GenericErrorResponse;
 import capstone.rt04.retailbackend.services.ProductService;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
@@ -44,13 +45,29 @@ public class ProductStockController {
                                                                             @RequestParam(required = false) Long storeId,
                                                                             @RequestParam(required = false) Long productVariantId) {
         try {
-            List<Product> products = productService.retrieveProductStocksByParameter(storeId,
+            List<Product> products = productService.retrieveProductStocksThroughProductByParameter(storeId,
                     warehouseId, productVariantId);
             return new ResponseEntity<>(products, HttpStatus.OK);
         } catch (Exception ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @GetMapping(ProductStockControllerRoutes.RETRIEVE_PRODUCT_STOCKS_BY_PARAMETER)
+    public ResponseEntity<?> retrieveProductStocksByParameter(@RequestParam(required = false) Long warehouseId,
+                                                                            @RequestParam(required = false) Long storeId,
+                                                                            @RequestParam(required = false) Long productVariantId) {
+        try {
+            List<ProductStock> productStocks = productService.retrieveProductStocksByParameter(storeId,
+                    warehouseId, productVariantId);
+            clearProductStockRelationship(productStocks);
+            return new ResponseEntity<>(productStocks, HttpStatus.OK);
+        } catch (Exception ex) {
+            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
 
     @PostMapping(ProductStockControllerRoutes.CREATE_PRODUCT_STOCK)
     public ResponseEntity<?> createProductStock(@RequestBody ProductStockCreateRequest productStockCreateRequest) throws ProductVariantNotFoundException, InputDataValidationException {
@@ -70,6 +87,12 @@ public class ProductStockController {
         }
     }
 
+    @PutMapping(ProductStockControllerRoutes.UPDATE_PRODUCT_STOCK_QTY)
+    public ResponseEntity<?> updateProductStockQty(@RequestBody ProductStockQtyUpdateRequest productStockQtyUpdateRequest) throws ProductStockNotFoundException {
+        ProductStock updateProductStock = productService.updateProductStockQty(productStockQtyUpdateRequest.getProductStockId(), productStockQtyUpdateRequest.getQuantity());
+        return new ResponseEntity<>(updateProductStock, HttpStatus.OK);
+    }
+
     @DeleteMapping(ProductStockControllerRoutes.DELETE_PRODUCT_STOCK)
     public ResponseEntity<?> deleteProductStock(@PathVariable Long productStockId) {
         try {
@@ -79,6 +102,20 @@ public class ProductStockController {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
         } catch (Exception ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    private void clearProductStockRelationship(List<ProductStock> productStocks) {
+        for( ProductStock productStock:  productStocks) {
+            productStock.getProductVariant().setProductStocks(null);
+            Product product = productStock.getProductVariant().getProduct();
+            product.setProductVariants(null);
+            product.setDiscounts(null);
+            product.setPromoCodes(null);
+            product.setTags(null);
+            product.setCategory(null);
+            product.setReviews(null);
+            product.setStyles(null);
         }
     }
 }

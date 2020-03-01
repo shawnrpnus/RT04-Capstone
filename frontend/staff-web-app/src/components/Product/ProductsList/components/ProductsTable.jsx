@@ -16,13 +16,14 @@ import {
   SaveAlt,
   Search,
   ViewColumn,
-  Visibility
+  Visibility,
+  List
 } from "@material-ui/icons";
 import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
 import { retrieveProductsDetails } from "../../../../redux/actions/productActions";
 import withPage from "../../../Layout/page/withPage";
 import colourList from "../../../../scss/colours.json";
-import axios from "axios";
+import ProductsStockDetails from "./ProductsStockDetails";
 
 const _ = require("lodash");
 
@@ -51,9 +52,8 @@ const jsonColorHexList = _.keyBy(colourList, "hex");
 
 class ProductsTable extends PureComponent {
   state = {
-    id: "",
-    redirect: false,
-    products: []
+    selectedProductId: "",
+    openProductStocksDetailsDialogue: false
   };
 
   componentDidMount() {
@@ -64,10 +64,18 @@ class ProductsTable extends PureComponent {
     this.props.history.push(`/product/viewProductDetails/${id}`);
   };
 
+  handleViewProductStocksDetails = productId => {
+    this.setState({
+      selectedProductId: productId,
+      openProductStocksDetailsDialogue: true
+    });
+  };
+
   formatData = () => {};
 
   render() {
     const { products, renderLoader, columnsToHide } = this.props;
+    const { openProductStocksDetailsDialogue, selectedProductId } = this.state;
 
     let data = [];
     if (products) {
@@ -97,7 +105,7 @@ class ProductsTable extends PureComponent {
         {products ? (
           <MaterialTable
             title="Products"
-            padding="none"
+            // padding="none"
             style={{ boxShadow: "none" }}
             icons={tableIcons}
             columns={[
@@ -149,7 +157,7 @@ class ProductsTable extends PureComponent {
             options={{
               filtering: true,
               sorting: true,
-              padding: "dense",
+              // padding: "dense",
               pageSize: 5,
               pageSizeOptions: [5, 10, 20, 40],
               actionsColumnIndex: -1,
@@ -157,21 +165,35 @@ class ProductsTable extends PureComponent {
               cellStyle: { textAlign: "center" },
               selection: this.props.selectable
             }}
-            actions={
+            actions={[
               !this.props.selectionAction
-                ? [
-                    {
-                      icon: Visibility,
-                      tooltip: "View Product Variants",
-                      onClick: (event, rowData) =>
-                        this.handleViewProductDetails(rowData.productId)
-                    }
-                  ]
-                : [this.props.selectionAction]
-            }
+                ? {
+                    icon: Visibility,
+                    tooltip: "View Product Variants",
+                    onClick: (event, rowData) =>
+                      this.handleViewProductDetails(rowData.productId)
+                  }
+                : this.props.selectionAction,
+              {
+                icon: List,
+                tooltip: "View / Update Product Stocks",
+                onClick: (event, rowData) =>
+                  this.handleViewProductStocksDetails(rowData.productId)
+              }
+            ]}
           />
         ) : (
           renderLoader()
+        )}
+        {openProductStocksDetailsDialogue && (
+          <ProductsStockDetails
+            open={openProductStocksDetailsDialogue}
+            onClose={() => {
+              this.setState({ openProductStocksDetailsDialogue: false });
+            }}
+            key={selectedProductId}
+            selectedProductId={selectedProductId}
+          />
         )}
       </div>
     );

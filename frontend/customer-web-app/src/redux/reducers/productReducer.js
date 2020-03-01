@@ -1,7 +1,8 @@
 import * as types from "../actions/types";
 
 const initialState = {
-  displayedProductDetails: null
+  displayedProductDetails: null,
+  currentProductDetail: null
 };
 
 export default function(state = initialState, action) {
@@ -10,6 +11,11 @@ export default function(state = initialState, action) {
       return {
         ...state,
         displayedProductDetails: action.products
+      };
+    case types.VIEW_SINGLE_PRODUCT:
+      return {
+        ...state,
+        currentProductDetail: action.product
       };
     default:
       return state;

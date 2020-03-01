@@ -87,9 +87,9 @@ function SubCategoryColumn(props) {
   const headerClasses = useHeaderStyles();
   const typoClasses = useTypoStyles();
   return (
-    <GridItem md>
+    <GridItem md style={{ width: "10vw" }}>
       <Link
-        to={`/shop/${rootCategory.categoryName}/${subCategory.categoryName}`}
+        to={`/shop/catalog/${rootCategory.categoryName}/${subCategory.categoryName}`}
       >
         <h5
           className={classNames(
@@ -106,7 +106,7 @@ function SubCategoryColumn(props) {
         {leafCategories.map(c => (
           <Link
             key={c.categoryId}
-            to={`/shop/${rootCategory.categoryName}/${subCategory.categoryName}/${c.categoryName}`}
+            to={`/shop/catalog/${rootCategory.categoryName}/${subCategory.categoryName}/${c.categoryName}`}
           >
             <ListItem button disableGutters>
               {c.categoryName}
@@ -192,11 +192,12 @@ export default CategoryNavbar;
 // Styling of tooltip content
 const HtmlTooltip = withStyles(theme => ({
   tooltip: {
-    backgroundColor: "#f5f5f9",
-    color: "rgba(0, 0, 0, 0.87)",
+    backgroundColor: "white",
+    //color: "rgba(0, 0, 0, 0.87)",
     maxWidth: "100vw",
     fontSize: theme.typography.pxToRem(14),
-    border: "1px solid #dadde9",
+    border: "1px solid #F0F0F0",
+    borderRadius: "0",
     minWidth: "200px",
     padding: "10px"
   }

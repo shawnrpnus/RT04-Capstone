@@ -279,13 +279,33 @@ export const updateShippingAddress = (updateShippingAddressRequest, history) => 
     axios
       .post(CUSTOMER_BASE_URL + "/updateShippingAddress", updateShippingAddressRequest)
       .then(response => {
-        const { data } = jsog.decode(response);
+        const {data} = jsog.decode(response);
         dispatch(updateShippingAddressSuccess(data));
         history.push("/account/address");
       })
       .catch(err => {
         dispatchErrorMapError(err, dispatch);
         // console.log(err.response.data);
+      });
+  }
+};
+
+export const addMeasurements = (req, enqueueSnackbar, setAddMeasurements) => {
+  return dispatch => {
+    //redux thunk passes dispatch
+    axios
+      .post(CUSTOMER_BASE_URL + "/updateMeasurements", req)
+      .then(response => {
+        dispatchUpdatedCustomer(response.data, dispatch);
+        enqueueSnackbar("Measurements added", {
+          variant: "success",
+          autoHideDuration: 1200
+        });
+        setAddMeasurements(true);
+      })
+      .catch(err => {
+        dispatchErrorMapError(err, dispatch);
+        console.log(err.response.data);
       });
   };
 };
@@ -314,9 +334,53 @@ export const addShippingAddressDetails = (addUpdateAddressRequest, enqueueSnackb
         // console.log(err.response.data);
       });
   };
-}
+};
 
 export const addShippingAddressSuccess = data => ({
   type: ADD_SHIPPING_ADDRESS_SUCCESS,
   loggedInCustomer: data
 });
+
+export const updateMeasurements = (
+  req,
+  enqueueSnackbar,
+  setAddMeasurements
+) => {
+  return dispatch => {
+    //redux thunk passes dispatch
+    axios
+      .post(CUSTOMER_BASE_URL + "/updateMeasurements", req)
+      .then(response => {
+        dispatchUpdatedCustomer(response.data, dispatch);
+        enqueueSnackbar("Measurements updated", {
+          variant: "success",
+          autoHideDuration: 1200
+        });
+        setAddMeasurements(true);
+      })
+      .catch(err => {
+        dispatchErrorMapError(err, dispatch);
+        console.log(err.response.data);
+      });
+  };
+};
+
+export const deleteMeasurements = (customerId, enqueueSnackbar) => {
+  return dispatch => {
+    //redux thunk passes dispatch
+    console.log(customerId);
+    axios
+      .post(CUSTOMER_BASE_URL + `/deleteMeasurements/${customerId}`)
+      .then(response => {
+        dispatchUpdatedCustomer(response.data, dispatch);
+        enqueueSnackbar("Measurements deleted", {
+          variant: "success",
+          autoHideDuration: 1200
+        });
+      })
+      .catch(err => {
+        dispatchErrorMapError(err, dispatch);
+        console.log(err);
+      });
+  };
+};

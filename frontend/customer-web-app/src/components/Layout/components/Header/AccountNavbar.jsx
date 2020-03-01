@@ -161,11 +161,12 @@ export default AccountNavbar;
 // Styling of tooltip content
 const HtmlTooltip = withStyles(theme => ({
   tooltip: {
-    backgroundColor: "#f5f5f9",
-    color: "rgba(0, 0, 0, 0.87)",
+    backgroundColor: "white",
+    // color: "rgba(0, 0, 0, 0.87)",
     maxWidth: "100%",
     fontSize: theme.typography.pxToRem(14),
-    border: "1px solid #dadde9",
+    border: "1px solid #F0F0F0",
+    borderRadius: "0",
     width: "200px",
     padding: "0"
   }

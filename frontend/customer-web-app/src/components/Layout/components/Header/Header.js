@@ -74,7 +74,12 @@ export default function Header(props) {
       <Toolbar className={classes.container}>
         <Button className={classes.title}>
           <Link to="/">
-            <img width="40px" height="40px" src={apricotNut} alt="apricot&nut"/>
+            <img
+              width="40px"
+              height="40px"
+              src={apricotNut}
+              alt="apricot&nut"
+            />
           </Link>
         </Button>
         <Hidden smDown implementation="css" className={classes.hidden}>

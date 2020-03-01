@@ -33,7 +33,7 @@ const VerifyEmailPrompt = props => {
               classes.textCenter
             )}
           >
-            ><h1 className={classes.title}>Just one more step</h1>
+            <h1 className={classes.title}>Just one more step</h1>
             <h4>
               Click the verification link sent to your email and you're all
               done!

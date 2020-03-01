@@ -2,15 +2,19 @@ package capstone.rt04.retailbackend.services;
 
 import capstone.rt04.retailbackend.entities.*;
 import capstone.rt04.retailbackend.repositories.AddressRepository;
+import capstone.rt04.retailbackend.repositories.SizeDetailsRepository;
 import capstone.rt04.retailbackend.request.product.ColourToImageUrlsMap;
 import capstone.rt04.retailbackend.util.enums.RoleNameEnum;
 import capstone.rt04.retailbackend.util.enums.SizeEnum;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.category.CategoryNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.category.CreateNewCategoryException;
+import capstone.rt04.retailbackend.util.exceptions.customer.CreateNewCustomerException;
+import capstone.rt04.retailbackend.util.exceptions.customer.CustomerNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.product.CreateNewProductException;
 import capstone.rt04.retailbackend.util.exceptions.product.CreateNewProductStockException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.shoppingcart.InvalidCartTypeException;
 import capstone.rt04.retailbackend.util.exceptions.staff.CreateDepartmentException;
 import capstone.rt04.retailbackend.util.exceptions.staff.CreateNewStaffException;
 import capstone.rt04.retailbackend.util.exceptions.staff.CreateRoleException;
@@ -27,6 +31,8 @@ import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 
+import static capstone.rt04.retailbackend.util.Constants.ONLINE_SHOPPING_CART;
+
 @Component
 @Profile("dev")
 public class StartUpService {
@@ -38,8 +44,12 @@ public class StartUpService {
     private final StyleService styleService;
     private final StoreService storeService;
     private final StaffService staffService;
+    private final SizeDetailsService sizeDetailsService;
+    private final ShoppingCartService shoppingCartService;
+    private final CustomerService customerService;
 
     private final AddressRepository addressRepository;
+    private final SizeDetailsRepository sizeDetailsRepository;
 
     private static Long sneakerCategoryId;
     private static Long shirtCategoryId;
@@ -50,8 +60,12 @@ public class StartUpService {
     private static Long jeansCategoryId;
     private static Long bermudasCategoryId;
 
+    private Long customerId;
+    private Long productVariantId29;
+    private Long productVariantId30;
 
-    public StartUpService(ProductService productService, CategoryService categoryService, WarehouseService warehouseService, TagService tagService, StyleService styleService, StoreService storeService, StaffService staffService, AddressRepository addressRepository) {
+
+    public StartUpService(ProductService productService, CategoryService categoryService, WarehouseService warehouseService, TagService tagService, StyleService styleService, StoreService storeService, StaffService staffService, SizeDetailsService sizeDetailsService, ShoppingCartService shoppingCartService, CustomerService customerService, AddressRepository addressRepository, SizeDetailsRepository sizeDetailsRepository) {
         this.productService = productService;
         this.categoryService = categoryService;
         this.warehouseService = warehouseService;
@@ -59,17 +73,24 @@ public class StartUpService {
         this.styleService = styleService;
         this.storeService = storeService;
         this.staffService = staffService;
+        this.sizeDetailsService = sizeDetailsService;
+        this.shoppingCartService = shoppingCartService;
+        this.customerService = customerService;
         this.addressRepository = addressRepository;
+        this.sizeDetailsRepository = sizeDetailsRepository;
     }
 
     @PostConstruct
-    public void init() throws InputDataValidationException, CreateNewCategoryException, CategoryNotFoundException, CreateNewProductException, ProductVariantNotFoundException, CreateNewProductStockException, WarehouseNotFoundException, StoreNotFoundException, CreateNewTagException, CreateNewStyleException, CreateNewStaffException, CreateRoleException, CreateDepartmentException {
-        createCategoryIfNotFound();
-        createProductIfNotFound();
+    public void init() throws InputDataValidationException, CreateNewCategoryException, CategoryNotFoundException, CreateNewProductException, ProductVariantNotFoundException, CreateNewProductStockException, WarehouseNotFoundException, StoreNotFoundException, CreateNewTagException, CreateNewStyleException, CreateNewStaffException, CreateRoleException, CreateDepartmentException, CreateNewCustomerException, CustomerNotFoundException, InvalidCartTypeException {
         createWarehouseAndStoreIfNotFound();
+        createCategoryIfNotFound();
+        createStaffIfNotFound();
+        createSizeDetailsIfNotFound();
+        createProductIfNotFound();
         createTagIfNotFound();
         createStyleIfNotFound();
-        createStaffIfNotFound();
+        createCustomerIfNotFound();
+        initializeShoppingCartIfNotFound();
     }
 
     private void createCategoryIfNotFound() throws CategoryNotFoundException, CreateNewCategoryException, InputDataValidationException {
@@ -243,9 +264,11 @@ public class StartUpService {
 
             Product product29 = new Product("0038", "Sleeveless Dress", "Sleeveless Dress", BigDecimal.valueOf(49.90), BigDecimal.valueOf(12.00));
             Product newProduct29 = productService.createNewProduct(product29, category9.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
+            productVariantId29 = newProduct29.getProductVariants().get(0).getProductVariantId();
 
             Product product30 = new Product("0039", "Long Sleeve Shirt", "Long sleeve ", BigDecimal.valueOf(89.90), BigDecimal.valueOf(23.00));
             Product newProduct30 = productService.createNewProduct(product30, category2.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
+            productVariantId30 = newProduct30.getProductVariants().get(0).getProductVariantId();
         }
     }
 
@@ -426,5 +449,34 @@ public class StartUpService {
 //        staff30.setAddress(new Address ("Block 1 Bukit Gombak Road","#23-18",313150,"-"));
 //        Staff newStaff30 = staffService.createNewStaff(staff30, staff30.getAddress(), role2, departmentRetail);
 
+    }
+
+    private void createSizeDetailsIfNotFound() {
+        if (sizeDetailsService.retrieveAllSizeDetails().size() == 0) {
+            SizeDetails xs = new SizeDetails(SizeEnum.XS);
+            sizeDetailsRepository.save(xs);
+
+            System.out.println(sizeDetailsService.retrieveSizeDetailsByEnum("XS"));
+            sizeDetailsRepository.save(new SizeDetails(SizeEnum.S));
+            sizeDetailsRepository.save(new SizeDetails(SizeEnum.M));
+            sizeDetailsRepository.save(new SizeDetails(SizeEnum.L));
+            sizeDetailsRepository.save(new SizeDetails(SizeEnum.XL));
+        }
+    }
+
+    private void createCustomerIfNotFound() throws InputDataValidationException, CreateNewCustomerException {
+        if (customerService.retrieveAllCustomers().size() == 0) {
+            Customer customer = customerService.createNewCustomer(new Customer("Lila", "Facchini",
+                    "lila@gmail.com", "password"));
+            customer.setVerified(true);
+            customerId = customer.getCustomerId();
+        }
+    }
+
+    private void initializeShoppingCartIfNotFound() throws ProductVariantNotFoundException, CustomerNotFoundException, InvalidCartTypeException {
+        if (shoppingCartService.initRetrieveAllShoppingCartItem().size() == 0) {
+            shoppingCartService.updateQuantityOfProductVariant(2, productVariantId29, customerId, ONLINE_SHOPPING_CART);
+            shoppingCartService.updateQuantityOfProductVariant(3, productVariantId30, customerId, ONLINE_SHOPPING_CART);
+        }
     }
 }

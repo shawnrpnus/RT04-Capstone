@@ -31,6 +31,7 @@ import { withStyles } from "@material-ui/core";
 import CategoryNavbar from "components/Layout/components/Header/CategoryNavbar";
 import { useDispatch, useSelector } from "react-redux";
 import { retrieveAllRootCategories } from "redux/actions/categoryActions";
+import AgAutocomplete from "components/Algolia/AgAutocomplete";
 
 const useStyles = makeStyles(styles);
 
@@ -115,25 +116,12 @@ export default function HeaderLinks(props) {
         </ListItem>
       </List>
       <List className={classes.list + " " + classes.mlAuto}>
-        {/*<ListItem>*/}
-        {/*  <CustomInput*/}
-        {/*    white*/}
-        {/*    inputRootCustomClasses={classes.inputRootCustomClasses}*/}
-        {/*    formControlProps={{*/}
-        {/*      className: classes.formControl*/}
-        {/*    }}*/}
-        {/*    inputProps={{*/}
-        {/*      placeholder: "Search",*/}
-        {/*      inputProps: {*/}
-        {/*        "aria-label": "Search",*/}
-        {/*        className: classes.searchInput*/}
-        {/*      }*/}
-        {/*    }}*/}
-        {/*  />*/}
-        {/*  <Button color="white" justIcon round>*/}
-        {/*    <Search className={classes.searchIcon} />*/}
-        {/*  </Button>*/}
-        {/*</ListItem>*/}
+        <ListItem>
+          <AgAutocomplete />
+          <Button color="white" justIcon round>
+            <Search className={classes.searchIcon} />
+          </Button>
+        </ListItem>
         <ListItem className={classes.listItem}>
           <AccountNavbar />
         </ListItem>

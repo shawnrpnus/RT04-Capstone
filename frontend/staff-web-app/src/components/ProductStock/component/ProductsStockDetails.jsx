@@ -19,17 +19,17 @@ import {
   Visibility
 } from "@material-ui/icons";
 import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
-import { retrieveProductsDetails } from "../../../redux/actions/productActions";
 import withPage from "../../Layout/page/withPage";
-import colourList from "../../../scss/colours.json";
-import makeStyles from "@material-ui/core/styles/makeStyles";
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
-import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import { Col, Row } from "reactstrap";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
+import UpdateProductStockRequest from "../../../models/productStock/UpdateProductStockRequest";
+import { updateProductStockQty } from "../../../redux/actions/productStockActions";
+import { toast } from "react-toastify";
+
 const _ = require("lodash");
 
 const tableIcons = {
@@ -52,9 +52,6 @@ const tableIcons = {
   ViewColumn: ViewColumn
 };
 
-const jsonColorNameList = _.keyBy(colourList, "name");
-const jsonColorHexList = _.keyBy(colourList, "hex");
-
 class ProductsStockDetails extends PureComponent {
   constructor(props) {
     super(props);
@@ -66,8 +63,23 @@ class ProductsStockDetails extends PureComponent {
     };
   }
 
+  handleUpdate = (productStockId, currentStock, oldStock) => {
+    if (currentStock !== oldStock) {
+      const req = new UpdateProductStockRequest(productStockId, currentStock);
+      this.props.updateProductStockQty(req, this.props.history);
+    }
+  };
+
   componentDidMount = () => {
-    const { products, selectedProductId } = { ...this.props };
+    this.updateState(false);
+  };
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (prevProps !== this.props) this.updateState(true);
+  }
+
+  updateState = showToast => {
+    const { products, selectedProductId } = this.props;
     // // Getting product, leafNodeName, colourToSizeImageMaps
     const product = _.find(products, {
       product: { productId: selectedProductId }
@@ -94,6 +106,7 @@ class ProductsStockDetails extends PureComponent {
     if (colourToSizeImageMaps) {
       list = _.keyBy([...colourToSizeImageMaps], "colour");
 
+      console.log(list);
       data = list[selectedProductVariant].sizeMaps.map((e, index) => {
         return {
           sku: e.productStock.productVariant.sku,
@@ -168,18 +181,14 @@ class ProductsStockDetails extends PureComponent {
                 editable={{
                   onRowUpdate: (newData, oldData) =>
                     new Promise((resolve, reject) => {
-                      let colourToSizeImageMaps = {
-                        ...this.state.colourToSizeImageMaps
-                      };
-                      colourToSizeImageMaps = _.keyBy(
-                        colourToSizeImageMaps,
-                        "colour"
+                      const { productStockId, currentStock } = newData;
+                      const { currentStock: oldStock } = oldData;
+                      this.handleUpdate(
+                        productStockId,
+                        Number(currentStock),
+                        Number(oldStock)
                       );
-                      colourToSizeImageMaps[oldData.colour].sizeMaps[
-                        oldData.sizeMapIndex
-                      ].productStock.quantity = Number(newData.currentStock);
-                      colourToSizeImageMaps = _.toArray(colourToSizeImageMaps);
-                      this.setState({ colourToSizeImageMaps }, () => resolve());
+                      resolve();
                     })
                 }}
               />
@@ -199,7 +208,9 @@ const mapStateToProps = state => ({
   errors: state.errors
 });
 
-const mapDispatchToProps = {};
+const mapDispatchToProps = {
+  updateProductStockQty
+};
 
 export default withRouter(
   connect(

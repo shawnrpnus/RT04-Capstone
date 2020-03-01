@@ -58,7 +58,7 @@ class ProductsStockTable extends PureComponent {
   };
 
   componentDidMount() {
-    this.props.retrieveProductsDetails(1308);
+    this.props.retrieveProductsDetails(1043);
   }
 
   handleViewProductStocksDetails = productId => {
@@ -90,12 +90,14 @@ class ProductsStockTable extends PureComponent {
           serialNumber: product.serialNumber,
           cost: product.cost,
           price: product.price,
-          category: product.category.name,
+          category: product.category.categoryName,
           colours: colours,
           image: image
         };
       });
     }
+
+    console.log(this.props);
 
     return (
       <div className="table" style={{ verticalAlign: "middle" }}>
@@ -181,7 +183,7 @@ class ProductsStockTable extends PureComponent {
         ) : (
           renderLoader()
         )}
-        {openProductStocksDetailsDialogue && (
+        {/* {openProductStocksDetailsDialogue && (
           <ProductsStockDetails
             open={openProductStocksDetailsDialogue}
             onClose={() => {
@@ -190,7 +192,7 @@ class ProductsStockTable extends PureComponent {
             key={selectedProductId}
             selectedProductId={selectedProductId}
           />
-        )}
+        )} */}
       </div>
     );
   }

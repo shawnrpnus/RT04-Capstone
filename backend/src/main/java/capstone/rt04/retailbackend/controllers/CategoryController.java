@@ -1,6 +1,7 @@
 package capstone.rt04.retailbackend.controllers;
 
 import capstone.rt04.retailbackend.entities.Category;
+import capstone.rt04.retailbackend.entities.Product;
 import capstone.rt04.retailbackend.entities.Style;
 import capstone.rt04.retailbackend.entities.Tag;
 import capstone.rt04.retailbackend.request.category.CategoryCreateRequest;
@@ -43,6 +44,7 @@ public class CategoryController {
     public ResponseEntity<?> retrieveCategoryById(@PathVariable Long categoryId) {
         try {
             Category category = categoryService.retrieveCategoryByCategoryId(categoryId);
+            clearCategoryRelationships(category);
             return new ResponseEntity<>(category, HttpStatus.OK);
         } catch (CategoryNotFoundException ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
@@ -56,6 +58,9 @@ public class CategoryController {
         List<CategoryDetails> childCategories = categoryService.retrieveAllChildCategories();
         List<Tag> tags = tagService.retrieveAllTags();
         List<Style> styles = styleService.retrieveAllStyles();
+        clearCategoryDetailsRelationships(childCategories);
+        clearStyleRelationships(styles);
+        clearTagRelationships(tags);
         return new ResponseEntity<>(new AllCategoryTagStyleResponse(childCategories, tags, styles), HttpStatus.OK);
     }
 
@@ -63,6 +68,9 @@ public class CategoryController {
     public ResponseEntity<?> retrieveAllRootCategories() {
         try {
             List<Category> categoryList = categoryService.retrieveAllRootCategories();
+            for (Category c : categoryList) {
+                clearCategoryRelationships(c);
+            }
             return new ResponseEntity<>(categoryList, HttpStatus.OK);
         } catch (Exception ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -72,6 +80,9 @@ public class CategoryController {
     @GetMapping(RETRIEVE_ALL_CATEGORIES)
     public ResponseEntity<?> retrieveAllCategories() {
         List<Category> categories = categoryService.retrieveAllCategories();
+        for (Category c : categories) {
+            clearCategoryRelationships(c);
+        }
         return new ResponseEntity<>(categories, HttpStatus.OK);
     }
 
@@ -89,6 +100,7 @@ public class CategoryController {
     public ResponseEntity<?> createNewCategory(@RequestBody CategoryCreateRequest categoryCreateRequest) throws CategoryNotFoundException, CreateNewCategoryException, InputDataValidationException {
         Category newCategory = categoryService.createNewCategory(categoryCreateRequest.getCategory(),
                 categoryCreateRequest.getParentCategoryId());
+        clearCategoryRelationships(newCategory);
         return new ResponseEntity<>(newCategory, HttpStatus.CREATED);
     }
 
@@ -97,13 +109,61 @@ public class CategoryController {
     public ResponseEntity<?> updateCategory(@RequestBody CategoryUpdateRequest categoryUpdateRequest) throws CategoryNotFoundException, UpdateCategoryException, InputDataValidationException {
 
         Category category = categoryService.updateCategory(categoryUpdateRequest.getCategory(), categoryUpdateRequest.getParentCategoryId());
+        clearCategoryRelationships(category);
         return new ResponseEntity<>(category, HttpStatus.OK);
     }
 
     @DeleteMapping(DELETE_CATEGORY)
     public ResponseEntity<?> deleteCategory(@PathVariable Long categoryId) throws CategoryNotFoundException, DeleteCategoryException {
         Category category = categoryService.deleteCategory(categoryId);
+        clearCategoryRelationships(category);
         return new ResponseEntity<>(category, HttpStatus.OK);
-
     }
+
+    public void clearTagRelationships(List<Tag> tags) {
+        tags.forEach(tag -> tag.setProducts(null));
+    }
+
+    public void clearStyleRelationships(List<Style> styles) {
+        styles.forEach(style -> {
+            style.setCustomers(null);
+            style.setProducts(null);
+        });
+    }
+
+    public void clearCategoryDetailsRelationships(List<CategoryDetails> categoryDetails) {
+        categoryDetails.forEach(categoryDetail -> {
+            categoryDetail.getCategory().setParentCategory(null);
+            categoryDetail.getCategory().setChildCategories(null);
+            categoryDetail.getCategory().setProducts(null);
+        });
+    }
+
+
+    private void clearCategoryRelationships(Category category){
+        Category root = category;
+        while (root.getParentCategory() != null){
+            root = root.getParentCategory();
+        }
+        clearChildCategoryRelationships(root);
+    }
+
+    private void clearChildCategoryRelationships(Category category) {
+        for (Product product : category.getProducts()) {
+            product.setTags(null);
+            product.setProductVariants(null);
+            product.setCategory(null);
+        }
+        if (category.getChildCategories() != null) {
+            for (Category childCat : category.getChildCategories()) {
+                for (Product p : childCat.getProducts()) {
+                    p.setTags(null);
+                    p.setProductVariants(null);
+                    p.setCategory(null);
+                }
+                clearChildCategoryRelationships(childCat);
+            }
+        }
+    }
+
 }

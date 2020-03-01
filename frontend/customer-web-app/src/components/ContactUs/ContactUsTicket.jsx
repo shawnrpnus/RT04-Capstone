@@ -179,7 +179,7 @@ function ContactUsTicket(props) {
                       Enquiry Type
                     </InputLabel>
                     <Select
-                      style={{minWidth: 120}}
+                      style={{ minWidth: 120 }}
                       defaultValue=""
                       MenuProps={{
                         className: classes.selectMenu
@@ -190,16 +190,22 @@ function ContactUsTicket(props) {
                       onChange={onChange}
                       name="contactUsCategory"
                     >
-                      {
-                      enums.map(function(item, i){
-                        return <MenuItem classes={{
-                          root: classy.selectMenuItem,
-                          selected: classy.selectMenuItemSelected
-                        }} value={item}>{item}</MenuItem>
+                      {enums.map(function(item, i) {
+                        return (
+                          <MenuItem
+                            classes={{
+                              root: classy.selectMenuItem,
+                              selected: classy.selectMenuItemSelected
+                            }}
+                            value={item}
+                          >
+                            {item}
+                          </MenuItem>
+                        );
                       })}
                     </Select>
                     <CustomTextField
-                      style={{marginTop: 20}}
+                      style={{ marginTop: 20 }}
                       fieldLabel="Content"
                       fieldName="content"
                       fullWidth
