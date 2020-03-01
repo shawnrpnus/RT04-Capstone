@@ -1,22 +1,30 @@
 package capstone.rt04.retailbackend.services;
 
-import capstone.rt04.retailbackend.entities.Customer;
-import capstone.rt04.retailbackend.entities.ProductStock;
-import capstone.rt04.retailbackend.entities.ShoppingCart;
-import capstone.rt04.retailbackend.entities.Warehouse;
+import capstone.rt04.retailbackend.entities.*;
+import capstone.rt04.retailbackend.request.algolia.AlgoliaProductDetailsResponse;
+import capstone.rt04.retailbackend.response.ColourToSizeImageMap;
+import capstone.rt04.retailbackend.response.ProductDetailsResponse;
+import capstone.rt04.retailbackend.response.SizeToProductVariantAndStockMap;
+import capstone.rt04.retailbackend.util.exceptions.product.ProductNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductStockNotFoundException;
+import com.algolia.search.DefaultSearchClient;
+import com.algolia.search.SearchClient;
+import com.algolia.search.SearchIndex;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Component
+@Transactional
 @Slf4j
 public class TimerService {
 
@@ -27,8 +35,9 @@ public class TimerService {
 
     private final Integer unattendedTimeLimit = 4;
 
-    private static final int intervalMs = 60 * 60 * 1000;
+    private static final int intervalMinute = 60 * 60 * 1000;
     private static final int intervalDay = 60 * 60 * 1000 * 24;
+    private static final int interval10Minutes = 10 * intervalMinute;
 
     public TimerService(CustomerService customerService, JavaMailSender javaMailSender,
                         ProductService productService, WarehouseService warehouseService) {
@@ -81,7 +90,7 @@ public class TimerService {
     }
 
     // in milliseconds
-    @Scheduled(fixedRate = intervalMs, initialDelay = 10000)
+    @Scheduled(fixedRate = intervalMinute, initialDelay = 10000)
     public void checkForUnattendedShoppingCarts() {
         log.info("checkForUnattendedShoppingCarts() triggered");
         List<Customer> allCustomers = customerService.retrieveAllCustomers();
@@ -107,4 +116,5 @@ public class TimerService {
             }
         }
     }
+
 }
