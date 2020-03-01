@@ -29,6 +29,7 @@ import withPage from "../../../Layout/page/withPage";
 import colourList from "../../../../scss/colours.json";
 import Typography from "@material-ui/core/Typography";
 import withMaterialConfirmDialog from "./../../../Layout/page/withMaterialConfirmDialog";
+import axios from "axios";
 
 const _ = require("lodash");
 const jsonColorList = _.keyBy(colourList, "hex");

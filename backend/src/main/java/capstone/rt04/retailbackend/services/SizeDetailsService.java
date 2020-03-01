@@ -25,7 +25,6 @@ public class SizeDetailsService {
 
     public SizeDetails retrieveSizeDetailsByEnum(String size) {
         SizeDetails sizeDetails = sizeDetailsRepository.findByProductSize(SizeEnum.valueOf(size));
-        log.info(String.valueOf(sizeDetails));
         return sizeDetails;
     }
 
