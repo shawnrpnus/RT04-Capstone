@@ -6,7 +6,11 @@ const initialState = {
 
   allRoles: null,
   allDepartments: null,
-  loggedInStaff: null
+  loggedInStaff: null,
+  currentRole:null,
+  currentDepartment:null,
+  currentAddress:null
+
 };
 
 export default function(state = initialState, action) {

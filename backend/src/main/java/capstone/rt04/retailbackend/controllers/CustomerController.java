@@ -182,8 +182,8 @@ public class CustomerController {
     @PostMapping(CustomerControllerRoutes.UPDATE_SHIPPING_ADDRESS)
     public ResponseEntity<?> updateShippingAddress(@RequestBody AddUpdateShippingAddressRequest req) throws CustomerNotFoundException, AddressNotFoundException, InputDataValidationException {
         validationService.throwExceptionIfInvalidBean(req);
-        Address address = customerService.updateShippingAddress(req.getCustomerId(), req.getShippingAddress());
-        return new ResponseEntity<>(address, HttpStatus.OK);
+        Customer customer = customerService.updateShippingAddress(req.getCustomerId(), req.getShippingAddress());
+        return new ResponseEntity<>(customer, HttpStatus.OK);
     }
 
     @DeleteMapping(CustomerControllerRoutes.REMOVE_SHIPPING_ADDRESS)

@@ -47,6 +47,16 @@ export default function(state = initialState, action) {
         ...state,
         loggedInCustomer: action.customer
       };
+    case types.UPDATE_SHIPPING_ADDRESS_SUCCESS:
+      return {
+        ...state,
+        loggedInCustomer: action.loggedInCustomer
+      };
+    case types.ADD_SHIPPING_ADDRESS_SUCCESS:
+      return {
+        ...state,
+        loggedInCustomer: action.loggedInCustomer
+      }
     case types.UPDATE_SHOPPING_CART_SUCCESS:
       return {
         ...state,

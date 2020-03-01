@@ -32,6 +32,8 @@ import LoadingOverlay from "react-loading-overlay";
 import { DialogContent } from "@material-ui/core";
 import ChangePasswordRequest from "models/customer/ChangePasswordRequest";
 import IconButton from "@material-ui/core/IconButton";
+import AddressCard from "./AddressCard";
+import AddAddress from "./AddAddress";
 
 const useStyles = makeStyles(signupPageStyle);
 const _ = require("lodash");
@@ -62,7 +64,7 @@ function AccountInfo(props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
-
+  const [addNewAddress, setAddNewAddress] = useState(false);
   //Effects
   //Cleanup on unmount
   useEffect(() => {
@@ -147,6 +149,11 @@ function AccountInfo(props) {
 
   const handleClickShowNewPassword = () => {
     setShowNewPassword(!showNewPassword);
+  };
+
+  const handleAddNewAddress = () => {
+    setAddNewAddress(!addNewAddress);
+    console.log(addNewAddress);
   };
 
   return (
@@ -367,6 +374,19 @@ function AccountInfo(props) {
               </div>
             </form>
           </GridItem>
+          <GridItem xs={12} sm={12} md={2}></GridItem>
+          {addNewAddress ? (
+            <GridItem xs={12} sm={12} md={5}>
+              <AddAddress addNewAddress={[addNewAddress, setAddNewAddress]} />
+            </GridItem>
+          ) : (
+            <GridItem xs={12} sm={12} md={5}>
+              <Button onClick={handleAddNewAddress} round color="primary">
+                Add New Address
+              </Button>
+              <AddressCard />
+            </GridItem>
+          )}
         </GridContainer>
         <Dialog open={dialogOpen} onClose={handleCloseDialog}>
           <DialogTitle id="simple-dialog-title">Verify your email</DialogTitle>

@@ -81,5 +81,12 @@ public class Address implements Serializable {
         this.yCoordinate = yCoordinate;
     }
 
-
+    public Address(@NotNull(message = "Line 1 is required") @Size(min = 1, message = "Line 1 is required") String line1, String line2, @NotNull(message = "Postal code is required") @Min(value = 100000, message = "Postal code is invalid") @Max(value = 999999, message = "Postal code is invalid") Integer postalCode, String buildingName, boolean isDefault, boolean isBilling) {
+        this.line1 = line1;
+        this.line2 = line2;
+        this.postalCode = postalCode;
+        this.buildingName = buildingName;
+        this.isDefault = isDefault;
+        this.isBilling = isBilling;
+    }
 }

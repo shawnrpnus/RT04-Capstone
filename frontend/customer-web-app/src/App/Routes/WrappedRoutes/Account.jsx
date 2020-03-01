@@ -8,6 +8,7 @@ import ProfilePage from "components/Profile/ProfilePage";
 import SecuredRoute from "App/Routes/SecuredRoute";
 import ForgotPassword from "components/Login/ForgotPassword";
 import ResetPassword from "components/Login/ResetPassword";
+import AddressCard from "../../../components/Profile/sections/AddressCard";
 
 export default () => (
   <Switch>
@@ -31,5 +32,6 @@ export default () => (
       path="/account/resetPassword/:verificationCode"
       component={ResetPassword}
     />
+    <Route exact path="/account/address" component={AddressCard} />
   </Switch>
 );

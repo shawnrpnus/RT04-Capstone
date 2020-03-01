@@ -67,11 +67,13 @@ export default function FooterSection() {
                 </a>
               </ListItem>
               <ListItem className={classes.inlineBlock}>
-                <a className={classes.block}>
-                  <Link key="contactUs" to="/contactUs/ticket">
-                    Contact Us
-                  </Link>
-                </a>
+                <Link
+                  className={classes.block}
+                  key="contactUs"
+                  to="/contactUs/ticket"
+                >
+                  Contact Us
+                </Link>
               </ListItem>
             </List>
           </div>
