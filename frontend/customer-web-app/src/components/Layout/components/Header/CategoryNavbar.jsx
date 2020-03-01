@@ -89,7 +89,7 @@ function SubCategoryColumn(props) {
   return (
     <GridItem md style={{ width: "10vw" }}>
       <Link
-        to={`/shop/${rootCategory.categoryName}/${subCategory.categoryName}`}
+        to={`/shop/catalog/${rootCategory.categoryName}/${subCategory.categoryName}`}
       >
         <h5
           className={classNames(
@@ -106,7 +106,7 @@ function SubCategoryColumn(props) {
         {leafCategories.map(c => (
           <Link
             key={c.categoryId}
-            to={`/shop/${rootCategory.categoryName}/${subCategory.categoryName}/${c.categoryName}`}
+            to={`/shop/catalog/${rootCategory.categoryName}/${subCategory.categoryName}/${c.categoryName}`}
           >
             <ListItem button disableGutters>
               {c.categoryName}

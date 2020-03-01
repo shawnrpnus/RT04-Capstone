@@ -1,4 +1,4 @@
-@import "../../../../node_modules/react-image-gallery/styles/scss/image-gallery.scss";
+@import "~react-image-gallery/styles/scss/image-gallery.scss";
 
 .image-gallery-left-nav,
 .image-gallery-right-nav {
@@ -35,11 +35,17 @@
   &::before {
     content: "chevron_left";
   }
+  .image-gallery-svg{
+    display: none;
+  }
 }
 .image-gallery-right-nav {
   right: -20px;
   &::before {
     content: "chevron_right";
+  }
+  .image-gallery-svg{
+    display: none;
   }
 }
 .image-gallery-thumbnail {
@@ -59,6 +65,9 @@
     position: relative;
     margin-top: 10px;
     margin-bottom: 10px;
+  }
+  .image-gallery-thumbnail-inner{
+    margin: 0 5px
   }
 }
 .image-gallery-thumbnail-label {

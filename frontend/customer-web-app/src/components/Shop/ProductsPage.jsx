@@ -82,7 +82,7 @@ export default function ProductPage(props) {
     }
   };
 
-  const colours = [];
+  const colours = []; //just used for filterBar
   const productDataList = productDetails
     ? productDetails.map(productDetail => {
         const { product, colourToSizeImageMaps } = productDetail;
