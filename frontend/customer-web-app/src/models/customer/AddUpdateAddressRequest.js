@@ -1,4 +1,4 @@
-export default class CreateCustomerRequest {
+export default class AddUpdateAddressRequest {
   customerId;
   shippingAddress;
 

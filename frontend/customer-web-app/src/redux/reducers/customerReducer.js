@@ -52,6 +52,11 @@ export default function(state = initialState, action) {
         ...state,
         loggedInCustomer: action.loggedInCustomer
       };
+    case types.ADD_SHIPPING_ADDRESS_SUCCESS:
+      return {
+        ...state,
+        loggedInCustomer: action.loggedInCustomer
+      }
     default:
       return state;
   }

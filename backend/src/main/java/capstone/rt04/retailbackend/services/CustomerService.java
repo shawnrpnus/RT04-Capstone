@@ -355,13 +355,14 @@ public class CustomerService {
     public Customer addShippingAddress(Long customerId, Address shippingAddress) throws CustomerNotFoundException, InputDataValidationException {
         validationService.throwExceptionIfInvalidBean(shippingAddress);
         Customer customer = retrieveCustomerByCustomerId(customerId);
-        addressRepository.save(shippingAddress);
+
         if (shippingAddress.isDefault()) {
             customer = setOtherAddressesToNonDefault(customerId);
         }
         if (shippingAddress.isBilling()) {
             customer = setOtherAddressesToNonBilling(customerId);
         }
+        addressRepository.save(shippingAddress);
         customer.addShippingAddress(shippingAddress);
         return lazyLoadCustomerFields(customer);
     }

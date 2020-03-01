@@ -1,5 +1,6 @@
 import axios from "axios";
 import {
+  ADD_SHIPPING_ADDRESS_SUCCESS,
   CUSTOMER_LOGOUT,
   EMAIL_SENDING,
   EMAIL_SENT,
@@ -284,12 +285,38 @@ export const updateShippingAddress = (updateShippingAddressRequest, history) => 
       })
       .catch(err => {
         dispatchErrorMapError(err, dispatch);
-        console.log(err.response.data);
+        // console.log(err.response.data);
       });
   };
 };
 
 export const updateShippingAddressSuccess = data => ({
   type: UPDATE_SHIPPING_ADDRESS_SUCCESS,
+  loggedInCustomer: data
+});
+
+export const addShippingAddressDetails = (addUpdateAddressRequest, enqueueSnackbar, history) => {
+  return dispatch => {
+    //redux thunk passes dispatch
+    axios
+      .post(CUSTOMER_BASE_URL + "/addShippingAddress", addUpdateAddressRequest)
+      .then(response => {
+        const { data } = jsog.decode(response);
+        dispatch(addShippingAddressSuccess(data));
+        enqueueSnackbar("New Address Added", {
+          variant: "success",
+          autoHideDuration: 1200
+        });
+        history.push("/account/profile");
+      })
+      .catch(err => {
+        dispatchErrorMapError(err, dispatch);
+        // console.log(err.response.data);
+      });
+  };
+}
+
+export const addShippingAddressSuccess = data => ({
+  type: ADD_SHIPPING_ADDRESS_SUCCESS,
   loggedInCustomer: data
 });

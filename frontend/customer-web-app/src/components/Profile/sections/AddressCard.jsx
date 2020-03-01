@@ -18,7 +18,7 @@ import GridContainer from "../../Layout/components/Grid/GridContainer";
 import Grid from "@material-ui/core/Grid";
 import GridItem from "../../Layout/components/Grid/GridItem";
 import {clearErrors} from "../../../redux/actions";
-import UpdateAddressRequest from "../../../models/customer/UpdateAddressRequest";
+import AddUpdateAddressRequest from "../../../models/customer/AddUpdateAddressRequest";
 import {updateShippingAddress} from "../../../redux/actions/customerActions";
 
 const style = {
@@ -29,7 +29,7 @@ const style = {
 
 const useStyles = makeStyles(style);
 
-export default function CardExampleTitleTextLinks(props) {
+export default function AddressCard(props) {
   //Redux
   const dispatch = useDispatch();
   // useEffect(() => dispatch(retrieveAllContactUsCategoryEnum()), []);
@@ -75,25 +75,25 @@ export default function CardExampleTitleTextLinks(props) {
       e.target.checked = false;
     }
 
-    const req = new UpdateAddressRequest(currCustomer.customerId, i.item);
+    const req = new AddUpdateAddressRequest(currCustomer.customerId, i.item);
     dispatch(updateShippingAddress(req, props.history));
     if (Object.keys(errors).length !== 0) {
       dispatch(clearErrors());
     }
-    // const req = new UpdateAddressRequest(currCustomer.customerId, inputState.currentAddress);
+    // const req = new AddUpdateAddressRequest(currCustomer.customerId, inputState.currentAddress);
     // console.log(req);
   };
 
   const classes = useStyles();
   return (
-    <Card style={{ width: "20rem", margin: 100 }}>
+    <Card style={{ width: "25rem", marginTop: "0", boxShadow: "none"}}>
       {shippingAddresses.map(function(item, i) {
         // console.log(item.default); //array[0]
         //console.log(i); //index
         return (
-          <CardBody key={item.addressId}>
+          <CardBody style={{border: ".5px solid #e8e7e7", boxShadow: "0 2px 4px 0 rgba(155,155,155,.2)", marginBottom:"30px"}} key={item.addressId}>
             <GridContainer>
-              <GridItem xs={12} sm={8} md={8}>
+              <GridItem xs={12} sm={10} md={10}>
                 <h4 className={classes.cardTitle}>
                   {(() => {
                     if(item.default && item.billing) {
@@ -120,7 +120,7 @@ export default function CardExampleTitleTextLinks(props) {
                 <br />
               </GridItem>
 
-              <GridItem xs={12} sm={4} md={4}>
+              <GridItem xs={12} sm={2} md={2}>
                 <br/>
                 Edit
               </GridItem>
