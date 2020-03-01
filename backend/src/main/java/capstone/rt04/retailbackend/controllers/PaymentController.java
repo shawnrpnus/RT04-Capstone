@@ -70,7 +70,7 @@ public class PaymentController {
 	}
 
 	@RequestMapping(method = RequestMethod.GET, value = PAYPAL_SUCCESS_URL)
-	public ResponseEntity<> successPay(@RequestParam("paymentId") String paymentId, @RequestParam("PayerID") String payerId){
+	public ResponseEntity<?> successPay(@RequestParam("paymentId") String paymentId, @RequestParam("PayerID") String payerId){
 		try {
 			Payment payment = paypalService.executePayment(paymentId, payerId);
 			if(payment.getState().equals("approved")){
