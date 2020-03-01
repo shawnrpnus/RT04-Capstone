@@ -36,6 +36,7 @@ import cardProfile2Square from "assets/img/faces/card-profile2-square.jpg";
 
 import profilePageStyle from "assets/jss/material-kit-pro-react/views/profilePageStyle.js";
 import AccountInfo from "components/Profile/sections/AccountInfo";
+import Measurements from "components/Profile/sections/Measurements";
 import { useSelector } from "react-redux";
 
 const useStyles = makeStyles(profilePageStyle);
@@ -271,39 +272,7 @@ export default function ProfilePage(props) {
                 {
                   tabButton: "Personalize",
                   tabIcon: Camera,
-                  tabContent: (
-                    <GridContainer justify="center">
-                      <GridItem xs={12} sm={12} md={3}>
-                        <img
-                          alt="..."
-                          src={mariyaGeorgieva}
-                          className={navImageClasses}
-                        />
-                        <img
-                          alt="..."
-                          src={clemOnojegaw}
-                          className={navImageClasses}
-                        />
-                      </GridItem>
-                      <GridItem xs={12} sm={12} md={3}>
-                        <img
-                          alt="..."
-                          src={clemOnojeghuo}
-                          className={navImageClasses}
-                        />
-                        <img
-                          alt="..."
-                          src={oluEletu}
-                          className={navImageClasses}
-                        />
-                        <img
-                          alt="..."
-                          src={cynthiaDelRio}
-                          className={navImageClasses}
-                        />
-                      </GridItem>
-                    </GridContainer>
-                  )
+                  tabContent: <Measurements />
                 }
               ]}
             />
