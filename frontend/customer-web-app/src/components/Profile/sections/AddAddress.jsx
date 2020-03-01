@@ -7,11 +7,18 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory, useLocation } from "react-router-dom";
 import customSelectStyle from "../../../assets/jss/material-kit-pro-react/customSelectStyle";
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import { clearErrors } from "../../../redux/actions";
 import CustomTextField from "../../UI/CustomInput/CustomTextField";
 import InputAdornment from "@material-ui/core/InputAdornment";
-import {Apartment, Check, Dehaze, Face, Home, Place} from "@material-ui/icons";
+import {
+  Apartment,
+  Check,
+  Dehaze,
+  Face,
+  Home,
+  Place
+} from "@material-ui/icons";
 import Button from "../../UI/CustomButtons/Button";
 import SendUpdateEmailLinkRequest from "../../../models/customer/SendUpdateEmailLinkRequest";
 import {
@@ -26,13 +33,14 @@ import AddUpdateAddressRequest from "../../../models/customer/AddUpdateAddressRe
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import customCheckboxRadioSwitch from "../../../assets/jss/material-kit-pro-react/customCheckboxRadioSwitchStyle";
-import {useSnackbar} from "notistack";
-
+import { useSnackbar } from "notistack";
 
 const useStyles = makeStyles(customCheckboxRadioSwitch);
 
 // do this to edit props (pass in props as a tuple)
-export default function AddAddress({ addNewAddress: [addNewAddress, setAddNewAddress] }) {
+export default function AddAddress({
+  addNewAddress: [addNewAddress, setAddNewAddress]
+}) {
   // console.log(addNewAddress);
   //Hooks
   const classes = useStyles();
@@ -42,9 +50,7 @@ export default function AddAddress({ addNewAddress: [addNewAddress, setAddNewAdd
   //Redux
   const dispatch = useDispatch();
   const errors = useSelector(state => state.errors);
-  const currCustomer = useSelector(
-    state => state.customer.loggedInCustomer
-  );
+  const currCustomer = useSelector(state => state.customer.loggedInCustomer);
 
   //State
   const [inputState, setInputState] = useState({
@@ -80,10 +86,13 @@ export default function AddAddress({ addNewAddress: [addNewAddress, setAddNewAdd
     );
     const req = new AddUpdateAddressRequest(currCustomer.customerId, address);
     dispatch(addShippingAddressDetails(req, enqueueSnackbar, history));
+    if (inputState.line1 !== "" && inputState.postalCode !== "") {
+      setAddNewAddress(!addNewAddress);
+    }
   };
 
-  const handleToggle = (e) => {
-    if(e === "delivery") {
+  const handleToggle = e => {
+    if (e === "delivery") {
       setInputState(inputState => ({
         ...inputState,
         default: !inputState.default
@@ -96,7 +105,7 @@ export default function AddAddress({ addNewAddress: [addNewAddress, setAddNewAdd
     }
 
     // console.log(inputState.default);
-  }
+  };
 
   const handleCancelAddAddress = () => {
     setAddNewAddress(!addNewAddress);
@@ -104,8 +113,11 @@ export default function AddAddress({ addNewAddress: [addNewAddress, setAddNewAdd
 
   return (
     <div>
-      <h4 style={{marginBottom:0}}>Add New Address</h4>
-      <small>Please enter an address you would like to save and deliver your items to.</small>
+      <h4 style={{ marginBottom: 0 }}>Add New Address</h4>
+      <small>
+        Please enter an address you would like to save and deliver your items
+        to.
+      </small>
 
       <form>
         <CustomTextField
@@ -181,7 +193,7 @@ export default function AddAddress({ addNewAddress: [addNewAddress, setAddNewAdd
           classes={{ label: classes.label }}
           label="Set as default delivery address"
         />
-        <br/>
+        <br />
         <FormControlLabel
           control={
             <Checkbox
@@ -198,11 +210,17 @@ export default function AddAddress({ addNewAddress: [addNewAddress, setAddNewAdd
           classes={{ label: classes.label }}
           label="Set as default billing address"
         />
-        <br/>
+        <br />
         <Button onClick={handleAddAddress} round color="primary">
           Submit
         </Button>
-        <Button onClick={handleCancelAddAddress} round >
+        <Button
+          onClick={() => {
+            handleCancelAddAddress();
+            dispatch(clearErrors());
+          }}
+          round
+        >
           Cancel
         </Button>
       </form>
