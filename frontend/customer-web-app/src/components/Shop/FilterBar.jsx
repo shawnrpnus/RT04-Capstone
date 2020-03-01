@@ -19,8 +19,15 @@ import Fab from "@material-ui/core/Fab";
 import { Publish, RotateLeft } from "@material-ui/icons";
 import Link from "@material-ui/core/Link";
 import FilterProductRequest from "models/product/FilterProductRequest";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { filterProducts } from "redux/actions/productActions";
+import {
+  setCheckedColours,
+  setCheckedSizes,
+  setCheckedTags,
+  setPriceRange,
+  setSelectedSort
+} from "redux/actions/filterBarActions";
 
 const _ = require("lodash");
 const useStyles = makeStyles(styles);
@@ -58,36 +65,65 @@ function FilterBar(props) {
   };
   const sortingOptions = Object.keys(sortingMap);
 
-  const [priceRange, setPriceRange] = useState([0, 200]);
-  const [checkedColours, setCheckedColours] = useState(initialColoursState);
-  const [checkedSizes, setCheckedSizes] = useState(initialSizesState);
-  const [checkedTags, setCheckedTags] = useState(initialTagsState);
-  const [selectedSort, setSelectedSort] = useState("Latest Arrivals");
+  // const [priceRange, setPriceRange] = useState([0, 200]);
+  // const [checkedColours, setCheckedColours] = useState(initialColoursState);
+  // const [checkedSizes, setCheckedSizes] = useState(initialSizesState);
+  // const [checkedTags, setCheckedTags] = useState(initialTagsState);
+  // const [selectedSort, setSelectedSort] = useState("Latest Arrivals");
+
+  const priceRange = useSelector(state => state.filterBar.priceRange);
+  const checkedColours = useSelector(state => state.filterBar.checkedColours);
+  const checkedSizes = useSelector(state => state.filterBar.checkedSizes);
+  const checkedTags = useSelector(state => state.filterBar.checkedTags);
+  const selectedSort = useSelector(state => state.filterBar.selectedSort);
+
+  useEffect(() => {
+    if (priceRange === null) {
+      dispatch(setPriceRange([0, 200]));
+    }
+    if (checkedColours === null) {
+      dispatch(setCheckedColours(initialColoursState));
+    }
+    if (checkedSizes === null) {
+      dispatch(setCheckedSizes(initialSizesState));
+    }
+    if (checkedTags === null) {
+      dispatch(setCheckedTags(initialTagsState));
+    }
+    if (selectedSort === null) {
+      dispatch(setSelectedSort(Object.keys(sortingMap)[0]));
+    }
+  });
 
   const handleCheckColour = key => event => {
-    setCheckedColours({
-      ...checkedColours,
-      [key]: event.target.checked
-    });
+    dispatch(
+      setCheckedColours({
+        ...checkedColours,
+        [key]: event.target.checked
+      })
+    );
   };
 
   const handleCheckSize = key => event => {
-    setCheckedSizes({
-      ...checkedSizes,
-      [key]: event.target.checked
-    });
+    dispatch(
+      setCheckedSizes({
+        ...checkedSizes,
+        [key]: event.target.checked
+      })
+    );
   };
 
   const handleCheckTag = key => event => {
-    setCheckedTags({
-      ...checkedTags,
-      [key]: event.target.checked
-    });
+    dispatch(
+      setCheckedTags({
+        ...checkedTags,
+        [key]: event.target.checked
+      })
+    );
   };
 
   const countApplied = obj => {
     let count = 0;
-    console.log(obj);
     Object.keys(obj).forEach(key => {
       if (obj[key]) count++;
     });
@@ -95,12 +131,20 @@ function FilterBar(props) {
   };
 
   const resetFilter = () => {
-    setPriceRange([0, 200]);
-    console.log(checkedColours);
-    setCheckedColours(initialColoursState);
-    console.log(checkedColours);
-    setCheckedTags(initialTagsState);
-    setCheckedSizes(initialSizesState);
+    dispatch(setPriceRange([0, 200]));
+    dispatch(setCheckedColours(initialColoursState));
+    dispatch(setCheckedTags(initialTagsState));
+    dispatch(setCheckedSizes(initialSizesState));
+    const req = new FilterProductRequest(
+      categoryId,
+      [],
+      [],
+      [],
+      0,
+      200,
+      sortingMap[Object.keys(sortingMap)[0]]
+    );
+    dispatch(filterProducts(req));
   };
 
   const handleSubmit = () => {
@@ -129,126 +173,140 @@ function FilterBar(props) {
   };
 
   return (
-    <Card plain>
-      <Fab
-        color="secondary"
-        variant="extended"
-        className={classes.floatingFilterDrawer}
-        onClick={handleSubmit}
-      >
-        <Publish /> Submit
-      </Fab>
-      <CardBody className={classes.cardBodyRefine}>
-        <h4 className={classes.cardTitle + " " + classes.textLeft}>Sort By</h4>
-        <FormControl fullWidth className={selectClasses.selectFormControl}>
-          <Select
-            id="sort-select"
-            value={selectedSort}
-            onChange={e => setSelectedSort(e.target.value)}
-          >
-            {sortingOptions.map(option => (
-              <MenuItem key={option} value={option}>
-                {option}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <h4 className={classes.cardTitle + " " + classes.textLeft}>
-          Filter by
-          <Tooltip
-            id="tooltip-top"
-            title="Reset Filter"
-            placement="top"
-            classes={{ tooltip: classes.tooltip }}
-          >
-            <Link
-              component="button"
-              variant="body2"
-              onClick={resetFilter}
-              style={{ float: "right" }}
+    allTags &&
+    allColours &&
+    priceRange &&
+    checkedColours &&
+    checkedSizes &&
+    checkedTags &&
+    selectedSort && (
+      <Card plain>
+        <Fab
+          color="secondary"
+          variant="extended"
+          className={classes.floatingFilterDrawer}
+          onClick={handleSubmit}
+        >
+          <Publish /> Submit
+        </Fab>
+        <CardBody className={classes.cardBodyRefine}>
+          <h4 className={classes.cardTitle + " " + classes.textLeft}>
+            Sort By
+          </h4>
+          <FormControl fullWidth className={selectClasses.selectFormControl}>
+            <Select
+              id="sort-select"
+              value={selectedSort}
+              onChange={e => dispatch(setSelectedSort(e.target.value))}
             >
-              <h4 className={classes.reset}>Reset</h4>
-            </Link>
-          </Tooltip>
-          <Clearfix />
-        </h4>
-        <Accordion
-          activeColor="rose"
-          collapses={[
-            {
-              title: "Price Range",
-              key: "Price Range",
-              content: (
-                <CardBody className={classes.cardBodyRefine}>
-                  <span
-                    className={classNames(
-                      classes.pullLeft,
-                      classes.priceSlider
-                    )}
-                  >
-                    ${priceRange[0]}
-                  </span>
-                  <span
-                    className={classNames(
-                      classes.pullRight,
-                      classes.priceSlider
-                    )}
-                  >
-                    ${priceRange[1]}
-                  </span>
-                  <br />
-                  <Slider
-                    value={priceRange}
-                    onChange={(e, newVal) => {
-                      setPriceRange(newVal);
-                    }}
-                    valueLabelDisplay="auto"
-                    min={0}
-                    max={200}
-                    style={{
-                      borderColor: "#e91e63"
-                    }}
+              {sortingOptions.map(option => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <h4 className={classes.cardTitle + " " + classes.textLeft}>
+            Filter by
+            <Tooltip
+              id="tooltip-top"
+              title="Reset Filter"
+              placement="top"
+              classes={{ tooltip: classes.tooltip }}
+            >
+              <Link
+                component="button"
+                variant="body2"
+                onClick={resetFilter}
+                style={{ float: "right" }}
+              >
+                <h4 className={classes.reset}>Reset</h4>
+              </Link>
+            </Tooltip>
+            <Clearfix />
+          </h4>
+          <Accordion
+            activeColor="rose"
+            collapses={[
+              {
+                title: `Price Range ${
+                  priceRange[0] !== 0 || priceRange[1] !== 200
+                    ? "(applied)"
+                    : ""
+                }`,
+                key: "Price Range",
+                content: (
+                  <CardBody className={classes.cardBodyRefine}>
+                    <span
+                      className={classNames(
+                        classes.pullLeft,
+                        classes.priceSlider
+                      )}
+                    >
+                      ${priceRange[0]}
+                    </span>
+                    <span
+                      className={classNames(
+                        classes.pullRight,
+                        classes.priceSlider
+                      )}
+                    >
+                      ${priceRange[1]}
+                    </span>
+                    <br />
+                    <Slider
+                      value={priceRange}
+                      onChange={(e, newVal) => {
+                        dispatch(setPriceRange(newVal));
+                      }}
+                      valueLabelDisplay="auto"
+                      min={0}
+                      max={200}
+                      style={{
+                        borderColor: "#e91e63"
+                      }}
+                    />
+                  </CardBody>
+                )
+              },
+              {
+                title: `Colours (${countApplied(checkedColours)} applied)`,
+                key: "Colour select",
+                content: allColours && !_.isEmpty(checkedColours) && (
+                  <CheckboxGroup
+                    list={allColours}
+                    checkedState={checkedColours}
+                    handleChange={handleCheckColour}
                   />
-                </CardBody>
-              )
-            },
-            {
-              title: `Colours (${countApplied(checkedColours)} applied)`,
-              key: "Colour select",
-              content: allColours && !_.isEmpty(checkedColours) && (
-                <CheckboxGroup
-                  list={allColours}
-                  checkedState={checkedColours}
-                  handleChange={handleCheckColour}
-                />
-              )
-            },
-            {
-              title: `Sizes (${countApplied(checkedSizes)} applied)`,
-              key: "Sizes select",
-              content: (
-                <CheckboxGroup
-                  list={allSizes}
-                  checkedState={checkedSizes}
-                  handleChange={handleCheckSize}
-                />
-              )
-            },
-            {
-              title: `Tags (${countApplied(checkedTags)} applied)`,
-              key: "Tag select",
-              content: (
-                <CheckboxGroup
-                  list={tagNames}
-                  checkedState={checkedTags}
-                  handleChange={handleCheckTag}
-                />
-              )
-            }
-          ]}
-        />
-      </CardBody>
-    </Card>
+                )
+              },
+              {
+                title: `Sizes (${countApplied(checkedSizes)} applied)`,
+                key: "Sizes select",
+                content: (
+                  <CheckboxGroup
+                    list={allSizes}
+                    checkedState={checkedSizes}
+                    handleChange={handleCheckSize}
+                  />
+                )
+              },
+              {
+                title: `Tags (${countApplied(checkedTags)} applied)`,
+                key: "Tag select",
+                content: (
+                  <CheckboxGroup
+                    list={tagNames}
+                    checkedState={checkedTags}
+                    handleChange={handleCheckTag}
+                  />
+                )
+              }
+            ]}
+          />
+        </CardBody>
+      </Card>
+    )
   );
 }
 
