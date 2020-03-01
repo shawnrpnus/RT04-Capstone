@@ -16,7 +16,7 @@ export const updateShoppingCart = (updateShoppingCartRequest, history) => {
         updateShoppingCartRequest
       )
       .then(response => {
-        updateShoppingCart(response.data, dispatch);
+        handleUpdateShoppingCart(response.data, dispatch);
       })
       .catch(err => {
         dispatchErrorMapError(err, dispatch);
@@ -30,7 +30,7 @@ const updateShoppingCartThroughCustomer = data => ({
   customer: data
 });
 
-const updateShoppingCart = (responseData, dispatch) => {
+const handleUpdateShoppingCart = (responseData, dispatch) => {
   const data = jsog.decode(responseData);
   dispatch(updateShoppingCartThroughCustomer(data));
 };

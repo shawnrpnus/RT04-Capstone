@@ -23,7 +23,10 @@ const styles = {
   ...tooltips,
   container: {
     ...container,
-    zIndex: 1
+    zIndex: 1,
+    ["@media (min-width: 600px)"]: {
+      maxWidth: "1550px"
+    }
   },
   title: {
     ...title,

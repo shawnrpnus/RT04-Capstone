@@ -10,6 +10,11 @@ import ListItem from "@material-ui/core/ListItem";
 import Tooltip from "@material-ui/core/Tooltip";
 import Grid from "@material-ui/core/Grid";
 import CancelIcon from "@material-ui/icons/Cancel";
+import IconButton from "@material-ui/core/IconButton";
+import AddIcon from "@material-ui/icons/Add";
+import RemoveIcon from "@material-ui/icons/Remove";
+import CardActions from "@material-ui/core/CardActions";
+import CardContent from "@material-ui/core/CardContent";
 
 // @material-ui/icons
 import Favorite from "@material-ui/icons/Favorite";
@@ -34,10 +39,11 @@ import CardBody from "components/UI/Card/CardBody";
 import shoppingCartStyle from "assets/jss/material-kit-pro-react/views/shoppingCartStyle.js";
 const useStyles = makeStyles(shoppingCartStyle);
 
-import product1 from "assets/img/product1.jpg";
-import product2 from "assets/img/product2.jpg";
-import product3 from "assets/img/product3.jpg";
-import { IconButton } from "@material-ui/core";
+import { updateShoppingCart } from "./../../redux/actions/shoppingCartActions";
+import UpdateShoppingCartRequest from "./../../models/ShoppingCart/UpdateShoppingCartRequest";
+import { Typography } from "@material-ui/core";
+
+import Divider from "@material-ui/core/Divider";
 
 export default function ShoppingCartPage() {
   const classes = useStyles();
@@ -51,13 +57,39 @@ export default function ShoppingCartPage() {
   useEffect(() => {
     window.scrollTo(0, 0);
     document.body.scrollTop = 0;
+  }, []);
+
+  useEffect(() => {
+    setShoppingCartItems(
+      _.get(customer, "onlineShoppingCart.shoppingCartItems", [])
+    );
   }, [customer]);
 
-  console.log(customer);
+  console.log(customer.onlineShoppingCart);
 
   const [shoppingCartItems, setShoppingCartItems] = useState(
     _.get(customer, "onlineShoppingCart.shoppingCartItems", [])
   );
+
+  const handleDelete = (e, productVariantId) => {
+    const request = new UpdateShoppingCartRequest(
+      0,
+      productVariantId,
+      customer.customerId,
+      "online"
+    );
+    dispatch(updateShoppingCart(request));
+  };
+
+  const handleUpdateQuantity = (quantity, productVariantId) => {
+    const request = new UpdateShoppingCartRequest(
+      quantity,
+      productVariantId,
+      customer.customerId,
+      "online"
+    );
+    dispatch(updateShoppingCart(request));
+  };
 
   return (
     <div>
@@ -87,336 +119,137 @@ export default function ShoppingCartPage() {
           <Card plain>
             <CardBody plain>
               <h3 className={classes.cardTitle}>Shopping Cart</h3>
-              {shoppingCartItems.map(cartItem => {
-                console.log(cartItem);
-                const {
-                  productImages,
-                  product,
-                  sizeDetails,
-                  colour
-                } = cartItem.productVariant;
-                const { quantity } = cartItem;
-                return (
+              <Grid container spacing={3}>
+                <Grid item md={9}>
+                  {shoppingCartItems.map(cartItem => {
+                    console.log(cartItem);
+                    const {
+                      productImages,
+                      product,
+                      sizeDetails,
+                      colour,
+                      productVariantId
+                    } = cartItem.productVariant;
+                    const { quantity } = cartItem;
+                    return (
+                      <Card>
+                        <GridContainer
+                          alignItems="center"
+                          style={{ textAlign: "center" }}
+                        >
+                          {/* Photo */}
+                          <Grid md={2}>
+                            {/* Modified CSS */}
+                            <div className={classes.imgContainer}>
+                              <img
+                                className={classes.img}
+                                src={productImages[1].productImageUrl}
+                              />
+                            </div>
+                          </Grid>
+                          {/* Name */}
+                          <GridItem md={2}>
+                            <p>{product.productName}</p>
+                          </GridItem>
+                          {/* Colour */}
+                          <GridItem md={1}>
+                            <p>{colour}</p>
+                          </GridItem>
+                          {/* Size */}
+                          <GridItem md={1}>
+                            <p>{sizeDetails.productSize}</p>
+                          </GridItem>
+                          {/* Price */}
+                          <GridItem md={1}>
+                            <p>${product.price}</p>
+                          </GridItem>
+                          {/* Quantity */}
+                          <GridItem md={1}>
+                            <IconButton
+                              style={{ marginTop: "-15%" }}
+                              onClick={e =>
+                                handleUpdateQuantity(
+                                  quantity - 1,
+                                  productVariantId
+                                )
+                              }
+                            >
+                              <RemoveIcon />
+                            </IconButton>
+                          </GridItem>
+                          <GridItem md={1}>
+                            <p>{quantity}</p>
+                          </GridItem>
+                          <GridItem md={1}>
+                            <IconButton
+                              style={{ marginTop: "-15%" }}
+                              onClick={e =>
+                                handleUpdateQuantity(
+                                  quantity + 1,
+                                  productVariantId
+                                )
+                              }
+                            >
+                              <AddIcon />
+                            </IconButton>
+                          </GridItem>
+                          {/* Amount */}
+                          <GridItem md={1}>
+                            <p>${(product.price * quantity).toFixed(2)}</p>
+                          </GridItem>
+                          {/* Action */}
+                          <GridItem md={1}>
+                            <IconButton
+                              style={{ marginTop: "-15%" }}
+                              onClick={e => handleDelete(e, productVariantId)}
+                            >
+                              <CancelIcon style={{ color: "red" }} />
+                            </IconButton>
+                          </GridItem>
+                        </GridContainer>
+                      </Card>
+                    );
+                  })}
+                </Grid>
+                <Grid item md={3}>
                   <Card>
-                    <GridContainer
-                      alignItems="center"
-                      style={{ textAlign: "center" }}
-                    >
-                      {/* Photo */}
-                      <Grid md={2}>
-                        {/* Modified CSS */}
-                        <div className={classes.imgContainer}>
-                          <img
-                            className={classes.img}
-                            src={productImages[1].productImageUrl}
-                          />
-                        </div>
+                    <CardContent>
+                      <Typography variant="h4" gutterBottom>
+                        TOTAL
+                      </Typography>
+                      <Divider style={{ marginBottom: "5%" }} />
+                      <Grid container>
+                        <Grid item xs={6}>
+                          <Typography variant="h6" component="h2">
+                            Sub-total
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={6} style={{ textAlign: "right" }}>
+                          <Typography variant="h6" component="h2">
+                            {customer.onlineShoppingCart.initialTotalAmount}
+                          </Typography>
+                        </Grid>
                       </Grid>
-                      {/* Name */}
-                      <GridItem md={2}>
-                        <p>{product.productName}</p>
-                      </GridItem>
-                      {/* Colour */}
-                      <GridItem md={1}>
-                        <p>{colour}</p>
-                      </GridItem>
-                      {/* Size */}
-                      <GridItem md={1}>
-                        <p>{sizeDetails.productSize}</p>
-                      </GridItem>
-                      {/* Price */}
-                      <GridItem md={1}>
-                        <p>${product.price}</p>
-                      </GridItem>
-                      {/* Quantity */}
-                      <GridItem md={3}>
-                        <p>{quantity}</p>
-                      </GridItem>
-                      {/* Amount */}
-                      <GridItem md={1}>
-                        <p>${(product.price * quantity).toFixed(2)}</p>
-                      </GridItem>
-                      {/* Action */}
-                      <GridItem md={1}>
-                        <IconButton style={{ marginTop: "-15%" }}>
-                          <CancelIcon style={{ color: "red" }} />
-                        </IconButton>
-                      </GridItem>
-                    </GridContainer>
+
+                      <Typography className={classes.pos} color="textSecondary">
+                        adjective
+                      </Typography>
+                      <Typography variant="body2" component="p">
+                        well meaning and kindly.
+                        <br />
+                        {'"a benevolent smile"'}
+                      </Typography>
+                    </CardContent>
+                    <CardActions>
+                      <Button size="small">Learn More</Button>
+                    </CardActions>
                   </Card>
-                );
-              })}
-              {/* <Table
-                tableHead={[
-                  "",
-                  "PRODUCT",
-                  "COLOR",
-                  "SIZE",
-                  "PRICE",
-                  "QTY",
-                  "AMOUNT",
-                  ""
-                ]}
-                tableData={[
-                  [
-                    <div className={classes.imgContainer} key={1}>
-                      <img src={product1} alt="..." className={classes.img} />
-                    </div>,
-                    <span key={1}>
-                      <a href="#jacket" className={classes.tdNameAnchor}>
-                        Spring Jacket
-                      </a>
-                      <br />
-                      <small className={classes.tdNameSmall}>
-                        by Dolce&amp;Gabbana
-                      </small>
-                    </span>,
-                    "Red",
-                    "M",
-                    <span key={1}>
-                      <small className={classes.tdNumberSmall}>€</small> 549
-                    </span>,
-                    <span key={1}>
-                      1{` `}
-                      <div className={classes.buttonGroup}>
-                        <Button
-                          color="info"
-                          size="sm"
-                          round
-                          className={classes.firstButton}
-                        >
-                          <Remove />
-                        </Button>
-                        <Button
-                          color="info"
-                          size="sm"
-                          round
-                          className={classes.lastButton}
-                        >
-                          <Add />
-                        </Button>
-                      </div>
-                    </span>,
-                    <span key={1}>
-                      <small className={classes.tdNumberSmall}>€</small> 549
-                    </span>,
-                    <Tooltip
-                      key={1}
-                      id="close1"
-                      title="Remove item"
-                      placement="left"
-                      classes={{ tooltip: classes.tooltip }}
-                    >
-                      <Button link className={classes.actionButton}>
-                        <Close />
-                      </Button>
-                    </Tooltip>
-                  ],
-                  [
-                    <div className={classes.imgContainer} key={1}>
-                      <img src={product2} alt="..." className={classes.img} />
-                    </div>,
-                    <span key={1}>
-                      <a href="#jacket" className={classes.tdNameAnchor}>
-                        Short Pants{" "}
-                      </a>
-                      <br />
-                      <small className={classes.tdNameSmall}>by Gucci</small>
-                    </span>,
-                    "Purple",
-                    "M",
-                    <span key={1}>
-                      <small className={classes.tdNumberSmall}>€</small> 499
-                    </span>,
-                    <span key={1}>
-                      2{` `}
-                      <div className={classes.buttonGroup}>
-                        <Button
-                          color="info"
-                          size="sm"
-                          round
-                          className={classes.firstButton}
-                        >
-                          <Remove />
-                        </Button>
-                        <Button
-                          color="info"
-                          size="sm"
-                          round
-                          className={classes.lastButton}
-                        >
-                          <Add />
-                        </Button>
-                      </div>
-                    </span>,
-                    <span key={1}>
-                      <small className={classes.tdNumberSmall}>€</small> 998
-                    </span>,
-                    <Tooltip
-                      key={1}
-                      id="close2"
-                      title="Remove item"
-                      placement="left"
-                      classes={{ tooltip: classes.tooltip }}
-                    >
-                      <Button link className={classes.actionButton}>
-                        <Close />
-                      </Button>
-                    </Tooltip>
-                  ],
-                  [
-                    <div className={classes.imgContainer} key={1}>
-                      <img src={product3} alt="..." className={classes.img} />
-                    </div>,
-                    <span key={1}>
-                      <a href="#jacket" className={classes.tdNameAnchor}>
-                        Pencil Skirt
-                      </a>
-                      <br />
-                      <small className={classes.tdNameSmall}>
-                        by Valentino
-                      </small>
-                    </span>,
-                    "White",
-                    "XL",
-                    <span key={1}>
-                      <small className={classes.tdNumberSmall}>€</small> 799
-                    </span>,
-                    <span key={1}>
-                      1{` `}
-                      <div className={classes.buttonGroup}>
-                        <Button
-                          color="info"
-                          size="sm"
-                          round
-                          className={classes.firstButton}
-                        >
-                          <Remove />
-                        </Button>
-                        <Button
-                          color="info"
-                          size="sm"
-                          round
-                          className={classes.lastButton}
-                        >
-                          <Add />
-                        </Button>
-                      </div>
-                    </span>,
-                    <span key={1}>
-                      <small className={classes.tdNumberSmall}>€</small> 799
-                    </span>,
-                    <Tooltip
-                      key={1}
-                      id="close3"
-                      title="Remove item"
-                      placement="left"
-                      classes={{ tooltip: classes.tooltip }}
-                    >
-                      <Button link className={classes.actionButton}>
-                        <Close />
-                      </Button>
-                    </Tooltip>
-                  ],
-                  {
-                    purchase: true,
-                    colspan: "3",
-                    amount: (
-                      <span>
-                        <small>€</small>2,346
-                      </span>
-                    ),
-                    col: {
-                      colspan: 3,
-                      text: (
-                        <Button color="info" round>
-                          Complete Purchase <KeyboardArrowRight />
-                        </Button>
-                      )
-                    }
-                  }
-                ]}
-                tableShopping
-                customHeadCellClasses={[
-                  classes.textCenter,
-                  classes.description,
-                  classes.description,
-                  classes.textRight,
-                  classes.textRight,
-                  classes.textRight
-                ]}
-                customHeadClassesForCells={[0, 2, 3, 4, 5, 6]}
-                customCellClasses={[
-                  classes.tdName,
-                  classes.customFont,
-                  classes.customFont,
-                  classes.tdNumber,
-                  classes.tdNumber + " " + classes.tdNumberAndButtonGroup,
-                  classes.tdNumber + " " + classes.textCenter
-                ]}
-                customClassesForCells={[1, 2, 3, 4, 5, 6]}
-              /> */}
+                </Grid>
+              </Grid>
             </CardBody>
           </Card>
         </div>
       </div>
-      {/* <Footer
-        content={
-          <div>
-            <div className={classes.left}>
-              <List className={classes.list}>
-                <ListItem className={classes.inlineBlock}>
-                  <a
-                    href="https://www.creative-tim.com/?ref=mkpr-shopping-cart"
-                    target="_blank"
-                    className={classes.block}
-                  >
-                    Creative Tim
-                  </a>
-                </ListItem>
-                <ListItem className={classes.inlineBlock}>
-                  <a
-                    href="https://www.creative-tim.com/presentation?ref=mkpr-shopping-cart"
-                    target="_blank"
-                    className={classes.block}
-                  >
-                    About us
-                  </a>
-                </ListItem>
-                <ListItem className={classes.inlineBlock}>
-                  <a
-                    href="https://blog.creative-tim.com/?ref=mkpr-shopping-cart"
-                    target="_blank"
-                    className={classes.block}
-                  >
-                    Blog
-                  </a>
-                </ListItem>
-                <ListItem className={classes.inlineBlock}>
-                  <a
-                    href="https://www.creative-tim.com/license?ref=mkpr-shopping-cart"
-                    target="_blank"
-                    className={classes.block}
-                  >
-                    Licenses
-                  </a>
-                </ListItem>
-              </List>
-            </div>
-            <div className={classes.right}>
-              &copy; {1900 + new Date().getYear()} , made with{" "}
-              <Favorite className={classes.icon} /> by{" "}
-              <a
-                href="https://www.creative-tim.com?ref=mkpr-shopping-cart"
-                target="_blank"
-              >
-                Creative Tim
-              </a>{" "}
-              for a better web.
-            </div>
-          </div>
-        }
-      /> */}
     </div>
   );
 }
