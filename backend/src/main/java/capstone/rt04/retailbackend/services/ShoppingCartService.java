@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -64,14 +65,16 @@ public class ShoppingCartService {
             if (shoppingCartItem.getProductVariant().getProductVariantId().equals(productVariantId)) {
                 if (quantity > 0) { //set to whatever input quantity
                     shoppingCartItem.setQuantity(quantity);
-                    Customer customer = customerService.retrieveCustomerByCustomerId(customerId);
                     shoppingCart.setLastUpdated(new Timestamp(System.currentTimeMillis()));
+                    shoppingCart.calculateAndSetInitialTotal();
+                    Customer customer = customerService.retrieveCustomerByCustomerId(customerId);
                     return customerService.lazyLoadCustomerFields(customer);
                 } else if (quantity == 0){ // delete
                     shoppingCartItem.setProductVariant(null);
                     shoppingCart.getShoppingCartItems().remove(shoppingCartItem);
                     shoppingCartItemRepository.delete(shoppingCartItem);
                     shoppingCart.setLastUpdated(new Timestamp(System.currentTimeMillis()));
+                    shoppingCart.calculateAndSetInitialTotal();
                     Customer customer = customerService.retrieveCustomerByCustomerId(customerId);
                     return customerService.lazyLoadCustomerFields(customer);
                 }
@@ -81,6 +84,7 @@ public class ShoppingCartService {
         ShoppingCartItem shoppingCartItem = createShoppingCartItem(quantity, productVariantId);
         shoppingCart.getShoppingCartItems().add(shoppingCartItem);
         shoppingCart.setLastUpdated(new Timestamp(System.currentTimeMillis()));
+        shoppingCart.calculateAndSetInitialTotal();
         Customer customer = customerService.retrieveCustomerByCustomerId(customerId);
         return customerService.lazyLoadCustomerFields(customer);
     }
@@ -89,6 +93,7 @@ public class ShoppingCartService {
         ShoppingCart shoppingCart = getShoppingCart(customerId, cartType);
         List<ShoppingCartItem> shoppingCartItems = shoppingCart.getShoppingCartItems();
         shoppingCart.setShoppingCartItems(new ArrayList<>());
+        shoppingCart.calculateAndSetInitialTotal();
         Customer customer = customerService.retrieveCustomerByCustomerId(customerId);
         for (ShoppingCartItem shoppingCartItem : shoppingCartItems){
             shoppingCartItem.setProductVariant(null);
