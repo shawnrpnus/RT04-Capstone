@@ -58,7 +58,15 @@ const productStyle = {
       height: "auto"
     },
     "& .image-gallery-thumbnail-image": {
-      margin: "5px 0"
+      margin: "5px 0",
+      height: "15vh",
+      width: "auto"
+    },
+    "& .image-gallery-right-nav": {
+      display: "none"
+    },
+    "& .image-gallery-left-nav": {
+      display: "none"
     },
     "& .image-gallery-swipe": {
       margin: "0px 0px",

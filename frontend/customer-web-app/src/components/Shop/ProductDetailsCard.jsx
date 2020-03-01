@@ -245,28 +245,38 @@ function ProductDetailsCard(props) {
                         >
                           {size}
                         </text>
+                        {!hasStock && (
+                          <React.Fragment>
+                            {/*<line x1="0" y1="0" x2="40" y2="40" stroke="red" />*/}
+                            <line
+                              x1="0"
+                              y1="40"
+                              x2="40"
+                              y2="0"
+                              stroke="black"
+                            />
+                          </React.Fragment>
+                        )}
                       </svg>
                     </Tooltip>
                   );
                 }
               )}
             </GridItem>
-            <GridItem md={12} sm={12}>
+            <GridItem md={12} sm={12} style={{ marginTop: "10px" }}>
               <Button
-                round
-                color="rose"
+                color="primary"
                 onClick={addToShoppingCart}
-                style={{ float: "right" }}
+                style={{ float: "right", width: "245px" }}
               >
                 Add to Shopping Cart &nbsp; <ShoppingCart />
               </Button>
             </GridItem>
             <GridItem md={12} sm={12}>
               <Button
-                round
-                color="rose"
+                color="primary"
                 onClick={addToShoppingCart}
-                style={{ float: "right" }}
+                style={{ float: "right", width: "245px" }}
               >
                 Add to Reservation Cart &nbsp; <ShoppingCart />
               </Button>
