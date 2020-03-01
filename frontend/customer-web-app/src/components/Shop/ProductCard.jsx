@@ -32,7 +32,7 @@ function ProductCard(props) {
     <GridItem md={3} sm={6} xs={6}>
       <Card plain product style={{ marginBottom: "50px" }}>
         <CardHeader noShadow image>
-          <Link to={`/product${product.productId}`}>
+          <Link to={`/shop/product/${product.productId}`}>
             <img
               src={colourToImageAndSizes[activeColourIndex].image}
               alt="productImage"
@@ -58,7 +58,7 @@ function ProductCard(props) {
           </Tooltip>
         </CardHeader>
         <CardBody className={classes.cardBodyPlain}>
-          <Link to={`/product${product.productId}`}>
+          <Link to={`/shop/product/${product.productId}`}>
             <GridContainer justify="space-between" style={{ height: "90px" }}>
               <GridItem xs={7}>
                 <h6 className={classes.cardTitle}>{product.productName}</h6>

@@ -1,4 +1,8 @@
-import { DISPLAY_PRODUCTS, GET_ERRORS } from "redux/actions/types";
+import {
+  DISPLAY_PRODUCTS,
+  GET_ERRORS,
+  VIEW_SINGLE_PRODUCT
+} from "redux/actions/types";
 import axios from "axios";
 import { dispatchErrorMapError } from "redux/actions/index";
 
@@ -43,3 +47,23 @@ export const filterProducts = req => {
       });
   };
 };
+
+export const retrieveProductById = productId => {
+  return dispatch => {
+    //redux thunk passes dispatch
+    axios
+      .get(PRODUCT_BASE_URL + `/retrieveProductById/${productId}`)
+      .then(response => {
+        const data = jsog.decode(response.data);
+        dispatch(viewSingleProduct(data));
+      })
+      .catch(err => {
+        dispatchErrorMapError(err, dispatch);
+      });
+  };
+};
+
+const viewSingleProduct = data => ({
+  type: VIEW_SINGLE_PRODUCT,
+  product: data
+});

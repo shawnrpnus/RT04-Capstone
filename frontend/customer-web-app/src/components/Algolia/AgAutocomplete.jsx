@@ -40,8 +40,8 @@ const MyAutoComplete = props => {
         <TextField
           {...params}
           label="Search"
-          margin="normal"
-          variant="outlined"
+          margin="none"
+          variant="standard"
         />
       )}
       value={currentRefinement}
