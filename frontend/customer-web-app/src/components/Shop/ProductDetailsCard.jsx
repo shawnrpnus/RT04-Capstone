@@ -8,7 +8,7 @@ import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import Button from "components/UI/CustomButtons/Button";
-import { ShoppingCart } from "@material-ui/icons";
+import { Favorite, FavoriteBorder, ShoppingCart } from "@material-ui/icons";
 import productStyle from "assets/jss/material-kit-pro-react/views/productStyle.js";
 import { makeStyles } from "@material-ui/core/styles";
 import colours from "assets/colours";
@@ -18,6 +18,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { updateShoppingCart } from "redux/actions/shoppingCartActions";
 import UpdateShoppingCartRequest from "models/ShoppingCart/UpdateShoppingCartRequest";
 import { useSnackbar } from "notistack";
+import IconButton from "@material-ui/core/IconButton";
 
 const _ = require("lodash");
 const useStyles = makeStyles(productStyle);
@@ -70,6 +71,7 @@ function ProductDetailsCard(props) {
     colourToImageAndSizes[activeColourIndex].colour
   );
   const [selectedSize, setSelectedSize] = React.useState("None");
+  const [isHoverFavorite, setIsHoverFavorite] = useState(false);
 
   const dispatch = useDispatch();
   const customer = useSelector(state => state.customer.loggedInCustomer);
@@ -115,12 +117,33 @@ function ProductDetailsCard(props) {
           <ImageGallery
             showFullscreenButton={false}
             showPlayButton={false}
-            startIndex={3}
+            startIndex={0}
+            thumbnailPosition="left"
             items={colourToImageAndSizes[activeColourIndex].imageSet}
           />
         </GridItem>
         <GridItem md={6} sm={6}>
-          <h2 className={classes.title}>{product.productName}</h2>
+          <h2 className={classes.title}>
+            {product.productName}
+            <Tooltip
+              id="tooltip-top"
+              title="Add to Wishlist"
+              placement="left"
+              classes={{ tooltip: classes.tooltip }}
+            >
+              <IconButton
+                className={classes.heartIconBtn}
+                onMouseEnter={() => setIsHoverFavorite(true)}
+                onMouseLeave={() => setIsHoverFavorite(false)}
+              >
+                {isHoverFavorite ? (
+                  <Favorite style={{ color: "#e91e63", margin: "0" }} />
+                ) : (
+                  <FavoriteBorder style={{ color: "#e91e63", margin: "0" }} />
+                )}
+              </IconButton>
+            </Tooltip>
+          </h2>
           <h3 className={classes.mainPrice}>${product.price}</h3>
           <Accordion
             active={[0]}
@@ -228,12 +251,32 @@ function ProductDetailsCard(props) {
                 }
               )}
             </GridItem>
+            <GridItem md={12} sm={12}>
+              <Button
+                round
+                color="rose"
+                onClick={addToShoppingCart}
+                style={{ float: "right" }}
+              >
+                Add to Shopping Cart &nbsp; <ShoppingCart />
+              </Button>
+            </GridItem>
+            <GridItem md={12} sm={12}>
+              <Button
+                round
+                color="rose"
+                onClick={addToShoppingCart}
+                style={{ float: "right" }}
+              >
+                Add to Reservation Cart &nbsp; <ShoppingCart />
+              </Button>
+            </GridItem>
           </GridContainer>
-          <GridContainer className={classes.pullRight}>
-            <Button round color="rose" onClick={addToShoppingCart}>
-              Add to Cart &nbsp; <ShoppingCart />
-            </Button>
-          </GridContainer>
+          {/*<GridContainer className={classes.pullRight}>*/}
+          {/*  <Button round color="rose" onClick={addToShoppingCart}>*/}
+          {/*    Add to Cart &nbsp; <ShoppingCart />*/}
+          {/*  </Button>*/}
+          {/*</GridContainer>*/}
         </GridItem>
       </GridContainer>
     </React.Fragment>

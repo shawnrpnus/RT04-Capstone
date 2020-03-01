@@ -55,11 +55,13 @@ const productStyle = {
     },
     "& .image-gallery-slide img": {
       borderRadius: "3px",
-      maxWidth: "300px",
       height: "auto"
     },
+    "& .image-gallery-thumbnail-image": {
+      margin: "5px 0"
+    },
     "& .image-gallery-swipe": {
-      margin: "30px 0px",
+      margin: "0px 0px",
       overflow: "hidden",
       width: "100%",
       height: "auto",
