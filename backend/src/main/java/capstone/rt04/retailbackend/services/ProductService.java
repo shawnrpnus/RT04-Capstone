@@ -170,10 +170,9 @@ public class ProductService {
             products = filteredProducts;
         } else {
             products = retrieveAllProducts();
+            // Arrange based on latest new products
+            Collections.sort(products, Comparator.comparing(Product::getProductId).reversed());
         }
-
-        // Arrange based on latest new products
-        Collections.sort(products, Comparator.comparing(Product::getProductId).reversed());
 
         String colour;
         List<String> colours = new ArrayList<>();

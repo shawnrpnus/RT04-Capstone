@@ -57,7 +57,7 @@ public class StartUpService {
     private Long productVariantId;
 
 
-    public StartUpService(ProductService productService, CategoryService categoryService, WarehouseService warehouseService, TagService tagService, StyleService styleService, StoreService storeService, StaffService staffService, SizeDetailsService sizeDetailsService, AddressRepository addressRepository, SizeDetailsRepository sizeDetailsRepository) {
+    public StartUpService(ProductService productService, CategoryService categoryService, WarehouseService warehouseService, TagService tagService, StyleService styleService, StoreService storeService, StaffService staffService, SizeDetailsService sizeDetailsService, ShoppingCartService shoppingCartService, AddressRepository addressRepository, SizeDetailsRepository sizeDetailsRepository) {
         this.productService = productService;
         this.categoryService = categoryService;
         this.warehouseService = warehouseService;
@@ -66,6 +66,7 @@ public class StartUpService {
         this.storeService = storeService;
         this.staffService = staffService;
         this.sizeDetailsService = sizeDetailsService;
+        this.shoppingCartService = shoppingCartService;
         this.addressRepository = addressRepository;
         this.sizeDetailsRepository = sizeDetailsRepository;
     }
