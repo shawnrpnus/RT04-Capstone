@@ -292,7 +292,11 @@ export const addMeasurements = (req, enqueueSnackbar, setAddMeasurements) => {
   };
 };
 
-export const updateMeasurements = (req, enqueueSnackbar, setAddMeasurements) => {
+export const updateMeasurements = (
+  req,
+  enqueueSnackbar,
+  setAddMeasurements
+) => {
   return dispatch => {
     //redux thunk passes dispatch
     axios

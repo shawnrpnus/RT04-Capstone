@@ -10,7 +10,11 @@ import Button from "components/UI/CustomButtons/Button";
 import UpdateMeasurementsRequest from "models/customer/UpdateMeasurementsRequest";
 import { useSnackbar } from "notistack";
 import GridItem from "components/Layout/components/Grid/GridItem";
-import {addMeasurements, updateMeasurements, deleteMeasurements} from "redux/actions/customerActions";
+import {
+  addMeasurements,
+  updateMeasurements,
+  deleteMeasurements
+} from "redux/actions/customerActions";
 import { Accessibility } from "@material-ui/icons";
 const useStyles = makeStyles(signupPageStyle);
 const _ = require("lodash");
@@ -33,72 +37,78 @@ function Measurements(props) {
     hip: "",
     height: ""
   });
-  
+
   const [hasAddMeasurements, setAddedMeasurements] = useState(true);
 
   //check if customer has added measurements
   useEffect(() => {
-      if (customer.measurements == null) {
-          console.log(customer);
-          setAddedMeasurements(false);  
-      } else {
-          //set input state
-          setInputState(inputState => 
-            ({ ...inputState, 
-                shoulder: customer.measurements.shoulder,
-                waist: customer.measurements.waist,
-                chest: customer.measurements.chest,
-                hip: customer.measurements.hip,
-                height: customer.measurements.height 
-            }));
-      }
-  },[customer]);
+    if (customer.measurements == null) {
+      console.log(customer);
+      setAddedMeasurements(false);
+    } else {
+      //set input state
+      setInputState(inputState => ({
+        ...inputState,
+        shoulder: customer.measurements.shoulder,
+        waist: customer.measurements.waist,
+        chest: customer.measurements.chest,
+        hip: customer.measurements.hip,
+        height: customer.measurements.height
+      }));
+    }
+  }, [customer]);
 
   const handleAddMeasurements = () => {
     const measurements = new UpdateMeasurementsRequest(
+      inputState.shoulder,
+      inputState.waist,
+      inputState.chest,
+      inputState.hip,
+      inputState.height
+    );
+    const customerId = customer.customerId;
+    const req = { customerId, measurements };
+    dispatch(addMeasurements(req, enqueueSnackbar, setAddedMeasurements));
+  };
+
+  const handleUpdateMeasurements = () => {
+    if (
+      inputState.shoulder == customer.measurements.shoulder &&
+      inputState.waist == customer.measurements.waist &&
+      inputState.chest == customer.measurements.chest &&
+      inputState.hip == customer.measurements.hip &&
+      inputState.height == customer.measurements.height
+    ) {
+      enqueueSnackbar("No changes in measurements", {
+        variant: "error",
+        autoHideDuration: 1200
+      });
+    } else {
+      const measurements = new UpdateMeasurementsRequest(
         inputState.shoulder,
         inputState.waist,
         inputState.chest,
         inputState.hip,
         inputState.height
-    );
-    const customerId = customer.customerId;
-    const req = {customerId, measurements};
-    dispatch(addMeasurements(req, enqueueSnackbar, setAddedMeasurements));
-  }
-
-  const handleUpdateMeasurements = () => {
-    if (inputState.shoulder == customer.measurements.shoulder && inputState.waist == customer.measurements.waist && inputState.chest == customer.measurements.chest && inputState.hip == customer.measurements.hip && inputState.height == customer.measurements.height) {
-        enqueueSnackbar("No changes in measurements", {
-            variant: "error",
-            autoHideDuration: 1200
-          });
-    } else {
-        const measurements = new UpdateMeasurementsRequest(
-            inputState.shoulder,
-            inputState.waist,
-            inputState.chest,
-            inputState.hip,
-            inputState.height
-        );
-        const customerId = customer.customerId;
-        const req = {customerId, measurements};
-        dispatch(updateMeasurements(req, enqueueSnackbar, setAddedMeasurements));
+      );
+      const customerId = customer.customerId;
+      const req = { customerId, measurements };
+      dispatch(updateMeasurements(req, enqueueSnackbar, setAddedMeasurements));
     }
-  }
+  };
 
   const handleDeleteMeasurements = () => {
     const customerId = customer.customerId;
     dispatch(deleteMeasurements(customerId, enqueueSnackbar));
-    setInputState(inputState => 
-        ({ ...inputState, 
-            shoulder: "",
-            waist: "",
-            chest: "",
-            hip: "",
-            height: "" 
-        }));
-  }
+    setInputState(inputState => ({
+      ...inputState,
+      shoulder: "",
+      waist: "",
+      chest: "",
+      hip: "",
+      height: ""
+    }));
+  };
 
   //Misc
   const onChange = e => {
@@ -112,8 +122,6 @@ function Measurements(props) {
     }
   };
 
-
-
   const resetInputState = () => {
     setInputState(prevInputState => ({
       ...prevInputState
@@ -121,129 +129,126 @@ function Measurements(props) {
   };
   return (
     <React.Fragment>
-        <GridContainer>
-          <GridItem xs={12} sm={12} md={4}>
-            <form className={classes.form}>
-              <CustomTextField
-                fieldLabel="Shoulder (cm)" 
-                fieldName="shoulder"
-                inputState={inputState}
-                onChange={onChange}
-                errors={errors}
-                InputProps={{
-                    startAdornment: (
-                      <InputAdornment
-                        position="start"
-                        className={classes.inputAdornment}
-                      >
-                        <Accessibility className={classes.inputAdornmentIcon} />
-                      </InputAdornment>
-                    )
-                  }}
-              />
-              <CustomTextField
-                fieldLabel="Waist (cm)" 
-                fieldName="waist"
-                inputState={inputState}
-                onChange={onChange}
-                errors={errors}
-                InputProps={{
-                    startAdornment: (
-                      <InputAdornment
-                        position="start"
-                        className={classes.inputAdornment}
-                      >
-                        <Accessibility className={classes.inputAdornmentIcon} />
-                      </InputAdornment>
-                    )
-                  }}
-              />
-              <CustomTextField
-                fieldLabel="Chest (cm)" 
-                fieldName="chest"
-                inputState={inputState}
-                onChange={onChange}
-                errors={errors}
-                InputProps={{
-                    startAdornment: (
-                      <InputAdornment
-                        position="start"
-                        className={classes.inputAdornment}
-                      >
-                        <Accessibility className={classes.inputAdornmentIcon} />
-                      </InputAdornment>
-                    )
-                  }}
-              />
-              <CustomTextField
-                fieldLabel="Hip (cm)"  
-                fieldName="hip"
-                inputState={inputState}
-                onChange={onChange}
-                errors={errors}
-                InputProps={{
-                    startAdornment: (
-                      <InputAdornment
-                        position="start"
-                        className={classes.inputAdornment}
-                      >
-                        <Accessibility className={classes.inputAdornmentIcon} />
-                      </InputAdornment>
-                    )
-                  }}
-              />
-              <CustomTextField
-                fieldLabel="Height (cm)" 
-                fieldName="height"
-                inputState={inputState}
-                onChange={onChange}
-                errors={errors}
-                InputProps={{
-                    startAdornment: (
-                      <InputAdornment
-                        position="start"
-                        className={classes.inputAdornment}
-                      >
-                        <Accessibility className={classes.inputAdornmentIcon} />
-                      </InputAdornment>
-                    )
-                  }}
-              />
-              <div className={classes.textCenter}>
-                {hasAddMeasurements ? (
-                  <React.Fragment>
-                    <Button
+      <GridContainer>
+        <GridItem xs={12} sm={12} md={4}>
+          <form className={classes.form}>
+            <CustomTextField
+              fieldLabel="Shoulder (cm)"
+              fieldName="shoulder"
+              inputState={inputState}
+              onChange={onChange}
+              errors={errors}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment
+                    position="start"
+                    className={classes.inputAdornment}
+                  >
+                    <Accessibility className={classes.inputAdornmentIcon} />
+                  </InputAdornment>
+                )
+              }}
+            />
+            <CustomTextField
+              fieldLabel="Waist (cm)"
+              fieldName="waist"
+              inputState={inputState}
+              onChange={onChange}
+              errors={errors}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment
+                    position="start"
+                    className={classes.inputAdornment}
+                  >
+                    <Accessibility className={classes.inputAdornmentIcon} />
+                  </InputAdornment>
+                )
+              }}
+            />
+            <CustomTextField
+              fieldLabel="Chest (cm)"
+              fieldName="chest"
+              inputState={inputState}
+              onChange={onChange}
+              errors={errors}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment
+                    position="start"
+                    className={classes.inputAdornment}
+                  >
+                    <Accessibility className={classes.inputAdornmentIcon} />
+                  </InputAdornment>
+                )
+              }}
+            />
+            <CustomTextField
+              fieldLabel="Hip (cm)"
+              fieldName="hip"
+              inputState={inputState}
+              onChange={onChange}
+              errors={errors}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment
+                    position="start"
+                    className={classes.inputAdornment}
+                  >
+                    <Accessibility className={classes.inputAdornmentIcon} />
+                  </InputAdornment>
+                )
+              }}
+            />
+            <CustomTextField
+              fieldLabel="Height (cm)"
+              fieldName="height"
+              inputState={inputState}
+              onChange={onChange}
+              errors={errors}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment
+                    position="start"
+                    className={classes.inputAdornment}
+                  >
+                    <Accessibility className={classes.inputAdornmentIcon} />
+                  </InputAdornment>
+                )
+              }}
+            />
+            <div className={classes.textCenter}>
+              {hasAddMeasurements ? (
+                <React.Fragment>
+                  <Button
                     onClick={handleUpdateMeasurements}
                     round
-                    color="primary">
+                    color="primary"
+                  >
                     Update Measurements
-                    </Button>
+                  </Button>
 
-                    <Button
+                  <Button
                     onClick={handleDeleteMeasurements}
                     round
                     color="primary"
-                    >
+                  >
                     Reset Measurements
-                    </Button>    
+                  </Button>
                 </React.Fragment>
-                ) : (
-                    <React.Fragment>
-                      <Button
-                        onClick={handleAddMeasurements}
-                        round
-                        color="primary"
-                      >
-                        Add Measurements
-                      </Button>
-                  </React.Fragment>    
-                )}
-              </div>
-            </form>
-          </GridItem>
-        </GridContainer>
+              ) : (
+                <React.Fragment>
+                  <Button onClick={handleAddMeasurements} round color="primary">
+                    Add Measurements
+                  </Button>
+                </React.Fragment>
+              )}
+            </div>
+          </form>
+        </GridItem>
+      </GridContainer>
     </React.Fragment>
   );
 }
 
-  export default Measurements;
+export default Measurements;
