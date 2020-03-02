@@ -71,7 +71,7 @@ export default function(state = initialState, action) {
     case types.SAVE_CARD_SUCCESS:
       return {
         ...state,
-        clientSecretForCard: action.clientSecret
+        customer: action.customer
       };
     default:
       return state;

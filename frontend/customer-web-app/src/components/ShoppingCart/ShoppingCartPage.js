@@ -41,9 +41,9 @@ import CardBody from "components/UI/Card/CardBody";
 import shoppingCartStyle from "assets/jss/material-kit-pro-react/views/shoppingCartStyle.js";
 import {
   updateShoppingCart,
-  checkOut,
-  saveCard
+  checkOut
 } from "./../../redux/actions/shoppingCartActions";
+import { saveCard } from "./../../redux/actions/customerActions";
 import UpdateShoppingCartRequest from "./../../models/ShoppingCart/UpdateShoppingCartRequest";
 import CreditCardDialog from "./CreditCardDialog.js";
 

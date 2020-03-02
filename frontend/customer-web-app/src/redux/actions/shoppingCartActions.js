@@ -64,23 +64,23 @@ const paymentSuccess = data => ({
   clientSecret: data
 });
 
-export const saveCard = (customerId, setShowCreditCardDialog) => {
-  return dispatch => {
-    axios
-      .get(`/saveCard/${customerId}`)
-      .then(resp => {
-        console.log(resp);
-        dispatch(saveCardSuccess(resp.data));
-        setShowCreditCardDialog(true);
-      })
-      .catch(err => {
-        console.log(err);
-      });
-  };
-};
+// export const saveCard = (customerId, setShowCreditCardDialog) => {
+//   return dispatch => {
+//     axios
+//       .get(`/saveCard/${customerId}`)
+//       .then(resp => {
+//         console.log(resp);
+//         dispatch(saveCardSuccess(resp.data));
+//         setShowCreditCardDialog(true);
+//       })
+//       .catch(err => {
+//         console.log(err);
+//       });
+//   };
+// };
 
-// Customer reducer
-const saveCardSuccess = data => ({
-  type: SAVE_CARD_SUCCESS,
-  clientSecret: data
-});
+// // Customer reducer
+// const saveCardSuccess = data => ({
+//   type: SAVE_CARD_SUCCESS,
+//   clientSecret: data
+// });

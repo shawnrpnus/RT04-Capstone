@@ -1,4 +1,4 @@
-package capstone.rt04.retailbackend.request.payment;
+package capstone.rt04.retailbackend.request.stripe;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,8 +9,14 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class PaymentRequest {
+public class PaymentWithSavedCardRequest {
+
+    private Long customerId;
+
+    private String paymentMethodId;
 
     private Long totalAmount;
+
+    private Long shoppingCartId;
 
 }

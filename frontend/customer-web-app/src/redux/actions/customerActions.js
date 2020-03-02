@@ -7,7 +7,8 @@ import {
   RESET_VERIFICATION_STATUS,
   UPDATE_SHIPPING_ADDRESS_SUCCESS,
   VERIFY_FAILURE,
-  VERIFY_SUCCESS
+  VERIFY_SUCCESS,
+  SAVE_CARD_SUCCESS
 } from "./types";
 import { UPDATE_CUSTOMER } from "redux/actions/types";
 import { dispatchErrorMapError } from "redux/actions/index";
@@ -451,3 +452,24 @@ export const clearWishlist = customerId => {
       });
   };
 };
+
+export const saveCard = saveCardRequest => {
+  return dispatch => {
+    axios
+      .post("/saveCard/", saveCardRequest)
+      .then(resp => {
+        // Return customer
+        console.log(resp);
+        dispatch(saveCardSuccess(resp.data));
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+};
+
+// Customer reducer
+const saveCardSuccess = data => ({
+  type: SAVE_CARD_SUCCESS,
+  customer: data
+});

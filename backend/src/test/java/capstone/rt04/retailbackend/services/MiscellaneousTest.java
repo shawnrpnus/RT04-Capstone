@@ -50,13 +50,13 @@ public class MiscellaneousTest {
 
     @Test
     public void createPayment() throws StripeException {
-        PaymentIntent paymentIntent = stripeService.createPayment(new Long(1000), "sgd");
+        PaymentIntent paymentIntent = stripeService.makeDirectPayment(new Long(1000));
         System.out.println(paymentIntent.getAmount());
         System.out.println(paymentIntent.getConfirmationMethod());
     }
 
     @Test
     public void createCustomer() throws StripeException, CustomerNotFoundException {
-        stripeService.createCustomer(new Long(1553));
+        stripeService.createStripeCustomer(new Long(1553));
     }
 }
