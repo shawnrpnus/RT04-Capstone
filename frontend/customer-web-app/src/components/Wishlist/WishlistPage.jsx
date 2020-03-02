@@ -61,12 +61,16 @@ export default function WishlistPage(props) {
         <div className={classes.container}>
           <Card plain>
             <CardBody plain>
-              {wishlistItems.map(productVariant => (
-                <React.Fragment>
-                  <WishlistItemCard productVariant={productVariant} />
-                  <Divider />
-                </React.Fragment>
-              ))}
+              {wishlistItems.length > 0 ? (
+                wishlistItems.map(productVariant => (
+                  <React.Fragment>
+                    <WishlistItemCard productVariant={productVariant} />
+                    <Divider />
+                  </React.Fragment>
+                ))
+              ) : (
+                <h3 style={{ textAlign: "center" }}>Your wishlist is empty.</h3>
+              )}
             </CardBody>
           </Card>
         </div>

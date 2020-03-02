@@ -9,7 +9,8 @@ const jsog = require("jsog");
 
 export const updateShoppingCart = (
   updateShoppingCartRequest,
-  enqueueSnackbar
+  enqueueSnackbar,
+  removeFromWishlistAPI
 ) => {
   return dispatch => {
     //redux thunk passes dispatch
@@ -20,6 +21,15 @@ export const updateShoppingCart = (
       )
       .then(response => {
         handleUpdateShoppingCart(response.data, dispatch);
+        if (removeFromWishlistAPI) {
+          //for transferring from wishlist to cart
+          dispatch(
+            removeFromWishlistAPI(
+              updateShoppingCartRequest.customerId,
+              updateShoppingCartRequest.productVariantId
+            )
+          );
+        }
         enqueueSnackbar("Item Added!", {
           variant: "success",
           autoHideDuration: 1200

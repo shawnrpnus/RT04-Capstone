@@ -18,6 +18,9 @@ import Popover from "@material-ui/core/Popover";
 import Popper from "@material-ui/core/Popper";
 import Paper from "@material-ui/core/Paper";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
+import { useSnackbar } from "notistack";
+import UpdateShoppingCartRequest from "models/ShoppingCart/UpdateShoppingCartRequest";
+import { updateShoppingCart } from "redux/actions/shoppingCartActions";
 
 const _ = require("lodash");
 const useStyles = makeStyles(wishtlistStyle);
@@ -25,6 +28,7 @@ const useStyles = makeStyles(wishtlistStyle);
 function WishlistItemCard(props) {
   const colorNames = _.keyBy(colours, "hex");
   const classes = useStyles();
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const dispatch = useDispatch();
   const customer = useSelector(state => state.customer.loggedInCustomer);
   const { productVariant } = props;
@@ -38,7 +42,8 @@ function WishlistItemCard(props) {
     dispatch(
       removeFromWishlistAPI(
         customer.customerId,
-        productVariant.productVariantId
+        productVariant.productVariantId,
+        enqueueSnackbar
       )
     );
     setPopoverOpen(false);
@@ -49,6 +54,30 @@ function WishlistItemCard(props) {
     setPopoverOpen(true);
     console.log(anchorEl);
     console.log(popoverOpen);
+  };
+
+  const moveToShoppingCart = () => {
+    const shoppingCartItems = customer.onlineShoppingCart.shoppingCartItems;
+    const prodVariantIdToCartItem = _.keyBy(
+      shoppingCartItems,
+      "productVariant.productVariantId"
+    );
+    let quantity = 1;
+    if (
+      prodVariantIdToCartItem.hasOwnProperty(productVariant.productVariantId)
+    ) {
+      quantity =
+        prodVariantIdToCartItem[productVariant.productVariantId].quantity + 1;
+    }
+    const customerId = customer.customerId;
+    const cartType = "online";
+    const req = new UpdateShoppingCartRequest(
+      quantity,
+      productVariant.productVariantId,
+      customerId,
+      cartType
+    );
+    dispatch(updateShoppingCart(req, enqueueSnackbar, removeFromWishlistAPI));
   };
 
   return (
@@ -100,9 +129,13 @@ function WishlistItemCard(props) {
               </h5>
             </GridItem>
             <GridItem md={12}>
-              <Button color="primary" disabled={!hasStock}>
+              <Button
+                color="primary"
+                disabled={!hasStock}
+                onClick={moveToShoppingCart}
+              >
                 <AddShoppingCartSharp />
-                Add to shopping cart
+                Move to shopping cart
               </Button>
               <Button color="primary">
                 <AddShoppingCartSharp />

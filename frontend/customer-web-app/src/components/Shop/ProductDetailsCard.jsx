@@ -92,8 +92,6 @@ function ProductDetailsCard(props) {
     if (prodVariantIdToCartItem.hasOwnProperty(productVariantId)) {
       quantity = prodVariantIdToCartItem[productVariantId].quantity + 1;
     }
-    console.log(prodVariantIdToCartItem);
-    console.log(quantity);
     const customerId = customer.customerId;
     const cartType = "online";
     const req = new UpdateShoppingCartRequest(

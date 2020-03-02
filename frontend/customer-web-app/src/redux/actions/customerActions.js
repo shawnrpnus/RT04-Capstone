@@ -434,7 +434,11 @@ export const addToWishlistAPI = (
   };
 };
 
-export const removeFromWishlistAPI = (customerId, productVariantId) => {
+export const removeFromWishlistAPI = (
+  customerId,
+  productVariantId,
+  enqueueSnackbar
+) => {
   return dispatch => {
     axios
       .post(CUSTOMER_BASE_URL + "/removeFromWishlist", null, {
@@ -442,6 +446,12 @@ export const removeFromWishlistAPI = (customerId, productVariantId) => {
       })
       .then(response => {
         dispatchUpdatedCustomer(response.data, dispatch);
+        if (enqueueSnackbar) {
+          enqueueSnackbar("Removed from wishlist!", {
+            variant: "success",
+            autoHideDuration: 1200
+          });
+        }
       })
       .catch(err => {
         dispatchErrorMapError(err, dispatch);
