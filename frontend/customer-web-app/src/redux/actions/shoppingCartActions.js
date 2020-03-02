@@ -29,11 +29,16 @@ export const updateShoppingCart = (
               updateShoppingCartRequest.productVariantId
             )
           );
+          enqueueSnackbar("Moved to shopping cart!", {
+            variant: "success",
+            autoHideDuration: 1200
+          });
+        } else {
+          enqueueSnackbar("Item Added!", {
+            variant: "success",
+            autoHideDuration: 1200
+          });
         }
-        enqueueSnackbar("Item Added!", {
-          variant: "success",
-          autoHideDuration: 1200
-        });
       })
       .catch(err => {
         dispatchErrorMapError(err, dispatch);

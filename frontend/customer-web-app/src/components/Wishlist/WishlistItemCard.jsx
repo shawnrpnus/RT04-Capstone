@@ -52,8 +52,6 @@ function WishlistItemCard(props) {
   const deleteConfirmation = e => {
     setAnchorEl(e.currentTarget);
     setPopoverOpen(true);
-    console.log(anchorEl);
-    console.log(popoverOpen);
   };
 
   const moveToShoppingCart = () => {

@@ -460,14 +460,20 @@ export const removeFromWishlistAPI = (
   };
 };
 
-export const clearWishlist = customerId => {
+export const clearWishlistAPI = (customerId, enqueueSnackbar) => {
   return dispatch => {
     axios
-      .post(CUSTOMER_BASE_URL + "/clearWishlist", {
+      .post(CUSTOMER_BASE_URL + "/clearWishlist", null, {
         params: { customerId }
       })
       .then(response => {
         dispatchUpdatedCustomer(response.data, dispatch);
+        if (enqueueSnackbar) {
+          enqueueSnackbar("Wishlist cleared!", {
+            variant: "success",
+            autoHideDuration: 1200
+          });
+        }
       })
       .catch(err => {
         dispatchErrorMapError(err, dispatch);
