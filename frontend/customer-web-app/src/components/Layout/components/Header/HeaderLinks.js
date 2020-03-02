@@ -32,6 +32,7 @@ import CategoryNavbar from "components/Layout/components/Header/CategoryNavbar";
 import { useDispatch, useSelector } from "react-redux";
 import { retrieveAllRootCategories } from "redux/actions/categoryActions";
 import AgAutocomplete from "components/Algolia/AgAutocomplete";
+import IconButton from "@material-ui/core/IconButton";
 
 const useStyles = makeStyles(styles);
 
@@ -118,9 +119,9 @@ export default function HeaderLinks(props) {
       <List className={classes.list + " " + classes.mlAuto}>
         <ListItem>
           <AgAutocomplete />
-          <Button color="white" justIcon round>
-            <Search className={classes.searchIcon} />
-          </Button>
+          {/*<IconButton color="white" justIcon round>*/}
+          {/*  <Search className={classes.searchIcon} />*/}
+          {/*</IconButton>*/}
         </ListItem>
         <ListItem className={classes.listItem}>
           <AccountNavbar />

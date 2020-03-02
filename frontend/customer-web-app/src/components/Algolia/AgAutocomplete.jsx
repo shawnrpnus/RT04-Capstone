@@ -13,6 +13,9 @@ import GridItem from "components/Layout/components/Grid/GridItem";
 import HeaderLinks from "components/Layout/components/Header/HeaderLinks";
 import { Link } from "react-router-dom";
 import { searchClient } from "components/Algolia/config";
+import InputAdornment from "@material-ui/core/InputAdornment";
+import { Lock, Visibility, VisibilityOff } from "@material-ui/icons";
+import IconButton from "@material-ui/core/IconButton";
 
 const AgAutocomplete = () => {
   return (
@@ -39,9 +42,20 @@ const MyAutoComplete = props => {
       renderInput={params => (
         <TextField
           {...params}
-          label="Search"
+          placeholder="Search"
           margin="none"
           variant="standard"
+          fullWidth
+          size="small"
+          // InputProps={{
+          //   endAdornment: (
+          //     <InputAdornment position="end">
+          //       <IconButton>
+          //         <Visibility />
+          //       </IconButton>
+          //     </InputAdornment>
+          //   )
+          // }}
         />
       )}
       value={currentRefinement}
@@ -56,7 +70,7 @@ const SearchResult = props => {
   const { product, colourToSizeImageMaps } = productDetails;
   const { productImages } = colourToSizeImageMaps[0];
   return (
-    <Link to={`/product/${product.productName}`}>
+    <Link to={`/shop/product/${product.productId}`}>
       <GridContainer>
         <GridItem xs={4}>
           <img

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import classNames from "classnames";
 import Parallax from "components/UI/Parallax/Parallax";
 import productStyle from "assets/jss/material-kit-pro-react/views/productStyle.js";
@@ -6,17 +6,7 @@ import ProductDetailsCard from "components/Shop/ProductDetailsCard";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { retrieveProductById } from "redux/actions/productActions";
-import GridItem from "components/Layout/components/Grid/GridItem";
-import ImageGallery from "react-image-gallery";
-import Accordion from "components/UI/Accordion/Accordion";
-import GridContainer from "components/Layout/components/Grid/GridContainer";
-import FormControl from "@material-ui/core/FormControl";
-import Select from "@material-ui/core/Select";
-import MenuItem from "@material-ui/core/MenuItem";
-import Button from "components/UI/CustomButtons/Button";
-import { ShoppingCart } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
-import colours from "assets/colours";
 
 const _ = require("lodash");
 const useStyles = makeStyles(productStyle);
