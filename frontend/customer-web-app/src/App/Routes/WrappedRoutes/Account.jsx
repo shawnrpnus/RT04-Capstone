@@ -9,6 +9,7 @@ import SecuredRoute from "App/Routes/SecuredRoute";
 import ForgotPassword from "components/Login/ForgotPassword";
 import ResetPassword from "components/Login/ResetPassword";
 import AddressCard from "../../../components/Profile/sections/AddressCard";
+import WishlistPage from "components/Wishlist/WishlistPage";
 
 export default () => (
   <Switch>
@@ -33,5 +34,6 @@ export default () => (
       component={ResetPassword}
     />
     <Route exact path="/account/address" component={AddressCard} />
+    <Route exact path="/account/wishlist" component={WishlistPage} />
   </Switch>
 );

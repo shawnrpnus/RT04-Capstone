@@ -86,7 +86,8 @@ public class GeneralExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler({
             VerificationCodeExpiredException.class,
-            InvalidCartTypeException.class
+            InvalidCartTypeException.class,
+            WishlistException.class
     })
     public final ResponseEntity<Object> handleBadRequestExceptions(Exception ex, WebRequest req) {
         return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
