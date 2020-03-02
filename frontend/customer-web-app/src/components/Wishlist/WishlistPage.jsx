@@ -14,11 +14,11 @@ import GridItem from "components/Layout/components/Grid/GridItem.js";
 import Card from "components/UI/Card/Card";
 import CardBody from "components/UI/Card/CardBody";
 
-import shoppingCartStyle from "assets/jss/material-kit-pro-react/views/shoppingCartStyle.js";
+import wishlistStyle from "assets/jss/material-kit-pro-react/views/wishlistStyle.js";
 import WishlistItemCard from "components/Wishlist/WishlistItemCard";
 import Divider from "@material-ui/core/Divider";
 
-const useStyles = makeStyles(shoppingCartStyle);
+const useStyles = makeStyles(wishlistStyle);
 
 export default function WishlistPage(props) {
   const classes = useStyles();
@@ -52,7 +52,7 @@ export default function WishlistPage(props) {
                 classes.textCenter
               )}
             >
-              <h2 className={classes.title}>My Wishlist</h2>
+              <h2 className={classes.mainTitle}>My Wishlist</h2>
             </GridItem>
           </GridContainer>
         </div>
@@ -61,7 +61,6 @@ export default function WishlistPage(props) {
         <div className={classes.container}>
           <Card plain>
             <CardBody plain>
-              <h3 className={classes.cardTitle}>My Wishlist</h3>
               {wishlistItems.map(productVariant => (
                 <React.Fragment>
                   <WishlistItemCard productVariant={productVariant} />

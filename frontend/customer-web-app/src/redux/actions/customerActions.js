@@ -30,6 +30,20 @@ const dispatchUpdatedCustomer = (customerDataRaw, dispatch) => {
   dispatch(updateCustomer(customer));
 };
 
+export const refreshCustomer = customerEmail => {
+  const req = { email: customerEmail };
+  return dispatch => {
+    axios
+      .post(CUSTOMER_BASE_URL + "/getCustomerByEmail", req)
+      .then(response => {
+        dispatchUpdatedCustomer(response.data, dispatch);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+};
+
 export const createNewCustomer = (createCustomerRequest, history) => {
   return dispatch => {
     //redux thunk passes dispatch
@@ -420,10 +434,10 @@ export const addToWishlistAPI = (
   };
 };
 
-export const removeFromWishlist = (customerId, productVariantId) => {
+export const removeFromWishlistAPI = (customerId, productVariantId) => {
   return dispatch => {
     axios
-      .post(CUSTOMER_BASE_URL + "/removeFromWishlist", {
+      .post(CUSTOMER_BASE_URL + "/removeFromWishlist", null, {
         params: { customerId, productVariantId }
       })
       .then(response => {
