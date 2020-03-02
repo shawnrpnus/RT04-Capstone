@@ -4,6 +4,9 @@ import capstone.rt04.retailbackend.entities.SizeDetails;
 import capstone.rt04.retailbackend.repositories.SizeDetailsRepository;
 import capstone.rt04.retailbackend.util.AES;
 import capstone.rt04.retailbackend.util.enums.SizeEnum;
+import capstone.rt04.retailbackend.util.exceptions.customer.CustomerNotFoundException;
+import com.stripe.exception.StripeException;
+import com.stripe.model.PaymentIntent;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,12 +17,14 @@ import org.springframework.test.context.junit4.SpringRunner;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @ActiveProfiles("test")
-public class EncryptionTest {
+public class MiscellaneousTest {
 
     @Autowired
     private SizeDetailsRepository sizeDetailsRepository;
     @Autowired
     private SizeDetailsService sizeDetailsService;
+    @Autowired
+    private StripeService stripeService;
 
     @Test
     public void encryptAndDecrypt() {
@@ -41,5 +46,17 @@ public class EncryptionTest {
 
         SizeDetails size = sizeDetailsService.retrieveSizeDetailsByEnum("XS");
         System.out.println(size.toString());
+    }
+
+    @Test
+    public void createPayment() throws StripeException {
+        PaymentIntent paymentIntent = stripeService.createPayment(new Long(1000), "sgd");
+        System.out.println(paymentIntent.getAmount());
+        System.out.println(paymentIntent.getConfirmationMethod());
+    }
+
+    @Test
+    public void createCustomer() throws StripeException, CustomerNotFoundException {
+        stripeService.createCustomer(new Long(1553));
     }
 }

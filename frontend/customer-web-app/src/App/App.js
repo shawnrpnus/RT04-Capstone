@@ -7,8 +7,13 @@ import store from "./store";
 import Routes from "./Routes";
 import { createBrowserHistory } from "history";
 import { SnackbarProvider } from "notistack";
+import { Elements } from "@stripe/react-stripe-js";
+import config from "../config/default.json";
+import { loadStripe } from "@stripe/stripe-js";
 
 let hist = createBrowserHistory();
+
+const stripePromise = loadStripe(config.stripePublicKey);
 
 function App() {
   return (
@@ -21,9 +26,11 @@ function App() {
     >
       <Provider store={store}>
         <ConfirmProvider>
-          <Router history={hist}>
-            <Routes />
-          </Router>
+          <Elements stripe={stripePromise}>
+            <Router history={hist}>
+              <Routes />
+            </Router>
+          </Elements>
         </ConfirmProvider>
       </Provider>
     </SnackbarProvider>
