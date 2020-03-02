@@ -114,6 +114,8 @@ public class Customer implements Serializable {
     @ManyToMany
     private List<Style> preferredStyles;
 
+    private String creditCardCustomerId;
+
     public Customer() {
         this.createdDateTime = new Timestamp(System.currentTimeMillis());
         this.verified = false;

@@ -16,6 +16,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 /**
@@ -34,24 +36,29 @@ public class CreditCard implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long creditCardId;
 
-    private String number; //encrypted
-
-    private String cvv; //encrypted
+    @Size(min = 4, max = 4)
+    private String last4;
 
     private Integer expiryMonth;
 
     private Integer expiryYear;
 
-    private boolean isDefault;
+    @NotNull(message = "Payment method ID must be provided")
+    private String paymentMethodId;
+
+    private String issuer;
+
+    private boolean defaultCard;
 
     public CreditCard() {
     }
 
-    public CreditCard(String number, String cvv, Integer expiryMonth, Integer expiryYear, boolean isDefault) {
-        this.number = number;
-        this.cvv = cvv;
+    public CreditCard(String last4, String paymentMethodId, Integer expiryMonth, Integer expiryYear, String issuer, Boolean defaultCard) {
+        this.last4 = last4;
+        this.paymentMethodId = paymentMethodId;
         this.expiryMonth = expiryMonth;
         this.expiryYear = expiryYear;
-        this.isDefault = isDefault;
+        this.issuer = issuer;
+        this.defaultCard = defaultCard;
     }
 }

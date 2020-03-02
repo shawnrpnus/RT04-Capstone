@@ -18,7 +18,7 @@ import Popper from "@material-ui/core/Popper";
 import Paper from "@material-ui/core/Paper";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import { useSnackbar } from "notistack";
-import UpdateShoppingCartRequest from "models/ShoppingCart/UpdateShoppingCartRequest";
+import UpdateShoppingCartRequest from "models/shoppingCart/UpdateShoppingCartRequest";
 import { updateShoppingCart } from "redux/actions/shoppingCartActions";
 
 const _ = require("lodash");

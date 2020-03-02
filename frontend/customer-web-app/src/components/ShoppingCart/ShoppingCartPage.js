@@ -5,6 +5,8 @@ import { useHistory, useLocation } from "react-router-dom";
 import classNames from "classnames";
 // @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles";
+import Typography from "@material-ui/core/Typography";
+import Divider from "@material-ui/core/Divider";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -37,13 +39,15 @@ import CardHeader from "components/UI/Card/CardHeader";
 import CardBody from "components/UI/Card/CardBody";
 
 import shoppingCartStyle from "assets/jss/material-kit-pro-react/views/shoppingCartStyle.js";
+import {
+  updateShoppingCart,
+  checkOut
+} from "./../../redux/actions/shoppingCartActions";
+import { saveCard } from "./../../redux/actions/customerActions";
+import UpdateShoppingCartRequest from "../../models/shoppingCart/UpdateShoppingCartRequest.js";
+import CreditCardDialog from "./CreditCardDialog.js";
+
 const useStyles = makeStyles(shoppingCartStyle);
-
-import { updateShoppingCart } from "./../../redux/actions/shoppingCartActions";
-import UpdateShoppingCartRequest from "./../../models/ShoppingCart/UpdateShoppingCartRequest";
-import { Typography } from "@material-ui/core";
-
-import Divider from "@material-ui/core/Divider";
 
 export default function ShoppingCartPage() {
   const classes = useStyles();
@@ -52,6 +56,7 @@ export default function ShoppingCartPage() {
   // Redux mapping state to props
   const errors = useSelector(state => state.errors);
   const customer = useSelector(state => state.customer.loggedInCustomer);
+  const clientSecret = useSelector(state => state.customer.clientSecret);
 
   // Updating shopping cart information
   useEffect(() => {
@@ -65,11 +70,13 @@ export default function ShoppingCartPage() {
     );
   }, [customer]);
 
-  console.log(customer.onlineShoppingCart);
-
+  const [showCreditCardDialog, setShowCreditCardDialog] = useState(false);
   const [shoppingCartItems, setShoppingCartItems] = useState(
     _.get(customer, "onlineShoppingCart.shoppingCartItems", [])
   );
+
+  console.log(customer.onlineShoppingCart);
+  console.log(clientSecret);
 
   const handleDelete = (e, productVariantId) => {
     const request = new UpdateShoppingCartRequest(
@@ -89,6 +96,11 @@ export default function ShoppingCartPage() {
       "online"
     );
     dispatch(updateShoppingCart(request));
+  };
+
+  const handleCheckout = () => {
+    // dispatch(checkOut({ totalAmount: 1500 }, setShowCreditCardDialog));
+    dispatch(saveCard(customer.customerId, setShowCreditCardDialog));
   };
 
   return (
@@ -122,7 +134,7 @@ export default function ShoppingCartPage() {
               <Grid container spacing={3}>
                 <Grid item md={9}>
                   {shoppingCartItems.map(cartItem => {
-                    console.log(cartItem);
+                    // console.log(cartItem);
                     const {
                       productImages,
                       product,
@@ -231,23 +243,32 @@ export default function ShoppingCartPage() {
                         </Grid>
                       </Grid>
 
-                      <Typography className={classes.pos} color="textSecondary">
+                      {/* <Typography className={classes.pos} color="textSecondary">
                         adjective
                       </Typography>
                       <Typography variant="body2" component="p">
                         well meaning and kindly.
                         <br />
                         {'"a benevolent smile"'}
-                      </Typography>
+                      </Typography> */}
                     </CardContent>
                     <CardActions>
-                      <Button size="small">Learn More</Button>
+                      <Button
+                        color="success"
+                        fullWidth
+                        onClick={handleCheckout}
+                      >
+                        Checkout
+                      </Button>
                     </CardActions>
                   </Card>
                 </Grid>
               </Grid>
             </CardBody>
           </Card>
+          {showCreditCardDialog && (
+            <CreditCardDialog handleClose={setShowCreditCardDialog} />
+          )}
         </div>
       </div>
     </div>

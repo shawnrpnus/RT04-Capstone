@@ -1,6 +1,7 @@
 import axios from "axios";
 import { UPDATE_SHOPPING_CART_SUCCESS } from "redux/actions/types";
 import { dispatchErrorMapError } from "redux/actions/index";
+import { PAYMENT_SUCCESS, SAVE_CARD_SUCCESS } from "./types";
 
 const CUSTOMER_BASE_URL = "/api/customer";
 
@@ -57,16 +58,44 @@ const handleUpdateShoppingCart = (responseData, dispatch) => {
   dispatch(updateShoppingCartThroughCustomer(data));
 };
 
-// export const customerLogin = (customerLoginRequest, history) => {
+export const checkOut = (paymentRequest, setShowCreditCardDialog) => {
+  return dispatch => {
+    axios
+      .post("/simulatePayment", paymentRequest)
+      .then(resp => {
+        console.log(resp);
+        dispatch(paymentSuccess(resp.data));
+        setShowCreditCardDialog(true);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+};
+
+// Customer reducer
+const paymentSuccess = data => ({
+  type: PAYMENT_SUCCESS,
+  clientSecret: data
+});
+
+// export const saveCard = (customerId, setShowCreditCardDialog) => {
 //   return dispatch => {
 //     axios
-//       .post(CUSTOMER_BASE_URL + "/login", customerLoginRequest)
-//       .then(response => {
-//         dispatchUpdatedCustomer(response.data, dispatch);
-//         history.push("/");
+//       .get(`/saveCard/${customerId}`)
+//       .then(resp => {
+//         console.log(resp);
+//         dispatch(saveCardSuccess(resp.data));
+//         setShowCreditCardDialog(true);
 //       })
 //       .catch(err => {
-//         dispatchErrorMapError(err, dispatch);
+//         console.log(err);
 //       });
 //   };
 // };
+
+// // Customer reducer
+// const saveCardSuccess = data => ({
+//   type: SAVE_CARD_SUCCESS,
+//   clientSecret: data
+// });

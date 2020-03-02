@@ -3,7 +3,8 @@ import * as types from "../actions/types";
 const initialState = {
   loggedInCustomer: null,
   isSendingEmail: false,
-  verificationStatus: null
+  verificationStatus: null,
+  clientSecret: null
 };
 
 export default function(state = initialState, action) {
@@ -61,6 +62,16 @@ export default function(state = initialState, action) {
       return {
         ...state,
         loggedInCustomer: action.customer
+      };
+    case types.PAYMENT_SUCCESS:
+      return {
+        ...state,
+        clientSecret: action.clientSecret
+      };
+    case types.SAVE_CARD_SUCCESS:
+      return {
+        ...state,
+        customer: action.customer
       };
     default:
       return state;

@@ -7,10 +7,15 @@ import store from "./store";
 import Routes from "./Routes";
 import { createBrowserHistory } from "history";
 import { SnackbarProvider } from "notistack";
+import { Elements } from "@stripe/react-stripe-js";
+import config from "../config/default.json";
+import { loadStripe } from "@stripe/stripe-js";
 import { refreshCustomer } from "redux/actions/customerActions";
 
 const _ = require("lodash");
 let hist = createBrowserHistory();
+
+const stripePromise = loadStripe("pk_test_ZmdBnDvGqXb5mo5QFHaP0NI000bsSGDp5k");
 
 function App() {
   return (
@@ -24,9 +29,11 @@ function App() {
       <Provider store={store}>
         <ConfirmProvider>
           <GlobalTimer>
-            <Router history={hist}>
-              <Routes />
-            </Router>
+            <Elements stripe={stripePromise}>
+              <Router history={hist}>
+                <Routes />
+              </Router>
+            </Elements>
           </GlobalTimer>
         </ConfirmProvider>
       </Provider>
