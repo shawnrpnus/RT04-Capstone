@@ -127,12 +127,14 @@ export default function HeaderLinks(props) {
           <AccountNavbar />
         </ListItem>
         <ListItem className={classes.listItem}>
-          <Button className={classes.navLink} round color="transparent">
-            <Favorite />
-            <Hidden mdUp implementation="css" className={classes.hidden}>
-              <div className={classes.collapse}>Wishlist</div>
-            </Hidden>
-          </Button>
+          <Link to="/account/wishlist" style={{ color: "inherit" }}>
+            <Button className={classes.navLink} round color="transparent">
+              <Favorite />
+              <Hidden mdUp implementation="css" className={classes.hidden}>
+                <div className={classes.collapse}>Wishlist</div>
+              </Hidden>
+            </Button>
+          </Link>
         </ListItem>
         <ListItem className={classes.listItem}>
           <Link key="login" to="/shoppingCart" style={{ color: "#555555" }}>

@@ -481,3 +481,26 @@ export const clearWishlistAPI = (customerId, enqueueSnackbar) => {
       });
   };
 };
+
+export const moveWishlistToShoppingCartAPI = (customerId, enqueueSnackbar) => {
+  return dispatch => {
+    axios
+      .post(CUSTOMER_BASE_URL + "/addWishlistToShoppingCart", null, {
+        params: { customerId }
+      })
+      .then(response => {
+        dispatchUpdatedCustomer(response.data, dispatch);
+        dispatch(clearWishlistAPI(customerId));
+        if (enqueueSnackbar) {
+          enqueueSnackbar("Wishlist moved to shopping cart!", {
+            variant: "success",
+            autoHideDuration: 1200
+          });
+        }
+      })
+      .catch(err => {
+        dispatchErrorMapError(err, dispatch);
+        console.log(err);
+      });
+  };
+};

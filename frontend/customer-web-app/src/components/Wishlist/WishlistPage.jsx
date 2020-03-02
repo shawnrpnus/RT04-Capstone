@@ -18,12 +18,15 @@ import wishlistStyle from "assets/jss/material-kit-pro-react/views/wishlistStyle
 import WishlistItemCard from "components/Wishlist/WishlistItemCard";
 import Divider from "@material-ui/core/Divider";
 import { Button } from "components/UI/CustomButtons/Button";
-import { DeleteSharp } from "@material-ui/icons";
+import { DeleteSharp, ShoppingCart } from "@material-ui/icons";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import Paper from "@material-ui/core/Paper";
 import Popper from "@material-ui/core/Popper";
 import { useSnackbar } from "notistack";
-import { clearWishlistAPI } from "redux/actions/customerActions";
+import {
+  clearWishlistAPI,
+  moveWishlistToShoppingCartAPI
+} from "redux/actions/customerActions";
 
 const useStyles = makeStyles(wishlistStyle);
 
@@ -55,6 +58,27 @@ export default function WishlistPage(props) {
     setPopoverOpen(true);
   };
 
+  const isSomeNoStock = () => {
+    return wishlistItems.some(productVariant => {
+      const hasStock = productVariant.productStocks[0].quantity > 0;
+      if (!hasStock) return true;
+    });
+  };
+
+  const moveWishlistToShoppingCart = () => {
+    const someNoStock = isSomeNoStock();
+    if (someNoStock) {
+      enqueueSnackbar("Some wishlist items are out of stock", {
+        variant: "error",
+        autoHideDuration: 1200
+      });
+      return;
+    }
+    dispatch(
+      moveWishlistToShoppingCartAPI(customer.customerId, enqueueSnackbar)
+    );
+  };
+
   return (
     <div>
       <Parallax
@@ -84,7 +108,13 @@ export default function WishlistPage(props) {
             <CardBody plain>
               {wishlistItems.length > 0 ? (
                 <React.Fragment>
-                  <Button color="primary" style={{ float: "right" }}>
+                  <Button
+                    color="primary"
+                    style={{ float: "right" }}
+                    disabled={isSomeNoStock()}
+                    onClick={moveWishlistToShoppingCart}
+                  >
+                    <ShoppingCart />
                     Move all to shopping cart
                   </Button>
                   <Button
