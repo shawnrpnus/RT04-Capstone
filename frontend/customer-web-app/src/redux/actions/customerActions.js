@@ -504,3 +504,75 @@ export const moveWishlistToShoppingCartAPI = (customerId, enqueueSnackbar) => {
       });
   };
 };
+
+export const addToReservationCartAPI = (
+  customerId,
+  productVariantId,
+  enqueueSnackbar
+) => {
+  return dispatch => {
+    axios
+      .post(CUSTOMER_BASE_URL + "/addToReservationCart", null, {
+        params: { customerId, productVariantId }
+      })
+      .then(response => {
+        dispatchUpdatedCustomer(response.data, dispatch);
+        enqueueSnackbar("Added to reservation cart!", {
+          variant: "success",
+          autoHideDuration: 1200
+        });
+      })
+      .catch(err => {
+        dispatchErrorMapError(err, dispatch);
+        console.log(err);
+      });
+  };
+};
+
+export const removeFromReservationCartAPI = (
+  customerId,
+  productVariantId,
+  enqueueSnackbar
+) => {
+  return dispatch => {
+    axios
+      .post(CUSTOMER_BASE_URL + "/removeFromReservationCart", null, {
+        params: { customerId, productVariantId }
+      })
+      .then(response => {
+        dispatchUpdatedCustomer(response.data, dispatch);
+        if (enqueueSnackbar) {
+          enqueueSnackbar("Removed from reservation cart!", {
+            variant: "success",
+            autoHideDuration: 1200
+          });
+        }
+      })
+      .catch(err => {
+        dispatchErrorMapError(err, dispatch);
+        console.log(err);
+      });
+  };
+};
+
+export const clearReservationCartAPI = (customerId, enqueueSnackbar) => {
+  return dispatch => {
+    axios
+      .post(CUSTOMER_BASE_URL + "/clearReservationCart", null, {
+        params: { customerId }
+      })
+      .then(response => {
+        dispatchUpdatedCustomer(response.data, dispatch);
+        if (enqueueSnackbar) {
+          enqueueSnackbar("Reservation cart cleared!", {
+            variant: "success",
+            autoHideDuration: 1200
+          });
+        }
+      })
+      .catch(err => {
+        dispatchErrorMapError(err, dispatch);
+        console.log(err);
+      });
+  };
+};

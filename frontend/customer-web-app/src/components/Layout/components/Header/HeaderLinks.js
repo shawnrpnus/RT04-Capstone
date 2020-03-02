@@ -144,9 +144,11 @@ export default function HeaderLinks(props) {
           </Link>
         </ListItem>
         <ListItem className={classes.listItem}>
-          <Button className={classes.navLink} round color="transparent">
-            <ShoppingCart className={classes.icons} /> Reserve
-          </Button>
+          <Link to="/account/reservationCart" style={{ color: "inherit" }}>
+            <Button className={classes.navLink} round color="transparent">
+              <ShoppingCart className={classes.icons} /> Reserve
+            </Button>
+          </Link>
         </ListItem>
       </List>
     </React.Fragment>

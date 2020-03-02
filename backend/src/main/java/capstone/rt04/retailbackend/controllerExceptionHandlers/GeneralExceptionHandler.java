@@ -11,6 +11,8 @@ import capstone.rt04.retailbackend.util.exceptions.product.ProductImageNotFoundE
 import capstone.rt04.retailbackend.util.exceptions.product.ProductNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductStockNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.reservation.CreateNewReservationException;
+import capstone.rt04.retailbackend.util.exceptions.reservation.ReservationNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.shoppingcart.InvalidCartTypeException;
 import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.style.CreateNewStyleException;
@@ -68,7 +70,7 @@ public class GeneralExceptionHandler extends ResponseEntityExceptionHandler {
             StyleNotFoundException.class, TagNotFoundException.class, CategoryNotFoundException.class,
             ProductNotFoundException.class, ProductStockNotFoundException.class, WarehouseNotFoundException.class,
             StoreNotFoundException.class, VerificationCodeNotFoundException.class, AlreadyVerifiedException.class,
-            ProductImageNotFoundException.class
+            ProductImageNotFoundException.class, ProductVariantNotFoundException.class, ReservationNotFoundException.class
     })
     public final ResponseEntity<Object> handleNotFoundExceptions(Exception ex, WebRequest req) {
         return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
@@ -87,7 +89,8 @@ public class GeneralExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler({
             VerificationCodeExpiredException.class,
             InvalidCartTypeException.class,
-            WishlistException.class
+            WishlistException.class,
+            CreateNewReservationException.class
     })
     public final ResponseEntity<Object> handleBadRequestExceptions(Exception ex, WebRequest req) {
         return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);

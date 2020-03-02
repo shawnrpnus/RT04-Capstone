@@ -35,4 +35,14 @@ public class CustomerControllerRoutes {
     public static final String REMOVE_FROM_RESERVATION_CART = "/removeFromReservationCart";
     public static final String CLEAR_RESERVATION_CART = "/clearReservationCart";
 
+    public static final String RESERVATION_BASE_ROUTE = "/api/reservation";
+    public static final String CREATE_RESERVATION = "/createReservation";
+    public static final String GET_AVAIL_SLOTS_FOR_STORE = "/getAvailSlotsForStore";
+    public static final String GET_UPCOMING_RESERVATIONS = "/getUpcomingReservations";
+    public static final String GET_PAST_RESERVATIONS = "/getPastReservations";
+    public static final String CANCEL_RESERVATION = "/cancelReservation";
+    public static final String UPDATE_RESERVATION = "/updateReservation";
+    public static final String GET_PROD_VARIANT_STORE_STOCK_STATUS = "/getProdVariantStoreStockStatus";
+    public static final String GET_STORES_STOCK_STATUS_FOR_CART = "/getStoresStockStatusForCart";
+
 }
