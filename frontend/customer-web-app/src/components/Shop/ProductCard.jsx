@@ -38,24 +38,24 @@ function ProductCard(props) {
               alt="productImage"
             />
           </Link>
-          <Tooltip
-            id="tooltip-top"
-            title="Add to Wishlist"
-            placement="left"
-            classes={{ tooltip: classes.tooltip }}
-          >
-            <IconButton
-              className={classes.heartIconBtn}
-              onMouseEnter={() => setIsHoverFavorite(true)}
-              onMouseLeave={() => setIsHoverFavorite(false)}
-            >
-              {isHoverFavorite ? (
-                <Favorite style={{ color: "#e91e63", margin: "0" }} />
-              ) : (
-                <FavoriteBorder style={{ color: "#e91e63", margin: "0" }} />
-              )}
-            </IconButton>
-          </Tooltip>
+          {/*<Tooltip*/}
+          {/*  id="tooltip-top"*/}
+          {/*  title="Add to Wishlist"*/}
+          {/*  placement="left"*/}
+          {/*  classes={{ tooltip: classes.tooltip }}*/}
+          {/*>*/}
+          {/*  <IconButton*/}
+          {/*    className={classes.heartIconBtn}*/}
+          {/*    onMouseEnter={() => setIsHoverFavorite(true)}*/}
+          {/*    onMouseLeave={() => setIsHoverFavorite(false)}*/}
+          {/*  >*/}
+          {/*    {isHoverFavorite ? (*/}
+          {/*      <Favorite style={{ color: "#e91e63", margin: "0" }} />*/}
+          {/*    ) : (*/}
+          {/*      <FavoriteBorder style={{ color: "#e91e63", margin: "0" }} />*/}
+          {/*    )}*/}
+          {/*  </IconButton>*/}
+          {/*</Tooltip>*/}
         </CardHeader>
         <CardBody className={classes.cardBodyPlain}>
           <Link to={`/shop/product/${product.productId}`}>

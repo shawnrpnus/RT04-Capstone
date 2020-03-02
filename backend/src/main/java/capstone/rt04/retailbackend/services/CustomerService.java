@@ -427,9 +427,12 @@ public class CustomerService {
         return lazyLoadCustomerFields(customer);
     }
 
-    public Customer addProductToWishlist(Long customerId, Long productVariantId) throws CustomerNotFoundException, ProductVariantNotFoundException {
+    public Customer addProductToWishlist(Long customerId, Long productVariantId) throws CustomerNotFoundException, ProductVariantNotFoundException, WishlistException {
         Customer customer = retrieveCustomerByCustomerId(customerId);
         ProductVariant productVariant = productService.retrieveProductVariantById(productVariantId);
+        if (customer.getWishlistItems().contains(productVariant)){
+            throw new WishlistException("Already in wishlist!");
+        }
         customer.getWishlistItems().add(productVariant);
         return lazyLoadCustomerFields(customer);
     }

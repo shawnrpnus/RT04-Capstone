@@ -395,3 +395,59 @@ export const deleteMeasurements = (customerId, enqueueSnackbar) => {
       });
   };
 };
+
+export const addToWishlistAPI = (
+  customerId,
+  productVariantId,
+  enqueueSnackbar
+) => {
+  return dispatch => {
+    axios
+      .post(CUSTOMER_BASE_URL + "/addToWishlist", null, {
+        params: { customerId, productVariantId }
+      })
+      .then(response => {
+        dispatchUpdatedCustomer(response.data, dispatch);
+        enqueueSnackbar("Added to wishlist!", {
+          variant: "success",
+          autoHideDuration: 1200
+        });
+      })
+      .catch(err => {
+        dispatchErrorMapError(err, dispatch);
+        console.log(err);
+      });
+  };
+};
+
+export const removeFromWishlist = (customerId, productVariantId) => {
+  return dispatch => {
+    axios
+      .post(CUSTOMER_BASE_URL + "/removeFromWishlist", {
+        params: { customerId, productVariantId }
+      })
+      .then(response => {
+        dispatchUpdatedCustomer(response.data, dispatch);
+      })
+      .catch(err => {
+        dispatchErrorMapError(err, dispatch);
+        console.log(err);
+      });
+  };
+};
+
+export const clearWishlist = customerId => {
+  return dispatch => {
+    axios
+      .post(CUSTOMER_BASE_URL + "/clearWishlist", {
+        params: { customerId }
+      })
+      .then(response => {
+        dispatchUpdatedCustomer(response.data, dispatch);
+      })
+      .catch(err => {
+        dispatchErrorMapError(err, dispatch);
+        console.log(err);
+      });
+  };
+};

@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @SuppressWarnings("Duplicates")
@@ -208,7 +209,7 @@ public class CustomerController {
     }
 
     @PostMapping(CustomerControllerRoutes.ADD_TO_WISHLIST)
-    public ResponseEntity<?> addToWishlist(@RequestParam Long customerId, @RequestParam Long productVariantId) throws CustomerNotFoundException, ProductVariantNotFoundException {
+    public ResponseEntity<?> addToWishlist(@RequestParam Long customerId, @RequestParam Long productVariantId) throws CustomerNotFoundException, ProductVariantNotFoundException, WishlistException {
         Customer customer = customerService.addProductToWishlist(customerId, productVariantId);
         clearCustomerRelationships(customer);
         return new ResponseEntity<>(customer, HttpStatus.OK);
@@ -303,17 +304,49 @@ public class CustomerController {
         customer.setPassword(null);
         for (ShoppingCartItem sci : customer.getOnlineShoppingCart().getShoppingCartItems()){
             if (sci.getProductVariant()!=null){
-                sci.getProductVariant().setProductImages(null);
-                sci.getProductVariant().setProduct(null);
-                sci.getProductVariant().setProductStocks(null);
+                sci.getProductVariant().getProduct().setProductVariants(null);
+                sci.getProductVariant().getProduct().setTags(null);
+                sci.getProductVariant().getProduct().setCategory(null);
+                sci.getProductVariant().getProduct().setStyles(null);
+                removeStoreStocksFromProductVariant(sci.getProductVariant());
             }
         }
         for (ShoppingCartItem sci : customer.getInStoreShoppingCart().getShoppingCartItems()){
             if (sci.getProductVariant()!=null){
-                sci.getProductVariant().setProductImages(null);
-                sci.getProductVariant().setProduct(null);
-                sci.getProductVariant().setProductStocks(null);
+                sci.getProductVariant().getProduct().setProductVariants(null);
+                sci.getProductVariant().getProduct().setTags(null);
+                sci.getProductVariant().getProduct().setCategory(null);
+                sci.getProductVariant().getProduct().setStyles(null);
+                removeStoreStocksFromProductVariant(sci.getProductVariant());
             }
+        }
+        for (ProductVariant pv : customer.getWishlistItems()){
+            pv.getProduct().setProductVariants(null);
+            pv.getProduct().setTags(null);
+            pv.getProduct().setCategory(null);
+            pv.getProduct().setStyles(null);
+            removeStoreStocksFromProductVariant(pv);
+        }
+        for (ProductVariant pv : customer.getReservationCartItems()){
+            pv.getProduct().setProductVariants(null);
+            pv.getProduct().setTags(null);
+            pv.getProduct().setCategory(null);
+            pv.getProduct().setStyles(null);
+            removeStoreStocksFromProductVariant(pv);
+        }
+    }
+
+    private void removeStoreStocksFromProductVariant(ProductVariant pv){
+        List<ProductStock> pdtStocks = pv.getProductStocks();
+        for (int i = 0; i < pdtStocks.size(); i++){ //remove all store stocks
+            if (pdtStocks.get(i).getStore() != null){
+                pv.getProductStocks().remove(pdtStocks.get(i));
+                i--;
+            }
+        }
+        for (ProductStock ps: pv.getProductStocks()){
+            ps.setProductVariant(null);
+            ps.setWarehouse(null);
         }
     }
 
