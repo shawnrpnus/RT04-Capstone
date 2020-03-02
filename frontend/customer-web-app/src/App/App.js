@@ -15,7 +15,7 @@ import { refreshCustomer } from "redux/actions/customerActions";
 const _ = require("lodash");
 let hist = createBrowserHistory();
 
-const stripePromise = loadStripe(config.stripePublicKey);
+const stripePromise = loadStripe("pk_test_ZmdBnDvGqXb5mo5QFHaP0NI000bsSGDp5k");
 
 function App() {
   return (
