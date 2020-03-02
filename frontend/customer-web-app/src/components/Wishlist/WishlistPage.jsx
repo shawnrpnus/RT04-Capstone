@@ -16,6 +16,7 @@ import CardBody from "components/UI/Card/CardBody";
 
 import shoppingCartStyle from "assets/jss/material-kit-pro-react/views/shoppingCartStyle.js";
 import WishlistItemCard from "components/Wishlist/WishlistItemCard";
+import Divider from "@material-ui/core/Divider";
 
 const useStyles = makeStyles(shoppingCartStyle);
 
@@ -62,7 +63,10 @@ export default function WishlistPage(props) {
             <CardBody plain>
               <h3 className={classes.cardTitle}>My Wishlist</h3>
               {wishlistItems.map(productVariant => (
-                <WishlistItemCard productVariant={productVariant} />
+                <React.Fragment>
+                  <WishlistItemCard productVariant={productVariant} />
+                  <Divider />
+                </React.Fragment>
               ))}
             </CardBody>
           </Card>
