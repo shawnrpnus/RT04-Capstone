@@ -1,16 +1,12 @@
 import React, { useState } from "react";
-import classNames from "classnames";
 import GridContainer from "components/Layout/components/Grid/GridContainer";
 import GridItem from "components/Layout/components/Grid/GridItem";
 import ImageGallery from "react-image-gallery";
 import Accordion from "components/UI/Accordion/Accordion";
-import FormControl from "@material-ui/core/FormControl";
-import Select from "@material-ui/core/Select";
-import MenuItem from "@material-ui/core/MenuItem";
 import Button from "components/UI/CustomButtons/Button";
 import { Favorite, FavoriteBorder, ShoppingCart } from "@material-ui/icons";
 import productStyle from "assets/jss/material-kit-pro-react/views/productStyle.js";
-import { makeStyles } from "@material-ui/core/styles";
+import makeStyles from "@material-ui/core/styles/makeStyles";
 import colours from "assets/colours";
 import Tooltip from "@material-ui/core/Tooltip";
 import Chip from "@material-ui/core/Chip";
