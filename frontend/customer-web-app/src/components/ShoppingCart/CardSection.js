@@ -30,11 +30,7 @@ function CardSection() {
   return (
     <label>
       Card details{" "}
-      <CardElement
-        hidePostalCode="true"
-        options={CARD_ELEMENT_OPTIONS}
-        autoComplete={true}
-      />
+      <CardElement hidePostalCode={true} options={CARD_ELEMENT_OPTIONS} />
     </label>
     //
   );

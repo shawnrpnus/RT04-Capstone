@@ -15,7 +15,6 @@ import tooltips from "assets/jss/material-kit-pro-react/tooltipsStyle.js";
 
 const styles = {
   main,
-  mainRaised,
   mrAuto,
   mlAuto,
   cardTitle,
@@ -26,6 +25,16 @@ const styles = {
     zIndex: 1,
     ["@media (min-width: 600px)"]: {
       maxWidth: "1550px"
+    }
+  },
+  mainRaised: {
+    ...mainRaised,
+    margin: "-120px 30px 0px"
+  },
+  mainTitle: {
+    ...title,
+    "&, & + h4": {
+      color: whiteColor
     }
   },
   title: {

@@ -12,7 +12,7 @@ import Tooltip from "@material-ui/core/Tooltip";
 import Chip from "@material-ui/core/Chip";
 import { useDispatch, useSelector } from "react-redux";
 import { updateShoppingCart } from "redux/actions/shoppingCartActions";
-import UpdateShoppingCartRequest from "models/ShoppingCart/UpdateShoppingCartRequest";
+import UpdateShoppingCartRequest from "models/shoppingCart/UpdateShoppingCartRequest";
 import { useSnackbar } from "notistack";
 import IconButton from "@material-ui/core/IconButton";
 import { isProductVariantInList } from "services/customerService";
@@ -92,8 +92,6 @@ function ProductDetailsCard(props) {
     if (prodVariantIdToCartItem.hasOwnProperty(productVariantId)) {
       quantity = prodVariantIdToCartItem[productVariantId].quantity + 1;
     }
-    console.log(prodVariantIdToCartItem);
-    console.log(quantity);
     const customerId = customer.customerId;
     const cartType = "online";
     const req = new UpdateShoppingCartRequest(

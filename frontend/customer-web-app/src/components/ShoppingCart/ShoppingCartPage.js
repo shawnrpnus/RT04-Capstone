@@ -44,7 +44,7 @@ import {
   checkOut
 } from "./../../redux/actions/shoppingCartActions";
 import { saveCard } from "./../../redux/actions/customerActions";
-import UpdateShoppingCartRequest from "./../../models/ShoppingCart/UpdateShoppingCartRequest";
+import UpdateShoppingCartRequest from "../../models/shoppingCart/UpdateShoppingCartRequest.js";
 import CreditCardDialog from "./CreditCardDialog.js";
 
 const useStyles = makeStyles(shoppingCartStyle);

@@ -31,6 +31,20 @@ const dispatchUpdatedCustomer = (customerDataRaw, dispatch) => {
   dispatch(updateCustomer(customer));
 };
 
+export const refreshCustomer = customerEmail => {
+  const req = { email: customerEmail };
+  return dispatch => {
+    axios
+      .post(CUSTOMER_BASE_URL + "/getCustomerByEmail", req)
+      .then(response => {
+        dispatchUpdatedCustomer(response.data, dispatch);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+};
+
 export const createNewCustomer = (createCustomerRequest, history) => {
   return dispatch => {
     //redux thunk passes dispatch
@@ -421,14 +435,24 @@ export const addToWishlistAPI = (
   };
 };
 
-export const removeFromWishlist = (customerId, productVariantId) => {
+export const removeFromWishlistAPI = (
+  customerId,
+  productVariantId,
+  enqueueSnackbar
+) => {
   return dispatch => {
     axios
-      .post(CUSTOMER_BASE_URL + "/removeFromWishlist", {
+      .post(CUSTOMER_BASE_URL + "/removeFromWishlist", null, {
         params: { customerId, productVariantId }
       })
       .then(response => {
         dispatchUpdatedCustomer(response.data, dispatch);
+        if (enqueueSnackbar) {
+          enqueueSnackbar("Removed from wishlist!", {
+            variant: "success",
+            autoHideDuration: 1200
+          });
+        }
       })
       .catch(err => {
         dispatchErrorMapError(err, dispatch);
@@ -437,14 +461,43 @@ export const removeFromWishlist = (customerId, productVariantId) => {
   };
 };
 
-export const clearWishlist = customerId => {
+export const clearWishlistAPI = (customerId, enqueueSnackbar) => {
   return dispatch => {
     axios
-      .post(CUSTOMER_BASE_URL + "/clearWishlist", {
+      .post(CUSTOMER_BASE_URL + "/clearWishlist", null, {
         params: { customerId }
       })
       .then(response => {
         dispatchUpdatedCustomer(response.data, dispatch);
+        if (enqueueSnackbar) {
+          enqueueSnackbar("Wishlist cleared!", {
+            variant: "success",
+            autoHideDuration: 1200
+          });
+        }
+      })
+      .catch(err => {
+        dispatchErrorMapError(err, dispatch);
+        console.log(err);
+      });
+  };
+};
+
+export const moveWishlistToShoppingCartAPI = (customerId, enqueueSnackbar) => {
+  return dispatch => {
+    axios
+      .post(CUSTOMER_BASE_URL + "/addWishlistToShoppingCart", null, {
+        params: { customerId }
+      })
+      .then(response => {
+        dispatchUpdatedCustomer(response.data, dispatch);
+        dispatch(clearWishlistAPI(customerId));
+        if (enqueueSnackbar) {
+          enqueueSnackbar("Wishlist moved to shopping cart!", {
+            variant: "success",
+            autoHideDuration: 1200
+          });
+        }
       })
       .catch(err => {
         dispatchErrorMapError(err, dispatch);
@@ -456,7 +509,7 @@ export const clearWishlist = customerId => {
 export const saveCard = saveCardRequest => {
   return dispatch => {
     axios
-      .post("/saveCard/", saveCardRequest)
+      .post("/saveCard", saveCardRequest)
       .then(resp => {
         // Return customer
         console.log(resp);
