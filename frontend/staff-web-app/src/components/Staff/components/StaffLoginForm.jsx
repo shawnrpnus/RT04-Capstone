@@ -8,6 +8,7 @@ import MomentUtils from "@date-io/moment";
 import { Button } from "reactstrap";
 import { clearErrors, updateErrors } from "../../../redux/actions";
 import StaffLoginRequest from "../../../models/staff/StaffLoginRequest";
+import Link from "@material-ui/core/Link";
 
 const _ = require("lodash");
 
@@ -89,7 +90,7 @@ class StaffLoginForm extends Component {
               />
 
               <div className="account__forgot-password">
-                <a onClick={this.onClick}>Forgot your password?</a>
+                <Link  href="#" onClick={this.onClick}>Forgot your password?</Link>
 
               </div>
             </div>

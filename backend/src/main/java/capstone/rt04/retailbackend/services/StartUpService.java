@@ -16,6 +16,7 @@ import capstone.rt04.retailbackend.util.exceptions.product.CreateNewProductStock
 import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.shoppingcart.InvalidCartTypeException;
 import capstone.rt04.retailbackend.util.exceptions.staff.CreateDepartmentException;
+import capstone.rt04.retailbackend.util.exceptions.staff.CreateNewStaffAccountException;
 import capstone.rt04.retailbackend.util.exceptions.staff.CreateNewStaffException;
 import capstone.rt04.retailbackend.util.exceptions.staff.CreateRoleException;
 import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
@@ -85,7 +86,7 @@ public class StartUpService {
     }
 
     @PostConstruct
-    public void init() throws InputDataValidationException, CreateNewCategoryException, CategoryNotFoundException, CreateNewProductException, ProductVariantNotFoundException, CreateNewProductStockException, WarehouseNotFoundException, StoreNotFoundException, CreateNewTagException, CreateNewStyleException, CreateNewStaffException, CreateRoleException, CreateDepartmentException, CreateNewCustomerException, CustomerNotFoundException, InvalidCartTypeException, StripeException {
+    public void init() throws InputDataValidationException, CreateNewCategoryException, CategoryNotFoundException, CreateNewProductException, ProductVariantNotFoundException, CreateNewProductStockException, WarehouseNotFoundException, StoreNotFoundException, CreateNewTagException, CreateNewStyleException, CreateNewStaffException, CreateRoleException, CreateDepartmentException, CreateNewCustomerException, CustomerNotFoundException, InvalidCartTypeException, StripeException, CreateNewStaffAccountException {
         createWarehouseAndStoreIfNotFound();
         createCategoryIfNotFound();
         createStaffIfNotFound();
@@ -314,7 +315,7 @@ public class StartUpService {
         styleService.createNewStyle(new Style("Sophisticated"));
     }
 
-    private void createStaffIfNotFound() throws CreateNewStaffException, InputDataValidationException, CreateRoleException, CreateDepartmentException {
+    private void createStaffIfNotFound() throws CreateNewStaffException, InputDataValidationException, CreateRoleException, CreateDepartmentException, CreateNewStaffAccountException {
         if (staffService.retrieveAllStaff().size() != 0) return;
         Product product = new Product("0010", "Stan Smith", "Adidas", BigDecimal.valueOf(109.90), BigDecimal.valueOf(49.90));
         Department departmentHR = staffService.createNewDepartment("HR");
@@ -329,6 +330,7 @@ public class StartUpService {
         Role role4 = staffService.createNewRole(RoleNameEnum.DIRECTOR);
 
 
+
         Staff staff = new Staff("Geogre", "Lee", 2, "116c", "geogrelee@gmail.com", BigDecimal.valueOf(10000));
         Address a1 = new Address("2E Hong San Walk", "#03-08", 612140, "Palm Garden");
         Staff newStaff = staffService.createNewStaff(staff, a1, role1.getRoleId(), departmentHR.getDepartmentId());
@@ -340,7 +342,7 @@ public class StartUpService {
         Staff staff3 = new Staff("Yi Lin", "Cai", 1, "131Z", "Caiyl@gmail.com", BigDecimal.valueOf(10000));
         Address a3 = new Address("Block 234 Bishan South", "#30-08", 321140, "Palm Garden");
         Staff newStaff3 = staffService.createNewStaff(staff3, a3, role1.getRoleId(), departmentHR.getDepartmentId());
-
+        staffService.createNewStaffAccount(newStaff3.getStaffId());
 
         Staff staff4 = new Staff("Gerard", "Ng", 20, "971C", "rayquaza@gmail.com", BigDecimal.valueOf(10000));
         Address a4 = new Address("Block 130 Taman Jurong", "#15-02", 231334, "-");

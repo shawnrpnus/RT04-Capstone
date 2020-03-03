@@ -17,12 +17,7 @@ class SidebarContent extends Component {
     return (
       <div className="sidebar__content">
         <ul className="sidebar__block">
-          {/*<SidebarLink*/}
-          {/*  title="Log Out"*/}
-          {/*  icon="exit"*/}
-          {/*  route="/log_in"*/}
-          {/*  onClick={this.hideSidebar}*/}
-          {/*/>*/}
+
 
           <SidebarCategory title="Staff" icon="users">
             <SidebarLink
