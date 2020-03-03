@@ -1,16 +1,17 @@
 package capstone.rt04.retailbackend.controllers;
 
-import capstone.rt04.retailbackend.entities.Product;
+import capstone.rt04.retailbackend.entities.Customer;
 import capstone.rt04.retailbackend.entities.Transaction;
+import capstone.rt04.retailbackend.request.transaction.TransactionCreateRequest;
 import capstone.rt04.retailbackend.request.transaction.TransactionRetrieveRequest;
 import capstone.rt04.retailbackend.response.GenericErrorResponse;
 import capstone.rt04.retailbackend.services.TransactionService;
+import capstone.rt04.retailbackend.util.exceptions.customer.CustomerNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.shoppingcart.InvalidCartTypeException;
 import capstone.rt04.retailbackend.util.exceptions.transaction.TransactionNotFoundException;
 import capstone.rt04.retailbackend.util.routeconstants.TransactionControllerRoutes;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,11 +29,10 @@ public class TransactionController {
     }
 
     @PostMapping(TransactionControllerRoutes.CREATE_TRANSACTION)
-    public ResponseEntity<?> createTransaction(@RequestBody Transaction transaction) {
-
-            Transaction newTransaction = transactionService.createNewTransaction(transaction);
-            return new ResponseEntity<>(newTransaction, HttpStatus.CREATED);
-
+    public ResponseEntity<?> createNewTransaction(@RequestBody TransactionCreateRequest transactionCreateRequest) throws CustomerNotFoundException, InvalidCartTypeException {
+        Customer customer = transactionService.createNewTransaction(transactionCreateRequest.getCustomerId(),
+                transactionCreateRequest.getShoppingCartId(), transactionCreateRequest.getCartType());
+        return new ResponseEntity<>(customer, HttpStatus.CREATED);
     }
 
     @GetMapping(TransactionControllerRoutes.RETRIEVE_TRANSACTION_BY_ID)
@@ -61,9 +61,9 @@ public class TransactionController {
         try {
             List<Transaction> transactions = transactionService.filterSortOrderHistory(transactionRetrieveRequest.getCollectionMode(), transactionRetrieveRequest.getDeliveryStatus(),
                     transactionRetrieveRequest.getStartDate(), transactionRetrieveRequest.getEndDate(),
-                   transactionRetrieveRequest.getSortEnum());
+                    transactionRetrieveRequest.getSortEnum());
             return new ResponseEntity<>(transactions, HttpStatus.OK);
-        }  catch (Exception ex) {
+        } catch (Exception ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

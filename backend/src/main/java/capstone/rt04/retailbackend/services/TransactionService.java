@@ -1,17 +1,17 @@
 package capstone.rt04.retailbackend.services;
 
 import capstone.rt04.retailbackend.entities.*;
+import capstone.rt04.retailbackend.repositories.TransactionLineItemRepository;
 import capstone.rt04.retailbackend.repositories.TransactionRepository;
 import capstone.rt04.retailbackend.util.enums.CollectionModeEnum;
 import capstone.rt04.retailbackend.util.enums.DeliveryStatusEnum;
 import capstone.rt04.retailbackend.util.enums.SortEnum;
+import capstone.rt04.retailbackend.util.exceptions.customer.CustomerNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.shoppingcart.InvalidCartTypeException;
 import capstone.rt04.retailbackend.util.exceptions.transaction.TransactionNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.*;
 
@@ -19,15 +19,21 @@ import java.util.*;
 @Transactional
 public class TransactionService {
 
-    @Autowired
     private final TransactionRepository transactionRepository;
+    private final TransactionLineItemRepository transactionLineItemRepository;
 
-    public TransactionService(TransactionRepository transactionRepository) {
+    private final CustomerService customerService;
+    private final ShoppingCartService shoppingCartService;
+
+    public TransactionService(TransactionRepository transactionRepository, TransactionLineItemRepository transactionLineItemRepository, CustomerService customerService, ShoppingCartService shoppingCartService) {
         this.transactionRepository = transactionRepository;
+        this.transactionLineItemRepository = transactionLineItemRepository;
+        this.customerService = customerService;
+        this.shoppingCartService = shoppingCartService;
     }
 
     /*create new transaction - not the actual one; simplified just for testing other use cases*/
-    public Transaction createNewTransaction(Transaction transaction) {
+    public Transaction testCreateNewTransaction(Transaction transaction) {
         transactionRepository.save(transaction);
         return transaction;
     }
@@ -42,7 +48,7 @@ public class TransactionService {
     }
 
     /*view order details*/
-    public Transaction retrieveTransactionById(Long transactionId) throws TransactionNotFoundException{
+    public Transaction retrieveTransactionById(Long transactionId) throws TransactionNotFoundException {
         if (transactionId == null) {
             throw new TransactionNotFoundException("transaction ID not provided");
         }
@@ -72,7 +78,7 @@ public class TransactionService {
     //sort by totalQuantity, finalTotalPrice. default: by latest transactions
     //filter by collection mode, delivery status, date range (based on createdDateTime)
     public List<Transaction> filterSortOrderHistory(CollectionModeEnum collectionMode, DeliveryStatusEnum deliveryStatus,
-                                                Date startDate, Date endDate, SortEnum sortEnum) {
+                                                    Date startDate, Date endDate, SortEnum sortEnum) {
 
         boolean matchCollectionMode, matchDeliveryStatus, matchDateRange;
         boolean isThereDateRange, isCollectionModeSelected, isDeliveryStatusSelected;
@@ -93,7 +99,7 @@ public class TransactionService {
             Date transactionDate = new Date(transactionTimestamp.getTime());
 
             //check which criteria(s) have been selected
-            if ((startDate != null && endDate != null) || (startDate != null && endDate == null) ) {
+            if ((startDate != null && endDate != null) || (startDate != null && endDate == null)) {
                 isThereDateRange = true;
                 if (startDate != null && endDate != null) {
                     if (transactionDate.compareTo(startDate) >= 0 && transactionDate.compareTo(endDate) <= 0) {
@@ -185,7 +191,36 @@ public class TransactionService {
         lazyLoadTransaction(transactionsToReturn);
         transactionsToReturn.toString();
         return transactionsToReturn;
+    }
 
+    public Customer createNewTransaction(Long customerId, Long shoppingCartId, String cartType) throws CustomerNotFoundException, InvalidCartTypeException {
+        Customer customer = customerService.retrieveCustomerByCustomerId(customerId);
+        ShoppingCart shoppingCart = shoppingCartService.retrieveShoppingCart(customerId, cartType);
+
+        Transaction transaction = new Transaction(customer);
+        TransactionLineItem transactionLineItem;
+        List<TransactionLineItem> transactionLineItems = new ArrayList<>();
+        List<ShoppingCartItem> shoppingCartItems = new ArrayList<>(shoppingCart.getShoppingCartItems());
+        Integer totalQuantity = 0;
+
+        // Transferring to transaction line item
+        for (ShoppingCartItem shoppingCartItem : shoppingCartItems) {
+            transactionLineItem = new TransactionLineItem(shoppingCartItem.getProductVariant().getProduct().getPrice(),
+                    shoppingCartItem.getQuantity(), null, shoppingCartItem.getProductVariant());
+            totalQuantity += shoppingCartItem.getQuantity();
+            transactionLineItemRepository.save(transactionLineItem);
+            transactionLineItems.add(transactionLineItem);
+        }
+        transaction.setTransactionLineItems(transactionLineItems);
+        transaction.setInitialTotalPrice(shoppingCart.getInitialTotalAmount());
+        transaction.setTotalQuantity(totalQuantity);
+        transaction.setCollectionMode(CollectionModeEnum.DELIVERY);
+        transactionRepository.save(transaction);
+
+        // Clear cart only when transaction is created successfully
+        shoppingCartService.clearShoppingCart(customerId, cartType);
+
+        return customer;
     }
 
 }

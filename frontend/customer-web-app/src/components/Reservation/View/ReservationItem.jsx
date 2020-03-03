@@ -12,6 +12,9 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import wishlistStyle from "assets/jss/material-kit-pro-react/views/wishlistStyle";
 import ProductVariantCard from "components/Reservation/View/ProductVariantCard";
 import Divider from "@material-ui/core/Divider";
+import { useDispatch, useSelector } from "react-redux";
+import { cancelReservation } from "redux/actions/reservationActions";
+import { useSnackbar } from "notistack";
 
 const _ = require("lodash");
 const moment = require("moment");
@@ -19,10 +22,29 @@ const useStyles = makeStyles(wishlistStyle);
 
 function ReservationItem(props) {
   const classes = useStyles();
+  const dispatch = useDispatch();
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+
   const { reservation, isPast } = props;
 
+  const customer = useSelector(state => state.customer.loggedInCustomer);
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
+
+  const cancelConfirmation = e => {
+    setAnchorEl(e.currentTarget);
+    setPopoverOpen(true);
+  };
+
+  const handleCancelReservation = () => {
+    dispatch(
+      cancelReservation(
+        reservation.reservationId,
+        customer.customerId,
+        enqueueSnackbar
+      )
+    );
+  };
 
   const { store } = reservation;
   const { address } = store;
@@ -48,7 +70,7 @@ function ReservationItem(props) {
                     <Edit />
                     Update
                   </Button>
-                  <Button color="danger">
+                  <Button color="danger" onClick={cancelConfirmation}>
                     <DeleteSharp />
                     Cancel
                   </Button>
@@ -97,9 +119,11 @@ function ReservationItem(props) {
           <ClickAwayListener onClickAway={() => setPopoverOpen(false)}>
             <Paper style={{ padding: "5px" }}>
               <h5 style={{ textAlign: "center", marginBottom: "0" }}>
-                Remove?
+                Cancel?
               </h5>
-              <Button color="danger">Yes</Button>
+              <Button color="danger" onClick={handleCancelReservation}>
+                Yes
+              </Button>
               <Button onClick={() => setPopoverOpen(false)}>No</Button>
             </Paper>
           </ClickAwayListener>

@@ -55,10 +55,10 @@ import { useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
 // local files
 import checkoutStyle from "assets/jss/material-kit-pro-react/views/checkoutStyle.js";
 import UpdateShoppingCartRequest from "../../models/shoppingCart/UpdateShoppingCartRequest.js";
-import AddressCard from "./../Profile/sections/AddressCard";
-import CustomDropdown from "components/UI/CustomDropdown/CustomDropdown.js";
 import CardSection from "./../ShoppingCart/CardSection";
 import PaymentRequest from "./../../models/payment/PaymentRequest";
+import AddressCardForCheckOut from "./AddressCardForCheckOut";
+import AddAddress from "../Profile/sections/AddAddress";
 
 const useStyles = makeStyles(checkoutStyle);
 
@@ -83,7 +83,9 @@ export default function CheckOutPage() {
   const { onlineShoppingCart, creditCards, shippingAddresses } = customer;
   const [clientSecret, setClientSecret] = useState(null);
   const [creditCardIndex, setCreditCardIndex] = useState(0);
-  const [selectedCard, setSelectedCard] = useState(null);
+  const [addNewAddress, setAddNewAddress] = useState(false);
+  const [currAddress, setCurrAddress] = useState("");
+  const [addCard, setAddCard] = useState(false);
 
   useEffect(() => {
     // setShoppingCartItems(
@@ -115,8 +117,6 @@ export default function CheckOutPage() {
     3. On changing of card
   */
 
-  const [addCard, setAddCard] = useState(false);
-
   const handleMakePaymentWithNewCard = () => {
     const { initialTotalAmount } = onlineShoppingCart;
     // Send back to server to get client_secret to complete payment
@@ -127,6 +127,21 @@ export default function CheckOutPage() {
     // We don't want to let default form submission happen here,
     // which would refresh the page.
     event.preventDefault();
+
+    let {
+      shoppingCartId,
+      initialTotalAmount: totalAmount
+    } = onlineShoppingCart;
+    const { paymentMethodId } = creditCards[creditCardIndex];
+    const { customerId } = customer;
+    // Stripe take in cents
+    totalAmount = totalAmount * 100;
+    const paymentRequest = new PaymentRequest(
+      customerId,
+      paymentMethodId,
+      totalAmount,
+      shoppingCartId
+    );
 
     if (clientSecret !== null) {
       if (!stripe || !elements) {
@@ -158,24 +173,11 @@ export default function CheckOutPage() {
           // post-payment actions.
           console.log("YAY succeed!!");
           console.log(result);
+          // POST back to create transaction
         }
       }
     } else {
       console.log("Payment with saved card!");
-      const {
-        shoppingCartId,
-        initialTotalAmount: totalAmount
-      } = onlineShoppingCart;
-      const { paymentMethodId } = creditCards[creditCardIndex];
-      const { customerId } = customer;
-      // Stripe take in cents
-      totalAmount = totalAmount * 100;
-      const paymentRequest = new PaymentRequest(
-        customerId,
-        paymentMethodId,
-        totalAmount,
-        shoppingCartId
-      );
       console.log(paymentRequest);
       dispatch(makePayment(paymentRequest, history));
     }
@@ -190,6 +192,11 @@ export default function CheckOutPage() {
   const toggleAddNewCard = e => {
     setAddCard(!addCard);
     setClientSecret(null);
+  };
+
+  const handleAddNewAddress = () => {
+    setAddNewAddress(!addNewAddress);
+    console.log(addNewAddress);
   };
 
   return (
@@ -216,12 +223,12 @@ export default function CheckOutPage() {
           <Card plain>
             <CardBody plain>
               <h3 className={classes.cardTitle}>Check Out</h3>
-              <Grid container spacing={6}>
+              <Grid container spacing={0}>
                 <Grid item md={6}>
                   <Card>
-                    <CardContent>
-                      <GridContainer>
-                        <GridItem xs={7}>
+                    <CardContent style={{ padding: "0 5%" }}>
+                      <Grid container>
+                        <Grid item xs={7}>
                           <Typography
                             className={classes.checkoutTitle}
                             variant="h4"
@@ -229,8 +236,8 @@ export default function CheckOutPage() {
                           >
                             TOTAL TO PAY
                           </Typography>
-                        </GridItem>
-                        <GridItem xs={5} style={{ textAlign: "right" }}>
+                        </Grid>
+                        <Grid item xs={5} style={{ textAlign: "right" }}>
                           <Typography
                             className={classes.checkoutTitle}
                             variant="h4"
@@ -238,66 +245,82 @@ export default function CheckOutPage() {
                           >
                             SGD${onlineShoppingCart.initialTotalAmount}
                           </Typography>
-                        </GridItem>
-                      </GridContainer>
+                        </Grid>
+                      </Grid>
                       <Divider style={{ marginBottom: "5%" }} />
                       <Grid container>
-                        <Grid item xs={12}>
-                          <Typography variant="h6" component="h2">
-                            Promo Code
-                          </Typography>
-                          <TextField fullWidth />
+                        <Grid container item xs={12}>
+                          <Grid item xs={6}>
+                            <Typography variant="h6" component="h2">
+                              Promo Code
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={6} style={{ textAlign: "right" }}>
+                            <Button onClick={null} disabled>
+                              Apply Promo Code
+                            </Button>
+                          </Grid>
+                          <TextField fullWidth style={{ margin: "5% 0" }} />
                         </Grid>
-                        <Grid item xs={12}>
-                          <Select
-                            style={{ minWidth: 120 }}
-                            defaultValue=""
-                            // MenuProps={{
-                            //   className: classes.selectMenu
-                            // }}
-                            // classes={{
-                            //   select: classes.select
-                            // }}
-                            // onChange={onChange}
-                            name="contactUsCategory"
-                          >
-                            {[1, 2, 3, 4].map(function(item, i) {
-                              return (
-                                <MenuItem
-                                  classes={{
-                                    root: classes.selectMenuItem,
-                                    selected: classes.selectMenuItemSelected
-                                  }}
-                                  value={item}
+                        <Grid item container xs={12}>
+                          {addNewAddress ? (
+                            <Grid item container xs={12}>
+                              <Grid item xs={false} md={2} />
+                              <Grid item xs={12} md={8}>
+                                <AddAddress
+                                  addNewAddress={[
+                                    addNewAddress,
+                                    setAddNewAddress
+                                  ]}
+                                  currAddress={[currAddress, setCurrAddress]}
+                                />
+                                <Button
+                                  onClick={handleAddNewAddress}
+                                  // color="primary"
                                 >
-                                  {item}
-                                </MenuItem>
-                              );
-                            })}
-                          </Select>
-                          {/* <AddressCard /> */}
+                                  Add New Address
+                                </Button>
+                              </Grid>
+                              <Grid item xs={false} md={2} />
+                            </Grid>
+                          ) : (
+                            <Grid item xs={12} container>
+                              <Grid item xs={12} style={{ textAlign: "right" }}>
+                                <Button
+                                  onClick={handleAddNewAddress}
+                                  // color="primary"
+                                >
+                                  Add New Address
+                                </Button>
+                              </Grid>
+                              <Grid item xs={12}>
+                                <AddressCardForCheckOut
+                                  addNewAddress={[
+                                    addNewAddress,
+                                    setAddNewAddress
+                                  ]}
+                                  currAddress={[currAddress, setCurrAddress]}
+                                />
+                              </Grid>
+                            </Grid>
+                          )}
                         </Grid>
-                        <Grid
-                          container
-                          item
-                          xs={12}
-                          alignItems="center"
-                          justifyItems="center"
-                        >
-                          <GridItem xs={6}>
+
+                        <Grid container item xs={12} alignItems="center">
+                          <Grid item xs={6}>
                             <InputLabel>
                               {addCard
                                 ? "Use a new card"
                                 : "Select payment card"}
                             </InputLabel>
-                          </GridItem>
-                          <GridItem xs={6} style={{ textAlign: "right" }}>
+                          </Grid>
+                          <Grid item xs={6} style={{ textAlign: "right" }}>
                             <Button onClick={toggleAddNewCard}>
                               {addCard ? "Cancel" : "Use a new card"}{" "}
                             </Button>
-                          </GridItem>
-                          {customer.creditCards && !addCard && (
-                            <GridItem xs={12}>
+                          </Grid>
+                          {customer.creditCards.length > 0 && !addCard && (
+                            <Grid item xs={12}>
                               <Select
                                 style={{
                                   margin: "5% 0",
@@ -327,7 +350,8 @@ export default function CheckOutPage() {
                                   }
                                 )}
                               </Select>
-                              <GridItem
+                              <Grid
+                                item
                                 xs={12}
                                 style={{ transform: "scale(0.8)" }}
                               >
@@ -340,15 +364,15 @@ export default function CheckOutPage() {
                                   preview={true}
                                   issuer={issuer}
                                 />
-                              </GridItem>
-                            </GridItem>
+                              </Grid>
+                            </Grid>
                           )}
                           {addCard && (
                             <GridItem container xs={12} style={{ padding: 0 }}>
-                              <GridItem xs={12}>
+                              <Grid item xs={12}>
                                 <CardSection />
-                              </GridItem>
-                              <GridItem xs={12} style={{ textAlign: "right" }}>
+                              </Grid>
+                              <Grid item xs={12} style={{ textAlign: "right" }}>
                                 <Button
                                   color="github"
                                   onClick={handleMakePaymentWithNewCard}
@@ -357,7 +381,7 @@ export default function CheckOutPage() {
                                 >
                                   Use this card
                                 </Button>
-                              </GridItem>
+                              </Grid>
                             </GridItem>
                           )}
                         </Grid>
@@ -371,7 +395,7 @@ export default function CheckOutPage() {
                         {'"a benevolent smile"'}
                       </Typography> */}
                     </CardContent>
-                    <CardActions>
+                    <CardActions style={{ padding: "4% 5%" }}>
                       <Button
                         color="success"
                         fullWidth

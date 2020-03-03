@@ -25,7 +25,8 @@ import {
   addShippingAddressDetails,
   emailSending,
   sendUpdateEmailLink,
-  updateCustomerName, updateShippingAddressDetails
+  updateCustomerName,
+  updateShippingAddressDetails
 } from "../../../redux/actions/customerActions";
 import UpdateCustomerRequest from "../../../models/customer/UpdateCustomerRequest";
 import Address from "../../../models/customer/Address";
@@ -79,7 +80,7 @@ export default function AddAddress({
   };
 
   const handleAddAddress = () => {
-    if(currAddress) {
+    if (currAddress) {
       const address = new Address(
         inputState.addressId,
         inputState.line1,
@@ -109,8 +110,6 @@ export default function AddAddress({
         setAddNewAddress(!addNewAddress);
       }
     }
-
-
   };
 
   const handleToggle = e => {
@@ -147,12 +146,11 @@ export default function AddAddress({
         <React.Fragment>
           <h4 style={{ marginBottom: 0 }}>Add New Address</h4>
           <small>
-            Please enter an address you would like to save and deliver your items
-            to.
+            Please enter an address you would like to save and deliver your
+            items to.
           </small>
         </React.Fragment>
       )}
-
 
       <form>
         <CustomTextField

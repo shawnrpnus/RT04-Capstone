@@ -21,6 +21,7 @@ import capstone.rt04.retailbackend.util.exceptions.style.StyleNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.tag.TagNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.warehouse.WarehouseNotFoundException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,7 +53,7 @@ public class ProductService {
     public ProductService(ValidationService validationService, TagService tagService, CategoryService categoryService, StyleService styleService,
                           StoreService storeService, ProductRepository productRepository, ProductVariantRepository productVariantRepository,
                           ProductStockRepository productStockRepository, ProductImageRepository productImageRepository, DiscountService discountService,
-                          PromoCodeService promoCodeService, WarehouseService warehouseService, SizeDetailsService sizeDetailsService, TransactionService transactionService) {
+                          PromoCodeService promoCodeService, WarehouseService warehouseService, SizeDetailsService sizeDetailsService, @Lazy TransactionService transactionService) {
         this.validationService = validationService;
         this.tagService = tagService;
         this.categoryService = categoryService;

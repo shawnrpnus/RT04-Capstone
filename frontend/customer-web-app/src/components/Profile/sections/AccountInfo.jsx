@@ -383,18 +383,27 @@ function AccountInfo(props) {
           <GridItem xs={12} sm={12} md={2}></GridItem>
           {addNewAddress === true ? (
             <GridItem xs={12} sm={12} md={5}>
-              <AddAddress addNewAddress={[addNewAddress, setAddNewAddress]} currAddress={[currAddress, setCurrAddress]} />
+              <AddAddress
+                addNewAddress={[addNewAddress, setAddNewAddress]}
+                currAddress={[currAddress, setCurrAddress]}
+              />
             </GridItem>
           ) : currAddress !== "" ? (
             <GridItem xs={12} sm={12} md={5}>
-              <AddAddress addNewAddress={[addNewAddress, setAddNewAddress]} currAddress={[currAddress, setCurrAddress]} />
+              <AddAddress
+                addNewAddress={[addNewAddress, setAddNewAddress]}
+                currAddress={[currAddress, setCurrAddress]}
+              />
             </GridItem>
           ) : addNewAddress === false ? (
             <GridItem xs={12} sm={12} md={5}>
               <Button onClick={handleAddNewAddress} round color="primary">
                 Add New Address
               </Button>
-              <AddressCard addNewAddress={[addNewAddress, setAddNewAddress]} currAddress={[currAddress, setCurrAddress]} />
+              <AddressCard
+                addNewAddress={[addNewAddress, setAddNewAddress]}
+                currAddress={[currAddress, setCurrAddress]}
+              />
             </GridItem>
           ) : (
             ""

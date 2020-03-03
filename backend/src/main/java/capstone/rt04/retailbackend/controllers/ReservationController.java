@@ -76,7 +76,7 @@ public class ReservationController {
     }
 
     @PostMapping(CustomerControllerRoutes.CANCEL_RESERVATION)
-    public ResponseEntity<?> cancelReservation(@RequestParam Long reservationId) throws ReservationNotFoundException {
+    public ResponseEntity<?> cancelReservation(@RequestParam Long reservationId) throws ReservationNotFoundException, InputDataValidationException {
         Reservation cancelledReservation = reservationService.cancelReservation(reservationId);
         clearReservationRelationships(cancelledReservation);
         return new ResponseEntity<>(cancelledReservation, HttpStatus.OK);
