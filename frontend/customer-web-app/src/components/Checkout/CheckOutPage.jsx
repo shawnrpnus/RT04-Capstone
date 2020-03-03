@@ -35,7 +35,7 @@ import KeyboardArrowRight from "@material-ui/icons/KeyboardArrowRight";
 import { useDispatch, useSelector } from "react-redux";
 import {
   getClientSecret,
-  makePayment
+  makePaymentWithSavedCard
 } from "../../redux/actions/shoppingCartActions";
 
 // core components

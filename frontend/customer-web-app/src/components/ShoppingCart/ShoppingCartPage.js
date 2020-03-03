@@ -284,7 +284,7 @@ export default function ShoppingCartPage() {
                 </Grid>
               </CardBody>
             ) : (
-              <h3 style={{ textAlign: "center" }}>
+              <h3 style={{ textAlign: "center", margin: "2%" }}>
                 Your shopping cart is empty.
               </h3>
             )}

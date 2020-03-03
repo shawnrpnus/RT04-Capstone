@@ -211,11 +211,16 @@ public class TransactionService {
             transactionLineItemRepository.save(transactionLineItem);
             transactionLineItems.add(transactionLineItem);
         }
-        transaction.setTransactionLineItems(transactionLineItems);
+
+        transaction.getTransactionLineItems().addAll(transactionLineItems);
         transaction.setInitialTotalPrice(shoppingCart.getInitialTotalAmount());
         transaction.setTotalQuantity(totalQuantity);
         transaction.setCollectionMode(CollectionModeEnum.DELIVERY);
         transactionRepository.save(transaction);
+
+        for(TransactionLineItem lineItem : transactionLineItems) {
+            lineItem.setTransaction(transaction);
+        }
 
         // Clear cart only when transaction is created successfully
         shoppingCartService.clearShoppingCart(customerId, cartType);

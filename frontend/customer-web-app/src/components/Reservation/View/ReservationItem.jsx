@@ -15,6 +15,7 @@ import Divider from "@material-ui/core/Divider";
 import { useDispatch, useSelector } from "react-redux";
 import { cancelReservation } from "redux/actions/reservationActions";
 import { useSnackbar } from "notistack";
+import { Link } from "react-router-dom";
 
 const _ = require("lodash");
 const moment = require("moment");
@@ -44,6 +45,7 @@ function ReservationItem(props) {
         enqueueSnackbar
       )
     );
+    setPopoverOpen(false);
   };
 
   const { store } = reservation;
@@ -66,10 +68,14 @@ function ReservationItem(props) {
             <GridItem md={12}>
               {!isPast && (
                 <React.Fragment>
-                  <Button color="primary">
-                    <Edit />
-                    Update
-                  </Button>
+                  <Link
+                    to={`/account/reservation/update/${reservation.reservationId}`}
+                  >
+                    <Button color="primary">
+                      <Edit />
+                      Update
+                    </Button>
+                  </Link>
                   <Button color="danger" onClick={cancelConfirmation}>
                     <DeleteSharp />
                     Cancel

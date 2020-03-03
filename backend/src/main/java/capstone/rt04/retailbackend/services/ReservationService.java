@@ -280,12 +280,23 @@ public class ReservationService {
     }
 
     public List<ReservationStockCheckResponse> getAllStoresStockStatusForCart(Long customerId) throws CustomerNotFoundException, ProductVariantNotFoundException, StoreNotFoundException {
-        List<ReservationStockCheckResponse> result = new ArrayList<>();
+
         List<ProductVariant> reservationCartItems = customerService.retrieveCustomerByCustomerId(customerId).getReservationCartItems();
+        return checkAllStoreStocksForGivenProductVariants(reservationCartItems);
+    }
+
+    public List<ReservationStockCheckResponse> getAllStoresStockStatusForReservation(Long reservationId) throws CustomerNotFoundException, ProductVariantNotFoundException, StoreNotFoundException, ReservationNotFoundException {
+
+        List<ProductVariant> reservationItems = retrieveReservationByReservationId(reservationId).getProductVariants();
+        return checkAllStoreStocksForGivenProductVariants(reservationItems);
+    }
+
+    private List<ReservationStockCheckResponse> checkAllStoreStocksForGivenProductVariants(List<ProductVariant> productVariants) throws ProductVariantNotFoundException, StoreNotFoundException {
+        List<ReservationStockCheckResponse> result = new ArrayList<>();
         List<Store> allStores = storeService.retrieveAllStores();
         for (Store store : allStores) {
             int numItemsNoStock = 0;
-            for (ProductVariant reservationCartItem : reservationCartItems){
+            for (ProductVariant reservationCartItem : productVariants){
                 try {
                     checkStoreStockForProductVariant(store.getStoreId(), reservationCartItem.getProductVariantId());
                 } catch (InputDataValidationException ex){ //insufficient stock
@@ -294,7 +305,7 @@ public class ReservationService {
             }
             if (numItemsNoStock == 0){
                 result.add(new ReservationStockCheckResponse(store, "In stock"));
-            } else if (numItemsNoStock == reservationCartItems.size()){
+            } else if (numItemsNoStock == productVariants.size()){
                 result.add(new ReservationStockCheckResponse(store, "Out of stock"));
             } else {
                 result.add(new ReservationStockCheckResponse(store, "Partially in stock"));

@@ -9,7 +9,11 @@ import { dispatchErrorMapError } from "redux/actions/index";
 const jsog = require("jsog");
 const PRODUCT_BASE_URL = "/api/product";
 
-export const retrieveProductsDetails = (storeOrWarehouseId, categoryId) => {
+export const retrieveProductsDetails = (
+  storeOrWarehouseId,
+  categoryId,
+  setIsLoading
+) => {
   return dispatch => {
     //redux thunk passes dispatch
     axios
@@ -18,6 +22,7 @@ export const retrieveProductsDetails = (storeOrWarehouseId, categoryId) => {
       })
       .then(response => {
         updateDisplayedProducts(response.data, dispatch);
+        setIsLoading(false);
       })
       .catch(err => {
         dispatchErrorMapError(err, dispatch);
@@ -35,12 +40,14 @@ const updateDisplayedProducts = (responseData, dispatch) => {
   dispatch(displayProductDetails(data));
 };
 
-export const filterProducts = req => {
+export const filterProducts = (req, setFilterDrawerOpen, setIsLoading) => {
   return dispatch => {
     axios
       .post(PRODUCT_BASE_URL + "/retrieveProductsDetailsByCriteria", req)
       .then(response => {
         updateDisplayedProducts(response.data, dispatch);
+        setFilterDrawerOpen(false);
+        setIsLoading(false);
       })
       .catch(err => {
         dispatchErrorMapError(err, dispatch);
@@ -48,7 +55,7 @@ export const filterProducts = req => {
   };
 };
 
-export const retrieveProductById = productId => {
+export const retrieveProductById = (productId, setIsLoading) => {
   return dispatch => {
     //redux thunk passes dispatch
     axios
@@ -56,6 +63,7 @@ export const retrieveProductById = productId => {
       .then(response => {
         const data = jsog.decode(response.data);
         dispatch(viewSingleProduct(data));
+        setIsLoading(false);
       })
       .catch(err => {
         dispatchErrorMapError(err, dispatch);

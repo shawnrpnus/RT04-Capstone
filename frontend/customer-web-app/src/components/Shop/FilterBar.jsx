@@ -36,7 +36,13 @@ const useSelectStyles = makeStyles(selectStyles);
 function FilterBar(props) {
   const classes = useStyles();
   const selectClasses = useSelectStyles();
-  const { allTags, allColours, categoryId } = props;
+  const {
+    allTags,
+    allColours,
+    categoryId,
+    setFilterDrawerOpen,
+    setIsLoading
+  } = props;
 
   const dispatch = useDispatch();
 
@@ -135,6 +141,7 @@ function FilterBar(props) {
     dispatch(setCheckedColours(initialColoursState));
     dispatch(setCheckedTags(initialTagsState));
     dispatch(setCheckedSizes(initialSizesState));
+    dispatch(setSelectedSort(Object.keys(sortingMap)[0]));
     const req = new FilterProductRequest(
       categoryId,
       [],
@@ -144,7 +151,8 @@ function FilterBar(props) {
       200,
       sortingMap[Object.keys(sortingMap)[0]]
     );
-    dispatch(filterProducts(req));
+    setIsLoading(true);
+    dispatch(filterProducts(req, setFilterDrawerOpen, setIsLoading));
   };
 
   const handleSubmit = () => {
@@ -168,8 +176,8 @@ function FilterBar(props) {
       maxPrice,
       sortEnum
     );
-
-    dispatch(filterProducts(req));
+    setIsLoading(true);
+    dispatch(filterProducts(req, setFilterDrawerOpen, setIsLoading));
   };
 
   return (

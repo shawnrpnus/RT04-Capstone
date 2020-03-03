@@ -73,7 +73,24 @@ export const getClientSecret = (totalAmount, setClientSecret) => {
     });
 };
 
-export const makePayment = (paymentRequest, history) => {
+export const completeDirectPayment = (paymentRequest, history) => {
+  return dispatch => {
+    axios
+      .post(`/makePaymentWithSavedCard`, paymentRequest)
+      .then(resp => {
+        // Return a customer object
+        // Update customer
+        console.log(resp);
+        handleUpdateShoppingCart(resp.data, dispatch);
+        history.push("/");
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+};
+
+export const makePaymentWithSavedCard = (paymentRequest, history) => {
   return dispatch => {
     axios
       .post(`/makePaymentWithSavedCard`, paymentRequest)

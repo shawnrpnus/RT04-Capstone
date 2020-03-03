@@ -22,8 +22,8 @@ function UpcomingReservations(props) {
   }, [upcomingReservations]);
 
   return (
-    <Card plain style={{ marginTop: "-10px" }}>
-      <CardBody plain style={{ paddingTop: "0" }}>
+    <Card plain style={{ marginTop: "0px" }}>
+      <CardBody plain>
         {upcomingReservations && upcomingReservations.length > 0 ? (
           upcomingReservations.map(reservation => (
             <React.Fragment>

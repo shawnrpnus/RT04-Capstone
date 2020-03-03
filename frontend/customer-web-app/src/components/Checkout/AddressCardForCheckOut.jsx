@@ -16,7 +16,7 @@ import CardBody from "../UI/Card/CardBody";
 import GridContainer from "../Layout/components/Grid/GridContainer";
 import GridItem from "../Layout/components/Grid/GridItem";
 import Button from "@material-ui/core/Button";
-import {Check, Delete, Edit} from "@material-ui/icons";
+import { Check, Delete, Edit } from "@material-ui/icons";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
 import React, { useState } from "react";
@@ -165,17 +165,20 @@ export default function AddressCardForCheckOut({
                       >
                         CHANGE
                       </Button>
-
                     </GridItem>
 
                     <GridItem xs={12} sm={12} md={12}>
                       {item.default ? (
                         <small>This is your default shipping address</small>
-                      ) : ""}
+                      ) : (
+                        ""
+                      )}
                       <br />
                       {item.billing ? (
                         <small>This is your default billing address</small>
-                      ) : ""}
+                      ) : (
+                        ""
+                      )}
                     </GridItem>
                   </GridContainer>
                 </CardBody>
@@ -225,18 +228,16 @@ export default function AddressCardForCheckOut({
                   </GridItem>
 
                   <GridItem style={{ paddingLeft: "0" }} xs={12} sm={2} md={2}>
-
-                        {/*<Checkbox*/}
-                        {/*  tabIndex={-1}*/}
-                        {/*  // onClick={() => handleToggle(21)}*/}
-                        {/*  checkedIcon={<Check className={classes.checkedIcon} />}*/}
-                        {/*  icon={<Check className={classes.uncheckedIcon} />}*/}
-                        {/*  classes={{*/}
-                        {/*    checked: classes.checked,*/}
-                        {/*    root: classes.checkRoot*/}
-                        {/*  }}*/}
-                        {/*/>*/}
-
+                    {/*<Checkbox*/}
+                    {/*  tabIndex={-1}*/}
+                    {/*  // onClick={() => handleToggle(21)}*/}
+                    {/*  checkedIcon={<Check className={classes.checkedIcon} />}*/}
+                    {/*  icon={<Check className={classes.uncheckedIcon} />}*/}
+                    {/*  classes={{*/}
+                    {/*    checked: classes.checked,*/}
+                    {/*    root: classes.checkRoot*/}
+                    {/*  }}*/}
+                    {/*/>*/}
                   </GridItem>
 
                   <GridItem xs={12} sm={12} md={12}>
@@ -286,18 +287,11 @@ export default function AddressCardForCheckOut({
                       />
                     )}
                   </GridItem>
-
-
                 </GridContainer>
               </CardBody>
             );
-
-
           })}
-          <Button
-            onClick={() => setShowOneAddress(true)}
-            color="primary"
-          >
+          <Button onClick={() => setShowOneAddress(true)} color="primary">
             CANCEL
           </Button>
         </React.Fragment>

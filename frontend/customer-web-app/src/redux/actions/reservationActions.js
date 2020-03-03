@@ -7,17 +7,35 @@ import { GET_ERRORS } from "./types";
 import { dispatchErrorMapError } from "redux/actions/index";
 import { UPDATE_UPCOMING_RESERVATIONS } from "./types";
 import { UPDATE_PAST_RESERVATIONS } from "./types";
+import { SET_UPDATING_RESERVATION } from "./types";
+import { SET_UPDATED_PRODUCT_VARIANTS } from "./types";
 
 const RESERVATION_BASE_URL = "/api/reservation";
 
 const _ = require("lodash");
 const jsog = require("jsog");
 
-export const retrieveStoresWithStockStatus = customerId => {
+export const retrieveStoresWithStockStatusForCart = customerId => {
   return dispatch => {
     axios
       .get(RESERVATION_BASE_URL + "/getStoresStockStatusForCart", {
         params: { customerId: customerId }
+      })
+      .then(response => {
+        const data = jsog.decode(response.data);
+        dispatch(updateStoresWithStockStatus(data));
+      })
+      .catch(err => {
+        dispatchErrorMapError(err, dispatch);
+      });
+  };
+};
+
+export const retrieveStoresWithStockStatusForReservation = reservationId => {
+  return dispatch => {
+    axios
+      .get(RESERVATION_BASE_URL + "/getStoresStockStatusForReservation", {
+        params: { reservationId }
       })
       .then(response => {
         const data = jsog.decode(response.data);
@@ -88,7 +106,8 @@ export const createReservation = (
   storeId,
   reservationDateTime,
   customerEmail,
-  enqueueSnackbar
+  enqueueSnackbar,
+  history
 ) => {
   reservationDateTime = moment(reservationDateTime).format(
     "YYYY-MM-DD HH:mm:ss"
@@ -106,6 +125,7 @@ export const createReservation = (
           variant: "success",
           autoHideDuration: 1200
         });
+        history.push("/account/reservation/upcoming");
       })
       .catch(err => dispatchErrorMapError(err, dispatch));
   };
@@ -187,14 +207,15 @@ export const updateReservation = (
   newStoreId,
   newReservationDateTime,
   customerId,
-  enqueueSnackbar
+  enqueueSnackbar,
+  history
 ) => {
   newReservationDateTime = moment(newReservationDateTime).format(
     "YYYY-MM-DD HH:mm:ss"
   );
   return dispatch => {
     axios
-      .post(RESERVATION_BASE_URL + "/createReservation", {
+      .post(RESERVATION_BASE_URL + "/updateReservation", {
         reservationId,
         newStoreId,
         newReservationDateTime
@@ -205,6 +226,7 @@ export const updateReservation = (
           variant: "success",
           autoHideDuration: 1200
         });
+        history.push("/account/reservation/upcoming");
       })
       .catch(err => {
         const errorMap = _.get(err, "response.data", null);
@@ -217,3 +239,24 @@ export const updateReservation = (
       });
   };
 };
+
+export const retrieveReservationById = reservationId => {
+  return dispatch => {
+    axios
+      .get(RESERVATION_BASE_URL + "/retrieveReservationById", {
+        params: { reservationId }
+      })
+      .then(response => {
+        const data = jsog.decode(response.data);
+        dispatch(setUpdatingReservation(data));
+      })
+      .catch(err => {
+        dispatchErrorMapError(err, dispatch);
+      });
+  };
+};
+
+const setUpdatingReservation = data => ({
+  type: SET_UPDATING_RESERVATION,
+  reservation: data
+});

@@ -19,6 +19,7 @@ import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -72,6 +73,8 @@ public class Transaction implements Serializable {
 
     public Transaction() {
         this.createdDateTime = new Timestamp(System.currentTimeMillis());
+        this.transactionLineItems = new ArrayList<>();
+        this.deliveries = new ArrayList<>();
     }
 
     public Transaction(Customer customer) {
