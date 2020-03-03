@@ -152,3 +152,32 @@ const updatePastReservations = data => ({
   type: UPDATE_PAST_RESERVATIONS,
   reservations: data
 });
+
+export const cancelReservation = (
+  reservationId,
+  customerId,
+  enqueueSnackbar
+) => {
+  return dispatch => {
+    axios
+      .post(RESERVATION_BASE_URL + "/cancelReservation", null, {
+        params: { reservationId }
+      })
+      .then(response => {
+        dispatch(getUpcomingReservations(customerId));
+        enqueueSnackbar("Reservation cancelled!", {
+          variant: "success",
+          autoHideDuration: 1200
+        });
+      })
+      .catch(err => {
+        const errorMap = _.get(err, "response.data", null);
+        if (_.get(errorMap, "reservationDateTime")) {
+          enqueueSnackbar(_.get(errorMap, "reservationDateTime"), {
+            variant: "error",
+            autoHideDuration: 1200
+          });
+        }
+      });
+  };
+};
