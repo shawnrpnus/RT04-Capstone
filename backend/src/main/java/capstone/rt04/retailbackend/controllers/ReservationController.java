@@ -90,8 +90,8 @@ public class ReservationController {
     }
 
     @GetMapping(CustomerControllerRoutes.GET_PROD_VARIANT_STORE_STOCK_STATUS)
-    public Map<Long, Integer> getProdVariantStoreStockStatus(@RequestParam Long productVariantId, @RequestParam Long storeId) throws ProductVariantNotFoundException, StoreNotFoundException {
-        return reservationService.getProdVariantStoreStockStatus(productVariantId, storeId);
+    public Map<Long, Map<String, Object>> getProdVariantStoreStockStatus(@RequestParam Long customerId, @RequestParam Long storeId) throws ProductVariantNotFoundException, StoreNotFoundException, CustomerNotFoundException {
+        return reservationService.getProdVariantStoreStockStatus(customerId, storeId);
     }
 
     @GetMapping(CustomerControllerRoutes.GET_STORES_STOCK_STATUS_FOR_CART)

@@ -16,10 +16,13 @@ function StoreCard(props) {
   const { address } = store;
   return (
     <Card plain style={{ margin: "0" }}>
-      <CardHeader className={classes.title} style={{ paddingBottom: 0 }}>
+      <CardHeader
+        className={classes.title}
+        style={{ paddingBottom: 0, paddingLeft: 0, marginLeft: 0 }}
+      >
         {store.storeName}
       </CardHeader>
-      <CardBody style={{ paddingBottom: "0" }}>
+      <CardBody style={{ paddingBottom: "0", paddingLeft: "0" }}>
         {`${address.buildingName}, ${address.line1} ${address.line2} ${address.postalCode}`}
         <br />
         {`Hours: ${store.openingTime.substring(

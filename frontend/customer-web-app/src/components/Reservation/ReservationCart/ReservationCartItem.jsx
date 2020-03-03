@@ -41,10 +41,10 @@ function ReservationCartItem(props) {
       removeFromReservationCartAPI(
         customer.customerId,
         productVariant.productVariantId,
-        enqueueSnackbar
+        enqueueSnackbar,
+        retrieveStoresWithStockStatus
       )
     );
-    dispatch(retrieveStoresWithStockStatus(customer.customerId));
     setPopoverOpen(false);
   };
 

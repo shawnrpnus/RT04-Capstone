@@ -2,7 +2,9 @@ import * as types from "../actions/types";
 
 const initialState = {
   storesWithStockStatus: null,
-  prodVariantToStoreStock: {}
+  prodVariantToStoreStock: {},
+  availSlotsForStore: null,
+  upcomingReservations: null
 };
 
 export default function(state = initialState, action) {
@@ -21,6 +23,16 @@ export default function(state = initialState, action) {
       return {
         ...state,
         prodVariantToStoreStock: {}
+      };
+    case types.GET_AVAIL_SLOTS_FOR_STORE:
+      return {
+        ...state,
+        availSlotsForStore: action.availSlotsForStore
+      };
+    case types.UPDATE_UPCOMING_RESERVATIONS:
+      return {
+        ...state,
+        upcomingReservations: action.reservations
       };
     default:
       return state;

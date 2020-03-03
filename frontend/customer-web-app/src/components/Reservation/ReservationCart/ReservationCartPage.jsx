@@ -23,8 +23,9 @@ import Paper from "@material-ui/core/Paper";
 import Popper from "@material-ui/core/Popper";
 import { useSnackbar } from "notistack";
 import { clearReservationCartAPI } from "redux/actions/customerActions";
-import ReservationCartItem from "components/Reservation/ReservationCartItem";
-import ReservationBooking from "components/Reservation/ReservationBooking";
+import ReservationCartItem from "components/Reservation/ReservationCart/ReservationCartItem";
+import ReservationBooking from "components/Reservation/ReservationBooking/ReservationBooking";
+import { clearProductVariantStoreStockStatus } from "redux/actions/reservationActions";
 
 const useStyles = makeStyles(wishlistStyle);
 
@@ -40,7 +41,9 @@ export default function WishlistPage(props) {
     document.body.scrollTop = 0;
   }, []);
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    dispatch(clearProductVariantStoreStockStatus());
+  }, []);
 
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -57,73 +60,47 @@ export default function WishlistPage(props) {
 
   return (
     <div>
-      <Parallax
-        image={require("assets/img/examples/bg2.jpg")}
-        filter="dark"
-        small
-      >
-        <div className={classes.container}>
+      {/*<div className={classNames(classes.main, classes.mainRaised)}>*/}
+      {/*  <div className={classes.container}>*/}
+      <Card plain style={{ marginTop: 0 }}>
+        <CardBody plain>
+          {reservationCartItems && reservationCartItems.length === 0 && (
+            <h3 style={{ textAlign: "center" }}>
+              Your reservation cart is empty. Add items to get started!
+            </h3>
+          )}
           <GridContainer>
-            <GridItem
-              md={8}
-              sm={8}
-              className={classNames(
-                classes.mlAuto,
-                classes.mrAuto,
-                classes.textCenter
+            <GridItem md>
+              {reservationCartItems.length > 0 && (
+                <React.Fragment>
+                  <Button
+                    color="danger"
+                    style={{ float: "left", marginBottom: "20px" }}
+                    onClick={clearConfirmation}
+                  >
+                    <DeleteSharp />
+                    Clear reservation cart
+                  </Button>
+                  {reservationCartItems.map(productVariant => (
+                    <React.Fragment>
+                      <ReservationCartItem productVariant={productVariant} />
+                      {reservationCartItems.length > 1 && <Divider />}
+                    </React.Fragment>
+                  ))}
+                </React.Fragment>
               )}
-            >
-              <h2 className={classes.mainTitle}>My Reservation Cart</h2>
+            </GridItem>
+            <Divider orientation="vertical" flexItem />
+            <GridItem md>
+              {reservationCartItems && reservationCartItems.length > 0 && (
+                <ReservationBooking />
+              )}
             </GridItem>
           </GridContainer>
-        </div>
-      </Parallax>
-      <div className={classNames(classes.main, classes.mainRaised)}>
-        <div className={classes.container}>
-          <Card plain>
-            <CardBody plain>
-              <GridContainer>
-                <GridItem md>
-                  {reservationCartItems.length > 0 ? (
-                    <React.Fragment>
-                      <Button
-                        color="primary"
-                        style={{ float: "left", marginBottom: "20px" }}
-                        onClick={clearConfirmation}
-                      >
-                        <DeleteSharp />
-                        Clear reservation cart
-                      </Button>
-                      {reservationCartItems.map(productVariant => (
-                        <React.Fragment>
-                          <ReservationCartItem
-                            productVariant={productVariant}
-                          />
-                          {reservationCartItems.length > 1 && <Divider />}
-                        </React.Fragment>
-                      ))}
-                    </React.Fragment>
-                  ) : (
-                    <h3 style={{ textAlign: "center" }}>
-                      Your reservation cart is empty.
-                    </h3>
-                  )}
-                </GridItem>
-                <Divider orientation="vertical" flexItem />
-                <GridItem md>
-                  <h3
-                    className={classes.title}
-                    style={{ margin: "5px 0 20px 0" }}
-                  >
-                    Make a Reservation
-                  </h3>
-                  <ReservationBooking />
-                </GridItem>
-              </GridContainer>
-            </CardBody>
-          </Card>
-        </div>
-      </div>
+        </CardBody>
+      </Card>
+      {/*  </div>*/}
+      {/*</div>*/}
       <Popper
         open={popoverOpen}
         anchorEl={anchorEl}

@@ -533,7 +533,8 @@ export const addToReservationCartAPI = (
 export const removeFromReservationCartAPI = (
   customerId,
   productVariantId,
-  enqueueSnackbar
+  enqueueSnackbar,
+  retrieveStoresWithStockStatus
 ) => {
   return dispatch => {
     axios
@@ -542,6 +543,9 @@ export const removeFromReservationCartAPI = (
       })
       .then(response => {
         dispatchUpdatedCustomer(response.data, dispatch);
+        if (retrieveStoresWithStockStatus) {
+          dispatch(retrieveStoresWithStockStatus(customerId));
+        }
         if (enqueueSnackbar) {
           enqueueSnackbar("Removed from reservation cart!", {
             variant: "success",
@@ -556,7 +560,11 @@ export const removeFromReservationCartAPI = (
   };
 };
 
-export const clearReservationCartAPI = (customerId, enqueueSnackbar) => {
+export const clearReservationCartAPI = (
+  customerId,
+  enqueueSnackbar,
+  retrieveStoresWithStockStatus
+) => {
   return dispatch => {
     axios
       .post(CUSTOMER_BASE_URL + "/clearReservationCart", null, {
@@ -564,6 +572,9 @@ export const clearReservationCartAPI = (customerId, enqueueSnackbar) => {
       })
       .then(response => {
         dispatchUpdatedCustomer(response.data, dispatch);
+        if (retrieveStoresWithStockStatus) {
+          dispatch(retrieveStoresWithStockStatus(customerId));
+        }
         if (enqueueSnackbar) {
           enqueueSnackbar("Reservation cart cleared!", {
             variant: "success",
