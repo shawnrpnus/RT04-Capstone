@@ -16,6 +16,7 @@ import wishlistStyle from "assets/jss/material-kit-pro-react/views/wishlistStyle
 import ReservationCartPage from "components/Reservation/ReservationCart/ReservationCartPage";
 import { ShoppingCart } from "@material-ui/icons";
 import UpcomingReservations from "components/Reservation/View/UpcomingReservations";
+import PastReservations from "components/Reservation/View/PastReservations";
 
 const useTabStyles = makeStyles(tabsStyle);
 const useStyles = makeStyles(wishlistStyle);
@@ -59,6 +60,11 @@ export default function ReservationHomePage(props) {
             tabName: "Upcoming Reservations",
             tabIcon: ShoppingCart,
             tabContent: <UpcomingReservations />
+          },
+          {
+            tabName: "Past Reservations",
+            tabIcon: ShoppingCart,
+            tabContent: <PastReservations />
           }
         ]}
       />

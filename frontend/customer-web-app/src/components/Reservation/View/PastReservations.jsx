@@ -4,40 +4,43 @@ import Card from "components/UI/Card/Card";
 import WishlistItemCard from "components/Wishlist/WishlistItemCard";
 import Divider from "@material-ui/core/Divider";
 import { useDispatch, useSelector } from "react-redux";
-import { getUpcomingReservations } from "redux/actions/reservationActions";
+import {
+  getPastReservations,
+  getUpcomingReservations
+} from "redux/actions/reservationActions";
 import ReservationItem from "components/Reservation/View/ReservationItem";
 
 const _ = require("lodash");
 
-function UpcomingReservations(props) {
+function PastReservations(props) {
   const dispatch = useDispatch();
-  const upcomingReservations = useSelector(
-    state => state.reservation.upcomingReservations,
+  const pastReservations = useSelector(
+    state => state.reservation.pastReservations,
     _.isEqual
   );
   const customer = useSelector(state => state.customer.loggedInCustomer);
 
   useEffect(() => {
-    dispatch(getUpcomingReservations(customer.customerId));
-  }, [upcomingReservations]);
+    dispatch(getPastReservations(customer.customerId));
+  }, [pastReservations]);
 
   return (
     <Card plain style={{ marginTop: "-10px" }}>
       <CardBody plain style={{ paddingTop: "0" }}>
-        {upcomingReservations && upcomingReservations.length > 0 ? (
-          upcomingReservations
+        {pastReservations && pastReservations.length > 0 ? (
+          pastReservations
             .sort((a, b) =>
               b.reservationDateTime.localeCompare(a.reservationDateTime)
             )
             .map(reservation => (
               <React.Fragment>
-                <ReservationItem reservation={reservation} />
+                <ReservationItem reservation={reservation} isPast={true} />
                 <Divider />
               </React.Fragment>
             ))
         ) : (
           <h3 style={{ textAlign: "center" }}>
-            You do not have any upcoming reservations.
+            You do not have any past reservations.
           </h3>
         )}
       </CardBody>
@@ -45,4 +48,4 @@ function UpcomingReservations(props) {
   );
 }
 
-export default UpcomingReservations;
+export default PastReservations;

@@ -4,7 +4,8 @@ const initialState = {
   storesWithStockStatus: null,
   prodVariantToStoreStock: {},
   availSlotsForStore: null,
-  upcomingReservations: null
+  upcomingReservations: null,
+  pastReservations: null
 };
 
 export default function(state = initialState, action) {
@@ -33,6 +34,11 @@ export default function(state = initialState, action) {
       return {
         ...state,
         upcomingReservations: action.reservations
+      };
+    case types.UPDATE_PAST_RESERVATIONS:
+      return {
+        ...state,
+        pastReservations: action.reservations
       };
     default:
       return state;

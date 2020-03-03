@@ -19,7 +19,7 @@ const useStyles = makeStyles(wishlistStyle);
 
 function ReservationItem(props) {
   const classes = useStyles();
-  const { reservation } = props;
+  const { reservation, isPast } = props;
 
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -42,14 +42,37 @@ function ReservationItem(props) {
               <h4>{`${address.buildingName}, ${address.line1} ${address.line2} ${address.postalCode}`}</h4>
             </GridItem>
             <GridItem md={12}>
-              <Button color="primary">
-                <Edit />
-                Update
-              </Button>
-              <Button color="danger">
-                <DeleteSharp />
-                Cancel
-              </Button>
+              {!isPast && (
+                <React.Fragment>
+                  <Button color="primary">
+                    <Edit />
+                    Update
+                  </Button>
+                  <Button color="danger">
+                    <DeleteSharp />
+                    Cancel
+                  </Button>
+                </React.Fragment>
+              )}
+              {isPast && (
+                <React.Fragment>
+                  <h4
+                    style={
+                      !reservation.attended
+                        ? { color: "red" }
+                        : { color: "green" }
+                    }
+                  >
+                    Status: {reservation.attended ? "Attended" : "Unattended"}
+                  </h4>
+                  {!reservation.attended && (
+                    <h6 style={{ color: "red" }}>
+                      Warning: Multiple unattended reservations will result in a
+                      temporary ban from the service.
+                    </h6>
+                  )}
+                </React.Fragment>
+              )}
             </GridItem>
           </GridContainer>
         </GridItem>

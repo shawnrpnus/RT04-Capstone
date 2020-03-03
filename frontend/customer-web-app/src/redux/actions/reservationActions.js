@@ -6,6 +6,7 @@ import { CONTACT_US_SUCCESS } from "./types";
 import { GET_ERRORS } from "./types";
 import { dispatchErrorMapError } from "redux/actions/index";
 import { UPDATE_UPCOMING_RESERVATIONS } from "./types";
+import { UPDATE_PAST_RESERVATIONS } from "./types";
 
 const RESERVATION_BASE_URL = "/api/reservation";
 
@@ -128,5 +129,26 @@ export const getUpcomingReservations = customerId => {
 
 const updateUpcomingReservations = data => ({
   type: UPDATE_UPCOMING_RESERVATIONS,
+  reservations: data
+});
+
+export const getPastReservations = customerId => {
+  return dispatch => {
+    axios
+      .get(RESERVATION_BASE_URL + "/getPastReservations", {
+        params: { customerId }
+      })
+      .then(response => {
+        const data = jsog.decode(response.data);
+        dispatch(updatePastReservations(data));
+      })
+      .catch(err => {
+        dispatchErrorMapError(err, dispatch);
+      });
+  };
+};
+
+const updatePastReservations = data => ({
+  type: UPDATE_PAST_RESERVATIONS,
   reservations: data
 });
