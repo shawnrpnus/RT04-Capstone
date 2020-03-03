@@ -33,7 +33,10 @@ import KeyboardArrowRight from "@material-ui/icons/KeyboardArrowRight";
 
 // redux
 import { useDispatch, useSelector } from "react-redux";
-import { checkOut } from "../../redux/actions/shoppingCartActions";
+import {
+  checkOut,
+  updateShoppingCart
+} from "../../redux/actions/shoppingCartActions";
 
 // core components
 import Parallax from "components/UI/Parallax/Parallax.js";
@@ -51,8 +54,8 @@ import "react-credit-cards/es/styles-compiled.css";
 // local files
 import checkoutStyle from "assets/jss/material-kit-pro-react/views/checkoutStyle.js";
 import UpdateShoppingCartRequest from "../../models/shoppingCart/UpdateShoppingCartRequest.js";
-import AddressCard from "./../Profile/sections/AddressCard";
-import CustomDropdown from "components/UI/CustomDropdown/CustomDropdown.js";
+import AddressCardForCheckOut from "./AddressCardForCheckOut";
+import AddAddress from "../Profile/sections/AddAddress";
 
 const useStyles = makeStyles(checkoutStyle);
 
@@ -79,6 +82,9 @@ export default function CheckOutPage() {
 
   const { onlineShoppingCart, creditCards, shippingAddresses } = customer;
   const [creditCardIndex, setCreditCardIndex] = useState(0);
+  const [addNewAddress, setAddNewAddress] = useState(false);
+  const [currAddress, setCurrAddress] = useState("");
+
   let { expiryMonth, expiryYear, last4, issuer, creditCardId } = creditCards[
     creditCardIndex
   ];
@@ -116,6 +122,11 @@ export default function CheckOutPage() {
   const onSelectCreditCard = e => {
     console.log(e);
     setCreditCardIndex(e.target.value);
+  };
+
+  const handleAddNewAddress = () => {
+    setAddNewAddress(!addNewAddress);
+    console.log(addNewAddress);
   };
 
   return (
@@ -175,35 +186,25 @@ export default function CheckOutPage() {
                           </Typography>
                           <TextField fullWidth />
                         </Grid>
-                        <Grid item xs={12}>
-                          <Select
-                            style={{ minWidth: 120 }}
-                            defaultValue=""
-                            // MenuProps={{
-                            //   className: classes.selectMenu
-                            // }}
-                            // classes={{
-                            //   select: classes.select
-                            // }}
-                            // onChange={onChange}
-                            name="contactUsCategory"
-                          >
-                            {[1, 2, 3, 4].map(function(item, i) {
-                              return (
-                                <MenuItem
-                                  classes={{
-                                    root: classes.selectMenuItem,
-                                    selected: classes.selectMenuItemSelected
-                                  }}
-                                  value={item}
-                                >
-                                  {item}
-                                </MenuItem>
-                              );
-                            })}
-                          </Select>
-                          {/* <AddressCard /> */}
-                        </Grid>
+                        {addNewAddress ? (
+                          <Grid item xs={12} md={7}>
+                            <AddAddress
+                              addNewAddress={[addNewAddress, setAddNewAddress]}
+                              currAddress={[currAddress, setCurrAddress]}
+                            />
+                          </Grid>
+                        ) : (
+                          <Grid item xs={12}>
+                            <Button onClick={handleAddNewAddress} round color="primary">
+                              Add New Address
+                            </Button>
+                            <AddressCardForCheckOut
+                              addNewAddress={[addNewAddress, setAddNewAddress]}
+                              currAddress={[currAddress, setCurrAddress]}
+                            />
+                          </Grid>
+                        )}
+
                         <Grid item xs={12}>
                           <InputLabel>Select payment card</InputLabel>
                           <Select
