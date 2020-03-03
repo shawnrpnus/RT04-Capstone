@@ -1,7 +1,5 @@
 package capstone.rt04.retailbackend.services;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import capstone.rt04.retailbackend.entities.*;
 import capstone.rt04.retailbackend.util.ErrorMessages;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
@@ -16,6 +14,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 
 @RunWith(SpringRunner.class)
@@ -45,8 +45,8 @@ public class CustomerServiceTest extends ServiceTestSetup {
         Customer validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
         customerService.updateCustomerDetails(validCustomer.getCustomerId(), "Bruce", "Wayne");
         Customer updatedCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
-        assertThat(updatedCustomer.getFirstName()).isEqualTo(validCustomer.getFirstName());
-        assertThat(updatedCustomer.getLastName()).isEqualTo(validCustomer.getLastName());
+        assertThat(updatedCustomer.getFirstName()).isEqualTo("Bruce");
+        assertThat(updatedCustomer.getLastName()).isEqualTo("Wayne");
     }
 
     @Test
@@ -136,13 +136,13 @@ public class CustomerServiceTest extends ServiceTestSetup {
     @Test
     public void crudCreditCards() throws Exception {
         Customer validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
-        CreditCard newCreditCard = new CreditCard("123", "123", 12, 23, true);
+        CreditCard newCreditCard = new CreditCard("1234", "123", 12, 23, "visa",true);
         customerService.addCreditCard(validCustomer.getCustomerId(), newCreditCard);
         validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
         assertThat(validCustomer.getCreditCards().contains(newCreditCard)).isTrue();
         assertThat(validCustomer.getCreditCards().size()).isEqualTo(1);
 
-        CreditCard c = customerService.getCreditCard(validCustomer.getCustomerId(), validCustomer.getCreditCards().get(0).getCreditCardId());
+        CreditCard c = customerService.retrieveCreditCardByCreditCardId(validCustomer.getCustomerId(), validCustomer.getCreditCards().get(0).getCreditCardId());
         assertThat(c).isEqualTo(newCreditCard);
 
         customerService.deleteCreditCard(validCustomer.getCustomerId(), validCustomer.getCreditCards().get(0).getCreditCardId());

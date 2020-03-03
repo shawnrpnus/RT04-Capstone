@@ -50,16 +50,26 @@ const productStyle = {
   productPage: {
     backgroundColor: grayColor[2],
     "& $mainRaised": {
-      margin: "-40vh 0 0",
+      margin: "-50vh 0 0",
       padding: "40px"
     },
     "& .image-gallery-slide img": {
       borderRadius: "3px",
-      maxWidth: "300px",
       height: "auto"
     },
+    "& .image-gallery-thumbnail-image": {
+      margin: "5px 0",
+      height: "15vh",
+      width: "auto"
+    },
+    "& .image-gallery-right-nav": {
+      display: "none"
+    },
+    "& .image-gallery-left-nav": {
+      display: "none"
+    },
     "& .image-gallery-swipe": {
-      margin: "30px 0px",
+      margin: "0px 0px",
       overflow: "hidden",
       width: "100%",
       height: "auto",

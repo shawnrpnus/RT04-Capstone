@@ -88,3 +88,5 @@ RegularButton.propTypes = {
 };
 
 export default RegularButton;
+
+export { RegularButton as Button };

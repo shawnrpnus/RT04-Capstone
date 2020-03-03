@@ -23,7 +23,10 @@ const styles = {
   ...tooltips,
   container: {
     ...container,
-    zIndex: 1
+    zIndex: 1,
+    ["@media (min-width: 600px)"]: {
+      maxWidth: "1550px"
+    }
   },
   title: {
     ...title,
@@ -68,12 +71,19 @@ const styles = {
     position: "relative"
   },
   imgContainer: {
-    width: "120px",
-    maxHeight: "160px",
+    width: "100%",
+    // maxHeight: "160px",
+    marginLeft: "10%",
+    transform: "scale(0.9)",
     overflow: "hidden",
     display: "block",
     "& img": {
       width: "100%"
+    },
+    ["@media(max-width: 500px)"]: {
+      transform: "scale(0.8)",
+      marginTop: "-8%",
+      marginLeft: "0"
     }
   },
   description: {

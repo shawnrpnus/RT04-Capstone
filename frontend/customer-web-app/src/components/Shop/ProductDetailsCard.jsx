@@ -1,17 +1,25 @@
 import React, { useState } from "react";
-import classNames from "classnames";
 import GridContainer from "components/Layout/components/Grid/GridContainer";
 import GridItem from "components/Layout/components/Grid/GridItem";
 import ImageGallery from "react-image-gallery";
 import Accordion from "components/UI/Accordion/Accordion";
-import FormControl from "@material-ui/core/FormControl";
-import Select from "@material-ui/core/Select";
-import MenuItem from "@material-ui/core/MenuItem";
 import Button from "components/UI/CustomButtons/Button";
-import { ShoppingCart } from "@material-ui/icons";
+import { Favorite, FavoriteBorder, ShoppingCart } from "@material-ui/icons";
 import productStyle from "assets/jss/material-kit-pro-react/views/productStyle.js";
-import { makeStyles } from "@material-ui/core/styles";
+import makeStyles from "@material-ui/core/styles/makeStyles";
 import colours from "assets/colours";
+import Tooltip from "@material-ui/core/Tooltip";
+import Chip from "@material-ui/core/Chip";
+import { useDispatch, useSelector } from "react-redux";
+import { updateShoppingCart } from "redux/actions/shoppingCartActions";
+import UpdateShoppingCartRequest from "models/shoppingCart/UpdateShoppingCartRequest";
+import { useSnackbar } from "notistack";
+import IconButton from "@material-ui/core/IconButton";
+import { isProductVariantInList } from "services/customerService";
+import {
+  addToReservationCartAPI,
+  addToWishlistAPI
+} from "redux/actions/customerActions";
 
 const _ = require("lodash");
 const useStyles = makeStyles(productStyle);
@@ -19,9 +27,8 @@ const useStyles = makeStyles(productStyle);
 function ProductDetailsCard(props) {
   const colorNames = _.keyBy(colours, "hex");
   const classes = useStyles();
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const { productDetail } = props;
-
-  const [activeColourIndex, setActiveColourIndex] = useState(0);
 
   const extractProductInformation = productDetail => {
     if (!productDetail) return {};
@@ -60,14 +67,100 @@ function ProductDetailsCard(props) {
     colourAndSizeToVariantAndStockMap
   } = extractProductInformation(productDetail);
 
+  const [activeColourIndex, setActiveColourIndex] = useState(0);
   const [selectedColour, setSelectedColour] = React.useState(
     colourToImageAndSizes[activeColourIndex].colour
   );
-  const [selectedSize, setSelectedSize] = React.useState(
-    colourToImageAndSizes[activeColourIndex].sizes[0]
-  );
+  const [selectedSize, setSelectedSize] = React.useState("None");
+  const [isHoverFavorite, setIsHoverFavorite] = useState(false);
 
-  console.log(colourAndSizeToVariantAndStockMap);
+  const dispatch = useDispatch();
+  const customer = useSelector(state => state.customer.loggedInCustomer);
+
+  const addToShoppingCart = () => {
+    if (selectedSize === "None") {
+      enqueueSnackbar("Please select a size", {
+        variant: "error",
+        autoHideDuration: 1200
+      });
+      return;
+    }
+    const productVariantId = getCurrentProductVariantId();
+    const shoppingCartItems = customer.onlineShoppingCart.shoppingCartItems;
+    const prodVariantIdToCartItem = _.keyBy(
+      shoppingCartItems,
+      "productVariant.productVariantId"
+    );
+    let quantity = 1;
+    if (prodVariantIdToCartItem.hasOwnProperty(productVariantId)) {
+      quantity = prodVariantIdToCartItem[productVariantId].quantity + 1;
+    }
+    const customerId = customer.customerId;
+    const cartType = "online";
+    const req = new UpdateShoppingCartRequest(
+      quantity,
+      productVariantId,
+      customerId,
+      cartType
+    );
+    dispatch(updateShoppingCart(req, enqueueSnackbar));
+  };
+
+  const addToWishlist = () => {
+    if (selectedSize === "None") {
+      enqueueSnackbar("Please select a size", {
+        variant: "error",
+        autoHideDuration: 1200
+      });
+      return;
+    }
+    const productVariantId = getCurrentProductVariantId();
+    const currentWishlist = customer.wishlistItems;
+    if (isProductVariantInList(productVariantId, currentWishlist)) {
+      enqueueSnackbar("Already in wishlist!", {
+        variant: "error",
+        autoHideDuration: 1200
+      });
+      return;
+    }
+    const customerId = customer.customerId;
+    dispatch(addToWishlistAPI(customerId, productVariantId, enqueueSnackbar));
+  };
+
+  const getCurrentProductVariantId = () => {
+    return _.get(
+      colourAndSizeToVariantAndStockMap,
+      `${selectedColour}.${selectedSize}.productVariantId`
+    );
+  };
+
+  const addToReservationCart = () => {
+    if (selectedSize === "None") {
+      enqueueSnackbar("Please select a size", {
+        variant: "error",
+        autoHideDuration: 1200
+      });
+      return;
+    }
+    const productVariantId = getCurrentProductVariantId();
+    const currentReservationCart = customer.reservationCartItems;
+    if (isProductVariantInList(productVariantId, currentReservationCart)) {
+      enqueueSnackbar("Already in reservation cart!", {
+        variant: "error",
+        autoHideDuration: 1200
+      });
+      return;
+    }
+    const customerId = customer.customerId;
+    dispatch(
+      addToReservationCartAPI(customerId, productVariantId, enqueueSnackbar)
+    );
+  };
+
+  const selectedStock = _.get(
+    colourAndSizeToVariantAndStockMap,
+    `${selectedColour}.${selectedSize}.productStock.quantity`
+  );
   return (
     <React.Fragment>
       <GridContainer>
@@ -75,28 +168,62 @@ function ProductDetailsCard(props) {
           <ImageGallery
             showFullscreenButton={false}
             showPlayButton={false}
-            startIndex={3}
+            startIndex={0}
+            thumbnailPosition="left"
             items={colourToImageAndSizes[activeColourIndex].imageSet}
           />
         </GridItem>
         <GridItem md={6} sm={6}>
-          <h2 className={classes.title}>{product.productName}</h2>
+          <h2 className={classes.title}>
+            {product.productName}
+            <Tooltip
+              id="tooltip-top"
+              title={
+                isProductVariantInList(
+                  getCurrentProductVariantId(),
+                  customer.wishlistItems
+                )
+                  ? "In wishlist"
+                  : "Add to Wishlist"
+              }
+              placement="top"
+              classes={{ tooltip: classes.tooltip }}
+            >
+              <IconButton
+                className={classes.heartIconBtn}
+                onMouseEnter={() => setIsHoverFavorite(true)}
+                onMouseLeave={() => setIsHoverFavorite(false)}
+                onClick={addToWishlist}
+              >
+                {isProductVariantInList(
+                  getCurrentProductVariantId(),
+                  customer.wishlistItems
+                ) ? (
+                  <Favorite style={{ color: "#e91e63", margin: "0" }} />
+                ) : isHoverFavorite ? (
+                  <Favorite style={{ color: "#e91e63", margin: "0" }} />
+                ) : (
+                  <FavoriteBorder style={{ color: "#e91e63", margin: "0" }} />
+                )}
+              </IconButton>
+            </Tooltip>
+          </h2>
           <h3 className={classes.mainPrice}>${product.price}</h3>
           <Accordion
-            active={0}
+            active={[0]}
             activeColor="rose"
             collapses={[
               {
                 title: "Description",
-                content: <p>{product.description}</p>
-              },
-              {
-                title: "Stock Information",
                 content: (
-                  <p>{`Stock: ${_.get(
-                    colourAndSizeToVariantAndStockMap,
-                    `${selectedColour}.${selectedSize}.productStock.quantity`
-                  )}`}</p>
+                  <p>
+                    {product.description}
+                    <br />
+                    <br />
+                    {product.tags.map(tag => (
+                      <Chip label={tag.name} style={{ marginRight: "3px" }} />
+                    ))}
+                  </p>
                 )
               }
             ]}
@@ -142,44 +269,81 @@ function ProductDetailsCard(props) {
               <h6>Selected: {selectedSize}</h6>
               {colourToImageAndSizes[activeColourIndex].sizes.map(
                 (size, index) => {
+                  const stock = _.get(
+                    colourAndSizeToVariantAndStockMap,
+                    `${selectedColour}.${size}.productStock.quantity`
+                  );
+                  const hasStock = stock > 0;
                   return (
-                    <svg
-                      key={size + index}
-                      width="40"
-                      style={{ margin: "0 2px", cursor: "pointer" }}
-                      height="40"
-                      onClick={() => setSelectedSize(size)}
-                    >
-                      <rect
+                    <Tooltip title={hasStock ? "In stock" : "Out of stock"}>
+                      <svg
+                        key={size + index}
                         width="40"
+                        style={{
+                          margin: "0 2px",
+                          cursor: "pointer"
+                        }}
                         height="40"
-                        style={{
-                          fill: "white",
-                          strokeWidth: selectedSize === size ? 4 : 1,
-                          stroke: selectedSize === size ? "black" : "grey"
-                        }}
-                      />
-                      <text
-                        x="50%"
-                        y="50%"
-                        style={{
-                          dominantBaseline: "middle",
-                          textAnchor: "middle",
-                          fontWeight: "bold"
-                        }}
+                        onClick={() => setSelectedSize(size)}
                       >
-                        {size}
-                      </text>
-                    </svg>
+                        <rect
+                          width="40"
+                          height="40"
+                          style={{
+                            fill: hasStock ? "white" : "grey",
+                            pointerEvents: hasStock ? "click" : "none",
+                            strokeWidth: selectedSize === size ? 4 : 1,
+                            stroke: selectedSize === size ? "black" : "grey"
+                          }}
+                        />
+                        <text
+                          x="50%"
+                          y="50%"
+                          style={{
+                            dominantBaseline: "middle",
+                            textAnchor: "middle",
+                            fontWeight: "bold"
+                          }}
+                        >
+                          {size}
+                        </text>
+                        {!hasStock && (
+                          <React.Fragment>
+                            {/*<line x1="0" y1="0" x2="40" y2="40" stroke="red" />*/}
+                            <line
+                              x1="0"
+                              y1="40"
+                              x2="40"
+                              y2="0"
+                              stroke="black"
+                            />
+                          </React.Fragment>
+                        )}
+                      </svg>
+                    </Tooltip>
                   );
                 }
               )}
             </GridItem>
-          </GridContainer>
-          <GridContainer className={classes.pullRight}>
-            <Button round color="rose">
-              Add to Cart &nbsp; <ShoppingCart />
-            </Button>
+            <GridItem md={12} sm={12} style={{ marginTop: "10px" }}>
+              <Button
+                color="primary"
+                onClick={addToShoppingCart}
+                style={{ float: "right", width: "245px" }}
+                disabled={selectedStock <= 0 || selectedSize === "None"}
+              >
+                Add to Shopping Cart &nbsp; <ShoppingCart />
+              </Button>
+            </GridItem>
+            <GridItem md={12} sm={12}>
+              <Button
+                color="primary"
+                onClick={addToReservationCart}
+                style={{ float: "right", width: "245px" }}
+              >
+                Add to Reservation Cart &nbsp; <ShoppingCart />
+              </Button>
+            </GridItem>
           </GridContainer>
         </GridItem>
       </GridContainer>

@@ -182,7 +182,7 @@ public class StaffController {
     @PostMapping(StaffControllerRoutes.RESET_STAFF_PASSWORD)
     public ResponseEntity<?> resetStaffPassword(@RequestBody ResetStaffPasswordRequest rq) throws StaffNotFoundException {
         try {
-            Staff staff = staffService.resetPassword(rq.getStaffId());
+            Staff staff = staffService.resetPassword(rq.getUsername());
             return new ResponseEntity<>(staff, HttpStatus.OK);
         }catch (StaffNotFoundException ex){
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);

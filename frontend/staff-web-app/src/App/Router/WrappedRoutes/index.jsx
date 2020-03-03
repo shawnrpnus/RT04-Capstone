@@ -7,6 +7,7 @@ import Category from "./Category";
 import Product from "./Product";
 import Staff from "./Staff";
 import ProductStock from "./ProductStock";
+import InventoryTable from "./Warehouse";
 
 export default () => (
   <div>
@@ -18,6 +19,7 @@ export default () => (
       <Route path="/product" component={Product} />
       <Route path="/staff" component={Staff} />
       <Route path="/productStock" component={ProductStock} />
+      <Route path="/warehouse" component={InventoryTable} />
     </div>
   </div>
 );

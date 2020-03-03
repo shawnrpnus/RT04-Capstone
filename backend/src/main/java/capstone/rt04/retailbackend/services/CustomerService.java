@@ -2,7 +2,6 @@ package capstone.rt04.retailbackend.services;
 
 import capstone.rt04.retailbackend.entities.*;
 import capstone.rt04.retailbackend.repositories.*;
-import capstone.rt04.retailbackend.util.AES;
 import capstone.rt04.retailbackend.util.Constants;
 import capstone.rt04.retailbackend.util.ErrorMessages;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
@@ -10,6 +9,7 @@ import capstone.rt04.retailbackend.util.exceptions.customer.*;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.shoppingcart.InvalidCartTypeException;
 import capstone.rt04.retailbackend.util.exceptions.style.StyleNotFoundException;
+import com.stripe.exception.StripeException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -28,7 +28,6 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static capstone.rt04.retailbackend.util.Constants.ONLINE_SHOPPING_CART;
-import static capstone.rt04.retailbackend.util.Constants.SECRET_KEY;
 
 /**
  * @author shawn
@@ -48,6 +47,7 @@ public class CustomerService {
     private final ShoppingCartService shoppingCartService;
     private final ProductService productService;
     private final StyleService styleService;
+    private final StripeService stripeService;
 
     private final CustomerRepository customerRepository;
     private final ReviewRepository reviewRepository;
@@ -60,7 +60,7 @@ public class CustomerService {
 
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
-    public CustomerService(JavaMailSender javaMailSender, RestTemplateBuilder builder, ValidationService validationService, ShoppingCartService shoppingCartService, ProductService productService, CustomerRepository customerRepository, ReviewRepository reviewRepository, ShoppingCartItemRepository shoppingCartItemRepository, ShoppingCartRepository shoppingCartRepository, VerificationCodeRepository verificationCodeRepository, MeasurementsRepository measurementsRepository, CreditCardRepository creditCardRepository, AddressRepository addressRepository, Environment environment, StyleService styleService) {
+    public CustomerService(JavaMailSender javaMailSender, RestTemplateBuilder builder, ValidationService validationService, ShoppingCartService shoppingCartService, ProductService productService, CustomerRepository customerRepository, ReviewRepository reviewRepository, ShoppingCartItemRepository shoppingCartItemRepository, ShoppingCartRepository shoppingCartRepository, VerificationCodeRepository verificationCodeRepository, MeasurementsRepository measurementsRepository, CreditCardRepository creditCardRepository, AddressRepository addressRepository, Environment environment, StyleService styleService, StripeService stripeService) {
         this.javaMailSender = javaMailSender;
         this.restTemplate = builder.build();
         this.validationService = validationService;
@@ -76,9 +76,10 @@ public class CustomerService {
         this.addressRepository = addressRepository;
         this.environment = environment;
         this.styleService = styleService;
+        this.stripeService = stripeService;
     }
 
-    public Customer createNewCustomer(Customer customer) throws InputDataValidationException, CreateNewCustomerException {
+    public Customer createNewCustomer(Customer customer) throws InputDataValidationException, CreateNewCustomerException, StripeException {
         validationService.throwExceptionIfInvalidBean(customer);
         try {
             //check email is new
@@ -87,6 +88,7 @@ public class CustomerService {
             customer.setPassword(encoder.encode(customer.getPassword()));
             Customer savedCustomer = customerRepository.save(customer);
             shoppingCartService.initializeShoppingCarts(savedCustomer.getCustomerId());
+            stripeService.createStripeCustomer(savedCustomer.getCustomerId());
             VerificationCode vCode = generateVerificationCode(savedCustomer.getCustomerId());
             if (Arrays.asList(environment.getActiveProfiles()).contains("dev")) {
                 nodeSendEmailVerificationLink("/account/verify/", vCode.getCode(), savedCustomer.getEmail(), savedCustomer.getFirstName(), savedCustomer.getLastName());
@@ -325,14 +327,14 @@ public class CustomerService {
 
     public Customer addCreditCard(Long customerId, CreditCard creditCard) throws CustomerNotFoundException {
         Customer customer = retrieveCustomerByCustomerId(customerId);
-        creditCard.setNumber(AES.encrypt(creditCard.getNumber(), SECRET_KEY));
-        creditCard.setCvv(AES.encrypt(creditCard.getCvv(), SECRET_KEY));
+//        creditCard.setNumber(AES.encrypt(creditCard.getNumber(), SECRET_KEY));
+//        creditCard.setCvv(AES.encrypt(creditCard.getCvv(), SECRET_KEY));
         creditCardRepository.save(creditCard);
         customer.addCreditCard(creditCard);
         return lazyLoadCustomerFields(customer);
     }
 
-    public CreditCard getCreditCard(Long customerId, Long creditCardId) throws CustomerNotFoundException, CreditCardNotFoundException {
+    public CreditCard retrieveCreditCardByCreditCardId(Long customerId, Long creditCardId) throws CustomerNotFoundException, CreditCardNotFoundException {
         Customer customer = retrieveCustomerByCustomerId(customerId);
         for (CreditCard c : customer.getCreditCards()) {
             if (c.getCreditCardId().equals(creditCardId)) {
@@ -342,9 +344,19 @@ public class CustomerService {
         throw new CreditCardNotFoundException("Credit card with id: " + creditCardId + " does not exist;");
     }
 
+    public CreditCard retrieveCreditCardByPaymentMethodId(Long customerId, String paymentMethodId) throws CustomerNotFoundException, CreditCardNotFoundException {
+        Customer customer = retrieveCustomerByCustomerId(customerId);
+        for (CreditCard c : customer.getCreditCards()) {
+            if (c.getPaymentMethodId().equals(paymentMethodId)) {
+                return c;
+            }
+        }
+        return null;
+    }
+
     public Customer deleteCreditCard(Long customerId, Long creditCardId) throws CustomerNotFoundException, CreditCardNotFoundException {
         Customer customer = retrieveCustomerByCustomerId(customerId);
-        CreditCard creditCardToRemove = getCreditCard(customerId, creditCardId);
+        CreditCard creditCardToRemove = retrieveCreditCardByCreditCardId(customerId, creditCardId);
 
         customer.getCreditCards().remove(creditCardToRemove);
         creditCardRepository.delete(creditCardToRemove);
@@ -427,9 +439,12 @@ public class CustomerService {
         return lazyLoadCustomerFields(customer);
     }
 
-    public Customer addProductToWishlist(Long customerId, Long productVariantId) throws CustomerNotFoundException, ProductVariantNotFoundException {
+    public Customer addProductToWishlist(Long customerId, Long productVariantId) throws CustomerNotFoundException, ProductVariantNotFoundException, WishlistException {
         Customer customer = retrieveCustomerByCustomerId(customerId);
         ProductVariant productVariant = productService.retrieveProductVariantById(productVariantId);
+        if (customer.getWishlistItems().contains(productVariant)) {
+            throw new WishlistException("Already in wishlist!");
+        }
         customer.getWishlistItems().add(productVariant);
         return lazyLoadCustomerFields(customer);
     }

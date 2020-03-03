@@ -32,6 +32,7 @@ import CategoryNavbar from "components/Layout/components/Header/CategoryNavbar";
 import { useDispatch, useSelector } from "react-redux";
 import { retrieveAllRootCategories } from "redux/actions/categoryActions";
 import AgAutocomplete from "components/Algolia/AgAutocomplete";
+import IconButton from "@material-ui/core/IconButton";
 
 const useStyles = makeStyles(styles);
 
@@ -118,30 +119,36 @@ export default function HeaderLinks(props) {
       <List className={classes.list + " " + classes.mlAuto}>
         <ListItem>
           <AgAutocomplete />
-          <Button color="white" justIcon round>
-            <Search className={classes.searchIcon} />
-          </Button>
+          {/*<IconButton color="white" justIcon round>*/}
+          {/*  <Search className={classes.searchIcon} />*/}
+          {/*</IconButton>*/}
         </ListItem>
         <ListItem className={classes.listItem}>
           <AccountNavbar />
         </ListItem>
         <ListItem className={classes.listItem}>
-          <Button className={classes.navLink} round color="transparent">
-            <Favorite />
-            <Hidden mdUp implementation="css" className={classes.hidden}>
-              <div className={classes.collapse}>Wishlist</div>
-            </Hidden>
-          </Button>
+          <Link to="/account/wishlist" style={{ color: "inherit" }}>
+            <Button className={classes.navLink} round color="transparent">
+              <Favorite />
+              <Hidden mdUp implementation="css" className={classes.hidden}>
+                <div className={classes.collapse}>Wishlist</div>
+              </Hidden>
+            </Button>
+          </Link>
         </ListItem>
         <ListItem className={classes.listItem}>
-          <Button className={classes.navLink} round color="transparent">
-            <ShoppingCart className={classes.icons} /> Shop
-          </Button>
+          <Link key="login" to="/shoppingCart" style={{ color: "#555555" }}>
+            <Button className={classes.navLink} round color="transparent">
+              <ShoppingCart className={classes.icons} /> Shop
+            </Button>
+          </Link>
         </ListItem>
         <ListItem className={classes.listItem}>
-          <Button className={classes.navLink} round color="transparent">
-            <ShoppingCart className={classes.icons} /> Reserve
-          </Button>
+          <Link to="/account/reservation" style={{ color: "inherit" }}>
+            <Button className={classes.navLink} round color="transparent">
+              <ShoppingCart className={classes.icons} /> Reserve
+            </Button>
+          </Link>
         </ListItem>
       </List>
     </React.Fragment>

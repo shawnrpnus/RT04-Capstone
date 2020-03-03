@@ -1,13 +1,18 @@
 import axios from "axios";
 import { UPDATE_SHOPPING_CART_SUCCESS } from "redux/actions/types";
 import { dispatchErrorMapError } from "redux/actions/index";
+import { PAYMENT_SUCCESS, SAVE_CARD_SUCCESS } from "./types";
 
 const CUSTOMER_BASE_URL = "/api/customer";
 
 const _ = require("lodash");
 const jsog = require("jsog");
 
-export const updateShoppingCart = (updateShoppingCartRequest, history) => {
+export const updateShoppingCart = (
+  updateShoppingCartRequest,
+  enqueueSnackbar,
+  removeFromWishlistAPI
+) => {
   return dispatch => {
     //redux thunk passes dispatch
     axios
@@ -16,7 +21,25 @@ export const updateShoppingCart = (updateShoppingCartRequest, history) => {
         updateShoppingCartRequest
       )
       .then(response => {
-        updateShoppingCart(response.data, dispatch);
+        handleUpdateShoppingCart(response.data, dispatch);
+        if (removeFromWishlistAPI) {
+          //for transferring from wishlist to cart
+          dispatch(
+            removeFromWishlistAPI(
+              updateShoppingCartRequest.customerId,
+              updateShoppingCartRequest.productVariantId
+            )
+          );
+          enqueueSnackbar("Moved to shopping cart!", {
+            variant: "success",
+            autoHideDuration: 1200
+          });
+        } else {
+          enqueueSnackbar("Item Added!", {
+            variant: "success",
+            autoHideDuration: 1200
+          });
+        }
       })
       .catch(err => {
         dispatchErrorMapError(err, dispatch);
@@ -24,26 +47,55 @@ export const updateShoppingCart = (updateShoppingCartRequest, history) => {
   };
 };
 
+// Customer reducer
 const updateShoppingCartThroughCustomer = data => ({
   type: UPDATE_SHOPPING_CART_SUCCESS,
   customer: data
 });
 
-const updateShoppingCart = (responseData, dispatch) => {
+const handleUpdateShoppingCart = (responseData, dispatch) => {
   const data = jsog.decode(responseData);
   dispatch(updateShoppingCartThroughCustomer(data));
 };
 
-// export const customerLogin = (customerLoginRequest, history) => {
+export const checkOut = (paymentRequest, setShowCreditCardDialog) => {
+  return dispatch => {
+    axios
+      .post("/simulatePayment", paymentRequest)
+      .then(resp => {
+        console.log(resp);
+        dispatch(paymentSuccess(resp.data));
+        setShowCreditCardDialog(true);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+};
+
+// Customer reducer
+const paymentSuccess = data => ({
+  type: PAYMENT_SUCCESS,
+  clientSecret: data
+});
+
+// export const saveCard = (customerId, setShowCreditCardDialog) => {
 //   return dispatch => {
 //     axios
-//       .post(CUSTOMER_BASE_URL + "/login", customerLoginRequest)
-//       .then(response => {
-//         dispatchUpdatedCustomer(response.data, dispatch);
-//         history.push("/");
+//       .get(`/saveCard/${customerId}`)
+//       .then(resp => {
+//         console.log(resp);
+//         dispatch(saveCardSuccess(resp.data));
+//         setShowCreditCardDialog(true);
 //       })
 //       .catch(err => {
-//         dispatchErrorMapError(err, dispatch);
+//         console.log(err);
 //       });
 //   };
 // };
+
+// // Customer reducer
+// const saveCardSuccess = data => ({
+//   type: SAVE_CARD_SUCCESS,
+//   clientSecret: data
+// });

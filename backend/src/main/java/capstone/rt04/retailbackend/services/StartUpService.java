@@ -16,12 +16,14 @@ import capstone.rt04.retailbackend.util.exceptions.product.CreateNewProductStock
 import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.shoppingcart.InvalidCartTypeException;
 import capstone.rt04.retailbackend.util.exceptions.staff.CreateDepartmentException;
+import capstone.rt04.retailbackend.util.exceptions.staff.CreateNewStaffAccountException;
 import capstone.rt04.retailbackend.util.exceptions.staff.CreateNewStaffException;
 import capstone.rt04.retailbackend.util.exceptions.staff.CreateRoleException;
 import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.style.CreateNewStyleException;
 import capstone.rt04.retailbackend.util.exceptions.tag.CreateNewTagException;
 import capstone.rt04.retailbackend.util.exceptions.warehouse.WarehouseNotFoundException;
+import com.stripe.exception.StripeException;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
@@ -61,6 +63,9 @@ public class StartUpService {
     private static Long bermudasCategoryId;
 
     private Long customerId;
+    private Long productVariantId26;
+    private Long productVariantId27;
+    private Long productVariantId28;
     private Long productVariantId29;
     private Long productVariantId30;
 
@@ -81,7 +86,7 @@ public class StartUpService {
     }
 
     @PostConstruct
-    public void init() throws InputDataValidationException, CreateNewCategoryException, CategoryNotFoundException, CreateNewProductException, ProductVariantNotFoundException, CreateNewProductStockException, WarehouseNotFoundException, StoreNotFoundException, CreateNewTagException, CreateNewStyleException, CreateNewStaffException, CreateRoleException, CreateDepartmentException, CreateNewCustomerException, CustomerNotFoundException, InvalidCartTypeException {
+    public void init() throws InputDataValidationException, CreateNewCategoryException, CategoryNotFoundException, CreateNewProductException, ProductVariantNotFoundException, CreateNewProductStockException, WarehouseNotFoundException, StoreNotFoundException, CreateNewTagException, CreateNewStyleException, CreateNewStaffException, CreateRoleException, CreateDepartmentException, CreateNewCustomerException, CustomerNotFoundException, InvalidCartTypeException, StripeException, CreateNewStaffAccountException {
         createWarehouseAndStoreIfNotFound();
         createCategoryIfNotFound();
         createStaffIfNotFound();
@@ -132,23 +137,21 @@ public class StartUpService {
 
             // Product images
             List<String> blackProductImageUrls = new ArrayList<>();
-            blackProductImageUrls.add("https://i8.amplience.net/i/jpl/jd_347293_a?qlt=92&w=750&h=531&v=1&fmt=webp");
-            blackProductImageUrls.add("https://i8.amplience.net/i/jpl/jd_347293_b?qlt=92&w=750&h=531&v=1&fmt=webp");
-            blackProductImageUrls.add("https://i8.amplience.net/i/jpl/jd_347293_c?qlt=92&w=750&h=531&v=1&fmt=webp");
-            blackProductImageUrls.add("https://i8.amplience.net/i/jpl/jd_347293_d?qlt=92&w=750&h=531&v=1&fmt=webp");
-            blackProductImageUrls.add("https://i8.amplience.net/i/jpl/jd_347293_e?qlt=92&w=750&h=531&v=1&fmt=webp");
+            blackProductImageUrls.add("https://pomelofashion.imgix.net/img/p/1/9/1/1/9/7/191197.jpg?auto=compress,format&fm=webp,jpg,png&w=700&q=75");
+            blackProductImageUrls.add("https://pomelofashion.imgix.net/img/p/1/9/1/1/9/8/191198.jpg?auto=compress,format&fm=webp,jpg,png&w=700&q=75");
+            blackProductImageUrls.add("https://pomelofashion.imgix.net/img/p/1/9/1/1/9/9/191199.jpg?auto=compress,format&fm=webp,jpg,png&w=700&q=75");
+            blackProductImageUrls.add("https://pomelofashion.imgix.net/img/p/1/9/1/2/0/0/191200.jpg?auto=compress,format&fm=webp,jpg,png&w=700&q=75");
+            blackProductImageUrls.add("https://pomelofashion.imgix.net/img/p/1/9/1/2/0/2/191202.jpg?auto=compress,format&fm=webp,jpg,png&w=700&q=75");
             List<String> greenProductImageUrls = new ArrayList<>();
-            greenProductImageUrls.add("https://i8.amplience.net/i/jpl/jd_M20324_a?qlt=92&w=750&h=531&v=1&fmt=webp");
-            greenProductImageUrls.add("https://i8.amplience.net/i/jpl/jd_M20324_b?qlt=92&w=750&h=531&v=1&fmt=webp");
-            greenProductImageUrls.add("https://i8.amplience.net/i/jpl/jd_M20324_c?qlt=92&w=750&h=531&v=1&fmt=webp");
-            greenProductImageUrls.add("https://i8.amplience.net/i/jpl/jd_M20324_d?qlt=92&w=750&h=531&v=1&fmt=webp");
-            greenProductImageUrls.add("https://i8.amplience.net/i/jpl/jd_M20324_e?qlt=92&w=750&h=531&v=1&fmt=webp");
+            greenProductImageUrls.add("https://dynamic.zacdn.com/u6MpVzFyd-4OxjGzbjVILD_d5T0=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/abercrombie-fitch-1031-4285121-1.jpg");
+            greenProductImageUrls.add("https://dynamic.zacdn.com/hpRn190IaUIwXyrcPDPfx1n0t4s=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/abercrombie-fitch-1031-4285121-2.jpg");
+            greenProductImageUrls.add("https://dynamic.zacdn.com/1q4vDr8_Y52JMQYAXNzGgMPNiac=/fit-in/692x1000/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/abercrombie-fitch-1032-4285121-3.jpg");
+            greenProductImageUrls.add("https://dynamic.zacdn.com/lOfHo7SbZtfcFdYuOfzfweyU9DQ=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/abercrombie-fitch-1032-4285121-4.jpg");
             List<String> redProductImageUrls = new ArrayList<>();
-            redProductImageUrls.add("https://i8.amplience.net/i/jpl/jd_EE5801_a?qlt=92&w=750&h=531&v=1&fmt=webp");
-            redProductImageUrls.add("https://i8.amplience.net/i/jpl/jd_EE5801_b?qlt=92&w=750&h=531&v=1&fmt=webp");
-            redProductImageUrls.add("https://i8.amplience.net/i/jpl/jd_EE5801_c?qlt=92&w=750&h=531&v=1&fmt=webp");
-            redProductImageUrls.add("https://i8.amplience.net/i/jpl/jd_EE5801_d?qlt=92&w=750&h=531&v=1&fmt=webp");
-            redProductImageUrls.add("https://i8.amplience.net/i/jpl/jd_EE5801_e?qlt=92&w=750&h=531&v=1&fmt=webp");
+            redProductImageUrls.add("https://images.asos-media.com/products/columbia-klamath-range-ii-half-zip-fleece-in-black/13080944-1-black?$XXL$&wid=513&fit=constrain");
+            redProductImageUrls.add("https://images.asos-media.com/products/columbia-klamath-range-ii-half-zip-fleece-in-black/13080944-2?$XXL$&wid=513&fit=constrain");
+            redProductImageUrls.add("https://images.asos-media.com/products/columbia-klamath-range-ii-half-zip-fleece-in-black/13080944-3?$XXL$&wid=513&fit=constrain");
+            redProductImageUrls.add("https://images.asos-media.com/products/columbia-klamath-range-ii-half-zip-fleece-in-black/13080944-4?$XXL$&wid=513&fit=constrain");
 
             List<SizeEnum> sizes = new ArrayList<>();
             sizes.add(SizeEnum.S);
@@ -255,12 +258,15 @@ public class StartUpService {
             Category category9 = categoryService.retrieveCategoryByCategoryId(dressesCategoryId);
             product22.setCategory(category9);
             Product newProduct26 = productService.createNewProduct(product26, category9.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
+            productVariantId26 = newProduct26.getProductVariants().get(0).getProductVariantId();
 
             Product product27 = new Product("0036", "Long Sleeve Dress", "Long Sleeve Dress", BigDecimal.valueOf(49.90), BigDecimal.valueOf(10.90));
             Product newProduct27 = productService.createNewProduct(product27, category9.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
+            productVariantId27 = newProduct27.getProductVariants().get(0).getProductVariantId();
 
             Product product28 = new Product("0037", "Short Sleeve Dress", "Short Sleeve Skirt", BigDecimal.valueOf(35.90), BigDecimal.valueOf(8.00));
             Product newProduct28 = productService.createNewProduct(product28, category9.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
+            productVariantId28 = newProduct28.getProductVariants().get(0).getProductVariantId();
 
             Product product29 = new Product("0038", "Sleeveless Dress", "Sleeveless Dress", BigDecimal.valueOf(49.90), BigDecimal.valueOf(12.00));
             Product newProduct29 = productService.createNewProduct(product29, category9.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
@@ -309,7 +315,7 @@ public class StartUpService {
         styleService.createNewStyle(new Style("Sophisticated"));
     }
 
-    private void createStaffIfNotFound() throws CreateNewStaffException, InputDataValidationException, CreateRoleException, CreateDepartmentException {
+    private void createStaffIfNotFound() throws CreateNewStaffException, InputDataValidationException, CreateRoleException, CreateDepartmentException, CreateNewStaffAccountException {
         if (staffService.retrieveAllStaff().size() != 0) return;
         Product product = new Product("0010", "Stan Smith", "Adidas", BigDecimal.valueOf(109.90), BigDecimal.valueOf(49.90));
         Department departmentHR = staffService.createNewDepartment("HR");
@@ -324,6 +330,7 @@ public class StartUpService {
         Role role4 = staffService.createNewRole(RoleNameEnum.DIRECTOR);
 
 
+
         Staff staff = new Staff("Geogre", "Lee", 2, "116c", "geogrelee@gmail.com", BigDecimal.valueOf(10000));
         Address a1 = new Address("2E Hong San Walk", "#03-08", 612140, "Palm Garden");
         Staff newStaff = staffService.createNewStaff(staff, a1, role1.getRoleId(), departmentHR.getDepartmentId());
@@ -335,7 +342,7 @@ public class StartUpService {
         Staff staff3 = new Staff("Yi Lin", "Cai", 1, "131Z", "Caiyl@gmail.com", BigDecimal.valueOf(10000));
         Address a3 = new Address("Block 234 Bishan South", "#30-08", 321140, "Palm Garden");
         Staff newStaff3 = staffService.createNewStaff(staff3, a3, role1.getRoleId(), departmentHR.getDepartmentId());
-
+        staffService.createNewStaffAccount(newStaff3.getStaffId());
 
         Staff staff4 = new Staff("Gerard", "Ng", 20, "971C", "rayquaza@gmail.com", BigDecimal.valueOf(10000));
         Address a4 = new Address("Block 130 Taman Jurong", "#15-02", 231334, "-");
@@ -464,18 +471,22 @@ public class StartUpService {
         }
     }
 
-    private void createCustomerIfNotFound() throws InputDataValidationException, CreateNewCustomerException {
+    private void createCustomerIfNotFound() throws InputDataValidationException, CreateNewCustomerException, CustomerNotFoundException, StripeException {
         if (customerService.retrieveAllCustomers().size() == 0) {
             Customer customer = customerService.createNewCustomer(new Customer("Lila", "Facchini",
                     "lila@gmail.com", "password"));
-            customer.setVerified(true);
             customerId = customer.getCustomerId();
+            customerService.retrieveCustomerByCustomerId(customerId);
+            customer.setVerified(true);
         }
     }
 
     private void initializeShoppingCartIfNotFound() throws ProductVariantNotFoundException, CustomerNotFoundException, InvalidCartTypeException {
         if (shoppingCartService.initRetrieveAllShoppingCartItem().size() == 0) {
-            shoppingCartService.updateQuantityOfProductVariant(2, productVariantId29, customerId, ONLINE_SHOPPING_CART);
+            shoppingCartService.updateQuantityOfProductVariant(2, productVariantId26, customerId, ONLINE_SHOPPING_CART);
+            shoppingCartService.updateQuantityOfProductVariant(3, productVariantId27, customerId, ONLINE_SHOPPING_CART);
+            shoppingCartService.updateQuantityOfProductVariant(3, productVariantId28, customerId, ONLINE_SHOPPING_CART);
+            shoppingCartService.updateQuantityOfProductVariant(3, productVariantId29, customerId, ONLINE_SHOPPING_CART);
             shoppingCartService.updateQuantityOfProductVariant(3, productVariantId30, customerId, ONLINE_SHOPPING_CART);
         }
     }

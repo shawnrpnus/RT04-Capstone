@@ -11,8 +11,8 @@ import {
 import { UserProps, AuthOProps } from "../../../shared/prop-types/ReducerProps";
 import * as PropTypes from "prop-types";
 import { connect } from "react-redux";
-import {clearErrors, updateErrors} from "../../../redux/actions";
-import {useDispatch} from "react-redux";
+import { clearErrors, updateErrors } from "../../../redux/actions";
+import { useDispatch } from "react-redux";
 
 class TopbarProfile extends PureComponent {
   static propTypes = {
@@ -40,7 +40,6 @@ class TopbarProfile extends PureComponent {
     const { collapse } = this.state;
 
     return (
-
       <div className="topbar__profile">
         <button className="topbar__avatar" type="button" onClick={this.toggle}>
           {loggedInStaff && (
@@ -62,14 +61,14 @@ class TopbarProfile extends PureComponent {
             <TopbarMenuLink
               title="My Profile"
               icon="user"
-              path="/account/profile"
+              path="/staff/viewProfile"
               onClick={this.toggle}
             />
             <TopbarMenuLink
-                title="Logout"
-                icon="exit"
-                path="/login"
-                onClick={this.logout}
+              title="Logout"
+              icon="exit"
+              path="/login"
+              onClick={this.logout}
             />
           </div>
         </Collapse>
@@ -80,14 +79,11 @@ class TopbarProfile extends PureComponent {
 
 //mapping global state to this component
 const mapStateToProps = state => ({
- loggedInStaff : state.staffEntity.loggedInStaff
+  loggedInStaff: state.staffEntity.loggedInStaff
 });
 
 const mapDispatchToProps = {
   staffLogout //api/staffEntity/createNewStaff
 };
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(TopbarProfile);
+export default connect(mapStateToProps, mapDispatchToProps)(TopbarProfile);
