@@ -153,19 +153,18 @@ const changeStaffPasswordError = data => ({
   errorMap: data
 });
 
-export const resetPassword = (ResetStaffPasswordRequest, history) => {
+export const resetPassword = (resetStaffPasswordRequest, history) => {
   return dispatch => {
     //redux thunk passes dispatch
     axios
-      .post(STAFF_BASE_URL + "/resetStaffPassword", ResetStaffPasswordRequest)
+      .post(STAFF_BASE_URL + "/resetStaffPassword", resetStaffPasswordRequest)
       .then(response => {
         const { data } = jsog.decode(response);
-        const staffId = data.staffId;
         dispatch(resetStaffPasswordSuccess(data));
-        toast.success("Staff password reset!", {
+        toast.success("Staff password reset! Please check your email", {
           position: toast.POSITION.TOP_CENTER
         });
-        //history.push(`/store/view/${storeId}`); // TODO: update redirect path
+          history.push(`/login`);
       })
       .catch(err => {
         dispatch(resetStaffPasswordError(err.response.data));

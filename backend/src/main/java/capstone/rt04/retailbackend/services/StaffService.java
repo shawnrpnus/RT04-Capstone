@@ -157,9 +157,9 @@ public class StaffService {
     }
 
     //For IT department to reset for staff
-    public Staff resetPassword(Long staffId) throws StaffNotFoundException{
+    public Staff resetPassword(String username) throws StaffNotFoundException{
         try {
-            Staff staff = retrieveStaffByStaffId(staffId);
+            Staff staff = retrieveStaffByUsername(username);
 
             String password = "password";
             staff.setPassword(encoder.encode(password));
@@ -171,7 +171,9 @@ public class StaffService {
 
             return staff;
         }catch (StaffNotFoundException ex){
-            throw new StaffNotFoundException("Staff does not exist!");
+            Map<String, String> errorMap = new HashMap<>();
+            errorMap.put("username", ErrorMessages.STAFF_DOES_NOT_EXIST);
+            throw new StaffNotFoundException(errorMap, ErrorMessages.STAFF_DOES_NOT_EXIST);
         }
     }
 

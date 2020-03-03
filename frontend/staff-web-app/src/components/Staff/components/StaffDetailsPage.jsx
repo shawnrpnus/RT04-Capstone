@@ -55,7 +55,7 @@ class StaffDetailsPage extends Component {
     const req = new StaffChangePasswordRequest(this.state.staffId, this.state.oldPassword, this.state.newPassword);
 
     this.props.changePassword(req, this.props.history);
-    
+
 
   };
 
