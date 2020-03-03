@@ -71,11 +71,6 @@ export default function UpdateReservationPage(props) {
       {/*  <div className={classes.container}>*/}
       <Card plain style={{ marginTop: 0 }}>
         <CardBody plain>
-          {reservationCartItems && reservationCartItems.length === 0 && (
-            <h3 style={{ textAlign: "center" }}>
-              Your reservation cart is empty. Add items to get started!
-            </h3>
-          )}
           <GridContainer>
             <GridItem md>
               {productVariants &&

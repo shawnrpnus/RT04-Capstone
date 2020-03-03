@@ -168,6 +168,8 @@ export default function ProductPage(props) {
                       subCategoryName,
                       leafCategoryName
                     )}
+                    setFilterDrawerOpen={setFilterDrawerOpen}
+                    setIsLoading={setIsLoading}
                   />
                 )}
               </Drawer>

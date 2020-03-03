@@ -40,12 +40,14 @@ const updateDisplayedProducts = (responseData, dispatch) => {
   dispatch(displayProductDetails(data));
 };
 
-export const filterProducts = req => {
+export const filterProducts = (req, setFilterDrawerOpen, setIsLoading) => {
   return dispatch => {
     axios
       .post(PRODUCT_BASE_URL + "/retrieveProductsDetailsByCriteria", req)
       .then(response => {
         updateDisplayedProducts(response.data, dispatch);
+        setFilterDrawerOpen(false);
+        setIsLoading(false);
       })
       .catch(err => {
         dispatchErrorMapError(err, dispatch);

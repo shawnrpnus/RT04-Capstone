@@ -20,7 +20,7 @@ import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import { Button } from "components/UI/CustomButtons/Button";
 import { useSnackbar } from "notistack";
-import { useParams } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 
 const _ = require("lodash");
 const useStyles = makeStyles(wishlistStyle);
@@ -31,6 +31,7 @@ function ReservationBooking(props) {
   //Hooks
   const classes = useStyles();
   const { mode } = useParams();
+  const history = useHistory();
   const selectClasses = useSelectStyles();
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
@@ -72,7 +73,8 @@ function ReservationBooking(props) {
           selectedStoreId,
           selectedTimeslot,
           email,
-          enqueueSnackbar
+          enqueueSnackbar,
+          history
         )
       );
     }

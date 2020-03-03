@@ -106,7 +106,8 @@ export const createReservation = (
   storeId,
   reservationDateTime,
   customerEmail,
-  enqueueSnackbar
+  enqueueSnackbar,
+  history
 ) => {
   reservationDateTime = moment(reservationDateTime).format(
     "YYYY-MM-DD HH:mm:ss"
@@ -124,6 +125,7 @@ export const createReservation = (
           variant: "success",
           autoHideDuration: 1200
         });
+        history.push("/account/reservation/upcoming");
       })
       .catch(err => dispatchErrorMapError(err, dispatch));
   };
