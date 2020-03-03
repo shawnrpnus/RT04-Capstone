@@ -11,6 +11,8 @@ import ResetPassword from "components/Login/ResetPassword";
 import AddressCard from "../../../components/Profile/sections/AddressCard";
 import WishlistPage from "components/Wishlist/WishlistPage";
 import ReservationCartPage from "components/Reservation/ReservationCartPage";
+import ShoppingCart from "../../../components/ShoppingCart/ShoppingCartPage";
+import CheckOutPage from "../../../components/Checkout/CheckOutPage";
 
 export default () => (
   <Switch>
@@ -41,5 +43,7 @@ export default () => (
       path="/account/reservationCart"
       component={ReservationCartPage}
     />
+    <Route exact path="/account/shoppingCart" component={ShoppingCart} />
+    <Route exact path="/account/checkout" component={CheckOutPage} />
   </Switch>
 );

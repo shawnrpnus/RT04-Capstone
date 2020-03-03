@@ -3,8 +3,8 @@ import { useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
 import { useDispatch, useSelector } from "react-redux";
 
 import Button from "components/UI/CustomButtons/Button.js";
-import CardSection from "./CardSection";
-import { saveCard } from "./../../redux/actions/customerActions";
+import CardSection from "../../ShoppingCart/CardSection";
+import { saveCard } from "../../../redux/actions/customerActions";
 import axios from "axios";
 
 export default function CardSetupForm() {

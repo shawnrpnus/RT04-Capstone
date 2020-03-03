@@ -7,7 +7,9 @@ import {
   mrAuto,
   whiteColor,
   grayColor,
-  mlAuto
+  mlAuto,
+  primaryColor,
+  primaryBoxShadow
 } from "assets/jss/material-kit-pro-react.js";
 
 import buttonGroup from "assets/jss/material-kit-pro-react/buttonGroupStyle.js";
@@ -137,6 +139,35 @@ const styles = {
     ...title,
     marginTop: "0",
     marginBottom: "0"
+  },
+  selectMenuItem: {
+    fontSize: "15px",
+    padding: "10px 20px",
+    margin: "0 5px",
+    textAlign: "center",
+    borderRadius: "2px",
+    transition: "all 150ms linear",
+    display: "block",
+    clear: "both",
+    fontWeight: "400",
+    lineHeight: "2",
+    whiteSpace: "nowrap",
+    color: grayColor[8],
+    paddingRight: "30px",
+    "&:hover": {
+      backgroundColor: primaryColor[0],
+      color: whiteColor,
+      ...primaryBoxShadow
+    }
+  },
+  selectMenuItemSelected: {
+    backgroundColor: primaryColor[0] + "!important",
+    color: whiteColor
+  },
+  checkoutTitle: {
+    ...title,
+    marginLeft: "5px",
+    marginRight: "5px"
   }
 };
 

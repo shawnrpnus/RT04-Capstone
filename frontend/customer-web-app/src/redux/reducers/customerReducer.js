@@ -68,11 +68,6 @@ export default function(state = initialState, action) {
         ...state,
         clientSecret: action.clientSecret
       };
-    case types.SAVE_CARD_SUCCESS:
-      return {
-        ...state,
-        customer: action.customer
-      };
     default:
       return state;
   }

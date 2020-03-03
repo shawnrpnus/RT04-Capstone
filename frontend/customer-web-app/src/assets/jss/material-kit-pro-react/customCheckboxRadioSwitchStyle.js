@@ -182,6 +182,11 @@ const customCheckboxRadioSwitch = {
     "& $switchIcon": {
       borderColor: primaryColor[0]
     }
+  },
+  creditCardContainer: {
+    "@media (max-width: 600px)": {
+      transform: "scale(0.75)"
+    }
   }
 };
 

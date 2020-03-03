@@ -582,10 +582,9 @@ export const saveCard = saveCardRequest => {
   return dispatch => {
     axios
       .post("/saveCard", saveCardRequest)
-      .then(resp => {
+      .then(response => {
         // Return customer
-        console.log(resp);
-        dispatch(saveCardSuccess(resp.data));
+        dispatchUpdatedCustomer(response.data, dispatch);
       })
       .catch(err => {
         console.log(err);
@@ -593,8 +592,18 @@ export const saveCard = saveCardRequest => {
   };
 };
 
-// Customer reducer
-const saveCardSuccess = data => ({
-  type: SAVE_CARD_SUCCESS,
-  customer: data
-});
+export const deleteCard = deleteCardRequest => {
+  return dispatch => {
+    console.log(deleteCardRequest);
+    axios
+      .post("/deleteCardOnStripeAndSql", deleteCardRequest)
+      .then(response => {
+        // Return customer
+        console.log(response);
+        dispatchUpdatedCustomer(response.data, dispatch);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+};

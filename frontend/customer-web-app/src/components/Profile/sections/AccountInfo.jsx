@@ -35,6 +35,7 @@ import IconButton from "@material-ui/core/IconButton";
 import AddressCard from "./AddressCard";
 import AddAddress from "./AddAddress";
 import AddCreditCard from "./AddCreditCard";
+import CreditCardCard from "./CreditCardCard";
 
 const useStyles = makeStyles(signupPageStyle);
 const _ = require("lodash");
@@ -375,6 +376,7 @@ function AccountInfo(props) {
               </div>
             </form>
             <AddCreditCard />
+            <CreditCardCard />
           </GridItem>
           <GridItem xs={12} sm={12} md={2}></GridItem>
           {addNewAddress ? (

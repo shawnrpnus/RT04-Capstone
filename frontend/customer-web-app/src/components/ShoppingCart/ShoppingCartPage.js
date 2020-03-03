@@ -14,6 +14,8 @@ import Grid from "@material-ui/core/Grid";
 import CancelIcon from "@material-ui/icons/Cancel";
 import IconButton from "@material-ui/core/IconButton";
 import AddIcon from "@material-ui/icons/Add";
+import AddBoxIcon from "@material-ui/icons/AddBox";
+import MinusBoxIcon from "@material-ui/icons/IndeterminateCheckBox";
 import RemoveIcon from "@material-ui/icons/Remove";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
@@ -39,6 +41,8 @@ import CardHeader from "components/UI/Card/CardHeader";
 import CardBody from "components/UI/Card/CardBody";
 
 import shoppingCartStyle from "assets/jss/material-kit-pro-react/views/shoppingCartStyle.js";
+import wishtlistStyle from "assets/jss/material-kit-pro-react/views/wishlistStyle.js";
+
 import {
   updateShoppingCart,
   checkOut
@@ -51,6 +55,7 @@ const useStyles = makeStyles(shoppingCartStyle);
 
 export default function ShoppingCartPage() {
   const classes = useStyles();
+  const history = useHistory();
   // Redux dispatch to call actions
   const dispatch = useDispatch();
   // Redux mapping state to props
@@ -78,17 +83,10 @@ export default function ShoppingCartPage() {
   console.log(customer.onlineShoppingCart);
   console.log(clientSecret);
 
-  const handleDelete = (e, productVariantId) => {
-    const request = new UpdateShoppingCartRequest(
-      0,
-      productVariantId,
-      customer.customerId,
-      "online"
-    );
-    dispatch(updateShoppingCart(request));
-  };
-
-  const handleUpdateQuantity = (quantity, productVariantId) => {
+  const handleUpdateQuantity = (quantity, productVariantId, isDelete) => {
+    if (isDelete) {
+      quantity = 0;
+    }
     const request = new UpdateShoppingCartRequest(
       quantity,
       productVariantId,
@@ -99,8 +97,9 @@ export default function ShoppingCartPage() {
   };
 
   const handleCheckout = () => {
+    history.push("/account/checkout");
     // dispatch(checkOut({ totalAmount: 1500 }, setShowCreditCardDialog));
-    dispatch(saveCard(customer.customerId, setShowCreditCardDialog));
+    // dispatch(saveCard(customer.customerId, setShowCreditCardDialog));
   };
 
   return (
@@ -133,7 +132,7 @@ export default function ShoppingCartPage() {
               <h3 className={classes.cardTitle}>Shopping Cart</h3>
               <Grid container spacing={3}>
                 <Grid item md={9}>
-                  {shoppingCartItems.map(cartItem => {
+                  {shoppingCartItems.map((cartItem, index) => {
                     // console.log(cartItem);
                     const {
                       productImages,
@@ -144,82 +143,97 @@ export default function ShoppingCartPage() {
                     } = cartItem.productVariant;
                     const { quantity } = cartItem;
                     return (
-                      <Card>
-                        <GridContainer
-                          alignItems="center"
-                          style={{ textAlign: "center" }}
-                        >
-                          {/* Photo */}
-                          <Grid md={2}>
-                            {/* Modified CSS */}
-                            <div className={classes.imgContainer}>
-                              <img
-                                className={classes.img}
-                                src={productImages[1].productImageUrl}
-                              />
-                            </div>
-                          </Grid>
-                          {/* Name */}
-                          <GridItem md={2}>
-                            <p>{product.productName}</p>
-                          </GridItem>
-                          {/* Colour */}
-                          <GridItem md={1}>
-                            <p>{colour}</p>
-                          </GridItem>
-                          {/* Size */}
-                          <GridItem md={1}>
-                            <p>{sizeDetails.productSize}</p>
-                          </GridItem>
-                          {/* Price */}
-                          <GridItem md={1}>
-                            <p>${product.price}</p>
-                          </GridItem>
-                          {/* Quantity */}
-                          <GridItem md={1}>
-                            <IconButton
-                              style={{ marginTop: "-15%" }}
-                              onClick={e =>
-                                handleUpdateQuantity(
-                                  quantity - 1,
-                                  productVariantId
-                                )
-                              }
+                      <div>
+                        <Card plain>
+                          <GridContainer
+                            alignItems="center"
+                            style={{ textAlign: "center" }}
+                          >
+                            {/* Photo */}
+                            <Grid item md={2}>
+                              {/* Modified CSS */}
+                              <div className={classes.imgContainer}>
+                                <img
+                                  className={classes.img}
+                                  src={productImages[1].productImageUrl}
+                                />
+                              </div>
+                            </Grid>
+                            {/* Name */}
+                            <GridItem
+                              container
+                              md={3}
+                              style={{ textAlign: "left" }}
                             >
-                              <RemoveIcon />
-                            </IconButton>
-                          </GridItem>
-                          <GridItem md={1}>
-                            <p>{quantity}</p>
-                          </GridItem>
-                          <GridItem md={1}>
-                            <IconButton
-                              style={{ marginTop: "-15%" }}
-                              onClick={e =>
-                                handleUpdateQuantity(
-                                  quantity + 1,
-                                  productVariantId
-                                )
-                              }
-                            >
-                              <AddIcon />
-                            </IconButton>
-                          </GridItem>
-                          {/* Amount */}
-                          <GridItem md={1}>
-                            <p>${(product.price * quantity).toFixed(2)}</p>
-                          </GridItem>
-                          {/* Action */}
-                          <GridItem md={1}>
-                            <IconButton
-                              style={{ marginTop: "-15%" }}
-                              onClick={e => handleDelete(e, productVariantId)}
-                            >
-                              <CancelIcon style={{ color: "red" }} />
-                            </IconButton>
-                          </GridItem>
-                        </GridContainer>
-                      </Card>
+                              <GridItem md={12}>
+                                <h3 className={classes.productName}>
+                                  {product.productName}
+                                </h3>
+                              </GridItem>
+                              <GridItem md={12}>
+                                <h3 style={{ marginTop: "10px" }}>
+                                  ${product.price}
+                                </h3>
+                              </GridItem>
+                              <GridItem md={12}>
+                                {colour}, {sizeDetails.productSize}
+                              </GridItem>
+                            </GridItem>
+                            {/* Quantity */}
+                            <GridItem md={1} style={{ textAlign: "right" }}>
+                              <IconButton
+                                className={classes.buttonTopMargin}
+                                onClick={e =>
+                                  handleUpdateQuantity(
+                                    quantity - 1,
+                                    productVariantId
+                                  )
+                                }
+                              >
+                                <MinusBoxIcon />
+                              </IconButton>
+                            </GridItem>
+                            <GridItem md={1}>
+                              <h3>{quantity}</h3>
+                            </GridItem>
+                            <GridItem md={1} style={{ textAlign: "left" }}>
+                              <IconButton
+                                className={classes.buttonTopMargin}
+                                onClick={e =>
+                                  handleUpdateQuantity(
+                                    quantity + 1,
+                                    productVariantId
+                                  )
+                                }
+                              >
+                                <AddBoxIcon />
+                              </IconButton>
+                            </GridItem>
+                            {/* Amount */}
+                            <GridItem md={2}>
+                              <h3>${(product.price * quantity).toFixed(2)}</h3>
+                            </GridItem>
+                            {/* Action */}
+                            <GridItem md={1}>
+                              <IconButton
+                                className={classes.buttonTopMargin}
+                                onClick={e =>
+                                  handleUpdateQuantity(
+                                    e,
+                                    productVariantId,
+                                    true
+                                  )
+                                }
+                              >
+                                <CancelIcon style={{ color: "red" }} />
+                              </IconButton>
+                            </GridItem>
+                          </GridContainer>
+                        </Card>
+                        {index !== shoppingCartItems.length - 1 && (
+                          <Divider style={{ margin: "0 5%" }} />
+                        )}
+                      </div>
                     );
                   })}
                 </Grid>
@@ -227,7 +241,7 @@ export default function ShoppingCartPage() {
                   <Card>
                     <CardContent>
                       <Typography variant="h4" gutterBottom>
-                        TOTAL
+                        Total
                       </Typography>
                       <Divider style={{ marginBottom: "5%" }} />
                       <Grid container>
@@ -266,9 +280,9 @@ export default function ShoppingCartPage() {
               </Grid>
             </CardBody>
           </Card>
-          {showCreditCardDialog && (
+          {/* {showCreditCardDialog && (
             <CreditCardDialog handleClose={setShowCreditCardDialog} />
-          )}
+          )} */}
         </div>
       </div>
     </div>

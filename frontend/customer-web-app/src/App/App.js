@@ -8,7 +8,6 @@ import Routes from "./Routes";
 import { createBrowserHistory } from "history";
 import { SnackbarProvider } from "notistack";
 import { Elements } from "@stripe/react-stripe-js";
-import config from "../config/default.json";
 import { loadStripe } from "@stripe/stripe-js";
 import { refreshCustomer } from "redux/actions/customerActions";
 
