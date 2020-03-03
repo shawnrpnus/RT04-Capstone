@@ -1,24 +1,25 @@
 import React from "react";
 import { Route, Switch } from "react-router-dom";
 import { StoreFormContainer, StoreTable } from "../../../components/Store";
+import SecureRoute from "../SecureRoute";
 
 export default () => (
   <Switch>
-    <Route
+    <SecureRoute
       exact
       path="/store/create"
       render={props => <StoreFormContainer {...props} mode="create" />}
     />
-    <Route
+    <SecureRoute
       exact
       path="/store/view/:storeId"
       render={props => <StoreFormContainer {...props} mode="view" />}
     />
-    <Route
+    <SecureRoute
       exact
       path="/store/update/:storeId"
       render={props => <StoreFormContainer {...props} mode="update" />}
     />
-    <Route exact path="/store/viewAll" component={StoreTable} />
+    <SecureRoute exact path="/store/viewAll" component={StoreTable} />
   </Switch>
 );

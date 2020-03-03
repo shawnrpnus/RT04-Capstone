@@ -3,11 +3,12 @@ import { Route, Switch } from "react-router-dom";
 import { ProductsTable } from "../../../components/Product/ProductsList";
 import { ProductCard } from "../../../components/Product/ProductPage";
 import { ProductForm } from "../../../components/Product/ProductCreate";
+import SecureRoute from "../SecureRoute";
 
 export default () => (
   <Switch>
-    <Route path="/product/createProduct" component={ProductForm} />
-    <Route path="/product/viewAllProduct" component={ProductsTable} />
-    <Route path="/product/viewProductDetails/:id" component={ProductCard} />
+    <SecureRoute path="/product/createProduct" component={ProductForm} />
+    <SecureRoute path="/product/viewAllProduct" component={ProductsTable} />
+    <SecureRoute path="/product/viewProductDetails/:id" component={ProductCard} />
   </Switch>
 );

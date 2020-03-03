@@ -13,13 +13,17 @@ import Switch from "@material-ui/core/Switch";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import customCheckboxRadioSwitch from "../../../assets/jss/material-kit-pro-react/customCheckboxRadioSwitchStyle";
 import Checkbox from "@material-ui/core/Checkbox";
-import { Check, Update } from "@material-ui/icons";
+import { Check, Delete, Edit, Update } from "@material-ui/icons";
 import GridContainer from "../../Layout/components/Grid/GridContainer";
 import Grid from "@material-ui/core/Grid";
 import GridItem from "../../Layout/components/Grid/GridItem";
 import { clearErrors } from "../../../redux/actions";
 import AddUpdateAddressRequest from "../../../models/customer/AddUpdateAddressRequest";
-import { updateShippingAddress } from "../../../redux/actions/customerActions";
+import {removeShippingAddressDetails, updateShippingAddress} from "../../../redux/actions/customerActions";
+import Button from "@material-ui/core/Button";
+import { useHistory } from "react-router-dom";
+import {useSnackbar} from "notistack";
+import RemoveShippingAddressRequest from "../../../models/customer/RemoveShippingAddressRequest";
 
 const style = {
   cardTitle,
@@ -29,9 +33,15 @@ const style = {
 
 const useStyles = makeStyles(style);
 
-export default function AddressCard(props) {
+export default function AddressCard({
+  addNewAddress: [addNewAddress, setAddNewAddress],
+  currAddress: [currAddress, setCurrAddress]
+}) {
   //Redux
   const dispatch = useDispatch();
+  const history = useHistory();
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+
   // useEffect(() => dispatch(retrieveAllContactUsCategoryEnum()), []);
   const unsortedShippingAddresses = useSelector(
     state => state.customer.loggedInCustomer.shippingAddresses
@@ -52,16 +62,14 @@ export default function AddressCard(props) {
   const errors = useSelector(state => state.errors);
 
   //State
-  const [inputState, setInputState] = useState({
-    currentAddress: ""
-  });
+  // const [currAddress, setCurrAddress] = useState("");
 
   const onChange = (e, i) => {
     e.persist();
-    console.log(e);
-    console.log(i.item);
     // console.log(e);
-    console.log(i);
+    // console.log(i.item);
+    // console.log(e);
+    // console.log(i);
 
     if (e.target.value === "shipping") {
       i.item.default = e.target.checked;
@@ -73,7 +81,7 @@ export default function AddressCard(props) {
     }
 
     const req = new AddUpdateAddressRequest(currCustomer.customerId, i.item);
-    dispatch(updateShippingAddress(req, props.history));
+    dispatch(updateShippingAddress(req, history));
     if (Object.keys(errors).length !== 0) {
       dispatch(clearErrors());
     }
@@ -81,9 +89,22 @@ export default function AddressCard(props) {
     // console.log(req);
   };
 
+  const onEditAddress = item => {
+    setCurrAddress(item);
+    setAddNewAddress(!addNewAddress);
+    // console.log(currAddress);
+  };
+
+  const onDeleteAddress = item => {
+    // console.log(item);
+    // const req = new RemoveShippingAddressRequest(currCustomer.customerId, item.addressId);
+    dispatch(removeShippingAddressDetails(currCustomer.customerId, item.addressId, enqueueSnackbar,history))
+    // setAddNewAddress(!addNewAddress);
+  }
+
   const classes = useStyles();
   return (
-    <Card style={{ width: "25rem", marginTop: "0", boxShadow: "none" }}>
+    <Card style={{ width: "28rem", marginTop: "0", boxShadow: "none" }}>
       {shippingAddresses.map(function(item, i) {
         // console.log(item.default); //array[0]
         //console.log(i); //index
@@ -124,9 +145,13 @@ export default function AddressCard(props) {
                 <br />
               </GridItem>
 
-              <GridItem xs={12} sm={2} md={2}>
-                <br />
-                Edit
+              <GridItem style={{ paddingLeft: "0" }} xs={12} sm={2} md={2}>
+                <Button onClick={() => onEditAddress(item)} color="primary">
+                  <Edit />
+                </Button>
+                <Button onClick={() => onDeleteAddress(item)} color="primary">
+                  <Delete />
+                </Button>
               </GridItem>
 
               <GridItem xs={12} sm={12} md={12}>

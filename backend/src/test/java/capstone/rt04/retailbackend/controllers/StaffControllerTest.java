@@ -46,6 +46,7 @@ public class StaffControllerTest{
     protected static Long createdStaffId;
     protected static String VALID_STAFF_PASSWORD;
     protected static final String VALID_STAFF_EMAIL = "tonystark@gmail.com";
+    protected static String createdStaffUsername;
     @Autowired
     protected DepartmentRepository departmentRepository;
     @Autowired
@@ -97,6 +98,7 @@ public class StaffControllerTest{
                 .then().statusCode(HttpStatus.CREATED.value()).extract().body().as(Staff.class);
         assertThat(createdStaff.getStaffId()).isEqualTo(createdStaffId);
         VALID_STAFF_PASSWORD = createdStaff.getPassword();
+        createdStaffUsername = createdStaff.getUsername();
         System.out.println("This is valid staff hashed password:"+ VALID_STAFF_PASSWORD);
     }
 
@@ -205,7 +207,7 @@ public class StaffControllerTest{
     @Test
     public void resetPassword(){
         //Invalid staff ID
-        ResetStaffPasswordRequest req = new ResetStaffPasswordRequest(Long.valueOf("9999"));
+        ResetStaffPasswordRequest req = new ResetStaffPasswordRequest("deededed");
         given()
                 .contentType("application/json")
                 .body(req)
@@ -213,7 +215,7 @@ public class StaffControllerTest{
                 .then().statusCode(HttpStatus.NOT_FOUND.value());
 
         //Valid staff ID, successful reset
-        req = new ResetStaffPasswordRequest(createdStaffId);
+        req = new ResetStaffPasswordRequest(createdStaffUsername);
         Staff s = given()
                 .contentType("application/json")
                 .body(req)

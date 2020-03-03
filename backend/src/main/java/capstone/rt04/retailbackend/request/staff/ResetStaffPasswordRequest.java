@@ -14,5 +14,6 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 public class ResetStaffPasswordRequest {
     @NotNull
-    private Long staffId;
+    private String username;
+
 }

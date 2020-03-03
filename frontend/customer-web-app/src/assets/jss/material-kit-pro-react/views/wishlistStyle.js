@@ -31,6 +31,10 @@ const styles = {
     ...mainRaised,
     margin: "-120px 30px 0px"
   },
+  customTabsRaised: {
+    margin: "-80px 30px 0",
+    width: "auto"
+  },
   mainTitle: {
     ...title,
     "&, & + h4": {

@@ -124,19 +124,17 @@ const createStaffAccountError = data => ({
   errorMap: data
 });
 
-export const changePassword = (StaffChangePasswordRequest, history) => {
+export const changePassword = (staffChangePasswordRequest, history) => {
   return dispatch => {
     //redux thunk passes dispatch
     axios
-      .post(STAFF_BASE_URL + "/changeStaffPassword", StaffChangePasswordRequest)
+      .post(STAFF_BASE_URL + "/changeStaffPassword", staffChangePasswordRequest)
       .then(response => {
         const { data } = jsog.decode(response);
-        const staffId = data.staffId;
         dispatch(changeStaffPasswordSuccess(data));
         toast.success("Staff password changed!", {
           position: toast.POSITION.TOP_CENTER
         });
-        //history.push(`/store/view/${storeId}`); // TODO: update redirect path
       })
       .catch(err => {
         dispatch(changeStaffPasswordError(err.response.data));
@@ -155,19 +153,18 @@ const changeStaffPasswordError = data => ({
   errorMap: data
 });
 
-export const resetPassword = (ResetStaffPasswordRequest, history) => {
+export const resetPassword = (resetStaffPasswordRequest, history) => {
   return dispatch => {
     //redux thunk passes dispatch
     axios
-      .post(STAFF_BASE_URL + "/resetStaffPassword", ResetStaffPasswordRequest)
+      .post(STAFF_BASE_URL + "/resetStaffPassword", resetStaffPasswordRequest)
       .then(response => {
         const { data } = jsog.decode(response);
-        const staffId = data.staffId;
         dispatch(resetStaffPasswordSuccess(data));
-        toast.success("Staff password reset!", {
+        toast.success("Staff password reset! Please check your email", {
           position: toast.POSITION.TOP_CENTER
         });
-        //history.push(`/store/view/${storeId}`); // TODO: update redirect path
+          history.push(`/login`);
       })
       .catch(err => {
         dispatch(resetStaffPasswordError(err.response.data));

@@ -85,6 +85,9 @@ public class ReservationService {
         store.getReservations().add(reservation);
         customer.getReservations().add(reservation);
 
+        //Clear reservation cart
+        customer.setReservationCartItems(new ArrayList<>());
+
         // Deduct from store's product stock
         for (ProductVariant pv : productVariants) {
             ProductStock productStock = productService.retrieveProductStockByStoreIdAndProductVariantId(storeId, pv.getProductVariantId());
@@ -252,12 +255,18 @@ public class ReservationService {
         return reservationToCancel;
     }
 
-    public Map<Long, Integer> getProdVariantStoreStockStatus(Long productVariantId, Long storeId) throws StoreNotFoundException, ProductVariantNotFoundException {
-        Map<Long, Integer> result = new HashMap<>();
-        ProductVariant pv = productService.retrieveProductVariantById(productVariantId);
-        ProductStock productStock = productService.retrieveProductStockByStoreIdAndProductVariantId(storeId, pv.getProductVariantId());
-        if (productStock != null && productStock.getQuantity() != null) {
-            result.put(productVariantId, productStock.getQuantity());
+    public Map<Long, Map<String, Object>> getProdVariantStoreStockStatus(Long customerId, Long storeId) throws StoreNotFoundException, ProductVariantNotFoundException, CustomerNotFoundException {
+        Customer customer = customerService.retrieveCustomerByCustomerId(customerId);
+        Map<Long, Map<String, Object>> result = new HashMap<>();
+        for (ProductVariant pv: customer.getReservationCartItems()) {
+            ProductStock productStock = productService.retrieveProductStockByStoreIdAndProductVariantId(storeId, pv.getProductVariantId());
+            String storeName = productStock.getStore().getStoreName();
+            Map<String, Object> stockAndName = new HashMap<>();
+            stockAndName.put("quantity", productStock.getQuantity());
+            stockAndName.put("storeName", storeName);
+            if (productStock != null && productStock.getQuantity() != null) {
+                result.put(pv.getProductVariantId(), stockAndName);
+            }
         }
         return result;
     }

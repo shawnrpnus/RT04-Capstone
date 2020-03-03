@@ -202,7 +202,7 @@ export default function CheckOutPage() {
                               );
                             })}
                           </Select>
-                          <AddressCard />
+                          {/* <AddressCard /> */}
                         </Grid>
                         <Grid item xs={12}>
                           <InputLabel>Select payment card</InputLabel>

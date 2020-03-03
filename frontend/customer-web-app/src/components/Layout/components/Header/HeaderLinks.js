@@ -148,7 +148,7 @@ export default function HeaderLinks(props) {
           </Link>
         </ListItem>
         <ListItem className={classes.listItem}>
-          <Link to="/account/reservationCart" style={{ color: "inherit" }}>
+          <Link to="/account/reservation" style={{ color: "inherit" }}>
             <Button className={classes.navLink} round color="transparent">
               <ShoppingCart className={classes.icons} /> Reserve
             </Button>
