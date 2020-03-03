@@ -14,6 +14,8 @@ import Popper from "@material-ui/core/Popper";
 import Paper from "@material-ui/core/Paper";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import { useSnackbar } from "notistack";
+import store from "App/store";
+import { retrieveStoresWithStockStatus } from "redux/actions/reservationActions";
 
 const _ = require("lodash");
 const useStyles = makeStyles(wishlistStyle);
@@ -24,6 +26,9 @@ function ReservationCartItem(props) {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const dispatch = useDispatch();
   const customer = useSelector(state => state.customer.loggedInCustomer);
+  const prodVariantToStoreStock = useSelector(
+    state => state.reservation.prodVariantToStoreStock
+  );
   const { productVariant } = props;
   const { product } = productVariant;
   const hasStock = productVariant.productStocks[0].quantity > 0;
@@ -36,7 +41,8 @@ function ReservationCartItem(props) {
       removeFromReservationCartAPI(
         customer.customerId,
         productVariant.productVariantId,
-        enqueueSnackbar
+        enqueueSnackbar,
+        retrieveStoresWithStockStatus
       )
     );
     setPopoverOpen(false);
@@ -47,6 +53,8 @@ function ReservationCartItem(props) {
     setPopoverOpen(true);
   };
 
+  const storeStockandName =
+    prodVariantToStoreStock[productVariant.productVariantId];
   return (
     <Card plain>
       <GridContainer style={{ textAlign: "left", alignItems: "center" }}>
@@ -83,16 +91,18 @@ function ReservationCartItem(props) {
                   alignItems: "center"
                 }}
               >
-                {hasStock ? (
-                  <React.Fragment>
-                    <CheckCircleOutlineIcon style={{ fill: "green" }} /> In
-                    stock
-                  </React.Fragment>
-                ) : (
-                  <React.Fragment>
-                    <CancelOutlined style={{ fill: "red" }} /> Out of stock
-                  </React.Fragment>
-                )}
+                {storeStockandName &&
+                  (storeStockandName.quantity > 0 ? (
+                    <React.Fragment>
+                      <CheckCircleOutlineIcon style={{ fill: "green" }} /> In
+                      stock at {storeStockandName.storeName}
+                    </React.Fragment>
+                  ) : (
+                    <React.Fragment>
+                      <CancelOutlined style={{ fill: "red" }} /> Out of stock at{" "}
+                      {storeStockandName.storeName}
+                    </React.Fragment>
+                  ))}
               </h5>
             </GridItem>
             <GridItem md={12}>
