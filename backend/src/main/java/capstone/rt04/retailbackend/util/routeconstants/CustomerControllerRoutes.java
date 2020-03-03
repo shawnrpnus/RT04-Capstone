@@ -22,7 +22,7 @@ public class CustomerControllerRoutes {
     public static final String REMOVE_CREDIT_CARD = "/removeCreditCard";
     public static final String ADD_SHIPPING_ADDRESS = "/addShippingAddress";
     public static final String UPDATE_SHIPPING_ADDRESS = "/updateShippingAddress";
-    public static final String REMOVE_SHIPPING_ADDRESS = "/removeShippingAddress";
+    public static final String REMOVE_SHIPPING_ADDRESS = "/removeShippingAddress/{customerId}/{shippingAddressId}";
     public static final String ADD_TO_WISHLIST = "/addToWishlist";
     public static final String REMOVE_FROM_WISHLIST = "/removeFromWishlist";
     public static final String CLEAR_WISHLIST = "/clearWishlist";

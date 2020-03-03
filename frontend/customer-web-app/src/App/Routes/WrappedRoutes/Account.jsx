@@ -32,6 +32,6 @@ export default () => (
       path="/account/resetPassword/:verificationCode"
       component={ResetPassword}
     />
-    <Route exact path="/account/address" component={AddressCard} />
+    {/*<Route exact path="/account/address" component={AddressCard} />*/}
   </Switch>
 );

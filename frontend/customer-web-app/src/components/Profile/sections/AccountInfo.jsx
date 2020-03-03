@@ -65,6 +65,8 @@ function AccountInfo(props) {
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [addNewAddress, setAddNewAddress] = useState(false);
+  const [currAddress, setCurrAddress] = useState("");
+
   //Effects
   //Cleanup on unmount
   useEffect(() => {
@@ -375,17 +377,23 @@ function AccountInfo(props) {
             </form>
           </GridItem>
           <GridItem xs={12} sm={12} md={2}></GridItem>
-          {addNewAddress ? (
+          {addNewAddress === true ? (
             <GridItem xs={12} sm={12} md={5}>
-              <AddAddress addNewAddress={[addNewAddress, setAddNewAddress]} />
+              <AddAddress addNewAddress={[addNewAddress, setAddNewAddress]} currAddress={[currAddress, setCurrAddress]} />
             </GridItem>
-          ) : (
+          ) : currAddress !== "" ? (
+            <GridItem xs={12} sm={12} md={5}>
+              <AddAddress addNewAddress={[addNewAddress, setAddNewAddress]} currAddress={[currAddress, setCurrAddress]} />
+            </GridItem>
+          ) : addNewAddress === false ? (
             <GridItem xs={12} sm={12} md={5}>
               <Button onClick={handleAddNewAddress} round color="primary">
                 Add New Address
               </Button>
-              <AddressCard />
+              <AddressCard addNewAddress={[addNewAddress, setAddNewAddress]} currAddress={[currAddress, setCurrAddress]} />
             </GridItem>
+          ) : (
+            ""
           )}
         </GridContainer>
         <Dialog open={dialogOpen} onClose={handleCloseDialog}>
