@@ -108,7 +108,7 @@ public class StripeService {
         return paymentMethods;
     }
 
-    public PaymentIntent makePaymentWithSavedCard(Long customerId, String paymentMethodId, Long totalAmount, Long shoppingCartId) throws CustomerNotFoundException, StripeException {
+    public capstone.rt04.retailbackend.entities.Customer makePaymentWithSavedCard(Long customerId, String paymentMethodId, Long totalAmount, Long shoppingCartId) throws CustomerNotFoundException, StripeException {
         Stripe.apiKey = "sk_test_E81pq87cIYZxL2NkXaXKsEEd00MGrcKvYx";
 
         capstone.rt04.retailbackend.entities.Customer customer = customerService.retrieveCustomerByCustomerId(customerId);
@@ -127,7 +127,7 @@ public class StripeService {
             // TODO: Convert shopping cart item to transaction line item and create new transaction
             System.out.println("Payment success!");
             System.out.print(intent.getClientSecret());
-            return intent;
+            return customer;
         } catch (CardException err) {
             // Error code will be authentication_required if authentication is needed
             System.out.println("Error code is : " + err.getCode());

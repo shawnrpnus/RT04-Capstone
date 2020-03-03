@@ -28,6 +28,7 @@ public class StripeController {
     @PostMapping("/directPayment")
     public ResponseEntity<?> directPayment(@RequestParam Long totalAmount) {
         try {
+            System.out.println(totalAmount);
             PaymentIntent paymentIntent = stripeService.makeDirectPayment(totalAmount);
             return new ResponseEntity<>(paymentIntent.getClientSecret(), HttpStatus.OK);
         } catch (StripeException e) {
@@ -78,9 +79,9 @@ public class StripeController {
     @PostMapping("/makePaymentWithSavedCard")
     public ResponseEntity<?> makePaymentWithSavedCard(@RequestBody PaymentWithSavedCardRequest paymentWithSavedCardRequest) throws CustomerNotFoundException {
         try {
-            PaymentIntent paymentIntent = stripeService.makePaymentWithSavedCard(paymentWithSavedCardRequest.getCustomerId(),
+            capstone.rt04.retailbackend.entities.Customer customer = stripeService.makePaymentWithSavedCard(paymentWithSavedCardRequest.getCustomerId(),
                     paymentWithSavedCardRequest.getPaymentMethodId(), paymentWithSavedCardRequest.getTotalAmount(), paymentWithSavedCardRequest.getShoppingCartId());
-            return new ResponseEntity<>(paymentIntent.toJson(), HttpStatus.OK);
+            return new ResponseEntity<>(customer, HttpStatus.OK);
         } catch (StripeException e) {
             System.out.println("Error creating customer");
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
