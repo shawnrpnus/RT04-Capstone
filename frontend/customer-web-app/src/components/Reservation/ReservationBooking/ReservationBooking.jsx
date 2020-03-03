@@ -9,7 +9,7 @@ import {
   getAvailSlotsForStore,
   getProductVariantStoreStockStatus,
   retrieveReservationById,
-  retrieveStoresWithStockStatus,
+  retrieveStoresWithStockStatusForCart,
   updateReservation
 } from "redux/actions/reservationActions";
 import Select from "@material-ui/core/Select";
@@ -51,7 +51,7 @@ function ReservationBooking(props) {
   //Effects
   useEffect(() => {
     if (customer.customerId) {
-      dispatch(retrieveStoresWithStockStatus(customer.customerId));
+      dispatch(retrieveStoresWithStockStatusForCart(customer.customerId));
     }
   }, []);
 

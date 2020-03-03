@@ -15,11 +15,27 @@ const RESERVATION_BASE_URL = "/api/reservation";
 const _ = require("lodash");
 const jsog = require("jsog");
 
-export const retrieveStoresWithStockStatus = customerId => {
+export const retrieveStoresWithStockStatusForCart = customerId => {
   return dispatch => {
     axios
       .get(RESERVATION_BASE_URL + "/getStoresStockStatusForCart", {
         params: { customerId: customerId }
+      })
+      .then(response => {
+        const data = jsog.decode(response.data);
+        dispatch(updateStoresWithStockStatus(data));
+      })
+      .catch(err => {
+        dispatchErrorMapError(err, dispatch);
+      });
+  };
+};
+
+export const retrieveStoresWithStockStatusForReservation = reservationId => {
+  return dispatch => {
+    axios
+      .get(RESERVATION_BASE_URL + "/getStoresStockStatusForReservation", {
+        params: { reservationId }
       })
       .then(response => {
         const data = jsog.decode(response.data);

@@ -195,7 +195,11 @@ export default function CheckOutPage() {
                           </Grid>
                         ) : (
                           <Grid item xs={12}>
-                            <Button onClick={handleAddNewAddress} round color="primary">
+                            <Button
+                              onClick={handleAddNewAddress}
+                              round
+                              color="primary"
+                            >
                               Add New Address
                             </Button>
                             <AddressCardForCheckOut
