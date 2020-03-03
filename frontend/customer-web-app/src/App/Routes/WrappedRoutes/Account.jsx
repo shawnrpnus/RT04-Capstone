@@ -46,6 +46,10 @@ export default () => (
     />
     <Route exact path="/account/shoppingCart" component={ShoppingCart} />
     <Route exact path="/account/checkout" component={CheckOutPage} />
-    <Route exact path="/account/reservation" component={ReservationHomePage} />
+    <Route
+      exact
+      path="/account/reservation/:mode/:reservationId?"
+      component={ReservationHomePage}
+    />
   </Switch>
 );

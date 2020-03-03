@@ -186,7 +186,7 @@ public class ReservationService {
 
         // make sure at least 15 mins before reservation
         if (!dateTime.after(new Timestamp(nowPlus15Minutes))) {
-            errorMap.put("reservationDateTime", "Reservation cannot be cancelled less than 15 minutes before.");
+            errorMap.put("reservationDateTime", "Reservation cannot be updated less than 15 minutes before.");
             throw new InputDataValidationException(errorMap, errorMap.toString());
         }
 
@@ -232,8 +232,16 @@ public class ReservationService {
         return reservationToUpdate;
     }
 
-    public Reservation cancelReservation(Long reservationId) throws ReservationNotFoundException {
+    public Reservation cancelReservation(Long reservationId) throws ReservationNotFoundException, InputDataValidationException {
         Reservation reservationToCancel = retrieveReservationByReservationId(reservationId);
+        long now = System.currentTimeMillis();
+        long nowPlus15Minutes = now + TimeUnit.MINUTES.toMillis(15);
+        Map<String, String> errorMap = new HashMap<>();
+        Timestamp dateTime = reservationToCancel.getReservationDateTime();
+        if (!dateTime.after(new Timestamp(nowPlus15Minutes))) {
+            errorMap.put("reservationDateTime", "Reservation cannot be cancelled less than 15 minutes before.");
+            throw new InputDataValidationException(errorMap, errorMap.toString());
+        }
 
         // Increment stock for productVariants in the store
         List<ProductVariant> productVariants = reservationToCancel.getProductVariants();

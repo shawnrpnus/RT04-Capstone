@@ -17,11 +17,15 @@ import Card from "components/UI/Card/Card.js";
 import CardBody from "components/UI/Card/CardBody.js";
 import CardHeader from "components/UI/Card/CardHeader.js";
 import styles from "assets/jss/material-kit-pro-react/components/customTabsStyle.js";
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles(styles);
 
 function CustomTabs(props) {
-  const [value, setValue] = React.useState(0);
+  const history = useHistory();
+  const [value, setValue] = React.useState(
+    props.activeIndex ? props.activeIndex : 0
+  );
   const handleChange = (event, value) => {
     setValue(value);
   };
@@ -68,6 +72,7 @@ function CustomTabs(props) {
                   selected: classes.customTabSelected,
                   wrapper: classes.customTabWrapper
                 }}
+                onClick={() => history.push(prop.route)}
                 // icon={<prop.tabIcon className={tabIcon} />}
                 {...icon}
                 label={prop.tabName}
@@ -76,18 +81,6 @@ function CustomTabs(props) {
           })}
         </Tabs>
       </CardHeader>
-      {/* <CardHeader
-          classes={{
-            root: cardHeader,
-            title: cardTitle,
-            content: classes.cardHeaderContent,
-            action: classes.cardHeaderAction
-          }}
-          title={title}
-          action={
-
-          }
-        /> */}
       <CardBody>
         {tabs.map((prop, key) => {
           if (key === value) {

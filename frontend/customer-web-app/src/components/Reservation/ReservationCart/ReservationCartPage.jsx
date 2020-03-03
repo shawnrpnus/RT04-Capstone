@@ -29,7 +29,7 @@ import { clearProductVariantStoreStockStatus } from "redux/actions/reservationAc
 
 const useStyles = makeStyles(wishlistStyle);
 
-export default function WishlistPage(props) {
+export default function ReservationCartPage(props) {
   const classes = useStyles();
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const dispatch = useDispatch();

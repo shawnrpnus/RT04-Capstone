@@ -19,10 +19,13 @@ import Grid from "@material-ui/core/Grid";
 import GridItem from "../../Layout/components/Grid/GridItem";
 import { clearErrors } from "../../../redux/actions";
 import AddUpdateAddressRequest from "../../../models/customer/AddUpdateAddressRequest";
-import {removeShippingAddressDetails, updateShippingAddress} from "../../../redux/actions/customerActions";
+import {
+  removeShippingAddressDetails,
+  updateShippingAddress
+} from "../../../redux/actions/customerActions";
 import Button from "@material-ui/core/Button";
 import { useHistory } from "react-router-dom";
-import {useSnackbar} from "notistack";
+import { useSnackbar } from "notistack";
 import RemoveShippingAddressRequest from "../../../models/customer/RemoveShippingAddressRequest";
 
 const style = {
@@ -98,9 +101,16 @@ export default function AddressCard({
   const onDeleteAddress = item => {
     // console.log(item);
     // const req = new RemoveShippingAddressRequest(currCustomer.customerId, item.addressId);
-    dispatch(removeShippingAddressDetails(currCustomer.customerId, item.addressId, enqueueSnackbar,history))
+    dispatch(
+      removeShippingAddressDetails(
+        currCustomer.customerId,
+        item.addressId,
+        enqueueSnackbar,
+        history
+      )
+    );
     // setAddNewAddress(!addNewAddress);
-  }
+  };
 
   const classes = useStyles();
   return (

@@ -25,16 +25,12 @@ function UpcomingReservations(props) {
     <Card plain style={{ marginTop: "-10px" }}>
       <CardBody plain style={{ paddingTop: "0" }}>
         {upcomingReservations && upcomingReservations.length > 0 ? (
-          upcomingReservations
-            .sort((a, b) =>
-              b.reservationDateTime.localeCompare(a.reservationDateTime)
-            )
-            .map(reservation => (
-              <React.Fragment>
-                <ReservationItem reservation={reservation} />
-                <Divider />
-              </React.Fragment>
-            ))
+          upcomingReservations.map(reservation => (
+            <React.Fragment>
+              <ReservationItem reservation={reservation} />
+              <Divider />
+            </React.Fragment>
+          ))
         ) : (
           <h3 style={{ textAlign: "center" }}>
             You do not have any upcoming reservations.

@@ -3,8 +3,10 @@ import {
   ADD_SHIPPING_ADDRESS_SUCCESS,
   CUSTOMER_LOGOUT,
   EMAIL_SENDING,
-  EMAIL_SENT, REMOVE_SHIPPING_ADDRESS_SUCCESS,
-  RESET_VERIFICATION_STATUS, UPDATE_SHIPPING_ADDRESS_SUCCESS,
+  EMAIL_SENT,
+  REMOVE_SHIPPING_ADDRESS_SUCCESS,
+  RESET_VERIFICATION_STATUS,
+  UPDATE_SHIPPING_ADDRESS_SUCCESS,
   VERIFY_FAILURE,
   VERIFY_SUCCESS,
   SAVE_CARD_SUCCESS
@@ -330,11 +332,18 @@ export const addMeasurements = (req, enqueueSnackbar, setAddMeasurements) => {
   };
 };
 
-export const updateShippingAddressDetails = (addUpdateAddressRequest, enqueueSnackbar, history) => {
+export const updateShippingAddressDetails = (
+  addUpdateAddressRequest,
+  enqueueSnackbar,
+  history
+) => {
   return dispatch => {
     //redux thunk passes dispatch
     axios
-      .post(CUSTOMER_BASE_URL + "/updateShippingAddress", addUpdateAddressRequest)
+      .post(
+        CUSTOMER_BASE_URL + "/updateShippingAddress",
+        addUpdateAddressRequest
+      )
       .then(response => {
         const { data } = jsog.decode(response);
         dispatch(updateShippingAddressSuccess(data));
@@ -386,11 +395,19 @@ export const addShippingAddressSuccess = data => ({
   loggedInCustomer: data
 });
 
-export const removeShippingAddressDetails = (customerId, shippingAddressId, enqueueSnackbar, history) => {
+export const removeShippingAddressDetails = (
+  customerId,
+  shippingAddressId,
+  enqueueSnackbar,
+  history
+) => {
   return dispatch => {
     //redux thunk passes dispatch
     axios
-      .delete(CUSTOMER_BASE_URL + `/removeShippingAddress/${customerId}/${shippingAddressId}`)
+      .delete(
+        CUSTOMER_BASE_URL +
+          `/removeShippingAddress/${customerId}/${shippingAddressId}`
+      )
       .then(response => {
         console.log("did run?");
         const { data } = jsog.decode(response);
