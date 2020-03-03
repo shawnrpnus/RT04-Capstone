@@ -11,6 +11,7 @@ import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoun
 import capstone.rt04.retailbackend.util.exceptions.shoppingcart.InvalidCartTypeException;
 import capstone.rt04.retailbackend.util.exceptions.style.StyleNotFoundException;
 import capstone.rt04.retailbackend.util.routeconstants.CustomerControllerRoutes;
+import com.stripe.exception.StripeException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -45,7 +46,7 @@ public class CustomerController {
 
     // 1. Sends verification link to customer's email
     @PostMapping(CustomerControllerRoutes.CREATE_NEW_CUSTOMER)
-    public ResponseEntity<?> createNewCustomer(@RequestBody Customer customer) throws InputDataValidationException, CreateNewCustomerException {
+    public ResponseEntity<?> createNewCustomer(@RequestBody Customer customer) throws InputDataValidationException, CreateNewCustomerException, StripeException {
         Customer newCustomer = customerService.createNewCustomer(customer);
         clearCustomerRelationships(newCustomer);
         return new ResponseEntity<>(newCustomer, HttpStatus.CREATED);

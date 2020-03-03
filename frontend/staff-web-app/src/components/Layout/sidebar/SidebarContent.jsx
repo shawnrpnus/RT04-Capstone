@@ -94,6 +94,17 @@ class SidebarContent extends Component {
               onClick={this.hideSidebar}
             />
           </SidebarCategory>
+
+          <SidebarCategory title="Warehouse" icon="apartment">
+            <SidebarLink
+              title="View Warehouse"
+              route="/warehouse/viewWarehouse"
+              onClick={this.hideSidebar}
+            />
+          </SidebarCategory>
+
+
+
         </ul>
       </div>
     );

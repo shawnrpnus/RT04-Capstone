@@ -15,6 +15,7 @@ import lombok.ToString;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,7 +26,7 @@ import java.util.List;
 @Getter
 @Setter
 @EqualsAndHashCode
-@ToString
+@ToString(exclude = {"productVariants", "customer", "store"})
 @JsonIdentityInfo(generator = JSOGGenerator.class)
 public class Reservation implements Serializable {
 
@@ -54,12 +55,13 @@ public class Reservation implements Serializable {
     public Reservation() {
         this.attended = false;
         this.isHandled = false;
+        this.productVariants = new ArrayList<>();
     }
 
     public Reservation(Timestamp reservationDateTime, List<ProductVariant> productVariants, Customer customer, Store store) {
         this();
         this.reservationDateTime = reservationDateTime;
-        this.productVariants = productVariants;
+        this.productVariants.addAll(productVariants);
         this.customer = customer;
         this.store = store;
     }

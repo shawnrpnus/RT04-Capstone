@@ -4,6 +4,7 @@ import StaffCreateForm from "../../../components/Staff/components/StaffCreateFor
 import StaffAccountCreateForm from "../../../components/Staff/components/StaffAccountCreateForm";
 import StaffTable from "../../../components/Staff/components/StaffTable";
 import StaffDetailsPage from "../../../components/Staff/components/StaffDetailsPage";
+import ResetPasswordForm from "../../../components/Staff/components/ResetPasswordForm";
 
 export default () => (
   <Switch>
@@ -11,5 +12,6 @@ export default () => (
     <Route path="/staff/createAccount" component={StaffAccountCreateForm} />
     <Route path="/staff/viewAll" component={StaffTable} />
     <Route path="/staff/viewProfile" component={StaffDetailsPage} />
+
   </Switch>
 );

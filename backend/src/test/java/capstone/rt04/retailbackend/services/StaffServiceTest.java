@@ -35,6 +35,7 @@ public class StaffServiceTest {
     @Autowired
     protected StaffService staffService;
     protected static Role testRole;
+    protected static String username;
     protected static Department testDepartment;
     protected static final String VALID_STAFF_EMAIL ="tonystark@gmail.com";
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
@@ -71,6 +72,7 @@ public class StaffServiceTest {
         createdStaffUsername = testValidStaff.getFirstName()+testValidStaff.getLastName()+createdStaffId.toString();
 
         testValidStaff = staffService.createNewStaffAccount(createdStaffId);
+        username = testValidStaff.getUsername();
         assertThat(testValidStaff.getPassword()).isNotNull();
         assertThat(testValidStaff.getUsername()).isEqualTo(createdStaffUsername);
         assertThat(testValidStaff.getStaffId()).isEqualTo(createdStaffId);
@@ -152,13 +154,13 @@ public class StaffServiceTest {
         //IT keys in staffID which is equivalent to the username
         //Test successful reset
         Staff validStaff = staffService.retrieveStaffByStaffId(createdStaffId);
-        Staff staffAfterReset = staffService.resetPassword(validStaff.getStaffId());
+        Staff staffAfterReset = staffService.resetPassword(username);
         assertThat(staffAfterReset.getStaffId()).isEqualTo(validStaff.getStaffId());
     }
     @Test (expected = StaffNotFoundException.class)
     public void resetStaffPasswordFail() throws Exception {
         //Expect Staff not found exception
-        Staff staffAfterReset = staffService.resetPassword(Long.valueOf("420"));
+        Staff staffAfterReset = staffService.resetPassword("ddddd");
 
     }
 

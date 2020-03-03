@@ -12,11 +12,14 @@ import Tooltip from "@material-ui/core/Tooltip";
 import Chip from "@material-ui/core/Chip";
 import { useDispatch, useSelector } from "react-redux";
 import { updateShoppingCart } from "redux/actions/shoppingCartActions";
-import UpdateShoppingCartRequest from "models/ShoppingCart/UpdateShoppingCartRequest";
+import UpdateShoppingCartRequest from "models/shoppingCart/UpdateShoppingCartRequest";
 import { useSnackbar } from "notistack";
 import IconButton from "@material-ui/core/IconButton";
 import { isProductVariantInList } from "services/customerService";
-import { addToWishlistAPI } from "redux/actions/customerActions";
+import {
+  addToReservationCartAPI,
+  addToWishlistAPI
+} from "redux/actions/customerActions";
 
 const _ = require("lodash");
 const useStyles = makeStyles(productStyle);
@@ -92,8 +95,6 @@ function ProductDetailsCard(props) {
     if (prodVariantIdToCartItem.hasOwnProperty(productVariantId)) {
       quantity = prodVariantIdToCartItem[productVariantId].quantity + 1;
     }
-    console.log(prodVariantIdToCartItem);
-    console.log(quantity);
     const customerId = customer.customerId;
     const cartType = "online";
     const req = new UpdateShoppingCartRequest(
@@ -130,6 +131,29 @@ function ProductDetailsCard(props) {
     return _.get(
       colourAndSizeToVariantAndStockMap,
       `${selectedColour}.${selectedSize}.productVariantId`
+    );
+  };
+
+  const addToReservationCart = () => {
+    if (selectedSize === "None") {
+      enqueueSnackbar("Please select a size", {
+        variant: "error",
+        autoHideDuration: 1200
+      });
+      return;
+    }
+    const productVariantId = getCurrentProductVariantId();
+    const currentReservationCart = customer.reservationCartItems;
+    if (isProductVariantInList(productVariantId, currentReservationCart)) {
+      enqueueSnackbar("Already in reservation cart!", {
+        variant: "error",
+        autoHideDuration: 1200
+      });
+      return;
+    }
+    const customerId = customer.customerId;
+    dispatch(
+      addToReservationCartAPI(customerId, productVariantId, enqueueSnackbar)
     );
   };
 
@@ -314,18 +338,13 @@ function ProductDetailsCard(props) {
             <GridItem md={12} sm={12}>
               <Button
                 color="primary"
-                onClick={() => {}}
+                onClick={addToReservationCart}
                 style={{ float: "right", width: "245px" }}
               >
                 Add to Reservation Cart &nbsp; <ShoppingCart />
               </Button>
             </GridItem>
           </GridContainer>
-          {/*<GridContainer className={classes.pullRight}>*/}
-          {/*  <Button round color="rose" onClick={addToShoppingCart}>*/}
-          {/*    Add to Cart &nbsp; <ShoppingCart />*/}
-          {/*  </Button>*/}
-          {/*</GridContainer>*/}
         </GridItem>
       </GridContainer>
     </React.Fragment>

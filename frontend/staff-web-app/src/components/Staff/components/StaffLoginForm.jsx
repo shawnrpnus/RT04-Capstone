@@ -35,6 +35,10 @@ class StaffLoginForm extends Component {
     }
   };
 
+  onClick = e => {
+    this.props.history.push(`/resetPassword`);
+  };
+
   showPassword(e) {
     e.preventDefault();
     this.setState(prevState => ({ showPassword: !prevState.showPassword }));
@@ -85,7 +89,8 @@ class StaffLoginForm extends Component {
               />
 
               <div className="account__forgot-password">
-                <a href="/">Forgot your password?</a>
+                <a onClick={this.onClick}>Forgot your password?</a>
+
               </div>
             </div>
             <div className="form__form-group">

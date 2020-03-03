@@ -10,6 +10,7 @@ import ForgotPassword from "components/Login/ForgotPassword";
 import ResetPassword from "components/Login/ResetPassword";
 import AddressCard from "../../../components/Profile/sections/AddressCard";
 import WishlistPage from "components/Wishlist/WishlistPage";
+import ReservationCartPage from "components/Reservation/ReservationCartPage";
 
 export default () => (
   <Switch>
@@ -35,5 +36,10 @@ export default () => (
     />
     <Route exact path="/account/address" component={AddressCard} />
     <Route exact path="/account/wishlist" component={WishlistPage} />
+    <Route
+      exact
+      path="/account/reservationCart"
+      component={ReservationCartPage}
+    />
   </Switch>
 );
