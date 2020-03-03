@@ -381,7 +381,7 @@ export const addShippingAddressDetails = (
           variant: "success",
           autoHideDuration: 1200
         });
-        history.push("/account/profile");
+        // history.push("/account/profile");
       })
       .catch(err => {
         dispatchErrorMapError(err, dispatch);
