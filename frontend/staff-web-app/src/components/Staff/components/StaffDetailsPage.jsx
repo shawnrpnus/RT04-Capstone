@@ -77,7 +77,7 @@ class StaffDetailsPage extends Component {
             <Grid container spacing={3}>
               <Grid item xs={12} md={6}>
                 {this.state.mode ? (
-                    <h5 className="bold-text">View Profile Details</h5>
+                    <h5 className="bold-text">Profile Details</h5>
                 ) : (
                     <h5 className="bold-text">Change Password</h5>
                 )}
