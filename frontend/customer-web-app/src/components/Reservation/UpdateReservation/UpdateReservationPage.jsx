@@ -31,14 +31,14 @@ import {
 } from "redux/actions/reservationActions";
 import { useParams } from "react-router-dom";
 import UpdateReservationBooking from "components/Reservation/UpdateReservation/UpdateReservationBooking";
+import UpdateReservationItem from "components/Reservation/UpdateReservation/UpdateReservationItem";
 
 const useStyles = makeStyles(wishlistStyle);
 
-export default function ReservationCartPage(props) {
+export default function UpdateReservationPage(props) {
   //Hooks
   const classes = useStyles();
   const { mode, reservationId } = useParams();
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   //Redux
   const dispatch = useDispatch();
@@ -48,30 +48,22 @@ export default function ReservationCartPage(props) {
     state => state.reservation.reservationToUpdate,
     _.isEqual
   );
+  const productVariants = _.get(reservationToUpdate, "productVariants");
+
+  //State
+  const [popoverOpen, setPopoverOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
 
   useEffect(() => {
     dispatch(clearProductVariantStoreStockStatus());
   }, []);
 
-  //For updating
+  //For updating, get the reservation to update
   useEffect(() => {
     if (reservationId) {
       dispatch(retrieveReservationById(reservationId));
     }
   }, [reservationId]);
-
-  const [popoverOpen, setPopoverOpen] = useState(false);
-  const [anchorEl, setAnchorEl] = useState(null);
-
-  const clearReservationCart = () => {
-    dispatch(clearReservationCartAPI(customer.customerId, enqueueSnackbar));
-    setPopoverOpen(false);
-  };
-
-  const clearConfirmation = e => {
-    setAnchorEl(e.currentTarget);
-    setPopoverOpen(true);
-  };
 
   return (
     <div>
@@ -86,52 +78,24 @@ export default function ReservationCartPage(props) {
           )}
           <GridContainer>
             <GridItem md>
-              {reservationCartItems.length > 0 && (
-                <React.Fragment>
-                  <Button
-                    color="danger"
-                    style={{ float: "left", marginBottom: "20px" }}
-                    onClick={clearConfirmation}
-                  >
-                    <DeleteSharp />
-                    Clear reservation cart
-                  </Button>
-                  {reservationCartItems.map(productVariant => (
-                    <React.Fragment>
-                      <ReservationCartItem productVariant={productVariant} />
-                      {reservationCartItems.length > 1 && <Divider />}
-                    </React.Fragment>
-                  ))}
-                </React.Fragment>
-              )}
+              {productVariants &&
+                productVariants.length > 0 &&
+                productVariants.map(productVariant => (
+                  <React.Fragment>
+                    <UpdateReservationItem productVariant={productVariant} />
+                    {productVariants.length > 1 && <Divider />}
+                  </React.Fragment>
+                ))}
             </GridItem>
             <Divider orientation="vertical" flexItem />
             <GridItem md>
-              {mode === "cart" &&
-                reservationCartItems &&
-                reservationCartItems.length > 0 && <ReservationBooking />}
+              {mode === "update" && <UpdateReservationBooking />}
             </GridItem>
           </GridContainer>
         </CardBody>
       </Card>
       {/*  </div>*/}
       {/*</div>*/}
-      <Popper
-        open={popoverOpen}
-        anchorEl={anchorEl}
-        style={{ zIndex: "2000" }}
-        placement="bottom"
-      >
-        <ClickAwayListener onClickAway={() => setPopoverOpen(false)}>
-          <Paper style={{ padding: "5px" }}>
-            <h5 style={{ textAlign: "center", marginBottom: "0" }}>Clear?</h5>
-            <Button color="danger" onClick={clearReservationCart}>
-              Yes
-            </Button>
-            <Button onClick={() => setPopoverOpen(false)}>No</Button>
-          </Paper>
-        </ClickAwayListener>
-      </Popper>
     </div>
   );
 }

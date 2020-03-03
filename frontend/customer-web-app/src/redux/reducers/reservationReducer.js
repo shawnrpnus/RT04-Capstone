@@ -5,7 +5,8 @@ const initialState = {
   prodVariantToStoreStock: {},
   availSlotsForStore: null,
   upcomingReservations: null,
-  pastReservations: null
+  pastReservations: null,
+  reservationToUpdate: null
 };
 
 export default function(state = initialState, action) {
@@ -34,7 +35,7 @@ export default function(state = initialState, action) {
       return {
         ...state,
         upcomingReservations: action.reservations.sort((a, b) =>
-          b.reservationDateTime.localeCompare(a.reservationDateTime)
+          a.reservationDateTime.localeCompare(b.reservationDateTime)
         )
       };
     case types.UPDATE_PAST_RESERVATIONS:
@@ -43,6 +44,11 @@ export default function(state = initialState, action) {
         pastReservations: action.reservations.sort((a, b) =>
           b.reservationDateTime.localeCompare(a.reservationDateTime)
         )
+      };
+    case types.SET_UPDATING_RESERVATION:
+      return {
+        ...state,
+        reservationToUpdate: action.reservation
       };
     default:
       return state;

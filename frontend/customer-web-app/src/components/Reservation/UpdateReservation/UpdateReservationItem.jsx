@@ -20,37 +20,16 @@ import { retrieveStoresWithStockStatus } from "redux/actions/reservationActions"
 const _ = require("lodash");
 const useStyles = makeStyles(wishlistStyle);
 
-function ReservationCartItem(props) {
+function UpdateReservationItem(props) {
   const colorNames = _.keyBy(colours, "hex");
   const classes = useStyles();
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
-  const dispatch = useDispatch();
-  const customer = useSelector(state => state.customer.loggedInCustomer);
+
+  //Redux
   const prodVariantToStoreStock = useSelector(
     state => state.reservation.prodVariantToStoreStock
   );
   const { productVariant } = props;
   const { product } = productVariant;
-
-  const [popoverOpen, setPopoverOpen] = useState(false);
-  const [anchorEl, setAnchorEl] = useState(null);
-
-  const removeFromReservationCart = () => {
-    dispatch(
-      removeFromReservationCartAPI(
-        customer.customerId,
-        productVariant.productVariantId,
-        enqueueSnackbar,
-        retrieveStoresWithStockStatus
-      )
-    );
-    setPopoverOpen(false);
-  };
-
-  const deleteConfirmation = e => {
-    setAnchorEl(e.currentTarget);
-    setPopoverOpen(true);
-  };
 
   const storeStockandName =
     prodVariantToStoreStock[productVariant.productVariantId];
@@ -104,36 +83,11 @@ function ReservationCartItem(props) {
                   ))}
               </h5>
             </GridItem>
-            <GridItem md={12}>
-              <Button color="danger" onClick={deleteConfirmation}>
-                <DeleteSharp />
-                Remove
-              </Button>
-            </GridItem>
           </GridContainer>
         </GridItem>
-
-        <Popper
-          open={popoverOpen}
-          anchorEl={anchorEl}
-          style={{ zIndex: "2000" }}
-          placement="top"
-        >
-          <ClickAwayListener onClickAway={() => setPopoverOpen(false)}>
-            <Paper style={{ padding: "5px" }}>
-              <h5 style={{ textAlign: "center", marginBottom: "0" }}>
-                Remove?
-              </h5>
-              <Button color="danger" onClick={removeFromReservationCart}>
-                Yes
-              </Button>
-              <Button onClick={() => setPopoverOpen(false)}>No</Button>
-            </Paper>
-          </ClickAwayListener>
-        </Popper>
       </GridContainer>
     </Card>
   );
 }
 
-export default ReservationCartItem;
+export default UpdateReservationItem;

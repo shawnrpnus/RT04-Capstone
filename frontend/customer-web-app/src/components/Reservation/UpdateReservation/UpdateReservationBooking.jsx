@@ -20,28 +20,37 @@ import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import { Button } from "components/UI/CustomButtons/Button";
 import { useSnackbar } from "notistack";
-import { useParams } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 
 const _ = require("lodash");
 const useStyles = makeStyles(wishlistStyle);
 const useSelectStyles = makeStyles(customSelectStyle);
 const moment = require("moment");
 
-function ReservationBooking(props) {
+function UpdateReservationBooking(props) {
   //Hooks
   const classes = useStyles();
-  const { mode } = useParams();
+  const { mode, reservationId } = useParams();
+  const history = useHistory();
   const selectClasses = useSelectStyles();
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   //Redux
   const dispatch = useDispatch();
   const customer = useSelector(state => state.customer.loggedInCustomer);
+
+  //to show avail timeslots in timeslot dropdown
   const availSlotsForStore = useSelector(
     state => state.reservation.availSlotsForStore
   );
+  //to show stock status in the store dropdown
   const storesWithStockStatus = useSelector(
-    state => state.reservation.storesWithStockStatus
+    state => state.reservation.storesWithStockStatus,
+    _.isEqual
+  );
+  const reservationToUpdate = useSelector(
+    state => state.reservation.reservationToUpdate,
+    _.isEqual
   );
 
   //State
@@ -53,7 +62,29 @@ function ReservationBooking(props) {
     if (customer.customerId) {
       dispatch(retrieveStoresWithStockStatus(customer.customerId));
     }
-  }, []);
+  }, [storesWithStockStatus]);
+
+  //****FOR UPDATING
+  useEffect(() => {
+    if (reservationId) {
+      dispatch(retrieveReservationById(reservationId));
+    }
+  }, [reservationId]);
+
+  useEffect(() => {
+    if (reservationToUpdate) {
+      setSelectedStoreId(reservationToUpdate.store.storeId);
+      setSelectedTimeslot(reservationToUpdate.reservationDateTime);
+      dispatch(
+        getProductVariantStoreStockStatus(
+          customer.customerId,
+          reservationToUpdate.store.storeId
+        ) //consumed in the cart
+      );
+      dispatch(getAvailSlotsForStore(reservationToUpdate.store.storeId));
+    }
+  }, [reservationToUpdate]);
+  //*****
 
   const onSelectStore = e => {
     setSelectedStoreId(e.target.value);
@@ -63,16 +94,17 @@ function ReservationBooking(props) {
     dispatch(getAvailSlotsForStore(e.target.value));
   };
 
-  const makeReservation = () => {
+  const handleUpdateReservation = () => {
     const { customerId, email } = customer;
-    if (mode === "cart") {
+    if (mode === "update" && reservationId) {
       dispatch(
-        createReservation(
-          customerId,
+        updateReservation(
+          reservationId,
           selectedStoreId,
           selectedTimeslot,
-          email,
-          enqueueSnackbar
+          customerId,
+          enqueueSnackbar,
+          history
         )
       );
     }
@@ -88,7 +120,7 @@ function ReservationBooking(props) {
   return (
     <React.Fragment>
       <h3 className={classes.title} style={{ margin: "5px 0 20px 0" }}>
-        Make a Reservation
+        Update Your Reservation
       </h3>
       <h5>
         Note: Reservations can only be made between 1 and 48 hours in advance.
@@ -106,7 +138,7 @@ function ReservationBooking(props) {
           {/*  Find me a store*/}
           {/*</Button>*/}
 
-          {/*Store picker, same ofor create update, but load with value in state*/}
+          {/*Store picker, same for create update, but load with value in state*/}
           <FormControl fullWidth className={selectClasses.selectFormControl}>
             <InputLabel>Select a store</InputLabel>
             <Select onChange={onSelectStore} value={selectedStoreId}>
@@ -163,12 +195,19 @@ function ReservationBooking(props) {
           <Button
             color="success"
             style={{ marginBottom: "20px" }}
-            onClick={makeReservation}
+            onClick={handleUpdateReservation}
             disabled={
               selectedStoreId === "" || selectedTimeslot === "" || !fullyStocked
             }
           >
-            Make Reservation
+            Update Reservation
+          </Button>
+          <Button
+            color="primary"
+            style={{ marginBottom: "20px" }}
+            onClick={() => history.goBack()}
+          >
+            Cancel
           </Button>
         </GridItem>
       </GridContainer>
@@ -176,4 +215,4 @@ function ReservationBooking(props) {
   );
 }
 
-export default ReservationBooking;
+export default UpdateReservationBooking;

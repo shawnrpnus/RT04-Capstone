@@ -7,6 +7,8 @@ import { GET_ERRORS } from "./types";
 import { dispatchErrorMapError } from "redux/actions/index";
 import { UPDATE_UPCOMING_RESERVATIONS } from "./types";
 import { UPDATE_PAST_RESERVATIONS } from "./types";
+import { SET_UPDATING_RESERVATION } from "./types";
+import { SET_UPDATED_PRODUCT_VARIANTS } from "./types";
 
 const RESERVATION_BASE_URL = "/api/reservation";
 
@@ -187,14 +189,15 @@ export const updateReservation = (
   newStoreId,
   newReservationDateTime,
   customerId,
-  enqueueSnackbar
+  enqueueSnackbar,
+  history
 ) => {
   newReservationDateTime = moment(newReservationDateTime).format(
     "YYYY-MM-DD HH:mm:ss"
   );
   return dispatch => {
     axios
-      .post(RESERVATION_BASE_URL + "/createReservation", {
+      .post(RESERVATION_BASE_URL + "/updateReservation", {
         reservationId,
         newStoreId,
         newReservationDateTime
@@ -205,6 +208,7 @@ export const updateReservation = (
           variant: "success",
           autoHideDuration: 1200
         });
+        history.push("/account/reservation/upcoming");
       })
       .catch(err => {
         const errorMap = _.get(err, "response.data", null);
@@ -217,3 +221,24 @@ export const updateReservation = (
       });
   };
 };
+
+export const retrieveReservationById = reservationId => {
+  return dispatch => {
+    axios
+      .get(RESERVATION_BASE_URL + "/retrieveReservationById", {
+        params: { reservationId }
+      })
+      .then(response => {
+        const data = jsog.decode(response.data);
+        dispatch(setUpdatingReservation(data));
+      })
+      .catch(err => {
+        dispatchErrorMapError(err, dispatch);
+      });
+  };
+};
+
+const setUpdatingReservation = data => ({
+  type: SET_UPDATING_RESERVATION,
+  reservation: data
+});

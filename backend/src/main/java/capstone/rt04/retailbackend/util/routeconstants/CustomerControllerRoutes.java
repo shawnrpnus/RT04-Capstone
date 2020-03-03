@@ -44,5 +44,6 @@ public class CustomerControllerRoutes {
     public static final String UPDATE_RESERVATION = "/updateReservation";
     public static final String GET_PROD_VARIANT_STORE_STOCK_STATUS = "/getProdVariantStoreStockStatus";
     public static final String GET_STORES_STOCK_STATUS_FOR_CART = "/getStoresStockStatusForCart";
+    public static final String RETRIEVE_RESERVATION_BY_ID = "/retrieveReservationById";
 
 }

@@ -101,6 +101,13 @@ public class ReservationController {
         return new ResponseEntity<>(reservationStockCheckResponses, HttpStatus.OK);
     }
 
+    @GetMapping(CustomerControllerRoutes.RETRIEVE_RESERVATION_BY_ID)
+    public ResponseEntity<?> retrieveReservationById(@RequestParam Long reservationId) throws ProductVariantNotFoundException, StoreNotFoundException, CustomerNotFoundException, ReservationNotFoundException {
+        Reservation reservation = reservationService.retrieveReservationByReservationId(reservationId);
+        clearReservationRelationships(reservation);
+        return new ResponseEntity<>(reservation, HttpStatus.OK);
+    }
+
 
     private void clearReservationStockCheckResponseRelationships(ReservationStockCheckResponse rscp){
         Store store = rscp.getStore();
