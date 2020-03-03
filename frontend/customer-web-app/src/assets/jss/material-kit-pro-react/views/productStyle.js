@@ -14,7 +14,7 @@ import tooltipsStyle from "assets/jss/material-kit-pro-react/tooltipsStyle.js";
 import imagesStyles from "assets/jss/material-kit-pro-react/imagesStyles.js";
 import customSelectStyle from "assets/jss/material-kit-pro-react/customSelectStyle.js";
 
-const productStyle = {
+const productStyle = theme => ({
   mlAuto,
   main,
   ...imagesStyles,
@@ -196,7 +196,11 @@ const productStyle = {
     width: "18px",
     height: "18px",
     position: "relative"
+  },
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 999,
+    color: "#fff"
   }
-};
+});
 
 export default productStyle;

@@ -55,7 +55,7 @@ export const filterProducts = (req, setFilterDrawerOpen, setIsLoading) => {
   };
 };
 
-export const retrieveProductById = productId => {
+export const retrieveProductById = (productId, setIsLoading) => {
   return dispatch => {
     //redux thunk passes dispatch
     axios
@@ -63,6 +63,7 @@ export const retrieveProductById = productId => {
       .then(response => {
         const data = jsog.decode(response.data);
         dispatch(viewSingleProduct(data));
+        setIsLoading(false);
       })
       .catch(err => {
         dispatchErrorMapError(err, dispatch);
