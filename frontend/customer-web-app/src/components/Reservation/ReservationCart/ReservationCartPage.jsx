@@ -44,10 +44,6 @@ export default function ReservationCartPage(props) {
   const dispatch = useDispatch();
   const customer = useSelector(state => state.customer.loggedInCustomer);
   const { reservationCartItems } = customer;
-  const reservationToUpdate = useSelector(
-    state => state.reservation.reservationToUpdate,
-    _.isEqual
-  );
 
   useEffect(() => {
     dispatch(clearProductVariantStoreStockStatus());

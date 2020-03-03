@@ -9,7 +9,11 @@ import { dispatchErrorMapError } from "redux/actions/index";
 const jsog = require("jsog");
 const PRODUCT_BASE_URL = "/api/product";
 
-export const retrieveProductsDetails = (storeOrWarehouseId, categoryId) => {
+export const retrieveProductsDetails = (
+  storeOrWarehouseId,
+  categoryId,
+  setIsLoading
+) => {
   return dispatch => {
     //redux thunk passes dispatch
     axios
@@ -18,6 +22,7 @@ export const retrieveProductsDetails = (storeOrWarehouseId, categoryId) => {
       })
       .then(response => {
         updateDisplayedProducts(response.data, dispatch);
+        setIsLoading(false);
       })
       .catch(err => {
         dispatchErrorMapError(err, dispatch);

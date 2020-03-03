@@ -176,6 +176,10 @@ const styles = {
   },
   labelText: {
     color: blackColor
+  },
+  backdrop: {
+    zIndex: 1000,
+    color: "#fff"
   }
 };
 

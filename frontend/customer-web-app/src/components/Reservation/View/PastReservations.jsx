@@ -21,8 +21,8 @@ function PastReservations(props) {
   }, [pastReservations]);
 
   return (
-    <Card plain style={{ marginTop: "-10px" }}>
-      <CardBody plain style={{ paddingTop: "0" }}>
+    <Card plain style={{ marginTop: "0px" }}>
+      <CardBody plain>
         {pastReservations && pastReservations.length > 0 ? (
           pastReservations.map(reservation => (
             <React.Fragment>

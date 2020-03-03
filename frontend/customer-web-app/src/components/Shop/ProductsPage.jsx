@@ -23,6 +23,8 @@ import FilterBar from "components/Shop/FilterBar";
 import { SwipeableDrawer } from "@material-ui/core";
 import { retrieveAllTags } from "redux/actions/tagActions";
 import { FilterList } from "@material-ui/icons";
+import Backdrop from "@material-ui/core/Backdrop";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 const _ = require("lodash");
 
@@ -43,10 +45,12 @@ export default function ProductPage(props) {
 
   //State
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   //Effects
   useEffect(() => {
     if (rootCategories) {
+      setIsLoading(true);
       dispatch(
         retrieveProductsDetails(
           null,
@@ -54,7 +58,8 @@ export default function ProductPage(props) {
             rootCategoryName,
             subCategoryName,
             leafCategoryName
-          )
+          ),
+          setIsLoading
         )
       );
     }
@@ -63,6 +68,11 @@ export default function ProductPage(props) {
   useEffect(() => {
     dispatch(retrieveAllTags());
   }, []);
+
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+    document.body.scrollTop = 0;
+  }, [rootCategoryName, subCategoryName, leafCategoryName]);
 
   const getCategoryIdFromPath = (
     rootCategoryName,
@@ -177,6 +187,9 @@ export default function ProductPage(props) {
           </div>
         </div>
       </div>
+      <Backdrop className={classes.backdrop} open={isLoading}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </div>
   );
 }
