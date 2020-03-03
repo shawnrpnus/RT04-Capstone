@@ -4,12 +4,14 @@ import { connect } from "react-redux";
 import { clearErrors, updateErrors } from "../../../redux/actions";
 import { Grid, TextField } from "@material-ui/core";
 import MaterialTextField from "../../../shared/components/Form/MaterialTextField";
-import { MuiPickersUtilsProvider } from "@material-ui/pickers";
-import { Button, ButtonToolbar } from "reactstrap";
+import Button from "@material-ui/core/Button";
 import * as PropTypes from "prop-types";
-import InputAdornment from "@material-ui/core/InputAdornment";
-import axios from "axios";
-import MaterialNumberSelect from "../../../shared/components/Form/MaterialNumberSelect";
+import ButtonGroup from "@material-ui/core/ButtonGroup";
+import CloseCircleIcon from "mdi-react/CloseCircleIcon";
+import ContentSaveIcon from "mdi-react/ContentSaveIcon";
+import ButtonToolbar from "reactstrap/es/ButtonToolbar";
+import StaffChangePasswordRequest from "../../../models/staff/StaffChangePasswordRequest";
+import {changePassword} from "../../../redux/actions/staffActions";
 
 class StaffDetailsPage extends Component {
   static propTypes = {
@@ -18,6 +20,8 @@ class StaffDetailsPage extends Component {
 
   constructor(props) {
     super(props);
+    this.handleChangeViewDetails = this.handleChangeViewDetails.bind(this);
+    this.handleChangePassword= this.handleChangePassword.bind(this);
     this.state = {
       staffId: this.props.loggedInStaff.staffId,
       firstName: this.props.loggedInStaff.firstName,
@@ -32,9 +36,28 @@ class StaffDetailsPage extends Component {
       buildingName: this.props.loggedInStaff.address.buildingName,
       postalCode: this.props.loggedInStaff.address.postalCode,
       departmentName: this.props.loggedInStaff.department.departmentName,
-      roleName: this.props.loggedInStaff.role.roleName
+      roleName: this.props.loggedInStaff.role.roleName,
+      oldPassword:"",
+      newPassword:""
     };
   }
+
+  handleChangeViewDetails() {
+    this.setState({ mode: true });
+  }
+  handleChangePassword() {
+    this.setState({ mode: false });
+  }
+
+  handleSubmit = (e) => {
+    e.preventDefault();
+
+    const req = new StaffChangePasswordRequest(this.state.staffId, this.state.oldPassword, this.state.newPassword);
+
+    this.props.changePassword(req, this.props.history);
+    
+
+  };
 
   onChange = e => {
     const name = e.target.name;
@@ -47,7 +70,39 @@ class StaffDetailsPage extends Component {
 
   render() {
     const { errors, disabled } = this.props;
+    const hasErrors = Object.keys(this.props.errors).length !== 0;
     return (
+        <React.Fragment>
+          <div className="card__title">
+            <Grid container spacing={3}>
+              <Grid item xs={12} md={6}>
+                {this.state.mode ? (
+                    <h5 className="bold-text">View Profile Details</h5>
+                ) : (
+                    <h5 className="bold-text">Change Password</h5>
+                )}
+              </Grid>
+              <Grid item xs={12} md={3}></Grid>
+              <Grid item xs={12} md={2}>
+                <ButtonGroup color="primary">
+                  <Button
+                      onClick={this.handleChangeViewDetails}
+                      variant={this.state.mode ? "contained" : "outlined"}
+                  >
+                    Details
+                  </Button>
+                  <Button
+                      onClick={this.handleChangePassword}
+                      variant={this.state.mode ? "outlined" : "contained"}
+                  >
+                    Settings
+                  </Button>
+                </ButtonGroup>
+              </Grid>
+            </Grid>
+          </div>
+
+          {this.state.mode ? (
       <form className="material-form">
         <Grid container spacing={3}>
           <Grid item xs={12} md={6}>
@@ -207,6 +262,60 @@ class StaffDetailsPage extends Component {
           </Grid>
         </Grid>
       </form>
+          ) : (
+              <form className="material-form">
+                <Grid container spacing={3}>
+                  <Grid item xs={12} md={6}>
+                    <MaterialTextField
+                        fieldLabel="Old password"
+                        onChange={this.onChange}
+                        fieldName="oldPassword"
+                        state={this.state}
+                        errors={errors}
+                        disabled={disabled}
+                        autoFocus={true}
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={6}></Grid>
+                  <Grid item xs={12} md={6}>
+                    <MaterialTextField
+                        fieldLabel="New password"
+                        onChange={this.onChange}
+                        fieldName="newPassword"
+                        state={this.state}
+                        errors={errors}
+                        disabled={disabled}
+                        autoFocus={true}
+                    />
+                  </Grid>
+
+                </Grid>
+
+                <ButtonToolbar className="form__button-toolbar">
+                  <Button
+                      color="primary"
+                      className="icon"
+                      onClick={e => this.handleSubmit(e)}
+                      disabled={hasErrors}
+                  >
+                    <p>
+                      <ContentSaveIcon/>
+                      Submit
+                    </p>
+                  </Button>
+                  <Button type="button" className="icon" onClick={this.onCancel}>
+                    <p>
+                      <CloseCircleIcon/>
+                      Cancel
+                    </p>
+                  </Button>
+                </ButtonToolbar>
+
+
+
+              </form>
+          )}
+        </React.Fragment>
     );
   }
 }
@@ -217,7 +326,9 @@ const mapStateToProps = state => ({
   errors: state.errors
 });
 
-const mapDispatchToProps = {};
+const mapDispatchToProps = {
+  changePassword
+};
 
 export default connect(
   mapStateToProps,
