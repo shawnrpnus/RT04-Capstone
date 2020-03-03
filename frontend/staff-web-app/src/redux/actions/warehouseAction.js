@@ -12,7 +12,6 @@ const jsog = require("jsog");
 
 export const updateProductStock = (updateProductStockRequest, history) => {
   return dispatch => {
-    //redux thunk passes dispatch
     axios
       .post(
         PRODUCT_STOCK_BASE_URL + "/updateProductStock",
@@ -56,7 +55,9 @@ export const updateProductStockQty = (updateProductStockRequest, history) => {
         const { data } = jsog.decode(response);
         // const productStockId = data.productStockId;
         // dispatch(updateProductStockQtySuccess(data));
-        retrieveProductsDetails()(dispatch);
+
+        retrieveProductsDetails(1043)(dispatch);
+
         // history.push(`/productStock/update/${productStockId}`);
       })
       .catch(err => {
@@ -75,29 +76,3 @@ const updateProductStockQtyError = data => ({
   type: types.GET_ERRORS,
   errorMap: data
 });
-
-export const retrieveProductStocksByParameter = (storeId, warehouseId, productVariantId) => {
-  return dispatch => {
-    axios
-        .get(PRODUCT_STOCK_BASE_URL + `/retrieveProductStocksByParameter`, {
-          params: { storeId, warehouseId, productVariantId }
-        })
-        .then(response => {
-          const { data } = jsog.decode(response);
-          dispatch(retrieveProductStocksByParameterSuccess(data));
-        })
-        .catch(err => {
-          dispatch(retrieveProductStocksByParameterError(err.response.data));
-        });
-  };
-};
-
-const retrieveProductStocksByParameterSuccess = data => ({
-  type: types.RETRIEVE_PRODUCT_STOCKS_BY_PARAMETER,
-  productStockEntities: data
-});
-
-const retrieveProductStocksByParameterError = data => ({
-  type: types.GET_ERRORS,
-  errorMap: data
-})

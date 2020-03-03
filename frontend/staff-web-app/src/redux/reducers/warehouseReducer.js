@@ -16,12 +16,7 @@ export default function(state = initialState, action) {
     case types.UPDATE_PRODUCT_STOCK_QTY:
       return {
         ...state,
-        currentProductStock: action.productStockEntity
-      };
-    case types.RETRIEVE_PRODUCT_STOCKS_BY_PARAMETER:
-      return {
-        ...state,
-        allProductStock: action.productStockEntities
+        allProductStock: action.productStockEntity
       };
     default:
       return state;

@@ -1,7 +1,8 @@
 import React, { PureComponent } from "react";
 import { Link, withRouter } from "react-router-dom";
-import MaterialTable from "material-table";
 import { connect } from "react-redux";
+import { retrieveProductsDetails } from "../../../redux/actions/productActions";
+
 import {
   AddBox,
   Check,
@@ -16,14 +17,14 @@ import {
   SaveAlt,
   Search,
   ViewColumn,
-  Visibility,
-  List
+  Visibility
 } from "@material-ui/icons";
+import colourList from "../../../scss/colours";
+import MaterialTable from "material-table";
 import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
-import { retrieveProductsDetails } from "../../../../redux/actions/productActions";
-import withPage from "../../../Layout/page/withPage";
-import colourList from "../../../../scss/colours.json";
+import withPage from "../../Layout/page/withPage";
 import ProductsStockDetails from "./ProductsStockDetails";
+
 
 const _ = require("lodash");
 
@@ -50,20 +51,17 @@ const tableIcons = {
 const jsonColorNameList = _.keyBy(colourList, "name");
 const jsonColorHexList = _.keyBy(colourList, "hex");
 
-class ProductsTable extends PureComponent {
+class InventoryTable extends PureComponent {
   state = {
+    redirect: false,
+    products: [],
     selectedProductId: "",
     openProductStocksDetailsDialogue: false
   };
 
   componentDidMount() {
-    // TODO: Retrieve store ID from cookie to input as argument
-    if (this.props.retrieveAllProducts) this.props.retrieveAllProducts();
+    this.props.retrieveProductsDetails();
   }
-
-  handleViewProductDetails = id => {
-    this.props.history.push(`/product/viewProductDetails/${id}`);
-  };
 
   handleViewProductStocksDetails = productId => {
     this.setState({
@@ -108,7 +106,7 @@ class ProductsTable extends PureComponent {
         {products ? (
           <MaterialTable
             title="Products"
-            // padding="none"
+            padding="none"
             style={{ boxShadow: "none" }}
             icons={tableIcons}
             columns={[
@@ -116,7 +114,9 @@ class ProductsTable extends PureComponent {
                 title: "Image",
                 field: "image",
                 render: rowData => (
-                  <Link to={`/warehouse/viewProductDetails/${rowData.productId}`}>
+                  <Link
+                    to={`/warehouse/viewProductStocksDetails/${rowData.productId}`}
+                  >
                     <img
                       style={{
                         width: "100%",
@@ -160,26 +160,17 @@ class ProductsTable extends PureComponent {
             options={{
               filtering: true,
               sorting: true,
-              // padding: "dense",
+              padding: "dense",
               pageSize: 5,
               pageSizeOptions: [5, 10, 20, 40],
               actionsColumnIndex: -1,
               headerStyle: { textAlign: "center" }, //change header padding
-              cellStyle: { textAlign: "center" },
-              selection: this.props.selectable
+              cellStyle: { textAlign: "center" }
             }}
             actions={[
-              !this.props.selectionAction
-                ? {
-                    icon: Visibility,
-                    tooltip: "View Product Variants",
-                    onClick: (event, rowData) =>
-                      this.handleViewProductDetails(rowData.productId)
-                  }
-                : this.props.selectionAction,
               {
-                icon: List,
-                tooltip: "View / Update Product Stocks",
+                icon: Visibility,
+                tooltip: "View Product Stocks Details",
                 onClick: (event, rowData) =>
                   this.handleViewProductStocksDetails(rowData.productId)
               }
@@ -210,14 +201,14 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = {
-  retrieveAllProducts: retrieveProductsDetails
+  retrieveProductsDetails
 };
 
-export const ProductsTableRaw = withRouter(ProductsTable);
+export const InventoryTableRaw = withRouter(InventoryTable);
 
 export default withRouter(
   connect(
     mapStateToProps,
     mapDispatchToProps
-  )(withPage(ProductsTable, "Product Management"))
+  )(withPage(InventoryTable, "Warehouse Stock"))
 );
