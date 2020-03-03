@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -135,6 +136,25 @@ public class StripeService {
             System.out.println(paymentIntent.getId());
             return null;
         }
+    }
+
+    public capstone.rt04.retailbackend.entities.Customer deleteCardOnStripeAndSql(Long customerId, Long creditCardId) throws StripeException, CustomerNotFoundException, CreditCardNotFoundException {
+        Stripe.apiKey = "sk_test_E81pq87cIYZxL2NkXaXKsEEd00MGrcKvYx";
+
+        capstone.rt04.retailbackend.entities.Customer dbCustomer = customerService.retrieveCustomerByCustomerId(customerId);
+
+        List<CreditCard> creditCards = new ArrayList<>(dbCustomer.getCreditCards());
+
+        for(CreditCard creditCard : creditCards) {
+            if(creditCard.getCreditCardId().equals(creditCardId)) {
+                System.out.println("Deleting card");
+                PaymentMethod paymentMethod = PaymentMethod.retrieve(creditCard.getPaymentMethodId());
+                paymentMethod.detach();
+                customerService.deleteCreditCard(customerId, creditCard.getCreditCardId());
+                break;
+            }
+        }
+        return dbCustomer;
     }
 }
 

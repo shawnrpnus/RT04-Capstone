@@ -202,10 +202,10 @@ public class CustomerController {
     }
 
     @DeleteMapping(CustomerControllerRoutes.REMOVE_SHIPPING_ADDRESS)
-    public ResponseEntity<?> removeShippingAddress(@RequestBody RemoveShippingAddressRequest req) throws CustomerNotFoundException, AddressNotFoundException, InputDataValidationException {
-        validationService.throwExceptionIfInvalidBean(req);
-        Customer customer = customerService.deleteShippingAddress(req.getCustomerId(), req.getShippingAddressId());
-        clearCustomerRelationships(customer);
+    public ResponseEntity<?> removeShippingAddress(@PathVariable Long customerId, @PathVariable Long shippingAddressId) throws CustomerNotFoundException, AddressNotFoundException, InputDataValidationException {
+//        validationService.throwExceptionIfInvalidBean(req);
+//        Customer customer = customerService.deleteShippingAddress(req.getCustomerId(), req.getShippingAddressId());
+        Customer customer = customerService.deleteShippingAddress(customerId, shippingAddressId);
         return new ResponseEntity<>(customer, HttpStatus.OK);
     }
 

@@ -3,9 +3,8 @@ import {
   ADD_SHIPPING_ADDRESS_SUCCESS,
   CUSTOMER_LOGOUT,
   EMAIL_SENDING,
-  EMAIL_SENT,
-  RESET_VERIFICATION_STATUS,
-  UPDATE_SHIPPING_ADDRESS_SUCCESS,
+  EMAIL_SENT, REMOVE_SHIPPING_ADDRESS_SUCCESS,
+  RESET_VERIFICATION_STATUS, UPDATE_SHIPPING_ADDRESS_SUCCESS,
   VERIFY_FAILURE,
   VERIFY_SUCCESS,
   SAVE_CARD_SUCCESS
@@ -303,7 +302,6 @@ export const updateShippingAddress = (
       .then(response => {
         const { data } = jsog.decode(response);
         dispatch(updateShippingAddressSuccess(data));
-        history.push("/account/address");
       })
       .catch(err => {
         dispatchErrorMapError(err, dispatch);
@@ -328,6 +326,27 @@ export const addMeasurements = (req, enqueueSnackbar, setAddMeasurements) => {
       .catch(err => {
         dispatchErrorMapError(err, dispatch);
         console.log(err.response.data);
+      });
+  };
+};
+
+export const updateShippingAddressDetails = (addUpdateAddressRequest, enqueueSnackbar, history) => {
+  return dispatch => {
+    //redux thunk passes dispatch
+    axios
+      .post(CUSTOMER_BASE_URL + "/updateShippingAddress", addUpdateAddressRequest)
+      .then(response => {
+        const { data } = jsog.decode(response);
+        dispatch(updateShippingAddressSuccess(data));
+        enqueueSnackbar("Address Updated", {
+          variant: "success",
+          autoHideDuration: 1200
+        });
+        history.push("/account/profile");
+      })
+      .catch(err => {
+        dispatchErrorMapError(err, dispatch);
+        // console.log(err.response.data);
       });
   };
 };
@@ -364,6 +383,33 @@ export const addShippingAddressDetails = (
 
 export const addShippingAddressSuccess = data => ({
   type: ADD_SHIPPING_ADDRESS_SUCCESS,
+  loggedInCustomer: data
+});
+
+export const removeShippingAddressDetails = (customerId, shippingAddressId, enqueueSnackbar, history) => {
+  return dispatch => {
+    //redux thunk passes dispatch
+    axios
+      .delete(CUSTOMER_BASE_URL + `/removeShippingAddress/${customerId}/${shippingAddressId}`)
+      .then(response => {
+        console.log("did run?");
+        const { data } = jsog.decode(response);
+        dispatch(removeShippingAddressSuccess(data));
+        enqueueSnackbar("Address Deleted", {
+          variant: "success",
+          autoHideDuration: 1200
+        });
+        history.push("/account/profile");
+      })
+      .catch(err => {
+        dispatchErrorMapError(err, dispatch);
+        // console.log(err.response.data);
+      });
+  };
+};
+
+export const removeShippingAddressSuccess = data => ({
+  type: REMOVE_SHIPPING_ADDRESS_SUCCESS,
   loggedInCustomer: data
 });
 
@@ -593,10 +639,9 @@ export const saveCard = saveCardRequest => {
   return dispatch => {
     axios
       .post("/saveCard", saveCardRequest)
-      .then(resp => {
+      .then(response => {
         // Return customer
-        console.log(resp);
-        dispatch(saveCardSuccess(resp.data));
+        dispatchUpdatedCustomer(response.data, dispatch);
       })
       .catch(err => {
         console.log(err);
@@ -604,8 +649,18 @@ export const saveCard = saveCardRequest => {
   };
 };
 
-// Customer reducer
-const saveCardSuccess = data => ({
-  type: SAVE_CARD_SUCCESS,
-  customer: data
-});
+export const deleteCard = deleteCardRequest => {
+  return dispatch => {
+    console.log(deleteCardRequest);
+    axios
+      .post("/deleteCardOnStripeAndSql", deleteCardRequest)
+      .then(response => {
+        // Return customer
+        console.log(response);
+        dispatchUpdatedCustomer(response.data, dispatch);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+};

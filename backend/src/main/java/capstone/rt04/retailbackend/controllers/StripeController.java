@@ -1,5 +1,6 @@
 package capstone.rt04.retailbackend.controllers;
 
+import capstone.rt04.retailbackend.request.stripe.DeleteCardRequest;
 import capstone.rt04.retailbackend.request.stripe.PaymentWithSavedCardRequest;
 import capstone.rt04.retailbackend.request.stripe.SaveCardRequest;
 import capstone.rt04.retailbackend.services.StripeService;
@@ -82,6 +83,17 @@ public class StripeController {
             return new ResponseEntity<>(paymentIntent.toJson(), HttpStatus.OK);
         } catch (StripeException e) {
             System.out.println("Error creating customer");
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("/deleteCardOnStripeAndSql")
+    public ResponseEntity<?> deleteCardOnStripeAndSql(@RequestBody DeleteCardRequest deleteCardRequest) throws CustomerNotFoundException, CreditCardNotFoundException {
+        try {
+            capstone.rt04.retailbackend.entities.Customer customer = stripeService.deleteCardOnStripeAndSql(deleteCardRequest.getCustomerId(), deleteCardRequest.getCreditCardId());
+            return new ResponseEntity<>(customer, HttpStatus.OK);
+        } catch (StripeException e) {
+            System.out.println("Error deleting card on stripe");
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }

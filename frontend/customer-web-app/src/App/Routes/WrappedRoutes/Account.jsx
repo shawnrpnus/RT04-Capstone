@@ -8,8 +8,10 @@ import ProfilePage from "components/Profile/ProfilePage";
 import SecuredRoute from "App/Routes/SecuredRoute";
 import ForgotPassword from "components/Login/ForgotPassword";
 import ResetPassword from "components/Login/ResetPassword";
-import AddressCard from "../../../components/Profile/sections/AddressCard";
+import AddressCard from "components/Profile/sections/AddressCard";
 import WishlistPage from "components/Wishlist/WishlistPage";
+import ShoppingCart from "components/ShoppingCart/ShoppingCartPage";
+import CheckOutPage from "components/Checkout/CheckOutPage";
 import ReservationCartPage from "components/Reservation/ReservationCart/ReservationCartPage";
 import ReservationHomePage from "components/Reservation/ReservationHomePage";
 
@@ -37,6 +39,13 @@ export default () => (
     />
     <Route exact path="/account/address" component={AddressCard} />
     <Route exact path="/account/wishlist" component={WishlistPage} />
+    <Route
+      exact
+      path="/account/reservationCart"
+      component={ReservationCartPage}
+    />
+    <Route exact path="/account/shoppingCart" component={ShoppingCart} />
+    <Route exact path="/account/checkout" component={CheckOutPage} />
     <Route exact path="/account/reservation" component={ReservationHomePage} />
   </Switch>
 );

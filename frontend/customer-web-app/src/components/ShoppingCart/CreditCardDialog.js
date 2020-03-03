@@ -13,7 +13,7 @@ import AddIcon from "@material-ui/icons/Add";
 import Typography from "@material-ui/core/Typography";
 import { blue } from "@material-ui/core/colors";
 import CheckoutForm from "./CheckoutForm";
-import CardSetupForm from "./CardSetupForm";
+import CardSetupForm from "../Profile/sections/CardSetupForm";
 
 const emails = ["username@gmail.com", "user02@gmail.com"];
 const useStyles = makeStyles({
