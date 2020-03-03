@@ -335,6 +335,7 @@ public class CustomerController {
             pv.getProduct().setStyles(null);
             removeStoreStocksFromProductVariant(pv);
         }
+        customer.setReservations(null);
     }
 
     private void removeStoreStocksFromProductVariant(ProductVariant pv){

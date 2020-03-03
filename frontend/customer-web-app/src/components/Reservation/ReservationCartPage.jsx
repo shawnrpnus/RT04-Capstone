@@ -24,6 +24,7 @@ import Popper from "@material-ui/core/Popper";
 import { useSnackbar } from "notistack";
 import { clearReservationCartAPI } from "redux/actions/customerActions";
 import ReservationCartItem from "components/Reservation/ReservationCartItem";
+import ReservationBooking from "components/Reservation/ReservationBooking";
 
 const useStyles = makeStyles(wishlistStyle);
 
@@ -38,6 +39,8 @@ export default function WishlistPage(props) {
     window.scrollTo(0, 0);
     document.body.scrollTop = 0;
   }, []);
+
+  useEffect(() => {}, []);
 
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -80,7 +83,7 @@ export default function WishlistPage(props) {
           <Card plain>
             <CardBody plain>
               <GridContainer>
-                <GridItem md={6}>
+                <GridItem md>
                   {reservationCartItems.length > 0 ? (
                     <React.Fragment>
                       <Button
@@ -96,7 +99,7 @@ export default function WishlistPage(props) {
                           <ReservationCartItem
                             productVariant={productVariant}
                           />
-                          <Divider />
+                          {reservationCartItems.length > 1 && <Divider />}
                         </React.Fragment>
                       ))}
                     </React.Fragment>
@@ -105,6 +108,16 @@ export default function WishlistPage(props) {
                       Your reservation cart is empty.
                     </h3>
                   )}
+                </GridItem>
+                <Divider orientation="vertical" flexItem />
+                <GridItem md>
+                  <h3
+                    className={classes.title}
+                    style={{ margin: "5px 0 20px 0" }}
+                  >
+                    Make a Reservation
+                  </h3>
+                  <ReservationBooking />
                 </GridItem>
               </GridContainer>
             </CardBody>

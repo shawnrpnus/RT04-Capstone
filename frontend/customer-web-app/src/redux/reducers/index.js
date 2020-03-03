@@ -6,6 +6,7 @@ import categoryReducer from "redux/reducers/categoryReducer";
 import productReducer from "redux/reducers/productReducer";
 import tagReducer from "redux/reducers/tagReducer";
 import filterBarReducer from "redux/reducers/filterBarReducer";
+import reservationReducer from "redux/reducers/reservationReducer";
 
 const rootReducer = combineReducers({
   customer: customerReducer,
@@ -14,7 +15,8 @@ const rootReducer = combineReducers({
   category: categoryReducer,
   product: productReducer,
   tag: tagReducer,
-  filterBar: filterBarReducer
+  filterBar: filterBarReducer,
+  reservation: reservationReducer
 });
 
 export default rootReducer;
