@@ -57,7 +57,7 @@ export default function(state = initialState, action) {
       return {
         ...state,
         loggedInCustomer: action.loggedInCustomer
-      }
+      };
     case types.REMOVE_SHIPPING_ADDRESS_SUCCESS:
       return {
         ...state,

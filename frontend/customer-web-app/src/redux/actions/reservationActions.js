@@ -101,7 +101,7 @@ export const createReservation = (
         reservationDateTime
       })
       .then(response => {
-        dispatch(refreshCustomer(customerEmail));
+        dispatch(refreshCustomer(customerEmail)); //for emptying reservation cart
         enqueueSnackbar("Reservation made!", {
           variant: "success",
           autoHideDuration: 1200
@@ -166,6 +166,42 @@ export const cancelReservation = (
       .then(response => {
         dispatch(getUpcomingReservations(customerId));
         enqueueSnackbar("Reservation cancelled!", {
+          variant: "success",
+          autoHideDuration: 1200
+        });
+      })
+      .catch(err => {
+        const errorMap = _.get(err, "response.data", null);
+        if (_.get(errorMap, "reservationDateTime")) {
+          enqueueSnackbar(_.get(errorMap, "reservationDateTime"), {
+            variant: "error",
+            autoHideDuration: 1200
+          });
+        }
+      });
+  };
+};
+
+export const updateReservation = (
+  reservationId,
+  newStoreId,
+  newReservationDateTime,
+  customerId,
+  enqueueSnackbar
+) => {
+  newReservationDateTime = moment(newReservationDateTime).format(
+    "YYYY-MM-DD HH:mm:ss"
+  );
+  return dispatch => {
+    axios
+      .post(RESERVATION_BASE_URL + "/createReservation", {
+        reservationId,
+        newStoreId,
+        newReservationDateTime
+      })
+      .then(response => {
+        dispatch(getUpcomingReservations(customerId));
+        enqueueSnackbar("Reservation updated!", {
           variant: "success",
           autoHideDuration: 1200
         });

@@ -186,7 +186,7 @@ public class ReservationService {
 
         // make sure at least 15 mins before reservation
         if (!dateTime.after(new Timestamp(nowPlus15Minutes))) {
-            errorMap.put("reservationDateTime", "Reservation cannot be cancelled less than 15 minutes before.");
+            errorMap.put("reservationDateTime", "Reservation cannot be updated less than 15 minutes before.");
             throw new InputDataValidationException(errorMap, errorMap.toString());
         }
 

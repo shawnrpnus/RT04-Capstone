@@ -17,6 +17,7 @@ import ReservationCartPage from "components/Reservation/ReservationCart/Reservat
 import { ShoppingCart } from "@material-ui/icons";
 import UpcomingReservations from "components/Reservation/View/UpcomingReservations";
 import PastReservations from "components/Reservation/View/PastReservations";
+import { useParams } from "react-router-dom";
 
 const useTabStyles = makeStyles(tabsStyle);
 const useStyles = makeStyles(wishlistStyle);
@@ -24,6 +25,7 @@ const useStyles = makeStyles(wishlistStyle);
 export default function ReservationHomePage(props) {
   const classes = useStyles();
   const tabClasses = useTabStyles();
+  const { mode } = useParams();
   return (
     <div>
       <Parallax
@@ -50,20 +52,32 @@ export default function ReservationHomePage(props) {
       <CustomTabs
         headerColor="primary"
         className={classes.customTabsRaised}
+        activeIndex={
+          mode === "cart" || mode === "update"
+            ? 0
+            : mode === "upcoming"
+            ? 1
+            : mode === "history"
+            ? 2
+            : 0
+        }
         tabs={[
           {
             tabName: "Reservation Cart",
             tabIcon: ShoppingCart,
+            route: "/account/reservation/cart",
             tabContent: <ReservationCartPage />
           },
           {
             tabName: "Upcoming Reservations",
             tabIcon: ShoppingCart,
+            route: "/account/reservation/upcoming",
             tabContent: <UpcomingReservations />
           },
           {
             tabName: "Past Reservations",
             tabIcon: ShoppingCart,
+            route: "/account/reservation/history",
             tabContent: <PastReservations />
           }
         ]}
