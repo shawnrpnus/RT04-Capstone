@@ -2,7 +2,7 @@ import React from "react";
 import { Redirect, Route } from "react-router-dom";
 import { useSelector } from "react-redux";
 
-const SecureRoute = ({ component: Component, ...rest }) => {
+const SecureRoute = ({ component: Component, render, ...rest }) => {
   let authenticated = false;
   let staff = useSelector(state => state.staffEntity.loggedInStaff);
 
@@ -11,13 +11,16 @@ const SecureRoute = ({ component: Component, ...rest }) => {
   return (
     <Route
       {...rest}
-      render={props =>
-        authenticated === true ? (
-          <Component {...props} staff={staff} />
-        ) : (
-          <Redirect to="/login" />
-        )
-      }
+      render={props => {
+        if (authenticated === true) {
+          return Component ? (
+            <Component {...props} staff={staff} />
+          ) : (
+            render(props)
+          );
+        }
+        return <Redirect to="/login" />;
+      }}
     />
   );
 };

@@ -3,16 +3,16 @@ import { Route, Switch } from "react-router-dom";
 import TagContainer from "../../../components/Tag/components/TagContainer";
 import { StoreTable } from "../../../components/Store";
 import AddTagToProduct from "../../../components/Tag/components/AddTagToProduct";
-import SecureRoute from "../SecureRoute";
+import RetailRoute from "./../RetailRoute";
 
 export default () => (
   <Switch>
-    <SecureRoute
+    <RetailRoute
       exact
       path="/tag/manage"
       render={props => <TagContainer {...props} mode="viewAll" />}
     />
-    <SecureRoute
+    <RetailRoute
       exact
       path="/tag/addTagToProducts"
       component={AddTagToProduct}

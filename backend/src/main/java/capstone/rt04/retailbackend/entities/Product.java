@@ -40,28 +40,28 @@ public class Product implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long productId;
 
-    @NotNull
+    @NotNull(message = "Serial name cannot be empty")
     @Column(nullable = false, unique = true)
     private String serialNumber;
 
-    @NotNull
+    @NotNull(message = "Product name cannot be empty")
     @Column(nullable = false)
     @Size(min = 0)
     private String productName;
 
-    @NotNull
+    @NotNull(message = "Description cannot be empty")
     @Column(nullable = false, columnDefinition = "VARCHAR(1337)")
     @Size(max = 1337)
     private String description;
 
-    @NotNull
+    @NotNull(message = "Price cannot be empty")
     @Column(nullable = false, precision = 11, scale = 2)
-    @DecimalMin("0.00")
+    @DecimalMin(value = "0.00", message = "Price must be more than 0")
     private BigDecimal price;
 
-    @NotNull
+    @NotNull(message = "Cost cannot be empty")
     @Column(nullable = false, precision = 11, scale = 2)
-    @DecimalMin("0.00")
+    @DecimalMin(value = "0.00", message = "Cost must be more than 0")
     private BigDecimal cost;
 
     @ManyToMany(mappedBy = "products")
@@ -75,7 +75,7 @@ public class Product implements Serializable {
 
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
-    @NotNull
+    @NotNull(message = "Product must belong to a category")
     private Category category;
 
     @OneToMany(mappedBy = "product")

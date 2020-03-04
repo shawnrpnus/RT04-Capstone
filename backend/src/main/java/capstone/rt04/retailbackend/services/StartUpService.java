@@ -95,7 +95,7 @@ public class StartUpService {
         createTagIfNotFound();
         createStyleIfNotFound();
         createCustomerIfNotFound();
-        //initializeShoppingCartIfNotFound();
+        // initializeShoppingCartIfNotFound();
     }
 
     private void createCategoryIfNotFound() throws CategoryNotFoundException, CreateNewCategoryException, InputDataValidationException {
@@ -331,9 +331,9 @@ public class StartUpService {
         List<Long>staffToConfigure =new ArrayList<>();
 
 
-        Staff staff = new Staff("Geogre", "Lee", 2, "116c", "geogrelee@gmail.com", BigDecimal.valueOf(10000));
+        Staff staff = new Staff("Re", "tail", 2, "116c", "geogrelee@gmail.com", BigDecimal.valueOf(10000));
         Address a1 = new Address("2E Hong San Walk", "#03-08", 612140, "Palm Garden");
-        Staff newStaff = staffService.createNewStaff(staff, a1, role1.getRoleId(), departmentHR.getDepartmentId());
+        Staff newStaff = staffService.createNewStaff(staff, a1, role1.getRoleId(), departmentRetail.getDepartmentId());
 
         Staff staff2 = new Staff("IT", "STAFF", 13, "213C", "annabeltwe@gmail.com", BigDecimal.valueOf(10000));
         Address a2 = new Address("Block 235 Chua Chu Kang Ave 2", "#15-234", 689051, "-");
@@ -344,6 +344,7 @@ public class StartUpService {
         Address a3 = new Address("Block 234 Bishan South", "#30-08", 321140, "Palm Garden");
         Staff newStaff3 = staffService.createNewStaff(staff3, a3, role1.getRoleId(), departmentHR.getDepartmentId());
 
+        staffToConfigure.add(newStaff.getStaffId());
         staffToConfigure.add(newStaff2.getStaffId());
         staffToConfigure.add(newStaff3.getStaffId());
         staffService.createNewStaffAccount(staffToConfigure);
@@ -359,9 +360,9 @@ public class StartUpService {
 //        Staff newStaff5 = staffService.createNewStaff(staff5, staff5.getAddress(), role4, departmentFinance);
 //
 //
-//        Staff staff6 = new Staff("Sergio", "Tan", 2, "312Z", "SergioEs@gmail.com",BigDecimal.valueOf(10000) );
+//        Staff staff6 = new Staff("Re", "tail", 2, "312Z", "SergioEs@gmail.com",BigDecimal.valueOf(10000) );
 //        staff6.setAddress(new Address ("Block 567 Bishan South","#20-08",321567,"-"));
-//        Staff newStaff6 = staffService.createNewStaff(staff6, staff6.getAddress(), role1, departmentRetail);
+//        Staff newStaff6 = staffService.createNewStaff(staff6, staff6.getAddress(), role1.getRoleId(), departmentRetail.getDepartmentId());
 //
 //
 //        Staff staff7 = new Staff("Jay", "Wang", 10, "560D", "WangDaXia@gmail.com",BigDecimal.valueOf(10000) );
@@ -486,13 +487,13 @@ public class StartUpService {
         }
     }
 
-//    private void initializeShoppingCartIfNotFound() throws ProductVariantNotFoundException, CustomerNotFoundException, InvalidCartTypeException {
-//        if (shoppingCartService.initRetrieveAllShoppingCartItem().size() == 0) {
-//            shoppingCartService.updateQuantityOfProductVariant(2, productVariantId26, customerId, ONLINE_SHOPPING_CART);
-//            shoppingCartService.updateQuantityOfProductVariant(3, productVariantId27, customerId, ONLINE_SHOPPING_CART);
-//            shoppingCartService.updateQuantityOfProductVariant(3, productVariantId28, customerId, ONLINE_SHOPPING_CART);
-//            shoppingCartService.updateQuantityOfProductVariant(3, productVariantId29, customerId, ONLINE_SHOPPING_CART);
-//            shoppingCartService.updateQuantityOfProductVariant(3, productVariantId30, customerId, ONLINE_SHOPPING_CART);
-//        }
-//    }
+    private void initializeShoppingCartIfNotFound() throws ProductVariantNotFoundException, CustomerNotFoundException, InvalidCartTypeException {
+        if (shoppingCartService.initRetrieveAllShoppingCartItem().size() == 0) {
+            shoppingCartService.updateQuantityOfProductVariant(2, productVariantId26, customerId, ONLINE_SHOPPING_CART);
+            shoppingCartService.updateQuantityOfProductVariant(3, productVariantId27, customerId, ONLINE_SHOPPING_CART);
+            shoppingCartService.updateQuantityOfProductVariant(3, productVariantId28, customerId, ONLINE_SHOPPING_CART);
+            shoppingCartService.updateQuantityOfProductVariant(3, productVariantId29, customerId, ONLINE_SHOPPING_CART);
+            shoppingCartService.updateQuantityOfProductVariant(3, productVariantId30, customerId, ONLINE_SHOPPING_CART);
+        }
+    }
 }

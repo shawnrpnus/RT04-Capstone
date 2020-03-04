@@ -57,8 +57,8 @@ class ProductsStockTable extends PureComponent {
   };
 
   componentDidMount() {
-    if (this.props.retrieveProductStocksByParameter)
-      this.props.retrieveProductStocksByParameter(3);
+    const { store } = this.props;
+    this.props.retrieveProductStocksByParameter(store.storeId);
   }
 
   handleCheckBox = (evt, data) => {
