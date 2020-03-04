@@ -10,7 +10,7 @@ import { Button } from "reactstrap";
 import { clearErrors, updateErrors } from "../../../redux/actions";
 import StaffLoginRequest from "../../../models/staff/StaffLoginRequest";
 import { retrieveAllStores } from "../../../redux/actions/storeActions";
-import { Grid, TextField, InputLabel } from "@material-ui/core";
+import { Grid, TextField, InputLabel, Typography } from "@material-ui/core";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 
@@ -125,7 +125,11 @@ class StaffLoginForm extends Component {
                       name="store"
                       defaultValue={""}
                     >
-                      <MenuItem key={"blank"} value={""}></MenuItem>
+                      <MenuItem key={"blank"} value={""}>
+                        <Typography style={{ visibility: "hidden" }}>
+                          blank
+                        </Typography>
+                      </MenuItem>
                       {allStores &&
                         allStores.map((store, index) => {
                           return (

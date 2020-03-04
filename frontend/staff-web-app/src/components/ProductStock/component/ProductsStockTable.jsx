@@ -57,8 +57,14 @@ class ProductsStockTable extends PureComponent {
   };
 
   componentDidMount() {
-    console.log(this.props);
-    this.props.retrieveProductStocksByParameter(3);
+    const warehouse =
+      _.get(this.props, "staff.department.departmentName") === "Warehouse";
+    const store = this.props.store;
+    if (warehouse) {
+      this.props.retrieveProductStocksByParameter();
+    } else if (store.storeId) {
+      this.props.retrieveProductStocksByParameter(store.storeId);
+    }
   }
 
   handleCheckBox = (evt, data) => {
