@@ -332,41 +332,6 @@ export const addMeasurements = (req, enqueueSnackbar, setAddMeasurements) => {
   };
 };
 
-export const updateShippingAddressSuccess = data => ({
-  type: UPDATE_SHIPPING_ADDRESS_SUCCESS,
-  loggedInCustomer: data
-});
-
-export const addShippingAddressDetails = (
-  addUpdateAddressRequest,
-  enqueueSnackbar,
-  history
-) => {
-  return dispatch => {
-    //redux thunk passes dispatch
-    axios
-      .post(CUSTOMER_BASE_URL + "/addShippingAddress", addUpdateAddressRequest)
-      .then(response => {
-        const { data } = jsog.decode(response);
-        dispatch(addShippingAddressSuccess(data));
-        enqueueSnackbar("New Address Added", {
-          variant: "success",
-          autoHideDuration: 1200
-        });
-        history.push("/account/profile");
-      })
-      .catch(err => {
-        dispatchErrorMapError(err, dispatch);
-        // console.log(err.response.data);
-      });
-  };
-};
-
-export const addShippingAddressSuccess = data => ({
-  type: ADD_SHIPPING_ADDRESS_SUCCESS,
-  loggedInCustomer: data
-});
-
 export const updateMeasurements = (
   req,
   enqueueSnackbar,
@@ -410,6 +375,41 @@ export const deleteMeasurements = (customerId, enqueueSnackbar) => {
       });
   };
 };
+
+export const updateShippingAddressSuccess = data => ({
+  type: UPDATE_SHIPPING_ADDRESS_SUCCESS,
+  loggedInCustomer: data
+});
+
+export const addShippingAddressDetails = (
+  addUpdateAddressRequest,
+  enqueueSnackbar,
+  history
+) => {
+  return dispatch => {
+    //redux thunk passes dispatch
+    axios
+      .post(CUSTOMER_BASE_URL + "/addShippingAddress", addUpdateAddressRequest)
+      .then(response => {
+        const { data } = jsog.decode(response);
+        dispatch(addShippingAddressSuccess(data));
+        enqueueSnackbar("New Address Added", {
+          variant: "success",
+          autoHideDuration: 1200
+        });
+        history.push("/account/profile");
+      })
+      .catch(err => {
+        dispatchErrorMapError(err, dispatch);
+        // console.log(err.response.data);
+      });
+  };
+};
+
+export const addShippingAddressSuccess = data => ({
+  type: ADD_SHIPPING_ADDRESS_SUCCESS,
+  loggedInCustomer: data
+});
 
 export const addToWishlistAPI = (
   customerId,
@@ -598,3 +598,65 @@ const saveCardSuccess = data => ({
   type: SAVE_CARD_SUCCESS,
   customer: data
 });
+
+export const addStylePreferences = (req, enqueueSnackbar, setAddStyle) => {
+  return dispatch => {
+    //redux thunk passes dispatch
+    axios
+      .post(CUSTOMER_BASE_URL + "/addStyle", req)
+      .then(response => {
+        dispatchUpdatedCustomer(response.data, dispatch);
+        enqueueSnackbar("Style preferences recorded", {
+          variant: "success",
+          autoHideDuration: 1200
+        });
+        setAddStyle(true);
+      })
+      .catch(err => {
+        dispatchErrorMapError(err, dispatch);
+        console.log(err.response.data);
+      });
+  };
+};
+
+export const updateStylePreferences = (req, enqueueSnackbar, setAddStyle) => {
+  return dispatch => {
+    //redux thunk passes dispatch
+    axios
+      .post(CUSTOMER_BASE_URL + "/addStyle", req)
+      .then(response => {
+        console.log(response);
+        dispatchUpdatedCustomer(response.data, dispatch);
+        enqueueSnackbar("Style preferences updated", {
+          variant: "success",
+          autoHideDuration: 1200
+        });
+        setAddStyle(true);
+      })
+      .catch(err => {
+        dispatchErrorMapError(err, dispatch);
+        console.log(err.response.data);
+      });
+  };
+};
+
+export const deleteStylePreferences = (req, enqueueSnackbar, setAddStyle) => {
+  return dispatch => {
+    //redux thunk passes dispatch
+    axios
+      .post(CUSTOMER_BASE_URL + "/removeStyle", req)
+      .then(response => {
+        console.log(response);
+        dispatchUpdatedCustomer(response.data, dispatch);
+        enqueueSnackbar("Style deleted", {
+          variant: "success",
+          autoHideDuration: 1200
+        });
+        setAddStyle(false);
+      })
+      .catch(err => {
+        dispatchErrorMapError(err, dispatch);
+        console.log(err.response.data);
+      });
+  };
+};

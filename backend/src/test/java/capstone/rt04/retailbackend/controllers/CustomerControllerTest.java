@@ -319,25 +319,6 @@ public class CustomerControllerTest extends ApiTestSetup {
         assertThat(customer.getWishlistItems().get(0).getProductVariantId().compareTo(productVariantId)).isZero();
     }
 
-    @Test
-    public void addRemoveStyle(){
-        Customer customer = given()
-                .queryParam("customerId", createdCustomerId)
-                .queryParam("styleId", styleId)
-                .when().post(CUSTOMER_BASE_ROUTE + ADD_STYLE)
-                .then().statusCode(HttpStatus.OK.value()).extract().body().as(Customer.class);
-        assertThat(customer.getCustomerId()).isEqualTo(createdCustomerId);
-        assertThat(customer.getPreferredStyles().size()).isOne();
-        assertThat(customer.getPreferredStyles().get(0).getStyleId().compareTo(styleId)).isZero();
-
-        customer = given()
-                .queryParam("customerId", createdCustomerId)
-                .queryParam("styleId", styleId)
-                .when().post(CUSTOMER_BASE_ROUTE + REMOVE_STYLE)
-                .then().statusCode(HttpStatus.OK.value()).extract().body().as(Customer.class);
-        assertThat(customer.getCustomerId()).isEqualTo(createdCustomerId);
-        assertThat(customer.getPreferredStyles().size()).isZero();
-    }
 
     @Test
     public void shoppingCartTests(){

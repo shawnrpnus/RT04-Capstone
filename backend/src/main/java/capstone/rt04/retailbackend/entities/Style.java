@@ -43,7 +43,7 @@ public class Style implements Serializable {
     @ManyToMany
     private List<Product> products;
 
-    @ManyToMany(mappedBy = "preferredStyles")
+    @OneToMany(mappedBy = "style")
     private List<Customer> customers;
 
     public Style() {

@@ -30,7 +30,7 @@ import java.util.List;
 @Getter
 @Setter
 @EqualsAndHashCode
-@ToString(exclude = {"verificationCode", "inStoreShoppingCart", "onlineShoppingCart", "preferredStyles"})
+@ToString(exclude = {"verificationCode", "inStoreShoppingCart", "onlineShoppingCart", "style"})
 @JsonIdentityInfo(generator = JSOGGenerator.class)
 public class Customer implements Serializable {
 
@@ -111,14 +111,16 @@ public class Customer implements Serializable {
     @OneToMany(mappedBy = "customer")
     private List<Reservation> reservations;
 
-    @ManyToMany
-    private List<Style> preferredStyles;
+    @ManyToOne
+    private Style style;
 
     private String creditCardCustomerId;
 
+    private String stylePreference;
+
     public Customer() {
         this.createdDateTime = new Timestamp(System.currentTimeMillis());
-        this.verified = false;
+        this.verified = true;
         this.usedPromoCodes = new ArrayList<>();
         this.creditCards = new ArrayList<>();
         this.shippingAddresses = new ArrayList<>();
@@ -128,7 +130,7 @@ public class Customer implements Serializable {
         this.wishlistItems = new ArrayList<>();
         this.reservationCartItems = new ArrayList<>();
         this.reservations = new ArrayList<>();
-        this.preferredStyles = new ArrayList<>();
+        this.stylePreference = "";
     }
 
 
