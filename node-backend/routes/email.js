@@ -64,4 +64,44 @@ router.post("/sendVerificationEmail", async (req, res) => {
   );
 });
 
+router.post("/sendUnattendedCartEmail", async (req, res) => {
+  const { email, fullName, link } = req.body;
+  const emailContent = {
+    body: {
+      name: `${fullName}`,
+      intro: "You left something in your shopping cart!",
+      action: {
+        instructions:
+            "Forget something? Click below to go to your cart",
+        button: {
+          color: "#22BC66", // Optional action button color
+          text: "Go to cart",
+          link: link
+        }
+      }
+    }
+  };
+
+  const emailBody = mailGenerator.generate(emailContent);
+  const emailText = mailGenerator.generatePlaintext(emailContent);
+
+  transporter.sendMail(
+      {
+        from: "rt04capstone@gmail.com",
+        to: email,
+        subject: "Hi, you've left something in your shopping cart!",
+        text: emailText,
+        html: emailBody
+      },
+      (error, info) => {
+        if (error) {
+          console.log(error);
+          res.status(500).send({ message: "Email failed to send" });
+        } else {
+          res.status(200).send({ message: "Email Sent" });
+        }
+      }
+  );
+});
+
 module.exports = router;

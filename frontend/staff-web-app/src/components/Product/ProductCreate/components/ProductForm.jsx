@@ -19,7 +19,9 @@ import CloseCircleIcon from "mdi-react/CloseCircleIcon";
 import renderDropZoneMultipleField from "./../../../../shared/components/Form/DropZoneMultiple";
 import {Field, reduxForm} from "redux-form";
 import ColourToImagesMap from "./../../../../models/product/ColourToImagesMap";
+
 import {clearErrors, updateErrors} from "../../../../redux/actions";
+
 
 const _ = require("lodash");
 const defaultSizes = ["XS", "S", "M", "L", "XL"];
@@ -454,9 +456,11 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = {
+
     createNewProduct,
     clearErrors,
     updateErrors
+
 };
 
 export default connect(

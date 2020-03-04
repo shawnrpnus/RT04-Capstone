@@ -1,49 +1,49 @@
-import React, {PureComponent} from "react";
-import {Link, withRouter} from "react-router-dom";
-import {connect} from "react-redux";
+import React, { PureComponent } from "react";
+import { Link, withRouter } from "react-router-dom";
+import { connect } from "react-redux";
 import {
-    AddBox,
-    Check,
-    ChevronLeft,
-    ChevronRight,
-    Clear,
-    DeleteOutline,
-    Edit,
-    FirstPage,
-    LastPage,
-    Remove,
-    SaveAlt,
-    Search,
-    ViewColumn,
-    Visibility
+  AddBox,
+  Check,
+  ChevronLeft,
+  ChevronRight,
+  Clear,
+  DeleteOutline,
+  Edit,
+  FirstPage,
+  LastPage,
+  Remove,
+  SaveAlt,
+  Search,
+  ViewColumn,
+  Visibility
 } from "@material-ui/icons";
 import MaterialTable from "material-table";
 import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
 import withPage from "../../Layout/page/withPage";
 import ProductsStockDetails from "./ProductsStockDetails";
-import {retrieveProductStocksByParameter} from "../../../redux/actions/productStockActions";
+import { retrieveProductStocksByParameter } from "../../../redux/actions/productStockActions";
 import Checkbox from "@material-ui/core/Checkbox";
 
 const _ = require("lodash");
 
 const tableIcons = {
-    Add: AddBox,
-    Check: Check,
-    Clear: Clear,
-    Delete: DeleteOutline,
-    DetailPanel: ChevronRight,
-    Edit: Edit,
-    Export: SaveAlt,
-    Filter: Search,
-    FirstPage: FirstPage,
-    LastPage: LastPage,
-    NextPage: ChevronRight,
-    PreviousPage: ChevronLeft,
-    ResetSearch: Clear,
-    Search: Search,
-    SortArrow: () => <div/>,
-    ThirdStateCheck: Remove,
-    ViewColumn: ViewColumn
+  Add: AddBox,
+  Check: Check,
+  Clear: Clear,
+  Delete: DeleteOutline,
+  DetailPanel: ChevronRight,
+  Edit: Edit,
+  Export: SaveAlt,
+  Filter: Search,
+  FirstPage: FirstPage,
+  LastPage: LastPage,
+  NextPage: ChevronRight,
+  PreviousPage: ChevronLeft,
+  ResetSearch: Clear,
+  Search: Search,
+  SortArrow: () => <div />,
+  ThirdStateCheck: Remove,
+  ViewColumn: ViewColumn
 };
 
 // const jsonColorNameList = _.keyBy(colourList, "name");
@@ -135,21 +135,22 @@ class ProductsStockTable extends PureComponent {
             </React.Fragment>
         )
     }
+
 }
 
 const mapStateToProps = state => ({
-    productStocks: state.productStock.allProductStock,
-    errors: state.errors
+  productStocks: state.productStock.allProductStock,
+  errors: state.errors
 });
 
 const mapDispatchToProps = {
-    retrieveProductStocksByParameter
+  retrieveProductStocksByParameter
 };
 
 
 export default withRouter(
-    connect(
-        mapStateToProps,
-        mapDispatchToProps
-    )(withPage(ProductsStockTable, "Product Stock Management"))
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )(withPage(ProductsStockTable, "Product Stock Management"))
 );

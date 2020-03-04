@@ -19,6 +19,8 @@ import {
   changePassword,
   emailSending,
   emailSent,
+  refreshCustomerEmail,
+  refreshCustomerId,
   sendUpdateEmailLink,
   updateCustomerName
 } from "redux/actions/customerActions";
@@ -32,9 +34,10 @@ import LoadingOverlay from "react-loading-overlay";
 import { DialogContent } from "@material-ui/core";
 import ChangePasswordRequest from "models/customer/ChangePasswordRequest";
 import IconButton from "@material-ui/core/IconButton";
-import AddressCard from "./AddressCard";
-import AddAddress from "./AddAddress";
-import AddCreditCard from "./AddCreditCard";
+import AddressCard from "components/Profile/sections/Address/AddressCard";
+import AddAddress from "components/Profile/sections/Address/AddAddress";
+import AddCreditCard from "components/Profile/sections/CreditCard/AddCreditCard";
+import CreditCardCard from "components/Profile/sections/CreditCard/CreditCardCard";
 
 const useStyles = makeStyles(signupPageStyle);
 const _ = require("lodash");
@@ -66,10 +69,16 @@ function AccountInfo(props) {
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [addNewAddress, setAddNewAddress] = useState(false);
+  const [currAddress, setCurrAddress] = useState("");
+
   //Effects
   //Cleanup on unmount
   useEffect(() => {
     return () => dispatch(emailSent());
+  }, []);
+
+  useEffect(() => {
+    dispatch(refreshCustomerId(customer.customerId));
   }, []);
 
   //Misc
@@ -375,19 +384,35 @@ function AccountInfo(props) {
               </div>
             </form>
             <AddCreditCard />
+            <CreditCardCard />
           </GridItem>
           <GridItem xs={12} sm={12} md={2}></GridItem>
-          {addNewAddress ? (
+          {addNewAddress === true ? (
             <GridItem xs={12} sm={12} md={5}>
-              <AddAddress addNewAddress={[addNewAddress, setAddNewAddress]} />
+              <AddAddress
+                addNewAddress={[addNewAddress, setAddNewAddress]}
+                currAddress={[currAddress, setCurrAddress]}
+              />
             </GridItem>
-          ) : (
+          ) : currAddress !== "" ? (
+            <GridItem xs={12} sm={12} md={5}>
+              <AddAddress
+                addNewAddress={[addNewAddress, setAddNewAddress]}
+                currAddress={[currAddress, setCurrAddress]}
+              />
+            </GridItem>
+          ) : addNewAddress === false ? (
             <GridItem xs={12} sm={12} md={5}>
               <Button onClick={handleAddNewAddress} round color="primary">
                 Add New Address
               </Button>
-              <AddressCard />
+              <AddressCard
+                addNewAddress={[addNewAddress, setAddNewAddress]}
+                currAddress={[currAddress, setCurrAddress]}
+              />
             </GridItem>
+          ) : (
+            ""
           )}
         </GridContainer>
         <Dialog open={dialogOpen} onClose={handleCloseDialog}>

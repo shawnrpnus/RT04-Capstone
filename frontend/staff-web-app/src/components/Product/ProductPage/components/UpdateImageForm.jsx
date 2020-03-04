@@ -64,7 +64,8 @@ class UpdateImageForm extends PureComponent {
 
   render() {
     const { errors, open, onClose, product } = this.props;
-    const { colourSizeMap } = this.state;
+    const { colourSizeMap, files } = this.state;
+    const disabled = files.length === 0;
 
     return (
       <Dialog onClose={onClose} open={open} fullWidth maxWidth={"md"}>
@@ -100,12 +101,8 @@ class UpdateImageForm extends PureComponent {
           <Button autoFocus onClick={onClose} color="primary">
             Cancel
           </Button>
-          <Button
-            color="primary"
-            onClick={this.onSubmit}
-            // disabled={sizesAvailable.length <= 0}
-          >
-            Create
+          <Button color="primary" onClick={this.onSubmit} disabled={disabled}>
+            Upload
           </Button>
         </DialogActions>
       </Dialog>

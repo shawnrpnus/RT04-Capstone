@@ -85,6 +85,9 @@ public class ReservationService {
         store.getReservations().add(reservation);
         customer.getReservations().add(reservation);
 
+        //Clear reservation cart
+        customer.setReservationCartItems(new ArrayList<>());
+
         // Deduct from store's product stock
         for (ProductVariant pv : productVariants) {
             ProductStock productStock = productService.retrieveProductStockByStoreIdAndProductVariantId(storeId, pv.getProductVariantId());
@@ -183,7 +186,7 @@ public class ReservationService {
 
         // make sure at least 15 mins before reservation
         if (!dateTime.after(new Timestamp(nowPlus15Minutes))) {
-            errorMap.put("reservationDateTime", "Reservation cannot be cancelled less than 15 minutes before.");
+            errorMap.put("reservationDateTime", "Reservation cannot be updated less than 15 minutes before.");
             throw new InputDataValidationException(errorMap, errorMap.toString());
         }
 
@@ -229,8 +232,16 @@ public class ReservationService {
         return reservationToUpdate;
     }
 
-    public Reservation cancelReservation(Long reservationId) throws ReservationNotFoundException {
+    public Reservation cancelReservation(Long reservationId) throws ReservationNotFoundException, InputDataValidationException {
         Reservation reservationToCancel = retrieveReservationByReservationId(reservationId);
+        long now = System.currentTimeMillis();
+        long nowPlus15Minutes = now + TimeUnit.MINUTES.toMillis(15);
+        Map<String, String> errorMap = new HashMap<>();
+        Timestamp dateTime = reservationToCancel.getReservationDateTime();
+        if (!dateTime.after(new Timestamp(nowPlus15Minutes))) {
+            errorMap.put("reservationDateTime", "Reservation cannot be cancelled less than 15 minutes before.");
+            throw new InputDataValidationException(errorMap, errorMap.toString());
+        }
 
         // Increment stock for productVariants in the store
         List<ProductVariant> productVariants = reservationToCancel.getProductVariants();
@@ -252,23 +263,40 @@ public class ReservationService {
         return reservationToCancel;
     }
 
-    public Map<Long, Integer> getProdVariantStoreStockStatus(Long productVariantId, Long storeId) throws StoreNotFoundException, ProductVariantNotFoundException {
-        Map<Long, Integer> result = new HashMap<>();
-        ProductVariant pv = productService.retrieveProductVariantById(productVariantId);
-        ProductStock productStock = productService.retrieveProductStockByStoreIdAndProductVariantId(storeId, pv.getProductVariantId());
-        if (productStock != null && productStock.getQuantity() != null) {
-            result.put(productVariantId, productStock.getQuantity());
+    public Map<Long, Map<String, Object>> getProdVariantStoreStockStatus(Long customerId, Long storeId) throws StoreNotFoundException, ProductVariantNotFoundException, CustomerNotFoundException {
+        Customer customer = customerService.retrieveCustomerByCustomerId(customerId);
+        Map<Long, Map<String, Object>> result = new HashMap<>();
+        for (ProductVariant pv: customer.getReservationCartItems()) {
+            ProductStock productStock = productService.retrieveProductStockByStoreIdAndProductVariantId(storeId, pv.getProductVariantId());
+            String storeName = productStock.getStore().getStoreName();
+            Map<String, Object> stockAndName = new HashMap<>();
+            stockAndName.put("quantity", productStock.getQuantity());
+            stockAndName.put("storeName", storeName);
+            if (productStock != null && productStock.getQuantity() != null) {
+                result.put(pv.getProductVariantId(), stockAndName);
+            }
         }
         return result;
     }
 
     public List<ReservationStockCheckResponse> getAllStoresStockStatusForCart(Long customerId) throws CustomerNotFoundException, ProductVariantNotFoundException, StoreNotFoundException {
-        List<ReservationStockCheckResponse> result = new ArrayList<>();
+
         List<ProductVariant> reservationCartItems = customerService.retrieveCustomerByCustomerId(customerId).getReservationCartItems();
+        return checkAllStoreStocksForGivenProductVariants(reservationCartItems);
+    }
+
+    public List<ReservationStockCheckResponse> getAllStoresStockStatusForReservation(Long reservationId) throws CustomerNotFoundException, ProductVariantNotFoundException, StoreNotFoundException, ReservationNotFoundException {
+
+        List<ProductVariant> reservationItems = retrieveReservationByReservationId(reservationId).getProductVariants();
+        return checkAllStoreStocksForGivenProductVariants(reservationItems);
+    }
+
+    private List<ReservationStockCheckResponse> checkAllStoreStocksForGivenProductVariants(List<ProductVariant> productVariants) throws ProductVariantNotFoundException, StoreNotFoundException {
+        List<ReservationStockCheckResponse> result = new ArrayList<>();
         List<Store> allStores = storeService.retrieveAllStores();
         for (Store store : allStores) {
             int numItemsNoStock = 0;
-            for (ProductVariant reservationCartItem : reservationCartItems){
+            for (ProductVariant reservationCartItem : productVariants){
                 try {
                     checkStoreStockForProductVariant(store.getStoreId(), reservationCartItem.getProductVariantId());
                 } catch (InputDataValidationException ex){ //insufficient stock
@@ -277,7 +305,7 @@ public class ReservationService {
             }
             if (numItemsNoStock == 0){
                 result.add(new ReservationStockCheckResponse(store, "In stock"));
-            } else if (numItemsNoStock == reservationCartItems.size()){
+            } else if (numItemsNoStock == productVariants.size()){
                 result.add(new ReservationStockCheckResponse(store, "Out of stock"));
             } else {
                 result.add(new ReservationStockCheckResponse(store, "Partially in stock"));

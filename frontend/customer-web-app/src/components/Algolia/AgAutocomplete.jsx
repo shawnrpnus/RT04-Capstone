@@ -72,7 +72,7 @@ const SearchResult = props => {
   return (
     <Link to={`/shop/product/${product.productId}`}>
       <GridContainer>
-        <GridItem xs={4}>
+        <GridItem xs={3}>
           <img
             height="auto"
             width="100%"
@@ -80,7 +80,7 @@ const SearchResult = props => {
             alt="ProdImage"
           />
         </GridItem>
-        <GridItem xs={8}>
+        <GridItem xs={9}>
           <GridContainer>
             <GridItem xs={12}>{product.productName}</GridItem>
             <GridItem>${product.price}</GridItem>

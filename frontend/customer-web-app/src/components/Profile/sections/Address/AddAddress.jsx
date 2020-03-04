@@ -3,13 +3,13 @@ import {
   cardLink,
   cardSubtitle,
   cardTitle
-} from "../../../assets/jss/material-kit-pro-react";
+} from "assets/jss/material-kit-pro-react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory, useLocation } from "react-router-dom";
-import customSelectStyle from "../../../assets/jss/material-kit-pro-react/customSelectStyle";
+import customSelectStyle from "assets/jss/material-kit-pro-react/customSelectStyle";
 import React, { useEffect, useState } from "react";
-import { clearErrors } from "../../../redux/actions";
-import CustomTextField from "../../UI/CustomInput/CustomTextField";
+import { clearErrors } from "redux/actions";
+import CustomTextField from "components/UI/CustomInput/CustomTextField";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import {
   Apartment,
@@ -19,29 +19,32 @@ import {
   Home,
   Place
 } from "@material-ui/icons";
-import Button from "../../UI/CustomButtons/Button";
-import SendUpdateEmailLinkRequest from "../../../models/customer/SendUpdateEmailLinkRequest";
+import Button from "components/UI/CustomButtons/Button";
+import SendUpdateEmailLinkRequest from "models/customer/SendUpdateEmailLinkRequest";
 import {
   addShippingAddressDetails,
   emailSending,
   sendUpdateEmailLink,
-  updateCustomerName
-} from "../../../redux/actions/customerActions";
-import UpdateCustomerRequest from "../../../models/customer/UpdateCustomerRequest";
-import Address from "../../../models/customer/Address";
-import AddUpdateAddressRequest from "../../../models/customer/AddUpdateAddressRequest";
+  updateCustomerName,
+  updateShippingAddressDetails
+} from "redux/actions/customerActions";
+import UpdateCustomerRequest from "models/customer/UpdateCustomerRequest";
+import Address from "models/customer/Address";
+import AddUpdateAddressRequest from "models/customer/AddUpdateAddressRequest";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
-import customCheckboxRadioSwitch from "../../../assets/jss/material-kit-pro-react/customCheckboxRadioSwitchStyle";
+import customCheckboxRadioSwitch from "assets/jss/material-kit-pro-react/customCheckboxRadioSwitchStyle";
 import { useSnackbar } from "notistack";
 
 const useStyles = makeStyles(customCheckboxRadioSwitch);
 
 // do this to edit props (pass in props as a tuple)
 export default function AddAddress({
-  addNewAddress: [addNewAddress, setAddNewAddress]
+  addNewAddress: [addNewAddress, setAddNewAddress],
+  currAddress: [currAddress, setCurrAddress]
 }) {
-  // console.log(addNewAddress);
+  console.log(addNewAddress);
+  console.log(currAddress);
   //Hooks
   const classes = useStyles();
   const history = useHistory();
@@ -54,12 +57,13 @@ export default function AddAddress({
 
   //State
   const [inputState, setInputState] = useState({
-    line1: "",
-    line2: "",
-    postalCode: "",
-    buildingName: "",
-    default: false,
-    billing: false
+    line1: currAddress ? currAddress.line1 : "",
+    line2: currAddress ? currAddress.line2 : "",
+    postalCode: currAddress ? currAddress.postalCode : "",
+    buildingName: currAddress ? currAddress.buildingName : "",
+    default: currAddress ? currAddress.default : false,
+    billing: currAddress ? currAddress.billing : false,
+    addressId: currAddress ? currAddress.addressId : undefined
   });
 
   const onChange = e => {
@@ -76,18 +80,35 @@ export default function AddAddress({
   };
 
   const handleAddAddress = () => {
-    const address = new Address(
-      inputState.line1,
-      inputState.line2,
-      inputState.postalCode,
-      inputState.buildingName,
-      inputState.default,
-      inputState.billing
-    );
-    const req = new AddUpdateAddressRequest(currCustomer.customerId, address);
-    dispatch(addShippingAddressDetails(req, enqueueSnackbar, history));
-    if (inputState.line1 !== "" && inputState.postalCode !== "") {
+    if (currAddress) {
+      const address = new Address(
+        inputState.addressId,
+        inputState.line1,
+        inputState.line2,
+        inputState.postalCode,
+        inputState.buildingName,
+        inputState.default,
+        inputState.billing
+      );
+      const req = new AddUpdateAddressRequest(currCustomer.customerId, address);
+      dispatch(updateShippingAddressDetails(req, enqueueSnackbar, history));
       setAddNewAddress(!addNewAddress);
+      setCurrAddress("");
+    } else {
+      const address = new Address(
+        inputState.addressId,
+        inputState.line1,
+        inputState.line2,
+        inputState.postalCode,
+        inputState.buildingName,
+        inputState.default,
+        inputState.billing
+      );
+      const req = new AddUpdateAddressRequest(currCustomer.customerId, address);
+      dispatch(addShippingAddressDetails(req, enqueueSnackbar, history));
+      if (inputState.line1 !== "" && inputState.postalCode !== "") {
+        setAddNewAddress(!addNewAddress);
+      }
     }
   };
 
@@ -109,15 +130,27 @@ export default function AddAddress({
 
   const handleCancelAddAddress = () => {
     setAddNewAddress(!addNewAddress);
+    setCurrAddress("");
   };
 
   return (
     <div>
-      <h4 style={{ marginBottom: 0 }}>Add New Address</h4>
-      <small>
-        Please enter an address you would like to save and deliver your items
-        to.
-      </small>
+      {currAddress ? (
+        <React.Fragment>
+          <h4 style={{ marginBottom: 0 }}>Edit Address</h4>
+          <small>
+            All future delivery labels will appear exactly as they are below.
+          </small>
+        </React.Fragment>
+      ) : (
+        <React.Fragment>
+          <h4 style={{ marginBottom: 0 }}>Add New Address</h4>
+          <small>
+            Please enter an address you would like to save and deliver your
+            items to.
+          </small>
+        </React.Fragment>
+      )}
 
       <form>
         <CustomTextField
@@ -182,6 +215,7 @@ export default function AddAddress({
             <Checkbox
               onClick={() => handleToggle("delivery")}
               // onClick={handleToggle}
+              checked={inputState.default}
               checkedIcon={<Check className={classes.checkedIcon} />}
               icon={<Check className={classes.uncheckedIcon} />}
               classes={{
@@ -199,6 +233,7 @@ export default function AddAddress({
             <Checkbox
               tabIndex={-1}
               onClick={() => handleToggle("billing")}
+              checked={inputState.billing}
               checkedIcon={<Check className={classes.checkedIcon} />}
               icon={<Check className={classes.uncheckedIcon} />}
               classes={{

@@ -3,13 +3,14 @@ import * as types from "../actions/types";
 const initialState = {
   currentStaff: null,
   allStaff: null,
-
+  staffWithNoAccount:null,
   allRoles: null,
   allDepartments: null,
   loggedInStaff: null,
   currentRole: null,
   currentDepartment: null,
-  currentAddress: null
+  currentAddress: null,
+
 };
 
 export default function(state = initialState, action) {
@@ -78,6 +79,13 @@ export default function(state = initialState, action) {
         ...state,
         loggedInStaff: action.staff
       };
+
+    case types.RETRIEVE_STAFF_WITH_NO_ACCOUNT:
+      return {
+        ...state,
+        staffWithNoAccount: action.staffEntity
+      };
+
 
     default:
       return state;

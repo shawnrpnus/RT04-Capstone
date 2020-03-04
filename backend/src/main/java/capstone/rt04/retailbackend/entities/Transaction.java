@@ -13,12 +13,14 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.commons.lang3.RandomStringUtils;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -36,6 +38,8 @@ public class Transaction implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long transactionId;
+
+    private String orderNumber;
 
     private Timestamp createdDateTime;
 
@@ -72,6 +76,9 @@ public class Transaction implements Serializable {
 
     public Transaction() {
         this.createdDateTime = new Timestamp(System.currentTimeMillis());
+        this.transactionLineItems = new ArrayList<>();
+        this.deliveries = new ArrayList<>();
+        this.orderNumber = RandomStringUtils.randomAlphanumeric(12);
     }
 
     public Transaction(Customer customer) {

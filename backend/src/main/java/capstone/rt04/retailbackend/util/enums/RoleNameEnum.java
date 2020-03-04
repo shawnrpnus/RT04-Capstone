@@ -13,5 +13,6 @@ public enum RoleNameEnum {
     DIRECTOR,
     MANAGER,
     ASSISTANT_MANAGER,
-    ASSISTANT
+    ASSISTANT,
+    HR
 }

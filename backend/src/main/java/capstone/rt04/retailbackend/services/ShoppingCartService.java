@@ -31,7 +31,7 @@ public class ShoppingCartService {
     private final ShoppingCartItemRepository shoppingCartItemRepository;
 
 
-    public ShoppingCartService(ProductService productService, @Lazy CustomerService customerService, ShoppingCartRepository shoppingCartRepository, ShoppingCartItemRepository shoppingCartItemRepository) {
+    public ShoppingCartService(@Lazy ProductService productService, @Lazy CustomerService customerService, ShoppingCartRepository shoppingCartRepository, ShoppingCartItemRepository shoppingCartItemRepository) {
         this.productService = productService;
         this.customerService = customerService;
         this.shoppingCartRepository = shoppingCartRepository;
@@ -63,7 +63,7 @@ public class ShoppingCartService {
 
     // use for adding, editing, deleting item from shopping cart
     public Customer updateQuantityOfProductVariant(Integer quantity, Long productVariantId, Long customerId, String cartType) throws CustomerNotFoundException, ProductVariantNotFoundException, InvalidCartTypeException {
-        ShoppingCart shoppingCart = getShoppingCart(customerId, cartType);
+        ShoppingCart shoppingCart = retrieveShoppingCart(customerId, cartType);
 
         for (ShoppingCartItem shoppingCartItem : shoppingCart.getShoppingCartItems()) {
             if (shoppingCartItem.getProductVariant().getProductVariantId().equals(productVariantId)) {
@@ -95,7 +95,7 @@ public class ShoppingCartService {
     }
 
     public Customer clearShoppingCart(Long customerId, String cartType) throws CustomerNotFoundException, InvalidCartTypeException {
-        ShoppingCart shoppingCart = getShoppingCart(customerId, cartType);
+        ShoppingCart shoppingCart = retrieveShoppingCart(customerId, cartType);
         List<ShoppingCartItem> shoppingCartItems = shoppingCart.getShoppingCartItems();
         shoppingCart.setShoppingCartItems(new ArrayList<>());
         shoppingCart.calculateAndSetInitialTotal();
@@ -107,7 +107,7 @@ public class ShoppingCartService {
         return customerService.lazyLoadCustomerFields(customer);
     }
 
-    public ShoppingCart getShoppingCart(Long customerId, String cartType) throws CustomerNotFoundException, InvalidCartTypeException {
+    public ShoppingCart retrieveShoppingCart(Long customerId, String cartType) throws CustomerNotFoundException, InvalidCartTypeException {
         Customer customer = customerService.retrieveCustomerByCustomerId(customerId);
         if (cartType.equals(ONLINE_SHOPPING_CART)) {
             customer.getOnlineShoppingCart().getShoppingCartItems().size();

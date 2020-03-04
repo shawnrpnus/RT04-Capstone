@@ -25,7 +25,7 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @EqualsAndHashCode
-@ToString
+@ToString(exclude = "transaction")
 @JsonIdentityInfo(generator = JSOGGenerator.class)
 public class TransactionLineItem implements Serializable {
 
@@ -44,15 +44,15 @@ public class TransactionLineItem implements Serializable {
     @Column(nullable = false)
     private Integer quantity;
     
-    @ManyToOne(optional = false)
-    @JoinColumn(nullable = false)
+    @ManyToOne
+    @JoinColumn
     private Transaction transaction;
     
     @OneToOne(mappedBy = "transactionLineItem")
     private Refund refund;
     
-    @ManyToOne(optional = false)
-    @JoinColumn(nullable = false)
+    @ManyToOne(optional = false) // persistent constraint
+    @JoinColumn(nullable = false) // db constraint
     private ProductVariant productVariant;
             
     public TransactionLineItem() {

@@ -125,29 +125,30 @@ public class StaffService {
     //staff username will be unique ID
     //After admin creates staff account, system sends staff via staff email the account username and password
     //No verification done here
-    public Staff createNewStaffAccount(Long staffID) throws CreateNewStaffAccountException {
+    public List<Staff> createNewStaffAccount(List<Long> staffIDs) throws CreateNewStaffAccountException {
 
+        List<Staff> toReturn = new ArrayList<>();
         try {
-            Staff staff = retrieveStaffByStaffId(staffID);
-            if(staff.getUsername()!=null){
-                Map<String, String> errorMap = new HashMap<>();
-                errorMap.put("staffId", ErrorMessages.STAFF_ACCOUNT_ALREADY_CONFIGURED);
-                throw new CreateNewStaffAccountException(errorMap, ErrorMessages.STAFF_ACCOUNT_ALREADY_CONFIGURED);
-            }
-            staff.setUsername(staff.getFirstName() + staff.getLastName() + staffID.toString());
+            for(Long id : staffIDs) {
+                Staff staff = retrieveStaffByStaffId(id);
+                if (staff.getUsername() != null) {
+                    Map<String, String> errorMap = new HashMap<>();
+                    errorMap.put("staffId", ErrorMessages.STAFF_ACCOUNT_ALREADY_CONFIGURED);
+                    throw new CreateNewStaffAccountException(errorMap, ErrorMessages.STAFF_ACCOUNT_ALREADY_CONFIGURED);
+                }
+                String username = staff.getFirstName() + staff.getLastName() + id.toString();
+                String u = username.replaceAll("\\s", "");
+                staff.setUsername(u);
+                String password = "password";
+                staff.setPassword(encoder.encode(password));
 
-            //generate random password
-            //password is encoded and stored in db
-            //send staff the password(not the encoded one)
-            String password = "password";
-            staff.setPassword(encoder.encode(password));
-            //dont need to save in repository because staff already saved when HR created.
+                toReturn.add(staff);
 //            if (Arrays.asList(environment.getActiveProfiles()).contains("dev")) {
 //                //send an email to staff informing staff of username and password
 //                sendEmail(staffID.toString(),password, "shawnroshan@gmail.com"); //TODO: to change to actual email
 //            }
-
-            return staff;
+            }
+            return toReturn;
         }catch (StaffNotFoundException ex){
             Map<String, String> errorMap = new HashMap<>();
             errorMap.put("staffId", ErrorMessages.STAFF_DOES_NOT_EXIST);
@@ -157,8 +158,16 @@ public class StaffService {
     }
 
     //For IT department to reset for staff
-    public Staff resetPassword(String username) throws StaffNotFoundException{
+    public Staff resetPassword(String username) throws StaffNotFoundException, InputDataValidationException {
+        if(username.isEmpty()){
+            Map<String, String> errorMap = new HashMap<>();
+            errorMap.put("username", ErrorMessages.USERNAME_REQUIRED);
+            throw new InputDataValidationException(errorMap, ErrorMessages.USERNAME_REQUIRED);
+        }
+
         try {
+
+
             Staff staff = retrieveStaffByUsername(username);
 
             String password = "password";
@@ -203,6 +212,19 @@ return allRoles;
     public List<Department> retrieveAllDepartments(){
         List<Department> allDepartments = departmentRepository.findAll();
         return allDepartments;
+
+    }
+
+    public List<Staff> retrieveStaffWithNoAccount(){
+        List<Staff> allStaff= staffRepository.findAll();
+        List<Staff> toReturn = new ArrayList<>();
+        for(Staff s : allStaff){
+            if(s.getUsername() == null){
+                toReturn.add(s);
+            }
+
+        }
+        return toReturn;
 
     }
 
@@ -280,13 +302,27 @@ return allRoles;
         try {
             Staff staff = retrieveStaffByStaffId(staffId);
 
+            if(oldPassword.isEmpty()){
+                Map<String, String> errorMap = new HashMap<>();
+                errorMap.put("oldPassword", ErrorMessages.OLD_PASSWORD_REQUIRED);
+                throw new InvalidStaffCredentialsException(errorMap,ErrorMessages.OLD_PASSWORD_REQUIRED);
+
+            }
+
+            if(newPassword.isEmpty()){
+                Map<String, String> errorMap = new HashMap<>();
+                errorMap.put("newPassword", ErrorMessages.NEW_PASSWORD_REQUIRED);
+                throw new InvalidStaffCredentialsException(errorMap,ErrorMessages.NEW_PASSWORD_REQUIRED);
+
+            }
+
             if (encoder.matches(oldPassword,staff.getPassword()) || oldPassword.equals(staff.getPassword())) {
 
                 staff.setPassword(encoder.encode(newPassword));
                 return retrieveStaffByStaffId(staffId);
             } else {
                 Map<String, String> errorMap = new HashMap<>();
-                errorMap.put("password", ErrorMessages.OLD_PASSWORD_INCORRECT);
+                errorMap.put("oldPassword", ErrorMessages.OLD_PASSWORD_INCORRECT);
                 throw new InvalidStaffCredentialsException(errorMap,ErrorMessages.OLD_PASSWORD_INCORRECT);
             }
         }catch(StaffNotFoundException ex){

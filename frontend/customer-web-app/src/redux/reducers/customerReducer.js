@@ -58,6 +58,11 @@ export default function(state = initialState, action) {
         ...state,
         loggedInCustomer: action.loggedInCustomer
       };
+    case types.REMOVE_SHIPPING_ADDRESS_SUCCESS:
+      return {
+        ...state,
+        loggedInCustomer: action.loggedInCustomer
+      };
     case types.UPDATE_SHOPPING_CART_SUCCESS:
       return {
         ...state,
@@ -67,11 +72,6 @@ export default function(state = initialState, action) {
       return {
         ...state,
         clientSecret: action.clientSecret
-      };
-    case types.SAVE_CARD_SUCCESS:
-      return {
-        ...state,
-        customer: action.customer
       };
     default:
       return state;

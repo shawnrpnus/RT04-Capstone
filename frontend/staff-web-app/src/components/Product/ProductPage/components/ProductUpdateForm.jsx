@@ -154,6 +154,7 @@ class ProductUpdateForm extends PureComponent {
               InputLabelProps={{
                 shrink: true
               }}
+              inputProps={{ min: "0", step: "1" }}
               onChange={this.onChange}
             />
             <TextField
@@ -166,6 +167,7 @@ class ProductUpdateForm extends PureComponent {
               InputLabelProps={{
                 shrink: true
               }}
+              inputProps={{ min: "0", step: "1" }}
               onChange={this.onChange}
             />
             <FormControl fullWidth style={{ margin: "3% 0" }}>

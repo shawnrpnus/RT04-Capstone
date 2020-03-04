@@ -76,7 +76,7 @@ public class ReservationController {
     }
 
     @PostMapping(CustomerControllerRoutes.CANCEL_RESERVATION)
-    public ResponseEntity<?> cancelReservation(@RequestParam Long reservationId) throws ReservationNotFoundException {
+    public ResponseEntity<?> cancelReservation(@RequestParam Long reservationId) throws ReservationNotFoundException, InputDataValidationException {
         Reservation cancelledReservation = reservationService.cancelReservation(reservationId);
         clearReservationRelationships(cancelledReservation);
         return new ResponseEntity<>(cancelledReservation, HttpStatus.OK);
@@ -90,8 +90,8 @@ public class ReservationController {
     }
 
     @GetMapping(CustomerControllerRoutes.GET_PROD_VARIANT_STORE_STOCK_STATUS)
-    public Map<Long, Integer> getProdVariantStoreStockStatus(@RequestParam Long productVariantId, @RequestParam Long storeId) throws ProductVariantNotFoundException, StoreNotFoundException {
-        return reservationService.getProdVariantStoreStockStatus(productVariantId, storeId);
+    public Map<Long, Map<String, Object>> getProdVariantStoreStockStatus(@RequestParam Long customerId, @RequestParam Long storeId) throws ProductVariantNotFoundException, StoreNotFoundException, CustomerNotFoundException {
+        return reservationService.getProdVariantStoreStockStatus(customerId, storeId);
     }
 
     @GetMapping(CustomerControllerRoutes.GET_STORES_STOCK_STATUS_FOR_CART)
@@ -99,6 +99,20 @@ public class ReservationController {
         List<ReservationStockCheckResponse> reservationStockCheckResponses = reservationService.getAllStoresStockStatusForCart(customerId);
         reservationStockCheckResponses.forEach(this::clearReservationStockCheckResponseRelationships);
         return new ResponseEntity<>(reservationStockCheckResponses, HttpStatus.OK);
+    }
+
+    @GetMapping(CustomerControllerRoutes.GET_STORES_STOCK_STATUS_FOR_RESERVATION)
+    public ResponseEntity<?> getStoresStockStatusForReservation(@RequestParam Long reservationId) throws ProductVariantNotFoundException, StoreNotFoundException, CustomerNotFoundException, ReservationNotFoundException {
+        List<ReservationStockCheckResponse> reservationStockCheckResponses = reservationService.getAllStoresStockStatusForReservation(reservationId);
+        reservationStockCheckResponses.forEach(this::clearReservationStockCheckResponseRelationships);
+        return new ResponseEntity<>(reservationStockCheckResponses, HttpStatus.OK);
+    }
+
+    @GetMapping(CustomerControllerRoutes.RETRIEVE_RESERVATION_BY_ID)
+    public ResponseEntity<?> retrieveReservationById(@RequestParam Long reservationId) throws ProductVariantNotFoundException, StoreNotFoundException, CustomerNotFoundException, ReservationNotFoundException {
+        Reservation reservation = reservationService.retrieveReservationByReservationId(reservationId);
+        clearReservationRelationships(reservation);
+        return new ResponseEntity<>(reservation, HttpStatus.OK);
     }
 
 

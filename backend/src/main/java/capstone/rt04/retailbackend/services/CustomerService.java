@@ -263,13 +263,18 @@ public class CustomerService {
         request.put("fullName", fullName);
 
         String endpoint = Constants.NODE_API_URL + "/email/sendVerificationEmail";
-        ResponseEntity<?> response = restTemplate.postForEntity(endpoint, request, Object.class);
-
-        if (response.getStatusCode().equals(HttpStatus.OK)) {
-            log.info("Email sent successfully to " + email);
-        } else {
-            log.error("Error sending email to " + email);
+        try {
+            ResponseEntity<?> response = restTemplate.postForEntity(endpoint, request, Object.class);
+            if (response.getStatusCode().equals(HttpStatus.OK)) {
+                log.info("Email sent successfully to " + email);
+            } else {
+                log.error("Error sending email to " + email);
+            }
+        } catch (Exception ex){
+            log.error(ex.getMessage());
         }
+
+
     }
 
     //customer click forget password --> send email to customer's email

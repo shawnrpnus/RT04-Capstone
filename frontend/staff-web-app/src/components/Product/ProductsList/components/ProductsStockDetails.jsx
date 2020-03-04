@@ -29,6 +29,8 @@ import MenuItem from "@material-ui/core/MenuItem";
 import UpdateProductStockRequest from "../../../../models/productStock/UpdateProductStockRequest";
 import { updateProductStockQty } from "../../../../redux/actions/productStockActions";
 import { toast } from "react-toastify";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import Backdrop from "@material-ui/core/Backdrop";
 
 const _ = require("lodash");
 
@@ -137,8 +139,10 @@ class ProductsStockDetails extends PureComponent {
     return (
       // call retrieve product details and pass in warehouse/store id
       <Dialog onClose={onClose} open={open} fullWidth maxWidth={"md"}>
+        <Backdrop style={{ zIndex: 1000 }} open={isLoading}>
+          <CircularProgress color="inherit" />
+        </Backdrop>
         <DialogTitle>Product stock details</DialogTitle>
-
         <DialogContent
           style={{
             textAlign: "center",

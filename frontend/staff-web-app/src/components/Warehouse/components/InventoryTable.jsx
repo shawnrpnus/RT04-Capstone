@@ -25,7 +25,6 @@ import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
 import withPage from "../../Layout/page/withPage";
 import ProductsStockDetails from "./ProductsStockDetails";
 
-
 const _ = require("lodash");
 
 const tableIcons = {

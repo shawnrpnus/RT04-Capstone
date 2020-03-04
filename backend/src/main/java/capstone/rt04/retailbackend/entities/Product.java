@@ -41,29 +41,33 @@ public class Product implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long productId;
 
-    @NotNull (message = ErrorMessages.SERIAL_NUMBER_REQUIRED)
+
+    @NotNull(message = "Serial name cannot be empty")
     @Column(nullable = false, unique = true)
     @Size(min = 5, message = ErrorMessages.SERIAL_NUMBER_REQUIRED)
     private String serialNumber;
 
-    @NotNull (message = ErrorMessages.PRODUCT_NAME_REQUIRED)
+
+    @NotNull(message = "Product name cannot be empty")
     @Column(nullable = false)
     @Size(min = 0, message = ErrorMessages.PRODUCT_NAME_REQUIRED)
     private String productName;
 
-    @NotNull (message = ErrorMessages.DESCRIPTION_REQUIRED)
+
+    @NotNull(message = "Description cannot be empty")
     @Column(nullable = false, columnDefinition = "VARCHAR(1337)")
     @Size(max = 1337, message = ErrorMessages.DESCRIPTION_REQUIRED)
     private String description;
 
-    @NotNull (message = ErrorMessages.PRICE_REQUIRED)
+
+    @NotNull(message = "Price cannot be empty")
     @Column(nullable = false, precision = 11, scale = 2)
-    @DecimalMin(value = "0.00", message = ErrorMessages.PRICE_REQUIRED)
+    @DecimalMin(value = "0.00", message = "Price must be more than 0")
     private BigDecimal price;
 
-    @NotNull (message = ErrorMessages.COST_REQUIRED)
+    @NotNull(message = "Cost cannot be empty")
     @Column(nullable = false, precision = 11, scale = 2)
-    @DecimalMin(value = "0.00", message = ErrorMessages.COST_REQUIRED)
+    @DecimalMin(value = "0.00", message = "Cost must be more than 0")
     private BigDecimal cost;
 
     @ManyToMany(mappedBy = "products")
@@ -77,7 +81,7 @@ public class Product implements Serializable {
 
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
-    @NotNull (message = ErrorMessages.CATEGORY_REQUIRED)
+    @NotNull(message = "Product must belong to a category")
     private Category category;
 
     @OneToMany(mappedBy = "product")

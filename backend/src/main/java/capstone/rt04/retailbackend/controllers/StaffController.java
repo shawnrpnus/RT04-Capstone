@@ -83,7 +83,7 @@ public class StaffController {
     public ResponseEntity<?> createNewStaffAccount(@RequestBody StaffAccountCreateRequest staffAccountCreateRequest) throws CreateNewStaffAccountException {
 
         try {
-            Staff staff = staffService.createNewStaffAccount(staffAccountCreateRequest.getStaffId());
+            List<Staff> staff = staffService.createNewStaffAccount(staffAccountCreateRequest.getStaffIds());
             return new ResponseEntity<>(staff, HttpStatus.CREATED);
         } catch (CreateNewStaffAccountException ex){
             return new ResponseEntity<>(ex.getErrorMap(), HttpStatus.BAD_REQUEST);
@@ -171,9 +171,9 @@ public class StaffController {
             Staff staff = staffService.retrieveStaffByStaffId(staffChangePasswordRequest.getStaffId());
             return new ResponseEntity<>(staff, HttpStatus.OK);
         } catch (StaffNotFoundException ex){
-            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
         } catch (InvalidStaffCredentialsException ex){
-            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(ex.getErrorMap(), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -185,7 +185,9 @@ public class StaffController {
             Staff staff = staffService.resetPassword(rq.getUsername());
             return new ResponseEntity<>(staff, HttpStatus.OK);
         }catch (StaffNotFoundException ex){
-            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(ex.getErrorMap(), HttpStatus.NOT_FOUND);
+        }catch(InputDataValidationException ex){
+            return new ResponseEntity<>(ex.getErrorMap(), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -195,6 +197,16 @@ public class StaffController {
         return new ResponseEntity<>(deletedStaff, HttpStatus.OK);
     }
 
+
+    @GetMapping(StaffControllerRoutes.RETRIEVE_STAFF_WITH_NO_ACCOUNT)
+    public ResponseEntity<?> retrieveStaffWithNoAccount() {
+        try {
+            List<Staff> staff = staffService.retrieveStaffWithNoAccount();
+            return new ResponseEntity<>(staff, HttpStatus.OK);
+        } catch (Exception ex) {
+            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 
 
