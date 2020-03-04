@@ -328,7 +328,7 @@ public class StartUpService {
         Role role2 = staffService.createNewRole(RoleNameEnum.ASSISTANT_MANAGER);
         Role role3 = staffService.createNewRole(RoleNameEnum.MANAGER);
         Role role4 = staffService.createNewRole(RoleNameEnum.DIRECTOR);
-
+        List<Long>staffToConfigure =new ArrayList<>();
 
 
         Staff staff = new Staff("Geogre", "Lee", 2, "116c", "geogrelee@gmail.com", BigDecimal.valueOf(10000));
@@ -338,12 +338,16 @@ public class StartUpService {
         Staff staff2 = new Staff("IT", "STAFF", 13, "213C", "annabeltwe@gmail.com", BigDecimal.valueOf(10000));
         Address a2 = new Address("Block 235 Chua Chu Kang Ave 2", "#15-234", 689051, "-");
         Staff newStaff2 = staffService.createNewStaff(staff2, a2, role2.getRoleId(), departmentIT.getDepartmentId());
-        staffService.createNewStaffAccount(newStaff2.getStaffId());
+
 
         Staff staff3 = new Staff("HR", "STAFF", 1, "131Z", "Caiyl@gmail.com", BigDecimal.valueOf(10000));
         Address a3 = new Address("Block 234 Bishan South", "#30-08", 321140, "Palm Garden");
         Staff newStaff3 = staffService.createNewStaff(staff3, a3, role1.getRoleId(), departmentHR.getDepartmentId());
-        staffService.createNewStaffAccount(newStaff3.getStaffId());
+
+        staffToConfigure.add(newStaff2.getStaffId());
+        staffToConfigure.add(newStaff3.getStaffId());
+        staffService.createNewStaffAccount(staffToConfigure);
+
 
         Staff staff4 = new Staff("Gerard", "Ng", 20, "971C", "rayquaza@gmail.com", BigDecimal.valueOf(10000));
         Address a4 = new Address("Block 130 Taman Jurong", "#15-02", 231334, "-");

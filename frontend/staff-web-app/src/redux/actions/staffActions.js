@@ -296,3 +296,28 @@ const loginStaffError = data => ({
 export const staffLogout = () => ({
   type: types.STAFF_LOGOUT
 });
+
+export const retrieveStaffWithNoAccount = () => {
+    return dispatch => {
+        //redux thunk passes dispatch
+        axios
+            .get(STAFF_BASE_URL + `/retrieveStaffWithNoAccount`)
+            .then(response => {
+                const { data } = jsog.decode(response);
+                dispatch(retrieveSuccess(data));
+            })
+            .catch(err => {
+                dispatch(retrieveError(err.response.data));
+            });
+    };
+};
+
+const retrieveSuccess = data => ({
+    type: types.RETRIEVE_STAFF_WITH_NO_ACCOUNT,
+    staffEntity: data
+});
+
+const retrieveError = data => ({
+    type: GET_ERRORS,
+    errorMap: data
+});
