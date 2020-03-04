@@ -95,7 +95,9 @@ export const createNewStaffAccount = (staffAccountCreateRequest, history) => {
     //redux thunk passes dispatch
     axios
       .post(
-        STAFF_BASE_URL + "/createNewStaffAccount",staffAccountCreateRequest)
+        STAFF_BASE_URL + "/createNewStaffAccount",
+        staffAccountCreateRequest
+      )
       .then(response => {
         const { data } = jsog.decode(response);
         dispatch(createStaffAccountSuccess(data));
@@ -103,7 +105,7 @@ export const createNewStaffAccount = (staffAccountCreateRequest, history) => {
           position: toast.POSITION.TOP_CENTER
         });
         //window.location.reload(true);
-          history.push(`/`); // TODO: update redirect path
+        history.push(`/`); // TODO: update redirect path
       })
       .catch(err => {
         dispatch(createStaffAccountError(err.response.data));
@@ -133,7 +135,7 @@ export const changePassword = (staffChangePasswordRequest, history) => {
         toast.success("Staff password changed!", {
           position: toast.POSITION.TOP_CENTER
         });
-          history.push(`/`); // TODO: update redirect path
+        history.push(`/`); // TODO: update redirect path
       })
       .catch(err => {
         dispatch(changeStaffPasswordError(err.response.data));
@@ -297,26 +299,26 @@ export const staffLogout = () => ({
 });
 
 export const retrieveStaffWithNoAccount = () => {
-    return dispatch => {
-        //redux thunk passes dispatch
-        axios
-            .get(STAFF_BASE_URL + `/retrieveStaffWithNoAccount`)
-            .then(response => {
-                const { data } = jsog.decode(response);
-                dispatch(retrieveSuccess(data));
-            })
-            .catch(err => {
-                dispatch(retrieveError(err.response.data));
-            });
-    };
+  return dispatch => {
+    //redux thunk passes dispatch
+    axios
+      .get(STAFF_BASE_URL + `/retrieveStaffWithNoAccount`)
+      .then(response => {
+        const { data } = jsog.decode(response);
+        dispatch(retrieveSuccess(data));
+      })
+      .catch(err => {
+        dispatch(retrieveError(err.response.data));
+      });
+  };
 };
 
 const retrieveSuccess = data => ({
-    type: types.RETRIEVE_STAFF_WITH_NO_ACCOUNT,
-    staffEntity: data
+  type: types.RETRIEVE_STAFF_WITH_NO_ACCOUNT,
+  staffEntity: data
 });
 
 const retrieveError = data => ({
-    type: GET_ERRORS,
-    errorMap: data
+  type: GET_ERRORS,
+  errorMap: data
 });

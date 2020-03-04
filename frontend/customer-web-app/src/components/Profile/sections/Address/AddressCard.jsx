@@ -141,10 +141,6 @@ export default function AddressCard({
                       return "Other Address";
                     }
                   })()}
-                  {/*{item.default && item.billing ? "Shipping & Billing Address": ""}*/}
-                  {/*{item.default ? "Shipping Address" : ""}*/}
-                  {/*{item.billing ? "Billing Address": ""}*/}
-                  {/*{!item.default && !item.billing ? 'Other Address' : ''}*/}
                 </h4>
                 <h6 className={classes.cardSubtitle}>
                   {item.buildingName !== null ? item.buildingName : ""}

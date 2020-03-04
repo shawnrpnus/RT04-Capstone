@@ -191,11 +191,9 @@ function Style(props) {
   const handleUpdateStylePreferences = () => {
     if (
       inputState.answer1.toString() ==
-        questionBank[0].answers[customer.stylePreference.split(",")[0]]
-        ||
+        questionBank[0].answers[customer.stylePreference.split(",")[0]] ||
       inputState.answer2.toString() ==
-        questionBank[1].answers[customer.stylePreference.split(",")[1]]
-       ||
+        questionBank[1].answers[customer.stylePreference.split(",")[1]] ||
       inputState.answer3.toString() ==
         questionBank[2].answers[customer.stylePreference.split(",")[2]]
     ) {

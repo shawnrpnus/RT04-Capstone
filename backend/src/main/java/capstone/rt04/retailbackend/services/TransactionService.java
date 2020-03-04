@@ -207,7 +207,7 @@ public class TransactionService {
         } else {
             Address txnBillingAddress = addressRepository.findById(billingAddress.getAddressId())
                     .orElseThrow(() -> new AddressNotFoundException("Address not found"));
-            transaction.setDeliveryAddress(txnBillingAddress);
+            transaction.setBillingAddress(txnBillingAddress);
         }
 
         transaction.getTransactionLineItems().addAll(transactionLineItems);

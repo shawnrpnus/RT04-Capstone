@@ -3,7 +3,7 @@ import * as types from "../actions/types";
 const initialState = {
   currentStaff: null,
   allStaff: null,
-  staffWithNoAccount:null,
+  staffWithNoAccount: null,
   allRoles: null,
   allDepartments: null,
   loggedInStaff: null,
@@ -84,7 +84,6 @@ export default function(state = initialState, action) {
         ...state,
         staffWithNoAccount: action.staffEntity
       };
-
 
     default:
       return state;
