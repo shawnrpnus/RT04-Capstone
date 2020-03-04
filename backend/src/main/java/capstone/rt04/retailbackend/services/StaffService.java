@@ -134,7 +134,9 @@ public class StaffService {
                 errorMap.put("staffId", ErrorMessages.STAFF_ACCOUNT_ALREADY_CONFIGURED);
                 throw new CreateNewStaffAccountException(errorMap, ErrorMessages.STAFF_ACCOUNT_ALREADY_CONFIGURED);
             }
-            staff.setUsername(staff.getFirstName() + staff.getLastName() + staffID.toString());
+            String username = staff.getFirstName() + staff.getLastName() + staffID.toString();
+            String u = username.replaceAll("\\s", "");
+            staff.setUsername(u);
 
             //generate random password
             //password is encoded and stored in db
