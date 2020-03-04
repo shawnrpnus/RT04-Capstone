@@ -3,7 +3,9 @@ import * as types from "../actions/types";
 const initialState = {
   currentStore: null,
   allStores: null,
-  crudAction: null
+  crudAction: null,
+  //for staff to select store in login page
+  selectedStore:null
 };
 
 export default function(state = initialState, action) {
@@ -16,7 +18,8 @@ export default function(state = initialState, action) {
     case types.RETRIEVE_STORE:
       return {
         ...state,
-        currentStore: action.storeEntity
+        currentStore: action.storeEntity,
+        selectedStore: action.selectedStore
       };
 
     case types.UPDATE_STORE:
