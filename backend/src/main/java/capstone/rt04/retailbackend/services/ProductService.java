@@ -84,6 +84,7 @@ public class ProductService {
 
         Map<String, String> errorMap = validationService.generateErrorMap(product);
 
+        System.out.println(errorMap);
         if (errorMap == null) {
             try {
                 if (!category.getChildCategories().isEmpty()) {

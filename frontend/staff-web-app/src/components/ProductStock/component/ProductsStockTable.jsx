@@ -147,7 +147,6 @@ const mapDispatchToProps = {
   retrieveProductStocksByParameter
 };
 
-
 export default withRouter(
   connect(
     mapStateToProps,
