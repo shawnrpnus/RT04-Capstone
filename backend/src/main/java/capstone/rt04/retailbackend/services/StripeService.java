@@ -1,6 +1,7 @@
 package capstone.rt04.retailbackend.services;
 
 import capstone.rt04.retailbackend.entities.CreditCard;
+import capstone.rt04.retailbackend.util.exceptions.customer.AddressNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.customer.CreditCardNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.customer.CustomerNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.shoppingcart.InvalidCartTypeException;
@@ -52,11 +53,11 @@ public class StripeService {
         return intent;
     }
 
-    public capstone.rt04.retailbackend.entities.Customer completeDirectPayment(Long customerId, Long shoppingCartId) throws CustomerNotFoundException, InvalidCartTypeException {
-        transactionService.createNewTransaction(customerId, shoppingCartId, ONLINE_SHOPPING_CART);
-        capstone.rt04.retailbackend.entities.Customer customer = customerService.retrieveCustomerByCustomerId(customerId);
-        return customer;
-    }
+//    public capstone.rt04.retailbackend.entities.Customer completeDirectPayment(Long customerId, Long shoppingCartId) throws CustomerNotFoundException, InvalidCartTypeException {
+//        transactionService.createNewTransaction(customerId, shoppingCartId, ONLINE_SHOPPING_CART);
+//        capstone.rt04.retailbackend.entities.Customer customer = customerService.retrieveCustomerByCustomerId(customerId);
+//        return customer;
+//    }
 
     public String initiateSaveCardRequest(Long customerId) throws StripeException, CustomerNotFoundException {
         Stripe.apiKey = "sk_test_E81pq87cIYZxL2NkXaXKsEEd00MGrcKvYx";
@@ -117,7 +118,7 @@ public class StripeService {
         return paymentMethods;
     }
 
-    public capstone.rt04.retailbackend.entities.Customer makePaymentWithSavedCard(Long customerId, String paymentMethodId, Long totalAmount, Long shoppingCartId) throws CustomerNotFoundException, StripeException, InvalidCartTypeException {
+    public capstone.rt04.retailbackend.entities.Customer makePaymentWithSavedCard(Long customerId, String paymentMethodId, Long totalAmount, Long shoppingCartId, capstone.rt04.retailbackend.entities.Address deliveryAddress, capstone.rt04.retailbackend.entities.Address billingAddress) throws CustomerNotFoundException, StripeException, InvalidCartTypeException, AddressNotFoundException {
         Stripe.apiKey = "sk_test_E81pq87cIYZxL2NkXaXKsEEd00MGrcKvYx";
 
         capstone.rt04.retailbackend.entities.Customer customer = customerService.retrieveCustomerByCustomerId(customerId);
@@ -134,7 +135,7 @@ public class StripeService {
         try {
             PaymentIntent intent = PaymentIntent.create(createParams);
             // TODO: Convert shopping cart item to transaction line item and create new transaction
-            transactionService.createNewTransaction(customerId, shoppingCartId, ONLINE_SHOPPING_CART);
+            transactionService.createNewTransaction(customerId, shoppingCartId, ONLINE_SHOPPING_CART, deliveryAddress, billingAddress);
             System.out.println("Payment success!");
             System.out.print(intent.getClientSecret());
             return customer;

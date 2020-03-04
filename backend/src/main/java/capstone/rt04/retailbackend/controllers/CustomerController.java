@@ -249,15 +249,15 @@ public class CustomerController {
     }
 
     @PostMapping(CustomerControllerRoutes.ADD_STYLE)
-    public ResponseEntity<?> addStyle(@RequestParam Long customerId, @RequestParam Long styleId) throws CustomerNotFoundException, StyleNotFoundException {
-        Customer customer = customerService.addStyle(customerId, styleId);
+    public ResponseEntity<?> addStyle(@RequestBody AddStyleRequest req) throws CustomerNotFoundException, StyleNotFoundException {
+        Customer customer = customerService.addStyle(req.getCustomerId(), req.getStylePreference());
         relationshipService.clearCustomerRelationships(customer);
         return new ResponseEntity<>(customer, HttpStatus.OK);
     }
 
     @PostMapping(CustomerControllerRoutes.REMOVE_STYLE)
-    public ResponseEntity<?> removeStyle(@RequestParam Long customerId, @RequestParam Long styleId) throws CustomerNotFoundException, StyleNotFoundException {
-        Customer customer = customerService.removeStyle(customerId, styleId);
+    public ResponseEntity<?> removeStyle(@RequestBody RemoveStyleRequest req) throws CustomerNotFoundException, StyleNotFoundException {
+        Customer customer = customerService.removeStyle(req.getCustomerId(), req.getStyleChosen());
         relationshipService.clearCustomerRelationships(customer);
         return new ResponseEntity<>(customer, HttpStatus.OK);
     }

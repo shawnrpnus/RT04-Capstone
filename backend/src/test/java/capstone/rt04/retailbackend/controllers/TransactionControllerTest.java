@@ -48,6 +48,7 @@ public class TransactionControllerTest {
         RestAssured.port = port;
     }
 
+    private static Long customerId;
     @Test
     public void createTransactions() {
         Customer customer = new Customer("Amy", "Tan", "amytan@gmail.com", "amytan");
@@ -58,7 +59,7 @@ public class TransactionControllerTest {
                 when().post(CUSTOMER_BASE_ROUTE + CREATE_NEW_CUSTOMER).
                 then().statusCode(HttpStatus.CREATED.value()).extract().body().as(Customer.class);
         assertThat(createdCustomer.getCustomerId()).isNotNull();
-
+        customerId = createdCustomer.getCustomerId();
         //create valid transactions
         Transaction validTransaction1 = new Transaction(createdCustomer);
         validTransaction1.setCollectionMode(CollectionModeEnum.IN_STORE);
@@ -139,7 +140,7 @@ public class TransactionControllerTest {
         List<Transaction> transactionsMatched = new ArrayList<>();
 
         //filter by collectionMode & deliveryStatus, sort by QUANTITY_LOW_TO_HIGH
-        TransactionRetrieveRequest filterByCollectionAndDeliverySorted = new TransactionRetrieveRequest(CollectionModeEnum.DELIVERY, DeliveryStatusEnum.DELIVERED, null, null, SortEnum.QUANTITY_LOW_TO_HIGH);
+        TransactionRetrieveRequest filterByCollectionAndDeliverySorted = new TransactionRetrieveRequest(customerId, CollectionModeEnum.DELIVERY, DeliveryStatusEnum.DELIVERED, null, null, SortEnum.QUANTITY_LOW_TO_HIGH);
         transactionsMatched = given()
                 .contentType("application/json")
                 .body(filterByCollectionAndDeliverySorted)
@@ -149,7 +150,7 @@ public class TransactionControllerTest {
         assertThat(transactionsMatched.get(0).getTotalQuantity()).isEqualTo(3);
 
         //filter by collectionMode
-        TransactionRetrieveRequest filterByCollectionMode = new TransactionRetrieveRequest(CollectionModeEnum.IN_STORE, null, null, null, null);
+        TransactionRetrieveRequest filterByCollectionMode = new TransactionRetrieveRequest(customerId, CollectionModeEnum.IN_STORE, null, null, null, null);
         transactionsMatched = given()
                 .contentType("application/json")
                 .body(filterByCollectionMode)
@@ -158,7 +159,7 @@ public class TransactionControllerTest {
         assertThat(transactionsMatched.size()).isEqualTo(1);
 
         //filter by DeliveryStatus
-        TransactionRetrieveRequest filterByDeliveryStatus = new TransactionRetrieveRequest(null, DeliveryStatusEnum.DELIVERED, null, null, null);
+        TransactionRetrieveRequest filterByDeliveryStatus = new TransactionRetrieveRequest(customerId, null, DeliveryStatusEnum.DELIVERED, null, null, null);
         transactionsMatched = given()
                 .contentType("application/json")
                 .body(filterByDeliveryStatus)
@@ -167,7 +168,7 @@ public class TransactionControllerTest {
         assertThat(transactionsMatched.size()).isEqualTo(2);
 
         //filter by dateRange
-        TransactionRetrieveRequest filterByDateRange = new TransactionRetrieveRequest(null, null, startDate, null, null);
+        TransactionRetrieveRequest filterByDateRange = new TransactionRetrieveRequest(customerId, null, null, "2019-12-09 00:00:00", null, null);
         transactionsMatched = given()
                 .contentType("application/json")
                 .body(filterByDateRange)
@@ -176,7 +177,7 @@ public class TransactionControllerTest {
         assertThat(transactionsMatched.size()).isEqualTo(4);
 
         //filter by collectionMode & deliveryStatus
-        TransactionRetrieveRequest filterByCollectionAndDelivery = new TransactionRetrieveRequest(CollectionModeEnum.DELIVERY, DeliveryStatusEnum.DELIVERED, null, null, null);
+        TransactionRetrieveRequest filterByCollectionAndDelivery = new TransactionRetrieveRequest(customerId, CollectionModeEnum.DELIVERY, DeliveryStatusEnum.DELIVERED, null, null, null);
         transactionsMatched = given()
                 .contentType("application/json")
                 .body(filterByCollectionAndDelivery)
@@ -186,7 +187,7 @@ public class TransactionControllerTest {
         assertThat(transactionsMatched.get(0).getTotalQuantity()).isEqualTo(5);
 
         //filter by collectionMode & dateRange
-        TransactionRetrieveRequest filterByCollectionAndDate = new TransactionRetrieveRequest(CollectionModeEnum.DELIVERY, null, startDate, null, null);
+        TransactionRetrieveRequest filterByCollectionAndDate = new TransactionRetrieveRequest(customerId, CollectionModeEnum.DELIVERY, null, "2019-12-09 00:00:00", null, null);
         transactionsMatched = given()
                 .contentType("application/json")
                 .body(filterByCollectionAndDate)
@@ -195,7 +196,7 @@ public class TransactionControllerTest {
         assertThat(transactionsMatched.size()).isEqualTo(3);
 
         //filter by deliveryStatus & dateRange
-        TransactionRetrieveRequest filterByDeliveryAndDate = new TransactionRetrieveRequest(null, DeliveryStatusEnum.DELIVERED, startDate, null, null);
+        TransactionRetrieveRequest filterByDeliveryAndDate = new TransactionRetrieveRequest(customerId, null, DeliveryStatusEnum.DELIVERED, "2019-12-09 00:00:00", null, null);
         transactionsMatched = given()
                 .contentType("application/json")
                 .body(filterByDeliveryAndDate)
@@ -204,7 +205,7 @@ public class TransactionControllerTest {
         assertThat(transactionsMatched.size()).isEqualTo(2);
 
         //filter by all criteria
-        TransactionRetrieveRequest filterByAllCriteria = new TransactionRetrieveRequest(null, DeliveryStatusEnum.DELIVERED, startDate, null, null);
+        TransactionRetrieveRequest filterByAllCriteria = new TransactionRetrieveRequest(customerId, null, DeliveryStatusEnum.DELIVERED, "2019-12-09 00:00:00", null, null);
         transactionsMatched = given()
                 .contentType("application/json")
                 .body(filterByAllCriteria)

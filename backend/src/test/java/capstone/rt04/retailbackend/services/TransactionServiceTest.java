@@ -29,10 +29,13 @@ public class TransactionServiceTest {
     private CustomerService customerService;
     private static Long transactionId1;
 
+    private static Long customerId;
+
     @Test
     public void createTransaction() throws Exception {
         Customer customer = new Customer("Amy", "Tan", "amytan@gmail.com", "amytan");
         Customer createdCustomer = customerService.createNewCustomer(customer);
+        customerId = createdCustomer.getCustomerId();
 
         //CollectionMode: IN-STORE, totalQuantity: 4
         Transaction validTransaction1 = new Transaction(createdCustomer);
@@ -81,41 +84,41 @@ public class TransactionServiceTest {
         Calendar cal = Calendar.getInstance();
         cal.clear();
         cal.set(2019, Calendar.DECEMBER, 9); //Year, month and day of month
-        Date startDate = cal.getTime();
+        String startDate = "2019-12-09 00:00:00";
         List<Transaction> transactionsMatched = new ArrayList<>();
 
         //retrieve transaction which matches collectionMode
-        transactionsMatched = transactionService.filterSortOrderHistory(CollectionModeEnum.IN_STORE, null, null, null, null);
+        transactionsMatched = transactionService.filterSortOrderHistory(customerId, CollectionModeEnum.IN_STORE, null, null, null, null);
         assertThat(transactionsMatched.size()).isEqualTo(1);
 
         //retrieve transaction which matches deliveryStatus
-        transactionsMatched = transactionService.filterSortOrderHistory(null, DeliveryStatusEnum.DELIVERED, null, null, null);
+        transactionsMatched = transactionService.filterSortOrderHistory(customerId,null, DeliveryStatusEnum.DELIVERED, null, null, null);
         assertThat(transactionsMatched.size()).isEqualTo(2);
 
         //retrieve transaction which matches dateRange
-        transactionsMatched = transactionService.filterSortOrderHistory(null, null, startDate, null, null);
+        transactionsMatched = transactionService.filterSortOrderHistory(customerId,null, null, startDate, null, null);
         assertThat(transactionsMatched.size()).isEqualTo(4);
 
         //retrieve transaction which matches collectionMode & deliveryStatus
-        transactionsMatched = transactionService.filterSortOrderHistory(CollectionModeEnum.DELIVERY, DeliveryStatusEnum.DELIVERED, null, null, null);
+        transactionsMatched = transactionService.filterSortOrderHistory(customerId, CollectionModeEnum.DELIVERY, DeliveryStatusEnum.DELIVERED, null, null, null);
         assertThat(transactionsMatched.size()).isEqualTo(2);
         assertThat(transactionsMatched.get(0).getTotalQuantity()).isEqualTo(5);
 
         //retrieve transaction which matches collectionMode & deliveryStatus sorted by totalQuantity from LOW_TO_HIGH
-        transactionsMatched = transactionService.filterSortOrderHistory(CollectionModeEnum.DELIVERY, DeliveryStatusEnum.DELIVERED, null, null, SortEnum.QUANTITY_LOW_TO_HIGH);
+        transactionsMatched = transactionService.filterSortOrderHistory(customerId, CollectionModeEnum.DELIVERY, DeliveryStatusEnum.DELIVERED, null, null, SortEnum.QUANTITY_LOW_TO_HIGH);
         assertThat(transactionsMatched.size()).isEqualTo(2);
         assertThat(transactionsMatched.get(0).getTotalQuantity()).isEqualTo(3);
 
         //retrieve transaction which matches collectionMode & dateRange
-        transactionsMatched = transactionService.filterSortOrderHistory(CollectionModeEnum.DELIVERY, null, startDate, null, null);
+        transactionsMatched = transactionService.filterSortOrderHistory(customerId, CollectionModeEnum.DELIVERY, null, startDate, null, null);
         assertThat(transactionsMatched.size()).isEqualTo(3);
 
         //retrieve transaction which matches deliveryStatus & dateRange
-        transactionsMatched = transactionService.filterSortOrderHistory(null, DeliveryStatusEnum.DELIVERED, startDate, null, null);
+        transactionsMatched = transactionService.filterSortOrderHistory(customerId, null, DeliveryStatusEnum.DELIVERED, startDate, null, null);
         assertThat(transactionsMatched.size()).isEqualTo(2);
 
         //retrieve transaction which matches collectionMode, deliveryStatus & dateRange
-        transactionsMatched = transactionService.filterSortOrderHistory(CollectionModeEnum.DELIVERY, DeliveryStatusEnum.IN_TRANSIT, startDate, null, null);
+        transactionsMatched = transactionService.filterSortOrderHistory(customerId, CollectionModeEnum.DELIVERY, DeliveryStatusEnum.IN_TRANSIT, startDate, null, null);
         assertThat(transactionsMatched.size()).isEqualTo(1);
     }
 

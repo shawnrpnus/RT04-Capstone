@@ -1,11 +1,13 @@
 package capstone.rt04.retailbackend.services;
 
 import capstone.rt04.retailbackend.entities.*;
+import capstone.rt04.retailbackend.repositories.AddressRepository;
 import capstone.rt04.retailbackend.repositories.TransactionLineItemRepository;
 import capstone.rt04.retailbackend.repositories.TransactionRepository;
 import capstone.rt04.retailbackend.util.enums.CollectionModeEnum;
 import capstone.rt04.retailbackend.util.enums.DeliveryStatusEnum;
 import capstone.rt04.retailbackend.util.enums.SortEnum;
+import capstone.rt04.retailbackend.util.exceptions.customer.AddressNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.customer.CustomerNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.shoppingcart.InvalidCartTypeException;
 import capstone.rt04.retailbackend.util.exceptions.transaction.TransactionNotFoundException;
@@ -21,13 +23,15 @@ public class TransactionService {
 
     private final TransactionRepository transactionRepository;
     private final TransactionLineItemRepository transactionLineItemRepository;
+    private final AddressRepository addressRepository;
 
     private final CustomerService customerService;
     private final ShoppingCartService shoppingCartService;
 
-    public TransactionService(TransactionRepository transactionRepository, TransactionLineItemRepository transactionLineItemRepository, CustomerService customerService, ShoppingCartService shoppingCartService) {
+    public TransactionService(TransactionRepository transactionRepository, TransactionLineItemRepository transactionLineItemRepository, AddressRepository addressRepository, CustomerService customerService, ShoppingCartService shoppingCartService) {
         this.transactionRepository = transactionRepository;
         this.transactionLineItemRepository = transactionLineItemRepository;
+        this.addressRepository = addressRepository;
         this.customerService = customerService;
         this.shoppingCartService = shoppingCartService;
     }
@@ -144,7 +148,7 @@ public class TransactionService {
                 matchDeliveryStatus = true;
             }
 
-            if (matchCollectionMode && matchDateRange && matchDeliveryStatus){
+            if (matchCollectionMode && matchDateRange && matchDeliveryStatus) {
                 transactionsToReturn.add(transaction);
             }
 
@@ -169,7 +173,7 @@ public class TransactionService {
 
     // TODO: Make this method reusable for in-store checkout
     // TODO: Add in address / promo code / discount to calculate final price?
-    public Customer createNewTransaction(Long customerId, Long shoppingCartId, String cartType) throws CustomerNotFoundException, InvalidCartTypeException {
+    public Customer createNewTransaction(Long customerId, Long shoppingCartId, String cartType, Address deliveryAddress, Address billingAddress) throws CustomerNotFoundException, InvalidCartTypeException, AddressNotFoundException {
         Customer customer = customerService.retrieveCustomerByCustomerId(customerId);
         ShoppingCart shoppingCart = shoppingCartService.retrieveShoppingCart(customerId, cartType);
 
@@ -186,6 +190,24 @@ public class TransactionService {
             totalQuantity += shoppingCartItem.getQuantity();
             transactionLineItemRepository.save(transactionLineItem);
             transactionLineItems.add(transactionLineItem);
+        }
+
+        //Address logic
+        if (deliveryAddress.getAddressId() == null) {
+            addressRepository.save(deliveryAddress);
+            transaction.setDeliveryAddress(deliveryAddress);
+        } else {
+            Address txnDeliveryAddress = addressRepository.findById(deliveryAddress.getAddressId())
+                    .orElseThrow(() -> new AddressNotFoundException("Address not found"));
+            transaction.setDeliveryAddress(txnDeliveryAddress);
+        }
+        if (billingAddress.getAddressId() == null) {
+            addressRepository.save(billingAddress);
+            transaction.setBillingAddress(billingAddress);
+        } else {
+            Address txnBillingAddress = addressRepository.findById(billingAddress.getAddressId())
+                    .orElseThrow(() -> new AddressNotFoundException("Address not found"));
+            transaction.setDeliveryAddress(txnBillingAddress);
         }
 
         transaction.getTransactionLineItems().addAll(transactionLineItems);

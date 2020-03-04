@@ -477,21 +477,63 @@ public class CustomerService {
         return customer;
     }
 
-    public Customer addStyle(Long customerId, Long styleId) throws CustomerNotFoundException, StyleNotFoundException {
+    public Customer addStyle(Long customerId, String stylePreference) throws CustomerNotFoundException, StyleNotFoundException {
         Customer customer = retrieveCustomerByCustomerId(customerId);
-        Style style = styleService.retrieveStyleByStyleId(styleId);
-        if (!customer.getPreferredStyles().contains(style)) {
-            customer.getPreferredStyles().add(style);
-            style.getCustomers().add(customer);
+        String[] styleChoices = stylePreference.split(",");
+        int vinCount = 0;
+        int boCount = 0;
+        int chicCount = 0;
+        int artCount = 0;
+        int soCount = 0;
+        String styleChosen = "";
+        if (customer.getStyle() != null && customer.getStylePreference() != "") {
+            customer.setStyle(null);
         }
+        customer.setStylePreference(stylePreference);
+        for (String styleChoice: styleChoices) {
+            if (styleChoice.equals("0")) {
+                vinCount++;
+            } else if (styleChoice.equals("1")) {
+                boCount++;
+            } else if (styleChoice.equals("2")) {
+                chicCount++;
+            } else if (styleChoice.equals("3")) {
+                artCount++;
+            } else {
+                soCount++;
+            }
+        }
+        if ((vinCount >= boCount) && (vinCount >= chicCount) && (vinCount >= artCount) && (vinCount >= soCount)) {
+            Style vintage = styleService.retrieveStyleByStyleName("Vintage");
+            customer.setStyle(vintage);
+            vintage.getCustomers().add(customer);
+        } else if ((boCount >= chicCount) && (boCount >= artCount) && (boCount >= soCount)) {
+            Style bohemian = styleService.retrieveStyleByStyleName("Bohemian");
+            customer.setStyle(bohemian);
+            bohemian.getCustomers().add(customer);
+        } else if ((chicCount >= artCount) && (chicCount >= soCount)) {
+            Style chic = styleService.retrieveStyleByStyleName("Chic");
+            customer.setStyle(chic);
+            chic.getCustomers().add(customer);
+        } else if (artCount >= soCount) {
+            Style artsy = styleService.retrieveStyleByStyleName("Artsy");
+            customer.setStyle(artsy);
+            artsy.getCustomers().add(customer);
+        } else {
+            Style sophisticated = styleService.retrieveStyleByStyleName("Sophisticated");
+            customer.setStyle(sophisticated);
+            sophisticated.getCustomers().add(customer);
+        }
+
         return lazyLoadCustomerFields(customer);
     }
 
-    public Customer removeStyle(Long customerId, Long styleId) throws CustomerNotFoundException, StyleNotFoundException {
+    public Customer removeStyle(Long customerId, String styleChosen) throws CustomerNotFoundException, StyleNotFoundException {
         Customer customer = retrieveCustomerByCustomerId(customerId);
-        Style style = styleService.retrieveStyleByStyleId(styleId);
-        customer.getPreferredStyles().remove(style);
+        Style style = styleService.retrieveStyleByStyleName(styleChosen);
+        customer.setStyle(null);
         style.getCustomers().remove(customer);
+        customer.setStylePreference("");
         return lazyLoadCustomerFields(customer);
     }
 
@@ -569,11 +611,9 @@ public class CustomerService {
         //----------------------------------------
 
         //clear relationships with styles
-        List<Style> styles = customer.getPreferredStyles();
-        customer.setPreferredStyles(null);
-        for (Style style : styles) {
-            style.getCustomers().remove(customer);
-        }
+        Style customerStyle = customer.getStyle();
+        customer.setStyle(null);
+        customerStyle.getCustomers().remove(customer);
 
         customer.setWishlistItems(null);
 
@@ -608,7 +648,8 @@ public class CustomerService {
         customer.getUsedPromoCodes().size();
         customer.getReviews().size();
         customer.getVerificationCode();
-        customer.getPreferredStyles().size();
+        customer.getStyle();
+        customer.getStylePreference();
         customer.getReservationCartItems().size();
         if (customer.getOnlineShoppingCart() != null) {
             customer.getOnlineShoppingCart().getShoppingCartItems().size();
@@ -625,7 +666,4 @@ public class CustomerService {
 
         return customer;
     }
-
-
 }
-
