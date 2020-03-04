@@ -102,7 +102,8 @@ export const createNewStaffAccount = (staffAccountCreateRequest, history) => {
         toast.success("Staff Account Created!", {
           position: toast.POSITION.TOP_CENTER
         });
-          history.push(`/staff/createAccount`); // TODO: update redirect path
+        //window.location.reload(true);
+          history.push(`/`); // TODO: update redirect path
       })
       .catch(err => {
         dispatch(createStaffAccountError(err.response.data));
@@ -132,6 +133,7 @@ export const changePassword = (staffChangePasswordRequest, history) => {
         toast.success("Staff password changed!", {
           position: toast.POSITION.TOP_CENTER
         });
+          history.push(`/staff/viewProfile`); // TODO: update redirect path
       })
       .catch(err => {
         dispatch(changeStaffPasswordError(err.response.data));

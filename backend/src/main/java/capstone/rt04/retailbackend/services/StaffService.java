@@ -300,7 +300,7 @@ return allRoles;
                 return retrieveStaffByStaffId(staffId);
             } else {
                 Map<String, String> errorMap = new HashMap<>();
-                errorMap.put("password", ErrorMessages.OLD_PASSWORD_INCORRECT);
+                errorMap.put("oldPassword", ErrorMessages.OLD_PASSWORD_INCORRECT);
                 throw new InvalidStaffCredentialsException(errorMap,ErrorMessages.OLD_PASSWORD_INCORRECT);
             }
         }catch(StaffNotFoundException ex){

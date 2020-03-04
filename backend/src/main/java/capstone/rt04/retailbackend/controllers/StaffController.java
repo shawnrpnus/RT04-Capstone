@@ -171,9 +171,9 @@ public class StaffController {
             Staff staff = staffService.retrieveStaffByStaffId(staffChangePasswordRequest.getStaffId());
             return new ResponseEntity<>(staff, HttpStatus.OK);
         } catch (StaffNotFoundException ex){
-            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
         } catch (InvalidStaffCredentialsException ex){
-            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(ex.getErrorMap(), HttpStatus.BAD_REQUEST);
         }
     }
 
