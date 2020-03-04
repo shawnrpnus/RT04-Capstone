@@ -12,9 +12,7 @@ public class CreateNewProductException extends Exception
         super(msg);
     }
     
-    
-    
-    public CreateNewProductException(String msg)
+    public CreateNewProductException(Map<String, String> errorMap, String msg)
     {
         super(msg);
         this.errorMap = errorMap;
