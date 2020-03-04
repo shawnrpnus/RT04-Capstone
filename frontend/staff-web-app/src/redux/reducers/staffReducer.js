@@ -3,14 +3,15 @@ import * as types from "../actions/types";
 const initialState = {
   currentStaff: null,
   allStaff: null,
-  staffWithNoAccount:null,
+  staffWithNoAccount: null,
   allRoles: null,
   allDepartments: null,
   loggedInStaff: null,
   currentRole: null,
   currentDepartment: null,
   currentAddress: null,
-
+  loggedInStoreId: null,
+  selectedStore: null
 };
 
 export default function(state = initialState, action) {
@@ -64,13 +65,12 @@ export default function(state = initialState, action) {
         ...state,
         currentStaff: action.deletedStaff
       };
-
     case types.STAFF_LOGIN:
       return {
         ...state,
-        loggedInStaff: action.staff
+        loggedInStaff: action.staff,
+        selectedStore: action.store
       };
-
     case types.STAFF_LOGOUT:
       return initialState;
 
@@ -85,7 +85,6 @@ export default function(state = initialState, action) {
         ...state,
         staffWithNoAccount: action.staffEntity
       };
-
 
     default:
       return state;

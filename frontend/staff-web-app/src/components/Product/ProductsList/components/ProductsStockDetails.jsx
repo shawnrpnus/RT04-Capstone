@@ -31,6 +31,7 @@ import { updateProductStockQty } from "../../../../redux/actions/productStockAct
 import { toast } from "react-toastify";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Backdrop from "@material-ui/core/Backdrop";
+import { Typography } from "@material-ui/core";
 
 const _ = require("lodash");
 
@@ -151,8 +152,17 @@ class ProductsStockDetails extends PureComponent {
           }}
         >
           <Row>
-            <Col md={8}></Col>{" "}
+            <Col md={8}></Col>
             <Col md={4}>
+              <span
+                style={{
+                  fontSize: 16,
+                  fontWeight: "bold",
+                  margin: "10% 5% 0 0"
+                }}
+              >
+                Colour :
+              </span>
               <Select
                 value={selectedProductVariant}
                 onChange={this.onSelectColour}

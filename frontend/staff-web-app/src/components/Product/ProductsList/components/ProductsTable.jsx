@@ -59,6 +59,7 @@ class ProductsTable extends PureComponent {
   componentDidMount() {
     // TODO: Retrieve store ID from cookie to input as argument
     const { store, retrieveProductsDetails } = this.props;
+    console.log(this.props);
     if (store.storeId) {
       console.log("retrieving for store ", store.storeId);
       retrieveProductsDetails(store.storeId);
@@ -80,10 +81,11 @@ class ProductsTable extends PureComponent {
   };
 
   render() {
-    const { products, renderLoader, columnsToHide } = this.props;
+    const { products, renderLoader, columnsToHide, store } = this.props;
     const { openProductStocksDetailsDialogue, selectedProductId } = this.state;
-
-    const role = _.get(this.props, "staff.role.roleName");
+    const salesmarketing =
+      _.get(this.props, "staff.department.departmentName") ===
+      "Sales and Marketing";
     console.log(this.props);
 
     let data = [];
@@ -174,22 +176,30 @@ class ProductsTable extends PureComponent {
               cellStyle: { textAlign: "center" },
               selection: this.props.selectable
             }}
-            actions={[
+            actions={
               !this.props.selectionAction
-                ? {
-                    icon: Visibility,
-                    tooltip: "View Product Variants",
-                    onClick: (event, rowData) =>
-                      this.handleViewProductDetails(rowData.productId)
-                  }
-                : this.props.selectionAction,
-              {
-                icon: List,
-                tooltip: "View / Update Product Stocks",
-                onClick: (event, rowData) =>
-                  this.handleViewProductStocksDetails(rowData.productId)
-              }
-            ]}
+                ? [
+                    {
+                      icon: Visibility,
+                      tooltip: "View Product Variants",
+                      onClick: (event, rowData) =>
+                        this.handleViewProductDetails(rowData.productId)
+                    },
+                    !salesmarketing && store.storeId
+                      ? {
+                          icon: List,
+                          tooltip: "View / Update Product Stocks",
+                          onClick: (event, rowData) =>
+                            this.handleViewProductStocksDetails(
+                              rowData.productId
+                            )
+                        }
+                      : null
+                  ]
+                : [this.props.selectionAction][0].icon === undefined
+                ? false
+                : [this.props.selectionAction]
+            }
           />
         ) : (
           renderLoader()

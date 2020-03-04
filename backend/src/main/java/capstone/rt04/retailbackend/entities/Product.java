@@ -40,7 +40,7 @@ public class Product implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long productId;
 
-    @NotNull(message = "Serial name cannot be empty")
+    @NotNull(message = "Serial number cannot be empty")
     @Column(nullable = false, unique = true)
     private String serialNumber;
 

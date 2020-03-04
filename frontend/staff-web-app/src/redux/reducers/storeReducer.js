@@ -5,7 +5,7 @@ const initialState = {
   allStores: null,
   crudAction: null,
   //for staff to select store in login page
-  selectedStore:null
+  selectedStore: null
 };
 
 export default function(state = initialState, action) {
@@ -18,10 +18,13 @@ export default function(state = initialState, action) {
     case types.RETRIEVE_STORE:
       return {
         ...state,
-        currentStore: action.storeEntity,
-        selectedStore: action.selectedStore
+        currentStore: action.storeEntity
       };
-
+    // case types.RETRIEVE_STORE_LOGIN:
+    //   return {
+    //     ...state,
+    //     selectedStore: action.selectedStore
+    //   };
     case types.UPDATE_STORE:
       return {
         ...state,

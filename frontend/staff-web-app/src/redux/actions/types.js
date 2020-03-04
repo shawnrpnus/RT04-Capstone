@@ -3,6 +3,9 @@ export const GET_ERRORS = "GET_ERRORS";
 export const CLEAR_ERRORS = "CLEAR_ERRORS";
 export const UPDATE_ERRORS = "UPDATE ERRORS";
 
+// Login
+export const RETRIEVE_STORE_LOGIN = "RETRIEVE_STORE_LOGIN";
+
 // Store
 export const CREATE_STORE = "CREATE_STORE";
 export const RETRIEVE_STORE = "RETRIEVE_STORE";

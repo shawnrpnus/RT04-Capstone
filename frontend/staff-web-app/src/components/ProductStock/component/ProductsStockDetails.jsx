@@ -131,7 +131,8 @@ class ProductsStockDetails extends PureComponent {
           }}
         >
           <Row>
-            <Col md={8}></Col>{" "}
+            <Col md={7}></Col>
+            <Col md={1}>Colour : </Col>
             <Col md={4}>
               <Select
                 value={selectedProductVariant}
