@@ -1,7 +1,7 @@
 export default class ResetStaffPasswordRequest {
-    username;
+  username;
 
-    constructor(username) {
-        this.username = username;
-    }
+  constructor(username) {
+    this.username = username;
+  }
 }

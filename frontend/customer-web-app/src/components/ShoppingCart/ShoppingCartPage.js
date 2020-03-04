@@ -83,9 +83,6 @@ export default function ShoppingCartPage() {
     _.get(customer, "onlineShoppingCart.shoppingCartItems", [])
   );
 
-  console.log(customer.onlineShoppingCart);
-  console.log(clientSecret);
-
   const handleUpdateQuantity = (quantity, productVariantId, isDelete) => {
     if (isDelete) {
       quantity = 0;

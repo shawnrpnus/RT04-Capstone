@@ -47,6 +47,14 @@ public class TransactionService {
         return pastOrders;
     }
 
+    public List<Transaction> retrieveCustomerTransactions(Long customerId){
+        List<Transaction> txns = transactionRepository.findAllByCustomer_CustomerId(customerId);
+        lazyLoadTransaction(txns);
+        return txns;
+    }
+
+
+
     /*view order details*/
     public Transaction retrieveTransactionById(Long transactionId) throws TransactionNotFoundException {
         if (transactionId == null) {
@@ -216,8 +224,11 @@ public class TransactionService {
 
         transaction.getTransactionLineItems().addAll(transactionLineItems);
         transaction.setInitialTotalPrice(shoppingCart.getInitialTotalAmount());
+        // TODO: Add DISCOUNT / PROMOCODE Logic here, for now final = initial
+        transaction.setFinalTotalPrice(shoppingCart.getInitialTotalAmount());
         transaction.setTotalQuantity(totalQuantity);
         transaction.setCollectionMode(CollectionModeEnum.DELIVERY);
+        transaction.setDeliveryStatus(DeliveryStatusEnum.PROCESSING);
         transactionRepository.save(transaction);
 
         for(TransactionLineItem lineItem : transactionLineItems) {
@@ -226,6 +237,7 @@ public class TransactionService {
 
         // Clear cart only when transaction is created successfully
         shoppingCartService.clearShoppingCart(customerId, cartType);
+
 
         return customer;
     }

@@ -83,7 +83,7 @@ public class StaffController {
     public ResponseEntity<?> createNewStaffAccount(@RequestBody StaffAccountCreateRequest staffAccountCreateRequest) throws CreateNewStaffAccountException {
 
         try {
-            Staff staff = staffService.createNewStaffAccount(staffAccountCreateRequest.getStaffId());
+            List<Staff> staff = staffService.createNewStaffAccount(staffAccountCreateRequest.getStaffIds());
             return new ResponseEntity<>(staff, HttpStatus.CREATED);
         } catch (CreateNewStaffAccountException ex){
             return new ResponseEntity<>(ex.getErrorMap(), HttpStatus.BAD_REQUEST);
@@ -195,6 +195,16 @@ public class StaffController {
         return new ResponseEntity<>(deletedStaff, HttpStatus.OK);
     }
 
+
+    @GetMapping(StaffControllerRoutes.RETRIEVE_STAFF_WITH_NO_ACCOUNT)
+    public ResponseEntity<?> retrieveStaffWithNoAccount() {
+        try {
+            List<Staff> staff = staffService.retrieveStaffWithNoAccount();
+            return new ResponseEntity<>(staff, HttpStatus.OK);
+        } catch (Exception ex) {
+            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 
 

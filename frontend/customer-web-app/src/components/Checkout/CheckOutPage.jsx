@@ -59,7 +59,7 @@ import UpdateShoppingCartRequest from "../../models/shoppingCart/UpdateShoppingC
 import CardSection from "./../ShoppingCart/CardSection";
 import PaymentRequest from "./../../models/payment/PaymentRequest";
 import AddressCardForCheckOut from "./AddressCardForCheckOut";
-import AddAddress from "../Profile/sections/AddAddress";
+import AddAddress from "components/Profile/sections/Address/AddAddress";
 import colourList from "assets/colours.json";
 
 const jsonColorHexList = _.keyBy(colourList, "hex");

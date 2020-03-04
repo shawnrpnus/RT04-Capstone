@@ -19,7 +19,7 @@ class Topbar extends PureComponent {
   render() {
     const {
       changeMobileSidebarVisibility,
-      changeSidebarVisibility,
+      changeSidebarVisibility
     } = this.props;
 
     return (
