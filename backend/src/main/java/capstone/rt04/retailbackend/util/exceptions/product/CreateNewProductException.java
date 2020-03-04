@@ -1,17 +1,20 @@
 package capstone.rt04.retailbackend.util.exceptions.product;
 
 
+import java.util.Map;
 
 public class CreateNewProductException extends Exception
 {
-    public CreateNewProductException()
-    {
-    }
-    
-    
-    
+    Map<String, String> errorMap;
+
     public CreateNewProductException(String msg)
     {
         super(msg);
+    }
+    
+    public CreateNewProductException(Map<String, String> errorMap, String msg)
+    {
+        super(msg);
+        this.errorMap = errorMap;
     }
 }

@@ -5,6 +5,7 @@
  */
 package capstone.rt04.retailbackend.entities;
 
+import capstone.rt04.retailbackend.util.ErrorMessages;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.voodoodyne.jackson.jsog.JSOGGenerator;
@@ -40,19 +41,24 @@ public class Product implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long productId;
 
+
     @NotNull(message = "Serial name cannot be empty")
     @Column(nullable = false, unique = true)
+    @Size(min = 5, message = ErrorMessages.SERIAL_NUMBER_REQUIRED)
     private String serialNumber;
+
 
     @NotNull(message = "Product name cannot be empty")
     @Column(nullable = false)
-    @Size(min = 0)
+    @Size(min = 0, message = ErrorMessages.PRODUCT_NAME_REQUIRED)
     private String productName;
+
 
     @NotNull(message = "Description cannot be empty")
     @Column(nullable = false, columnDefinition = "VARCHAR(1337)")
-    @Size(max = 1337)
+    @Size(max = 1337, message = ErrorMessages.DESCRIPTION_REQUIRED)
     private String description;
+
 
     @NotNull(message = "Price cannot be empty")
     @Column(nullable = false, precision = 11, scale = 2)
