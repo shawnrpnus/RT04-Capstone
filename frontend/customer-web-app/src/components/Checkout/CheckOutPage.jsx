@@ -120,7 +120,10 @@ export default function CheckOutPage() {
       shoppingCartId,
       initialTotalAmount: totalAmount
     } = onlineShoppingCart;
-    const { paymentMethodId } = creditCards[creditCardIndex];
+    let paymentMethodId;
+    if (creditCards[creditCardIndex]) {
+      paymentMethodId = creditCards[creditCardIndex].paymentMethodId;
+    }
     const { customerId } = customer;
     // TODO: Process the amount to include finalTotalAmount
     // Stripe take in cents
