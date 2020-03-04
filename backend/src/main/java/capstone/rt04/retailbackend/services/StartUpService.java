@@ -331,7 +331,7 @@ public class StartUpService {
         List<Long>staffToConfigure =new ArrayList<>();
 
 
-        Staff staff = new Staff("Geogre", "Lee", 2, "116c", "geogrelee@gmail.com", BigDecimal.valueOf(10000));
+        Staff staff = new Staff("Re", "tail", 2, "116c", "geogrelee@gmail.com", BigDecimal.valueOf(10000));
         Address a1 = new Address("2E Hong San Walk", "#03-08", 612140, "Palm Garden");
         Staff newStaff = staffService.createNewStaff(staff, a1, role1.getRoleId(), departmentRetail.getDepartmentId());
 
