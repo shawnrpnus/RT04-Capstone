@@ -38,7 +38,7 @@ public class TransactionServiceTest {
         Transaction validTransaction1 = new Transaction(createdCustomer);
         validTransaction1.setCollectionMode(CollectionModeEnum.IN_STORE);
         validTransaction1.setTotalQuantity(4);
-        Transaction transaction1 = transactionService.createNewTransaction(validTransaction1);
+        Transaction transaction1 = transactionService.testCreateNewTransaction(validTransaction1);
         transactionId1 = transaction1.getTransactionId();
 
         //CollectionMode: DELIVERY, DeliveryStatus: DELIVERED, totalQuantity: 3
@@ -46,21 +46,21 @@ public class TransactionServiceTest {
         validTransaction2.setCollectionMode(CollectionModeEnum.DELIVERY);
         validTransaction2.setDeliveryStatus(DeliveryStatusEnum.DELIVERED);
         validTransaction2.setTotalQuantity(3);
-        Transaction transaction2 = transactionService.createNewTransaction(validTransaction2);
+        Transaction transaction2 = transactionService.testCreateNewTransaction(validTransaction2);
 
         //CollectionMode: DELIVERY, DeliveryStatus: IN-TRANSIT, totalQuantity: 2
         Transaction validTransaction3 = new Transaction(createdCustomer);
         validTransaction3.setCollectionMode(CollectionModeEnum.DELIVERY);
         validTransaction3.setDeliveryStatus(DeliveryStatusEnum.IN_TRANSIT);
         validTransaction3.setTotalQuantity(2);
-        Transaction transaction3 = transactionService.createNewTransaction(validTransaction3);
+        Transaction transaction3 = transactionService.testCreateNewTransaction(validTransaction3);
 
         //CollectionMode: DELIVERY, DeliveryStatus: DELIVERED, totalQuantity: 5
         Transaction validTransaction4 = new Transaction(createdCustomer);
         validTransaction4.setCollectionMode(CollectionModeEnum.DELIVERY);
         validTransaction4.setDeliveryStatus(DeliveryStatusEnum.DELIVERED);
         validTransaction4.setTotalQuantity(5);
-        Transaction transaction4 = transactionService.createNewTransaction(validTransaction4);
+        Transaction transaction4 = transactionService.testCreateNewTransaction(validTransaction4);
     }
 
     @Test

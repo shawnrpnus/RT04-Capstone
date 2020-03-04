@@ -34,8 +34,8 @@ import KeyboardArrowRight from "@material-ui/icons/KeyboardArrowRight";
 // redux
 import { useDispatch, useSelector } from "react-redux";
 import {
-  checkOut,
-  updateShoppingCart
+  getClientSecret,
+  makePaymentWithSavedCard
 } from "../../redux/actions/shoppingCartActions";
 
 // core components
@@ -50,10 +50,13 @@ import CardBody from "components/UI/Card/CardBody";
 // external libraries
 import Cards from "react-credit-cards";
 import "react-credit-cards/es/styles-compiled.css";
+import { useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
 
 // local files
 import checkoutStyle from "assets/jss/material-kit-pro-react/views/checkoutStyle.js";
 import UpdateShoppingCartRequest from "../../models/shoppingCart/UpdateShoppingCartRequest.js";
+import CardSection from "./../ShoppingCart/CardSection";
+import PaymentRequest from "./../../models/payment/PaymentRequest";
 import AddressCardForCheckOut from "./AddressCardForCheckOut";
 import AddAddress from "../Profile/sections/AddAddress";
 
@@ -66,7 +69,10 @@ export default function CheckOutPage() {
   // Redux mapping state to props
   const errors = useSelector(state => state.errors);
   const customer = useSelector(state => state.customer.loggedInCustomer);
-  const clientSecret = useSelector(state => state.customer.clientSecret);
+
+  const stripe = useStripe();
+  const elements = useElements();
+  const history = useHistory();
 
   // Updating shopping cart information
   useEffect(() => {
@@ -74,25 +80,35 @@ export default function CheckOutPage() {
     document.body.scrollTop = 0;
   }, []);
 
+  const { onlineShoppingCart, creditCards, shippingAddresses } = customer;
+  const [clientSecret, setClientSecret] = useState(null);
+  const [creditCardIndex, setCreditCardIndex] = useState(0);
+  const [addNewAddress, setAddNewAddress] = useState(false);
+  const [currAddress, setCurrAddress] = useState("");
+  const [addCard, setAddCard] = useState(false);
+
   useEffect(() => {
     // setShoppingCartItems(
     //   _.get(customer, "onlineShoppingCart.shoppingCartItems", [])
     // );
-  }, [customer]);
+  }, [customer, clientSecret]);
 
-  const { onlineShoppingCart, creditCards, shippingAddresses } = customer;
-  const [creditCardIndex, setCreditCardIndex] = useState(0);
-  const [addNewAddress, setAddNewAddress] = useState(false);
-  const [currAddress, setCurrAddress] = useState("");
+  let expiryMonth, expiryYear, last4, issuer, creditCardId;
+  if (creditCards[creditCardIndex]) {
+    const creditCard = creditCards[creditCardIndex];
+    expiryMonth = creditCard.expiryMonth;
+    expiryYear = creditCard.expiryYear;
+    last4 = creditCard.last4;
+    issuer = creditCard.issuer;
+    creditCardId = creditCard.creditCardId;
+  }
 
-  let { expiryMonth, expiryYear, last4, issuer, creditCardId } = creditCards[
-    creditCardIndex
-  ];
   expiryMonth = expiryMonth > 10 ? expiryMonth : `0${expiryMonth}`;
 
   console.log(onlineShoppingCart);
   console.log(creditCards);
   console.log(shippingAddresses);
+  console.log(clientSecret);
 
   /*
     Client secret need to updated and stored in redux store
@@ -101,27 +117,81 @@ export default function CheckOutPage() {
     3. On changing of card
   */
 
-  const handleUpdateQuantity = (quantity, productVariantId, isDelete) => {
-    if (isDelete) {
-      quantity = 0;
-    }
-    const request = new UpdateShoppingCartRequest(
-      quantity,
-      productVariantId,
-      customer.customerId,
-      "online"
-    );
-    dispatch(updateShoppingCart(request));
+  const handleMakePaymentWithNewCard = () => {
+    const { initialTotalAmount } = onlineShoppingCart;
+    // Send back to server to get client_secret to complete payment
+    getClientSecret(initialTotalAmount, setClientSecret);
   };
 
-  const handleCheckout = () => {
-    // dispatch(checkOut({ totalAmount: 1500 }, setShowCreditCardDialog));
-    // dispatch(saveCard(customer.customerId, setShowCreditCardDialog));
+  const handleConfirmPayment = async event => {
+    // We don't want to let default form submission happen here,
+    // which would refresh the page.
+    event.preventDefault();
+
+    let {
+      shoppingCartId,
+      initialTotalAmount: totalAmount
+    } = onlineShoppingCart;
+    const { paymentMethodId } = creditCards[creditCardIndex];
+    const { customerId } = customer;
+    // Stripe take in cents
+    totalAmount = totalAmount * 100;
+    const paymentRequest = new PaymentRequest(
+      customerId,
+      paymentMethodId,
+      totalAmount,
+      shoppingCartId
+    );
+
+    if (clientSecret !== null) {
+      if (!stripe || !elements) {
+        // Stripe.js has not yet loaded.
+        // Make sure to disable form submission until Stripe.js has loaded.
+        return;
+      }
+
+      const result = await stripe.confirmCardPayment(clientSecret, {
+        payment_method: {
+          card: elements.getElement(CardElement),
+          billing_details: {
+            name: `${customer.firstName} ${customer.lastName}`
+          }
+        }
+      });
+
+      if (result.error) {
+        // Show error to your customer (e.g., insufficient funds)
+        console.log(result.error.message);
+      } else {
+        // The payment has been processed!
+        console.log("Payment succeed!!");
+        if (result.paymentIntent.status === "succeeded") {
+          // Show a success message to your customer
+          // There's a risk of the customer closing the window before callback
+          // execution. Set up a webhook or plugin to listen for the
+          // payment_intent.succeeded event that handles any business critical
+          // post-payment actions.
+          console.log("YAY succeed!!");
+          console.log(result);
+          // POST back to create transaction
+        }
+      }
+    } else {
+      console.log("Payment with saved card!");
+      console.log(paymentRequest);
+      dispatch(makePayment(paymentRequest, history));
+    }
   };
 
   const onSelectCreditCard = e => {
     console.log(e);
     setCreditCardIndex(e.target.value);
+    setClientSecret(null);
+  };
+
+  const toggleAddNewCard = e => {
+    setAddCard(!addCard);
+    setClientSecret(null);
   };
 
   const handleAddNewAddress = () => {
@@ -153,12 +223,12 @@ export default function CheckOutPage() {
           <Card plain>
             <CardBody plain>
               <h3 className={classes.cardTitle}>Check Out</h3>
-              <Grid container spacing={6}>
-                <Grid item md={7}>
+              <Grid container spacing={0}>
+                <Grid item md={6}>
                   <Card>
-                    <CardContent>
-                      <GridContainer>
-                        <GridItem xs={7}>
+                    <CardContent style={{ padding: "0 5%" }}>
+                      <Grid container>
+                        <Grid item xs={7}>
                           <Typography
                             className={classes.checkoutTitle}
                             variant="h4"
@@ -166,8 +236,8 @@ export default function CheckOutPage() {
                           >
                             TOTAL TO PAY
                           </Typography>
-                        </GridItem>
-                        <GridItem xs={5} style={{ textAlign: "right" }}>
+                        </Grid>
+                        <Grid item xs={5} style={{ textAlign: "right" }}>
                           <Typography
                             className={classes.checkoutTitle}
                             variant="h4"
@@ -175,81 +245,145 @@ export default function CheckOutPage() {
                           >
                             SGD${onlineShoppingCart.initialTotalAmount}
                           </Typography>
-                        </GridItem>
-                      </GridContainer>
-
+                        </Grid>
+                      </Grid>
                       <Divider style={{ marginBottom: "5%" }} />
                       <Grid container>
-                        <Grid item xs={12}>
-                          <Typography variant="h6" component="h2">
-                            Promo Code
-                          </Typography>
-                          <TextField fullWidth />
-                        </Grid>
-                        {addNewAddress ? (
-                          <Grid item xs={12} md={7}>
-                            <AddAddress
-                              addNewAddress={[addNewAddress, setAddNewAddress]}
-                              currAddress={[currAddress, setCurrAddress]}
-                            />
+                        <Grid container item xs={12}>
+                          <Grid item xs={6}>
+                            <Typography variant="h6" component="h2">
+                              Promo Code
+                            </Typography>
                           </Grid>
-                        ) : (
-                          <Grid item xs={12}>
-                            <Button
-                              onClick={handleAddNewAddress}
-                              round
-                              color="primary"
-                            >
-                              Add New Address
+                          <Grid item xs={6} style={{ textAlign: "right" }}>
+                            <Button onClick={null} disabled>
+                              Apply Promo Code
                             </Button>
-                            <AddressCardForCheckOut
-                              addNewAddress={[addNewAddress, setAddNewAddress]}
-                              currAddress={[currAddress, setCurrAddress]}
-                            />
                           </Grid>
-                        )}
+                          <TextField fullWidth style={{ margin: "5% 0" }} />
+                        </Grid>
+                        <Grid item container xs={12}>
+                          {addNewAddress ? (
+                            <Grid item container xs={12}>
+                              <Grid item xs={false} md={2} />
+                              <Grid item xs={12} md={8}>
+                                <AddAddress
+                                  addNewAddress={[
+                                    addNewAddress,
+                                    setAddNewAddress
+                                  ]}
+                                  currAddress={[currAddress, setCurrAddress]}
+                                />
+                                <Button
+                                  onClick={handleAddNewAddress}
+                                  // color="primary"
+                                >
+                                  Add New Address
+                                </Button>
+                              </Grid>
+                              <Grid item xs={false} md={2} />
+                            </Grid>
+                          ) : (
+                            <Grid item xs={12} container>
+                              <Grid item xs={12} style={{ textAlign: "right" }}>
+                                <Button
+                                  onClick={handleAddNewAddress}
+                                  // color="primary"
+                                >
+                                  Add New Address
+                                </Button>
+                              </Grid>
+                              <Grid item xs={12}>
+                                <AddressCardForCheckOut
+                                  addNewAddress={[
+                                    addNewAddress,
+                                    setAddNewAddress
+                                  ]}
+                                  currAddress={[currAddress, setCurrAddress]}
+                                />
+                              </Grid>
+                            </Grid>
+                          )}
+                        </Grid>
 
-                        <Grid item xs={12}>
-                          <InputLabel>Select payment card</InputLabel>
-                          <Select
-                            style={{
-                              margin: "5% 0",
-                              textAlign: "center",
-                              fontSize: "24px"
-                            }}
-                            fullWidth
-                            // style={{ width: 200 }}
-                            defaultValue={creditCardIndex}
-                            onChange={onSelectCreditCard}
-                            name="credit-card"
-                          >
-                            {customer.creditCards.map(
-                              ({ last4, creditCardId }, index) => {
-                                return (
-                                  <MenuItem
-                                    classes={{
-                                      root: classes.selectMenuItem,
-                                      selected: classes.selectMenuItemSelected
-                                    }}
-                                    value={index}
-                                  >
-                                    **** **** **** {last4}
-                                  </MenuItem>
-                                );
-                              }
-                            )}
-                          </Select>
-                          <div style={{ transform: "scale(0.8)" }}>
-                            <Cards
-                              cvc={" "}
-                              expiry={`${expiryMonth}/${expiryYear}`}
-                              // focus={this.state.focus}
-                              name=" "
-                              number={`************${last4}`}
-                              preview={true}
-                              issuer={issuer}
-                            />
-                          </div>
+                        <Grid container item xs={12} alignItems="center">
+                          <Grid item xs={6}>
+                            <InputLabel>
+                              {addCard
+                                ? "Use a new card"
+                                : "Select payment card"}
+                            </InputLabel>
+                          </Grid>
+                          <Grid item xs={6} style={{ textAlign: "right" }}>
+                            <Button onClick={toggleAddNewCard}>
+                              {addCard ? "Cancel" : "Use a new card"}{" "}
+                            </Button>
+                          </Grid>
+                          {customer.creditCards.length > 0 && !addCard && (
+                            <Grid item xs={12}>
+                              <Select
+                                style={{
+                                  margin: "5% 0",
+                                  textAlign: "center",
+                                  fontSize: "24px"
+                                }}
+                                fullWidth
+                                // style={{ width: 200 }}
+                                defaultValue={creditCardIndex}
+                                onChange={onSelectCreditCard}
+                                name="credit-card"
+                              >
+                                {customer.creditCards.map(
+                                  ({ last4, creditCardId }, index) => {
+                                    return (
+                                      <MenuItem
+                                        classes={{
+                                          root: classes.selectMenuItem,
+                                          selected:
+                                            classes.selectMenuItemSelected
+                                        }}
+                                        value={index}
+                                      >
+                                        **** **** **** {last4}
+                                      </MenuItem>
+                                    );
+                                  }
+                                )}
+                              </Select>
+                              <Grid
+                                item
+                                xs={12}
+                                style={{ transform: "scale(0.8)" }}
+                              >
+                                <Cards
+                                  cvc={" "}
+                                  expiry={`${expiryMonth}/${expiryYear}`}
+                                  // focus={this.state.focus}
+                                  name=" "
+                                  number={`************${last4}`}
+                                  preview={true}
+                                  issuer={issuer}
+                                />
+                              </Grid>
+                            </Grid>
+                          )}
+                          {addCard && (
+                            <GridItem container xs={12} style={{ padding: 0 }}>
+                              <Grid item xs={12}>
+                                <CardSection />
+                              </Grid>
+                              <Grid item xs={12} style={{ textAlign: "right" }}>
+                                <Button
+                                  color="github"
+                                  onClick={handleMakePaymentWithNewCard}
+                                  disabled={!stripe}
+                                  // className={classes.firstButton}
+                                >
+                                  Use this card
+                                </Button>
+                              </Grid>
+                            </GridItem>
+                          )}
                         </Grid>
                       </Grid>
                       {/* <Typography className={classes.pos} color="textSecondary">
@@ -261,18 +395,19 @@ export default function CheckOutPage() {
                         {'"a benevolent smile"'}
                       </Typography> */}
                     </CardContent>
-                    <CardActions>
+                    <CardActions style={{ padding: "4% 5%" }}>
                       <Button
                         color="success"
                         fullWidth
-                        onClick={handleCheckout}
-                        disabled={true}
+                        onClick={handleConfirmPayment}
+                        // disabled={true}
                       >
                         Confirm payment
                       </Button>
                     </CardActions>
                   </Card>
                 </Grid>
+                <Grid item md={1} />
                 <Grid item md={5}>
                   {customer.onlineShoppingCart.shoppingCartItems.map(
                     (cartItem, index) => {
