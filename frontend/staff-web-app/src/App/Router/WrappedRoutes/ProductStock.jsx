@@ -10,7 +10,11 @@ import SecureRoute from "../SecureRoute";
 
 export default () => (
   <Switch>
-    <SecureRoute exact path="/productStock/viewAll" component={ProductsStockTable} />
+    <SecureRoute
+      exact
+      path="/productStock/viewAll"
+      component={ProductsStockTable}
+    />
     <SecureRoute
       path="/productStock/viewProductStocksDetails/:id"
       component={ProductsStockDetails}

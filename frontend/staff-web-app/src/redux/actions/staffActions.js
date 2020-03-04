@@ -164,7 +164,7 @@ export const resetPassword = (resetStaffPasswordRequest, history) => {
         toast.success("Staff password reset! Please check your email", {
           position: toast.POSITION.TOP_CENTER
         });
-          history.push(`/login`);
+        history.push(`/login`);
       })
       .catch(err => {
         dispatch(resetStaffPasswordError(err.response.data));

@@ -76,19 +76,23 @@ const updateProductStockQtyError = data => ({
   errorMap: data
 });
 
-export const retrieveProductStocksByParameter = (storeId, warehouseId, productVariantId) => {
+export const retrieveProductStocksByParameter = (
+  storeId,
+  warehouseId,
+  productVariantId
+) => {
   return dispatch => {
     axios
-        .get(PRODUCT_STOCK_BASE_URL + `/retrieveProductStocksByParameter`, {
-          params: { storeId, warehouseId, productVariantId }
-        })
-        .then(response => {
-          const { data } = jsog.decode(response);
-          dispatch(retrieveProductStocksByParameterSuccess(data));
-        })
-        .catch(err => {
-          dispatch(retrieveProductStocksByParameterError(err.response.data));
-        });
+      .get(PRODUCT_STOCK_BASE_URL + `/retrieveProductStocksByParameter`, {
+        params: { storeId, warehouseId, productVariantId }
+      })
+      .then(response => {
+        const { data } = jsog.decode(response);
+        dispatch(retrieveProductStocksByParameterSuccess(data));
+      })
+      .catch(err => {
+        dispatch(retrieveProductStocksByParameterError(err.response.data));
+      });
   };
 };
 
@@ -100,4 +104,4 @@ const retrieveProductStocksByParameterSuccess = data => ({
 const retrieveProductStocksByParameterError = data => ({
   type: types.GET_ERRORS,
   errorMap: data
-})
+});

@@ -9,6 +9,9 @@ export default () => (
   <Switch>
     <SecureRoute path="/product/createProduct" component={ProductForm} />
     <SecureRoute path="/product/viewAllProduct" component={ProductsTable} />
-    <SecureRoute path="/product/viewProductDetails/:id" component={ProductCard} />
+    <SecureRoute
+      path="/product/viewProductDetails/:id"
+      component={ProductCard}
+    />
   </Switch>
 );

@@ -8,7 +8,7 @@ import ProfilePage from "components/Profile/ProfilePage";
 import SecuredRoute from "App/Routes/SecuredRoute";
 import ForgotPassword from "components/Login/ForgotPassword";
 import ResetPassword from "components/Login/ResetPassword";
-import AddressCard from "components/Profile/sections/AddressCard";
+import AddressCard from "components/Profile/sections/Address/AddressCard";
 import WishlistPage from "components/Wishlist/WishlistPage";
 import ShoppingCart from "components/ShoppingCart/ShoppingCartPage";
 import CheckOutPage from "components/Checkout/CheckOutPage";
@@ -38,15 +38,15 @@ export default () => (
       component={ResetPassword}
     />
     <Route exact path="/account/address" component={AddressCard} />
-    <Route exact path="/account/wishlist" component={WishlistPage} />
-    <Route
+    <SecuredRoute exact path="/account/wishlist" component={WishlistPage} />
+    <SecuredRoute
       exact
       path="/account/reservationCart"
       component={ReservationCartPage}
     />
-    <Route exact path="/account/shoppingCart" component={ShoppingCart} />
-    <Route exact path="/account/checkout" component={CheckOutPage} />
-    <Route
+    <SecuredRoute exact path="/account/shoppingCart" component={ShoppingCart} />
+    <SecuredRoute exact path="/account/checkout" component={CheckOutPage} />
+    <SecuredRoute
       exact
       path="/account/reservation/:mode/:reservationId?"
       component={ReservationHomePage}
