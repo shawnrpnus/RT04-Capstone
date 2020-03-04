@@ -12,6 +12,10 @@ export default () => (
       path="/tag/manage"
       render={props => <TagContainer {...props} mode="viewAll" />}
     />
-    <SecureRoute exact path="/tag/addTagToProducts" component={AddTagToProduct} />
+    <SecureRoute
+      exact
+      path="/tag/addTagToProducts"
+      component={AddTagToProduct}
+    />
   </Switch>
 );

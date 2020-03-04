@@ -2,16 +2,16 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory, useLocation } from "react-router-dom";
 import React, { useEffect, useState } from "react";
-import { clearErrors } from "../../../redux/actions";
-import Button from "../../UI/CustomButtons/Button";
-import customCheckboxRadioSwitch from "../../../assets/jss/material-kit-pro-react/customCheckboxRadioSwitchStyle";
+import { clearErrors } from "redux/actions";
+import Button from "components/UI/CustomButtons/Button";
+import customCheckboxRadioSwitch from "assets/jss/material-kit-pro-react/customCheckboxRadioSwitchStyle";
 import { useSnackbar } from "notistack";
 import Cards from "react-credit-cards";
 import "react-credit-cards/es/styles-compiled.css";
 import Grid from "@material-ui/core/Grid";
 import IconButton from "@material-ui/core/IconButton";
 import CancelIcon from "@material-ui/icons/Cancel";
-import { deleteCard } from "./../../../redux/actions/customerActions";
+import { deleteCard } from "redux/actions/customerActions";
 
 const useStyles = makeStyles(customCheckboxRadioSwitch);
 

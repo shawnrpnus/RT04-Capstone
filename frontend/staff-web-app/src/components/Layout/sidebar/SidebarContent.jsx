@@ -17,8 +17,6 @@ class SidebarContent extends Component {
     return (
       <div className="sidebar__content">
         <ul className="sidebar__block">
-
-
           <SidebarCategory title="Staff" icon="users">
             <SidebarLink
               title="Create"
@@ -97,9 +95,6 @@ class SidebarContent extends Component {
               onClick={this.hideSidebar}
             />
           </SidebarCategory>
-
-
-
         </ul>
       </div>
     );

@@ -90,8 +90,9 @@ class StaffLoginForm extends Component {
               />
 
               <div className="account__forgot-password">
-                <Link  href="#" onClick={this.onClick}>Forgot your password?</Link>
-
+                <Link href="#" onClick={this.onClick}>
+                  Forgot your password?
+                </Link>
               </div>
             </div>
             <div className="form__form-group">

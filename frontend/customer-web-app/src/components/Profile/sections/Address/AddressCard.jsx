@@ -3,30 +3,30 @@ import {
   cardLink,
   cardSubtitle,
   cardTitle
-} from "../../../assets/jss/material-kit-pro-react";
-import Card from "../../UI/Card/Card";
-import CardBody from "../../UI/Card/CardBody";
+} from "assets/jss/material-kit-pro-react";
+import Card from "components/UI/Card/Card";
+import CardBody from "components/UI/Card/CardBody";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { retrieveAllContactUsCategoryEnum } from "../../../redux/actions/contactUsAction";
+import { retrieveAllContactUsCategoryEnum } from "redux/actions/contactUsAction";
 import Switch from "@material-ui/core/Switch";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
-import customCheckboxRadioSwitch from "../../../assets/jss/material-kit-pro-react/customCheckboxRadioSwitchStyle";
+import customCheckboxRadioSwitch from "assets/jss/material-kit-pro-react/customCheckboxRadioSwitchStyle";
 import Checkbox from "@material-ui/core/Checkbox";
 import { Check, Delete, Edit, Update } from "@material-ui/icons";
-import GridContainer from "../../Layout/components/Grid/GridContainer";
+import GridContainer from "components/Layout/components/Grid/GridContainer";
 import Grid from "@material-ui/core/Grid";
-import GridItem from "../../Layout/components/Grid/GridItem";
-import { clearErrors } from "../../../redux/actions";
-import AddUpdateAddressRequest from "../../../models/customer/AddUpdateAddressRequest";
+import GridItem from "components/Layout/components/Grid/GridItem";
+import { clearErrors } from "redux/actions";
+import AddUpdateAddressRequest from "models/customer/AddUpdateAddressRequest";
 import {
   removeShippingAddressDetails,
   updateShippingAddress
-} from "../../../redux/actions/customerActions";
+} from "redux/actions/customerActions";
 import Button from "@material-ui/core/Button";
 import { useHistory } from "react-router-dom";
 import { useSnackbar } from "notistack";
-import RemoveShippingAddressRequest from "../../../models/customer/RemoveShippingAddressRequest";
+import RemoveShippingAddressRequest from "models/customer/RemoveShippingAddressRequest";
 
 const style = {
   cardTitle,

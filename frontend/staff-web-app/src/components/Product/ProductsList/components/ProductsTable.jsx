@@ -116,7 +116,9 @@ class ProductsTable extends PureComponent {
                 title: "Image",
                 field: "image",
                 render: rowData => (
-                  <Link to={`/warehouse/viewProductDetails/${rowData.productId}`}>
+                  <Link
+                    to={`/warehouse/viewProductDetails/${rowData.productId}`}
+                  >
                     <img
                       style={{
                         width: "100%",

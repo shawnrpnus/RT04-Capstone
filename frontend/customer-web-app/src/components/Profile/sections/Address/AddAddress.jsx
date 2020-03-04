@@ -3,13 +3,13 @@ import {
   cardLink,
   cardSubtitle,
   cardTitle
-} from "../../../assets/jss/material-kit-pro-react";
+} from "assets/jss/material-kit-pro-react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory, useLocation } from "react-router-dom";
-import customSelectStyle from "../../../assets/jss/material-kit-pro-react/customSelectStyle";
+import customSelectStyle from "assets/jss/material-kit-pro-react/customSelectStyle";
 import React, { useEffect, useState } from "react";
-import { clearErrors } from "../../../redux/actions";
-import CustomTextField from "../../UI/CustomInput/CustomTextField";
+import { clearErrors } from "redux/actions";
+import CustomTextField from "components/UI/CustomInput/CustomTextField";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import {
   Apartment,
@@ -19,21 +19,21 @@ import {
   Home,
   Place
 } from "@material-ui/icons";
-import Button from "../../UI/CustomButtons/Button";
-import SendUpdateEmailLinkRequest from "../../../models/customer/SendUpdateEmailLinkRequest";
+import Button from "components/UI/CustomButtons/Button";
+import SendUpdateEmailLinkRequest from "models/customer/SendUpdateEmailLinkRequest";
 import {
   addShippingAddressDetails,
   emailSending,
   sendUpdateEmailLink,
   updateCustomerName,
   updateShippingAddressDetails
-} from "../../../redux/actions/customerActions";
-import UpdateCustomerRequest from "../../../models/customer/UpdateCustomerRequest";
-import Address from "../../../models/customer/Address";
-import AddUpdateAddressRequest from "../../../models/customer/AddUpdateAddressRequest";
+} from "redux/actions/customerActions";
+import UpdateCustomerRequest from "models/customer/UpdateCustomerRequest";
+import Address from "models/customer/Address";
+import AddUpdateAddressRequest from "models/customer/AddUpdateAddressRequest";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
-import customCheckboxRadioSwitch from "../../../assets/jss/material-kit-pro-react/customCheckboxRadioSwitchStyle";
+import customCheckboxRadioSwitch from "assets/jss/material-kit-pro-react/customCheckboxRadioSwitchStyle";
 import { useSnackbar } from "notistack";
 
 const useStyles = makeStyles(customCheckboxRadioSwitch);
