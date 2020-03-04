@@ -335,11 +335,12 @@ public class StartUpService {
         Address a1 = new Address("2E Hong San Walk", "#03-08", 612140, "Palm Garden");
         Staff newStaff = staffService.createNewStaff(staff, a1, role1.getRoleId(), departmentHR.getDepartmentId());
 
-        Staff staff2 = new Staff("Annabel", "Tan", 13, "213C", "annabeltwe@gmail.com", BigDecimal.valueOf(10000));
+        Staff staff2 = new Staff("IT", "STAFF", 13, "213C", "annabeltwe@gmail.com", BigDecimal.valueOf(10000));
         Address a2 = new Address("Block 235 Chua Chu Kang Ave 2", "#15-234", 689051, "-");
         Staff newStaff2 = staffService.createNewStaff(staff2, a2, role2.getRoleId(), departmentIT.getDepartmentId());
+        staffService.createNewStaffAccount(newStaff2.getStaffId());
 
-        Staff staff3 = new Staff("Yi Lin", "Cai", 1, "131Z", "Caiyl@gmail.com", BigDecimal.valueOf(10000));
+        Staff staff3 = new Staff("HR", "STAFF", 1, "131Z", "Caiyl@gmail.com", BigDecimal.valueOf(10000));
         Address a3 = new Address("Block 234 Bishan South", "#30-08", 321140, "Palm Garden");
         Staff newStaff3 = staffService.createNewStaff(staff3, a3, role1.getRoleId(), departmentHR.getDepartmentId());
         staffService.createNewStaffAccount(newStaff3.getStaffId());
