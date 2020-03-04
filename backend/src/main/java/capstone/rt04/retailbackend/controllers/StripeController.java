@@ -1,10 +1,13 @@
 package capstone.rt04.retailbackend.controllers;
 
+import capstone.rt04.retailbackend.request.stripe.DeleteCardRequest;
 import capstone.rt04.retailbackend.request.stripe.PaymentWithSavedCardRequest;
 import capstone.rt04.retailbackend.request.stripe.SaveCardRequest;
 import capstone.rt04.retailbackend.services.StripeService;
+import capstone.rt04.retailbackend.services.TransactionService;
 import capstone.rt04.retailbackend.util.exceptions.customer.CreditCardNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.customer.CustomerNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.shoppingcart.InvalidCartTypeException;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Customer;
 import com.stripe.model.PaymentIntent;
@@ -15,6 +18,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import static capstone.rt04.retailbackend.util.Constants.ONLINE_SHOPPING_CART;
+
 @Controller
 @RequestMapping("/")
 @CrossOrigin(origins = {"http://localhost:3000"})
@@ -22,17 +27,27 @@ public class StripeController {
 
     @Autowired
     private StripeService stripeService;
+    @Autowired
+    private TransactionService transactionService;
 
     // Not using saved card
     @PostMapping("/directPayment")
     public ResponseEntity<?> directPayment(@RequestParam Long totalAmount) {
         try {
+            System.out.println(totalAmount);
             PaymentIntent paymentIntent = stripeService.makeDirectPayment(totalAmount);
             return new ResponseEntity<>(paymentIntent.getClientSecret(), HttpStatus.OK);
         } catch (StripeException e) {
             System.out.println("Error simulating payment");
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @PostMapping("/completeDirectPayment")
+    public ResponseEntity<?> completeDirectPayment(@RequestBody PaymentWithSavedCardRequest paymentWithSavedCardRequest) throws CustomerNotFoundException, InvalidCartTypeException {
+        capstone.rt04.retailbackend.entities.Customer customer = transactionService.createNewTransaction(paymentWithSavedCardRequest.getCustomerId(),
+                paymentWithSavedCardRequest.getShoppingCartId(), ONLINE_SHOPPING_CART);
+        return new ResponseEntity<>(customer, HttpStatus.OK);
     }
 
     @GetMapping("/initiateSaveCardRequest/{customerId}")
@@ -75,13 +90,24 @@ public class StripeController {
     }
 
     @PostMapping("/makePaymentWithSavedCard")
-    public ResponseEntity<?> makePaymentWithSavedCard(@RequestBody PaymentWithSavedCardRequest paymentWithSavedCardRequest) throws CustomerNotFoundException {
+    public ResponseEntity<?> makePaymentWithSavedCard(@RequestBody PaymentWithSavedCardRequest paymentWithSavedCardRequest) throws CustomerNotFoundException, InvalidCartTypeException {
         try {
-            PaymentIntent paymentIntent = stripeService.makePaymentWithSavedCard(paymentWithSavedCardRequest.getCustomerId(),
+            capstone.rt04.retailbackend.entities.Customer customer = stripeService.makePaymentWithSavedCard(paymentWithSavedCardRequest.getCustomerId(),
                     paymentWithSavedCardRequest.getPaymentMethodId(), paymentWithSavedCardRequest.getTotalAmount(), paymentWithSavedCardRequest.getShoppingCartId());
-            return new ResponseEntity<>(paymentIntent.toJson(), HttpStatus.OK);
+            return new ResponseEntity<>(customer, HttpStatus.OK);
         } catch (StripeException e) {
             System.out.println("Error creating customer");
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("/deleteCardOnStripeAndSql")
+    public ResponseEntity<?> deleteCardOnStripeAndSql(@RequestBody DeleteCardRequest deleteCardRequest) throws CustomerNotFoundException, CreditCardNotFoundException {
+        try {
+            capstone.rt04.retailbackend.entities.Customer customer = stripeService.deleteCardOnStripeAndSql(deleteCardRequest.getCustomerId(), deleteCardRequest.getCreditCardId());
+            return new ResponseEntity<>(customer, HttpStatus.OK);
+        } catch (StripeException e) {
+            System.out.println("Error deleting card on stripe");
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }

@@ -1,14 +1,15 @@
 import axios from "axios";
 import { toast } from "react-toastify";
+import * as types from "./types";
 
-import {
-  CREATE_PRODUCT,
-  RETRIEVE_PRODUCT_BY_ID,
-  GET_ERRORS,
-  RETRIEVE_ALL_PRODUCTS,
-  RETRIEVE_ALL_PRODUCTS_FOR_CATEGORY,
-  RETRIEVE_PRODUCTS_DETAILS
-} from "./types";
+// import {
+//   // CREATE_PRODUCT,
+//   RETRIEVE_PRODUCT_BY_ID,
+//   GET_ERRORS,
+//   // RETRIEVE_ALL_PRODUCTS,
+//   RETRIEVE_ALL_PRODUCTS_FOR_CATEGORY,
+//   RETRIEVE_PRODUCTS_DETAILS, default as types
+// } from "./types";
 
 const PRODUCT_BASE_URL = "/api/product";
 const CATEGORY_BASE_URL = "/api/category";
@@ -35,18 +36,18 @@ export const createNewProduct = (createProductRequest, history) => {
       })
       .catch(err => {
         dispatch(createProductError(err.response.data));
-        //console.log(err.response.data);
+        console.log(err.response.data);
       });
   };
 };
 
 const createProductSuccess = data => ({
-  type: CREATE_PRODUCT,
+  type: types.CREATE_PRODUCT,
   product: data
 });
 
 const createProductError = data => ({
-  type: GET_ERRORS,
+  type: types.GET_ERRORS,
   errorMap: data
 });
 
@@ -74,12 +75,12 @@ export const retrieveProductById = (
 };
 
 const retrieveProductByIdSuccess = data => ({
-  type: RETRIEVE_PRODUCT_BY_ID,
+  type: types.RETRIEVE_PRODUCT_BY_ID,
   product: data
 });
 
 const retrieveProductByIdError = data => ({
-  type: GET_ERRORS,
+  type: types.GET_ERRORS,
   errorMap: data
 });
 
@@ -105,17 +106,17 @@ export const retrieveProductsDetails = (storeOrWarehouseId, categoryId) => {
 };
 
 const retrieveProductsDetailsSuccess = data => ({
-  type: RETRIEVE_PRODUCTS_DETAILS,
+  type: types.RETRIEVE_PRODUCTS_DETAILS,
   products: data
 });
 
 const retrieveProductsDetailsForCategorySuccess = data => ({
-  type: RETRIEVE_ALL_PRODUCTS_FOR_CATEGORY,
+  type: types.RETRIEVE_ALL_PRODUCTS_FOR_CATEGORY,
   categoryProducts: data
 });
 
 const retrieveProductsDetailsError = data => ({
-  type: GET_ERRORS,
+  type: types.GET_ERRORS,
   errorMap: data
 });
 
@@ -143,13 +144,17 @@ export const updateProduct = (product, handleCloseProductUpdateDialog) => {
   };
 };
 
-export const createProductVariants = (request, history) => {
+export const createProductVariants = (request, handleCloseDialog) => {
   return dispatch => {
     axios
       .post(PRODUCT_BASE_URL + "Variant/createMultipleProductVariants", request)
       .then(() => {
         console.log("Successfully created product variants!");
         retrieveProductById(request.productId)(dispatch);
+        toast.success("Product variants created!", {
+          position: toast.POSITION.TOP_CENTER
+        });
+        handleCloseDialog();
       })
       .catch(() => {
         console.log("Failed");

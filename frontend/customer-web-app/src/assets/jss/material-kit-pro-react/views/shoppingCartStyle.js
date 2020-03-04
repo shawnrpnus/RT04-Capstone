@@ -129,6 +129,14 @@ const styles = {
   },
   textRight: {
     textAlign: "right"
+  },
+  buttonTopMargin: {
+    marginTop: "8px"
+  },
+  productName: {
+    ...title,
+    marginTop: "0",
+    marginBottom: "0"
   }
 };
 

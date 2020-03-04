@@ -136,17 +136,22 @@ export default function HeaderLinks(props) {
             </Button>
           </Link>
         </ListItem>
+
         <ListItem className={classes.listItem}>
-          <Link key="login" to="/shoppingCart" style={{ color: "#555555" }}>
+          <Link
+            key="login"
+            to="/account/shoppingCart"
+            style={{ color: "inherit" }}
+          >
             <Button className={classes.navLink} round color="transparent">
               <ShoppingCart className={classes.icons} /> Shop
             </Button>
           </Link>
         </ListItem>
         <ListItem className={classes.listItem}>
-          <Link to="/account/reservationCart" style={{ color: "inherit" }}>
+          <Link to="/account/reservation/cart" style={{ color: "inherit" }}>
             <Button className={classes.navLink} round color="transparent">
-              <ShoppingCart className={classes.icons} /> Reserve
+              Reservation
             </Button>
           </Link>
         </ListItem>

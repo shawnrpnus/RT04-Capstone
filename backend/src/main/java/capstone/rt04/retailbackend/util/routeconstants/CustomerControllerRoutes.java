@@ -4,6 +4,7 @@ public class CustomerControllerRoutes {
     public static final String CUSTOMER_BASE_ROUTE = "/api/customer";
     public static final String CREATE_NEW_CUSTOMER = "/createNewCustomer";
     public static final String GET_CUSTOMER_BY_EMAIL = "/getCustomerByEmail";
+    public static final String RETRIEVE_CUSTOMER_BY_ID = "/retrieveCustomerById";
     public static final String SEND_UPDATE_EMAIL_LINK = "/sendUpdateEmailLink";
     public static final String UPDATE_EMAIL = "/updateEmail/{code}";
     public static final String UPDATE_CUSTOMER = "/updateCustomer";
@@ -22,7 +23,7 @@ public class CustomerControllerRoutes {
     public static final String REMOVE_CREDIT_CARD = "/removeCreditCard";
     public static final String ADD_SHIPPING_ADDRESS = "/addShippingAddress";
     public static final String UPDATE_SHIPPING_ADDRESS = "/updateShippingAddress";
-    public static final String REMOVE_SHIPPING_ADDRESS = "/removeShippingAddress";
+    public static final String REMOVE_SHIPPING_ADDRESS = "/removeShippingAddress/{customerId}/{shippingAddressId}";
     public static final String ADD_TO_WISHLIST = "/addToWishlist";
     public static final String REMOVE_FROM_WISHLIST = "/removeFromWishlist";
     public static final String CLEAR_WISHLIST = "/clearWishlist";
@@ -44,5 +45,8 @@ public class CustomerControllerRoutes {
     public static final String UPDATE_RESERVATION = "/updateReservation";
     public static final String GET_PROD_VARIANT_STORE_STOCK_STATUS = "/getProdVariantStoreStockStatus";
     public static final String GET_STORES_STOCK_STATUS_FOR_CART = "/getStoresStockStatusForCart";
+    public static final String RETRIEVE_RESERVATION_BY_ID = "/retrieveReservationById";
+    public static final String GET_STORES_STOCK_STATUS_FOR_RESERVATION = "/getStoresStockStatusForReservation";
+
 
 }

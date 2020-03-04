@@ -9,6 +9,7 @@ import capstone.rt04.retailbackend.request.product.ColourToImageUrlsMap;
 import capstone.rt04.retailbackend.response.ColourToSizeImageMap;
 import capstone.rt04.retailbackend.response.ProductDetailsResponse;
 import capstone.rt04.retailbackend.response.SizeToProductVariantAndStockMap;
+import capstone.rt04.retailbackend.util.ErrorMessages;
 import capstone.rt04.retailbackend.util.enums.SizeEnum;
 import capstone.rt04.retailbackend.util.enums.SortEnum;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
@@ -21,6 +22,7 @@ import capstone.rt04.retailbackend.util.exceptions.style.StyleNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.tag.TagNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.warehouse.WarehouseNotFoundException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,7 +54,7 @@ public class ProductService {
     public ProductService(ValidationService validationService, TagService tagService, CategoryService categoryService, StyleService styleService,
                           StoreService storeService, ProductRepository productRepository, ProductVariantRepository productVariantRepository,
                           ProductStockRepository productStockRepository, ProductImageRepository productImageRepository, DiscountService discountService,
-                          PromoCodeService promoCodeService, WarehouseService warehouseService, SizeDetailsService sizeDetailsService, TransactionService transactionService) {
+                          PromoCodeService promoCodeService, WarehouseService warehouseService, SizeDetailsService sizeDetailsService, @Lazy TransactionService transactionService) {
         this.validationService = validationService;
         this.tagService = tagService;
         this.categoryService = categoryService;
@@ -72,7 +74,9 @@ public class ProductService {
     public Product createNewProduct(Product product, Long categoryId, List<Long> tagIds, List<Long> styleIds, List<SizeEnum> sizes, List<ColourToImageUrlsMap> colourToImageUrlsMaps) throws InputDataValidationException, CreateNewProductException, CategoryNotFoundException {
 
         if (categoryId == null) {
-            throw new CreateNewProductException("The new product must be associated a leaf category");
+            Map<String, String> errorMap = new HashMap<>();
+            errorMap.put("categoryId", ErrorMessages.CATEGORY_REQUIRED);
+            throw new CreateNewProductException(errorMap,ErrorMessages.CATEGORY_REQUIRED);
         }
 
         Category category = categoryService.retrieveCategoryByCategoryId(categoryId);
@@ -80,10 +84,11 @@ public class ProductService {
 
         Map<String, String> errorMap = validationService.generateErrorMap(product);
 
+        System.out.println(errorMap);
         if (errorMap == null) {
             try {
                 if (!category.getChildCategories().isEmpty()) {
-                    throw new CreateNewProductException("Selected category for the new product is not a leaf category");
+                    throw new CreateNewProductException(ErrorMessages.CREATE_NEW_PRODUCT_FAILED);
                 }
 
                 product.setCategory(category);
@@ -112,15 +117,15 @@ public class ProductService {
                 if (ex.getCause() != null
                         && ex.getCause().getCause() != null
                         && ex.getCause().getCause().getClass().getSimpleName().equals("SQLIntegrityConstraintViolationException")) {
-                    throw new CreateNewProductException("Product with same SKU code already exist");
+                    throw new CreateNewProductException(ErrorMessages.CREATE_NEW_PRODUCT_FAILED);
                 } else {
-                    throw new CreateNewProductException("An unexpected error has occurred: " + ex.getMessage());
+                    throw new CreateNewProductException(ErrorMessages.CREATE_NEW_PRODUCT_FAILED);
                 }
             } catch (Exception ex) {
-                throw new CreateNewProductException("An unexpected error has occurred: " + ex.getMessage());
+                throw new CreateNewProductException(ErrorMessages.CREATE_NEW_PRODUCT_FAILED);
             }
         } else {
-            throw new InputDataValidationException(errorMap, "Invalid data");
+            throw new InputDataValidationException(errorMap, "Invalid input!");
         }
     }
 
@@ -250,7 +255,9 @@ public class ProductService {
 
     public Product retrieveProductById(Long productId) throws ProductNotFoundException {
         if (productId == null) {
-            throw new ProductNotFoundException("Product ID not provided");
+            Map<String, String> errorMap = new HashMap<>();
+            errorMap.put("productId", ErrorMessages.PRODUCT_ID_REQUIRED);
+            throw new ProductNotFoundException(errorMap, "Product ID not provided");
         }
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ProductNotFoundException("Product ID " + productId + " does not exist!"));
@@ -357,7 +364,9 @@ public class ProductService {
 
     public List<Product> retrieveListOfProductsById(List<Long> productIds) throws ProductNotFoundException {
         if (productIds == null) {
-            throw new ProductNotFoundException("Product IDs not provided");
+            Map<String, String> errorMap = new HashMap<>();
+            errorMap.put("productId", ErrorMessages.PRODUCT_ID_REQUIRED);
+            throw new ProductNotFoundException(errorMap,"Product IDs not provided");
         }
         List<Product> products = (List<Product>) productRepository.findAllById(productIds);
         lazilyLoadProduct(products);

@@ -9,12 +9,13 @@ import {
 import "./CardSectionStyles.css";
 
 const CARD_ELEMENT_OPTIONS = {
+  hidePostalCode: true,
   style: {
     base: {
       color: "#32325d",
       fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
       fontSmoothing: "antialiased",
-      fontSize: "18px",
+      fontSize: "16px",
       "::placeholder": {
         color: "#aab7c4"
       }
@@ -29,8 +30,7 @@ const CARD_ELEMENT_OPTIONS = {
 function CardSection() {
   return (
     <label>
-      Card details{" "}
-      <CardElement hidePostalCode={true} options={CARD_ELEMENT_OPTIONS} />
+      Card details <CardElement options={CARD_ELEMENT_OPTIONS} />
     </label>
     //
   );

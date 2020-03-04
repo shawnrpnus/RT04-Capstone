@@ -32,6 +32,7 @@ const MaterialTextField = props => {
         disabled={disabled}
         autoFocus={autoFocus}
         InputProps={InputProps}
+        inputProps={{ min: "0", step: "1" }}
       />
     </div>
   );

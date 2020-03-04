@@ -4,6 +4,7 @@ import {
   CUSTOMER_LOGOUT,
   EMAIL_SENDING,
   EMAIL_SENT,
+  REMOVE_SHIPPING_ADDRESS_SUCCESS,
   RESET_VERIFICATION_STATUS,
   UPDATE_SHIPPING_ADDRESS_SUCCESS,
   VERIFY_FAILURE,
@@ -31,11 +32,26 @@ const dispatchUpdatedCustomer = (customerDataRaw, dispatch) => {
   dispatch(updateCustomer(customer));
 };
 
-export const refreshCustomer = customerEmail => {
+export const refreshCustomerEmail = customerEmail => {
   const req = { email: customerEmail };
   return dispatch => {
     axios
       .post(CUSTOMER_BASE_URL + "/getCustomerByEmail", req)
+      .then(response => {
+        dispatchUpdatedCustomer(response.data, dispatch);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+};
+
+export const refreshCustomerId = customerId => {
+  return dispatch => {
+    axios
+      .get(CUSTOMER_BASE_URL + "/retrieveCustomerById", {
+        params: { customerId }
+      })
       .then(response => {
         dispatchUpdatedCustomer(response.data, dispatch);
       })
@@ -303,7 +319,6 @@ export const updateShippingAddress = (
       .then(response => {
         const { data } = jsog.decode(response);
         dispatch(updateShippingAddressSuccess(data));
-        history.push("/account/address");
       })
       .catch(err => {
         dispatchErrorMapError(err, dispatch);
@@ -332,8 +347,106 @@ export const addMeasurements = (req, enqueueSnackbar, setAddMeasurements) => {
   };
 };
 
+export const updateShippingAddressDetails = (
+  addUpdateAddressRequest,
+  enqueueSnackbar,
+  history
+) => {
+  return dispatch => {
+    //redux thunk passes dispatch
+    axios
+      .post(
+        CUSTOMER_BASE_URL + "/updateShippingAddress",
+        addUpdateAddressRequest
+      )
+      .then(response => {
+        const { data } = jsog.decode(response);
+        dispatch(updateShippingAddressSuccess(data));
+        enqueueSnackbar("Address Updated", {
+          variant: "success",
+          autoHideDuration: 1200
+        });
+        history.push("/account/profile");
+      })
+      .catch(err => {
+        dispatchErrorMapError(err, dispatch);
+        // console.log(err.response.data);
+      });
+  };
+};
+
+export const updateShippingAddressSuccess = data => ({
+  type: UPDATE_SHIPPING_ADDRESS_SUCCESS,
+  loggedInCustomer: data
+});
+
+export const addShippingAddressDetails = (
+  addUpdateAddressRequest,
+  enqueueSnackbar,
+  history
+) => {
+  return dispatch => {
+    //redux thunk passes dispatch
+    axios
+      .post(CUSTOMER_BASE_URL + "/addShippingAddress", addUpdateAddressRequest)
+      .then(response => {
+        const { data } = jsog.decode(response);
+        dispatch(addShippingAddressSuccess(data));
+        enqueueSnackbar("New Address Added", {
+          variant: "success",
+          autoHideDuration: 1200
+        });
+        //history.push("/account/profile");
+      })
+      .catch(err => {
+        dispatchErrorMapError(err, dispatch);
+        // console.log(err.response.data);
+      });
+  };
+};
+
+export const addShippingAddressSuccess = data => ({
+  type: ADD_SHIPPING_ADDRESS_SUCCESS,
+  loggedInCustomer: data
+});
+
+export const removeShippingAddressDetails = (
+  customerId,
+  shippingAddressId,
+  enqueueSnackbar,
+  history
+) => {
+  return dispatch => {
+    //redux thunk passes dispatch
+    axios
+      .delete(
+        CUSTOMER_BASE_URL +
+          `/removeShippingAddress/${customerId}/${shippingAddressId}`
+      )
+      .then(response => {
+        console.log("did run?");
+        const { data } = jsog.decode(response);
+        dispatch(removeShippingAddressSuccess(data));
+        enqueueSnackbar("Address Deleted", {
+          variant: "success",
+          autoHideDuration: 1200
+        });
+        history.push("/account/profile");
+      })
+      .catch(err => {
+        dispatchErrorMapError(err, dispatch);
+        // console.log(err.response.data);
+      });
+  };
+};
+
+export const removeShippingAddressSuccess = data => ({
+  type: REMOVE_SHIPPING_ADDRESS_SUCCESS,
+  loggedInCustomer: data
+});
+
 export const updateMeasurements = (
-  req,
+  req, 
   enqueueSnackbar,
   setAddMeasurements
 ) => {
@@ -348,6 +461,7 @@ export const updateMeasurements = (
           autoHideDuration: 1200
         });
         setAddMeasurements(true);
+        // history.push("/account/profile");
       })
       .catch(err => {
         dispatchErrorMapError(err, dispatch);
@@ -375,41 +489,6 @@ export const deleteMeasurements = (customerId, enqueueSnackbar) => {
       });
   };
 };
-
-export const updateShippingAddressSuccess = data => ({
-  type: UPDATE_SHIPPING_ADDRESS_SUCCESS,
-  loggedInCustomer: data
-});
-
-export const addShippingAddressDetails = (
-  addUpdateAddressRequest,
-  enqueueSnackbar,
-  history
-) => {
-  return dispatch => {
-    //redux thunk passes dispatch
-    axios
-      .post(CUSTOMER_BASE_URL + "/addShippingAddress", addUpdateAddressRequest)
-      .then(response => {
-        const { data } = jsog.decode(response);
-        dispatch(addShippingAddressSuccess(data));
-        enqueueSnackbar("New Address Added", {
-          variant: "success",
-          autoHideDuration: 1200
-        });
-        history.push("/account/profile");
-      })
-      .catch(err => {
-        dispatchErrorMapError(err, dispatch);
-        // console.log(err.response.data);
-      });
-  };
-};
-
-export const addShippingAddressSuccess = data => ({
-  type: ADD_SHIPPING_ADDRESS_SUCCESS,
-  loggedInCustomer: data
-});
 
 export const addToWishlistAPI = (
   customerId,
@@ -533,7 +612,8 @@ export const addToReservationCartAPI = (
 export const removeFromReservationCartAPI = (
   customerId,
   productVariantId,
-  enqueueSnackbar
+  enqueueSnackbar,
+  retrieveStoresWithStockStatus
 ) => {
   return dispatch => {
     axios
@@ -542,6 +622,9 @@ export const removeFromReservationCartAPI = (
       })
       .then(response => {
         dispatchUpdatedCustomer(response.data, dispatch);
+        if (retrieveStoresWithStockStatus) {
+          dispatch(retrieveStoresWithStockStatus(customerId));
+        }
         if (enqueueSnackbar) {
           enqueueSnackbar("Removed from reservation cart!", {
             variant: "success",
@@ -556,7 +639,11 @@ export const removeFromReservationCartAPI = (
   };
 };
 
-export const clearReservationCartAPI = (customerId, enqueueSnackbar) => {
+export const clearReservationCartAPI = (
+  customerId,
+  enqueueSnackbar,
+  retrieveStoresWithStockStatus
+) => {
   return dispatch => {
     axios
       .post(CUSTOMER_BASE_URL + "/clearReservationCart", null, {
@@ -564,6 +651,9 @@ export const clearReservationCartAPI = (customerId, enqueueSnackbar) => {
       })
       .then(response => {
         dispatchUpdatedCustomer(response.data, dispatch);
+        if (retrieveStoresWithStockStatus) {
+          dispatch(retrieveStoresWithStockStatus(customerId));
+        }
         if (enqueueSnackbar) {
           enqueueSnackbar("Reservation cart cleared!", {
             variant: "success",
@@ -582,10 +672,25 @@ export const saveCard = saveCardRequest => {
   return dispatch => {
     axios
       .post("/saveCard", saveCardRequest)
-      .then(resp => {
+      .then(response => {
         // Return customer
-        console.log(resp);
-        dispatch(saveCardSuccess(resp.data));
+        dispatchUpdatedCustomer(response.data, dispatch);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+};
+
+export const deleteCard = deleteCardRequest => {
+  return dispatch => {
+    console.log(deleteCardRequest);
+    axios
+      .post("/deleteCardOnStripeAndSql", deleteCardRequest)
+      .then(response => {
+        // Return customer
+        console.log(response);
+        dispatchUpdatedCustomer(response.data, dispatch);
       })
       .catch(err => {
         console.log(err);
@@ -657,6 +762,5 @@ export const deleteStylePreferences = (req, enqueueSnackbar, setAddStyle) => {
       .catch(err => {
         dispatchErrorMapError(err, dispatch);
         console.log(err.response.data);
-      });
-  };
-};
+      })
+  }}

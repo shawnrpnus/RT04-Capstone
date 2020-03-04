@@ -16,9 +16,10 @@ import java.util.Date;
 @NoArgsConstructor
 public class TransactionRetrieveRequest {
 
+    private Long customerId;
     private CollectionModeEnum collectionMode;
     private DeliveryStatusEnum deliveryStatus;
-    private Date startDate;
-    private Date endDate;
+    private String startDate; //dateTime must be in format 'YYYY-MM-DD hh:mm:ss' should start with 00:00:00
+    private String endDate; //dateTime must be in format 'YYYY-MM-DD hh:mm:ss' end with 23:59:59
     private SortEnum sortEnum;
 }

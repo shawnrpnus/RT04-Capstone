@@ -3,6 +3,7 @@ package capstone.rt04.retailbackend.services;
 import capstone.rt04.retailbackend.entities.CreditCard;
 import capstone.rt04.retailbackend.util.exceptions.customer.CreditCardNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.customer.CustomerNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.shoppingcart.InvalidCartTypeException;
 import com.stripe.Stripe;
 import com.stripe.exception.CardException;
 import com.stripe.exception.StripeException;
@@ -13,9 +14,12 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static capstone.rt04.retailbackend.util.Constants.ONLINE_SHOPPING_CART;
 
 @Service
 @Transactional
@@ -25,9 +29,11 @@ public class StripeService {
 // See your keys here: https://dashboard.stripe.com/account/apikeys
 
     private final CustomerService customerService;
+    private final TransactionService transactionService;
 
-    public StripeService(@Lazy CustomerService customerService) {
+    public StripeService(@Lazy CustomerService customerService, @Lazy TransactionService transactionService) {
         this.customerService = customerService;
+        this.transactionService = transactionService;
     }
 
     public PaymentIntent makeDirectPayment(Long totalAmount) throws StripeException {
@@ -42,9 +48,14 @@ public class StripeService {
 
         // Verify your integration in this guide by including this parameter
         PaymentIntent intent = PaymentIntent.create(createParams);
-
         System.out.print(intent.getClientSecret());
         return intent;
+    }
+
+    public capstone.rt04.retailbackend.entities.Customer completeDirectPayment(Long customerId, Long shoppingCartId) throws CustomerNotFoundException, InvalidCartTypeException {
+        transactionService.createNewTransaction(customerId, shoppingCartId, ONLINE_SHOPPING_CART);
+        capstone.rt04.retailbackend.entities.Customer customer = customerService.retrieveCustomerByCustomerId(customerId);
+        return customer;
     }
 
     public String initiateSaveCardRequest(Long customerId) throws StripeException, CustomerNotFoundException {
@@ -91,7 +102,6 @@ public class StripeService {
         customerParams.put("email", dbCustomer.getEmail());
         Customer customer = Customer.create(customerParams);
         dbCustomer.setCreditCardCustomerId(customer.getId());
-        System.out.println(customer);
         return customer;
     }
 
@@ -107,7 +117,7 @@ public class StripeService {
         return paymentMethods;
     }
 
-    public PaymentIntent makePaymentWithSavedCard(Long customerId, String paymentMethodId, Long totalAmount, Long shoppingCartId) throws CustomerNotFoundException, StripeException {
+    public capstone.rt04.retailbackend.entities.Customer makePaymentWithSavedCard(Long customerId, String paymentMethodId, Long totalAmount, Long shoppingCartId) throws CustomerNotFoundException, StripeException, InvalidCartTypeException {
         Stripe.apiKey = "sk_test_E81pq87cIYZxL2NkXaXKsEEd00MGrcKvYx";
 
         capstone.rt04.retailbackend.entities.Customer customer = customerService.retrieveCustomerByCustomerId(customerId);
@@ -124,9 +134,10 @@ public class StripeService {
         try {
             PaymentIntent intent = PaymentIntent.create(createParams);
             // TODO: Convert shopping cart item to transaction line item and create new transaction
+            transactionService.createNewTransaction(customerId, shoppingCartId, ONLINE_SHOPPING_CART);
             System.out.println("Payment success!");
             System.out.print(intent.getClientSecret());
-            return intent;
+            return customer;
         } catch (CardException err) {
             // Error code will be authentication_required if authentication is needed
             System.out.println("Error code is : " + err.getCode());
@@ -136,36 +147,23 @@ public class StripeService {
             return null;
         }
     }
-}
 
-//
-//
-//// Charge the Customer instead of the card:
-//        ChargeCreateParams chargeParams =
-//                ChargeCreateParams.builder()
-//                        .setAmount(1000L)
-//                        .setCurrency("usd")
-//                        .setCustomer(customer.getId())
-//                        .build();
-//
-//        Charge charge = Charge.create(chargeParams);
-//
-//// YOUR CODE: Save the customer ID and other info in a database for later.
-//
-//// When it's time to charge the customer again, retrieve the customer ID.
-//        ChargeCreateParams chargeParams2 =
-//                ChargeCreateParams.builder()
-//                        .setAmount(1500L) // $15.00 this time
-//                        .setCurrency("usd")
-//                        .setCustomer(customerId) // Previously stored, then retrieved
-//                        .build();
-//
-//        Charge charge2 = Charge.create(chargeParams2);
-//
-//
-//        Map<String, Object> params = new HashMap<>();
-//        params.put("amount", 999);
-//        params.put("currency", "sgd");
-//        params.put("description", "Example charge");
-//        params.put("source", token);
-//        Charge charge = Charge.create(params);
+    public capstone.rt04.retailbackend.entities.Customer deleteCardOnStripeAndSql(Long customerId, Long creditCardId) throws StripeException, CustomerNotFoundException, CreditCardNotFoundException {
+        Stripe.apiKey = "sk_test_E81pq87cIYZxL2NkXaXKsEEd00MGrcKvYx";
+
+        capstone.rt04.retailbackend.entities.Customer dbCustomer = customerService.retrieveCustomerByCustomerId(customerId);
+
+        List<CreditCard> creditCards = new ArrayList<>(dbCustomer.getCreditCards());
+
+        for (CreditCard creditCard : creditCards) {
+            if (creditCard.getCreditCardId().equals(creditCardId)) {
+                System.out.println("Deleting card");
+                PaymentMethod paymentMethod = PaymentMethod.retrieve(creditCard.getPaymentMethodId());
+                paymentMethod.detach();
+                customerService.deleteCreditCard(customerId, creditCard.getCreditCardId());
+                break;
+            }
+        }
+        return dbCustomer;
+    }
+}

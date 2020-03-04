@@ -1,0 +1,1 @@
+UPDATE product_stock SET quantity = FLOOR(RAND()*(26)) WHERE true;

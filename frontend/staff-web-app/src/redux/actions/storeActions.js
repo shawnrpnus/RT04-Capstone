@@ -60,7 +60,8 @@ export const retrieveStoreById = (storeId, history) => {
 
 const retrieveStoreSuccess = data => ({
   type: types.RETRIEVE_STORE,
-  storeEntity: data
+  storeEntity: data,
+  selectedStore: data
 });
 
 const retrieveStoreError = data => ({

@@ -2,13 +2,11 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory, useLocation } from "react-router-dom";
 import React, { useEffect, useState } from "react";
-import { clearErrors } from "../../../redux/actions";
-import Button from "../../UI/CustomButtons/Button";
-import customCheckboxRadioSwitch from "../../../assets/jss/material-kit-pro-react/customCheckboxRadioSwitchStyle";
+import { clearErrors } from "redux/actions";
+import Button from "components/UI/CustomButtons/Button";
+import customCheckboxRadioSwitch from "assets/jss/material-kit-pro-react/customCheckboxRadioSwitchStyle";
 import { useSnackbar } from "notistack";
-import CardSetupForm from "./../../ShoppingCart/CardSetupForm";
-import Cards from "react-credit-cards";
-import "react-credit-cards/es/styles-compiled.css";
+import CardSetupForm from "components/Profile/sections/CreditCard/CardSetupForm";
 
 const useStyles = makeStyles(customCheckboxRadioSwitch);
 
@@ -25,12 +23,12 @@ export default function AddCreditCard() {
   const currCustomer = useSelector(state => state.customer.loggedInCustomer);
 
   return (
-    <div>
-      <h4 style={{ marginBottom: 0 }}>Add New Address</h4>
-      <small>
+    <div style={{ marginTop: "5%" }}>
+      <h4>Add New Credit Card</h4>
+      {/* <small>
         Please enter an address you would like to save and deliver your items
         to.
-      </small>
+      </small> */}
       <CardSetupForm />
     </div>
   );

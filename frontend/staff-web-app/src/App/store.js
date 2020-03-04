@@ -54,6 +54,9 @@ const unsubscribe = store.subscribe(() => {
   saveToLocalStorage({
     staffEntity: {
       loggedInStaff: _.get(store.getState(), "staffEntity.loggedInStaff")
+    },
+    storeEntity: {
+      selectedStore: _.get(store.getState(), "storeEntity.selectedStore")
     }
   });
 });

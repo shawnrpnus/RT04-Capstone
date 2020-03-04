@@ -18,7 +18,7 @@ import tooltipsStyle from "assets/jss/material-kit-pro-react/tooltipsStyle.js";
 import imagesStyles from "assets/jss/material-kit-pro-react/imagesStyles";
 import { blackColor } from "assets/jss/material-kit-pro-react";
 
-const styles = {
+const styles = theme => ({
   ...customCheckboxRadioSwitch,
   ...tooltipsStyle,
   main,
@@ -176,7 +176,11 @@ const styles = {
   },
   labelText: {
     color: blackColor
+  },
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 999,
+    color: "#fff"
   }
-};
+});
 
 export default styles;
