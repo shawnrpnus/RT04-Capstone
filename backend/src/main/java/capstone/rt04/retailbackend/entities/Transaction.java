@@ -61,6 +61,9 @@ public class Transaction implements Serializable {
     @ManyToOne
     private Address deliveryAddress;
 
+    @ManyToOne
+    private Address billingAddress;
+
     @OneToMany(mappedBy = "transaction")
     @Size(min = 1)
     private List<TransactionLineItem> transactionLineItems;

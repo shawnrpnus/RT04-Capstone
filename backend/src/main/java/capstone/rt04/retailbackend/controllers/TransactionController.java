@@ -36,13 +36,13 @@ public class TransactionController {
         this.relationshipService = relationshipService;
     }
 
-    @PostMapping(TransactionControllerRoutes.CREATE_TRANSACTION)
-    public ResponseEntity<?> createNewTransaction(@RequestBody TransactionCreateRequest transactionCreateRequest) throws CustomerNotFoundException, InvalidCartTypeException {
-        Customer customer = transactionService.createNewTransaction(transactionCreateRequest.getCustomerId(),
-                transactionCreateRequest.getShoppingCartId(), transactionCreateRequest.getCartType());
-        relationshipService.clearCustomerRelationships(customer);
-        return new ResponseEntity<>(customer, HttpStatus.CREATED);
-    }
+//    @PostMapping(TransactionControllerRoutes.CREATE_TRANSACTION)
+//    public ResponseEntity<?> createNewTransaction(@RequestBody TransactionCreateRequest transactionCreateRequest) throws CustomerNotFoundException, InvalidCartTypeException {
+//        Customer customer = transactionService.createNewTransaction(transactionCreateRequest.getCustomerId(),
+//                transactionCreateRequest.getShoppingCartId(), transactionCreateRequest.getCartType());
+//        relationshipService.clearCustomerRelationships(customer);
+//        return new ResponseEntity<>(customer, HttpStatus.CREATED);
+//    }
 
     @GetMapping(TransactionControllerRoutes.RETRIEVE_TRANSACTION_BY_ID)
     public ResponseEntity<?> retrieveTransactionById(@PathVariable Long transactionId) {

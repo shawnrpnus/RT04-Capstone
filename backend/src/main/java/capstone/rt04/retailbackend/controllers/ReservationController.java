@@ -141,6 +141,7 @@ public class ReservationController {
             reservation.getCustomer().setWishlistItems(null);
             reservation.getCustomer().setReservationCartItems(null);
             reservation.getCustomer().setReservations(null);
+            reservation.getCustomer().setTransactions(null);
         }
         if (reservation.getStore() != null) {
             reservation.getStore().setReservations(null);
