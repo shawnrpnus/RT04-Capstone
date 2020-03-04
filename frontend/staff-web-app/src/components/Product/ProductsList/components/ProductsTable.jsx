@@ -116,7 +116,6 @@ class ProductsTable extends PureComponent {
         {products ? (
           <MaterialTable
             title="Products"
-            // padding="none"
             style={{ boxShadow: "none" }}
             icons={tableIcons}
             columns={[
@@ -168,7 +167,6 @@ class ProductsTable extends PureComponent {
             options={{
               filtering: true,
               sorting: true,
-              // padding: "dense",
               pageSize: 5,
               pageSizeOptions: [5, 10, 20, 40],
               actionsColumnIndex: -1,
@@ -212,6 +210,7 @@ class ProductsTable extends PureComponent {
             }}
             key={selectedProductId}
             selectedProductId={selectedProductId}
+            storeId={store.storeId}
           />
         )}
       </div>

@@ -158,8 +158,16 @@ public class StaffService {
     }
 
     //For IT department to reset for staff
-    public Staff resetPassword(String username) throws StaffNotFoundException{
+    public Staff resetPassword(String username) throws StaffNotFoundException, InputDataValidationException {
+        if(username.isEmpty()){
+            Map<String, String> errorMap = new HashMap<>();
+            errorMap.put("username", ErrorMessages.USERNAME_REQUIRED);
+            throw new InputDataValidationException(errorMap, ErrorMessages.USERNAME_REQUIRED);
+        }
+
         try {
+
+
             Staff staff = retrieveStaffByUsername(username);
 
             String password = "password";
@@ -269,7 +277,20 @@ return allRoles;
     }
 
     //staff logins with username
-    public Staff staffLogin(String username, String password) throws InvalidStaffCredentialsException{
+    public Staff staffLogin(String username, String password) throws InvalidStaffCredentialsException, InputDataValidationException {
+
+        if(username.isEmpty()){
+            Map<String, String> errorMap = new HashMap<>();
+            errorMap.put("username", ErrorMessages.USERNAME_REQUIRED);
+            throw new InputDataValidationException(errorMap, ErrorMessages.USERNAME_REQUIRED);
+        }
+
+        if(password.isEmpty()){
+            Map<String, String> errorMap = new HashMap<>();
+            errorMap.put("password", ErrorMessages.PASSWORD_REQUIRED);
+            throw new InputDataValidationException(errorMap, ErrorMessages.PASSWORD_REQUIRED);
+        }
+
         try {
             Staff staff = retrieveStaffByUsername(username);
             //First statement for testing purposes because unable to retrieve unhashed password from staff object. 2nd statement for staff
@@ -293,6 +314,20 @@ return allRoles;
     public Staff changeStaffPassword(Long staffId, String oldPassword, String newPassword) throws StaffNotFoundException, InvalidStaffCredentialsException {
         try {
             Staff staff = retrieveStaffByStaffId(staffId);
+
+            if(oldPassword.isEmpty()){
+                Map<String, String> errorMap = new HashMap<>();
+                errorMap.put("oldPassword", ErrorMessages.OLD_PASSWORD_REQUIRED);
+                throw new InvalidStaffCredentialsException(errorMap,ErrorMessages.OLD_PASSWORD_REQUIRED);
+
+            }
+
+            if(newPassword.isEmpty()){
+                Map<String, String> errorMap = new HashMap<>();
+                errorMap.put("newPassword", ErrorMessages.NEW_PASSWORD_REQUIRED);
+                throw new InvalidStaffCredentialsException(errorMap,ErrorMessages.NEW_PASSWORD_REQUIRED);
+
+            }
 
             if (encoder.matches(oldPassword,staff.getPassword()) || oldPassword.equals(staff.getPassword())) {
 

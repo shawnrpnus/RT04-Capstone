@@ -5,7 +5,12 @@ const initialState = {
   checkedColours: null,
   checkedSizes: null,
   checkedTags: null,
-  selectedSort: null
+  selectedSort: null,
+  orderStartDate: null,
+  orderEndDate: null,
+  orderCollectionMode: null,
+  orderDeliveryStatus: null,
+  orderSelectedSort: null
 };
 
 export default function(state = initialState, action) {
@@ -34,6 +39,31 @@ export default function(state = initialState, action) {
       return {
         ...state,
         selectedSort: action.data
+      };
+    case types.SET_ORDER_START_DATE:
+      return {
+        ...state,
+        orderStartDate: action.data
+      };
+    case types.SET_ORDER_END_DATE:
+      return {
+        ...state,
+        orderEndDate: action.data
+      };
+    case types.SET_ORDER_DELIVERY_STATUS:
+      return {
+        ...state,
+        orderDeliveryStatus: action.data
+      };
+    case types.SET_ORDER_COLLECTION_MODE:
+      return {
+        ...state,
+        orderCollectionMode: action.data
+      };
+    case types.SET_ORDER_SELECTED_SORT:
+      return {
+        ...state,
+        orderSelectedSort: action.data
       };
     default:
       return state;

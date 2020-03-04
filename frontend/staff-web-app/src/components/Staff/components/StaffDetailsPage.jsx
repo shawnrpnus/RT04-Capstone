@@ -13,7 +13,6 @@ import ButtonToolbar from "reactstrap/es/ButtonToolbar";
 import StaffChangePasswordRequest from "../../../models/staff/StaffChangePasswordRequest";
 import { changePassword } from "../../../redux/actions/staffActions";
 
-
 class StaffDetailsPage extends Component {
   static propTypes = {
     errors: PropTypes.object
@@ -277,6 +276,7 @@ class StaffDetailsPage extends Component {
                   errors={errors}
                   disabled={disabled}
                   autoFocus={true}
+                  type="password"
                 />
               </Grid>
               <Grid item xs={12} md={6}></Grid>
@@ -288,7 +288,7 @@ class StaffDetailsPage extends Component {
                   state={this.state}
                   errors={errors}
                   disabled={disabled}
-                  autoFocus={true}
+                  type="password"
                 />
               </Grid>
             </Grid>

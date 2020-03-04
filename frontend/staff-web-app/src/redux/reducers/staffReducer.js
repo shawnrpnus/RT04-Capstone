@@ -10,7 +10,6 @@ const initialState = {
   currentRole: null,
   currentDepartment: null,
   currentAddress: null,
-  loggedInStoreId: null,
   selectedStore: null
 };
 

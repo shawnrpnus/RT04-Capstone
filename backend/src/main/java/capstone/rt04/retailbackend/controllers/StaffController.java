@@ -153,7 +153,9 @@ public class StaffController {
             return new ResponseEntity<>(staff, HttpStatus.OK);
         } catch (InvalidStaffCredentialsException ex){
             return new ResponseEntity<>(ex.getErrorMap(), HttpStatus.BAD_REQUEST);
-        }
+        } catch(InputDataValidationException ex){
+          return new ResponseEntity<>(ex.getErrorMap(), HttpStatus.BAD_REQUEST);
+      }
     }
 
     @PostMapping(StaffControllerRoutes.CHANGE_STAFF_PASSWORD)
@@ -185,7 +187,9 @@ public class StaffController {
             Staff staff = staffService.resetPassword(rq.getUsername());
             return new ResponseEntity<>(staff, HttpStatus.OK);
         }catch (StaffNotFoundException ex){
-            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(ex.getErrorMap(), HttpStatus.NOT_FOUND);
+        }catch(InputDataValidationException ex){
+            return new ResponseEntity<>(ex.getErrorMap(), HttpStatus.BAD_REQUEST);
         }
     }
 

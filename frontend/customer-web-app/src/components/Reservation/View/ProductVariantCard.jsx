@@ -15,11 +15,13 @@ function ProductVariantCard(props) {
   const { productVariant } = props;
   const { product } = productVariant;
 
+  const { quantity } = props;
+
   return (
     <Card plain style={{ margin: "5px 0" }}>
       <GridContainer style={{ textAlign: "left", alignItems: "center" }}>
         {/* Photo */}
-        <GridItem md={2}>
+        <GridItem md={2} xs={6}>
           {/* Modified CSS */}
           <div className={classes.imgContainer} style={{ width: "90%" }}>
             <img
@@ -29,10 +31,12 @@ function ProductVariantCard(props) {
             />
           </div>
         </GridItem>
-        <GridItem md={10}>
+        <GridItem md={10} xs={6}>
           <GridContainer>
             <GridItem md={12}>
-              <h5 className={classes.title}>{product.productName}</h5>
+              <h5 className={classes.title}>
+                {product.productName} {quantity && `(${quantity})`}
+              </h5>
             </GridItem>
             <GridItem md={12}>
               <h5 style={{ margin: "3px 0" }}>${product.price}</h5>

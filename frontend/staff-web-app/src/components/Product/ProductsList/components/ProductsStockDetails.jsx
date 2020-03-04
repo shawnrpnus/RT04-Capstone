@@ -67,14 +67,6 @@ class ProductsStockDetails extends PureComponent {
     };
   }
 
-  handleUpdate = (productStockId, currentStock, oldStock) => {
-    if (currentStock !== oldStock) {
-      const req = new UpdateProductStockRequest(productStockId, currentStock);
-      this.props.updateProductStockQty(req, this.props.history);
-      this.setState({ isLoading: true });
-    }
-  };
-
   componentDidMount = () => {
     this.updateState(false);
   };
@@ -82,6 +74,20 @@ class ProductsStockDetails extends PureComponent {
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (prevProps !== this.props) this.updateState(true);
   }
+
+  handleUpdate = (productStockId, currentStock, oldStock) => {
+    if (currentStock < 0) {
+      return toast.error("Product stock must not be a negative number!", {
+        position: toast.POSITION.TOP_CENTER
+      });
+    }
+    if (currentStock !== oldStock) {
+      const { storeId } = this.props;
+      const req = new UpdateProductStockRequest(productStockId, currentStock);
+      this.props.updateProductStockQty(req, storeId);
+      this.setState({ isLoading: true });
+    }
+  };
 
   updateState = showToast => {
     const { products, selectedProductId } = this.props;

@@ -22,7 +22,6 @@ class SidebarContent extends Component {
     const store = department === "Store";
     const warehouse = department === "Warehouse";
 
-    console.log(this.props.staff);
     return (
       <div className="sidebar__content">
         <ul className="sidebar__block">

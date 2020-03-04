@@ -108,10 +108,8 @@ class StaffLoginForm extends Component {
                       state={this.state}
                       errors={errors}
                       disabled={disabled}
-                      autoFocus={true}
                       type="password"
                     />
-
                     <div className="account__forgot-password">
                       <Link to="/resetPassword">Forgot your password?</Link>
                     </div>

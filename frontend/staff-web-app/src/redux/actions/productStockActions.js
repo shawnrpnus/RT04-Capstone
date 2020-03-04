@@ -44,24 +44,21 @@ const updateProductStockError = data => ({
   errorMap: data
 });
 
-export const updateProductStockQty = (updateProductStockRequest, history) => {
+export const updateProductStockQty = (updateProductStockRequest, storeId) => {
   return dispatch => {
     //redux thunk passes dispatch
+    console.log(storeId);
+
     axios
       .put(
         PRODUCT_STOCK_BASE_URL + "/updateProductStockQty",
         updateProductStockRequest
       )
       .then(response => {
-        const { data } = jsog.decode(response);
-        // const productStockId = data.productStockId;
-        // dispatch(updateProductStockQtySuccess(data));
-        retrieveProductsDetails()(dispatch);
-        // history.push(`/productStock/update/${productStockId}`);
+        retrieveProductsDetails(storeId)(dispatch);
       })
       .catch(err => {
         dispatch(updateProductStockQtyError(err.response.data));
-        //console.log(err.response.data);
       });
   };
 };

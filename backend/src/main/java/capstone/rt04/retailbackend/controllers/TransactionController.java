@@ -17,6 +17,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 
@@ -54,7 +57,7 @@ public class TransactionController {
 
     @GetMapping(TransactionControllerRoutes.RETRIEVE_ALL_TRANSACTIONS)
     public ResponseEntity<?> retrievePastOrders() {
-       List<Transaction> txns = transactionService.retrievePastOrders();
+        List<Transaction> txns = transactionService.retrievePastOrders();
         for (Transaction txn : txns) {
             relationshipService.clearTransactionRelationships(txn);
         }
@@ -62,18 +65,19 @@ public class TransactionController {
     }
 
     @GetMapping(TransactionControllerRoutes.RETRIEVE_CUSTOMER_TRANSACTIONS)
-    public ResponseEntity<?> retrieveCustomerTransactions(@RequestParam Long customerId){
+    public ResponseEntity<?> retrieveCustomerTransactions(@RequestParam Long customerId) {
         List<Transaction> txns = transactionService.retrieveCustomerTransactions(customerId);
         for (Transaction txn : txns) {
             relationshipService.clearTransactionRelationships(txn);
         }
+        Collections.sort(txns, Comparator.comparing(Transaction::getTransactionId).reversed());
         return new ResponseEntity<>(txns, HttpStatus.OK);
     }
 
-    @GetMapping(TransactionControllerRoutes.RETRIEVE_MATCHED_TRANSACTIONS)
+    @PostMapping(TransactionControllerRoutes.RETRIEVE_MATCHED_TRANSACTIONS)
     public ResponseEntity<?> retrieveMatchedOrders(@RequestBody TransactionRetrieveRequest transactionRetrieveRequest) {
         try {
-            List<Transaction> transactions = transactionService.filterSortOrderHistory(transactionRetrieveRequest.getCollectionMode(), transactionRetrieveRequest.getDeliveryStatus(),
+            List<Transaction> transactions = transactionService.filterSortOrderHistory(transactionRetrieveRequest.getCustomerId(), transactionRetrieveRequest.getCollectionMode(), transactionRetrieveRequest.getDeliveryStatus(),
                     transactionRetrieveRequest.getStartDate(), transactionRetrieveRequest.getEndDate(),
                     transactionRetrieveRequest.getSortEnum());
             for (Transaction transaction : transactions) {
@@ -84,8 +88,6 @@ public class TransactionController {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-
 
 
 }
