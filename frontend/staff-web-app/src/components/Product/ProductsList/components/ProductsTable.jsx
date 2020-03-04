@@ -58,7 +58,14 @@ class ProductsTable extends PureComponent {
 
   componentDidMount() {
     // TODO: Retrieve store ID from cookie to input as argument
-    if (this.props.retrieveAllProducts) this.props.retrieveAllProducts();
+    const { store, retrieveProductsDetails } = this.props;
+    if (store.storeId) {
+      console.log("retrieving for store ", store.storeId);
+      retrieveProductsDetails(store.storeId);
+    } else {
+      console.log("retrieving for warehouse");
+      retrieveProductsDetails();
+    }
   }
 
   handleViewProductDetails = id => {
@@ -76,7 +83,9 @@ class ProductsTable extends PureComponent {
     const { products, renderLoader, columnsToHide } = this.props;
     const { openProductStocksDetailsDialogue, selectedProductId } = this.state;
 
+    const role = _.get(this.props, "staff.role.roleName");
     console.log(this.props);
+
     let data = [];
     if (products) {
       data = products.map(e => {
@@ -207,7 +216,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = {
-  retrieveAllProducts: retrieveProductsDetails
+  retrieveProductsDetails
 };
 
 export const ProductsTableRaw = withRouter(ProductsTable);

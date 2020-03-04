@@ -353,10 +353,10 @@ public class StartUpService {
 //        Staff newStaff5 = staffService.createNewStaff(staff5, staff5.getAddress(), role4, departmentFinance);
 //
 //
-//        Staff staff6 = new Staff("Sergio", "Tan", 2, "312Z", "SergioEs@gmail.com",BigDecimal.valueOf(10000) );
-//        staff6.setAddress(new Address ("Block 567 Bishan South","#20-08",321567,"-"));
-//        Staff newStaff6 = staffService.createNewStaff(staff6, staff6.getAddress(), role1, departmentRetail);
-//
+        Staff staff6 = new Staff("Re", "tail", 2, "312Z", "SergioEs@gmail.com",BigDecimal.valueOf(10000) );
+        staff6.setAddress(new Address ("Block 567 Bishan South","#20-08",321567,"-"));
+        Staff newStaff6 = staffService.createNewStaff(staff6, staff6.getAddress(), role1.getRoleId(), departmentRetail.getDepartmentId());
+
 //
 //        Staff staff7 = new Staff("Jay", "Wang", 10, "560D", "WangDaXia@gmail.com",BigDecimal.valueOf(10000) );
 //        staff7.setAddress(new Address ("Block 23 Lakeside Street 4","#13-18",312540,"Lake Vista"));

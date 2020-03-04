@@ -41,7 +41,7 @@ class CategoryTree extends Component {
   onSelectionChange = e => {
     this.setState({ selectedCategoryId: e.value });
     // TODO: Update store/warehouse ID from global state / local storage
-    this.props.retrieveAllProducts(null, e.value);
+    this.props.retrieveProductsDetails(null, e.value);
   };
 
   onContextMenu = event => {
@@ -171,9 +171,14 @@ class CategoryTree extends Component {
                   <ProductsTableRaw
                     products={categoryProducts}
                     renderLoader={renderLoader}
+                    {...this.props}
                   />
                 ) : (
-                  <ProductsTableRaw products={[]} renderLoader={renderLoader} />
+                  <ProductsTableRaw
+                    products={[]}
+                    renderLoader={renderLoader}
+                    {...this.props}
+                  />
                 )}
               </Grid>
             </Grid>
@@ -194,7 +199,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = {
   retrieveAllRootCategories,
   retrieveAllCategories,
-  retrieveAllProducts: retrieveProductsDetails,
+  retrieveProductsDetails,
   deleteCategory,
   createCategory,
   clearErrors
