@@ -25,6 +25,45 @@ import TableEyeIcon from "mdi-react/TableEyeIcon";
 import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
+import MaterialTable from "material-table";
+import Checkbox from "@material-ui/core/Checkbox";
+import {
+    AddBox,
+    ArrowUpward,
+    Check,
+    ChevronLeft,
+    ChevronRight,
+    Clear,
+    Delete,
+    Edit,
+    FirstPage,
+    LastPage,
+    Remove,
+    SaveAlt,
+    Search,
+    SearchOutlined,
+    ViewColumn,
+    Visibility
+} from "@material-ui/icons";
+const tableIcons = {
+    Add: AddBox,
+    Check: Check,
+    Clear: Clear,
+    Delete: Delete,
+    DetailPanel: ChevronRight,
+    Edit: Edit,
+    Export: SaveAlt,
+    Filter: SearchOutlined,
+    FirstPage: FirstPage,
+    LastPage: LastPage,
+    NextPage: ChevronRight,
+    PreviousPage: ChevronLeft,
+    ResetSearch: Clear,
+    Search: Search,
+    SortArrow: () => <div />,
+    ThirdStateCheck: Remove,
+    ViewColumn: ViewColumn
+};
 
 class StaffAccountCreateForm extends Component {
     static propTypes = {
@@ -42,7 +81,7 @@ class StaffAccountCreateForm extends Component {
         }
 
         componentDidMount() {
-                this.props.retrieveStaffWithNoAccount;
+                this.props.retrieveStaffWithNoAccount();
             }
 
     handleCheckBox = (evt, data) => {
@@ -50,7 +89,7 @@ class StaffAccountCreateForm extends Component {
             //data is the list of products selected
             console.log(data.staffId);
 
-             this.state.staffIds.push(data);
+             this.state.staffIds.push(data.staffId);
         };
 
     onChange = e => {
@@ -67,18 +106,16 @@ class StaffAccountCreateForm extends Component {
 
 handleSubmit = (e) => {
         e.preventDefault();
-
-        const req = new StaffAccountCreateRequest(this.state.staffIds);
-
-                this.props.createNewStaffAccount(req, this.props.history);
-
-
+        console.log(this.state.staffIds);
+         const req = new StaffAccountCreateRequest(this.state.staffIds);
+         this.props.createNewStaffAccount(req, this.props.history);
     };
 
     render() {
         const data = this.props.allStaff;
         console.log(data);
         const { history, renderLoader } = this.props;
+        const hasErrors = Object.keys(this.props.errors).length !== 0;
 
         return (
             <React.Fragment>
@@ -127,6 +164,21 @@ handleSubmit = (e) => {
                                     renderLoader()
                                 )}
                             </div>
+
+                            <ButtonToolbar className="form__button-toolbar">
+                            <Button
+                            color="primary"
+                            className="icon"
+                            onClick={e => this.handleSubmit(e)}
+                            disabled={hasErrors}
+                            >
+                            <p>
+                            <ContentSaveIcon />
+                            Submit
+                             </p>
+                            </Button>
+                            </ButtonToolbar>
+
                         </React.Fragment>
 
         );
@@ -137,7 +189,7 @@ handleSubmit = (e) => {
 }
 //mapping global state to this component
     const mapStateToProps = state => ({
-    allStaff = state.staffEntity.staffWithNoAccount,
+    allStaff : state.staffEntity.staffWithNoAccount,
     errors: state.errors
 });
 
