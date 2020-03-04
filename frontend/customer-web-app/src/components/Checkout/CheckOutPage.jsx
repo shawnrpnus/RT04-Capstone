@@ -349,6 +349,7 @@ export default function CheckOutPage() {
                                   ({ last4, creditCardId }, index) => {
                                     return (
                                       <MenuItem
+                                        key={index}
                                         classes={{
                                           root: classes.selectMenuItem,
                                           selected:

@@ -71,7 +71,7 @@ export const createNewStaff = (staffCreateRequest, history) => {
         toast.success("Staff Created!", {
           position: toast.POSITION.TOP_CENTER
         });
-        //history.push(`/store/view/${storeId}`); // TODO: update redirect path
+        history.push(`/staff/viewAll`); // TODO: update redirect path
       })
       .catch(err => {
         dispatch(createStaffError(err.response.data));
@@ -90,22 +90,20 @@ const createStaffError = data => ({
   errorMap: data
 });
 
-export const createNewStaffAccount = (StaffAccountCreateRequest, history) => {
+export const createNewStaffAccount = (staffAccountCreateRequest, history) => {
   return dispatch => {
     //redux thunk passes dispatch
     axios
       .post(
-        STAFF_BASE_URL + "/createNewStaffAccount",
-        StaffAccountCreateRequest
-      )
+        STAFF_BASE_URL + "/createNewStaffAccount",staffAccountCreateRequest)
       .then(response => {
         const { data } = jsog.decode(response);
-        const staffId = data.staffId;
         dispatch(createStaffAccountSuccess(data));
         toast.success("Staff Account Created!", {
           position: toast.POSITION.TOP_CENTER
         });
-        //history.push(`/store/view/${storeId}`); // TODO: update redirect path
+        //window.location.reload(true);
+          history.push(`/`); // TODO: update redirect path
       })
       .catch(err => {
         dispatch(createStaffAccountError(err.response.data));
@@ -135,6 +133,7 @@ export const changePassword = (staffChangePasswordRequest, history) => {
         toast.success("Staff password changed!", {
           position: toast.POSITION.TOP_CENTER
         });
+          history.push(`/`); // TODO: update redirect path
       })
       .catch(err => {
         dispatch(changeStaffPasswordError(err.response.data));
@@ -295,4 +294,29 @@ const loginStaffError = data => ({
 
 export const staffLogout = () => ({
   type: types.STAFF_LOGOUT
+});
+
+export const retrieveStaffWithNoAccount = () => {
+    return dispatch => {
+        //redux thunk passes dispatch
+        axios
+            .get(STAFF_BASE_URL + `/retrieveStaffWithNoAccount`)
+            .then(response => {
+                const { data } = jsog.decode(response);
+                dispatch(retrieveSuccess(data));
+            })
+            .catch(err => {
+                dispatch(retrieveError(err.response.data));
+            });
+    };
+};
+
+const retrieveSuccess = data => ({
+    type: types.RETRIEVE_STAFF_WITH_NO_ACCOUNT,
+    staffEntity: data
+});
+
+const retrieveError = data => ({
+    type: GET_ERRORS,
+    errorMap: data
 });

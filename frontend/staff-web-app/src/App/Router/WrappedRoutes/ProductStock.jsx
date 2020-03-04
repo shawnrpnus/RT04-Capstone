@@ -6,16 +6,16 @@ import {
 } from "../../../components/ProductStock";
 import { Route, Switch } from "react-router-dom";
 import { ProductsStockDetails } from "../../../components/ProductStock";
-import SecureRoute from "../SecureRoute";
+import RetailRoute from "./../RetailRoute";
 
 export default () => (
   <Switch>
-    <SecureRoute
+    <RetailRoute
       exact
       path="/productStock/viewAll"
       component={ProductsStockTable}
     />
-    <SecureRoute
+    <RetailRoute
       path="/productStock/viewProductStocksDetails/:id"
       component={ProductsStockDetails}
     />

@@ -67,7 +67,7 @@ class AddProductVariantForm extends PureComponent {
       imageUrls: []
     }));
     const request = { productId, colourToImageUrlsMaps, sizes };
-    this.props.createProductVariants(request);
+    this.props.createProductVariants(request, this.props.onClose);
   };
 
   render() {

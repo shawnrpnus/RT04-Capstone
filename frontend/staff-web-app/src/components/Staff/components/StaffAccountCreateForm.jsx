@@ -2,7 +2,7 @@ import React, { Component, PureComponent } from "react";
 import withPage from "../../Layout/page/withPage";
 import { connect } from "react-redux";
 import { clearErrors, updateErrors } from "../../../redux/actions";
-import { createNewStaffAccount} from "../../../redux/actions/staffActions";
+import { createNewStaffAccount, retrieveStaffWithNoAccount} from "../../../redux/actions/staffActions";
 import StaffAccountCreateRequest from "../../../models/staff/StaffAccountCreateRequest";
 import { Button, ButtonToolbar } from "reactstrap";
 import * as PropTypes from "prop-types";
@@ -25,6 +25,45 @@ import TableEyeIcon from "mdi-react/TableEyeIcon";
 import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
+import MaterialTable from "material-table";
+import Checkbox from "@material-ui/core/Checkbox";
+import {
+    AddBox,
+    ArrowUpward,
+    Check,
+    ChevronLeft,
+    ChevronRight,
+    Clear,
+    Delete,
+    Edit,
+    FirstPage,
+    LastPage,
+    Remove,
+    SaveAlt,
+    Search,
+    SearchOutlined,
+    ViewColumn,
+    Visibility
+} from "@material-ui/icons";
+const tableIcons = {
+    Add: AddBox,
+    Check: Check,
+    Clear: Clear,
+    Delete: Delete,
+    DetailPanel: ChevronRight,
+    Edit: Edit,
+    Export: SaveAlt,
+    Filter: SearchOutlined,
+    FirstPage: FirstPage,
+    LastPage: LastPage,
+    NextPage: ChevronRight,
+    PreviousPage: ChevronLeft,
+    ResetSearch: Clear,
+    Search: Search,
+    SortArrow: () => <div />,
+    ThirdStateCheck: Remove,
+    ViewColumn: ViewColumn
+};
 
 class StaffAccountCreateForm extends Component {
     static propTypes = {
@@ -37,9 +76,21 @@ class StaffAccountCreateForm extends Component {
     constructor(props) {
             super(props);
             this.state = {
-                staffId : ""
+                staffIds : []
             };
         }
+
+        componentDidMount() {
+                this.props.retrieveStaffWithNoAccount();
+            }
+
+    handleCheckBox = (evt, data) => {
+            evt.preventDefault();
+            //data is the list of products selected
+            console.log(data.staffId);
+
+             this.state.staffIds.push(data.staffId);
+        };
 
     onChange = e => {
                 const name = e.target.name;
@@ -55,61 +106,80 @@ class StaffAccountCreateForm extends Component {
 
 handleSubmit = (e) => {
         e.preventDefault();
-
-        const req = new StaffAccountCreateRequest(this.state.staffId);
-
-                this.props.createNewStaffAccount(req, this.props.history);
-
-
+        console.log(this.state.staffIds);
+         const req = new StaffAccountCreateRequest(this.state.staffIds);
+         this.props.createNewStaffAccount(req, this.props.history);
     };
 
     render() {
-        //pulling out the fields from props
-        const {errors, disabled} = this.props;
-
+        const data = this.props.allStaff;
+        console.log(data);
+        const { history, renderLoader } = this.props;
         const hasErrors = Object.keys(this.props.errors).length !== 0;
 
         return (
-            <MuiPickersUtilsProvider utils={MomentUtils}>
-                <form className="material-form">
-                    <Grid container spacing={3}>
-                        <Grid item xs={12} md={6}>
-                            <MaterialTextField
-                                fieldLabel="Staff ID"
-                                onChange={this.onChange}
-                                fieldName="staffId"
-                                state={this.state}
-                                errors={errors}
-                                disabled={disabled}
-                                autoFocus={true}
-                            />
-                        </Grid>
-                        </Grid>
+            <React.Fragment>
+                            <div
+                            className="table"
+                            style={{
+                            width: "auto",
+                            verticalAlign: "middle"
+                            }}
+                            >
 
-                                                <ButtonToolbar className="form__button-toolbar">
-                                                    <Button
-                                                        color="primary"
-                                                        className="icon"
-                                                        onClick={e => this.handleSubmit(e)}
-                                                        disabled={hasErrors}
-                                                    >
-                                                        <p>
-                                                            <ContentSaveIcon/>
-                                                            Submit
-                                                        </p>
-                                                    </Button>
-                                                    <Button type="button" className="icon" onClick={this.onCancel}>
-                                                        <p>
-                                                            <CloseCircleIcon/>
-                                                            Cancel
-                                                        </p>
-                                                    </Button>
-                                                </ButtonToolbar>
+                                {this.props.allStaff ? (
+                                    <MaterialTable
+                                        title="Staff"
+                                        style={{ boxShadow: "none" }}
+                                        icons={tableIcons}
+                                        columns={[
+                                            { title: "ID", field: "staffId" },
+                                            { title: "First Name", field: "firstName" },
+                                            { title: "Last Name", field: "lastName" },
+                                            { title: "Email", field: "email" }
+                                        ]}
+                                        actions={[
+                                            {
+                                                 icon: Checkbox,
+                                                 tooltip: "Select to configure",
+                                                 onClick: (event, rowData) =>
+                                                 this.handleCheckBox(event,rowData)
+                                            }
+                                        ]}
+                                        data={data}
+                                        options={{
+                                            filtering: true,
+                                            sorting: true,
+                                            pageSize: 5,
+                                            search: true,
+                                            padding: "dense",
+                                            showTitle: true,
+                                            pageSizeOptions: [5, 10, 15],
+                                            actionsColumnIndex: -1,
+                                            headerStyle: { textAlign: "center" },
+                                            cellStyle: { textAlign: "center" }
+                                        }}
+                                    />
+                                ) : (
+                                    renderLoader()
+                                )}
+                            </div>
 
+                            <ButtonToolbar className="form__button-toolbar">
+                            <Button
+                            color="primary"
+                            className="icon"
+                            onClick={e => this.handleSubmit(e)}
+                            disabled={hasErrors}
+                            >
+                            <p>
+                            <ContentSaveIcon />
+                            Submit
+                             </p>
+                            </Button>
+                            </ButtonToolbar>
 
-
-                </form>
-            </MuiPickersUtilsProvider>
+                        </React.Fragment>
 
         );
 
@@ -119,14 +189,15 @@ handleSubmit = (e) => {
 }
 //mapping global state to this component
     const mapStateToProps = state => ({
+    allStaff : state.staffEntity.staffWithNoAccount,
     errors: state.errors
 });
 
     const mapDispatchToProps = {
     createNewStaffAccount, //api/staffEntity/createNewStaffAccount
+    retrieveStaffWithNoAccount,
     clearErrors,
-    updateErrors,
-
+    updateErrors
 };
 
     export default connect(

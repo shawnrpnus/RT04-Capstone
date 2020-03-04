@@ -3,25 +3,25 @@ import { Redirect, Route } from "react-router-dom";
 import { useSelector } from "react-redux";
 import SecureRoute from "./SecureRoute";
 
-const HRRoute = ({ component: Component, ...rest }) => {
-  let authenticated = false;
+const RetailRoute = ({ component: Component, render, ...rest }) => {
   let staff = useSelector(state => state.staffEntity.loggedInStaff);
   let store = useSelector(state => state.storeEntity.selectedStore);
-
-  if (staff) authenticated = true;
 
   return (
     <SecureRoute
       {...rest}
       render={props => {
-        if (staff.department.departmentName === "HR") {
-          return <Component {...props} store={store} />;
+        if (staff.department.departmentName === "Retail") {
+          return Component ? (
+            <Component {...props} store={store} />
+          ) : (
+            render(props)
+          );
         }
-
         return <Redirect to="/" />;
       }}
     />
   );
 };
 
-export default HRRoute;
+export default RetailRoute;

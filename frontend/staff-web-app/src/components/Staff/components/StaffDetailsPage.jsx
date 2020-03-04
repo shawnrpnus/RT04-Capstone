@@ -13,6 +13,7 @@ import ButtonToolbar from "reactstrap/es/ButtonToolbar";
 import StaffChangePasswordRequest from "../../../models/staff/StaffChangePasswordRequest";
 import { changePassword } from "../../../redux/actions/staffActions";
 
+
 class StaffDetailsPage extends Component {
   static propTypes = {
     errors: PropTypes.object
@@ -325,7 +326,9 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = {
-  changePassword
+  changePassword,
+  clearErrors,
+  updateErrors
 };
 
 export default connect(

@@ -85,8 +85,8 @@ class AddTagToProduct extends Component {
   }
 
   render() {
-    const { errors, renderLoader } = this.props;
-    console.log(this.props.allProducts);
+    const { errors, renderLoader, store } = this.props;
+    console.log(this.props);
     return (
       <React.Fragment>
         <div className="card__title">
@@ -151,6 +151,7 @@ class AddTagToProduct extends Component {
                         onClick: (evt, data) =>
                           this.handleAddTagToProducts(evt, data)
                       }}
+                      {...this.props}
                     />
                   ) : (
                     renderLoader()
@@ -173,6 +174,7 @@ class AddTagToProduct extends Component {
                         onClick: (evt, data) =>
                           this.handleDeleteTagFromProducts(evt, data)
                       }}
+                      {...this.props}
                     />
                   ) : (
                     renderLoader()
