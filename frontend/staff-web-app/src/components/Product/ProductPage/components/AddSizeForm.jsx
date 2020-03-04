@@ -66,7 +66,7 @@ class AddSizeForm extends PureComponent {
       imageUrls: []
     }));
     const request = { productId, sizes, colourToImageUrlsMaps };
-    this.props.createProductVariants(request);
+    this.props.createProductVariants(request, this.props.onClose);
   };
 
   render() {
@@ -130,7 +130,7 @@ class AddSizeForm extends PureComponent {
           <Button
             color="primary"
             onClick={this.onSubmit}
-            disabled={sizesAvailable.length <= 0}
+            disabled={sizes.length <= 0}
           >
             Create
           </Button>

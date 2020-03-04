@@ -143,13 +143,17 @@ export const updateProduct = (product, handleCloseProductUpdateDialog) => {
   };
 };
 
-export const createProductVariants = (request, history) => {
+export const createProductVariants = (request, handleCloseDialog) => {
   return dispatch => {
     axios
       .post(PRODUCT_BASE_URL + "Variant/createMultipleProductVariants", request)
       .then(() => {
         console.log("Successfully created product variants!");
         retrieveProductById(request.productId)(dispatch);
+        toast.success("Product variants created!", {
+          position: toast.POSITION.TOP_CENTER
+        });
+        handleCloseDialog();
       })
       .catch(() => {
         console.log("Failed");

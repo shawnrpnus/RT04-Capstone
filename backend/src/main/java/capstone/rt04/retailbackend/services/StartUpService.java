@@ -33,8 +33,6 @@ import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 
-import static capstone.rt04.retailbackend.util.Constants.ONLINE_SHOPPING_CART;
-
 @Component
 @Profile("dev")
 public class StartUpService {
@@ -482,12 +480,12 @@ public class StartUpService {
     }
 
     private void initializeShoppingCartIfNotFound() throws ProductVariantNotFoundException, CustomerNotFoundException, InvalidCartTypeException {
-        if (shoppingCartService.initRetrieveAllShoppingCartItem().size() == 0) {
-            shoppingCartService.updateQuantityOfProductVariant(2, productVariantId26, customerId, ONLINE_SHOPPING_CART);
-            shoppingCartService.updateQuantityOfProductVariant(3, productVariantId27, customerId, ONLINE_SHOPPING_CART);
-            shoppingCartService.updateQuantityOfProductVariant(3, productVariantId28, customerId, ONLINE_SHOPPING_CART);
-            shoppingCartService.updateQuantityOfProductVariant(3, productVariantId29, customerId, ONLINE_SHOPPING_CART);
-            shoppingCartService.updateQuantityOfProductVariant(3, productVariantId30, customerId, ONLINE_SHOPPING_CART);
-        }
+//        if (shoppingCartService.initRetrieveAllShoppingCartItem().size() == 0) {
+//            shoppingCartService.updateQuantityOfProductVariant(2, productVariantId26, customerId, ONLINE_SHOPPING_CART);
+//            shoppingCartService.updateQuantityOfProductVariant(3, productVariantId27, customerId, ONLINE_SHOPPING_CART);
+//            shoppingCartService.updateQuantityOfProductVariant(3, productVariantId28, customerId, ONLINE_SHOPPING_CART);
+//            shoppingCartService.updateQuantityOfProductVariant(3, productVariantId29, customerId, ONLINE_SHOPPING_CART);
+//            shoppingCartService.updateQuantityOfProductVariant(3, productVariantId30, customerId, ONLINE_SHOPPING_CART);
+//        }
     }
 }

@@ -72,12 +72,11 @@ class ProductsTable extends PureComponent {
     });
   };
 
-  formatData = () => {};
-
   render() {
     const { products, renderLoader, columnsToHide } = this.props;
     const { openProductStocksDetailsDialogue, selectedProductId } = this.state;
 
+    console.log(this.props);
     let data = [];
     if (products) {
       data = products.map(e => {
@@ -101,8 +100,6 @@ class ProductsTable extends PureComponent {
       });
     }
 
-    console.log(products);
-
     return (
       <div className="table" style={{ verticalAlign: "middle" }}>
         {products ? (
@@ -116,7 +113,7 @@ class ProductsTable extends PureComponent {
                 title: "Image",
                 field: "image",
                 render: rowData => (
-                  <Link to={`/warehouse/viewProductDetails/${rowData.productId}`}>
+                  <Link to={`/product/viewProductDetails/${rowData.productId}`}>
                     <img
                       style={{
                         width: "100%",
