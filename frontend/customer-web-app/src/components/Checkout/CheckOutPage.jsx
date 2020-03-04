@@ -35,7 +35,8 @@ import KeyboardArrowRight from "@material-ui/icons/KeyboardArrowRight";
 import { useDispatch, useSelector } from "react-redux";
 import {
   getClientSecret,
-  makePaymentWithSavedCard
+  makePaymentWithSavedCard,
+  completeDirectPayment
 } from "../../redux/actions/shoppingCartActions";
 
 // core components
@@ -59,6 +60,9 @@ import CardSection from "./../ShoppingCart/CardSection";
 import PaymentRequest from "./../../models/payment/PaymentRequest";
 import AddressCardForCheckOut from "./AddressCardForCheckOut";
 import AddAddress from "../Profile/sections/AddAddress";
+import colourList from "assets/colours.json";
+
+const jsonColorHexList = _.keyBy(colourList, "hex");
 
 const useStyles = makeStyles(checkoutStyle);
 
@@ -82,16 +86,14 @@ export default function CheckOutPage() {
 
   const { onlineShoppingCart, creditCards, shippingAddresses } = customer;
   const [clientSecret, setClientSecret] = useState(null);
-  const [creditCardIndex, setCreditCardIndex] = useState(0);
+  const [creditCardIndex, setCreditCardIndex] = useState(
+    creditCards.length > 0 ? 0 : null
+  );
   const [addNewAddress, setAddNewAddress] = useState(false);
   const [currAddress, setCurrAddress] = useState("");
   const [addCard, setAddCard] = useState(false);
 
-  useEffect(() => {
-    // setShoppingCartItems(
-    //   _.get(customer, "onlineShoppingCart.shoppingCartItems", [])
-    // );
-  }, [customer, clientSecret]);
+  useEffect(() => {}, [customer, clientSecret]);
 
   let expiryMonth, expiryYear, last4, issuer, creditCardId;
   if (creditCards[creditCardIndex]) {
@@ -105,18 +107,6 @@ export default function CheckOutPage() {
 
   expiryMonth = expiryMonth > 10 ? expiryMonth : `0${expiryMonth}`;
 
-  console.log(onlineShoppingCart);
-  console.log(creditCards);
-  console.log(shippingAddresses);
-  console.log(clientSecret);
-
-  /*
-    Client secret need to updated and stored in redux store
-    1. On page load
-    2. On applying / removing of promo code
-    3. On changing of card
-  */
-
   const handleMakePaymentWithNewCard = () => {
     const { initialTotalAmount } = onlineShoppingCart;
     // Send back to server to get client_secret to complete payment
@@ -124,8 +114,6 @@ export default function CheckOutPage() {
   };
 
   const handleConfirmPayment = async event => {
-    // We don't want to let default form submission happen here,
-    // which would refresh the page.
     event.preventDefault();
 
     let {
@@ -134,6 +122,7 @@ export default function CheckOutPage() {
     } = onlineShoppingCart;
     const { paymentMethodId } = creditCards[creditCardIndex];
     const { customerId } = customer;
+    // TODO: Process the amount to include finalTotalAmount
     // Stripe take in cents
     totalAmount = totalAmount * 100;
     const paymentRequest = new PaymentRequest(
@@ -173,31 +162,51 @@ export default function CheckOutPage() {
           // post-payment actions.
           console.log("YAY succeed!!");
           console.log(result);
-          // POST back to create transaction
+          dispatch(completeDirectPayment(paymentRequest, history));
         }
       }
     } else {
       console.log("Payment with saved card!");
       console.log(paymentRequest);
-      dispatch(makePayment(paymentRequest, history));
+      dispatch(makePaymentWithSavedCard(paymentRequest, history));
     }
   };
 
+  /*
+    Client secret need to updated in state when
+    1. On applying / removing of promo code
+    2. On changing of card
+  */
   const onSelectCreditCard = e => {
-    console.log(e);
     setCreditCardIndex(e.target.value);
     setClientSecret(null);
   };
 
   const toggleAddNewCard = e => {
+    const addCardBoolean = addCard;
     setAddCard(!addCard);
     setClientSecret(null);
+    if (!addCardBoolean) {
+      setCreditCardIndex(null);
+    } else {
+      if (creditCards.length > 0) setCreditCardIndex(0);
+    }
   };
 
   const handleAddNewAddress = () => {
     setAddNewAddress(!addNewAddress);
     console.log(addNewAddress);
   };
+
+  console.log(currAddress);
+
+  /*
+    Disable the complete payment button if
+    1. clientSecret === null && creditCardIndex === null\
+      - no new card & no card selected
+    2. no address selected
+  */
+  const disabled = clientSecret === null && creditCardIndex === null; // && !address;
 
   return (
     <div>
@@ -274,12 +283,12 @@ export default function CheckOutPage() {
                                   ]}
                                   currAddress={[currAddress, setCurrAddress]}
                                 />
-                                <Button
+                                {/* <Button
                                   onClick={handleAddNewAddress}
                                   // color="primary"
                                 >
                                   Add New Address
-                                </Button>
+                                </Button> */}
                               </Grid>
                               <Grid item xs={false} md={2} />
                             </Grid>
@@ -344,7 +353,7 @@ export default function CheckOutPage() {
                                         }}
                                         value={index}
                                       >
-                                        **** **** **** {last4}
+                                        •••• •••• •••• {last4}
                                       </MenuItem>
                                     );
                                   }
@@ -360,7 +369,7 @@ export default function CheckOutPage() {
                                   expiry={`${expiryMonth}/${expiryYear}`}
                                   // focus={this.state.focus}
                                   name=" "
-                                  number={`************${last4}`}
+                                  number={`••••••••••••${last4}`}
                                   preview={true}
                                   issuer={issuer}
                                 />
@@ -376,7 +385,7 @@ export default function CheckOutPage() {
                                 <Button
                                   color="github"
                                   onClick={handleMakePaymentWithNewCard}
-                                  disabled={!stripe}
+                                  disabled={!stripe || clientSecret}
                                   // className={classes.firstButton}
                                 >
                                   Use this card
@@ -400,7 +409,7 @@ export default function CheckOutPage() {
                         color="success"
                         fullWidth
                         onClick={handleConfirmPayment}
-                        // disabled={true}
+                        disabled={disabled}
                       >
                         Confirm payment
                       </Button>
@@ -454,7 +463,8 @@ export default function CheckOutPage() {
                                   </h3>
                                 </GridItem>
                                 <GridItem md={12}>
-                                  {colour}, {sizeDetails.productSize}
+                                  {jsonColorHexList[colour].name},{" "}
+                                  {sizeDetails.productSize}
                                 </GridItem>
                               </GridItem>
                               {/* Quantity */}

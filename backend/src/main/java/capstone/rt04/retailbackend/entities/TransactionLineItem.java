@@ -25,7 +25,7 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @EqualsAndHashCode
-@ToString
+@ToString(exclude = "transaction")
 @JsonIdentityInfo(generator = JSOGGenerator.class)
 public class TransactionLineItem implements Serializable {
 

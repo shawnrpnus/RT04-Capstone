@@ -193,6 +193,8 @@ public class TransactionService {
         return transactionsToReturn;
     }
 
+    // TODO: Make this method reusable for in-store checkout
+    // TODO: Add in address / promo code / discount to calculate final price?
     public Customer createNewTransaction(Long customerId, Long shoppingCartId, String cartType) throws CustomerNotFoundException, InvalidCartTypeException {
         Customer customer = customerService.retrieveCustomerByCustomerId(customerId);
         ShoppingCart shoppingCart = shoppingCartService.retrieveShoppingCart(customerId, cartType);

@@ -50,6 +50,9 @@ import {
 import { saveCard } from "./../../redux/actions/customerActions";
 import UpdateShoppingCartRequest from "../../models/shoppingCart/UpdateShoppingCartRequest.js";
 import CreditCardDialog from "./CreditCardDialog.js";
+import colourList from "assets/colours.json";
+
+const jsonColorHexList = _.keyBy(colourList, "hex");
 
 const useStyles = makeStyles(shoppingCartStyle);
 
@@ -178,7 +181,8 @@ export default function ShoppingCartPage() {
                                   </h3>
                                 </GridItem>
                                 <GridItem md={12}>
-                                  {colour}, {sizeDetails.productSize}
+                                  {jsonColorHexList[colour].name},{" "}
+                                  {sizeDetails.productSize}
                                 </GridItem>
                               </GridItem>
                               {/* Quantity */}
@@ -256,7 +260,9 @@ export default function ShoppingCartPage() {
                           </Grid>
                           <Grid item xs={6} style={{ textAlign: "right" }}>
                             <Typography variant="h6" component="h2">
-                              {customer.onlineShoppingCart.initialTotalAmount}
+                              {customer.onlineShoppingCart.initialTotalAmount.toFixed(
+                                2
+                              )}
                             </Typography>
                           </Grid>
                         </Grid>
