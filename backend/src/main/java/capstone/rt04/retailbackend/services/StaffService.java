@@ -277,7 +277,20 @@ return allRoles;
     }
 
     //staff logins with username
-    public Staff staffLogin(String username, String password) throws InvalidStaffCredentialsException{
+    public Staff staffLogin(String username, String password) throws InvalidStaffCredentialsException, InputDataValidationException {
+
+        if(username.isEmpty()){
+            Map<String, String> errorMap = new HashMap<>();
+            errorMap.put("username", ErrorMessages.USERNAME_REQUIRED);
+            throw new InputDataValidationException(errorMap, ErrorMessages.USERNAME_REQUIRED);
+        }
+
+        if(password.isEmpty()){
+            Map<String, String> errorMap = new HashMap<>();
+            errorMap.put("password", ErrorMessages.PASSWORD_REQUIRED);
+            throw new InputDataValidationException(errorMap, ErrorMessages.PASSWORD_REQUIRED);
+        }
+
         try {
             Staff staff = retrieveStaffByUsername(username);
             //First statement for testing purposes because unable to retrieve unhashed password from staff object. 2nd statement for staff

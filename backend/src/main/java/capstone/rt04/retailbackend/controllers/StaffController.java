@@ -153,7 +153,9 @@ public class StaffController {
             return new ResponseEntity<>(staff, HttpStatus.OK);
         } catch (InvalidStaffCredentialsException ex){
             return new ResponseEntity<>(ex.getErrorMap(), HttpStatus.BAD_REQUEST);
-        }
+        } catch(InputDataValidationException ex){
+          return new ResponseEntity<>(ex.getErrorMap(), HttpStatus.BAD_REQUEST);
+      }
     }
 
     @PostMapping(StaffControllerRoutes.CHANGE_STAFF_PASSWORD)
