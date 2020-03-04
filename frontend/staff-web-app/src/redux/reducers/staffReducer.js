@@ -9,8 +9,7 @@ const initialState = {
   loggedInStaff: null,
   currentRole: null,
   currentDepartment: null,
-  currentAddress: null,
-
+  currentAddress: null
 };
 
 export default function(state = initialState, action) {
@@ -79,8 +78,6 @@ export default function(state = initialState, action) {
         ...state,
         loggedInStaff: action.staff
       };
-
-
 
     default:
       return state;

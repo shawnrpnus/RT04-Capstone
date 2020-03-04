@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import PropTypes, {object} from "prop-types";
-import {staffLogin} from "../../../redux/actions/staffActions";
+import PropTypes, { object } from "prop-types";
+import { staffLogin } from "../../../redux/actions/staffActions";
 import { connect } from "react-redux";
 import MaterialTextField from "../../../shared/components/Form/MaterialTextField";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
@@ -9,8 +9,11 @@ import { Button } from "reactstrap";
 import { clearErrors, updateErrors } from "../../../redux/actions";
 import StaffLoginRequest from "../../../models/staff/StaffLoginRequest";
 import Link from "@material-ui/core/Link";
-import {retrieveAllStores, retrieveStoreById} from "../../../redux/actions/storeActions";
-import {Grid, TextField} from "@material-ui/core";
+import {
+  retrieveAllStores,
+  retrieveStoreById
+} from "../../../redux/actions/storeActions";
+import { Grid, TextField } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 
 const _ = require("lodash");
@@ -69,7 +72,6 @@ class StaffLoginForm extends Component {
     console.log(this.state.storeId);
     console.log(this.props.staffStore);
     this.props.staffLogin(req, this.props.history);
-
   };
 
   render() {
@@ -86,71 +88,69 @@ class StaffLoginForm extends Component {
           </div>
 
           <Grid container spacing={3}>
-
-          <Grid item xs={12} md={6}>
-            <Autocomplete
+            <Grid item xs={12} md={6}>
+              <Autocomplete
                 id="tags-standard"
                 options={this.props.allStores}
                 getOptionLabel={option => option.storeName}
                 onChange={(event, value) => this.onSelectStore(event, value)}
                 getOptionSelected={(option, value) =>
-                    option.storeId === value.storeId
+                  option.storeId === value.storeId
                 }
                 renderInput={params => (
-                    <TextField
-                        {...params}
-                        variant="standard"
-                        label="Store"
-                        fullWidth
-                    />
+                  <TextField
+                    {...params}
+                    variant="standard"
+                    label="Store"
+                    fullWidth
+                  />
                 )}
                 errors={errors}
-            />
-          </Grid>
+              />
+            </Grid>
 
             <Grid item xs={12} md={12}>
+              <form className="material-form">
+                <div className="form__form-group">
+                  <MaterialTextField
+                    fieldLabel="Username"
+                    onChange={this.onChange}
+                    fieldName="username"
+                    state={this.state}
+                    errors={errors}
+                    disabled={disabled}
+                    autoFocus={true}
+                  />
+                </div>
 
-          <form className="material-form">
-            <div className="form__form-group">
-              <MaterialTextField
-                fieldLabel="Username"
-                onChange={this.onChange}
-                fieldName="username"
-                state={this.state}
-                errors={errors}
-                disabled={disabled}
-                autoFocus={true}
-              />
-            </div>
+                <div className="form__form-group">
+                  <MaterialTextField
+                    fieldLabel="Password"
+                    onChange={this.onChange}
+                    fieldName="password"
+                    state={this.state}
+                    errors={errors}
+                    disabled={disabled}
+                    autoFocus={true}
+                  />
 
-            <div className="form__form-group">
-              <MaterialTextField
-                fieldLabel="Password"
-                onChange={this.onChange}
-                fieldName="password"
-                state={this.state}
-                errors={errors}
-                disabled={disabled}
-                autoFocus={true}
-              />
-
-              <div className="account__forgot-password">
-                <Link href="#" onClick={this.onClick}>
-                  Forgot your password?
-                </Link>
-              </div>
-            </div>
-            <div className="form__form-group">
-              <Button
-                className="account__btn"
-                onClick={e => this.handleSubmit(e)}
-                color="primary"
-                disabled={hasErrors}
-              >
-                Sign In
-              </Button>
-            </div>
-          </form>
+                  <div className="account__forgot-password">
+                    <Link href="#" onClick={this.onClick}>
+                      Forgot your password?
+                    </Link>
+                  </div>
+                </div>
+                <div className="form__form-group">
+                  <Button
+                    className="account__btn"
+                    onClick={e => this.handleSubmit(e)}
+                    color="primary"
+                    disabled={hasErrors}
+                  >
+                    Sign In
+                  </Button>
+                </div>
+              </form>
             </Grid>
           </Grid>
         </div>
@@ -173,7 +173,6 @@ const mapDispatchToProps = {
   staffLogin,
   clearErrors,
   updateErrors
-
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(StaffLoginForm);

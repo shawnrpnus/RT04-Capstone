@@ -47,12 +47,11 @@ public class TransactionService {
         return pastOrders;
     }
 
-    public List<Transaction> retrieveCustomerTransactions(Long customerId){
+    public List<Transaction> retrieveCustomerTransactions(Long customerId) {
         List<Transaction> txns = transactionRepository.findAllByCustomer_CustomerId(customerId);
         lazyLoadTransaction(txns);
         return txns;
     }
-
 
 
     /*view order details*/
@@ -85,119 +84,86 @@ public class TransactionService {
     /*filterAndSort order history*/
     //sort by totalQuantity, finalTotalPrice. default: by latest transactions
     //filter by collection mode, delivery status, date range (based on createdDateTime)
-    public List<Transaction> filterSortOrderHistory(CollectionModeEnum collectionMode, DeliveryStatusEnum deliveryStatus,
-                                                    Date startDate, Date endDate, SortEnum sortEnum) {
+    //dateTime must be in format 'YYYY-MM-DD hh:mm:ss'
+    public List<Transaction> filterSortOrderHistory(Long customerId, CollectionModeEnum collectionMode, DeliveryStatusEnum deliveryStatus,
+                                                    String startDate, String endDate, SortEnum sortEnum) {
+
 
         boolean matchCollectionMode, matchDeliveryStatus, matchDateRange;
-        boolean isThereDateRange, isCollectionModeSelected, isDeliveryStatusSelected;
 
         List<Transaction> transactionsToReturn = new ArrayList<>();
-        List<Transaction> allTransactions = transactionRepository.findAll();
+        List<Transaction> allTransactions = retrieveCustomerTransactions(customerId);
 
         for (Transaction transaction : allTransactions) {
             matchCollectionMode = false;
             matchDeliveryStatus = false;
             matchDateRange = false;
-            isThereDateRange = false;
-            isCollectionModeSelected = false;
-            isDeliveryStatusSelected = false;
+
 
             //convert transaction timestamp into Date obj
             Timestamp transactionTimestamp = transaction.getCreatedDateTime();
-            Date transactionDate = new Date(transactionTimestamp.getTime());
 
             //check which criteria(s) have been selected
-            if ((startDate != null && endDate != null) || (startDate != null && endDate == null)) {
-                isThereDateRange = true;
-                if (startDate != null && endDate != null) {
-                    if (transactionDate.compareTo(startDate) >= 0 && transactionDate.compareTo(endDate) <= 0) {
-                        matchDateRange = true;
-                    }
-                }
-                if (startDate != null && endDate == null) {
-                    if (transactionDate.compareTo(startDate) >= 0) {
-                        matchDateRange = true;
-                    }
+            if ((startDate != null && endDate != null)) {
+                //isThereDateRange = true;
+                Timestamp startTimestamp = Timestamp.valueOf(startDate);
+                Timestamp endTimestamp = Timestamp.valueOf(endDate);
+                if (transactionTimestamp.after(startTimestamp) && transactionTimestamp.before(endTimestamp)) {
+                    matchDateRange = true;
                 }
             }
+            if (startDate != null && endDate == null) {
+                Timestamp startTimestamp = Timestamp.valueOf(startDate);
+                if (transactionTimestamp.after(startTimestamp)) {
+                    matchDateRange = true;
+                }
+            }
+            if (startDate == null && endDate != null) {
+                Timestamp endTimestamp = Timestamp.valueOf(endDate);
+                if (transactionTimestamp.before(endTimestamp)) {
+                    matchDateRange = true;
+                }
+            }
+            if (startDate == null && endDate == null) {
+                matchDateRange = true;
+            }
+
             if (collectionMode != null) {
-                isCollectionModeSelected = true;
                 if (transaction.getCollectionMode() == collectionMode) {
                     matchCollectionMode = true;
                 }
+            } else {
+                matchCollectionMode = true;
             }
+
             if (deliveryStatus != null) {
-                isDeliveryStatusSelected = true;
                 if (transaction.getDeliveryStatus() == deliveryStatus) {
                     matchDeliveryStatus = true;
                 }
+            } else {
+                matchDeliveryStatus = true;
             }
 
-            //only filter by date
-            if (isThereDateRange && !isCollectionModeSelected && !isDeliveryStatusSelected) {
-                if (matchDateRange) {
-                    transactionsToReturn.add(transaction);
-                }
+            if (matchCollectionMode && matchDateRange && matchDeliveryStatus){
+                transactionsToReturn.add(transaction);
             }
 
-            //only filter by collection mode
-            if (isCollectionModeSelected && !isThereDateRange && !isDeliveryStatusSelected) {
-                if (matchCollectionMode) {
-                    transactionsToReturn.add(transaction);
-                }
-            }
-
-            //only filter by delivery status
-            if (isDeliveryStatusSelected && !isThereDateRange && !isCollectionModeSelected) {
-                if (matchDeliveryStatus) {
-                    transactionsToReturn.add(transaction);
-                }
-            }
-
-            //filter by date & collection mode
-            if (isCollectionModeSelected && isThereDateRange && !isDeliveryStatusSelected) {
-                if (matchCollectionMode && matchDateRange) {
-                    transactionsToReturn.add(transaction);
-                }
-            }
-
-            //filter by date & delivery status
-            if (isDeliveryStatusSelected && isThereDateRange && !isCollectionModeSelected) {
-                if (matchDeliveryStatus && matchDateRange) {
-                    transactionsToReturn.add(transaction);
-                }
-            }
-
-            //filter by collection mode & delivery status
-            if (isCollectionModeSelected && isDeliveryStatusSelected && !isThereDateRange) {
-                if (matchCollectionMode && matchDeliveryStatus) {
-                    transactionsToReturn.add(transaction);
-                }
-            }
-
-            //filter by date, collection mode & delivery status
-            if (isCollectionModeSelected && isDeliveryStatusSelected && isThereDateRange) {
-                if (matchCollectionMode && matchDeliveryStatus && matchDateRange) {
-                    transactionsToReturn.add(transaction);
-                }
-            }
         }
 
         if (sortEnum == SortEnum.PRICE_LOW_TO_HIGH) {
             Collections.sort(transactionsToReturn, Comparator.comparing(Transaction::getFinalTotalPrice));
         } else if (sortEnum == SortEnum.PRICE_HIGH_TO_LOW) {
             Collections.sort(transactionsToReturn, Comparator.comparing(Transaction::getFinalTotalPrice).reversed());
-        } else if (sortEnum == SortEnum.QUANTITY_LOW_TO_HIGH) {
-            Collections.sort(transactionsToReturn, Comparator.comparing(Transaction::getTotalQuantity));
-        } else if (sortEnum == SortEnum.QUANTITY_HIGH_TO_LOW) {
-            Collections.sort(transactionsToReturn, Comparator.comparing(Transaction::getTotalQuantity).reversed());
+        } else if (sortEnum == SortEnum.DATE_OLDEST_FIRST) {
+            Collections.sort(transactionsToReturn, Comparator.comparing(Transaction::getTransactionId));
+        } else if (sortEnum == SortEnum.DATE_NEWEST_FIRST) {
+            Collections.sort(transactionsToReturn, Comparator.comparing(Transaction::getTransactionId).reversed());
         } else {
             //default sort by latest transaction
             Collections.sort(transactionsToReturn, Comparator.comparing(Transaction::getTransactionId).reversed());
         }
 
         lazyLoadTransaction(transactionsToReturn);
-        transactionsToReturn.toString();
         return transactionsToReturn;
     }
 
@@ -231,7 +197,7 @@ public class TransactionService {
         transaction.setDeliveryStatus(DeliveryStatusEnum.PROCESSING);
         transactionRepository.save(transaction);
 
-        for(TransactionLineItem lineItem : transactionLineItems) {
+        for (TransactionLineItem lineItem : transactionLineItems) {
             lineItem.setTransaction(transaction);
         }
 

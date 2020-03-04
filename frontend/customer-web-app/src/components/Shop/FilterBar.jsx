@@ -71,12 +71,6 @@ function FilterBar(props) {
   };
   const sortingOptions = Object.keys(sortingMap);
 
-  // const [priceRange, setPriceRange] = useState([0, 200]);
-  // const [checkedColours, setCheckedColours] = useState(initialColoursState);
-  // const [checkedSizes, setCheckedSizes] = useState(initialSizesState);
-  // const [checkedTags, setCheckedTags] = useState(initialTagsState);
-  // const [selectedSort, setSelectedSort] = useState("Latest Arrivals");
-
   const priceRange = useSelector(state => state.filterBar.priceRange);
   const checkedColours = useSelector(state => state.filterBar.checkedColours);
   const checkedSizes = useSelector(state => state.filterBar.checkedSizes);

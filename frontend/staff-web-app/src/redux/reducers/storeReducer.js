@@ -5,7 +5,7 @@ const initialState = {
   allStores: null,
   crudAction: null,
   //for staff to select store in login page
-  selectedStore:null
+  selectedStore: null
 };
 
 export default function(state = initialState, action) {
