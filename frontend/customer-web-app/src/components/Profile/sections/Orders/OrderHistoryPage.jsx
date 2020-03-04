@@ -12,6 +12,7 @@ import Drawer from "@material-ui/core/Drawer";
 import Backdrop from "@material-ui/core/Backdrop";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import OrderFilterBar from "components/Profile/sections/Orders/OrderFilterBar";
+import Divider from "@material-ui/core/Divider";
 
 const _ = require("lodash");
 
@@ -74,10 +75,12 @@ function OrderHistoryPage(props) {
         {transactions &&
           transactions.length > 0 &&
           transactions.map(transaction => (
-            <OrderHistoryCard
-              key={transaction.transactionId}
-              transaction={transaction}
-            />
+            <React.Fragment>
+              <OrderHistoryCard
+                key={transaction.transactionId}
+                transaction={transaction}
+              />
+            </React.Fragment>
           ))}
         {transactions && transactions.length === 0 && (
           <h3 style={{ textAlign: "center" }}>
