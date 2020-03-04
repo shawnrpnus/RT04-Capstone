@@ -135,7 +135,7 @@ export const changePassword = (staffChangePasswordRequest, history) => {
         toast.success("Staff password changed!", {
           position: toast.POSITION.TOP_CENTER
         });
-        history.push(`/`); // TODO: update redirect path
+        history.push(`/staff/viewProfile`); // TODO: update redirect path
       })
       .catch(err => {
         dispatch(changeStaffPasswordError(err.response.data));
@@ -263,15 +263,16 @@ const deleteStaffError = data => ({
   errorMap: data
 });
 
-export const staffLogin = (staffLoginRequest, history) => {
+export const staffLogin = (staffLoginRequest, history, store) => {
   return dispatch => {
     //redux thunk passes dispatch
     axios
       .post(STAFF_BASE_URL + "/loginStaff", staffLoginRequest)
       .then(response => {
         const { data } = jsog.decode(response);
+        console.log(data);
         const staffId = data.staffId;
-        dispatch(loginStaffSuccess(data));
+        dispatch(loginStaffSuccess(data, store));
         toast.success("You are logged in!", {
           position: toast.POSITION.TOP_CENTER
         });
@@ -283,10 +284,11 @@ export const staffLogin = (staffLoginRequest, history) => {
       });
   };
 };
-const loginStaffSuccess = data => ({
-  type: types.STAFF_LOGIN,
 
-  staff: data
+const loginStaffSuccess = (data, store) => ({
+  type: types.STAFF_LOGIN,
+  staff: data,
+  store
 });
 
 const loginStaffError = data => ({

@@ -135,6 +135,10 @@ class ProductCard extends PureComponent {
       "productVariantId"
     );
 
+    const salesmarketing =
+      _.get(this.props, "staff.department.departmentName") ===
+      "Sales and Marketing";
+
     return (
       <div>
         {colourSizeMap.length > 0 ? (
@@ -146,13 +150,16 @@ class ProductCard extends PureComponent {
             <div className="product-card__info">
               <Row>
                 <Col xs={12} md={6}>
-                  <h3 className="product-card__title">
+                  <h3
+                    className="product-card__title"
+                    style={{ marginTop: "5%" }}
+                  >
                     {productName}{" "}
                     {variants[selectedSize] && variants[selectedSize].sku}
                   </h3>
                 </Col>
                 <Col xs={2} md={1}>
-                  {selectedSize && (
+                  {selectedSize && salesmarketing && (
                     <Tooltip
                       title={<span style={{ fontSize: 15 }}>Delete size</span>}
                     >
@@ -164,48 +171,56 @@ class ProductCard extends PureComponent {
                 </Col>
 
                 <Col xs={2} md={1}>
-                  <Tooltip
-                    title={<span style={{ fontSize: 15 }}>Update images</span>}
-                  >
-                    <IconButton onClick={this.handleOpenUpdateImageDialog}>
-                      <ImageIcon style={{ fontSize: 40 }} />
-                    </IconButton>
-                  </Tooltip>
-                  {/* <Switch
-                checked={uploadImage}
-                onChange={this.handleToggleUploadImage}
-              /> */}
-                </Col>
-                <Col xs={2} md={1}>
-                  <Tooltip
-                    title={<span style={{ fontSize: 15 }}>Add sizes</span>}
-                  >
-                    <IconButton onClick={this.handleOpenAddSizeDialog}>
-                      <AddCircleRoundedIcon style={{ fontSize: 40 }} />
-                    </IconButton>
-                  </Tooltip>
-                </Col>
-                <Col xs={2} md={1}>
-                  <Tooltip
-                    title={
-                      <span style={{ fontSize: 15 }}>Add new colours</span>
-                    }
-                  >
-                    <IconButton
-                      onClick={this.handleOpenCreateProductVariantDialog}
+                  {salesmarketing && (
+                    <Tooltip
+                      title={
+                        <span style={{ fontSize: 15 }}>Update images</span>
+                      }
                     >
-                      <CreateIcon style={{ fontSize: 40 }} />
-                    </IconButton>
-                  </Tooltip>
+                      <IconButton onClick={this.handleOpenUpdateImageDialog}>
+                        <ImageIcon style={{ fontSize: 40 }} />
+                      </IconButton>
+                    </Tooltip>
+                  )}
+                </Col>
+                <Col xs={2} md={1}>
+                  {salesmarketing && (
+                    <Tooltip
+                      title={<span style={{ fontSize: 15 }}>Add sizes</span>}
+                    >
+                      <IconButton onClick={this.handleOpenAddSizeDialog}>
+                        <AddCircleRoundedIcon style={{ fontSize: 40 }} />
+                      </IconButton>
+                    </Tooltip>
+                  )}
+                </Col>
+                <Col xs={2} md={1}>
+                  {salesmarketing && (
+                    <Tooltip
+                      title={
+                        <span style={{ fontSize: 15 }}>Add new colours</span>
+                      }
+                    >
+                      <IconButton
+                        onClick={this.handleOpenCreateProductVariantDialog}
+                      >
+                        <CreateIcon style={{ fontSize: 40 }} />
+                      </IconButton>
+                    </Tooltip>
+                  )}
                 </Col>
                 <Col xs={3} md={2}>
-                  <Tooltip
-                    title={<span style={{ fontSize: 15 }}>Update product</span>}
-                  >
-                    <IconButton onClick={this.handleOpenProductUpdateDialog}>
-                      <BuildIcon style={{ fontSize: 40 }} />
-                    </IconButton>
-                  </Tooltip>
+                  {salesmarketing && (
+                    <Tooltip
+                      title={
+                        <span style={{ fontSize: 15 }}>Update product</span>
+                      }
+                    >
+                      <IconButton onClick={this.handleOpenProductUpdateDialog}>
+                        <BuildIcon style={{ fontSize: 40 }} />
+                      </IconButton>
+                    </Tooltip>
+                  )}
                 </Col>
               </Row>
               <div className="product-card__rate">

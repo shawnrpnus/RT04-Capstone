@@ -56,41 +56,49 @@ class ResetPasswordForm extends Component {
     const hasErrors = Object.keys(this.props.errors).length !== 0;
 
     return (
-      <div className="account__card">
-        <form className="material-form">
-          <div className="form__form-group">
-            <MaterialTextField
-              fieldLabel="Username"
-              onChange={this.onChange}
-              fieldName="username"
-              state={this.state}
-              errors={errors}
-              disabled={disabled}
-              autoFocus={true}
-            />
-          </div>
+      <Grid
+        container
+        xs={12}
+        alignItems="center"
+        justify="center"
+        style={{ height: "100vh" }}
+      >
+        <div className="account__card">
+          <form className="material-form">
+            <div className="form__form-group">
+              <MaterialTextField
+                fieldLabel="Username"
+                onChange={this.onChange}
+                fieldName="username"
+                state={this.state}
+                errors={errors}
+                disabled={disabled}
+                autoFocus={true}
+              />
+            </div>
 
-          <ButtonToolbar className="form__button-toolbar">
-            <Button
-              color="primary"
-              className="icon"
-              onClick={e => this.handleSubmit(e)}
-              disabled={hasErrors}
-            >
-              <p>
-                <ContentSaveIcon />
-                Submit
-              </p>
-            </Button>
-            <Button type="button" className="icon" onClick={this.onCancel}>
-              <p>
-                <CloseCircleIcon />
-                Cancel
-              </p>
-            </Button>
-          </ButtonToolbar>
-        </form>
-      </div>
+            <ButtonToolbar className="form__button-toolbar">
+              <Button
+                color="primary"
+                className="icon"
+                onClick={e => this.handleSubmit(e)}
+                disabled={hasErrors}
+              >
+                <p>
+                  <ContentSaveIcon />
+                  Submit
+                </p>
+              </Button>
+              <Button type="button" className="icon" onClick={this.onCancel}>
+                <p>
+                  <CloseCircleIcon />
+                  Cancel
+                </p>
+              </Button>
+            </ButtonToolbar>
+          </form>
+        </div>
+      </Grid>
     );
   }
 }

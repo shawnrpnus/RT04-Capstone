@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 const SecureRoute = ({ component: Component, render, ...rest }) => {
   let authenticated = false;
   let staff = useSelector(state => state.staffEntity.loggedInStaff);
+  // let store = useSelector(state => state.staffEntity.selectedStore);
 
   if (staff) authenticated = true;
 

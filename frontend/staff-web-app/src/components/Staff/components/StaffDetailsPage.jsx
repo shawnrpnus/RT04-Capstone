@@ -276,6 +276,7 @@ class StaffDetailsPage extends Component {
                   errors={errors}
                   disabled={disabled}
                   autoFocus={true}
+                  type="password"
                 />
               </Grid>
               <Grid item xs={12} md={6}></Grid>
@@ -287,7 +288,7 @@ class StaffDetailsPage extends Component {
                   state={this.state}
                   errors={errors}
                   disabled={disabled}
-                  autoFocus={true}
+                  type="password"
                 />
               </Grid>
             </Grid>

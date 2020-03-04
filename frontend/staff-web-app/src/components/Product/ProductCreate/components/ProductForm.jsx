@@ -167,7 +167,29 @@ class ProductForm extends React.Component {
 
   render() {
     const { handleSubmit, errors, disabled } = this.props;
-    const hasErrors = Object.keys(this.props.errors).length !== 0;
+    console.log(this.props);
+    // const hasErrors = Object.keys(this.props.errors).length !== 0;
+    const {
+      serialNumber,
+      productName,
+      description,
+      price,
+      cost,
+      categoryId,
+      sizes,
+      colourToImageUrlsMaps
+    } = this.state;
+    const disable =
+      !serialNumber ||
+      serialNumber.length < 5 ||
+      !productName ||
+      !price ||
+      !cost ||
+      !categoryId ||
+      sizes.length === 0 ||
+      !description ||
+      !colourToImageUrlsMaps ||
+      colourToImageUrlsMaps.length === 0;
 
     return (
       <form className="material-form">
@@ -180,9 +202,10 @@ class ProductForm extends React.Component {
               fieldName="serialNumber"
               state={this.state}
               errors={errors}
-              disabled={disabled}
               autoFocus={true}
+              error={errors}
             />
+            <small>Serial number must be atleast 5 digits</small>
           </Grid>
           <Grid item xs={12} md={4}>
             <MaterialTextField
@@ -191,8 +214,6 @@ class ProductForm extends React.Component {
               fieldName="productName"
               state={this.state}
               errors={errors}
-              disabled={disabled}
-              autoFocus={true}
             />
           </Grid>
           <Grid item xs={12} md={4}>
@@ -227,8 +248,6 @@ class ProductForm extends React.Component {
               onChange={this.onChange}
               state={this.state}
               errors={errors}
-              disabled={disabled}
-              autoFocus={true}
             />
           </Grid>
           <Grid item xs={12} md={6}>
@@ -369,7 +388,6 @@ class ProductForm extends React.Component {
               fieldName="price"
               state={this.state}
               errors={errors}
-              disabled={disabled}
             />
           </Grid>
           <Grid item xs={12} md={3}>
@@ -380,7 +398,6 @@ class ProductForm extends React.Component {
               fieldName="cost"
               state={this.state}
               errors={errors}
-              disabled={disabled}
             />
           </Grid>
         </Grid>
@@ -398,7 +415,7 @@ class ProductForm extends React.Component {
               columns={[
                 { title: "Colours", field: "name" },
                 {
-                  title: "Dropzone",
+                  title: "Images",
                   field: "dropzone",
                   render: rowData => {
                     return (
@@ -416,7 +433,9 @@ class ProductForm extends React.Component {
                 search: false,
                 paging: false,
                 sorting: false,
-                filtering: false
+                filtering: false,
+                headerStyle: { textAlign: "center" },
+                cellStyle: { textAlign: "center" }
               }}
               data={this.state.colours}
             />
@@ -427,7 +446,7 @@ class ProductForm extends React.Component {
             color="primary"
             className="icon"
             onClick={this.onSubmit}
-            disabled={hasErrors}
+            disabled={disable}
           >
             <p>
               <ContentSaveIcon />

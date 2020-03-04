@@ -76,7 +76,7 @@ public class ProductService {
         if (categoryId == null) {
             Map<String, String> errorMap = new HashMap<>();
             errorMap.put("categoryId", ErrorMessages.CATEGORY_REQUIRED);
-            throw new CreateNewProductException(errorMap,ErrorMessages.CATEGORY_REQUIRED);
+            throw new CreateNewProductException(errorMap, ErrorMessages.CATEGORY_REQUIRED);
         }
 
         Category category = categoryService.retrieveCategoryByCategoryId(categoryId);
@@ -366,7 +366,7 @@ public class ProductService {
         if (productIds == null) {
             Map<String, String> errorMap = new HashMap<>();
             errorMap.put("productId", ErrorMessages.PRODUCT_ID_REQUIRED);
-            throw new ProductNotFoundException(errorMap,"Product IDs not provided");
+            throw new ProductNotFoundException(errorMap, "Product IDs not provided");
         }
         List<Product> products = (List<Product>) productRepository.findAllById(productIds);
         lazilyLoadProduct(products);
@@ -678,6 +678,7 @@ public class ProductService {
         return productStock;
     }
 
+    // Substituted by retrieveProductsDetails
     @Transactional(readOnly = true)
     public List<Product> retrieveProductStocksThroughProductByParameter(Long storeId, Long warehouseId, Long
             productVariantId) {
@@ -692,10 +693,12 @@ public class ProductService {
                 if (productVariant != null) {
 
                     for (ProductStock productStock : productVariant.getProductStocks()) {
-
                         if (productStock.getStore() != null && productStock.getStore().getStoreId().equals(storeId) ||
-                                productStock.getWarehouse() != null && productStock.getWarehouse().getWarehouseId().equals(warehouseId) ||
                                 productStock.getProductVariant() != null && productStock.getProductVariant().getProductVariantId().equals(productVariantId)) {
+                            productStocks.add(productStock);
+                            continue;
+                        }
+                        if (productStock.getWarehouse() != null && storeId == null) {
                             productStocks.add(productStock);
                         }
                     }
@@ -715,8 +718,11 @@ public class ProductService {
 
         for (ProductStock productStock : originalProductStocks) {
             if (productStock.getStore() != null && productStock.getStore().getStoreId().equals(storeId) ||
-                    productStock.getWarehouse() != null && productStock.getWarehouse().getWarehouseId().equals(warehouseId) ||
                     productStock.getProductVariant() != null && productStock.getProductVariant().getProductVariantId().equals(productVariantId)) {
+                productStocks.add(productStock);
+                continue;
+            }
+            if (storeId == null && productStock.getWarehouse() != null) {
                 productStocks.add(productStock);
             }
         }

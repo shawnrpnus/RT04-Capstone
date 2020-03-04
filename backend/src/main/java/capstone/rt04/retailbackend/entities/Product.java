@@ -41,8 +41,7 @@ public class Product implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long productId;
 
-
-    @NotNull(message = "Serial name cannot be empty")
+    @NotNull(message = "Serial number cannot be empty")
     @Column(nullable = false, unique = true)
     @Size(min = 5, message = ErrorMessages.SERIAL_NUMBER_REQUIRED)
     private String serialNumber;
