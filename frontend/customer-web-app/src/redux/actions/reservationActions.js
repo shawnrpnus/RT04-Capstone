@@ -1,6 +1,6 @@
 import axios from "axios";
 import * as types from "./types";
-import { emailSent, refreshCustomer } from "./customerActions";
+import { emailSent, refreshCustomerEmail } from "./customerActions";
 import { EMAIL_SENT } from "./types";
 import { CONTACT_US_SUCCESS } from "./types";
 import { GET_ERRORS } from "./types";
@@ -120,7 +120,7 @@ export const createReservation = (
         reservationDateTime
       })
       .then(response => {
-        dispatch(refreshCustomer(customerEmail)); //for emptying reservation cart
+        dispatch(refreshCustomerEmail(customerEmail)); //for emptying reservation cart
         enqueueSnackbar("Reservation made!", {
           variant: "success",
           autoHideDuration: 1200

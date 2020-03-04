@@ -4,6 +4,7 @@ public class CustomerControllerRoutes {
     public static final String CUSTOMER_BASE_ROUTE = "/api/customer";
     public static final String CREATE_NEW_CUSTOMER = "/createNewCustomer";
     public static final String GET_CUSTOMER_BY_EMAIL = "/getCustomerByEmail";
+    public static final String RETRIEVE_CUSTOMER_BY_ID = "/retrieveCustomerById";
     public static final String SEND_UPDATE_EMAIL_LINK = "/sendUpdateEmailLink";
     public static final String UPDATE_EMAIL = "/updateEmail/{code}";
     public static final String UPDATE_CUSTOMER = "/updateCustomer";

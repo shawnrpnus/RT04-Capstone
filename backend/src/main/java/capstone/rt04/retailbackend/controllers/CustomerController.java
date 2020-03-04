@@ -74,6 +74,13 @@ public class CustomerController {
         return new ResponseEntity<>(customer, HttpStatus.OK);
     }
 
+    @GetMapping(CustomerControllerRoutes.RETRIEVE_CUSTOMER_BY_ID)
+    public ResponseEntity<?> retrieveCustomerById(@RequestParam Long customerId) throws CustomerNotFoundException {
+        Customer customer = customerService.retrieveCustomerByCustomerId(customerId);
+        clearCustomerRelationships(customer);
+        return new ResponseEntity<>(customer, HttpStatus.OK);
+    }
+
     @GetMapping(CustomerControllerRoutes.GET_CUSTOMER_FROM_CODE)
     public ResponseEntity<?> getCustomerFromCode(@PathVariable String code) throws VerificationCodeExpiredException {
         Customer customer = customerService.retrieveCustomerByVerificationCode(code);

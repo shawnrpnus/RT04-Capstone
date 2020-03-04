@@ -32,11 +32,26 @@ const dispatchUpdatedCustomer = (customerDataRaw, dispatch) => {
   dispatch(updateCustomer(customer));
 };
 
-export const refreshCustomer = customerEmail => {
+export const refreshCustomerEmail = customerEmail => {
   const req = { email: customerEmail };
   return dispatch => {
     axios
       .post(CUSTOMER_BASE_URL + "/getCustomerByEmail", req)
+      .then(response => {
+        dispatchUpdatedCustomer(response.data, dispatch);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+};
+
+export const refreshCustomerId = customerId => {
+  return dispatch => {
+    axios
+      .get(CUSTOMER_BASE_URL + "/retrieveCustomerById", {
+        params: { customerId }
+      })
       .then(response => {
         dispatchUpdatedCustomer(response.data, dispatch);
       })

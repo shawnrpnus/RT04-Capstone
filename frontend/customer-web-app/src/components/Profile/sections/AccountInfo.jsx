@@ -19,6 +19,8 @@ import {
   changePassword,
   emailSending,
   emailSent,
+  refreshCustomerEmail,
+  refreshCustomerId,
   sendUpdateEmailLink,
   updateCustomerName
 } from "redux/actions/customerActions";
@@ -73,6 +75,10 @@ function AccountInfo(props) {
   //Cleanup on unmount
   useEffect(() => {
     return () => dispatch(emailSent());
+  }, []);
+
+  useEffect(() => {
+    dispatch(refreshCustomerId(customer.customerId));
   }, []);
 
   //Misc
