@@ -53,6 +53,14 @@ public class StyleService {
         return style;
     }
 
+    public Style retrieveStyleByStyleName(String styleName) throws StyleNotFoundException {
+        Style style = styleRepository.findByStyleName(styleName).orElseThrow(
+                () -> new StyleNotFoundException("Style with name: " + styleName + " does not exist!")
+        );
+        style.getProducts().size();
+        return style;
+    }
+
     public List<Style> retrieveListOfStylesById(List<Long> styleIds) {
         List<Style> styles = (List<Style>) styleRepository.findAllById(styleIds);
         return lazilyLoadStyle(styles);
@@ -93,7 +101,7 @@ public class StyleService {
             List<Customer> customers = styleToDelete.getCustomers();
             styleToDelete.setCustomers(null);
             for (Customer customer : customers){
-                customer.getPreferredStyles().remove(styleToDelete);
+                customer.setStyle(null);
             }
 
             List<Product> products = styleToDelete.getProducts();

@@ -128,10 +128,13 @@ function Measurements(props) {
     }));
   };
   return (
-    <React.Fragment>
-      <GridContainer>
-        <GridItem xs={12} sm={12} md={4}>
-          <form className={classes.form}>
+    <div className={classes.textCenter}>
+      <h4>Measurements</h4>
+      <small>
+        Receive recommendations on suitable sizes
+      </small>
+      <div style={{ marginTop: 20}}>
+      <form>
             <CustomTextField
               fieldLabel="Shoulder (cm)"
               fieldName="shoulder"
@@ -217,7 +220,7 @@ function Measurements(props) {
                 )
               }}
             />
-            <div className={classes.textCenter}>
+            <div>
               {hasAddMeasurements ? (
                 <React.Fragment>
                   <Button
@@ -245,9 +248,8 @@ function Measurements(props) {
               )}
             </div>
           </form>
-        </GridItem>
-      </GridContainer>
-    </React.Fragment>
+      </div>
+    </div>
   );
 }
 

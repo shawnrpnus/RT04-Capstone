@@ -248,16 +248,4 @@ public class CustomerServiceTest extends ServiceTestSetup {
         assertThat(validCustomer.getReservationCartItems().size()).isEqualTo(0);
     }
 
-    @Test
-    public void addRemoveStyles() throws Exception {
-        Customer validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
-        customerService.addStyle(validCustomer.getCustomerId(), styleId);
-        validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
-        assertThat(validCustomer.getPreferredStyles().size()).isOne();
-        assertThat(validCustomer.getPreferredStyles().get(0).getStyleId().compareTo(styleId)).isZero();
-
-        customerService.removeStyle(validCustomer.getCustomerId(), styleId);
-        validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
-        assertThat(validCustomer.getPreferredStyles().size()).isZero();
-    }
 }
