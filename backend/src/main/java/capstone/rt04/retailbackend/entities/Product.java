@@ -5,6 +5,7 @@
  */
 package capstone.rt04.retailbackend.entities;
 
+import capstone.rt04.retailbackend.util.ErrorMessages;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.voodoodyne.jackson.jsog.JSOGGenerator;
@@ -40,28 +41,29 @@ public class Product implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long productId;
 
-    @NotNull
+    @NotNull (message = ErrorMessages.SERIAL_NUMBER_REQUIRED)
     @Column(nullable = false, unique = true)
+    @Size(min = 5, message = ErrorMessages.SERIAL_NUMBER_REQUIRED)
     private String serialNumber;
 
-    @NotNull
+    @NotNull (message = ErrorMessages.PRODUCT_NAME_REQUIRED)
     @Column(nullable = false)
-    @Size(min = 0)
+    @Size(min = 0, message = ErrorMessages.PRODUCT_NAME_REQUIRED)
     private String productName;
 
-    @NotNull
+    @NotNull (message = ErrorMessages.DESCRIPTION_REQUIRED)
     @Column(nullable = false, columnDefinition = "VARCHAR(1337)")
-    @Size(max = 1337)
+    @Size(max = 1337, message = ErrorMessages.DESCRIPTION_REQUIRED)
     private String description;
 
-    @NotNull
+    @NotNull (message = ErrorMessages.PRICE_REQUIRED)
     @Column(nullable = false, precision = 11, scale = 2)
-    @DecimalMin("0.00")
+    @DecimalMin(value = "0.00", message = ErrorMessages.PRICE_REQUIRED)
     private BigDecimal price;
 
-    @NotNull
+    @NotNull (message = ErrorMessages.COST_REQUIRED)
     @Column(nullable = false, precision = 11, scale = 2)
-    @DecimalMin("0.00")
+    @DecimalMin(value = "0.00", message = ErrorMessages.COST_REQUIRED)
     private BigDecimal cost;
 
     @ManyToMany(mappedBy = "products")
@@ -75,7 +77,7 @@ public class Product implements Serializable {
 
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
-    @NotNull
+    @NotNull (message = ErrorMessages.CATEGORY_REQUIRED)
     private Category category;
 
     @OneToMany(mappedBy = "product")

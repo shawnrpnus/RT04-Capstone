@@ -55,7 +55,7 @@ class ProductsStockTable extends PureComponent {
     state = {
         // redirect: false,
         selectedProductStocks: [],
-         selectedProductId: ""
+        selectedProductId: ""
     };
 
     componentDidMount() {
@@ -69,7 +69,7 @@ class ProductsStockTable extends PureComponent {
         evt.preventDefault();
         //data is the list of products selected
 
-            this.state.selectedProductStocks.push(data);
+        this.state.selectedProductStocks.push(data);
     };
 
 
@@ -82,7 +82,7 @@ class ProductsStockTable extends PureComponent {
         console.log(this.props)
 
         let data = [];
-        if (this.props.productStocks){
+        if (this.props.productStocks) {
             data = this.props.productStocks.map(productStock => {
                 return {
                     productStockId: productStock.productStockId,
@@ -94,44 +94,44 @@ class ProductsStockTable extends PureComponent {
 
         return (
             <React.Fragment>
-               
-            <div className="table" style={{verticalAlign: "middle"}}>
-                {this.props.productStocks ? (
-                    <MaterialTable
-                        title="Product Stocks"
-                        padding="none"
-                        style={{boxShadow: "none"}}
-                        icons={tableIcons}
-                        columns={[
-                            {title: "Product Stock ID.", field: "productStockId"},
-                            {title: "SKU", field: "sku"},
-                            {title: "Current Stock", field: "quantity"}
-                        ]}
-                        data={data}
-                        options={{
-                            filtering: true,
-                            sorting: true,
-                            padding: "dense",
-                            pageSize: 5,
-                            pageSizeOptions: [5, 10, 20, 40],
-                            actionsColumnIndex: -1,
-                            headerStyle: {textAlign: "center"}, //change header padding
-                            cellStyle: {textAlign: "center"}
-                        }}
-                        actions={[
-                            {
-                                icon: Checkbox,
-                                tooltip: "View Product Stocks Details",
-                                onClick: (event, rowData) =>
-                                    this.handleCheckBox(event,rowData)
-                            }
 
-                        ]}
-                    />
-                ) : (
-                    renderLoader()
-                )}
-            </div>
+                <div className="table" style={{verticalAlign: "middle"}}>
+                    {this.props.productStocks ? (
+                        <MaterialTable
+                            title="Product Stocks"
+                            padding="none"
+                            style={{boxShadow: "none"}}
+                            icons={tableIcons}
+                            columns={[
+                                {title: "Product Stock ID.", field: "productStockId"},
+                                {title: "SKU", field: "sku"},
+                                {title: "Current Stock", field: "quantity"}
+                            ]}
+                            data={data}
+                            options={{
+                                filtering: true,
+                                sorting: true,
+                                padding: "dense",
+                                pageSize: 5,
+                                pageSizeOptions: [5, 10, 20, 40],
+                                actionsColumnIndex: -1,
+                                headerStyle: {textAlign: "center"}, //change header padding
+                                cellStyle: {textAlign: "center"}
+                            }}
+                            actions={[
+                                {
+                                    icon: Checkbox,
+                                    tooltip: "View Product Stocks Details",
+                                    onClick: (event, rowData) =>
+                                        this.handleCheckBox(event, rowData)
+                                }
+
+                            ]}
+                        />
+                    ) : (
+                        renderLoader()
+                    )}
+                </div>
             </React.Fragment>
         )
     }
@@ -145,7 +145,6 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = {
     retrieveProductStocksByParameter
 };
-
 
 
 export default withRouter(

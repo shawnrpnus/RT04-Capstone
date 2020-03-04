@@ -14,6 +14,7 @@ import capstone.rt04.retailbackend.response.SizeToProductVariantAndStockMap;
 import capstone.rt04.retailbackend.services.ProductService;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.category.CategoryNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.product.ProductNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.product.*;
 import capstone.rt04.retailbackend.util.exceptions.style.StyleNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.tag.TagNotFoundException;
@@ -44,14 +45,14 @@ public class ProductController {
     }
 
     @GetMapping(ProductControllerRoutes.RETRIEVE_PRODUCT_BY_ID)
-    public ResponseEntity<?> retrieveProductById(@PathVariable Long productId) {
+    public ResponseEntity<?> retrieveProductById(@PathVariable Long productId) throws ProductNotFoundException {
         try {
             List<ProductDetailsResponse> products = productService.retrieveProductsDetails(null, productId, null);
             if (products.size() == 0) throw new ProductNotFoundException();
             clearPdrRelationships(products, true);
             return new ResponseEntity<>(products.get(0), HttpStatus.OK);
         } catch (ProductNotFoundException ex) {
-            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(ex.getErrorMap(), HttpStatus.NOT_FOUND);
         } catch (Exception ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -110,9 +111,9 @@ public class ProductController {
         } catch (InputDataValidationException ex) {
             return new ResponseEntity<>(ex.getErrorMap(), HttpStatus.BAD_REQUEST);
         } catch (CreateNewProductException ex) {
-            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception ex) {
-            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
