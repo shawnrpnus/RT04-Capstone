@@ -102,7 +102,6 @@ public class StripeService {
         customerParams.put("email", dbCustomer.getEmail());
         Customer customer = Customer.create(customerParams);
         dbCustomer.setCreditCardCustomerId(customer.getId());
-        System.out.println(customer);
         return customer;
     }
 

@@ -61,7 +61,7 @@ export default function CreditCardCard() {
                   expiry={`${expiryMonth}/${expiryYear}`}
                   // focus={this.state.focus}
                   name=" "
-                  number={`************${last4}`}
+                  number={`••••••••••••${last4}`}
                   preview={true}
                   issuer={issuer}
                 />

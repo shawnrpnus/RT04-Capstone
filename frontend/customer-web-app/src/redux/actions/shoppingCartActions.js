@@ -76,7 +76,7 @@ export const getClientSecret = (totalAmount, setClientSecret) => {
 export const completeDirectPayment = (paymentRequest, history) => {
   return dispatch => {
     axios
-      .post(`/makePaymentWithSavedCard`, paymentRequest)
+      .post(`/completeDirectPayment`, paymentRequest)
       .then(resp => {
         // Return a customer object
         // Update customer
