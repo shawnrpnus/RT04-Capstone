@@ -33,7 +33,6 @@ public class TimerService {
     private RestTemplate restTemplate;
 
     private final Integer unattendedTimeLimit = 4;
-
     private static final int intervalMinute = 60 * 60 * 1000;
     private static final int intervalDay = 60 * 60 * 1000 * 24;
     private static final int interval10Minutes = 10 * intervalMinute;
