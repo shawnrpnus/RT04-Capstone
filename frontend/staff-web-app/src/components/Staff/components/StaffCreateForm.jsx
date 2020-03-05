@@ -182,6 +182,7 @@ class StaffCreateForm extends Component {
                 disabled={disabled}
                 autoFocus={true}
               />
+              <small>Please enter last 4 characters of NRIC</small>
             </Grid>
 
             <Grid item xs={12} md={6}>

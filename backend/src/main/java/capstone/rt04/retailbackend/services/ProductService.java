@@ -72,7 +72,17 @@ public class ProductService {
     }
 
     public Product createNewProduct(Product product, Long categoryId, List<Long> tagIds, List<Long> styleIds, List<SizeEnum> sizes, List<ColourToImageUrlsMap> colourToImageUrlsMaps) throws InputDataValidationException, CreateNewProductException, CategoryNotFoundException {
-        validationService.throwExceptionIfInvalidBean(product);
+
+        //check whether serial number is unique
+        List<Product> products = retrieveAllProducts();
+        for(Product p : products){
+            if(p.getSerialNumber().equals(product.getSerialNumber())){
+                Map<String, String> errorMap = new HashMap<>();
+                errorMap.put("serialNumber", ErrorMessages.SERIAL_NUMBER_UNIQUE);
+                throw new InputDataValidationException(errorMap, ErrorMessages.SERIAL_NUMBER_UNIQUE);
+            }
+        }
+
         if (categoryId == null) {
             Map<String, String> errorMap = new HashMap<>();
             errorMap.put("categoryId", ErrorMessages.CATEGORY_REQUIRED);

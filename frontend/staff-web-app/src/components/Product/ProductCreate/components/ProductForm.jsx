@@ -205,7 +205,7 @@ class ProductForm extends React.Component {
               autoFocus={true}
               error={errors}
             />
-            <small>Serial number must be atleast 5 digits</small>
+            <small>Serial number must be at least 5 digits</small>
           </Grid>
           <Grid item xs={12} md={4}>
             <MaterialTextField
