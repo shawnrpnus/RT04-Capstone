@@ -13,14 +13,19 @@ import FilterProductRequest from "models/product/FilterProductRequest";
 const _ = require("lodash");
 
 function Recommendations(props) {
-  const { customer } = props;
+  const { customer, classes } = props;
   const dispatch = useDispatch();
   const productDetails = useSelector(
     state => state.product.displayedProductDetails
   );
 
+  console.log(customer);
   useEffect(() => {
     if (customer) {
+      const style = {
+        styleId: customer.style.styleId,
+        styleName: customer.style.styleName
+      };
       const req = new FilterProductRequest(
         null,
         [],
@@ -29,7 +34,7 @@ function Recommendations(props) {
         0,
         200,
         "LATEST_ARRIVAL",
-        customer.style
+        style
       );
 
       dispatch(filterProducts(req));
@@ -55,15 +60,19 @@ function Recommendations(props) {
 
   return (
     <GridItem xs={12} sm={12} md={12}>
-      <h4>Recommended For You</h4>
+      <h2 className={classes.title} style={{ textAlign: "center" }}>
+        Recommended For You
+      </h2>
       <GridContainer>
         {productDataList &&
-          productDataList.map(productDetail => (
-            <ProductCard
-              productDetail={productDetail}
-              key={productDetail.product.productId}
-            />
-          ))}
+          productDataList
+            .slice(0, 5)
+            .map(productDetail => (
+              <ProductCard
+                productDetail={productDetail}
+                key={productDetail.product.productId}
+              />
+            ))}
       </GridContainer>
     </GridItem>
   );

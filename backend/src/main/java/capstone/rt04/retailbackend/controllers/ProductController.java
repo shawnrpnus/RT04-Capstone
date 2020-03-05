@@ -244,6 +244,8 @@ public class ProductController {
                 review.setStaff(null);
             }
 
+            pdr.getProduct().setStyles(null);
+
             pdr.getProduct().getCategory().setProducts(null);
             pdr.getProduct().getCategory().setParentCategory(null);
             pdr.getProduct().getCategory().setChildCategories(null);

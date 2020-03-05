@@ -317,7 +317,7 @@ public class ProductService {
 
                 if(style != null){
                     Style styleToCheck = styleService.retrieveStyleByStyleId(style.getStyleId());
-                    if (productVariant.getProduct().getStyles().contains(style)){
+                    if (productVariant.getProduct().getStyles().contains(styleToCheck)){
                         matchStyle=true;
                     }
                 } else {
