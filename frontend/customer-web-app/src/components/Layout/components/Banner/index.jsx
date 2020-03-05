@@ -15,12 +15,12 @@ const useStyles = makeStyles(headersStyle);
 export default function Banner(props) {
   const classes = useStyles();
 
+  const customer = useSelector(state => state.customer.loggedInCustomer);
+
   React.useEffect(() => {
     window.scrollTo(0, 0);
     document.body.scrollTop = 0;
   }, []);
-
-  const customer = useSelector(state => state.customer.loggedInCustomer);
 
   return (
     <div
@@ -30,7 +30,9 @@ export default function Banner(props) {
       <div className={classes.container}>
         <GridContainer>
           <LandingPage classes={classes} />
-          {customer && <Recommendations customer={customer} />}
+          {customer && customer.style && (
+            <Recommendations customer={customer} />
+          )}
         </GridContainer>
       </div>
     </div>

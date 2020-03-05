@@ -31,7 +31,7 @@ const StyledRating = withStyles({
   }
 })(Rating);
 export default function AddEditReview(props) {
-  const { reviews, editReview, currReview, setCurrReview} = props;
+  const { reviews, editReview, currReview, setCurrReview } = props;
   const classes = useStyles();
   //Redux
   const dispatch = useDispatch();
@@ -47,7 +47,7 @@ export default function AddEditReview(props) {
   const [inputState, setInputState] = useState({
     reviewId: currReview ? currReview.reviewId : "",
     content: currReview ? currReview.content : "",
-    rating: currReview ? currReview.rating : 3,
+    rating: currReview ? currReview.rating : 3
   });
   const months = [
     "January",
@@ -104,7 +104,7 @@ export default function AddEditReview(props) {
           enqueueSnackbar
         )
       );
-      setCurrReview('');
+      setCurrReview("");
     } else {
       const review = new Review(
         inputState.reviewId,
@@ -168,7 +168,7 @@ export default function AddEditReview(props) {
             <span>
               <Button
                 onClick={() => {
-                  setCurrReview('');
+                  setCurrReview("");
                   dispatch(clearErrors());
                 }}
                 className={classes.footerButtons}
@@ -185,7 +185,6 @@ export default function AddEditReview(props) {
               >
                 Post review
               </Button>
-
             </span>
           }
         />

@@ -92,9 +92,9 @@ public class StartUpService {
         createCategoryIfNotFound();
         createStaffIfNotFound();
         createSizeDetailsIfNotFound();
+        createStyleIfNotFound();
         createProductIfNotFound();
         createTagIfNotFound();
-        createStyleIfNotFound();
         createCustomerIfNotFound();
         // initializeShoppingCartIfNotFound();
     }
