@@ -115,7 +115,7 @@ class SidebarContent extends Component {
             />
           </SidebarCategory>
           )}
-          {(salesmarketing|| store || warehouse) && (
+          {(store || warehouse) && (
             <SidebarCategory title="Product Stocks" icon="list">
               <SidebarLink
                 title="View All"
