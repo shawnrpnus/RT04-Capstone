@@ -9,6 +9,7 @@ import ProductCard from "components/Shop/ProductCard";
 import GridContainer from "components/Layout/components/Grid/GridContainer";
 import { useDispatch, useSelector } from "react-redux";
 import FilterProductRequest from "models/product/FilterProductRequest";
+import Card from "components/UI/Card/Card";
 
 const _ = require("lodash");
 
@@ -59,21 +60,31 @@ function Recommendations(props) {
     : [];
 
   return (
-    <GridItem xs={12} sm={12} md={12}>
-      <h2 className={classes.title} style={{ textAlign: "center" }}>
+    <GridItem
+      xs={12}
+      sm={12}
+      md={12}
+      style={{ backgroundColor: "white", paddingTop: "10px" }}
+    >
+      <h2
+        className={classes.title}
+        style={{ textAlign: "center", marginTop: "10px" }}
+      >
         Recommended For You
       </h2>
-      <GridContainer>
-        {productDataList &&
-          productDataList
-            .slice(0, 5)
-            .map(productDetail => (
-              <ProductCard
-                productDetail={productDetail}
-                key={productDetail.product.productId}
-              />
-            ))}
-      </GridContainer>
+      <Card plain>
+        <GridContainer style={{ marginLeft: "42px", marginRight: "42px" }}>
+          {productDataList &&
+            productDataList
+              .slice(0, 4)
+              .map(productDetail => (
+                <ProductCard
+                  productDetail={productDetail}
+                  key={productDetail.product.productId}
+                />
+              ))}
+        </GridContainer>
+      </Card>
     </GridItem>
   );
 }
