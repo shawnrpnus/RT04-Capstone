@@ -31,6 +31,7 @@ public class RelationshipService {
             pv.getProduct().setStyles(null);
             removeStoreStocksFromProductVariant(pv);
         }
+        customer.setReviews(null);
         if (customer.getStyle()!=null){
             customer.getStyle().setProducts(null);
             customer.getStyle().setCustomers(null);

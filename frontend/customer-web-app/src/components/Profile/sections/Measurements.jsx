@@ -134,7 +134,7 @@ function Measurements(props) {
       <div style={{ marginTop: 20 }}>
         <form>
           <CustomTextField
-            fieldLabel="Shoulder (cm)"
+            fieldLabel="Shoulder (35-55 cm)"
             fieldName="shoulder"
             inputState={inputState}
             onChange={onChange}
@@ -151,7 +151,7 @@ function Measurements(props) {
             }}
           />
           <CustomTextField
-            fieldLabel="Waist (cm)"
+            fieldLabel="Waist (60-120 cm)"
             fieldName="waist"
             inputState={inputState}
             onChange={onChange}
@@ -168,7 +168,7 @@ function Measurements(props) {
             }}
           />
           <CustomTextField
-            fieldLabel="Chest (cm)"
+            fieldLabel="Chest (60-150 cm)"
             fieldName="chest"
             inputState={inputState}
             onChange={onChange}
@@ -185,7 +185,7 @@ function Measurements(props) {
             }}
           />
           <CustomTextField
-            fieldLabel="Hip (cm)"
+            fieldLabel="Hip (60-150 cm)"
             fieldName="hip"
             inputState={inputState}
             onChange={onChange}
@@ -202,7 +202,7 @@ function Measurements(props) {
             }}
           />
           <CustomTextField
-            fieldLabel="Height (cm)"
+            fieldLabel="Height (140-200 cm)"
             fieldName="height"
             inputState={inputState}
             onChange={onChange}

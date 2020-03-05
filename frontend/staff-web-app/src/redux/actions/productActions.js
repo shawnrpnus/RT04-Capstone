@@ -98,6 +98,7 @@ export const retrieveProductsDetails = (storeOrWarehouseId, categoryId) => {
       })
       .then(response => {
         const { data } = jsog.decode(response);
+        console.log(data);
         if (categoryId) {
           dispatch(retrieveProductsDetailsForCategorySuccess(data));
         } else {
@@ -196,8 +197,52 @@ export const deleteProductVariant = (productVariantId, productId) => {
         console.log(response);
         retrieveProductById(productId)(dispatch);
       })
-      .catch(() => {
-        console.log("Failed");
+      .catch(err => {
+        console.log(err.response.data);
+        if (!!err.response && !!err.response.data) {
+          const { errorMessage } = err.response.data;
+          if (errorMessage) {
+            //not inputDataValidationException
+            toast.error(errorMessage, {
+              position: toast.POSITION.TOP_CENTER
+            });
+          }
+        } else {
+          console.log(err);
+        }
+      });
+  };
+};
+
+export const deleteProduct = (productId, storeId) => {
+  return dispatch => {
+    axios
+      .delete(PRODUCT_BASE_URL + `/deleteProduct/${productId}`)
+      .then(response => {
+        console.log(response);
+        console.log(storeId);
+        if (storeId) {
+          retrieveProductsDetails(storeId)(dispatch);
+        } else {
+          retrieveProductsDetails()(dispatch);
+        }
+        toast.success("Succesfully deleted product", {
+          position: toast.POSITION.TOP_CENTER
+        });
+      })
+      .catch(err => {
+        console.log(err.response.data);
+        if (!!err.response && !!err.response.data) {
+          const { errorMessage } = err.response.data;
+          if (errorMessage) {
+            //not inputDataValidationException
+            toast.error(errorMessage, {
+              position: toast.POSITION.TOP_CENTER
+            });
+          }
+        } else {
+          console.log(err);
+        }
       });
   };
 };

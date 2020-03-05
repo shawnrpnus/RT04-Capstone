@@ -11,6 +11,7 @@ import {
   DELETE_REVIEW_BY_REVIEW_ID_SUCCESS,
   GET_ALL_REVIEWS_BY_PRODUCT_ID_SUCCESS,
   GET_ERRORS,
+  RETRIEVE_REVIEW_BY_CUSTOMER_ID_SUCCESS,
   UPDATE_REVIEW_BY_REVIEW_ID_SUCCESS
 } from "./types";
 
@@ -139,4 +140,22 @@ export const checkIfCanWriteReview = (productId, customerId) => {
 export const checkIfCanWriteReviewSuccess = data => ({
   type: CHECK_IF_CAN_WRITE_REVIEW_SUCCESS,
   canWrite: data
+});
+
+export const retrieveReviewsByCustomerId = customerId => {
+  return dispatch =>
+    axios
+      .get(REVIEW_BASE_URL + `/retrieveReviewsByCustomerId/${customerId}`)
+      .then(response => {
+        const { data } = jsog.decode(response);
+        dispatch(retrieveReviewsByCustomerIdSuccess(data));
+      })
+      .catch(err => {
+        dispatchErrorMapError(err, dispatch);
+      });
+};
+
+export const retrieveReviewsByCustomerIdSuccess = data => ({
+  type: RETRIEVE_REVIEW_BY_CUSTOMER_ID_SUCCESS,
+  allReviews: data
 });

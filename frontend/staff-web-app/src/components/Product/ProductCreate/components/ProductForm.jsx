@@ -170,7 +170,7 @@ class ProductForm extends React.Component {
     this.props.createNewProduct(form, this.props.history, () =>
       this.setState({ isLoading: false })
     );
-    this.setState({ isLoading: true });
+    // this.setState({ isLoading: true });
   };
 
   render() {
@@ -214,7 +214,7 @@ class ProductForm extends React.Component {
           <Grid item xs={12} md={4}>
             <MaterialTextField
               type="number"
-              fieldLabel="Serial Number"
+              fieldLabel="Serial Number *"
               onChange={this.onChange}
               fieldName="serialNumber"
               state={this.state}
@@ -226,7 +226,7 @@ class ProductForm extends React.Component {
           </Grid>
           <Grid item xs={12} md={4}>
             <MaterialTextField
-              fieldLabel="Name"
+              fieldLabel="Name *"
               onChange={this.onChange}
               fieldName="productName"
               state={this.state}
@@ -248,6 +248,7 @@ class ProductForm extends React.Component {
                   variant="standard"
                   label="Category"
                   fullWidth
+                  required
                 />
               )}
               errors={errors}
@@ -265,6 +266,7 @@ class ProductForm extends React.Component {
               onChange={this.onChange}
               state={this.state}
               errors={errors}
+              required
             />
           </Grid>
           <Grid item xs={12} md={6}>
@@ -345,6 +347,7 @@ class ProductForm extends React.Component {
                     {...params}
                     variant="standard"
                     label="Colours"
+                    required
                     fullWidth
                     InputLabelProps={{
                       shrink: true
@@ -387,6 +390,7 @@ class ProductForm extends React.Component {
                   {...params}
                   variant="standard"
                   label="Sizes"
+                  required
                   // placeholder="Styles"
                   fullWidth
                   InputLabelProps={{
@@ -400,7 +404,7 @@ class ProductForm extends React.Component {
           <Grid item xs={12} md={3}>
             <MaterialTextField
               type="number"
-              fieldLabel="Price"
+              fieldLabel="Price *"
               onChange={this.onChange}
               fieldName="price"
               state={this.state}
@@ -410,7 +414,7 @@ class ProductForm extends React.Component {
           <Grid item xs={12} md={3}>
             <MaterialTextField
               type="number"
-              fieldLabel="Cost"
+              fieldLabel="Cost *"
               onChange={this.onChange}
               fieldName="cost"
               state={this.state}

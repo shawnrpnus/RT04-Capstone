@@ -6,12 +6,12 @@ const mailGenerator = new Mailgen({
   theme: "default",
   product: {
     // Appears in header & footer of e-mails
-    name: "Apricot n' Nut",
+    name: "Apricot & Nut",
     link: "http://localhost:3000",
     // Optional product logo
     logo:
       "https://res.cloudinary.com/rt04capstone/image/upload/v1583433855/rsz_1apricot-nut-logo-word_jzhocy.png",
-    copyright: "Copyright © 2020 Apricot n' Nut. All rights reserved."
+    copyright: "Copyright © 2020 Apricot & Nut. All rights reserved."
   }
 });
 const transporter = Nodemailer.createTransport({
@@ -30,7 +30,7 @@ router.post("/sendVerificationEmail", async (req, res) => {
   const emailContent = {
     body: {
       name: `${fullName}`,
-      intro: "Welcome to Appleberry.",
+      intro: "Welcome to Apricot & Nut.",
       action: {
         instructions:
           "Thank you for registering! Get started by verifying your account below",
@@ -52,6 +52,47 @@ router.post("/sendVerificationEmail", async (req, res) => {
       from: "rt04capstone@gmail.com",
       to: email,
       subject: "Verify your account",
+      text: emailText,
+      html: emailBody
+    },
+    (error, info) => {
+      if (error) {
+        console.log(error);
+        res.status(500).send({ message: "Email failed to send" });
+      } else {
+        res.status(200).send({ message: "Email Sent" });
+      }
+    }
+  );
+});
+
+router.post("/sendForgotPasswordEmail", async (req, res) => {
+  const { email, fullName, link } = req.body;
+  const emailContent = {
+    body: {
+      name: `${fullName}`,
+      intro: "Welcome to Apricot & Nut.",
+      action: {
+        instructions:
+          "Forgot your password? Click the button below to reset it:",
+        button: {
+          color: "#22BC66", // Optional action button color
+          text: "Reset Password",
+          link: link
+        }
+      },
+      outro: "This link is valid for 1 hour."
+    }
+  };
+
+  const emailBody = mailGenerator.generate(emailContent);
+  const emailText = mailGenerator.generatePlaintext(emailContent);
+
+  transporter.sendMail(
+    {
+      from: "rt04capstone@gmail.com",
+      to: email,
+      subject: "Reset your password",
       text: emailText,
       html: emailBody
     },
@@ -123,11 +164,11 @@ router.post("/contactUsConfirmation", async (req, res) => {
       break;
     case "COMPLIMENT":
       response =
-        "Thank you for the compliment! On behalf of Apricot n' Nut, we would like to express gratitude for your continuous support.";
+        "Thank you for the compliment! On behalf of Apricot & Nut, we would like to express gratitude for your continuous support.";
       break;
     default:
       response =
-        "Thank you for your feedback. Hope you had a wonderful experiencing shopping on Apricot n' Nut";
+        "Thank you for your feedback. Hope you had a wonderful experiencing shopping on Apricot & Nut";
   }
 
   const emailContent = {
@@ -148,7 +189,7 @@ router.post("/contactUsConfirmation", async (req, res) => {
     {
       from: "rt04capstone@gmail.com",
       to: email,
-      subject: "Apricot n' Nut - Feedback confirmation email",
+      subject: "Apricot & Nut - Feedback confirmation email",
       text: emailText,
       html: emailBody
     },

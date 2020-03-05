@@ -20,7 +20,10 @@ import {
   List
 } from "@material-ui/icons";
 import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
-import { retrieveProductsDetails } from "../../../../redux/actions/productActions";
+import {
+  retrieveProductsDetails,
+  deleteProduct
+} from "../../../../redux/actions/productActions";
 import withPage from "../../../Layout/page/withPage";
 import colourList from "../../../../scss/colours.json";
 import ProductsStockDetails from "./ProductsStockDetails";
@@ -79,6 +82,10 @@ class ProductsTable extends PureComponent {
     });
   };
 
+  handleDeleteProduct = productId => {
+    this.props.deleteProduct(productId, _.get(this.props.store, "storeId"));
+  };
+
   render() {
     const { products, renderLoader, columnsToHide, store } = this.props;
     const { openProductStocksDetailsDialogue, selectedProductId } = this.state;
@@ -87,7 +94,6 @@ class ProductsTable extends PureComponent {
       "Sales and Marketing";
     const warehouse =
       _.get(this.props, "staff.department.departmentName") === "Warehouse";
-    console.log(this.props);
 
     let data = [];
     if (products) {
@@ -116,6 +122,7 @@ class ProductsTable extends PureComponent {
       <div className="table" style={{ verticalAlign: "middle" }}>
         {products ? (
           <MaterialTable
+            key={data.length}
             title="Products"
             style={{ boxShadow: "none" }}
             icons={tableIcons}
@@ -132,9 +139,6 @@ class ProductsTable extends PureComponent {
                         borderRadius: "10%"
                       }}
                       src={rowData.image}
-                      onClick={() =>
-                        console.log("You saved me" + rowData.image)
-                      }
                     />
                   </Link>
                 )
@@ -151,7 +155,12 @@ class ProductsTable extends PureComponent {
                     return (
                       <FiberManualRecordIcon
                         key={color + index}
-                        style={{ color: jsonColorNameList[color].hex }}
+                        style={{
+                          color: jsonColorNameList[color].hex,
+                          border: color === "White" ? "1px black solid" : null,
+                          borderRadius: "200px",
+                          transform: color === "White" ? "scale(0.7)" : false
+                        }}
                       />
                     );
                   })
@@ -184,6 +193,7 @@ class ProductsTable extends PureComponent {
                       onClick: (event, rowData) =>
                         this.handleViewProductDetails(rowData.productId)
                     },
+
                     !salesmarketing && (store.storeId || warehouse)
                       ? {
                           icon: List,
@@ -193,7 +203,13 @@ class ProductsTable extends PureComponent {
                               rowData.productId
                             )
                         }
-                      : null
+                      : null,
+                    {
+                      icon: DeleteOutline,
+                      tooltip: "Delete product",
+                      onClick: (event, rowData) =>
+                        this.handleDeleteProduct(rowData.productId)
+                    }
                   ]
                 : [this.props.selectionAction][0].icon === undefined
                 ? false
@@ -226,7 +242,8 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = {
-  retrieveProductsDetails
+  retrieveProductsDetails,
+  deleteProduct
 };
 
 export const ProductsTableRaw = withRouter(ProductsTable);

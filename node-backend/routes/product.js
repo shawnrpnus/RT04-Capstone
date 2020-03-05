@@ -65,67 +65,67 @@ router.post(
     const filesArray = Object.values(req.files);
     let imageUrls;
 
-    Promise.all(
-      filesArray.map(async (files, index) => {
-        imageUrls = [];
-        Promise.all([
-          await Promise.all(
-            files.map(async ({ originalname }, idx) => {
-              console.log("image " + idx);
-              await cloudinary.uploader
-                .upload(`./uploads/${originalname}`, {
-                  public_id: originalname,
-                  width: 500,
-                  height: 500,
-                  crop: "fit"
-                  // tags: "basic_sample",
-                  // effect: "saturation:-70"
-                })
-                .then(image => {
-                  console.log(image.secure_url);
-                  if (request.colourToImageUrlsMaps[index].imageUrls) {
-                    request.colourToImageUrlsMaps[index].imageUrls.push(
-                      image.secure_url
-                    );
-                  } else {
-                    request.colourToImageUrlsMaps[index].imageUrls = [
-                      image.secure_url
-                    ];
-                    delete request.colourToImageUrlsMaps[index].files;
-                  }
-                })
-                .catch(err => {
-                  res.status(400).send(err);
-                });
+    if (filesArray.length > 0) {
+      Promise.all(
+        filesArray.map(async (files, index) => {
+          imageUrls = [];
+          Promise.all([
+            await Promise.all(
+              files.map(async ({ originalname }, idx) => {
+                console.log("image " + idx);
+                await cloudinary.uploader
+                  .upload(`./uploads/${originalname}`, {
+                    public_id: originalname,
+                    width: 500,
+                    height: 500,
+                    crop: "fit"
+                    // tags: "basic_sample",
+                    // effect: "saturation:-70"
+                  })
+                  .then(image => {
+                    console.log(image.secure_url);
+                    if (request.colourToImageUrlsMaps[index].imageUrls) {
+                      request.colourToImageUrlsMaps[index].imageUrls.push(
+                        image.secure_url
+                      );
+                    } else {
+                      request.colourToImageUrlsMaps[index].imageUrls = [
+                        image.secure_url
+                      ];
+                      delete request.colourToImageUrlsMaps[index].files;
+                    }
+                  })
+                  .catch(err => {
+                    res.status(400).send(err);
+                  });
+              })
+            )
+          ]);
+        })
+      )
+        .then(async () => {
+          console.log("+++++++++++ Creating after promise ++++++++++++++");
+          // console.log(request);
+          await axios
+            .post(
+              process.env.SPRING_API_URL + "/product/createNewProduct",
+              request
+            )
+            .then(response => {
+              console.log("----------------------");
+              // console.log(request);
+              return res.send(request);
             })
-          )
-        ]);
-      })
-    )
-      .then(async () => {
-        console.log("+++++++++++ Creating after promise ++++++++++++++");
-        // console.log(request);
-        await axios
-          .post(
-            process.env.SPRING_API_URL + "/product/createNewProduct",
-            request
-          )
-          .then(response => {
-            console.log("----------------------");
-            // console.log(request);
-            return res.send(request);
-          })
-          .catch(err => {
-            console.log("**********************");
-            console.log(err.message);
-            return res.status(400).send(err);
-          });
-      })
-      .catch(err => {
-        console.log(err);
-      });
-
-    if (filesArray.length === 0) {
+            .catch(err => {
+              console.log("**********************");
+              console.log(err.message);
+              return res.status(400).send(err);
+            });
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    } else {
       request.colourToImageUrlsMaps.map((e, index) => {
         request.colourToImageUrlsMaps[index].imageUrls = [];
         delete request.colourToImageUrlsMaps[index].files;
@@ -137,8 +137,8 @@ router.post(
           return res.send(request);
         })
         .catch(err => {
-          console.log(err);
-          return res.status(400).send(err);
+          console.log(err.response.data);
+          return res.status(400).send(JSON.stringify(err.response.data));
         });
     }
   }

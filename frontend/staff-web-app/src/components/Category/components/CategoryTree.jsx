@@ -20,6 +20,7 @@ import { ContextMenu } from "primereact/contextmenu";
 import CreateUpdateCategoryDialog from "./CreateUpdateCategoryDialog";
 import { Button, ButtonToolbar } from "reactstrap";
 import { clearErrors } from "../../../redux/actions";
+import { deleteProduct } from "./../../../redux/actions/productActions";
 
 const _ = require("lodash");
 
@@ -217,7 +218,8 @@ const mapDispatchToProps = {
   retrieveProductsDetails,
   deleteCategory,
   createCategory,
-  clearErrors
+  clearErrors,
+  deleteProduct
 };
 
 export default connect(

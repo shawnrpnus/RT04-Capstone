@@ -2,7 +2,8 @@ import axios from "axios";
 import { dispatchErrorMapError } from "redux/actions/index";
 import {
   RETRIEVE_ALL_TAGS,
-  UPDATE_DISPLAYED_TRANSACTIONS
+  UPDATE_DISPLAYED_TRANSACTIONS,
+  UPDATE_VIEWED_TRANSACTION
 } from "redux/actions/types";
 
 const jsog = require("jsog");
@@ -42,3 +43,21 @@ export const filterTransactions = (req, setFilterDrawerOpen, setIsLoading) => {
         dispatchErrorMapError(err, dispatch);
       });
 };
+
+export const retrieveTransactionById = transactionId => {
+  return dispatch =>
+    axios
+      .get(TRANSACTION_BASE_URL + "/retrieveTransactionById/" + transactionId)
+      .then(response => {
+        const data = jsog.decode(response.data);
+        dispatch(updatedViewedTransaction(data));
+      })
+      .catch(err => {
+        dispatchErrorMapError(err, dispatch);
+      });
+};
+
+const updatedViewedTransaction = data => ({
+  type: UPDATE_VIEWED_TRANSACTION,
+  transaction: data
+});

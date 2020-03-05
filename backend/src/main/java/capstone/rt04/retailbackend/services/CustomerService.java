@@ -274,8 +274,28 @@ public class CustomerService {
         } catch (Exception ex){
             log.error(ex.getMessage());
         }
+    }
 
+    private void nodeSendResetPasswordLink(String path, String code, String email, String firstName, String lastName) {
+        restTemplate = new RestTemplate();
+        Map<String, String> request = new HashMap<>();
+        String fullName = firstName + " " + lastName;
+        String link = Constants.FRONTEND_URL + path + code;
+        request.put("link", link);
+        request.put("email", email);
+        request.put("fullName", fullName);
 
+        String endpoint = Constants.NODE_API_URL + "/email/sendForgotPasswordEmail";
+        try {
+            ResponseEntity<?> response = restTemplate.postForEntity(endpoint, request, Object.class);
+            if (response.getStatusCode().equals(HttpStatus.OK)) {
+                log.info("Email sent successfully to " + email);
+            } else {
+                log.error("Error sending email to " + email);
+            }
+        } catch (Exception ex){
+            log.error(ex.getMessage());
+        }
     }
 
     //customer click forget password --> send email to customer's email
@@ -305,7 +325,7 @@ public class CustomerService {
     public void sendResetPasswordLink(String email) throws CustomerNotFoundException {
         Customer customer = retrieveCustomerByEmail(email);
         VerificationCode vCode = generateVerificationCode(customer.getCustomerId());
-        nodeSendEmailVerificationLink("/account/resetPassword/", vCode.getCode(),
+        nodeSendResetPasswordLink("/account/resetPassword/", vCode.getCode(),
                 vCode.getCustomer().getEmail(), vCode.getCustomer().getFirstName(),
                 vCode.getCustomer().getLastName());
     }

@@ -61,7 +61,7 @@ export const createNewContactUs = (
       .then(response => {
         const { data } = jsog.decode(response);
         dispatch(contactUsSuccess(data));
-        enqueueSnackbar("Feedback succesfully submitted!", {
+        enqueueSnackbar("Ticket submitted!", {
           variant: "success",
           autoHideDuration: 2000
         });

@@ -75,7 +75,7 @@ function OrderHistoryPage(props) {
         {transactions &&
           transactions.length > 0 &&
           transactions.map(transaction => (
-            <React.Fragment>
+            <React.Fragment key={transaction.transactionId}>
               <OrderHistoryCard
                 key={transaction.transactionId}
                 transaction={transaction}

@@ -139,6 +139,11 @@ class ProductCard extends PureComponent {
       _.get(this.props, "staff.department.departmentName") ===
       "Sales and Marketing";
 
+    // Redirect back when a product no longer has any product variant
+    if (_.get(this.state, "product.productVariants.length") === 0) {
+      this.props.history.push("/product/viewAllProduct");
+    }
+
     return (
       <div>
         {colourSizeMap.length > 0 ? (
@@ -231,10 +236,12 @@ class ProductCard extends PureComponent {
                 <StarOutlineIcon />
                 <a className="product-card__link"></a>
               </div>
-
               <h1 className="product-card__price">
-                ${price}{" "}
-                <span className="product-card__old-price">${cost}</span>
+                ${price.toFixed(2)}{" "}
+                <span className="product-card__old-price">
+                  {" "}
+                  Cost : ${cost.toFixed(2)}
+                </span>
               </h1>
               <h4 className="product-card__category">{leafNodeName}</h4>
               <div className="form__form-group">
@@ -243,12 +250,18 @@ class ProductCard extends PureComponent {
                   {/* Product Variant .map() */}
                   {colourSizeMap &&
                     colourSizeMap.map(({ colour }, index) => {
+                      console.log(colour);
                       return (
                         <FiberManualRecordIcon
                           style={{
                             color: colour,
                             cursor: "pointer",
-                            fontSize: 40
+                            fontSize: 40,
+                            border:
+                              colour === "#FFFFFF" ? "1px black solid" : null,
+                            borderRadius: "200px",
+                            transform:
+                              colour === "#FFFFFF" ? "scale(0.7)" : false
                           }}
                           key={colour}
                           onClick={() => this.handleSelectColour(index)}
