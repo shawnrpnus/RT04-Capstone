@@ -115,7 +115,7 @@ class SidebarContent extends Component {
             />
           </SidebarCategory>
           )}
-          {(store || warehouse) && (
+          {(salesmarketing|| store || warehouse) && (
             <SidebarCategory title="Product Stocks" icon="list">
               <SidebarLink
                 title="View All"
@@ -125,7 +125,7 @@ class SidebarContent extends Component {
             </SidebarCategory>
           )}
 
-          {(warehouse) &&(
+          {(salesmarketing||warehouse) &&(
           <SidebarCategory title="Warehouse" icon="apartment">
             <SidebarLink
               title="View Warehouse"
