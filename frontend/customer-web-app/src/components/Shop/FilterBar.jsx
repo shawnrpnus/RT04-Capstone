@@ -143,7 +143,8 @@ function FilterBar(props) {
       [],
       0,
       200,
-      sortingMap[Object.keys(sortingMap)[0]]
+      sortingMap[Object.keys(sortingMap)[0]],
+      null
     );
     setIsLoading(true);
     dispatch(filterProducts(req, setFilterDrawerOpen, setIsLoading));
@@ -168,7 +169,8 @@ function FilterBar(props) {
       sizes,
       minPrice,
       maxPrice,
-      sortEnum
+      sortEnum,
+      null
     );
     setIsLoading(true);
     dispatch(filterProducts(req, setFilterDrawerOpen, setIsLoading));

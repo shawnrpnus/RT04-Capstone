@@ -6,8 +6,18 @@ export default class ChangePasswordRequest {
   minPrice;
   maxPrice;
   sortEnum;
+  style;
 
-  constructor(categoryId, tags, colours, sizes, minPrice, maxPrice, sortEnum) {
+  constructor(
+    categoryId,
+    tags,
+    colours,
+    sizes,
+    minPrice,
+    maxPrice,
+    sortEnum,
+    style
+  ) {
     this.categoryId = categoryId;
     this.tags = tags;
     this.colours = colours;
@@ -15,5 +25,6 @@ export default class ChangePasswordRequest {
     this.minPrice = minPrice;
     this.maxPrice = maxPrice;
     this.sortEnum = sortEnum;
+    this.style = style;
   }
 }
