@@ -91,8 +91,8 @@ export default function CheckOutPage() {
     creditCards.length > 0 ? 0 : null
   );
   const [addNewAddress, setAddNewAddress] = useState(false);
-  const [currShippingAddress, setCurrShippingAddress] = useState("");
-  const [currBillingAddress, setCurrBillingAddress] = useState("");
+  const [currShippingAddress, setCurrShippingAddress] = useState(null);
+  const [currBillingAddress, setCurrBillingAddress] = useState(null);
   const [addCard, setAddCard] = useState(false);
 
   useEffect(() => {}, [customer, clientSecret]);
@@ -200,22 +200,18 @@ export default function CheckOutPage() {
     }
   };
 
-  const handleAddNewAddress = () => {
-    setAddNewAddress(!addNewAddress);
-    console.log(addNewAddress);
-  };
-
-  console.log("Curr addr below");
-  console.log(currBillingAddress);
-  console.log(currShippingAddress);
-
   /*
     Disable the complete payment button if
     1. clientSecret === null && creditCardIndex === null\
       - no new card & no card selected
     2. no address selected
   */
-  const disabled = clientSecret === null && creditCardIndex === null; // && !address;
+  console.log(currShippingAddress);
+  console.log(currBillingAddress);
+  const disabled =
+    (clientSecret === null && creditCardIndex === null) ||
+    !currBillingAddress ||
+    !currShippingAddress;
 
   return (
     <div>

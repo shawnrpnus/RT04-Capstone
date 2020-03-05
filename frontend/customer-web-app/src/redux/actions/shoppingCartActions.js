@@ -82,7 +82,7 @@ export const completeDirectPayment = (paymentRequest, history) => {
         // Update customer
         console.log(resp);
         handleUpdateShoppingCart(resp.data, dispatch);
-        history.push("/");
+        history.push("/account/profile/orderHistory");
       })
       .catch(err => {
         console.log(err);
@@ -99,7 +99,7 @@ export const makePaymentWithSavedCard = (paymentRequest, history) => {
         // Update customer
         console.log(resp);
         handleUpdateShoppingCart(resp.data, dispatch);
-        history.push("/");
+        history.push("/account/profile/orderHistory");
       })
       .catch(err => {
         console.log(err);
