@@ -5,11 +5,6 @@ import { resetPassword } from "../../../redux/actions/staffActions";
 import ResetStaffPasswordRequest from "../../../models/staff/ResetStaffPasswordRequest";
 import { Button, ButtonToolbar } from "reactstrap";
 import * as PropTypes from "prop-types";
-import {
-  KeyboardTimePicker,
-  MuiPickersUtilsProvider
-} from "@material-ui/pickers";
-import MomentUtils from "@date-io/moment";
 import { Grid } from "@material-ui/core";
 import MaterialTextField from "../../../shared/components/Form/MaterialTextField";
 import ContentSaveIcon from "mdi-react/ContentSaveIcon";

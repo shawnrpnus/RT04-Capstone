@@ -110,9 +110,9 @@ class StaffLoginForm extends Component {
                       disabled={disabled}
                       type="password"
                     />
-                    <div className="account__forgot-password">
-                      <Link to="/resetPassword">Forgot your password?</Link>
-                    </div>
+                    {/*<div className="account__forgot-password">*/}
+                    {/*  <Link to="/resetPassword">Forgot your password?</Link>*/}
+                    {/*</div>*/}
                   </div>
 
                   <Grid item xs={12} style={{ marginTop: "10%" }}>

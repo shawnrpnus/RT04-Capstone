@@ -241,7 +241,10 @@ public class ProductController {
                 review.setStaff(null);
             }
 
-            pdr.getProduct().setStyles(null);
+            for(Style style: pdr.getProduct().getStyles()){
+                style.setProducts(null);
+                style.setCustomers(null);
+            }
 
             pdr.getProduct().getCategory().setProducts(null);
             pdr.getProduct().getCategory().setParentCategory(null);
