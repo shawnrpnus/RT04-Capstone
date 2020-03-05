@@ -101,7 +101,7 @@ class ProductsStockTable extends PureComponent {
           productName: productStock.productVariant.product.productName,
           sku: productStock.productVariant.sku,
           quantity: productStock.quantity,
-          image: productStock.productVariant.productImages[0].productImageUrl
+          image: _.get(productStock, "productVariant.productImages[0].productImageUrl", "")
         };
       });
     }

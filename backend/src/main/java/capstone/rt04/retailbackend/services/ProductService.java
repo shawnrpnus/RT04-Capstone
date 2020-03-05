@@ -814,7 +814,9 @@ public class ProductService {
         }
 
         for(ProductStock ps : productStocks) {
-            ps.setQuantity(ps.getQuantity()+ps.getReorderQuantity());
+            if(ps.getNotificationLevel() >= ps.getQuantity()) {
+                ps.setQuantity(ps.getQuantity()+ps.getReorderQuantity());
+            }
         }
 
         return productStocks;
