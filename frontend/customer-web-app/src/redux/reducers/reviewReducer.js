@@ -34,6 +34,11 @@ export default function(state = initialState, action) {
         ...state,
         canWrite: action.canWrite
       };
+    case types.RETRIEVE_REVIEW_BY_CUSTOMER_ID_SUCCESS:
+      return {
+        ...state,
+        allReviews: action.allReviews
+      }
     default:
       return state;
   }
