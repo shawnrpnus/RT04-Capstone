@@ -13,4 +13,6 @@ public interface ReviewRepository extends CrudRepository<Review, Long> {
 
     //retrieve a list of reviews for a product
     List<Review> findAllByProduct_ProductId(Long productId);
+
+    List<Review> findAllByCustomer_CustomerId(Long customerId);
 }
