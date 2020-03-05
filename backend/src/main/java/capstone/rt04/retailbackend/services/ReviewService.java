@@ -90,18 +90,17 @@ public class ReviewService {
         review.setCustomer(customer);
         review.setProduct(p);
         Map<String, String> errorMap = validationService.generateErrorMap(review);
-        System.out.println("WHATTt outside");
+
 
         if (errorMap == null) {
             try {
-                System.out.println("WHATTT" + review.getReviewId());
+
                 Review reviewToUpdate = retrieveReviewById(review.getReviewId());
                 reviewToUpdate.setRating(review.getRating());
                 reviewToUpdate.setResponse(review.getResponse());
                 reviewToUpdate.setContent(review.getContent());
                 return reviewToUpdate;
             } catch (ReviewNotFoundException ex) {
-                System.out.println("WHATTt");
                 throw new ReviewNotUpdatedException("Error updating review.");
             }
         }
@@ -124,14 +123,9 @@ public class ReviewService {
 
     public Boolean checkIfAllowedToWriteReview(Long productId, Long customerId) throws CustomerNotFoundException {
         Customer customer = customerService.retrieveCustomerByCustomerId(customerId);
-        System.out.println("DID RUN CHECKIFALLOWED?");
         for(Transaction transaction : customer.getTransactions()) {
             for(TransactionLineItem tle : transaction.getTransactionLineItems()) {
-                System.out.println("DID RUN INSIDE LOOP CHECKIFALLOWED");
-                System.out.println("1" + tle.getProductVariant().getProduct().getProductId());
-                System.out.println("2 " + productId);
                 if(tle.getProductVariant().getProduct().getProductId().equals(productId)) {
-                    System.out.println("BANKAI ");
                     return true;
                 }
             }

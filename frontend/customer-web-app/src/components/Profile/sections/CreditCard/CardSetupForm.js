@@ -74,7 +74,7 @@ export default function CardSetupForm() {
 
   const cc = _.get(customer, "creditCards");
   return (
-    <div style={{ padding: "5%" }}>
+    <div>
       <CardSection key={cc && cc.length} />
       <Button
         color="primary"

@@ -100,12 +100,6 @@ export default function ProfilePage(props) {
           </GridContainer>
         </div>
       )
-    },
-    {
-      tabButton: "Reviews",
-      tabIcon: People,
-      route: "/account/profile/reviews",
-      tabContent: <ReviewCardForProfilePage />
     }
   ];
 
@@ -161,10 +155,8 @@ export default function ProfilePage(props) {
                   ? 1
                   : mode === "personalize"
                   ? 2
-                  : mode === "reviews"
-                  ? 3
                   : mode === "viewOrder"
-                  ? 4
+                  ? 3
                   : 0
               }
               tabs={tabs}
