@@ -19,7 +19,7 @@ function UpcomingReservations(props) {
 
   useEffect(() => {
     dispatch(getUpcomingReservations(customer.customerId));
-  }, [upcomingReservations]);
+  }, []);
 
   console.log("hello");
   return (

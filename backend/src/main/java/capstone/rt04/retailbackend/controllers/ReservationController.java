@@ -130,6 +130,7 @@ public class ReservationController {
             for (ProductVariant pv : reservation.getProductVariants()){
                 pv.getProduct().setProductVariants(null);
                 pv.getProduct().setCategory(null);
+                pv.getProduct().setStyles(null);
                 pv.setProductStocks(null);
             }
         }
@@ -142,6 +143,7 @@ public class ReservationController {
             reservation.getCustomer().setReservationCartItems(null);
             reservation.getCustomer().setReservations(null);
             reservation.getCustomer().setTransactions(null);
+            reservation.getCustomer().setStyle(null);
         }
         if (reservation.getStore() != null) {
             reservation.getStore().setReservations(null);

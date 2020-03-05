@@ -146,6 +146,7 @@ function UpdateReservationBooking(props) {
               {storesWithStockStatus &&
                 storesWithStockStatus.map(storeWithStock => (
                   <MenuItem
+                    key={storeWithStock.store.storeId}
                     value={storeWithStock.store.storeId}
                     style={{ padding: "0" }}
                   >
@@ -176,7 +177,7 @@ function UpdateReservationBooking(props) {
                   }}
                 >
                   {availSlotsForStore.map(slot => (
-                    <MenuItem value={slot}>
+                    <MenuItem key={slot} value={slot}>
                       {moment(slot).format("D MMM h:mm A")}
                     </MenuItem>
                   ))}

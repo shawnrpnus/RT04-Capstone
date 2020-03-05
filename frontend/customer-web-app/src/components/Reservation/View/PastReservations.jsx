@@ -25,7 +25,7 @@ function PastReservations(props) {
       <CardBody plain>
         {pastReservations && pastReservations.length > 0 ? (
           pastReservations.map(reservation => (
-            <React.Fragment>
+            <React.Fragment key={reservation.reservationId}>
               <ReservationItem reservation={reservation} isPast={true} />
               <Divider />
             </React.Fragment>

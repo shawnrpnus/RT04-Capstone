@@ -119,7 +119,7 @@ function ReservationItem(props) {
         <Popper
           open={popoverOpen}
           anchorEl={anchorEl}
-          style={{ zIndex: "2000" }}
+          style={{ zIndex: "1000" }}
           placement="top"
         >
           <ClickAwayListener onClickAway={() => setPopoverOpen(false)}>

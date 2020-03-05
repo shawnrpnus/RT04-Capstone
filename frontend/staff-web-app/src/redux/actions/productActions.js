@@ -16,7 +16,11 @@ const CATEGORY_BASE_URL = "/api/category";
 const jsog = require("jsog");
 
 // Send to node to upload photo
-export const createNewProduct = (createProductRequest, history, closeCircularProgress) => {
+export const createNewProduct = (
+  createProductRequest,
+  history,
+  closeCircularProgress
+) => {
   return dispatch => {
     //redux thunk passes dispatch
     axios
@@ -32,7 +36,7 @@ export const createNewProduct = (createProductRequest, history, closeCircularPro
         toast.success("Product Created!", {
           position: toast.POSITION.TOP_CENTER
         });
-        closeCircularProgress()
+        closeCircularProgress();
         history.push(`/product/viewAllProduct`);
       })
       .catch(err => {

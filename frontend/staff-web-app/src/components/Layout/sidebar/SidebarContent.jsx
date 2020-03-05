@@ -105,14 +105,14 @@ class SidebarContent extends Component {
               />
             </SidebarCategory>
           )}
-          {(salesmarketing) &&(
-          <SidebarCategory title="Category" icon="list">
-            <SidebarLink
-              title="View All"
-              route="/category/viewAll"
-              onClick={this.hideSidebar}
-            />
-          </SidebarCategory>
+          {salesmarketing && (
+            <SidebarCategory title="Category" icon="list">
+              <SidebarLink
+                title="View All"
+                route="/category/viewAll"
+                onClick={this.hideSidebar}
+              />
+            </SidebarCategory>
           )}
           {(store || warehouse) && (
             <SidebarCategory title="Product Stocks" icon="list">
@@ -124,14 +124,14 @@ class SidebarContent extends Component {
             </SidebarCategory>
           )}
 
-          {(salesmarketing||warehouse) &&(
-          <SidebarCategory title="Warehouse" icon="apartment">
-            <SidebarLink
-              title="View Warehouse"
-              route="/warehouse/viewWarehouse"
-              onClick={this.hideSidebar}
-            />
-          </SidebarCategory>
+          {(salesmarketing || warehouse) && (
+            <SidebarCategory title="Warehouse" icon="apartment">
+              <SidebarLink
+                title="View Warehouse"
+                route="/warehouse/viewWarehouse"
+                onClick={this.hideSidebar}
+              />
+            </SidebarCategory>
           )}
         </ul>
       </div>
