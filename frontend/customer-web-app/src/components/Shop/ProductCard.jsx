@@ -36,7 +36,7 @@ function ProductCard(props) {
             <img
               src={colourToImageAndSizes[activeColourIndex].image}
               alt="productImage"
-              style={{ height: "340px", objectFit: "cover" }}
+              style={{ height: "auto", width: "100%", objectFit: "cover" }}
             />
           </Link>
           {/*<Tooltip*/}

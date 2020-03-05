@@ -18,22 +18,13 @@ function LandingPage(props) {
       <br />
       <h6>Shop Now:</h6>
       <div>
-        <Link to="/shop/catalog/Men/Clothing">
+        <Link to="/account/login">
           <Button
             color="white"
             size="lg"
             style={{ width: "125px", opacity: "0.9", marginRight: "2px" }}
           >
-            Men
-          </Button>
-        </Link>
-        <Link to="/shop/catalog/Women/Clothing">
-          <Button
-            color="white"
-            size="lg"
-            style={{ width: "125px", opacity: "0.9", marginLeft: "2px" }}
-          >
-            Women
+            Login
           </Button>
         </Link>
       </div>
