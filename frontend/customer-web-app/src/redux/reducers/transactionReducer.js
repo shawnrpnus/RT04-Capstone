@@ -1,7 +1,8 @@
 import * as types from "../actions/types";
 
 const initialState = {
-  displayedTransactions: null
+  displayedTransactions: null,
+  viewedTransaction: null
 };
 
 export default function(state = initialState, action) {
@@ -10,6 +11,11 @@ export default function(state = initialState, action) {
       return {
         ...state,
         displayedTransactions: action.transactions
+      };
+    case types.UPDATE_VIEWED_TRANSACTION:
+      return {
+        ...state,
+        viewedTransaction: action.transaction
       };
     default:
       return state;

@@ -161,6 +161,8 @@ function ProductDetailsCard(props) {
     colourAndSizeToVariantAndStockMap,
     `${selectedColour}.${selectedSize}.productStock.quantity`
   );
+
+  console.log(colourAndSizeToVariantAndStockMap);
   return (
     <React.Fragment>
       <GridContainer>
@@ -277,6 +279,9 @@ function ProductDetailsCard(props) {
                     colourAndSizeToVariantAndStockMap,
                     `${selectedColour}.${size}.productStock.quantity`
                   );
+                  console.log(selectedColour);
+                  console.log(size);
+                  console.log(stock);
                   const hasStock = stock > 0;
                   return (
                     <Tooltip title={hasStock ? "In stock" : "Out of stock"}>

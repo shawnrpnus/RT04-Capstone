@@ -14,6 +14,7 @@ import capstone.rt04.retailbackend.util.exceptions.transaction.TransactionNotFou
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.*;
 
@@ -185,8 +186,10 @@ public class TransactionService {
 
         // Transferring to transaction line item
         for (ShoppingCartItem shoppingCartItem : shoppingCartItems) {
-            transactionLineItem = new TransactionLineItem(shoppingCartItem.getProductVariant().getProduct().getPrice(),
+            transactionLineItem = new TransactionLineItem(shoppingCartItem.getProductVariant().getProduct().getPrice().multiply(new BigDecimal(shoppingCartItem.getQuantity())),
                     shoppingCartItem.getQuantity(), null, shoppingCartItem.getProductVariant());
+            //TODO: Update final subtotal based on discount and promo code
+            transactionLineItem.setFinalSubTotal(transactionLineItem.getInitialSubTotal());
             totalQuantity += shoppingCartItem.getQuantity();
             transactionLineItemRepository.save(transactionLineItem);
             transactionLineItems.add(transactionLineItem);

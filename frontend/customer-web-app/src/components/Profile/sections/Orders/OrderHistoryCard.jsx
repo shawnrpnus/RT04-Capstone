@@ -9,6 +9,7 @@ import typographyStyle from "assets/jss/material-kit-pro-react/views/componentsS
 import { makeStyles } from "@material-ui/core/styles";
 import FilterBar from "components/Shop/FilterBar";
 import Drawer from "@material-ui/core/Drawer";
+import { useHistory } from "react-router-dom";
 
 const _ = require("lodash");
 const moment = require("moment");
@@ -17,7 +18,7 @@ const useTypoStyles = makeStyles(typographyStyle);
 
 function OrderHistoryCard(props) {
   const { transaction } = props;
-
+  const history = useHistory();
   const typoClasses = useTypoStyles();
   const deliveryStatusEnumMap = {
     PROCESSING: "Processing",
@@ -78,7 +79,16 @@ function OrderHistoryCard(props) {
                 <b>Amount:</b>
                 <br />${transaction.finalTotalPrice}
               </h5>
-              <Button fullWidth color="success" style={{ float: "bottom" }}>
+              <Button
+                fullWidth
+                color="success"
+                style={{ float: "bottom" }}
+                onClick={() =>
+                  history.push(
+                    `/account/profile/viewOrder/${transaction.transactionId}`
+                  )
+                }
+              >
                 View Order
               </Button>
             </GridItem>

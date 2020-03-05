@@ -41,6 +41,10 @@ import Style from "components/Profile/sections/Style";
 import { useDispatch, useSelector } from "react-redux";
 import OrderHistoryPage from "components/Profile/sections/Orders/OrderHistoryPage";
 import { clearErrors } from "redux/actions";
+import { useParams } from "react-router-dom";
+import { ShoppingCart } from "@material-ui/icons";
+import UpdateReservationPage from "components/Reservation/UpdateReservation/UpdateReservationPage";
+import OrderDetails from "components/Profile/sections/Orders/OrderDetails";
 
 const useStyles = makeStyles(profilePageStyle);
 
@@ -48,6 +52,7 @@ export default function ProfilePage(props) {
   const dispatch = useDispatch();
   const customer = useSelector(state => state.customer.loggedInCustomer);
   const classes = useStyles();
+  const { mode, transactionId } = useParams();
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -64,6 +69,48 @@ export default function ProfilePage(props) {
     classes.imgFluid
   );
   const navImageClasses = classNames(classes.imgRounded, classes.imgGallery);
+
+  const tabs = [
+    {
+      tabButton: "Account",
+      tabIcon: Palette,
+      route: "/account/profile/info",
+      tabContent: <AccountInfo />
+    },
+    {
+      tabButton: "Orders",
+      tabIcon: People,
+      route: "/account/profile/orderHistory",
+      tabContent: <OrderHistoryPage />
+    },
+    {
+      tabButton: "Personalize",
+      tabIcon: Camera,
+      route: "/account/profile/personalize",
+      tabContent: (
+        <div>
+          <GridContainer>
+            <GridItem xs={3} sm={3} md={3}>
+              <Measurements />
+            </GridItem>
+            <GridItem xs={9} sm={9} md={9}>
+              <Style />
+            </GridItem>
+          </GridContainer>
+        </div>
+      )
+    }
+  ];
+
+  console.log(mode);
+  if (mode === "viewOrder") {
+    tabs.push({
+      tabButton: "Order Details",
+      tabIcon: Camera,
+      route: `/account/profile/viewOrder/${transactionId}`,
+      tabContent: <OrderDetails />
+    });
+  }
 
   return (
     <div>
@@ -97,38 +144,22 @@ export default function ProfilePage(props) {
             <NavPills
               alignCenter
               // horizontal={{
-              //   tabsGrid: { xs: 12, sm: 4, md: 2 },
-              //   contentGrid: { xs: 12, sm: 8, md: 10 }
+              //   tabsGrid: { xs: 6, sm: 4, md: 4 }
               // }}
               color="primary"
-              tabs={[
-                {
-                  tabButton: "Account",
-                  tabIcon: Palette,
-                  tabContent: <AccountInfo />
-                },
-                {
-                  tabButton: "Orders",
-                  tabIcon: People,
-                  tabContent: <OrderHistoryPage />
-                },
-                {
-                  tabButton: "Personalize",
-                  tabIcon: Camera,
-                  tabContent: (
-                    <div>
-                      <GridContainer>
-                        <GridItem xs={3} sm={3} md={3}>
-                          <Measurements />
-                        </GridItem>
-                        <GridItem xs={9} sm={9} md={9}>
-                          <Style />
-                        </GridItem>
-                      </GridContainer>
-                    </div>
-                  )
-                }
-              ]}
+              key={mode}
+              active={
+                mode === "info"
+                  ? 0
+                  : mode === "orderHistory"
+                  ? 1
+                  : mode === "personalize"
+                  ? 2
+                  : mode === "viewOrder"
+                  ? 3
+                  : 0
+              }
+              tabs={tabs}
             />
           </div>
           <Clearfix />

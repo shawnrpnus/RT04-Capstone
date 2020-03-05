@@ -15,10 +15,12 @@ import GridContainer from "components/Layout/components/Grid/GridContainer.js";
 import GridItem from "components/Layout/components/Grid/GridItem.js";
 
 import styles from "assets/jss/material-kit-pro-react/components/navPillsStyle.js";
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles(styles);
 
 export default function NavPills(props) {
+  const history = useHistory();
   const [active, setActive] = React.useState(props.active);
   const handleChange = (event, active) => {
     setActive(active);
@@ -59,6 +61,7 @@ export default function NavPills(props) {
             label={prop.tabButton}
             key={key}
             {...icon}
+            onClick={() => history.push(prop.route)}
             classes={{
               root: pillsClasses,
               label: classes.label,

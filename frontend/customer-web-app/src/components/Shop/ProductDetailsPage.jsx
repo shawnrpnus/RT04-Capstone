@@ -24,7 +24,8 @@ function ProductDetailsPage(props) {
 
   const dispatch = useDispatch();
   const currentProductDetail = useSelector(
-    state => state.product.currentProductDetail
+    state => state.product.currentProductDetail,
+    _.isEqual
   );
 
   const currentProductReviews = useSelector(state => state.review.allReviews);
@@ -57,7 +58,10 @@ function ProductDetailsPage(props) {
         <div className={classNames(classes.section, classes.sectionGray)}>
           <div className={classes.container}>
             <div className={classNames(classes.main, classes.mainRaised)}>
-              <ProductDetailsCard productDetail={currentProductDetail} />
+              <ProductDetailsCard
+                productDetail={currentProductDetail}
+                key={currentProductDetail.product.productId}
+              />
               <ReviewCard reviews={currentProductReviews} />
             </div>
           </div>

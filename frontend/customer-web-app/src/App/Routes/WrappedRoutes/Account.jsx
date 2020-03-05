@@ -19,7 +19,11 @@ export default () => (
   <Switch>
     <Route exact path="/account/login" component={LoginPage} />
     <Route exact path="/account/register" component={Register} />
-    <SecuredRoute exact path="/account/profile" component={ProfilePage} />
+    <SecuredRoute
+      exact
+      path="/account/profile/:mode/:transactionId?"
+      component={ProfilePage}
+    />
     <Route exact path="/account/verifyEmail" component={VerifyEmailPrompt} />
     <Route
       exact
