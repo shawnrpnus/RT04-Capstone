@@ -120,7 +120,7 @@ public class Customer implements Serializable {
 
     public Customer() {
         this.createdDateTime = new Timestamp(System.currentTimeMillis());
-        this.verified = true;
+        this.verified = false;
         this.usedPromoCodes = new ArrayList<>();
         this.creditCards = new ArrayList<>();
         this.shippingAddresses = new ArrayList<>();
