@@ -82,7 +82,7 @@ export const completeDirectPayment = (paymentRequest, history) => {
         // Update customer
         console.log(resp);
         handleUpdateShoppingCart(resp.data, dispatch);
-        history.push("/");
+        history.push("/account/profile/orderHistory");
       })
       .catch(err => {
         console.log(err);
@@ -99,7 +99,7 @@ export const makePaymentWithSavedCard = (paymentRequest, history) => {
         // Update customer
         console.log(resp);
         handleUpdateShoppingCart(resp.data, dispatch);
-        history.push("/");
+        history.push("/account/profile/orderHistory");
       })
       .catch(err => {
         console.log(err);
@@ -107,8 +107,21 @@ export const makePaymentWithSavedCard = (paymentRequest, history) => {
   };
 };
 
-// // Customer reducer
-// const paymentSuccess = data => ({
-//   type: PAYMENT_SUCCESS,
-//   clientSecret: data
-// });
+export const clearShoppingCart = customerId => {
+  console.log(customerId);
+  return dispatch => {
+    axios
+      .post(CUSTOMER_BASE_URL + "/clearShoppingCart", null, {
+        params: { customerId, cartType: "online" }
+      })
+      .then(resp => {
+        // Return a customer object
+        // Update customer
+        console.log(resp);
+        handleUpdateShoppingCart(resp.data, dispatch);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+};

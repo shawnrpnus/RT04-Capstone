@@ -23,8 +23,8 @@ export default function AddCreditCard() {
   const currCustomer = useSelector(state => state.customer.loggedInCustomer);
 
   return (
-    <div style={{ marginTop: "5%" }}>
-      <h4>Add New Credit Card</h4>
+    <div>
+      <h6>Add New Credit Card</h6>
       {/* <small>
         Please enter an address you would like to save and deliver your items
         to.

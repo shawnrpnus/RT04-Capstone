@@ -48,7 +48,7 @@ function OrderHistoryPage(props) {
 
   useEffect(() => {
     dispatch(retrieveCustomerTransactions(customer.customerId));
-  }, [customer]);
+  }, [customer.custoemrId]);
 
   return (
     <GridContainer>
@@ -75,7 +75,7 @@ function OrderHistoryPage(props) {
         {transactions &&
           transactions.length > 0 &&
           transactions.map(transaction => (
-            <React.Fragment>
+            <React.Fragment key={transaction.transactionId}>
               <OrderHistoryCard
                 key={transaction.transactionId}
                 transaction={transaction}

@@ -45,7 +45,7 @@ import wishtlistStyle from "assets/jss/material-kit-pro-react/views/wishlistStyl
 
 import {
   updateShoppingCart,
-  checkOut
+  clearShoppingCart
 } from "./../../redux/actions/shoppingCartActions";
 import { saveCard } from "./../../redux/actions/customerActions";
 import UpdateShoppingCartRequest from "../../models/shoppingCart/UpdateShoppingCartRequest.js";
@@ -98,8 +98,10 @@ export default function ShoppingCartPage() {
 
   const handleCheckout = () => {
     history.push("/account/checkout");
-    // dispatch(checkOut({ totalAmount: 1500 }, setShowCreditCardDialog));
-    // dispatch(saveCard(customer.customerId, setShowCreditCardDialog));
+  };
+
+  const handleClearShoppingCart = () => {
+    dispatch(clearShoppingCart(customer.customerId));
   };
 
   return (
@@ -243,12 +245,23 @@ export default function ShoppingCartPage() {
                     })}
                   </Grid>
                   <Grid item md={3}>
+                    <Button
+                      color="danger"
+                      fullWidth
+                      onClick={handleClearShoppingCart}
+                      style={{
+                        margin: "5% 0",
+                        fontSize: "20px"
+                      }}
+                    >
+                      Clear Shopping Cart
+                    </Button>
                     <Card>
                       <CardContent>
                         <Typography variant="h4" gutterBottom>
-                          Total
+                          Total <Divider style={{ margin: "1% 0" }} />
                         </Typography>
-                        <Divider style={{ marginBottom: "5%" }} />
+
                         <Grid container>
                           <Grid item xs={6}>
                             <Typography variant="h6" component="h2">
@@ -278,6 +291,10 @@ export default function ShoppingCartPage() {
                           color="success"
                           fullWidth
                           onClick={handleCheckout}
+                          style={{
+                            margin: "5% 2%",
+                            fontSize: "20px"
+                          }}
                         >
                           Checkout
                         </Button>
