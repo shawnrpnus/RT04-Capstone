@@ -21,6 +21,7 @@ import capstone.rt04.retailbackend.util.exceptions.staff.CreateNewStaffException
 import capstone.rt04.retailbackend.util.exceptions.staff.CreateRoleException;
 import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.style.CreateNewStyleException;
+import capstone.rt04.retailbackend.util.exceptions.style.StyleNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.tag.CreateNewTagException;
 import capstone.rt04.retailbackend.util.exceptions.warehouse.WarehouseNotFoundException;
 import com.stripe.exception.StripeException;
@@ -86,7 +87,7 @@ public class StartUpService {
     }
 
     @PostConstruct
-    public void init() throws InputDataValidationException, CreateNewCategoryException, CategoryNotFoundException, CreateNewProductException, ProductVariantNotFoundException, CreateNewProductStockException, WarehouseNotFoundException, StoreNotFoundException, CreateNewTagException, CreateNewStyleException, CreateNewStaffException, CreateRoleException, CreateDepartmentException, CreateNewCustomerException, CustomerNotFoundException, InvalidCartTypeException, StripeException, CreateNewStaffAccountException {
+    public void init() throws InputDataValidationException, CreateNewCategoryException, CategoryNotFoundException, CreateNewProductException, ProductVariantNotFoundException, CreateNewProductStockException, WarehouseNotFoundException, StoreNotFoundException, CreateNewTagException, CreateNewStyleException, CreateNewStaffException, CreateRoleException, CreateDepartmentException, CreateNewCustomerException, CustomerNotFoundException, InvalidCartTypeException, StripeException, CreateNewStaffAccountException, StyleNotFoundException {
         createWarehouseAndStoreIfNotFound();
         createCategoryIfNotFound();
         createStaffIfNotFound();
@@ -131,7 +132,16 @@ public class StartUpService {
         }
     }
 
-    private void createProductIfNotFound() throws CategoryNotFoundException, InputDataValidationException, CreateNewProductException, ProductVariantNotFoundException {
+    private void createStyleIfNotFound() throws CreateNewStyleException, InputDataValidationException {
+        if (styleService.retrieveAllStyles().size() != 0) return;
+        styleService.createNewStyle(new Style("Vintage"));
+        styleService.createNewStyle(new Style("Bohemian"));
+        styleService.createNewStyle(new Style("Chic"));
+        styleService.createNewStyle(new Style("Artsy"));
+        styleService.createNewStyle(new Style("Sophisticated"));
+    }
+
+    private void createProductIfNotFound() throws StyleNotFoundException, CategoryNotFoundException, InputDataValidationException, CreateNewProductException, ProductVariantNotFoundException {
         List<Product> products = productService.retrieveAllProducts();
         if (products.size() == 0) {
 
@@ -164,116 +174,216 @@ public class StartUpService {
 
             Category category = categoryService.retrieveCategoryByCategoryId(sneakerCategoryId); //sneakers
 
+            Style vintage = styleService.retrieveStyleByStyleName("Vintage");
+            Style bohemian = styleService.retrieveStyleByStyleName("Bohemian");
+            Style chic = styleService.retrieveStyleByStyleName("Chic");
+            Style artsy = styleService.retrieveStyleByStyleName("Artsy");
+            Style sophisticated = styleService.retrieveStyleByStyleName("Sophisticated");
+
             Product product = new Product("001000", "Stan Smith", "Adidas", BigDecimal.valueOf(109.90), BigDecimal.valueOf(49.90));
             product.setCategory(category);
-            Product newProduct = productService.createNewProduct(product, category.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
+            product.getStyles().add(artsy);
+            List<Long> productStyles = new ArrayList<>();
+            productStyles.add(artsy.getStyleId());
+            Product newProduct = productService.createNewProduct(product, category.getCategoryId(), null, productStyles, sizes, colourToImageUrlsMaps);
 
             Product product2 = new Product("001100", "Fila Disruptor II", "Fila", BigDecimal.valueOf(109.90), BigDecimal.valueOf(49.90));
             Category category2 = categoryService.retrieveCategoryByCategoryId(shirtCategoryId); //shirt
             product2.setCategory(category2);
-            Product newProduct2 = productService.createNewProduct(product2, category2.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
+            product2.getStyles().add(artsy);
+            List<Long> product2Styles = new ArrayList<>();
+            product2Styles.add(artsy.getStyleId());
+            Product newProduct2 = productService.createNewProduct(product2, category2.getCategoryId(), null, product2Styles, sizes, colourToImageUrlsMaps);
 
             Product product3 = new Product("001200", "Nike Air Max", "Nike", BigDecimal.valueOf(109.90), BigDecimal.valueOf(49.90));
             Category category3 = categoryService.retrieveCategoryByCategoryId(socksCategoryId); // socks
             product3.setCategory(category);
-            Product newProduct3 = productService.createNewProduct(product3, category3.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
+            product3.getStyles().add(chic);
+            List<Long> product3Styles = new ArrayList<>();
+            product3Styles.add(chic.getStyleId());
+            Product newProduct3 = productService.createNewProduct(product3, category3.getCategoryId(), null, product3Styles, sizes, colourToImageUrlsMaps);
 
             Product product4 = new Product("001300", "Polo Tee", "Official Fred Perry Merchandise", BigDecimal.valueOf(109.90), BigDecimal.valueOf(49.90));
             Category category4 = categoryService.retrieveCategoryByCategoryId(shirtCategoryId); //shirt
             product4.setCategory(category4);
-            Product newProduct4 = productService.createNewProduct(product4, category4.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
+            product4.getStyles().add(artsy);
+            List<Long> product4Styles = new ArrayList<>();
+            product4Styles.add(artsy.getStyleId());
+            Product newProduct4 = productService.createNewProduct(product4, category4.getCategoryId(), null, product4Styles, sizes, colourToImageUrlsMaps);
 
             Product product5 = new Product("001400", "Burberry Skirt", "Burberry Skirt", BigDecimal.valueOf(60.00), BigDecimal.valueOf(10.00));
             Category category5 = categoryService.retrieveCategoryByCategoryId(skirtsCategoryId);
             product5.setCategory(category5);
-            Product newProduct5 = productService.createNewProduct(product5, category5.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
+            product5.getStyles().add(sophisticated);
+            product5.getStyles().add(chic);
+            product5.getStyles().add(vintage);
+            List<Long> product5Styles = new ArrayList<>();
+            product5Styles.add(sophisticated.getStyleId());
+            product5Styles.add(chic.getStyleId());
+            product5Styles.add(vintage.getStyleId());
+            Product newProduct5 = productService.createNewProduct(product5, category5.getCategoryId(), null, product5Styles, sizes, colourToImageUrlsMaps);
 
             Product product6 = new Product("001500", "Mickey Mouse T-Shirt", "Official Disneyland Merchandise", BigDecimal.valueOf(25.00), BigDecimal.valueOf(3.99));
             Category category6 = categoryService.retrieveCategoryByCategoryId(tShirtCategoryId);
             product6.setCategory(category6);
-            Product newProduct6 = productService.createNewProduct(product6, category6.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
+            product6.getStyles().add(artsy);
+            List<Long> product6Styles = new ArrayList<>();
+            product6Styles.add(artsy.getStyleId());
+            Product newProduct6 = productService.createNewProduct(product6, category6.getCategoryId(), null, product6Styles, sizes, colourToImageUrlsMaps);
 
             Product product7 = new Product("001600", "Maxi Skirt", "Beautiful Skirt 100% Cotton ", BigDecimal.valueOf(59.90), BigDecimal.valueOf(8.90));
-            Product newProduct7 = productService.createNewProduct(product7, category5.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
+            product7.getStyles().add(bohemian);
+            List<Long> product7Styles = new ArrayList<>();
+            product7Styles.add(bohemian.getStyleId());
+            Product newProduct7 = productService.createNewProduct(product7, category5.getCategoryId(), null, product7Styles, sizes, colourToImageUrlsMaps);
 
             Product product8 = new Product("001700", "Mini Skirt", "Mini Skirt", BigDecimal.valueOf(29.90), BigDecimal.valueOf(4.59));
-            Product newProduct8 = productService.createNewProduct(product8, category5.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
+            product8.getStyles().add(chic);
+            List<Long> product8Styles = new ArrayList<>();
+            product8Styles.add(chic.getStyleId());
+            Product newProduct8 = productService.createNewProduct(product8, category5.getCategoryId(), null, product8Styles, sizes, colourToImageUrlsMaps);
 
             Product product9 = new Product("001800", "Fila T-Shirt", "Fila", BigDecimal.valueOf(60.00), BigDecimal.valueOf(14.99));
-            Product newProduct9 = productService.createNewProduct(product9, category6.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
+            product9.getStyles().add(artsy);
+            List<Long> product9Styles = new ArrayList<>();
+            product9Styles.add(artsy.getStyleId());
+            Product newProduct9 = productService.createNewProduct(product9, category6.getCategoryId(), null, product9Styles, sizes, colourToImageUrlsMaps);
 
             Product product10 = new Product("001900", "Liverpool T-Shirt", "Liverpool FC", BigDecimal.valueOf(99.00), BigDecimal.valueOf(25.00));
-            Product newProduct10 = productService.createNewProduct(product10, category6.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
+            product10.getStyles().add(artsy);
+            List<Long> product10Styles = new ArrayList<>();
+            product10Styles.add(artsy.getStyleId());
+            Product newProduct10 = productService.createNewProduct(product10, category6.getCategoryId(), null, product10Styles, sizes, colourToImageUrlsMaps);
 
             Product product11 = new Product("002000", "Manchester United T-Shirt", "Manchester United", BigDecimal.valueOf(99.00), BigDecimal.valueOf(25.00));
-            Product newProduct11 = productService.createNewProduct(product11, category6.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
+            product11.getStyles().add(artsy);
+            List<Long> product11Styles = new ArrayList<>();
+            product11Styles.add(artsy.getStyleId());
+            Product newProduct11 = productService.createNewProduct(product11, category6.getCategoryId(), null, product11Styles, sizes, colourToImageUrlsMaps);
 
             Product product12 = new Product("002100", "Plain Crew T-shirt", "100% Cotton", BigDecimal.valueOf(9.99), BigDecimal.valueOf(1.50));
-            Product newProduct12 = productService.createNewProduct(product12, category6.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
+            product12.getStyles().add(chic);
+            List<Long> product12Styles = new ArrayList<>();
+            product12Styles.add(chic.getStyleId());
+            Product newProduct12 = productService.createNewProduct(product12, category6.getCategoryId(), null, product12Styles, sizes, colourToImageUrlsMaps);
 
             Product product13 = new Product("002200", "Long Skirt", "Long Skirt", BigDecimal.valueOf(65.90), BigDecimal.valueOf(19.90));
-            Product newProduct13 = productService.createNewProduct(product13, category5.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
+            product13.getStyles().add(bohemian);
+            List<Long> product13Styles = new ArrayList<>();
+            product13Styles.add(bohemian.getStyleId());
+            Product newProduct13 = productService.createNewProduct(product13, category5.getCategoryId(), null, product13Styles, sizes, colourToImageUrlsMaps);
 
             Product product14 = new Product("002300", "Nudie Jeans", "Nudie", BigDecimal.valueOf(259.00), BigDecimal.valueOf(56.00));
             Category category7 = categoryService.retrieveCategoryByCategoryId(jeansCategoryId); //jeans
-            product4.setCategory(category7);
-            Product newProduct14 = productService.createNewProduct(product14, category7.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
+            product14.setCategory(category7);
+            product14.getStyles().add(chic);
+            List<Long> product14Styles = new ArrayList<>();
+            product14Styles.add(chic.getStyleId());
+            Product newProduct14 = productService.createNewProduct(product14, category7.getCategoryId(), null, product14Styles, sizes, colourToImageUrlsMaps);
 
             Product product15 = new Product("002400", "Cheap Monday Jeans", "Beautiful Skirt", BigDecimal.valueOf(89.00), BigDecimal.valueOf(15.00));
-            Product newProduct15 = productService.createNewProduct(product15, category7.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
+            product15.getStyles().add(chic);
+            List<Long> product15Styles = new ArrayList<>();
+            product15Styles.add(chic.getStyleId());
+            Product newProduct15 = productService.createNewProduct(product15, category7.getCategoryId(), null, product15Styles, sizes, colourToImageUrlsMaps);
 
             Product product16 = new Product("002500", "Avengers Socks", "Avengers", BigDecimal.valueOf(2.50), BigDecimal.valueOf(0.30));
-            Product newProduct16 = productService.createNewProduct(product16, category3.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
+            product16.getStyles().add(artsy);
+            List<Long> product16Styles = new ArrayList<>();
+            product16Styles.add(artsy.getStyleId());
+            Product newProduct16 = productService.createNewProduct(product16, category3.getCategoryId(), null, product16Styles, sizes, colourToImageUrlsMaps);
 
             Product product17 = new Product("002600", "Striped Shirt", "Blue Stripes Shirt ", BigDecimal.valueOf(50.00), BigDecimal.valueOf(15.00));
-            Product newProduct17 = productService.createNewProduct(product17, category2.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
+            product17.getStyles().add(vintage);
+            List<Long> product17Styles = new ArrayList<>();
+            product17Styles.add(vintage.getStyleId());
+            Product newProduct17 = productService.createNewProduct(product17, category2.getCategoryId(), null, product17Styles, sizes, colourToImageUrlsMaps);
 
             Product product18 = new Product("002700", "Abercrombie & Fitch Shirt", "A&F", BigDecimal.valueOf(99.00), BigDecimal.valueOf(12.00));
-            Product newProduct18 = productService.createNewProduct(product18, category2.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
+            product18.getStyles().add(chic);
+            List<Long> product18Styles = new ArrayList<>();
+            product18Styles.add(chic.getStyleId());
+            Product newProduct18 = productService.createNewProduct(product18, category2.getCategoryId(), null, product18Styles, sizes, colourToImageUrlsMaps);
 
             Product product19 = new Product("002800", "Abercrombie & Fitch T Shirt", "A&F", BigDecimal.valueOf(45), BigDecimal.valueOf(5.00));
-            Product newProduct19 = productService.createNewProduct(product19, category6.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
+            product19.getStyles().add(chic);
+            List<Long> product19Styles = new ArrayList<>();
+            product19Styles.add(chic.getStyleId());
+            Product newProduct19 = productService.createNewProduct(product19, category6.getCategoryId(), null, product19Styles, sizes, colourToImageUrlsMaps);
 
             Product product20 = new Product("002900", "Abercrombie & Fitch Jeans", "Beautiful Skirt", BigDecimal.valueOf(120.00), BigDecimal.valueOf(29.00));
-            Product newProduct20 = productService.createNewProduct(product20, category7.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
+            product20.getStyles().add(chic);
+            List<Long> product20Styles = new ArrayList<>();
+            product20Styles.add(chic.getStyleId());
+            Product newProduct20 = productService.createNewProduct(product20, category7.getCategoryId(), null, product20Styles, sizes, colourToImageUrlsMaps);
 
             Product product21 = new Product("003000", "Ankle Socks", "Ankle Socks", BigDecimal.valueOf(5.00), BigDecimal.valueOf(0.50));
-            Product newProduct21 = productService.createNewProduct(product21, category3.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
+            product21.getStyles().add(chic);
+            List<Long> product21Styles = new ArrayList<>();
+            product21Styles.add(chic.getStyleId());
+            Product newProduct21 = productService.createNewProduct(product21, category3.getCategoryId(), null, product21Styles, sizes, colourToImageUrlsMaps);
 
             Product product22 = new Product("003100", "Docker Bermudas", "Bermudas", BigDecimal.valueOf(45.00), BigDecimal.valueOf(8.99));
             Category category8 = categoryService.retrieveCategoryByCategoryId(bermudasCategoryId);
             product22.setCategory(category8);
-            Product newProduct22 = productService.createNewProduct(product22, category8.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
+            product22.getStyles().add(vintage);
+            List<Long> product22Styles = new ArrayList<>();
+            product22Styles.add(vintage.getStyleId());
+            Product newProduct22 = productService.createNewProduct(product22, category8.getCategoryId(), null, product22Styles, sizes, colourToImageUrlsMaps);
 
             Product product23 = new Product("003200", "Slim Fit Bermudas", "Slim Fit Skirt", BigDecimal.valueOf(29.90), BigDecimal.valueOf(10.00));
-            Product newProduct23 = productService.createNewProduct(product23, category8.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
+            product23.getStyles().add(vintage);
+            List<Long> product23Styles = new ArrayList<>();
+            product23Styles.add(vintage.getStyleId());
+            Product newProduct23 = productService.createNewProduct(product23, category8.getCategoryId(), null, product23Styles, sizes, colourToImageUrlsMaps);
 
             Product product24 = new Product("003300", "Regular Cut Bermudas", "Regular Cut", BigDecimal.valueOf(29.90), BigDecimal.valueOf(10.00));
-            Product newProduct24 = productService.createNewProduct(product24, category8.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
+            product24.getStyles().add(vintage);
+            List<Long> product24Styles = new ArrayList<>();
+            product24Styles.add(vintage.getStyleId());
+            Product newProduct24 = productService.createNewProduct(product24, category8.getCategoryId(), null, product24Styles, sizes, colourToImageUrlsMaps);
 
             Product product25 = new Product("003400", "Skinny Jeans", "Tight Fit", BigDecimal.valueOf(79.90), BigDecimal.valueOf(14.99));
-            Product newProduct25 = productService.createNewProduct(product25, category7.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
+            product25.getStyles().add(chic);
+            List<Long> product25Styles = new ArrayList<>();
+            product25Styles.add(chic.getStyleId());
+            Product newProduct25 = productService.createNewProduct(product25, category7.getCategoryId(), null, product25Styles, sizes, colourToImageUrlsMaps);
 
             Product product26 = new Product("003500", "Parachute Dress", "Weew", BigDecimal.valueOf(59.90), BigDecimal.valueOf(14.90));
             Category category9 = categoryService.retrieveCategoryByCategoryId(dressesCategoryId);
-            product22.setCategory(category9);
-            Product newProduct26 = productService.createNewProduct(product26, category9.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
+            product26.setCategory(category9);
+            product26.getStyles().add(bohemian);
+            List<Long> product26Styles = new ArrayList<>();
+            product26Styles.add(bohemian.getStyleId());
+            Product newProduct26 = productService.createNewProduct(product26, category9.getCategoryId(), null, product26Styles, sizes, colourToImageUrlsMaps);
             productVariantId26 = newProduct26.getProductVariants().get(0).getProductVariantId();
 
             Product product27 = new Product("003600", "Long Sleeve Dress", "Long Sleeve Dress", BigDecimal.valueOf(49.90), BigDecimal.valueOf(10.90));
-            Product newProduct27 = productService.createNewProduct(product27, category9.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
+            product27.getStyles().add(sophisticated);
+            List<Long> product27Styles = new ArrayList<>();
+            product27Styles.add(sophisticated.getStyleId());
+            Product newProduct27 = productService.createNewProduct(product27, category9.getCategoryId(), null, product27Styles, sizes, colourToImageUrlsMaps);
             productVariantId27 = newProduct27.getProductVariants().get(0).getProductVariantId();
 
             Product product28 = new Product("003700", "Short Sleeve Dress", "Short Sleeve Skirt", BigDecimal.valueOf(35.90), BigDecimal.valueOf(8.00));
-            Product newProduct28 = productService.createNewProduct(product28, category9.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
+            product28.getStyles().add(sophisticated);
+            List<Long> product28Styles = new ArrayList<>();
+            product28Styles.add(sophisticated.getStyleId());
+            Product newProduct28 = productService.createNewProduct(product28, category9.getCategoryId(), null, product28Styles, sizes, colourToImageUrlsMaps);
             productVariantId28 = newProduct28.getProductVariants().get(0).getProductVariantId();
 
             Product product29 = new Product("003800", "Sleeveless Dress", "Sleeveless Dress", BigDecimal.valueOf(49.90), BigDecimal.valueOf(12.00));
-            Product newProduct29 = productService.createNewProduct(product29, category9.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
+            product29.getStyles().add(sophisticated);
+            List<Long> product29Styles = new ArrayList<>();
+            product29Styles.add(sophisticated.getStyleId());
+            Product newProduct29 = productService.createNewProduct(product29, category9.getCategoryId(), null, product29Styles, sizes, colourToImageUrlsMaps);
             productVariantId29 = newProduct29.getProductVariants().get(0).getProductVariantId();
 
             Product product30 = new Product("003900", "Long Sleeve Shirt", "Long sleeve ", BigDecimal.valueOf(89.90), BigDecimal.valueOf(23.00));
-            Product newProduct30 = productService.createNewProduct(product30, category2.getCategoryId(), null, null, sizes, colourToImageUrlsMaps);
+            product30.getStyles().add(sophisticated);
+            List<Long> product30Styles = new ArrayList<>();
+            product30Styles.add(sophisticated.getStyleId());
+            Product newProduct30 = productService.createNewProduct(product30, category2.getCategoryId(), null, product30Styles, sizes, colourToImageUrlsMaps);
             productVariantId30 = newProduct30.getProductVariants().get(0).getProductVariantId();
         }
     }
@@ -304,15 +414,6 @@ public class StartUpService {
         tagService.createNewTag(new Tag("Popular"));
         tagService.createNewTag(new Tag("Sales"));
         tagService.createNewTag(new Tag("New Arrival"));
-    }
-
-    private void createStyleIfNotFound() throws CreateNewStyleException, InputDataValidationException {
-        if (styleService.retrieveAllStyles().size() != 0) return;
-        styleService.createNewStyle(new Style("Vintage"));
-        styleService.createNewStyle(new Style("Bohemian"));
-        styleService.createNewStyle(new Style("Chic"));
-        styleService.createNewStyle(new Style("Artsy"));
-        styleService.createNewStyle(new Style("Sophisticated"));
     }
 
     private void createStaffIfNotFound() throws CreateNewStaffException, InputDataValidationException, CreateRoleException, CreateDepartmentException, CreateNewStaffAccountException {
