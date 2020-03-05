@@ -60,8 +60,8 @@ class ProductsTable extends PureComponent {
     // TODO: Retrieve store ID from cookie to input as argument
     const { store, retrieveProductsDetails } = this.props;
     console.log(this.props);
-    if (store !== null && store!== undefined) {
-      if(store.storeId) {
+    if (store !== null && store !== undefined) {
+      if (store.storeId) {
         console.log("retrieving for store ", store.storeId);
         retrieveProductsDetails(store.storeId);
       }

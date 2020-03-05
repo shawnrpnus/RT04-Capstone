@@ -162,9 +162,12 @@ export const resetPassword = (resetStaffPasswordRequest, history) => {
       .then(response => {
         const { data } = jsog.decode(response);
         dispatch(resetStaffPasswordSuccess(data));
-        toast.success("Staff password reset! Please inform staff of new password!", {
-          position: toast.POSITION.TOP_CENTER
-        });
+        toast.success(
+          "Staff password reset! Please inform staff of new password!",
+          {
+            position: toast.POSITION.TOP_CENTER
+          }
+        );
         history.push(`/`);
       })
       .catch(err => {

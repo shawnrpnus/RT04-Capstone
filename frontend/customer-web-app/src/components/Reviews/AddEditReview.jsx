@@ -31,7 +31,13 @@ const StyledRating = withStyles({
   }
 })(Rating);
 export default function AddEditReview(props) {
-  const { reviews, currReview, setCurrReview, addNewReview, setAddNewReview} = props;
+  const {
+    reviews,
+    currReview,
+    setCurrReview,
+    addNewReview,
+    setAddNewReview
+  } = props;
   const classes = useStyles();
   //Redux
   const dispatch = useDispatch();
@@ -85,7 +91,8 @@ export default function AddEditReview(props) {
   };
 
   const onSubmit = () => {
-    if (currReview) { //edit review
+    if (currReview) {
+      //edit review
       const review = new Review(
         inputState.reviewId,
         inputState.content,
@@ -104,8 +111,9 @@ export default function AddEditReview(props) {
           enqueueSnackbar
         )
       );
-      setCurrReview('');
-    } else { //add new review
+      setCurrReview("");
+    } else {
+      //add new review
       const review = new Review(
         inputState.reviewId,
         inputState.content,
@@ -125,10 +133,9 @@ export default function AddEditReview(props) {
           enqueueSnackbar
         )
       );
-
     }
-    if(currReview) {
-      setCurrReview('');
+    if (currReview) {
+      setCurrReview("");
     } else {
       setAddNewReview(!addNewReview);
     }
@@ -174,8 +181,8 @@ export default function AddEditReview(props) {
             <span>
               <Button
                 onClick={() => {
-                  if(currReview) {
-                    setCurrReview('');
+                  if (currReview) {
+                    setCurrReview("");
                   } else {
                     setAddNewReview(!addNewReview);
                   }

@@ -13,7 +13,7 @@ export default () => (
   <Switch>
     <HRRoute path="/staff/create" component={StaffCreateForm} />
     <ITRoute path="/staff/createAccount" component={StaffAccountCreateForm} />
-      <ITRoute path="/staff/resetPassword" component={ResetPasswordForm} />
+    <ITRoute path="/staff/resetPassword" component={ResetPasswordForm} />
     <HRRoute path="/staff/viewAll" component={StaffTable} />
     <SecureRoute path="/staff/viewProfile" component={StaffDetailsPage} />
   </Switch>

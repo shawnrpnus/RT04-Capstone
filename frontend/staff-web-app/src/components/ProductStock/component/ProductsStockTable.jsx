@@ -82,10 +82,12 @@ class ProductsStockTable extends PureComponent {
       productStockIds.push(element.productStockId);
     });
     console.log(productStockIds);
-    this.props.simulateReorderingFromSupplier(productStockIds,this.props.history);
+    this.props.simulateReorderingFromSupplier(
+      productStockIds,
+      this.props.history
+    );
     // const req = new AddTagToProductsRequest(this.state.tagId, productStockIds);
     // this.props.addTagToProducts(req, this.props.history);
-
   };
 
   render() {
@@ -154,14 +156,14 @@ class ProductsStockTable extends PureComponent {
               //   onClick: (evt, data) =>
               //     this.handleAddTagToProducts(evt, data)
               // }}
-                actions={[
-                  {
-                    icon: Checkbox,
-                    tooltip: "Simulate Order From Supplier",
-                    onClick: (event, rowData) =>
-                      this.handleCheckBox(event, rowData)
-                  }
-                ]}
+              actions={[
+                {
+                  icon: Checkbox,
+                  tooltip: "Simulate Order From Supplier",
+                  onClick: (event, rowData) =>
+                    this.handleCheckBox(event, rowData)
+                }
+              ]}
             />
           ) : (
             renderLoader()

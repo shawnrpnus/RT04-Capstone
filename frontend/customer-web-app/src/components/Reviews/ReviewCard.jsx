@@ -83,7 +83,7 @@ export default function ReviewCard(props) {
     setAddNewReview(!addNewReview);
     console.log(addNewReview);
   };
-  const handleEditReview = (item) => {
+  const handleEditReview = item => {
     // setAddNewReview(!addNewReview);
     setCurrReview(item);
   };
@@ -243,7 +243,9 @@ export default function ReviewCard(props) {
                               currCustomer.customerId ? (
                               <span style={{ float: "right" }}>
                                 <Button>
-                                  <Edit onClick={() => handleEditReview(item)} />
+                                  <Edit
+                                    onClick={() => handleEditReview(item)}
+                                  />
                                 </Button>
                                 <Button onClick={() => onDelete(item)}>
                                   <Delete />

@@ -44,7 +44,6 @@ const updateProductStockError = data => ({
   errorMap: data
 });
 
-
 export const simulateReorderingFromSupplier = (productStockIds, history) => {
   return dispatch => {
     //redux thunk passes dispatch
@@ -74,7 +73,6 @@ const simulateReorderingFromSupplierSuccess = data => ({
   type: types.SIMULATE_REORDERING_FROM_SUPPLIER,
   simulateOrderProductStocks: data
 });
-
 
 export const updateProductStockQty = (updateProductStockRequest, storeId) => {
   return dispatch => {
