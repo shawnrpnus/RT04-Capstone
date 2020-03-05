@@ -154,9 +154,9 @@ public class ProductService {
     }
 
     public List<ProductDetailsResponse> retrieveProductsDetailsByCriteria(Long categoryId, List<Tag> tags, List<String> colours, List<SizeEnum> sizes,
-                                                                          BigDecimal minPrice, BigDecimal maxPrice, SortEnum sortEnum) throws ProductNotFoundException {
+                                                                          BigDecimal minPrice, BigDecimal maxPrice, SortEnum sortEnum, Style style) throws ProductNotFoundException, StyleNotFoundException {
 
-        List<Product> filteredProducts = retrieveProductByCriteria(categoryId, tags, colours, sizes, minPrice, maxPrice, sortEnum);
+        List<Product> filteredProducts = retrieveProductByCriteria(categoryId, tags, colours, sizes, minPrice, maxPrice, sortEnum, style);
 
         return retrieveProductsDetails(null, null, filteredProducts);
     }
@@ -269,7 +269,7 @@ public class ProductService {
     }
 
     public List<Product> retrieveProductByCriteria(Long categoryId, List<Tag> tags, List<String> colours, List<SizeEnum> sizes,
-                                                   BigDecimal minPrice, BigDecimal maxPrice, SortEnum sortEnum) {
+                                                   BigDecimal minPrice, BigDecimal maxPrice, SortEnum sortEnum, Style style) throws StyleNotFoundException {
         List<Product> products = new ArrayList<>();
         List<Product> productsByTag = null;
 
@@ -279,60 +279,80 @@ public class ProductService {
             productsByTag = productRepository.findAllByTagsIn(tags);
         }
 
-        Boolean matchColour, matchSize, matchPriceRange, matchCategory, matchTag;
+        Boolean matchColour, matchSize, matchPriceRange, matchCategory, matchTag, matchStyle;
 
         for (Product product : productsByTag) {
             matchSize = false;
             matchPriceRange = false;
             matchColour = false;
             matchCategory = false;
+            matchStyle = false;
 
-            if (checkIfCategoryIsInside(product.getCategory(), categoryId)) {
+            if (categoryId == null){
+                matchCategory = true;
+            } else if (checkIfCategoryIsInside(product.getCategory(), categoryId)) {
                 matchCategory = true;
             }
-
-//            for (Tag tag : product.getTags()) {
-//                for(Tag inputTag : tags) {
-//                    if (inputTag.getTagId().equals(tag.getTagId())) matchTag = true;
-//                    break;
-//                }
-//                if(matchTag) break;
-//            }
 
             if (product.getPrice().compareTo(minPrice) >= 0 && product.getPrice().compareTo(maxPrice) <= 0)
                 matchPriceRange = true;
 
             for (ProductVariant productVariant : product.getProductVariants()) {
 
-                if (colours != null && colours.size() > 0) {
-                    if (colours.contains(productVariant.getColour())) {
+                if (colours != null && colours.size() > 0){
+                    if(colours.contains(productVariant.getColour())){
                         matchColour = true;
-                        if (sizes != null && sizes.size() > 0) {
-                            for (SizeEnum size : sizes) {
-                                if (size.equals(productVariant.getSizeDetails().getProductSize())) {
-                                    matchSize = true;
-                                    break;
-                                }
-                            }
-                        } else {
-                            matchSize = true;
-                        }
                     }
-                } else {
-                    matchColour = true;
-                    if (sizes != null && sizes.size() > 0) {
-                        for (SizeEnum size : sizes) {
-                            if (size.equals(productVariant.getSizeDetails().getProductSize())) {
-                                matchSize = true;
-                                break;
-                            }
-                        }
-                    } else {
+                } else if (colours == null || colours.size() == 0){
+                    matchColour= true;
+                }
+
+                if (sizes != null && sizes.size() > 0){
+                    if (sizes.contains(productVariant.getSizeDetails().getProductSize())){
                         matchSize = true;
                     }
+                } else if(sizes == null || sizes.size() == 0){
+                    matchSize = true;
                 }
+
+                if(style != null){
+                    Style styleToCheck = styleService.retrieveStyleByStyleId(style.getStyleId());
+                    if (productVariant.getProduct().getStyles().contains(styleToCheck)){
+                        matchStyle=true;
+                    }
+                } else {
+                    matchStyle=true;
+                }
+
+//                if (colours != null && colours.size() > 0) {
+//                    if (colours.contains(productVariant.getColour())) {
+//                        matchColour = true;
+//                        if (sizes != null && sizes.size() > 0) {
+//                            for (SizeEnum size : sizes) {
+//                                if (size.equals(productVariant.getSizeDetails().getProductSize())) {
+//                                    matchSize = true;
+//                                    break;
+//                                }
+//                            }
+//                        } else {
+//                            matchSize = true;
+//                        }
+//                    }
+//                } else {
+//                    matchColour = true;
+//                    if (sizes != null && sizes.size() > 0) {
+//                        for (SizeEnum size : sizes) {
+//                            if (size.equals(productVariant.getSizeDetails().getProductSize())) {
+//                                matchSize = true;
+//                                break;
+//                            }
+//                        }
+//                    } else {
+//                        matchSize = true;
+//                    }
+//                }
             }
-            if (matchColour && matchSize && matchPriceRange && matchCategory) {
+            if (matchColour && matchSize && matchPriceRange && matchCategory && matchStyle) {
                 products.add(product);
             }
         }

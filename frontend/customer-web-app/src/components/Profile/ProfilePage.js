@@ -112,19 +112,11 @@ export default function ProfilePage(props) {
                   tabContent: (
                     <div>
                       <GridContainer>
-                        <GridItem
-                          xs={3}
-                          sm={3}
-                          md={3}
-                        >
-                          <Measurements/>
+                        <GridItem xs={3} sm={3} md={3}>
+                          <Measurements />
                         </GridItem>
-                        <GridItem
-                          xs={9}
-                          sm={9}
-                          md={9}
-                        >
-                          <Style/>
+                        <GridItem xs={9} sm={9} md={9}>
+                          <Style />
                         </GridItem>
                       </GridContainer>
                     </div>

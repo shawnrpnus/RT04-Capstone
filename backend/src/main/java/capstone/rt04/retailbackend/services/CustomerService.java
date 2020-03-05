@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import javax.persistence.PersistenceException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -439,7 +440,7 @@ public class CustomerService {
 
         customer.getShippingAddresses().remove(shippingAddressToRemove);
 
-        addressRepository.delete(shippingAddressToRemove);
+        //dont delete, in case referenced by other stuff e.g. transaction
 
         return lazyLoadCustomerFields(customer);
     }

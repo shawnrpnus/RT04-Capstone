@@ -61,6 +61,7 @@ import PaymentRequest from "./../../models/payment/PaymentRequest";
 import AddressCardForCheckOut from "./AddressCardForCheckOut";
 import AddAddress from "components/Profile/sections/Address/AddAddress";
 import colourList from "assets/colours.json";
+import CheckoutProdVariantCard from "components/Checkout/CheckoutProdVariantCard";
 
 const jsonColorHexList = _.keyBy(colourList, "hex");
 
@@ -90,7 +91,8 @@ export default function CheckOutPage() {
     creditCards.length > 0 ? 0 : null
   );
   const [addNewAddress, setAddNewAddress] = useState(false);
-  const [currAddress, setCurrAddress] = useState("");
+  const [currShippingAddress, setCurrShippingAddress] = useState("");
+  const [currBillingAddress, setCurrBillingAddress] = useState("");
   const [addCard, setAddCard] = useState(false);
 
   useEffect(() => {}, [customer, clientSecret]);
@@ -132,7 +134,9 @@ export default function CheckOutPage() {
       customerId,
       paymentMethodId,
       totalAmount,
-      shoppingCartId
+      shoppingCartId,
+      currShippingAddress,
+      currBillingAddress
     );
 
     if (clientSecret !== null) {
@@ -201,7 +205,9 @@ export default function CheckOutPage() {
     console.log(addNewAddress);
   };
 
-  console.log(currAddress);
+  console.log("Curr addr below");
+  console.log(currBillingAddress);
+  console.log(currShippingAddress);
 
   /*
     Disable the complete payment button if
@@ -279,39 +285,31 @@ export default function CheckOutPage() {
                             <Grid item container xs={12}>
                               <Grid item xs={false} md={2} />
                               <Grid item xs={12} md={8}>
-                                <AddAddress
-                                  addNewAddress={[
-                                    addNewAddress,
-                                    setAddNewAddress
-                                  ]}
-                                  currAddress={[currAddress, setCurrAddress]}
-                                />
-                                {/* <Button
-                                  onClick={handleAddNewAddress}
-                                  // color="primary"
-                                >
-                                  Add New Address
-                                </Button> */}
+                                {/*<AddAddress*/}
+                                {/*  addNewAddress={[*/}
+                                {/*    addNewAddress,*/}
+                                {/*    setAddNewAddress*/}
+                                {/*  ]}*/}
+                                {/*  currAddress={[*/}
+                                {/*    */}
+                                {/*  ]}*/}
+                                {/*/>*/}
                               </Grid>
                               <Grid item xs={false} md={2} />
                             </Grid>
                           ) : (
                             <Grid item xs={12} container>
-                              <Grid item xs={12} style={{ textAlign: "right" }}>
-                                <Button
-                                  onClick={handleAddNewAddress}
-                                  // color="primary"
-                                >
-                                  Add New Address
-                                </Button>
-                              </Grid>
                               <Grid item xs={12}>
+                                <h5>Shipping & Billing</h5>
                                 <AddressCardForCheckOut
                                   addNewAddress={[
                                     addNewAddress,
                                     setAddNewAddress
                                   ]}
-                                  currAddress={[currAddress, setCurrAddress]}
+                                  setCurrShippingAddress={
+                                    setCurrShippingAddress
+                                  }
+                                  setCurrBillingAddress={setCurrBillingAddress}
                                 />
                               </Grid>
                             </Grid>
@@ -381,7 +379,7 @@ export default function CheckOutPage() {
                             </Grid>
                           )}
                           {addCard && (
-                            <GridItem container xs={12} style={{ padding: 0 }}>
+                            <GridContainer xs={12} style={{ padding: 0 }}>
                               <Grid item xs={12}>
                                 <CardSection />
                               </Grid>
@@ -395,18 +393,10 @@ export default function CheckOutPage() {
                                   Use this card
                                 </Button>
                               </Grid>
-                            </GridItem>
+                            </GridContainer>
                           )}
                         </Grid>
                       </Grid>
-                      {/* <Typography className={classes.pos} color="textSecondary">
-                        adjective
-                      </Typography>
-                      <Typography variant="body2" component="p">
-                        well meaning and kindly.
-                        <br />
-                        {'"a benevolent smile"'}
-                      </Typography> */}
                     </CardContent>
                     <CardActions style={{ padding: "4% 5%" }}>
                       <Button
@@ -423,73 +413,13 @@ export default function CheckOutPage() {
                 <Grid item md={1} />
                 <Grid item md={5}>
                   {customer.onlineShoppingCart.shoppingCartItems.map(
-                    (cartItem, index) => {
-                      // console.log(cartItem);
-                      const {
-                        productImages,
-                        product,
-                        sizeDetails,
-                        colour,
-                        productVariantId
-                      } = cartItem.productVariant;
-                      const { quantity } = cartItem;
-                      return (
-                        <div>
-                          <Card plain>
-                            <GridContainer
-                              alignItems="center"
-                              style={{ textAlign: "center" }}
-                            >
-                              {/* Photo */}
-                              <Grid item md={2}>
-                                {/* Modified CSS */}
-                                <div className={classes.imgContainer}>
-                                  <img
-                                    className={classes.img}
-                                    src={productImages[1].productImageUrl}
-                                  />
-                                </div>
-                              </Grid>
-                              {/* Name */}
-                              <GridItem
-                                container
-                                md={6}
-                                style={{ textAlign: "left" }}
-                              >
-                                <GridItem md={12}>
-                                  <h3 className={classes.productName}>
-                                    {product.productName}
-                                  </h3>
-                                </GridItem>
-                                <GridItem md={12}>
-                                  <h3 style={{ marginTop: "10px" }}>
-                                    ${product.price}
-                                  </h3>
-                                </GridItem>
-                                <GridItem md={12}>
-                                  {jsonColorHexList[colour].name},{" "}
-                                  {sizeDetails.productSize}
-                                </GridItem>
-                              </GridItem>
-                              {/* Quantity */}
-                              <GridItem md={1}>
-                                <h3>{quantity}</h3>
-                              </GridItem>
-                              {/* Amount */}
-                              <GridItem md={3}>
-                                <h3>
-                                  ${(product.price * quantity).toFixed(2)}
-                                </h3>
-                              </GridItem>
-                            </GridContainer>
-                          </Card>
-                          {index !==
-                            customer.onlineShoppingCart.shoppingCartItems
-                              .length -
-                              1 && <Divider style={{ margin: "0 5%" }} />}
-                        </div>
-                      );
-                    }
+                    (cartItem, index) => (
+                      <CheckoutProdVariantCard
+                        cartItem={cartItem}
+                        index={index}
+                        customer={customer}
+                      />
+                    )
                   )}
                 </Grid>
               </Grid>

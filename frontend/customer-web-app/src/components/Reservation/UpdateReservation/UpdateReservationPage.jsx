@@ -76,7 +76,7 @@ export default function UpdateReservationPage(props) {
               {productVariants &&
                 productVariants.length > 0 &&
                 productVariants.map(productVariant => (
-                  <React.Fragment>
+                  <React.Fragment key={productVariant.productVariantId}>
                     <UpdateReservationItem productVariant={productVariant} />
                     {productVariants.length > 1 && <Divider />}
                   </React.Fragment>

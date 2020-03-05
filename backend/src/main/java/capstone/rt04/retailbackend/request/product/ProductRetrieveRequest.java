@@ -1,6 +1,7 @@
 package capstone.rt04.retailbackend.request.product;
 
 import capstone.rt04.retailbackend.entities.Category;
+import capstone.rt04.retailbackend.entities.Style;
 import capstone.rt04.retailbackend.entities.Tag;
 import capstone.rt04.retailbackend.util.enums.SizeEnum;
 import capstone.rt04.retailbackend.util.enums.SortEnum;
@@ -34,4 +35,6 @@ public class ProductRetrieveRequest {
     private BigDecimal maxPrice;
 
     private SortEnum sortEnum;
+
+    private Style style;
 }

@@ -42,7 +42,14 @@ function OrderHistoryCard(props) {
     return lineItem.productVariant;
   });
   return (
-    <Card style={{ padding: "20px", marginTop: "10px" }}>
+    <Card
+      plain
+      style={{
+        padding: "20px",
+        margin: "10px 0",
+        borderRadius: "0px"
+      }}
+    >
       <GridContainer>
         <GridItem md={12} xs={12}>
           <h5
@@ -59,7 +66,7 @@ function OrderHistoryCard(props) {
           </h5>
         </GridItem>
         <GridItem md={12} xs={12}>
-          <Divider />
+          <Divider variant="middle" />
           <GridContainer>
             <GridItem md={3} xs={12}>
               <h5>

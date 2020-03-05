@@ -7,6 +7,11 @@ import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { retrieveProductById } from "redux/actions/productActions";
 import { makeStyles } from "@material-ui/core/styles";
+import ReviewCard from "../Reviews/ReviewCard";
+import {
+  checkIfCanWriteReview,
+  retrieveAllReviewsByProductId
+} from "../../redux/actions/reviewAction";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Backdrop from "@material-ui/core/Backdrop";
 
@@ -22,11 +27,18 @@ function ProductDetailsPage(props) {
     state => state.product.currentProductDetail
   );
 
+  const currentProductReviews = useSelector(state => state.review.allReviews);
+
+  console.log(currentProductReviews);
   const [isLoading, setIsLoading] = useState(true);
   //Make API call to retrieve single prod from url param
   useEffect(() => {
     setIsLoading(true);
     dispatch(retrieveProductById(productId, setIsLoading));
+  }, [productId]);
+
+  useEffect(() => {
+    dispatch(retrieveAllReviewsByProductId(productId));
   }, [productId]);
 
   React.useEffect(() => {
@@ -46,6 +58,7 @@ function ProductDetailsPage(props) {
           <div className={classes.container}>
             <div className={classNames(classes.main, classes.mainRaised)}>
               <ProductDetailsCard productDetail={currentProductDetail} />
+              <ReviewCard reviews={currentProductReviews} />
             </div>
           </div>
         </div>

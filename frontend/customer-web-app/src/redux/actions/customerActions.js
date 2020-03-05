@@ -446,7 +446,7 @@ export const removeShippingAddressSuccess = data => ({
 });
 
 export const updateMeasurements = (
-  req, 
+  req,
   enqueueSnackbar,
   setAddMeasurements
 ) => {
@@ -762,5 +762,6 @@ export const deleteStylePreferences = (req, enqueueSnackbar, setAddStyle) => {
       .catch(err => {
         dispatchErrorMapError(err, dispatch);
         console.log(err.response.data);
-      })
-  }}
+      });
+  };
+};

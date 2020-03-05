@@ -1,8 +1,7 @@
 export default class StaffAccountCreateRequest {
-    staffIds;
+  staffIds;
 
-    constructor(staffIds) {
-        this.staffIds = staffIds;
-    }
-
+  constructor(staffIds) {
+    this.staffIds = staffIds;
+  }
 }

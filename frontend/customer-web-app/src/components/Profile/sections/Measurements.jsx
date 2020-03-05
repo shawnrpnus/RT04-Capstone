@@ -130,124 +130,122 @@ function Measurements(props) {
   return (
     <div className={classes.textCenter}>
       <h4>Measurements</h4>
-      <small>
-        Receive recommendations on suitable sizes
-      </small>
-      <div style={{ marginTop: 20}}>
-      <form>
-            <CustomTextField
-              fieldLabel="Shoulder (cm)"
-              fieldName="shoulder"
-              inputState={inputState}
-              onChange={onChange}
-              errors={errors}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment
-                    position="start"
-                    className={classes.inputAdornment}
-                  >
-                    <Accessibility className={classes.inputAdornmentIcon} />
-                  </InputAdornment>
-                )
-              }}
-            />
-            <CustomTextField
-              fieldLabel="Waist (cm)"
-              fieldName="waist"
-              inputState={inputState}
-              onChange={onChange}
-              errors={errors}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment
-                    position="start"
-                    className={classes.inputAdornment}
-                  >
-                    <Accessibility className={classes.inputAdornmentIcon} />
-                  </InputAdornment>
-                )
-              }}
-            />
-            <CustomTextField
-              fieldLabel="Chest (cm)"
-              fieldName="chest"
-              inputState={inputState}
-              onChange={onChange}
-              errors={errors}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment
-                    position="start"
-                    className={classes.inputAdornment}
-                  >
-                    <Accessibility className={classes.inputAdornmentIcon} />
-                  </InputAdornment>
-                )
-              }}
-            />
-            <CustomTextField
-              fieldLabel="Hip (cm)"
-              fieldName="hip"
-              inputState={inputState}
-              onChange={onChange}
-              errors={errors}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment
-                    position="start"
-                    className={classes.inputAdornment}
-                  >
-                    <Accessibility className={classes.inputAdornmentIcon} />
-                  </InputAdornment>
-                )
-              }}
-            />
-            <CustomTextField
-              fieldLabel="Height (cm)"
-              fieldName="height"
-              inputState={inputState}
-              onChange={onChange}
-              errors={errors}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment
-                    position="start"
-                    className={classes.inputAdornment}
-                  >
-                    <Accessibility className={classes.inputAdornmentIcon} />
-                  </InputAdornment>
-                )
-              }}
-            />
-            <div>
-              {hasAddMeasurements ? (
-                <React.Fragment>
-                  <Button
-                    onClick={handleUpdateMeasurements}
-                    round
-                    color="primary"
-                  >
-                    Update Measurements
-                  </Button>
+      <small>Receive recommendations on suitable sizes</small>
+      <div style={{ marginTop: 20 }}>
+        <form>
+          <CustomTextField
+            fieldLabel="Shoulder (cm)"
+            fieldName="shoulder"
+            inputState={inputState}
+            onChange={onChange}
+            errors={errors}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment
+                  position="start"
+                  className={classes.inputAdornment}
+                >
+                  <Accessibility className={classes.inputAdornmentIcon} />
+                </InputAdornment>
+              )
+            }}
+          />
+          <CustomTextField
+            fieldLabel="Waist (cm)"
+            fieldName="waist"
+            inputState={inputState}
+            onChange={onChange}
+            errors={errors}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment
+                  position="start"
+                  className={classes.inputAdornment}
+                >
+                  <Accessibility className={classes.inputAdornmentIcon} />
+                </InputAdornment>
+              )
+            }}
+          />
+          <CustomTextField
+            fieldLabel="Chest (cm)"
+            fieldName="chest"
+            inputState={inputState}
+            onChange={onChange}
+            errors={errors}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment
+                  position="start"
+                  className={classes.inputAdornment}
+                >
+                  <Accessibility className={classes.inputAdornmentIcon} />
+                </InputAdornment>
+              )
+            }}
+          />
+          <CustomTextField
+            fieldLabel="Hip (cm)"
+            fieldName="hip"
+            inputState={inputState}
+            onChange={onChange}
+            errors={errors}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment
+                  position="start"
+                  className={classes.inputAdornment}
+                >
+                  <Accessibility className={classes.inputAdornmentIcon} />
+                </InputAdornment>
+              )
+            }}
+          />
+          <CustomTextField
+            fieldLabel="Height (cm)"
+            fieldName="height"
+            inputState={inputState}
+            onChange={onChange}
+            errors={errors}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment
+                  position="start"
+                  className={classes.inputAdornment}
+                >
+                  <Accessibility className={classes.inputAdornmentIcon} />
+                </InputAdornment>
+              )
+            }}
+          />
+          <div>
+            {hasAddMeasurements ? (
+              <React.Fragment>
+                <Button
+                  onClick={handleUpdateMeasurements}
+                  round
+                  color="primary"
+                >
+                  Update Measurements
+                </Button>
 
-                  <Button
-                    onClick={handleDeleteMeasurements}
-                    round
-                    color="primary"
-                  >
-                    Reset Measurements
-                  </Button>
-                </React.Fragment>
-              ) : (
-                <React.Fragment>
-                  <Button onClick={handleAddMeasurements} round color="primary">
-                    Add Measurements
-                  </Button>
-                </React.Fragment>
-              )}
-            </div>
-          </form>
+                <Button
+                  onClick={handleDeleteMeasurements}
+                  round
+                  color="primary"
+                >
+                  Reset Measurements
+                </Button>
+              </React.Fragment>
+            ) : (
+              <React.Fragment>
+                <Button onClick={handleAddMeasurements} round color="primary">
+                  Add Measurements
+                </Button>
+              </React.Fragment>
+            )}
+          </div>
+        </form>
       </div>
     </div>
   );
