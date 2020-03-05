@@ -101,20 +101,20 @@ export default function HeaderLinks(props) {
               <CategoryNavbar category={rc} />
             </ListItem>
           ))}
-        <ListItem className={classes.listItem}>
-          <CustomDropdown
-            noLiPadding
-            navDropdown
-            hoverColor={dropdownHoverColor}
-            buttonText="Lookbook"
-            buttonProps={{
-              className: classes.navLink,
-              color: "transparent"
-            }}
-            buttonIcon={ViewCarousel}
-            dropdownList={[]}
-          />
-        </ListItem>
+        {/*<ListItem className={classes.listItem}>*/}
+        {/*  <CustomDropdown*/}
+        {/*    noLiPadding*/}
+        {/*    navDropdown*/}
+        {/*    hoverColor={dropdownHoverColor}*/}
+        {/*    buttonText="Lookbook"*/}
+        {/*    buttonProps={{*/}
+        {/*      className: classes.navLink,*/}
+        {/*      color: "transparent"*/}
+        {/*    }}*/}
+        {/*    buttonIcon={ViewCarousel}*/}
+        {/*    dropdownList={[]}*/}
+        {/*  />*/}
+        {/*</ListItem>*/}
       </List>
       <List className={classes.list + " " + classes.mlAuto}>
         <ListItem>
