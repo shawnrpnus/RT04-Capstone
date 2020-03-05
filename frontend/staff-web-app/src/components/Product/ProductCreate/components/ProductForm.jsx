@@ -19,6 +19,8 @@ import CloseCircleIcon from "mdi-react/CloseCircleIcon";
 import renderDropZoneMultipleField from "./../../../../shared/components/Form/DropZoneMultiple";
 import { Field, reduxForm } from "redux-form";
 import ColourToImagesMap from "./../../../../models/product/ColourToImagesMap";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import Backdrop from "@material-ui/core/Backdrop";
 
 import { clearErrors, updateErrors } from "../../../../redux/actions";
 
@@ -49,7 +51,8 @@ class ProductForm extends React.Component {
       styleIds: [],
       colours: [],
       colourToImageUrlsMaps: [],
-      sizes: []
+      sizes: [],
+      isLoading: false
     };
   }
 
@@ -162,7 +165,10 @@ class ProductForm extends React.Component {
       });
     });
     form.append("request", JSON.stringify(req));
-    this.props.createNewProduct(form, this.props.history);
+    this.props.createNewProduct(form, this.props.history, () =>
+      this.setState({ isLoading: false })
+    );
+    this.setState({ isLoading: true });
   };
 
   render() {
@@ -177,7 +183,8 @@ class ProductForm extends React.Component {
       cost,
       categoryId,
       sizes,
-      colourToImageUrlsMaps
+      colourToImageUrlsMaps,
+      isLoading
     } = this.state;
     const disable =
       !serialNumber ||
@@ -193,6 +200,9 @@ class ProductForm extends React.Component {
 
     return (
       <form className="material-form">
+        <Backdrop style={{ zIndex: 1000 }} open={isLoading}>
+          <CircularProgress color="inherit" />
+        </Backdrop>
         <Grid container spacing={3}>
           <Grid item xs={12} md={4}>
             <MaterialTextField
@@ -205,7 +215,7 @@ class ProductForm extends React.Component {
               autoFocus={true}
               error={errors}
             />
-            <small>Serial number must be atleast 5 digits</small>
+            <small>Serial number must be at least 5 digits</small>
           </Grid>
           <Grid item xs={12} md={4}>
             <MaterialTextField
