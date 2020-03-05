@@ -84,7 +84,11 @@ function ProductCard(props) {
                       <rect
                         width="30"
                         height="20"
-                        style={{ fill: cis.colour }}
+                        style={{
+                          fill: cis.colour,
+                          strokeWidth: cis.colour == "#FFFFFF" ? 2 : 0,
+                          stroke: cis.colour == "#FFFFFF" ? "black" : "none"
+                        }}
                       />
                     </svg>
                   );

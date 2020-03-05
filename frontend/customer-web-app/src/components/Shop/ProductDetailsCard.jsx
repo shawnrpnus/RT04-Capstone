@@ -258,7 +258,11 @@ function ProductDetailsCard(props) {
                       y="4"
                       width="32"
                       height="32"
-                      style={{ fill: cis.colour }}
+                      style={{
+                        fill: cis.colour,
+                        strokeWidth: cis.colour == "#FFFFFF" ? 0.5 : 0,
+                        stroke: cis.colour == "#FFFFFF" ? "black" : "none"
+                      }}
                     />
                   </svg>
                 );
@@ -340,6 +344,7 @@ function ProductDetailsCard(props) {
                 color="primary"
                 onClick={addToReservationCart}
                 style={{ float: "right", width: "245px" }}
+                disabled={selectedSize === "None"}
               >
                 Add to Reservation Cart &nbsp; <ShoppingCart />
               </Button>
