@@ -173,7 +173,7 @@ public class TransactionService {
 
     // TODO: Make this method reusable for in-store checkout
     // TODO: Add in address / promo code / discount to calculate final price?
-    public Customer createNewTransaction(Long customerId, Long shoppingCartId, String cartType, Address deliveryAddress, Address billingAddress) throws CustomerNotFoundException, InvalidCartTypeException, AddressNotFoundException {
+    public Customer createNewTransaction(Long customerId, Long storeId, String cartType, Address deliveryAddress, Address billingAddress) throws CustomerNotFoundException, InvalidCartTypeException, AddressNotFoundException {
         Customer customer = customerService.retrieveCustomerByCustomerId(customerId);
         ShoppingCart shoppingCart = shoppingCartService.retrieveShoppingCart(customerId, cartType);
 
@@ -190,6 +190,23 @@ public class TransactionService {
             totalQuantity += shoppingCartItem.getQuantity();
             transactionLineItemRepository.save(transactionLineItem);
             transactionLineItems.add(transactionLineItem);
+        }
+
+        // Get from warehouse
+        for (ShoppingCartItem shoppingCartItem : shoppingCartItems) {
+            // Looping through product stock of the selected product variant to find warehouse stock
+            for (ProductStock productStock : shoppingCartItem.getProductVariant().getProductStocks()) {
+                if (storeId == null && productStock.getWarehouse() != null) {
+                    // Deduct from warehouse
+                    System.out.println("Deduct from warehouse");
+                    productStock.setQuantity(productStock.getQuantity() - 1);
+                } else if (storeId != null && productStock.getStore().getStoreId() != storeId) {
+                    // Deduct from the correct store
+                    System.out.println("Deduct from db store ID: " + productStock.getStore().getStoreId() + " - pass in store ID "
+                            + storeId);
+                    productStock.setQuantity(productStock.getQuantity() - 1);
+                }
+            }
         }
 
         //Address logic

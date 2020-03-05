@@ -134,7 +134,7 @@ export default function CheckOutPage() {
       customerId,
       paymentMethodId,
       totalAmount,
-      shoppingCartId,
+      null,
       currShippingAddress,
       currBillingAddress
     );

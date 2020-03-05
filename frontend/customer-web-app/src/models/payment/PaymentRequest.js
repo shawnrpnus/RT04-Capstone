@@ -2,7 +2,7 @@ export default class PaymentRequest {
   customerId;
   paymentMethodId;
   totalAmount;
-  shoppingCartId;
+  storeId;
   deliveryAddress;
   billingAddress;
 
@@ -10,14 +10,14 @@ export default class PaymentRequest {
     customerId,
     paymentMethodId,
     totalAmount,
-    shoppingCartId,
+    storeId,
     deliveryAddress,
     billingAddress
   ) {
     this.customerId = customerId;
     this.paymentMethodId = paymentMethodId;
     this.totalAmount = totalAmount;
-    this.shoppingCartId = shoppingCartId;
+    this.storeId = storeId;
     this.deliveryAddress = deliveryAddress;
     this.billingAddress = billingAddress;
   }
