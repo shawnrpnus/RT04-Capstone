@@ -155,3 +155,26 @@ const deleteStoreError = data => ({
   type: types.GET_ERRORS,
   errorMap: data
 });
+
+// export const retrieveStoreByIdForLogin = (storeId, history) => {
+//   return dispatch => {
+//     axios
+//       .get(STORE_BASE_URL + "/retrieveStoreById/" + storeId)
+//       .then(response => {
+//         const { data } = jsog.decode(response);
+//         dispatch(retrieveLoginStoreSuccess(data));
+//       })
+//       .catch(err => {
+//         toast.error("Store Not Found!", {
+//           position: toast.POSITION.TOP_CENTER
+//         });
+//         history.push(`/store/viewAll`);
+//         dispatch(retrieveStoreError(err.response.data));
+//       });
+//   };
+// };
+
+// const retrieveLoginStoreSuccess = data => ({
+//   type: types.RETRIEVE_STORE_LOGIN,
+//   selectedStore: data
+// });

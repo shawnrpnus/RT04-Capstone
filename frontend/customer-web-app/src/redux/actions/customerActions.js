@@ -32,11 +32,26 @@ const dispatchUpdatedCustomer = (customerDataRaw, dispatch) => {
   dispatch(updateCustomer(customer));
 };
 
-export const refreshCustomer = customerEmail => {
+export const refreshCustomerEmail = customerEmail => {
   const req = { email: customerEmail };
   return dispatch => {
     axios
       .post(CUSTOMER_BASE_URL + "/getCustomerByEmail", req)
+      .then(response => {
+        dispatchUpdatedCustomer(response.data, dispatch);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+};
+
+export const refreshCustomerId = customerId => {
+  return dispatch => {
+    axios
+      .get(CUSTOMER_BASE_URL + "/retrieveCustomerById", {
+        params: { customerId }
+      })
       .then(response => {
         dispatchUpdatedCustomer(response.data, dispatch);
       })
@@ -381,7 +396,7 @@ export const addShippingAddressDetails = (
           variant: "success",
           autoHideDuration: 1200
         });
-        // history.push("/account/profile");
+        //history.push("/account/profile");
       })
       .catch(err => {
         dispatchErrorMapError(err, dispatch);
@@ -446,6 +461,7 @@ export const updateMeasurements = (
           autoHideDuration: 1200
         });
         setAddMeasurements(true);
+        // history.push("/account/profile");
       })
       .catch(err => {
         dispatchErrorMapError(err, dispatch);
@@ -678,6 +694,74 @@ export const deleteCard = deleteCardRequest => {
       })
       .catch(err => {
         console.log(err);
+      });
+  };
+};
+
+// Customer reducer
+const saveCardSuccess = data => ({
+  type: SAVE_CARD_SUCCESS,
+  customer: data
+});
+
+export const addStylePreferences = (req, enqueueSnackbar, setAddStyle) => {
+  return dispatch => {
+    //redux thunk passes dispatch
+    axios
+      .post(CUSTOMER_BASE_URL + "/addStyle", req)
+      .then(response => {
+        dispatchUpdatedCustomer(response.data, dispatch);
+        enqueueSnackbar("Style preferences recorded", {
+          variant: "success",
+          autoHideDuration: 1200
+        });
+        setAddStyle(true);
+      })
+      .catch(err => {
+        dispatchErrorMapError(err, dispatch);
+        console.log(err.response.data);
+      });
+  };
+};
+
+export const updateStylePreferences = (req, enqueueSnackbar, setAddStyle) => {
+  return dispatch => {
+    //redux thunk passes dispatch
+    axios
+      .post(CUSTOMER_BASE_URL + "/addStyle", req)
+      .then(response => {
+        console.log(response);
+        dispatchUpdatedCustomer(response.data, dispatch);
+        enqueueSnackbar("Style preferences updated", {
+          variant: "success",
+          autoHideDuration: 1200
+        });
+        setAddStyle(true);
+      })
+      .catch(err => {
+        dispatchErrorMapError(err, dispatch);
+        console.log(err.response.data);
+      });
+  };
+};
+
+export const deleteStylePreferences = (req, enqueueSnackbar, setAddStyle) => {
+  return dispatch => {
+    //redux thunk passes dispatch
+    axios
+      .post(CUSTOMER_BASE_URL + "/removeStyle", req)
+      .then(response => {
+        console.log(response);
+        dispatchUpdatedCustomer(response.data, dispatch);
+        enqueueSnackbar("Style deleted", {
+          variant: "success",
+          autoHideDuration: 1200
+        });
+        setAddStyle(false);
+      })
+      .catch(err => {
+        dispatchErrorMapError(err, dispatch);
+        console.log(err.response.data);
       });
   };
 };

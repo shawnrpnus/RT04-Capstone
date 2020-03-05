@@ -15,7 +15,7 @@ import Paper from "@material-ui/core/Paper";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import { useSnackbar } from "notistack";
 import store from "App/store";
-import { retrieveStoresWithStockStatus } from "redux/actions/reservationActions";
+import { retrieveStoresWithStockStatusForCart } from "redux/actions/reservationActions";
 
 const _ = require("lodash");
 const useStyles = makeStyles(wishlistStyle);
@@ -31,7 +31,6 @@ function ReservationCartItem(props) {
   );
   const { productVariant } = props;
   const { product } = productVariant;
-  const hasStock = productVariant.productStocks[0].quantity > 0;
 
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -42,7 +41,7 @@ function ReservationCartItem(props) {
         customer.customerId,
         productVariant.productVariantId,
         enqueueSnackbar,
-        retrieveStoresWithStockStatus
+        retrieveStoresWithStockStatusForCart
       )
     );
     setPopoverOpen(false);

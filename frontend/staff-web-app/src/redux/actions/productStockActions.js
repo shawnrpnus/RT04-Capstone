@@ -44,24 +44,21 @@ const updateProductStockError = data => ({
   errorMap: data
 });
 
-export const updateProductStockQty = (updateProductStockRequest, history) => {
+export const updateProductStockQty = (updateProductStockRequest, storeId) => {
   return dispatch => {
     //redux thunk passes dispatch
+    console.log(storeId);
+
     axios
       .put(
         PRODUCT_STOCK_BASE_URL + "/updateProductStockQty",
         updateProductStockRequest
       )
       .then(response => {
-        const { data } = jsog.decode(response);
-        // const productStockId = data.productStockId;
-        // dispatch(updateProductStockQtySuccess(data));
-        retrieveProductsDetails()(dispatch);
-        // history.push(`/productStock/update/${productStockId}`);
+        retrieveProductsDetails(storeId)(dispatch);
       })
       .catch(err => {
         dispatch(updateProductStockQtyError(err.response.data));
-        //console.log(err.response.data);
       });
   };
 };
@@ -76,19 +73,23 @@ const updateProductStockQtyError = data => ({
   errorMap: data
 });
 
-export const retrieveProductStocksByParameter = (storeId, warehouseId, productVariantId) => {
+export const retrieveProductStocksByParameter = (
+  storeId,
+  warehouseId,
+  productVariantId
+) => {
   return dispatch => {
     axios
-        .get(PRODUCT_STOCK_BASE_URL + `/retrieveProductStocksByParameter`, {
-          params: { storeId, warehouseId, productVariantId }
-        })
-        .then(response => {
-          const { data } = jsog.decode(response);
-          dispatch(retrieveProductStocksByParameterSuccess(data));
-        })
-        .catch(err => {
-          dispatch(retrieveProductStocksByParameterError(err.response.data));
-        });
+      .get(PRODUCT_STOCK_BASE_URL + `/retrieveProductStocksByParameter`, {
+        params: { storeId, warehouseId, productVariantId }
+      })
+      .then(response => {
+        const { data } = jsog.decode(response);
+        dispatch(retrieveProductStocksByParameterSuccess(data));
+      })
+      .catch(err => {
+        dispatch(retrieveProductStocksByParameterError(err.response.data));
+      });
   };
 };
 
@@ -100,4 +101,4 @@ const retrieveProductStocksByParameterSuccess = data => ({
 const retrieveProductStocksByParameterError = data => ({
   type: types.GET_ERRORS,
   errorMap: data
-})
+});

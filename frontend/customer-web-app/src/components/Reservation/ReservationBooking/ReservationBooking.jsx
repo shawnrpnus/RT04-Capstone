@@ -8,7 +8,9 @@ import {
   createReservation,
   getAvailSlotsForStore,
   getProductVariantStoreStockStatus,
-  retrieveStoresWithStockStatus
+  retrieveReservationById,
+  retrieveStoresWithStockStatusForCart,
+  updateReservation
 } from "redux/actions/reservationActions";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -18,6 +20,7 @@ import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import { Button } from "components/UI/CustomButtons/Button";
 import { useSnackbar } from "notistack";
+import { useParams, useHistory } from "react-router-dom";
 
 const _ = require("lodash");
 const useStyles = makeStyles(wishlistStyle);
@@ -25,9 +28,14 @@ const useSelectStyles = makeStyles(customSelectStyle);
 const moment = require("moment");
 
 function ReservationBooking(props) {
+  //Hooks
   const classes = useStyles();
+  const { mode } = useParams();
+  const history = useHistory();
   const selectClasses = useSelectStyles();
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+
+  //Redux
   const dispatch = useDispatch();
   const customer = useSelector(state => state.customer.loggedInCustomer);
   const availSlotsForStore = useSelector(
@@ -36,8 +44,17 @@ function ReservationBooking(props) {
   const storesWithStockStatus = useSelector(
     state => state.reservation.storesWithStockStatus
   );
+
+  //State
   const [selectedStoreId, setSelectedStoreId] = useState("");
   const [selectedTimeslot, setSelectedTimeslot] = useState("");
+
+  //Effects
+  useEffect(() => {
+    if (customer.customerId) {
+      dispatch(retrieveStoresWithStockStatusForCart(customer.customerId));
+    }
+  }, []);
 
   const onSelectStore = e => {
     setSelectedStoreId(e.target.value);
@@ -47,31 +64,29 @@ function ReservationBooking(props) {
     dispatch(getAvailSlotsForStore(e.target.value));
   };
 
-  useEffect(() => {
-    if (customer.customerId) {
-      dispatch(retrieveStoresWithStockStatus(customer.customerId));
-    }
-  }, []);
-
   const makeReservation = () => {
     const { customerId, email } = customer;
-    dispatch(
-      createReservation(
-        customerId,
-        selectedStoreId,
-        selectedTimeslot,
-        email,
-        enqueueSnackbar
-      )
-    );
+    if (mode === "cart") {
+      dispatch(
+        createReservation(
+          customerId,
+          selectedStoreId,
+          selectedTimeslot,
+          email,
+          enqueueSnackbar,
+          history
+        )
+      );
+    }
   };
 
+  //check if store is fully stocked to allow making reservation
   const fullyStocked =
     _.get(
       _.keyBy(storesWithStockStatus, "store.storeId"),
       `${selectedStoreId}.stockStatus`
     ) === "In stock";
-  console.log(fullyStocked);
+
   return (
     <React.Fragment>
       <h3 className={classes.title} style={{ margin: "5px 0 20px 0" }}>
@@ -92,6 +107,8 @@ function ReservationBooking(props) {
           {/*<Button color="primary" style={{ marginBottom: "20px" }}>*/}
           {/*  Find me a store*/}
           {/*</Button>*/}
+
+          {/*Store picker, same ofor create update, but load with value in state*/}
           <FormControl fullWidth className={selectClasses.selectFormControl}>
             <InputLabel>Select a store</InputLabel>
             <Select onChange={onSelectStore} value={selectedStoreId}>
@@ -108,6 +125,7 @@ function ReservationBooking(props) {
           </FormControl>
         </GridItem>
         <GridItem md={12} sm={12}>
+          {/*Time slot picker, same for create/update but load with value in state*/}
           <FormControl fullWidth className={selectClasses.selectFormControl}>
             {availSlotsForStore && (
               <React.Fragment>
@@ -152,7 +170,7 @@ function ReservationBooking(props) {
               selectedStoreId === "" || selectedTimeslot === "" || !fullyStocked
             }
           >
-            Make reservation
+            Make Reservation
           </Button>
         </GridItem>
       </GridContainer>

@@ -37,7 +37,9 @@ import cardProfile2Square from "assets/img/faces/card-profile2-square.jpg";
 import profilePageStyle from "assets/jss/material-kit-pro-react/views/profilePageStyle.js";
 import AccountInfo from "components/Profile/sections/AccountInfo";
 import Measurements from "components/Profile/sections/Measurements";
+import Style from "components/Profile/sections/Style";
 import { useSelector } from "react-redux";
+import OrderHistoryPage from "components/Profile/sections/Orders/OrderHistoryPage";
 
 const useStyles = makeStyles(profilePageStyle);
 
@@ -102,177 +104,23 @@ export default function ProfilePage(props) {
                 {
                   tabButton: "Orders",
                   tabIcon: People,
-                  tabContent: (
-                    <div>
-                      <GridContainer justify="center">
-                        <GridItem
-                          xs={12}
-                          sm={12}
-                          md={5}
-                          className={classes.gridItem}
-                        >
-                          <Card profile plain className={classes.card}>
-                            <GridContainer>
-                              <GridItem xs={12} sm={12} md={5}>
-                                <CardHeader image plain>
-                                  <a href="#pablo">
-                                    <img src={avatar} alt="..." />
-                                  </a>
-                                  <div
-                                    className={classes.coloredShadow}
-                                    style={{
-                                      backgroundImage: "url(" + avatar + ")",
-                                      opacity: "1"
-                                    }}
-                                  />
-                                </CardHeader>
-                              </GridItem>
-                              <GridItem xs={12} sm={12} md={7}>
-                                <CardBody plain>
-                                  <h4 className={classes.cardTitle}>
-                                    Gigi Hadid
-                                  </h4>
-                                  <Muted>
-                                    <h6>MODEL</h6>
-                                  </Muted>
-                                  <p className={classes.description}>
-                                    Don{"'"}t be scared of the truth because we
-                                    need to restart the human foundation in
-                                    truth...
-                                  </p>
-                                </CardBody>
-                              </GridItem>
-                            </GridContainer>
-                          </Card>
-                        </GridItem>
-                        <GridItem
-                          xs={12}
-                          sm={12}
-                          md={5}
-                          className={classes.gridItem}
-                        >
-                          <Card profile plain className={classes.card}>
-                            <GridContainer>
-                              <GridItem xs={12} sm={12} md={5}>
-                                <CardHeader image plain>
-                                  <a href="#pablo">
-                                    <img src={marc} alt="..." />
-                                  </a>
-                                  <div
-                                    className={classes.coloredShadow}
-                                    style={{
-                                      backgroundImage: "url(" + marc + ")",
-                                      opacity: "1"
-                                    }}
-                                  />
-                                </CardHeader>
-                              </GridItem>
-                              <GridItem xs={12} sm={12} md={7}>
-                                <CardBody plain>
-                                  <h4 className={classes.cardTitle}>
-                                    Marc Jacobs
-                                  </h4>
-                                  <Muted>
-                                    <h6>DESIGNER</h6>
-                                  </Muted>
-                                  <p className={classes.description}>
-                                    Don{"'"}t be scared of the truth because we
-                                    need to restart the human foundation in
-                                    truth...
-                                  </p>
-                                </CardBody>
-                              </GridItem>
-                            </GridContainer>
-                          </Card>
-                        </GridItem>
-                      </GridContainer>
-                      <GridContainer justify="center">
-                        <GridItem
-                          xs={12}
-                          sm={12}
-                          md={5}
-                          className={classes.gridItem}
-                        >
-                          <Card profile plain className={classes.card}>
-                            <GridContainer>
-                              <GridItem xs={12} sm={12} md={5}>
-                                <CardHeader image plain>
-                                  <a href="#pablo">
-                                    <img src={kendall} alt="..." />
-                                  </a>
-                                  <div
-                                    className={classes.coloredShadow}
-                                    style={{
-                                      backgroundImage: "url(" + kendall + ")",
-                                      opacity: "1"
-                                    }}
-                                  />
-                                </CardHeader>
-                              </GridItem>
-                              <GridItem xs={12} sm={12} md={7}>
-                                <CardBody plain>
-                                  <h4 className={classes.cardTitle}>
-                                    Kendall Jenner
-                                  </h4>
-                                  <Muted>
-                                    <h6>MODEL</h6>
-                                  </Muted>
-                                  <p className={classes.description}>
-                                    I love you like Kanye loves Kanye. Don
-                                    {"'"}t be scared of the truth.
-                                  </p>
-                                </CardBody>
-                              </GridItem>
-                            </GridContainer>
-                          </Card>
-                        </GridItem>
-                        <GridItem
-                          xs={12}
-                          sm={12}
-                          md={5}
-                          className={classes.gridItem}
-                        >
-                          <Card profile plain className={classes.card}>
-                            <GridContainer>
-                              <GridItem xs={12} sm={12} md={5}>
-                                <CardHeader image plain>
-                                  <a href="#pablo">
-                                    <img src={cardProfile2Square} alt="..." />
-                                  </a>
-                                  <div
-                                    className={classes.coloredShadow}
-                                    style={{
-                                      backgroundImage:
-                                        "url(" + cardProfile2Square + ")",
-                                      opacity: "1"
-                                    }}
-                                  />
-                                </CardHeader>
-                              </GridItem>
-                              <GridItem xs={12} sm={12} md={7}>
-                                <CardBody plain>
-                                  <h4 className={classes.cardTitle}>
-                                    George West
-                                  </h4>
-                                  <Muted>
-                                    <h6>MODEL/DJ</h6>
-                                  </Muted>
-                                  <p className={classes.description}>
-                                    I love you like Kanye loves Kanye.
-                                  </p>
-                                </CardBody>
-                              </GridItem>
-                            </GridContainer>
-                          </Card>
-                        </GridItem>
-                      </GridContainer>
-                    </div>
-                  )
+                  tabContent: <OrderHistoryPage />
                 },
                 {
                   tabButton: "Personalize",
                   tabIcon: Camera,
-                  tabContent: <Measurements />
+                  tabContent: (
+                    <div>
+                      <GridContainer>
+                        <GridItem xs={3} sm={3} md={3}>
+                          <Measurements />
+                        </GridItem>
+                        <GridItem xs={9} sm={9} md={9}>
+                          <Style />
+                        </GridItem>
+                      </GridContainer>
+                    </div>
+                  )
                 }
               ]}
             />

@@ -53,7 +53,8 @@ if (window.navigator.userAgent.includes("Chrome")) {
 const unsubscribe = store.subscribe(() => {
   saveToLocalStorage({
     staffEntity: {
-      loggedInStaff: _.get(store.getState(), "staffEntity.loggedInStaff")
+      loggedInStaff: _.get(store.getState(), "staffEntity.loggedInStaff"),
+      selectedStore: _.get(store.getState(), "staffEntity.selectedStore")
     }
   });
 });

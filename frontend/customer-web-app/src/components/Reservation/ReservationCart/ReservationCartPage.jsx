@@ -25,25 +25,36 @@ import { useSnackbar } from "notistack";
 import { clearReservationCartAPI } from "redux/actions/customerActions";
 import ReservationCartItem from "components/Reservation/ReservationCart/ReservationCartItem";
 import ReservationBooking from "components/Reservation/ReservationBooking/ReservationBooking";
-import { clearProductVariantStoreStockStatus } from "redux/actions/reservationActions";
+import {
+  clearProductVariantStoreStockStatus,
+  retrieveReservationById
+} from "redux/actions/reservationActions";
+import { useParams } from "react-router-dom";
+import UpdateReservationBooking from "components/Reservation/UpdateReservation/UpdateReservationBooking";
 
 const useStyles = makeStyles(wishlistStyle);
 
 export default function ReservationCartPage(props) {
+  //Hooks
   const classes = useStyles();
+  const { mode, reservationId } = useParams();
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+
+  //Redux
   const dispatch = useDispatch();
   const customer = useSelector(state => state.customer.loggedInCustomer);
   const { reservationCartItems } = customer;
 
   useEffect(() => {
-    window.scrollTo(0, 0);
-    document.body.scrollTop = 0;
-  }, []);
-
-  useEffect(() => {
     dispatch(clearProductVariantStoreStockStatus());
   }, []);
+
+  //For updating
+  useEffect(() => {
+    if (reservationId) {
+      dispatch(retrieveReservationById(reservationId));
+    }
+  }, [reservationId]);
 
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -92,9 +103,9 @@ export default function ReservationCartPage(props) {
             </GridItem>
             <Divider orientation="vertical" flexItem />
             <GridItem md>
-              {reservationCartItems && reservationCartItems.length > 0 && (
-                <ReservationBooking />
-              )}
+              {mode === "cart" &&
+                reservationCartItems &&
+                reservationCartItems.length > 0 && <ReservationBooking />}
             </GridItem>
           </GridContainer>
         </CardBody>

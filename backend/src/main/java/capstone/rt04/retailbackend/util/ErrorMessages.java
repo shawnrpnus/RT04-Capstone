@@ -42,4 +42,16 @@ public class ErrorMessages {
     public static final String STAFF_DOES_NOT_EXIST = "Staff does not exist!";
     public static final String INCORRECT_PASSWORD = "Password is wrong!";
     public static final String INCORRECT_USERNAME = "Username is wrong!";
+
+    public static final String SERIAL_NUMBER_REQUIRED = "Serial number is required!";
+    public static final String PRODUCT_NAME_REQUIRED = "Product name is required!";
+    public static final String DESCRIPTION_REQUIRED = "Description is required!";
+    public static final String PRICE_REQUIRED = "Price is required!";
+    public static final String COST_REQUIRED = "Cost is required!";
+    public static final String CATEGORY_REQUIRED = "Category is required!";
+    public static final String PRODUCT_ID_REQUIRED ="Product ID is required!";
+
+    public static final String CREATE_NEW_PRODUCT_FAILED = "Failed in creating new product!";
+
+    public static final String SKU_TAKEN = "The product SKU is already exists!";
 }

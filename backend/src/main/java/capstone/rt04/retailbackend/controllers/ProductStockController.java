@@ -31,6 +31,7 @@ public class ProductStockController {
     public ResponseEntity<?> retrieveProductStockById(@PathVariable Long productStockId) {
         try {
             ProductStock productStock = productService.retrieveProductStockById(productStockId);
+            clearProductStockRelationship(productStock);
             return new ResponseEntity<>(productStock, HttpStatus.OK);
         } catch (ProductStockNotFoundException ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
@@ -55,12 +56,12 @@ public class ProductStockController {
 
     @GetMapping(ProductStockControllerRoutes.RETRIEVE_PRODUCT_STOCKS_BY_PARAMETER)
     public ResponseEntity<?> retrieveProductStocksByParameter(@RequestParam(required = false) Long warehouseId,
-                                                                            @RequestParam(required = false) Long storeId,
-                                                                            @RequestParam(required = false) Long productVariantId) {
+                                                              @RequestParam(required = false) Long storeId,
+                                                              @RequestParam(required = false) Long productVariantId) {
         try {
             List<ProductStock> productStocks = productService.retrieveProductStocksByParameter(storeId,
                     warehouseId, productVariantId);
-            clearProductStockRelationship(productStocks);
+            productStocks.forEach(this::clearProductStockRelationship);
             return new ResponseEntity<>(productStocks, HttpStatus.OK);
         } catch (Exception ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -68,10 +69,10 @@ public class ProductStockController {
     }
 
 
-
     @PostMapping(ProductStockControllerRoutes.CREATE_PRODUCT_STOCK)
     public ResponseEntity<?> createProductStock(@RequestBody ProductStockCreateRequest productStockCreateRequest) throws ProductVariantNotFoundException, InputDataValidationException {
         ProductStock productStock = productService.createProductStock(productStockCreateRequest.getProductStock(), productStockCreateRequest.getProductVariantId());
+        clearProductStockRelationship(productStock);
         return new ResponseEntity<>(productStock, HttpStatus.CREATED);
     }
 
@@ -79,6 +80,7 @@ public class ProductStockController {
     public ResponseEntity<?> updateProductStock(@RequestBody ProductStock productStock) {
         try {
             ProductStock newProductStock = productService.updateProductStock(productStock);
+            clearProductStockRelationship(newProductStock);
             return new ResponseEntity<>(newProductStock, HttpStatus.OK);
         } catch (ProductStockNotFoundException ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
@@ -90,6 +92,7 @@ public class ProductStockController {
     @PutMapping(ProductStockControllerRoutes.UPDATE_PRODUCT_STOCK_QTY)
     public ResponseEntity<?> updateProductStockQty(@RequestBody ProductStockQtyUpdateRequest productStockQtyUpdateRequest) throws ProductStockNotFoundException {
         ProductStock updateProductStock = productService.updateProductStockQty(productStockQtyUpdateRequest.getProductStockId(), productStockQtyUpdateRequest.getQuantity());
+        clearProductStockRelationship(updateProductStock);
         return new ResponseEntity<>(updateProductStock, HttpStatus.OK);
     }
 
@@ -97,6 +100,7 @@ public class ProductStockController {
     public ResponseEntity<?> deleteProductStock(@PathVariable Long productStockId) {
         try {
             ProductStock productStock = productService.deleteProductStock(productStockId);
+            clearProductStockRelationship(productStock);
             return new ResponseEntity<>(productStock, HttpStatus.OK);
         } catch (ProductStockNotFoundException ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
@@ -105,17 +109,22 @@ public class ProductStockController {
         }
     }
 
-    private void clearProductStockRelationship(List<ProductStock> productStocks) {
-        for( ProductStock productStock:  productStocks) {
-            productStock.getProductVariant().setProductStocks(null);
-            Product product = productStock.getProductVariant().getProduct();
-            product.setProductVariants(null);
-            product.setDiscounts(null);
-            product.setPromoCodes(null);
-            product.setTags(null);
-            product.setCategory(null);
-            product.setReviews(null);
-            product.setStyles(null);
+    private void clearProductStockRelationship(ProductStock productStock) {
+        productStock.getProductVariant().setProductStocks(null);
+        Product product = productStock.getProductVariant().getProduct();
+        product.setProductVariants(null);
+        product.setDiscounts(null);
+        product.setPromoCodes(null);
+        product.setTags(null);
+        product.setCategory(null);
+        product.setReviews(null);
+        product.setStyles(null);
+        if (productStock.getWarehouse() != null) {
+            productStock.getWarehouse().setProductStocks(null);
+        }
+        if (productStock.getStore() != null){
+            productStock.getStore().setProductStocks(null);
         }
     }
+
 }

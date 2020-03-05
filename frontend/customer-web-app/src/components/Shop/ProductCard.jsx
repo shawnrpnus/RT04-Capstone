@@ -36,6 +36,7 @@ function ProductCard(props) {
             <img
               src={colourToImageAndSizes[activeColourIndex].image}
               alt="productImage"
+              style={{ height: "340px", objectFit: "cover" }}
             />
           </Link>
           {/*<Tooltip*/}
@@ -59,7 +60,7 @@ function ProductCard(props) {
         </CardHeader>
         <CardBody className={classes.cardBodyPlain}>
           <Link to={`/shop/product/${product.productId}`}>
-            <GridContainer justify="space-between" style={{ height: "90px" }}>
+            <GridContainer justify="space-between" style={{ height: "60px" }}>
               <GridItem xs={7}>
                 <h6 className={classes.cardTitle}>{product.productName}</h6>
               </GridItem>

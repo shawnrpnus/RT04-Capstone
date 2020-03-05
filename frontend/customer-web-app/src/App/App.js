@@ -9,7 +9,7 @@ import { createBrowserHistory } from "history";
 import { SnackbarProvider } from "notistack";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
-import { refreshCustomer } from "redux/actions/customerActions";
+import { refreshCustomerEmail } from "redux/actions/customerActions";
 
 const _ = require("lodash");
 let hist = createBrowserHistory();
@@ -53,7 +53,7 @@ function GlobalTimer(props) {
     let customerTimer = null;
     if (customer) {
       customerTimer = setInterval(
-        () => dispatch(refreshCustomer(customer.email)),
+        () => dispatch(refreshCustomerEmail(customer.email)),
         60000
       );
     }

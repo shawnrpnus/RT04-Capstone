@@ -14,6 +14,5 @@ export default () => (
     <ITRoute path="/staff/createAccount" component={StaffAccountCreateForm} />
     <HRRoute path="/staff/viewAll" component={StaffTable} />
     <SecureRoute path="/staff/viewProfile" component={StaffDetailsPage} />
-
   </Switch>
 );

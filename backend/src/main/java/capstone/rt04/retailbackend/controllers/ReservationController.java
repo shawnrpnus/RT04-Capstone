@@ -101,6 +101,20 @@ public class ReservationController {
         return new ResponseEntity<>(reservationStockCheckResponses, HttpStatus.OK);
     }
 
+    @GetMapping(CustomerControllerRoutes.GET_STORES_STOCK_STATUS_FOR_RESERVATION)
+    public ResponseEntity<?> getStoresStockStatusForReservation(@RequestParam Long reservationId) throws ProductVariantNotFoundException, StoreNotFoundException, CustomerNotFoundException, ReservationNotFoundException {
+        List<ReservationStockCheckResponse> reservationStockCheckResponses = reservationService.getAllStoresStockStatusForReservation(reservationId);
+        reservationStockCheckResponses.forEach(this::clearReservationStockCheckResponseRelationships);
+        return new ResponseEntity<>(reservationStockCheckResponses, HttpStatus.OK);
+    }
+
+    @GetMapping(CustomerControllerRoutes.RETRIEVE_RESERVATION_BY_ID)
+    public ResponseEntity<?> retrieveReservationById(@RequestParam Long reservationId) throws ProductVariantNotFoundException, StoreNotFoundException, CustomerNotFoundException, ReservationNotFoundException {
+        Reservation reservation = reservationService.retrieveReservationByReservationId(reservationId);
+        clearReservationRelationships(reservation);
+        return new ResponseEntity<>(reservation, HttpStatus.OK);
+    }
+
 
     private void clearReservationStockCheckResponseRelationships(ReservationStockCheckResponse rscp){
         Store store = rscp.getStore();
@@ -127,6 +141,7 @@ public class ReservationController {
             reservation.getCustomer().setWishlistItems(null);
             reservation.getCustomer().setReservationCartItems(null);
             reservation.getCustomer().setReservations(null);
+            reservation.getCustomer().setTransactions(null);
         }
         if (reservation.getStore() != null) {
             reservation.getStore().setReservations(null);

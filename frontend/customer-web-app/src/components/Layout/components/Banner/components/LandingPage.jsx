@@ -2,6 +2,7 @@ import React from "react";
 import Button from "components/UI/CustomButtons/Button";
 import classNames from "classnames";
 import GridItem from "components/Layout/components/Grid/GridItem";
+import { Link } from "react-router-dom";
 
 function LandingPage(props) {
   const { classes } = props;
@@ -17,18 +18,24 @@ function LandingPage(props) {
       <br />
       <h6>Shop Now:</h6>
       <div>
-        <Button color="white" simple size="lg" justIcon>
-          <i className="fab fa-twitter" />
-        </Button>
-        <Button color="white" simple size="lg" justIcon>
-          <i className="fab fa-facebook-square" />
-        </Button>
-        <Button color="white" simple size="lg" justIcon>
-          <i className="fab fa-google-plus-g" />
-        </Button>
-        <Button color="white" simple size="lg" justIcon>
-          <i className="fab fa-instagram" />
-        </Button>
+        <Link to="/shop/catalog/Men/Clothing">
+          <Button
+            color="white"
+            size="lg"
+            style={{ width: "125px", opacity: "0.9", marginRight: "2px" }}
+          >
+            Men
+          </Button>
+        </Link>
+        <Link to="/shop/catalog/Women/Clothing">
+          <Button
+            color="white"
+            size="lg"
+            style={{ width: "125px", opacity: "0.9", marginLeft: "2px" }}
+          >
+            Women
+          </Button>
+        </Link>
       </div>
     </GridItem>
   );

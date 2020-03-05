@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import classNames from "classnames";
 import Parallax from "components/UI/Parallax/Parallax";
 import productStyle from "assets/jss/material-kit-pro-react/views/productStyle.js";
@@ -9,6 +9,8 @@ import { retrieveProductById } from "redux/actions/productActions";
 import { makeStyles } from "@material-ui/core/styles";
 import ReviewCard from "../Reviews/ReviewCard";
 import {checkIfCanWriteReview, retrieveAllReviewsByProductId} from "../../redux/actions/reviewAction";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import Backdrop from "@material-ui/core/Backdrop";
 
 const _ = require("lodash");
 const useStyles = makeStyles(productStyle);
@@ -27,14 +29,21 @@ function ProductDetailsPage(props) {
   );
 
   console.log(currentProductReviews);
+  const [isLoading, setIsLoading] = useState(true);
   //Make API call to retrieve single prod from url param
   useEffect(() => {
-    dispatch(retrieveProductById(productId));
+    setIsLoading(true);
+    dispatch(retrieveProductById(productId, setIsLoading));
   }, [productId]);
 
   useEffect(() => {
     dispatch(retrieveAllReviewsByProductId(productId));
   }, [productId]);
+
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+    document.body.scrollTop = 0;
+  }, []);
 
   return (
     currentProductDetail && (
@@ -52,6 +61,9 @@ function ProductDetailsPage(props) {
             </div>
           </div>
         </div>
+        <Backdrop className={classes.backdrop} open={isLoading}>
+          <CircularProgress color="inherit" />
+        </Backdrop>
       </div>
     )
   );

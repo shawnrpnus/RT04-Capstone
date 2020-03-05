@@ -58,7 +58,15 @@ class ProductsTable extends PureComponent {
 
   componentDidMount() {
     // TODO: Retrieve store ID from cookie to input as argument
-    if (this.props.retrieveAllProducts) this.props.retrieveAllProducts();
+    const { store, retrieveProductsDetails } = this.props;
+    console.log(this.props);
+    if (store.storeId) {
+      console.log("retrieving for store ", store.storeId);
+      retrieveProductsDetails(store.storeId);
+    } else {
+      console.log("retrieving for warehouse");
+      retrieveProductsDetails();
+    }
   }
 
   handleViewProductDetails = id => {
@@ -72,11 +80,13 @@ class ProductsTable extends PureComponent {
     });
   };
 
-  formatData = () => {};
-
   render() {
-    const { products, renderLoader, columnsToHide } = this.props;
+    const { products, renderLoader, columnsToHide, store } = this.props;
     const { openProductStocksDetailsDialogue, selectedProductId } = this.state;
+    const salesmarketing =
+      _.get(this.props, "staff.department.departmentName") ===
+      "Sales and Marketing";
+    console.log(this.props);
 
     let data = [];
     if (products) {
@@ -101,14 +111,11 @@ class ProductsTable extends PureComponent {
       });
     }
 
-    console.log(products);
-
     return (
       <div className="table" style={{ verticalAlign: "middle" }}>
         {products ? (
           <MaterialTable
             title="Products"
-            // padding="none"
             style={{ boxShadow: "none" }}
             icons={tableIcons}
             columns={[
@@ -116,7 +123,7 @@ class ProductsTable extends PureComponent {
                 title: "Image",
                 field: "image",
                 render: rowData => (
-                  <Link to={`/warehouse/viewProductDetails/${rowData.productId}`}>
+                  <Link to={`/product/viewProductDetails/${rowData.productId}`}>
                     <img
                       style={{
                         width: "100%",
@@ -160,7 +167,6 @@ class ProductsTable extends PureComponent {
             options={{
               filtering: true,
               sorting: true,
-              // padding: "dense",
               pageSize: 5,
               pageSizeOptions: [5, 10, 20, 40],
               actionsColumnIndex: -1,
@@ -168,22 +174,30 @@ class ProductsTable extends PureComponent {
               cellStyle: { textAlign: "center" },
               selection: this.props.selectable
             }}
-            actions={[
+            actions={
               !this.props.selectionAction
-                ? {
-                    icon: Visibility,
-                    tooltip: "View Product Variants",
-                    onClick: (event, rowData) =>
-                      this.handleViewProductDetails(rowData.productId)
-                  }
-                : this.props.selectionAction,
-              {
-                icon: List,
-                tooltip: "View / Update Product Stocks",
-                onClick: (event, rowData) =>
-                  this.handleViewProductStocksDetails(rowData.productId)
-              }
-            ]}
+                ? [
+                    {
+                      icon: Visibility,
+                      tooltip: "View Product Variants",
+                      onClick: (event, rowData) =>
+                        this.handleViewProductDetails(rowData.productId)
+                    },
+                    !salesmarketing && store.storeId
+                      ? {
+                          icon: List,
+                          tooltip: "View / Update Product Stocks",
+                          onClick: (event, rowData) =>
+                            this.handleViewProductStocksDetails(
+                              rowData.productId
+                            )
+                        }
+                      : null
+                  ]
+                : [this.props.selectionAction][0].icon === undefined
+                ? false
+                : [this.props.selectionAction]
+            }
           />
         ) : (
           renderLoader()
@@ -196,6 +210,7 @@ class ProductsTable extends PureComponent {
             }}
             key={selectedProductId}
             selectedProductId={selectedProductId}
+            storeId={store.storeId}
           />
         )}
       </div>
@@ -210,7 +225,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = {
-  retrieveAllProducts: retrieveProductsDetails
+  retrieveProductsDetails
 };
 
 export const ProductsTableRaw = withRouter(ProductsTable);

@@ -19,6 +19,8 @@ import {
   changePassword,
   emailSending,
   emailSent,
+  refreshCustomerEmail,
+  refreshCustomerId,
   sendUpdateEmailLink,
   updateCustomerName
 } from "redux/actions/customerActions";
@@ -32,10 +34,10 @@ import LoadingOverlay from "react-loading-overlay";
 import { DialogContent } from "@material-ui/core";
 import ChangePasswordRequest from "models/customer/ChangePasswordRequest";
 import IconButton from "@material-ui/core/IconButton";
-import AddressCard from "./AddressCard";
-import AddAddress from "./AddAddress";
-import AddCreditCard from "./AddCreditCard";
-import CreditCardCard from "./CreditCardCard";
+import AddressCard from "components/Profile/sections/Address/AddressCard";
+import AddAddress from "components/Profile/sections/Address/AddAddress";
+import AddCreditCard from "components/Profile/sections/CreditCard/AddCreditCard";
+import CreditCardCard from "components/Profile/sections/CreditCard/CreditCardCard";
 
 const useStyles = makeStyles(signupPageStyle);
 const _ = require("lodash");
@@ -73,6 +75,10 @@ function AccountInfo(props) {
   //Cleanup on unmount
   useEffect(() => {
     return () => dispatch(emailSent());
+  }, []);
+
+  useEffect(() => {
+    dispatch(refreshCustomerId(customer.customerId));
   }, []);
 
   //Misc

@@ -8,6 +8,7 @@ import tagReducer from "redux/reducers/tagReducer";
 import filterBarReducer from "redux/reducers/filterBarReducer";
 import reservationReducer from "redux/reducers/reservationReducer";
 import reviewReducer from "./reviewReducer";
+import transactionReducer from "redux/reducers/transactionReducer";
 
 const rootReducer = combineReducers({
   customer: customerReducer,
@@ -18,7 +19,8 @@ const rootReducer = combineReducers({
   review: reviewReducer,
   tag: tagReducer,
   filterBar: filterBarReducer,
-  reservation: reservationReducer
+  reservation: reservationReducer,
+  transaction: transactionReducer
 });
 
 export default rootReducer;

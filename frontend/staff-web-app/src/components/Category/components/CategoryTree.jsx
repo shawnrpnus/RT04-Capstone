@@ -21,6 +21,8 @@ import CreateUpdateCategoryDialog from "./CreateUpdateCategoryDialog";
 import { Button, ButtonToolbar } from "reactstrap";
 import { clearErrors } from "../../../redux/actions";
 
+const _ = require("lodash");
+
 class CategoryTree extends Component {
   constructor(props) {
     super(props);
@@ -41,12 +43,13 @@ class CategoryTree extends Component {
   onSelectionChange = e => {
     this.setState({ selectedCategoryId: e.value });
     // TODO: Update store/warehouse ID from global state / local storage
-    this.props.retrieveAllProducts(null, e.value);
+    this.props.retrieveProductsDetails(null, e.value);
   };
 
-  onContextMenu = event => {
-    //console.log(event);
-    this.cm.show(event.originalEvent);
+  onContextMenu = (event, department) => {
+    if (department === "Sales and Marketing")
+      //console.log(event);
+      this.cm.show(event.originalEvent);
   };
 
   onContextMenuSelectionChange = event => {
@@ -69,6 +72,8 @@ class CategoryTree extends Component {
       categoryProducts,
       deleteCategory
     } = this.props;
+    const department = _.get(this.props, "staff.department.departmentName");
+
     const menu = [
       {
         label: "Add Child",
@@ -130,7 +135,12 @@ class CategoryTree extends Component {
                       <b>Left click</b> to view products
                     </h6>
                   </li>
-                  <li>
+                  <li
+                    style={{
+                      visibility:
+                        department === "Sales and Marketing" ? true : "hidden"
+                    }}
+                  >
                     <h6>
                       <b>Right click</b> for more options
                     </h6>
@@ -138,7 +148,12 @@ class CategoryTree extends Component {
                 </ul>
                 <Button
                   size="sm"
-                  style={{ width: "100%", marginBottom: "5px" }}
+                  style={{
+                    width: "100%",
+                    marginBottom: "5px",
+                    visibility:
+                      department === "Sales and Marketing" ? true : "hidden"
+                  }}
                   onClick={() => this.openDialog("createRoot")}
                   color="primary"
                 >
@@ -159,7 +174,7 @@ class CategoryTree extends Component {
                   onSelectionChange={this.onSelectionChange}
                   filter={true}
                   style={{ width: "100%" }}
-                  onContextMenu={this.onContextMenu}
+                  onContextMenu={e => this.onContextMenu(e, department)}
                   onContextMenuSelectionChange={
                     this.onContextMenuSelectionChange
                   }
@@ -171,9 +186,14 @@ class CategoryTree extends Component {
                   <ProductsTableRaw
                     products={categoryProducts}
                     renderLoader={renderLoader}
+                    {...this.props}
                   />
                 ) : (
-                  <ProductsTableRaw products={[]} renderLoader={renderLoader} />
+                  <ProductsTableRaw
+                    products={[]}
+                    renderLoader={renderLoader}
+                    {...this.props}
+                  />
                 )}
               </Grid>
             </Grid>
@@ -194,7 +214,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = {
   retrieveAllRootCategories,
   retrieveAllCategories,
-  retrieveAllProducts: retrieveProductsDetails,
+  retrieveProductsDetails,
   deleteCategory,
   createCategory,
   clearErrors

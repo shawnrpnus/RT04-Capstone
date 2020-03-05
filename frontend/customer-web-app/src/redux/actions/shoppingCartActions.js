@@ -58,14 +58,31 @@ const handleUpdateShoppingCart = (responseData, dispatch) => {
   dispatch(updateShoppingCartThroughCustomer(data));
 };
 
-export const checkOut = (paymentRequest, setShowCreditCardDialog) => {
+export const getClientSecret = (totalAmount, setClientSecret) => {
+  axios
+    .post(`/directPayment`, null, {
+      params: { totalAmount: totalAmount * 100 }
+    })
+    .then(resp => {
+      // Return a client_secret string
+      console.log(resp);
+      setClientSecret(resp.data);
+    })
+    .catch(err => {
+      console.log(err);
+    });
+};
+
+export const completeDirectPayment = (paymentRequest, history) => {
   return dispatch => {
     axios
-      .post("/simulatePayment", paymentRequest)
+      .post(`/completeDirectPayment`, paymentRequest)
       .then(resp => {
+        // Return a customer object
+        // Update customer
         console.log(resp);
-        dispatch(paymentSuccess(resp.data));
-        setShowCreditCardDialog(true);
+        handleUpdateShoppingCart(resp.data, dispatch);
+        history.push("/");
       })
       .catch(err => {
         console.log(err);
@@ -73,29 +90,25 @@ export const checkOut = (paymentRequest, setShowCreditCardDialog) => {
   };
 };
 
-// Customer reducer
-const paymentSuccess = data => ({
-  type: PAYMENT_SUCCESS,
-  clientSecret: data
-});
-
-// export const saveCard = (customerId, setShowCreditCardDialog) => {
-//   return dispatch => {
-//     axios
-//       .get(`/saveCard/${customerId}`)
-//       .then(resp => {
-//         console.log(resp);
-//         dispatch(saveCardSuccess(resp.data));
-//         setShowCreditCardDialog(true);
-//       })
-//       .catch(err => {
-//         console.log(err);
-//       });
-//   };
-// };
+export const makePaymentWithSavedCard = (paymentRequest, history) => {
+  return dispatch => {
+    axios
+      .post(`/makePaymentWithSavedCard`, paymentRequest)
+      .then(resp => {
+        // Return a customer object
+        // Update customer
+        console.log(resp);
+        handleUpdateShoppingCart(resp.data, dispatch);
+        history.push("/");
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+};
 
 // // Customer reducer
-// const saveCardSuccess = data => ({
-//   type: SAVE_CARD_SUCCESS,
+// const paymentSuccess = data => ({
+//   type: PAYMENT_SUCCESS,
 //   clientSecret: data
 // });

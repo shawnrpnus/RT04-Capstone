@@ -15,14 +15,15 @@ import Card from "../UI/Card/Card";
 import CardBody from "../UI/Card/CardBody";
 import GridContainer from "../Layout/components/Grid/GridContainer";
 import GridItem from "../Layout/components/Grid/GridItem";
-import Button from "@material-ui/core/Button";
-import {Check, Delete, Edit} from "@material-ui/icons";
+
+import { Check, Delete, Edit } from "@material-ui/icons";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import Checkbox from "@material-ui/core/Checkbox";
+import { Button } from "components/UI/CustomButtons/Button";
 
 const style = {
   cardTitle,
@@ -34,13 +35,17 @@ const useStyles = makeStyles(style);
 
 export default function AddressCardForCheckOut({
   addNewAddress: [addNewAddress, setAddNewAddress],
-  currAddress: [currAddress, setCurrAddress]
+  setCurrShippingAddress,
+  setCurrBillingAddress
 }) {
+  const classes = useStyles();
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+
   //Redux
   const dispatch = useDispatch();
   const history = useHistory();
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
-
+  const currCustomer = useSelector(state => state.customer.loggedInCustomer);
+  const errors = useSelector(state => state.errors);
   // useEffect(() => dispatch(retrieveAllContactUsCategoryEnum()), []);
   const unsortedShippingAddresses = useSelector(
     state => state.customer.loggedInCustomer.shippingAddresses
@@ -58,69 +63,45 @@ export default function AddressCardForCheckOut({
     }
   });
 
-  const currCustomer = useSelector(state => state.customer.loggedInCustomer);
+  const [shownShippingAddress, setShownShippingAddress] = useState(
+    shippingAddresses.find(item => item.default)
+  );
+  const [shownBillingAddress, setShownBillingAddress] = useState(
+    shippingAddresses.find(item => item.billing)
+  );
+  const [mode, setMode] = useState(null);
 
-  const errors = useSelector(state => state.errors);
+  useEffect(() => {
+    setCurrShippingAddress(shownShippingAddress);
+    setCurrBillingAddress(shownBillingAddress);
+  }, [shownShippingAddress, shownBillingAddress]);
 
-  //State
-  // const [currAddress, setCurrAddress] = useState("");
-
-  const onChange = (e, i) => {
-    e.persist();
-    // console.log(e);
-    // console.log(i.item);
-    // console.log(e);
-    // console.log(i);
-
-    if (e.target.value === "shipping") {
-      i.item.default = e.target.checked;
-      e.target.checked = false;
+  const changeShippingOrBilling = address => {
+    if (mode === "changeShipping") {
+      setShownShippingAddress(address);
+    } else if (mode === "changeBilling") {
+      setShownBillingAddress(address);
     }
-    if (e.target.value === "billing") {
-      i.item.billing = e.target.checked;
-      e.target.checked = false;
-    }
-
-    const req = new AddUpdateAddressRequest(currCustomer.customerId, i.item);
-    dispatch(updateShippingAddress(req, history));
-    setShowOneAddress(true);
-
-    if (Object.keys(errors).length !== 0) {
-      dispatch(clearErrors());
-    }
-    // const req = new AddUpdateAddressRequest(currCustomer.customerId, inputState.currentAddress);
-    // console.log(req);
+    setMode(null);
   };
 
-  const onEditAddress = item => {
-    setCurrAddress(item);
-    setAddNewAddress(!addNewAddress);
-    // console.log(currAddress);
-  };
-
-  const onDeleteAddress = item => {
-    // console.log(item);
-    // const req = new RemoveShippingAddressRequest(currCustomer.customerId, item.addressId);
-    dispatch(
-      removeShippingAddressDetails(
-        currCustomer.customerId,
-        item.addressId,
-        enqueueSnackbar,
-        history
-      )
-    );
-    // setAddNewAddress(!addNewAddress);
-  };
-
-  const classes = useStyles();
   return (
-    <Card style={{ width: "25rem", marginTop: "0", boxShadow: "none" }}>
-      {showOneAddress ? (
+    <Card style={{ marginTop: "0", boxShadow: "none" }}>
+      {mode === null ? (
         <React.Fragment>
-          {shippingAddresses
-            .filter(item => item.default)
-            .map(function(item, i) {
-              return (
+          {[shownShippingAddress, shownBillingAddress].map(function(
+            item,
+            index
+          ) {
+            return item ? (
+              <React.Fragment>
+                <h5>
+                  {index === 0
+                    ? "Shipping address for this transaction"
+                    : index === 1
+                    ? "Billing address for this transaction"
+                    : ""}
+                </h5>
                 <CardBody
                   style={{
                     border: ".5px solid #e8e7e7",
@@ -130,20 +111,7 @@ export default function AddressCardForCheckOut({
                   key={item.addressId}
                 >
                   <GridContainer>
-                    <GridItem xs={12} sm={10} md={10}>
-                      <h4 className={classes.cardTitle}>
-                        {(() => {
-                          if (item.default && item.billing) {
-                            return "Shipping & Billing Address";
-                          } else if (item.default && !item.billing) {
-                            return "Shipping Address";
-                          } else if (!item.default && item.billing) {
-                            return "Billing Address";
-                          } else {
-                            return "Other Address";
-                          }
-                        })()}
-                      </h4>
+                    <GridItem md={9}>
                       <h6 className={classes.cardSubtitle}>
                         {item.buildingName !== null ? item.buildingName : ""}
                       </h6>
@@ -153,40 +121,48 @@ export default function AddressCardForCheckOut({
                       <br />
                     </GridItem>
 
-                    <GridItem
-                      style={{ paddingLeft: "0" }}
-                      xs={12}
-                      sm={2}
-                      md={2}
-                    >
+                    <GridItem style={{ paddingLeft: "0" }} md={3}>
                       <Button
-                        onClick={() => setShowOneAddress(false)}
+                        onClick={
+                          index === 0
+                            ? () => setMode("changeShipping")
+                            : index === 1
+                            ? () => setMode("changeBilling")
+                            : () => console.log("shit went wrong")
+                        }
                         color="primary"
                       >
                         CHANGE
                       </Button>
-
                     </GridItem>
 
                     <GridItem xs={12} sm={12} md={12}>
                       {item.default ? (
                         <small>This is your default shipping address</small>
-                      ) : ""}
+                      ) : (
+                        ""
+                      )}
                       <br />
                       {item.billing ? (
                         <small>This is your default billing address</small>
-                      ) : ""}
+                      ) : (
+                        ""
+                      )}
                     </GridItem>
                   </GridContainer>
                 </CardBody>
-              );
-            })}{" "}
+              </React.Fragment>
+            ) : (
+              <Button>
+                Add a {index === 0 ? "shipping" : index === 1 ? "billing" : ""}{" "}
+                address
+              </Button>
+            );
+          })}{" "}
         </React.Fragment>
       ) : (
         <React.Fragment>
           {shippingAddresses.map(function(item, i) {
-            // console.log(item.default); //array[0]
-            //console.log(i); //index
             return (
               <CardBody
                 style={{
@@ -198,23 +174,6 @@ export default function AddressCardForCheckOut({
               >
                 <GridContainer>
                   <GridItem xs={12} sm={10} md={10}>
-                    <h4 className={classes.cardTitle}>
-                      {(() => {
-                        if (item.default && item.billing) {
-                          return "Shipping & Billing Address";
-                        } else if (item.default && !item.billing) {
-                          return "Shipping Address";
-                        } else if (!item.default && item.billing) {
-                          return "Billing Address";
-                        } else {
-                          return "Other Address";
-                        }
-                      })()}
-                      {/*{item.default && item.billing ? "Shipping & Billing Address": ""}*/}
-                      {/*{item.default ? "Shipping Address" : ""}*/}
-                      {/*{item.billing ? "Billing Address": ""}*/}
-                      {/*{!item.default && !item.billing ? 'Other Address' : ''}*/}
-                    </h4>
                     <h6 className={classes.cardSubtitle}>
                       {item.buildingName !== null ? item.buildingName : ""}
                     </h6>
@@ -224,80 +183,16 @@ export default function AddressCardForCheckOut({
                     <br />
                   </GridItem>
 
-                  <GridItem style={{ paddingLeft: "0" }} xs={12} sm={2} md={2}>
-
-                        {/*<Checkbox*/}
-                        {/*  tabIndex={-1}*/}
-                        {/*  // onClick={() => handleToggle(21)}*/}
-                        {/*  checkedIcon={<Check className={classes.checkedIcon} />}*/}
-                        {/*  icon={<Check className={classes.uncheckedIcon} />}*/}
-                        {/*  classes={{*/}
-                        {/*    checked: classes.checked,*/}
-                        {/*    root: classes.checkRoot*/}
-                        {/*  }}*/}
-                        {/*/>*/}
-
+                  <GridItem xs={12}>
+                    <Button onClick={() => changeShippingOrBilling(item)}>
+                      Select
+                    </Button>
                   </GridItem>
-
-                  <GridItem xs={12} sm={12} md={12}>
-                    {item.default ? (
-                      <small>This is your default shipping address</small>
-                    ) : (
-                      <FormControlLabel
-                        control={
-                          <Switch
-                            onChange={e => onChange(e, { item })}
-                            value="shipping"
-                            classes={{
-                              switchBase: classes.switchBase,
-                              checked: classes.switchChecked,
-                              thumb: classes.switchIcon,
-                              track: classes.switchBar
-                            }}
-                          />
-                        }
-                        classes={{
-                          label: classes.label
-                        }}
-                        label="Set as default shipping address"
-                      />
-                    )}
-                    <br />
-                    {item.billing ? (
-                      <small>This is your default billing address</small>
-                    ) : (
-                      <FormControlLabel
-                        control={
-                          <Switch
-                            onChange={e => onChange(e, { item })}
-                            value="billing"
-                            classes={{
-                              switchBase: classes.switchBase,
-                              checked: classes.switchChecked,
-                              thumb: classes.switchIcon,
-                              track: classes.switchBar
-                            }}
-                          />
-                        }
-                        classes={{
-                          label: classes.label
-                        }}
-                        label="Set as default billing address"
-                      />
-                    )}
-                  </GridItem>
-
-
                 </GridContainer>
               </CardBody>
             );
-
-
           })}
-          <Button
-            onClick={() => setShowOneAddress(true)}
-            color="primary"
-          >
+          <Button onClick={() => setMode(null)} color="primary">
             CANCEL
           </Button>
         </React.Fragment>

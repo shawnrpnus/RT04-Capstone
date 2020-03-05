@@ -50,6 +50,9 @@ import {
 import { saveCard } from "./../../redux/actions/customerActions";
 import UpdateShoppingCartRequest from "../../models/shoppingCart/UpdateShoppingCartRequest.js";
 import CreditCardDialog from "./CreditCardDialog.js";
+import colourList from "assets/colours.json";
+
+const jsonColorHexList = _.keyBy(colourList, "hex");
 
 const useStyles = makeStyles(shoppingCartStyle);
 
@@ -79,9 +82,6 @@ export default function ShoppingCartPage() {
   const [shoppingCartItems, setShoppingCartItems] = useState(
     _.get(customer, "onlineShoppingCart.shoppingCartItems", [])
   );
-
-  console.log(customer.onlineShoppingCart);
-  console.log(clientSecret);
 
   const handleUpdateQuantity = (quantity, productVariantId, isDelete) => {
     if (isDelete) {
@@ -128,136 +128,143 @@ export default function ShoppingCartPage() {
       <div className={classNames(classes.main, classes.mainRaised)}>
         <div className={classes.container}>
           <Card plain>
-            <CardBody plain>
-              <h3 className={classes.cardTitle}>Shopping Cart</h3>
-              <Grid container spacing={3}>
-                <Grid item md={9}>
-                  {shoppingCartItems.map((cartItem, index) => {
-                    // console.log(cartItem);
-                    const {
-                      productImages,
-                      product,
-                      sizeDetails,
-                      colour,
-                      productVariantId
-                    } = cartItem.productVariant;
-                    const { quantity } = cartItem;
-                    return (
-                      <div>
-                        <Card plain>
-                          <GridContainer
-                            alignItems="center"
-                            style={{ textAlign: "center" }}
-                          >
-                            {/* Photo */}
-                            <Grid item md={2}>
-                              {/* Modified CSS */}
-                              <div className={classes.imgContainer}>
-                                <img
-                                  className={classes.img}
-                                  src={productImages[1].productImageUrl}
-                                />
-                              </div>
-                            </Grid>
-                            {/* Name */}
-                            <GridItem
-                              container
-                              md={3}
-                              style={{ textAlign: "left" }}
-                            >
-                              <GridItem md={12}>
-                                <h3 className={classes.productName}>
-                                  {product.productName}
-                                </h3>
-                              </GridItem>
-                              <GridItem md={12}>
-                                <h3 style={{ marginTop: "10px" }}>
-                                  ${product.price}
-                                </h3>
-                              </GridItem>
-                              <GridItem md={12}>
-                                {colour}, {sizeDetails.productSize}
-                              </GridItem>
-                            </GridItem>
-                            {/* Quantity */}
-                            <GridItem md={1} style={{ textAlign: "right" }}>
-                              <IconButton
-                                className={classes.buttonTopMargin}
-                                onClick={e =>
-                                  handleUpdateQuantity(
-                                    quantity - 1,
-                                    productVariantId
-                                  )
-                                }
-                              >
-                                <MinusBoxIcon />
-                              </IconButton>
-                            </GridItem>
-                            <GridItem md={1}>
-                              <h3>{quantity}</h3>
-                            </GridItem>
-                            <GridItem md={1} style={{ textAlign: "left" }}>
-                              <IconButton
-                                className={classes.buttonTopMargin}
-                                onClick={e =>
-                                  handleUpdateQuantity(
-                                    quantity + 1,
-                                    productVariantId
-                                  )
-                                }
-                              >
-                                <AddBoxIcon />
-                              </IconButton>
-                            </GridItem>
-                            {/* Amount */}
-                            <GridItem md={2}>
-                              <h3>${(product.price * quantity).toFixed(2)}</h3>
-                            </GridItem>
-                            {/* Action */}
-                            <GridItem md={1}>
-                              <IconButton
-                                className={classes.buttonTopMargin}
-                                onClick={e =>
-                                  handleUpdateQuantity(
-                                    e,
-                                    productVariantId,
-                                    true
-                                  )
-                                }
-                              >
-                                <CancelIcon style={{ color: "red" }} />
-                              </IconButton>
-                            </GridItem>
-                          </GridContainer>
-                        </Card>
-                        {index !== shoppingCartItems.length - 1 && (
-                          <Divider style={{ margin: "0 5%" }} />
-                        )}
-                      </div>
-                    );
-                  })}
-                </Grid>
-                <Grid item md={3}>
-                  <Card>
-                    <CardContent>
-                      <Typography variant="h4" gutterBottom>
-                        Total
-                      </Typography>
-                      <Divider style={{ marginBottom: "5%" }} />
-                      <Grid container>
-                        <Grid item xs={6}>
-                          <Typography variant="h6" component="h2">
-                            Sub-total
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={6} style={{ textAlign: "right" }}>
-                          <Typography variant="h6" component="h2">
-                            {customer.onlineShoppingCart.initialTotalAmount}
-                          </Typography>
-                        </Grid>
-                      </Grid>
+            {shoppingCartItems.length > 0 ? (
+              <CardBody plain>
+                <h3 className={classes.cardTitle}>Shopping Cart</h3>
 
-                      {/* <Typography className={classes.pos} color="textSecondary">
+                <Grid container spacing={3}>
+                  <Grid item md={9}>
+                    {shoppingCartItems.map((cartItem, index) => {
+                      // console.log(cartItem);
+                      const {
+                        productImages,
+                        product,
+                        sizeDetails,
+                        colour,
+                        productVariantId
+                      } = cartItem.productVariant;
+                      const { quantity } = cartItem;
+                      return (
+                        <div>
+                          <Card plain>
+                            <GridContainer
+                              alignItems="center"
+                              style={{ textAlign: "center" }}
+                            >
+                              {/* Photo */}
+                              <Grid item md={2}>
+                                {/* Modified CSS */}
+                                <div className={classes.imgContainer}>
+                                  <img
+                                    className={classes.img}
+                                    src={productImages[1].productImageUrl}
+                                  />
+                                </div>
+                              </Grid>
+                              {/* Name */}
+                              <GridItem
+                                container
+                                md={3}
+                                style={{ textAlign: "left" }}
+                              >
+                                <GridItem md={12}>
+                                  <h3 className={classes.productName}>
+                                    {product.productName}
+                                  </h3>
+                                </GridItem>
+                                <GridItem md={12}>
+                                  <h3 style={{ marginTop: "10px" }}>
+                                    ${product.price}
+                                  </h3>
+                                </GridItem>
+                                <GridItem md={12}>
+                                  {jsonColorHexList[colour].name},{" "}
+                                  {sizeDetails.productSize}
+                                </GridItem>
+                              </GridItem>
+                              {/* Quantity */}
+                              <GridItem md={1} style={{ textAlign: "right" }}>
+                                <IconButton
+                                  className={classes.buttonTopMargin}
+                                  onClick={e =>
+                                    handleUpdateQuantity(
+                                      quantity - 1,
+                                      productVariantId
+                                    )
+                                  }
+                                >
+                                  <MinusBoxIcon />
+                                </IconButton>
+                              </GridItem>
+                              <GridItem md={1}>
+                                <h3>{quantity}</h3>
+                              </GridItem>
+                              <GridItem md={1} style={{ textAlign: "left" }}>
+                                <IconButton
+                                  className={classes.buttonTopMargin}
+                                  onClick={e =>
+                                    handleUpdateQuantity(
+                                      quantity + 1,
+                                      productVariantId
+                                    )
+                                  }
+                                >
+                                  <AddBoxIcon />
+                                </IconButton>
+                              </GridItem>
+                              {/* Amount */}
+                              <GridItem md={2}>
+                                <h3>
+                                  ${(product.price * quantity).toFixed(2)}
+                                </h3>
+                              </GridItem>
+                              {/* Action */}
+                              <GridItem md={1}>
+                                <IconButton
+                                  className={classes.buttonTopMargin}
+                                  onClick={e =>
+                                    handleUpdateQuantity(
+                                      e,
+                                      productVariantId,
+                                      true
+                                    )
+                                  }
+                                >
+                                  <CancelIcon style={{ color: "red" }} />
+                                </IconButton>
+                              </GridItem>
+                            </GridContainer>
+                          </Card>
+                          {index !== shoppingCartItems.length - 1 && (
+                            <Divider style={{ margin: "0 5%" }} />
+                          )}
+                        </div>
+                      );
+                    })}
+                  </Grid>
+                  <Grid item md={3}>
+                    <Card>
+                      <CardContent>
+                        <Typography variant="h4" gutterBottom>
+                          Total
+                        </Typography>
+                        <Divider style={{ marginBottom: "5%" }} />
+                        <Grid container>
+                          <Grid item xs={6}>
+                            <Typography variant="h6" component="h2">
+                              Sub-total
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={6} style={{ textAlign: "right" }}>
+                            <Typography variant="h6" component="h2">
+                              {customer.onlineShoppingCart.initialTotalAmount.toFixed(
+                                2
+                              )}
+                            </Typography>
+                          </Grid>
+                        </Grid>
+
+                        {/* <Typography className={classes.pos} color="textSecondary">
                         adjective
                       </Typography>
                       <Typography variant="body2" component="p">
@@ -265,20 +272,25 @@ export default function ShoppingCartPage() {
                         <br />
                         {'"a benevolent smile"'}
                       </Typography> */}
-                    </CardContent>
-                    <CardActions>
-                      <Button
-                        color="success"
-                        fullWidth
-                        onClick={handleCheckout}
-                      >
-                        Checkout
-                      </Button>
-                    </CardActions>
-                  </Card>
+                      </CardContent>
+                      <CardActions>
+                        <Button
+                          color="success"
+                          fullWidth
+                          onClick={handleCheckout}
+                        >
+                          Checkout
+                        </Button>
+                      </CardActions>
+                    </Card>
+                  </Grid>
                 </Grid>
-              </Grid>
-            </CardBody>
+              </CardBody>
+            ) : (
+              <h3 style={{ textAlign: "center", margin: "2%" }}>
+                Your shopping cart is empty.
+              </h3>
+            )}
           </Card>
           {/* {showCreditCardDialog && (
             <CreditCardDialog handleClose={setShowCreditCardDialog} />

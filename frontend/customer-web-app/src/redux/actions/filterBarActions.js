@@ -5,6 +5,11 @@ import {
   SET_CHECKED_COLOURS,
   SET_CHECKED_SIZES,
   SET_CHECKED_TAGS,
+  SET_ORDER_COLLECTION_MODE,
+  SET_ORDER_DELIVERY_STATUS,
+  SET_ORDER_END_DATE,
+  SET_ORDER_SELECTED_SORT,
+  SET_ORDER_START_DATE,
   SET_PRICE_RANGE,
   SET_SELECTED_SORT
 } from "redux/actions/types";
@@ -31,5 +36,26 @@ export const setCheckedTags = data => ({
 
 export const setSelectedSort = data => ({
   type: SET_SELECTED_SORT,
+  data: data
+});
+
+export const setOrderStartDate = data => ({
+  type: SET_ORDER_START_DATE,
+  data: data
+});
+export const setOrderEndDate = data => ({
+  type: SET_ORDER_END_DATE,
+  data: data
+});
+export const setOrderCollectionMode = data => ({
+  type: SET_ORDER_COLLECTION_MODE,
+  data: data
+});
+export const setOrderDeliveryStatus = data => ({
+  type: SET_ORDER_DELIVERY_STATUS,
+  data: data
+});
+export const setOrderSelectedSort = data => ({
+  type: SET_ORDER_SELECTED_SORT,
   data: data
 });
