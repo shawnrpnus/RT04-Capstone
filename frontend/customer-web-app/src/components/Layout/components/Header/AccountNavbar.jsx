@@ -46,9 +46,11 @@ function RenderAccountToolTip(props) {
   return (
     <React.Fragment>
       <HtmlTooltip title={<AccountToolTipContent />} interactive>
-        <Button className={classes.navLink} round color="transparent">
-          <AccountCircle />
-        </Button>
+        <Link to="/account/profile/info" style={{ color: "inherit" }}>
+          <Button className={classes.navLink} round color="transparent">
+            <AccountCircle />
+          </Button>
+        </Link>
       </HtmlTooltip>
     </React.Fragment>
   );
@@ -136,7 +138,7 @@ function AccDropDownLinksAfterLogin(props) {
   return [
     <Link
       key="profile"
-      to="/account/profile"
+      to="/account/profile/info"
       className={classes ? classes.dropdownLink : null}
     >
       {Component ? (

@@ -31,7 +31,7 @@ import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import customSelectStyle from "../../assets/jss/material-kit-pro-react/customSelectStyle";
-import {useSnackbar} from "notistack";
+import { useSnackbar } from "notistack";
 
 const useStyles = makeStyles(contactUsStyle);
 const useClassy = makeStyles(customSelectStyle);
@@ -93,7 +93,7 @@ function ContactUsTicket(props) {
       firstName,
       lastName
     );
-    dispatch(createNewContactUs(req, enqueueSnackbar,props.history));
+    dispatch(createNewContactUs(req, enqueueSnackbar, props.history));
     setInputState({
       contactUsCategory: "",
       customerEmail: "",
@@ -101,8 +101,7 @@ function ContactUsTicket(props) {
       firstName: "",
       lastName: ""
     });
-    dispatch({type: "clearEnum"});
-
+    dispatch({ type: "clearEnum" });
   };
 
   React.useEffect(() => {
@@ -261,8 +260,8 @@ function ContactUsTicket(props) {
                     title="Give us a ring"
                     description={
                       <p>
-                        Shawn Roshan Pillay <br /> +65 9756 1233 <br /> Mon - Fri,
-                        8:00-22:00
+                        Shawn Roshan Pillay <br /> +65 9756 1233 <br /> Mon -
+                        Fri, 8:00-22:00
                       </p>
                     }
                     icon={Phone}

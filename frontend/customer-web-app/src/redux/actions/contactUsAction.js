@@ -49,7 +49,11 @@ const retrieveAllContactUsCategoryEnumError = data => ({
   errorMap: data
 });
 
-export const createNewContactUs = (createContactUsRequest, enqueueSnackbar, history) => {
+export const createNewContactUs = (
+  createContactUsRequest,
+  enqueueSnackbar,
+  history
+) => {
   return dispatch => {
     //redux thunk passes dispatch
     axios

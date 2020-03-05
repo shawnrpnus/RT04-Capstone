@@ -8,7 +8,7 @@ import GridContainer from "../Layout/components/Grid/GridContainer";
 import GridItem from "../Layout/components/Grid/GridItem";
 import Button from "@material-ui/core/Button";
 import { Add, Clear, Delete, Edit } from "@material-ui/icons";
-import {Link, useHistory} from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { getUpcomingReservations } from "../../redux/actions/reservationActions";
 import Rating from "@material-ui/lab/Rating";
 import Media from "../Layout/components/Media/Media";
@@ -38,66 +38,75 @@ export default function ReviewCardForProfilePage() {
           <div>
             <h3 className={classes.title}>Reviews</h3>
           </div>
-          {reviews !== null ?
-            reviews.map(function(item, i) {
-            const months = [
-              "January",
-              "February",
-              "March",
-              "April",
-              "May",
-              "June",
-              "July",
-              "August",
-              "September",
-              "October",
-              "November",
-              "December"
-            ];
-            const dateTime = new Date(item.createdDateTime);
-            const formatted_date =
-              dateTime.getDate() +
-              " " +
-              months[dateTime.getMonth()] +
-              " " +
-              dateTime.getFullYear();
+          {reviews !== null
+            ? reviews.map(function(item, i) {
+                const months = [
+                  "January",
+                  "February",
+                  "March",
+                  "April",
+                  "May",
+                  "June",
+                  "July",
+                  "August",
+                  "September",
+                  "October",
+                  "November",
+                  "December"
+                ];
+                const dateTime = new Date(item.createdDateTime);
+                const formatted_date =
+                  dateTime.getDate() +
+                  " " +
+                  months[dateTime.getMonth()] +
+                  " " +
+                  dateTime.getFullYear();
 
-            return (
-              <GridContainer
-                key={item.reviewId}
-                justify="center">
-                <GridItem xs={12} sm={10} md={12}>
-              <Media
-                title={
-                  <span>
-                    <Link to={`/shop/product/${(_.get(item,"product.productId"))}`}>
-                      <Button style={{padding: "0px 2px"}}
-                        color="white"
-                        size="lg"
-                      >
-                      {(_.get(item, "product.productName"))}{" "}
-                      </Button>
-                    </Link>
+                return (
+                  <GridContainer key={item.reviewId} justify="center">
+                    <GridItem xs={12} sm={10} md={12}>
+                      <Media
+                        title={
+                          <span>
+                            <Link
+                              to={`/shop/product/${_.get(
+                                item,
+                                "product.productId"
+                              )}`}
+                            >
+                              <Button
+                                style={{ padding: "0px 2px" }}
+                                color="white"
+                                size="lg"
+                              >
+                                {_.get(item, "product.productName")}{" "}
+                              </Button>
+                            </Link>
 
-                    <small>· {formatted_date}</small>
-                    <br />
-                    <Rating
-                      name="read-only"
-                      value={item.rating}
-                      readOnly
-                      size="small"
-                    />
-                  </span>
-                }
-                body={
-                  <p style={{fontSize:"14px"}}className={classes.color555}>{item.content}</p>
-                }
-              />
-                </GridItem>
-
-              </GridContainer>
-            );
-          }) : ""}
+                            <small>· {formatted_date}</small>
+                            <br />
+                            <Rating
+                              name="read-only"
+                              value={item.rating}
+                              readOnly
+                              size="small"
+                            />
+                          </span>
+                        }
+                        body={
+                          <p
+                            style={{ fontSize: "14px" }}
+                            className={classes.color555}
+                          >
+                            {item.content}
+                          </p>
+                        }
+                      />
+                    </GridItem>
+                  </GridContainer>
+                );
+              })
+            : ""}
         </GridItem>
       </GridContainer>
     </div>

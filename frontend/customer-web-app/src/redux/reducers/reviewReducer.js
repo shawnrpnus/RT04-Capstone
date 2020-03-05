@@ -38,7 +38,7 @@ export default function(state = initialState, action) {
       return {
         ...state,
         allReviews: action.allReviews
-      }
+      };
     default:
       return state;
   }

@@ -21,7 +21,7 @@ export default function(state = initialState, action) {
       return {
         ...state,
         allContactUsCategoryEnum: []
-      }
+      };
     default:
       return state;
   }

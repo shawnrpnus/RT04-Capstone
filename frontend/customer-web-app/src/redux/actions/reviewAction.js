@@ -10,7 +10,8 @@ import {
   CREATE_REVIEW_BY_REVIEW_ID_SUCCESS,
   DELETE_REVIEW_BY_REVIEW_ID_SUCCESS,
   GET_ALL_REVIEWS_BY_PRODUCT_ID_SUCCESS,
-  GET_ERRORS, RETRIEVE_REVIEW_BY_CUSTOMER_ID_SUCCESS,
+  GET_ERRORS,
+  RETRIEVE_REVIEW_BY_CUSTOMER_ID_SUCCESS,
   UPDATE_REVIEW_BY_REVIEW_ID_SUCCESS
 } from "./types";
 
@@ -141,12 +142,10 @@ export const checkIfCanWriteReviewSuccess = data => ({
   canWrite: data
 });
 
-export const retrieveReviewsByCustomerId = (customerId) => {
+export const retrieveReviewsByCustomerId = customerId => {
   return dispatch =>
     axios
-      .get(
-        REVIEW_BASE_URL + `/retrieveReviewsByCustomerId/${customerId}`
-      )
+      .get(REVIEW_BASE_URL + `/retrieveReviewsByCustomerId/${customerId}`)
       .then(response => {
         const { data } = jsog.decode(response);
         dispatch(retrieveReviewsByCustomerIdSuccess(data));
