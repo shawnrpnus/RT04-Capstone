@@ -99,7 +99,7 @@ router.post(
                   return res.send(request);
                 })
                 .catch(err => {
-                  console.log(error);
+                  console.log(err);
                   return res.status(400).send(err);
                 });
             }
@@ -110,20 +110,22 @@ router.post(
       });
     });
 
-    request.colourToImageUrlsMaps.map((e, index) => {
-      request.colourToImageUrlsMaps[index].imageUrls = [];
-      delete request.colourToImageUrlsMaps[index].files;
-    });
-
-    axios
-      .post(process.env.SPRING_API_URL + "/product/createNewProduct", request)
-      .then(response => {
-        return res.send(request);
-      })
-      .catch(err => {
-        console.log(err);
-        return res.status(400).send(err);
+    if (filesArray.length === 0) {
+      request.colourToImageUrlsMaps.map((e, index) => {
+        request.colourToImageUrlsMaps[index].imageUrls = [];
+        delete request.colourToImageUrlsMaps[index].files;
       });
+
+      axios
+        .post(process.env.SPRING_API_URL + "/product/createNewProduct", request)
+        .then(response => {
+          return res.send(request);
+        })
+        .catch(err => {
+          console.log(err);
+          return res.status(400).send(err);
+        });
+    }
   }
 );
 

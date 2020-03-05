@@ -318,6 +318,7 @@ class ProductCard extends PureComponent {
             key={productId + "update"}
           />
         )}
+
         {openCreateProductVariantDialog && (
           <AddProductVariantForm
             open={openCreateProductVariantDialog}

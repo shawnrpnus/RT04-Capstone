@@ -38,18 +38,24 @@ import profilePageStyle from "assets/jss/material-kit-pro-react/views/profilePag
 import AccountInfo from "components/Profile/sections/AccountInfo";
 import Measurements from "components/Profile/sections/Measurements";
 import Style from "components/Profile/sections/Style";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import OrderHistoryPage from "components/Profile/sections/Orders/OrderHistoryPage";
+import { clearErrors } from "redux/actions";
 
 const useStyles = makeStyles(profilePageStyle);
 
 export default function ProfilePage(props) {
+  const dispatch = useDispatch();
   const customer = useSelector(state => state.customer.loggedInCustomer);
   const classes = useStyles();
 
   useEffect(() => {
     window.scrollTo(0, 0);
     document.body.scrollTop = 0;
+  }, []);
+
+  useEffect(() => {
+    dispatch(clearErrors);
   }, []);
 
   const imageClasses = classNames(

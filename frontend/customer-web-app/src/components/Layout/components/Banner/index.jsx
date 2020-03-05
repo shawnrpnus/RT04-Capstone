@@ -23,18 +23,20 @@ export default function Banner(props) {
   }, []);
 
   return (
-    <div
-      className={classes.pageHeader}
-      style={{ backgroundImage: `url("${dg2}")` }}
-    >
-      <div className={classes.container}>
-        <GridContainer>
-          <LandingPage classes={classes} />
-          {customer && customer.style && (
-            <Recommendations customer={customer} />
-          )}
-        </GridContainer>
+    <React.Fragment>
+      <div
+        className={classes.pageHeader}
+        style={{ backgroundImage: `url("${dg2}")` }}
+      >
+        <div className={classes.container}>
+          <GridContainer>
+            <LandingPage classes={classes} />
+          </GridContainer>
+        </div>
       </div>
-    </div>
+      {customer && customer.style && (
+        <Recommendations classes={classes} customer={customer} />
+      )}
+    </React.Fragment>
   );
 }

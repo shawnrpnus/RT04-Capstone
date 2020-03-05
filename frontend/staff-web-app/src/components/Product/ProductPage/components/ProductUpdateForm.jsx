@@ -39,7 +39,7 @@ class ProductUpdateForm extends PureComponent {
     };
   }
 
-  async componentDidMount() {
+   async componentDidMount() {
     const response = await retrieveAllCategoryTagStyle();
     console.log(response);
     let { categories, tags, styles } = response;
