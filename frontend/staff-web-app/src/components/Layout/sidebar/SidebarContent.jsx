@@ -106,6 +106,7 @@ class SidebarContent extends Component {
               />
             </SidebarCategory>
           )}
+          {(salesmarketing) &&(
           <SidebarCategory title="Category" icon="list">
             <SidebarLink
               title="View All"
@@ -113,6 +114,7 @@ class SidebarContent extends Component {
               onClick={this.hideSidebar}
             />
           </SidebarCategory>
+          )}
           {(store || warehouse) && (
             <SidebarCategory title="Product Stocks" icon="list">
               <SidebarLink
@@ -122,6 +124,8 @@ class SidebarContent extends Component {
               />
             </SidebarCategory>
           )}
+
+          {(warehouse) &&(
           <SidebarCategory title="Warehouse" icon="apartment">
             <SidebarLink
               title="View Warehouse"
@@ -129,6 +133,7 @@ class SidebarContent extends Component {
               onClick={this.hideSidebar}
             />
           </SidebarCategory>
+          )}
         </ul>
       </div>
     );
