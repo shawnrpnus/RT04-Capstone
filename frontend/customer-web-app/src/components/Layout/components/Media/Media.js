@@ -37,8 +37,8 @@ export default function Media(props) {
         <div className={classes.mediaFooter}>{footer}</div>
         {innerMedias !== undefined
           ? innerMedias.map(prop => {
-            return prop;
-          })
+              return prop;
+            })
           : null}
       </div>
     </div>

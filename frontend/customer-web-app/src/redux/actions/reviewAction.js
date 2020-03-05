@@ -1,6 +1,9 @@
 import axios from "axios";
-import {dispatchErrorMapError} from "./index";
-import {addShippingAddressSuccess, updateShippingAddressSuccess} from "./customerActions";
+import { dispatchErrorMapError } from "./index";
+import {
+  addShippingAddressSuccess,
+  updateShippingAddressSuccess
+} from "./customerActions";
 import {
   ADD_SHIPPING_ADDRESS_SUCCESS,
   CHECK_IF_CAN_WRITE_REVIEW_SUCCESS,
@@ -22,9 +25,7 @@ export const createReviewDetails = (
   return dispatch => {
     //redux thunk passes dispatch
     axios
-      .post(
-        REVIEW_BASE_URL + "/createNewReview", addEditReviewRequest
-      )
+      .post(REVIEW_BASE_URL + "/createNewReview", addEditReviewRequest)
       .then(response => {
         const { data } = jsog.decode(response);
         dispatch(createReviewDetailsSuccess(data));
@@ -46,8 +47,7 @@ export const createReviewDetailsSuccess = data => ({
   currReview: data
 });
 
-
-export const retrieveAllReviewsByProductId = (productId) => {
+export const retrieveAllReviewsByProductId = productId => {
   return dispatch =>
     axios
       .get(REVIEW_BASE_URL + `/retrieveAllReviewByProductId/${productId}`)
@@ -73,9 +73,7 @@ export const updateReviewDetails = (
   return dispatch => {
     //redux thunk passes dispatch
     axios
-      .post(
-        REVIEW_BASE_URL + "/updateReview",addEditReviewRequest
-      )
+      .post(REVIEW_BASE_URL + "/updateReview", addEditReviewRequest)
       .then(response => {
         const { data } = jsog.decode(response);
         dispatch(updateReviewDetailsSuccess(data));
@@ -97,17 +95,11 @@ export const updateReviewDetailsSuccess = data => ({
   currReview: data
 });
 
-export const deleteReviewDetails = (
-  productId,
-  reviewId,
-  enqueueSnackbar
-) => {
+export const deleteReviewDetails = (productId, reviewId, enqueueSnackbar) => {
   return dispatch => {
     //redux thunk passes dispatch
     axios
-      .delete(
-        REVIEW_BASE_URL + `/deleteReview/${reviewId}`
-      )
+      .delete(REVIEW_BASE_URL + `/deleteReview/${reviewId}`)
       .then(response => {
         const { data } = jsog.decode(response);
         dispatch(deleteReviewDetailsSuccess(data));
@@ -132,7 +124,9 @@ export const deleteReviewDetailsSuccess = data => ({
 export const checkIfCanWriteReview = (productId, customerId) => {
   return dispatch =>
     axios
-      .get(REVIEW_BASE_URL + `/checkIfCanWriteReview/${productId}/${customerId}`)
+      .get(
+        REVIEW_BASE_URL + `/checkIfCanWriteReview/${productId}/${customerId}`
+      )
       .then(response => {
         const { data } = jsog.decode(response);
         dispatch(checkIfCanWriteReviewSuccess(data));

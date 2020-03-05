@@ -176,7 +176,7 @@ public class ProductControllerTest extends ApiTestSetup {
         colours.add("Pink");
 
         ProductRetrieveRequest productRetrieveRequest = new ProductRetrieveRequest(null, tags, colours,
-                null, BigDecimal.ZERO, BigDecimal.valueOf(500), null);
+                null, BigDecimal.ZERO, BigDecimal.valueOf(500), null, null);
         products = given()
                 .contentType("application/json")
                 .body(productRetrieveRequest)

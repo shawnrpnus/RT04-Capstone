@@ -47,7 +47,7 @@ export default function AddEditReview(props) {
   const [inputState, setInputState] = useState({
     reviewId: currReview ? currReview.reviewId : "",
     content: currReview ? currReview.content : "",
-    rating: currReview ? currReview.rating : 3,
+    rating: currReview ? currReview.rating : 3
   });
   const months = [
     "January",
@@ -195,7 +195,6 @@ export default function AddEditReview(props) {
               >
                 Post review
               </Button>
-
             </span>
           }
         />
