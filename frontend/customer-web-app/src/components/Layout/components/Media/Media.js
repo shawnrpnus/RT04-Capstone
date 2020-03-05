@@ -24,11 +24,11 @@ export default function Media(props) {
   const classes = useStyles();
   return (
     <div {...rest} className={classes.media}>
-      <a href={avatarLink} className={classes.mediaLink}>
-        <div className={classes.mediaAvatar}>
-          <img src={avatar} alt={avatarAlt} />
-        </div>
-      </a>
+      {/*<a href={avatarLink} className={classes.mediaLink}>*/}
+      {/*  <div className={classes.mediaAvatar}>*/}
+      {/*    <img src={avatar} alt={avatarAlt} />*/}
+      {/*  </div>*/}
+      {/*</a>*/}
       <div className={classes.mediaBody}>
         {title !== undefined ? (
           <h4 className={classes.mediaHeading}>{title}</h4>

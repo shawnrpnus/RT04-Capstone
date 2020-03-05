@@ -24,6 +24,7 @@ import MaterialTable from "material-table";
 import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
 import withPage from "../../Layout/page/withPage";
 import ProductsStockDetails from "./ProductsStockDetails";
+import Checkbox from "@material-ui/core/Checkbox";
 
 const _ = require("lodash");
 

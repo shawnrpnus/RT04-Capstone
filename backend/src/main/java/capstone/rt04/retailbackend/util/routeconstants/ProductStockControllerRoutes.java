@@ -9,4 +9,6 @@ public class ProductStockControllerRoutes {
     public static final String UPDATE_PRODUCT_STOCK = "/updateProductStock";
     public static final String UPDATE_PRODUCT_STOCK_QTY = "/updateProductStockQty";
     public static final String DELETE_PRODUCT_STOCK = "/deleteProductStock/{productStockId}";
+    public static final String SIMULATE_REORDERING_FROM_SUPPLIER = "/simulateReorderingFromSupplier";
+
 }

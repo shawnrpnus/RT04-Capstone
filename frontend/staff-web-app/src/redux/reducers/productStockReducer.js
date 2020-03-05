@@ -3,6 +3,7 @@ import * as types from "../actions/types";
 const initialState = {
   currentProductStock: null,
   allProductStock: null,
+  simulateOrderProductStocks: null,
   crudAction: null
 };
 
@@ -23,6 +24,11 @@ export default function(state = initialState, action) {
         ...state,
         allProductStock: action.productStockEntities
       };
+    case types.SIMULATE_REORDERING_FROM_SUPPLIER:
+      return {
+        ...state,
+        simulateOrderProductStocks: action.simulateOrderProductStocks
+      }
     default:
       return state;
   }

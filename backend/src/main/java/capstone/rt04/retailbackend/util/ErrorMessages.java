@@ -37,6 +37,9 @@ public class ErrorMessages {
 
 
     public static final String NRIC_REQUIRED = "NRIC is required!";
+    public static final String NRIC_MAX = "Please enter only last 4 characters of NRIC!";
+    public static final String NRIC_FIRST_THREE = "First 3 characters have to be digits!";
+    public static final String NRIC_LAST_LETTER = "Last input has to be an alphabet!";
     public static final String SALARY_REQUIRED ="Salary is required!";
     public static final String STAFF_ACCOUNT_ALREADY_CONFIGURED ="An account has already been configured for this staff!";
     public static final String STAFF_DOES_NOT_EXIST = "Staff does not exist!";
