@@ -72,7 +72,7 @@ public class ProductService {
     }
 
     public Product createNewProduct(Product product, Long categoryId, List<Long> tagIds, List<Long> styleIds, List<SizeEnum> sizes, List<ColourToImageUrlsMap> colourToImageUrlsMaps) throws InputDataValidationException, CreateNewProductException, CategoryNotFoundException {
-
+        validationService.throwExceptionIfInvalidBean(product);
         if (categoryId == null) {
             Map<String, String> errorMap = new HashMap<>();
             errorMap.put("categoryId", ErrorMessages.CATEGORY_REQUIRED);
