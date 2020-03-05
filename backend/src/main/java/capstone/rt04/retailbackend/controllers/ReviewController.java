@@ -1,5 +1,6 @@
 package capstone.rt04.retailbackend.controllers;
 
+import capstone.rt04.retailbackend.entities.Customer;
 import capstone.rt04.retailbackend.entities.Review;
 import capstone.rt04.retailbackend.request.review.ReviewCreateRequest;
 import capstone.rt04.retailbackend.response.GenericErrorResponse;
@@ -55,6 +56,7 @@ public class ReviewController {
     public ResponseEntity<?> retrieveAllReviewByProductId(@PathVariable Long productId) {
         try {
             List<Review> reviews = reviewService.retrieveAllReviewsByProductId(productId);
+            clearReviewRelationships(reviews);
             return new ResponseEntity<>(reviews, HttpStatus.OK);
         } catch (Exception ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -62,9 +64,9 @@ public class ReviewController {
     }
 
     @PostMapping(ReviewControllerRoutes.UPDATE_REVIEW)
-    public ResponseEntity<?> updateReview(@RequestBody Review newReview) {
+    public ResponseEntity<?> updateReview(@RequestBody ReviewCreateRequest reviewCreateRequest) {
         try {
-            Review review = reviewService.updateReview(newReview);
+            Review review = reviewService.updateReview(reviewCreateRequest.getReview(), reviewCreateRequest.getCustomerId(), reviewCreateRequest.getProductId());
             return new ResponseEntity<>(review, HttpStatus.OK);
         } catch (ReviewNotFoundException ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
@@ -77,5 +79,25 @@ public class ReviewController {
     public ResponseEntity<?> deleteReview(@PathVariable Long reviewId) throws ReviewNotDeletedException, ReviewNotFoundException, CustomerNotFoundException, ProductNotFoundException {
         Review deletedReview = reviewService.deleteReview(reviewId);
         return new ResponseEntity<>(deletedReview, HttpStatus.OK);
+    }
+
+    @GetMapping(ReviewControllerRoutes.CHECK_IF_CAN_WRITE_REVIEW)
+    public ResponseEntity<?> checkIfCanWriteReview(@PathVariable Long productId, @PathVariable  Long customerId) throws CustomerNotFoundException {
+        Boolean canWrite = reviewService.checkIfAllowedToWriteReview(productId, customerId);
+        return new ResponseEntity<>(canWrite, HttpStatus.OK);
+    }
+
+    private void clearReviewRelationships(List<Review> reviews) {
+        for(Review review : reviews) {
+            if(review.getStaff() != null) {
+                review.getStaff().setRepliedReviews(null);
+            }
+            if(review.getProduct() != null) {
+                review.getProduct().setReviews(null);
+            }
+            if(review.getCustomer() != null) {
+                review.getCustomer().setReviews(null);
+            }
+        }
     }
 }

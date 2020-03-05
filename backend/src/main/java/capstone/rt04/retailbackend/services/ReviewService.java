@@ -42,10 +42,14 @@ public class ReviewService {
             throw new InputDataValidationException(errorMap, "Review is invalid!");
         }
         try {
-            Review newReview = reviewRepository.save(review);
+
             Product product = productService.retrieveProductById(productId);
-            product.getReviews().add(newReview);
+            review.setProduct(product);
             Customer customer = customerService.retrieveCustomerByCustomerId(customerId);
+            review.setCustomer(customer);
+            Review newReview = reviewRepository.save(review);
+            product.getReviews().add(newReview);
+
             customer.getReviews().add(newReview);
         } catch (PersistenceException | ProductNotFoundException | CustomerNotFoundException ex){
             throw new CreateNewReviewException("Error creating new review");
@@ -75,16 +79,24 @@ public class ReviewService {
         return review;
     }
 
-    public Review updateReview(Review review) throws InputDataValidationException, ReviewNotUpdatedException, ReviewNotFoundException {
+    public Review updateReview(Review review, Long customerId, Long productId) throws InputDataValidationException, ReviewNotUpdatedException, ReviewNotFoundException, CustomerNotFoundException, ProductNotFoundException {
+        Customer customer = customerService.retrieveCustomerByCustomerId(customerId);
+        Product p = productService.retrieveProductById(productId);
+        review.setCustomer(customer);
+        review.setProduct(p);
         Map<String, String> errorMap = validationService.generateErrorMap(review);
+        System.out.println("WHATTt outside");
+
         if (errorMap == null) {
             try {
+                System.out.println("WHATTT" + review.getReviewId());
                 Review reviewToUpdate = retrieveReviewById(review.getReviewId());
                 reviewToUpdate.setRating(review.getRating());
                 reviewToUpdate.setResponse(review.getResponse());
                 reviewToUpdate.setContent(review.getContent());
                 return reviewToUpdate;
             } catch (ReviewNotFoundException ex) {
+                System.out.println("WHATTt");
                 throw new ReviewNotUpdatedException("Error updating review.");
             }
         }
@@ -103,6 +115,18 @@ public class ReviewService {
 
         reviewRepository.delete(reviewToDelete);
         return reviewToDelete;
+    }
+
+    public Boolean checkIfAllowedToWriteReview(Long productId, Long customerId) throws CustomerNotFoundException {
+        Customer customer = customerService.retrieveCustomerByCustomerId(customerId);
+        for(Transaction transaction : customer.getTransactions()) {
+            for(TransactionLineItem tle : transaction.getTransactionLineItems()) {
+                if(tle.getProductVariant().getProduct().getProductId() == productId) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public void lazilyLoadReview(List<Review> reviews) {

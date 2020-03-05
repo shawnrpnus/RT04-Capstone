@@ -31,7 +31,7 @@ import java.util.List;
 @Getter
 @Setter
 @EqualsAndHashCode
-@ToString
+@ToString(exclude = {"repliedReviews"})
 @JsonIdentityInfo(generator = JSOGGenerator.class)
 public class Staff implements Serializable {
 

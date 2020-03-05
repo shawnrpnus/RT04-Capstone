@@ -28,24 +28,27 @@ class SidebarContent extends Component {
           {(it || hr) && (
             <SidebarCategory title="Staff" icon="users">
               {it && (
-                <SidebarLink
-                  title="Create"
-                  route="/staff/create"
-                  onClick={this.hideSidebar}
-                />
+                  <SidebarLink
+                      title="Configure Staff Account"
+                      route="/staff/createAccount"
+                      onClick={this.hideSidebar}
+                  />
               )}
               {hr && (
                 <React.Fragment>
+
+                  <SidebarLink
+                      title="Create"
+                      route="/staff/create"
+                      onClick={this.hideSidebar}
+                  />
+
                   <SidebarLink
                     title="View All"
                     route="/staff/viewAll"
                     onClick={this.hideSidebar}
                   />
-                  <SidebarLink
-                    title="Configure Staff Account"
-                    route="/staff/createAccount"
-                    onClick={this.hideSidebar}
-                  />
+
                 </React.Fragment>
               )}
             </SidebarCategory>
