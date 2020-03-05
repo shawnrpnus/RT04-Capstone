@@ -89,18 +89,7 @@ class StaffTable extends Component {
                                 { title: "NRIC", field: "nric" }
                             ]}
                             actions={[
-                                {
-                                    icon: Visibility,
-                                    tooltip: "View More Details",
-                                    onClick: (event, rowData) =>
-                                        history.push(`/staff/view/${rowData.staffId}`)
-                                },
-                                {
-                                    icon: Edit,
-                                    tooltip: "Update Staff",
-                                    onClick: (event, rowData) =>
-                                        history.push(`/staff/update/${rowData.staffId}`)
-                                },
+                               
                                 {
                                     icon: Delete,
                                     tooltip: "Delete Store",

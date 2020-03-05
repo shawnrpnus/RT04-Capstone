@@ -71,6 +71,7 @@ public class Staff implements Serializable {
     @NotNull
     @Column(nullable = false)
     @Size(min =1 , message =ErrorMessages.NRIC_REQUIRED)
+    @Size(max =4 , message =ErrorMessages.NRIC_MAX)
     private String nric;
 
     @NotNull (message =ErrorMessages.SALARY_REQUIRED)

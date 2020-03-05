@@ -37,16 +37,19 @@ public class ReviewService {
     }
 
     public Review createNewReview(Review review, Long productId, Long customerId) throws CreateNewReviewException, InputDataValidationException {
-        Map<String, String> errorMap = validationService.generateErrorMap(review);
-        if (errorMap != null){
-            throw new InputDataValidationException(errorMap, "Review is invalid!");
-        }
+
         try {
 
             Product product = productService.retrieveProductById(productId);
             review.setProduct(product);
             Customer customer = customerService.retrieveCustomerByCustomerId(customerId);
             review.setCustomer(customer);
+
+            Map<String, String> errorMap = validationService.generateErrorMap(review);
+            if (errorMap != null){
+                throw new InputDataValidationException(errorMap, "Review is invalid!");
+            }
+
             Review newReview = reviewRepository.save(review);
             product.getReviews().add(newReview);
 
@@ -119,9 +122,14 @@ public class ReviewService {
 
     public Boolean checkIfAllowedToWriteReview(Long productId, Long customerId) throws CustomerNotFoundException {
         Customer customer = customerService.retrieveCustomerByCustomerId(customerId);
+        System.out.println("DID RUN CHECKIFALLOWED?");
         for(Transaction transaction : customer.getTransactions()) {
             for(TransactionLineItem tle : transaction.getTransactionLineItems()) {
-                if(tle.getProductVariant().getProduct().getProductId() == productId) {
+                System.out.println("DID RUN INSIDE LOOP CHECKIFALLOWED");
+                System.out.println("1" + tle.getProductVariant().getProduct().getProductId());
+                System.out.println("2 " + productId);
+                if(tle.getProductVariant().getProduct().getProductId().equals(productId)) {
+                    System.out.println("BANKAI ");
                     return true;
                 }
             }

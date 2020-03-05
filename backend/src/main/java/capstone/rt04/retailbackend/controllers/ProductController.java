@@ -1,9 +1,6 @@
 package capstone.rt04.retailbackend.controllers;
 
-import capstone.rt04.retailbackend.entities.Product;
-import capstone.rt04.retailbackend.entities.ProductVariant;
-import capstone.rt04.retailbackend.entities.Review;
-import capstone.rt04.retailbackend.entities.Tag;
+import capstone.rt04.retailbackend.entities.*;
 import capstone.rt04.retailbackend.request.algolia.AlgoliaProductDetailsResponse;
 import capstone.rt04.retailbackend.request.product.ProductCreateRequest;
 import capstone.rt04.retailbackend.request.product.ProductRetrieveRequest;

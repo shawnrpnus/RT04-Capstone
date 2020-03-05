@@ -109,6 +109,12 @@ public class ProductStockController {
         }
     }
 
+    @PostMapping(ProductStockControllerRoutes.SIMULATE_REORDERING_FROM_SUPPLIER)
+    public ResponseEntity<?> simulateReorderingFromSupplier(@RequestBody List<Long> productStockIds) throws ProductStockNotFoundException {
+        List<ProductStock> productStocks = productService.simulateReorderingFromSupplier(productStockIds);
+        return new ResponseEntity<>(productStocks, HttpStatus.OK);
+    }
+
     private void clearProductStockRelationship(ProductStock productStock) {
         productStock.getProductVariant().setProductStocks(null);
         Product product = productStock.getProductVariant().getProduct();

@@ -31,7 +31,7 @@ const StyledRating = withStyles({
   }
 })(Rating);
 export default function AddEditReview(props) {
-  const { reviews, editReview, currReview, setCurrReview } = props;
+  const { reviews, currReview, setCurrReview, addNewReview, setAddNewReview} = props;
   const classes = useStyles();
   //Redux
   const dispatch = useDispatch();
@@ -85,7 +85,7 @@ export default function AddEditReview(props) {
   };
 
   const onSubmit = () => {
-    if (currReview) {
+    if (currReview) { //edit review
       const review = new Review(
         inputState.reviewId,
         inputState.content,
@@ -104,8 +104,8 @@ export default function AddEditReview(props) {
           enqueueSnackbar
         )
       );
-      setCurrReview("");
-    } else {
+      setCurrReview('');
+    } else { //add new review
       const review = new Review(
         inputState.reviewId,
         inputState.content,
@@ -125,6 +125,12 @@ export default function AddEditReview(props) {
           enqueueSnackbar
         )
       );
+
+    }
+    if(currReview) {
+      setCurrReview('');
+    } else {
+      setAddNewReview(!addNewReview);
     }
   };
 
@@ -168,7 +174,11 @@ export default function AddEditReview(props) {
             <span>
               <Button
                 onClick={() => {
-                  setCurrReview("");
+                  if(currReview) {
+                    setCurrReview('');
+                  } else {
+                    setAddNewReview(!addNewReview);
+                  }
                   dispatch(clearErrors());
                 }}
                 className={classes.footerButtons}

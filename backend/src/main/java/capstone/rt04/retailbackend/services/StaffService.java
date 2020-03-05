@@ -85,6 +85,19 @@ public class StaffService {
       validationService.throwExceptionIfInvalidBean(staff);
        validationService.throwExceptionIfInvalidBean(staffAddress);
 
+        if (!Character.isLetter(staff.getNric().charAt(3))){
+            Map<String, String> errorMap = new HashMap<>();
+            errorMap.put("nric", ErrorMessages.NRIC_LAST_LETTER);
+            throw new InputDataValidationException(errorMap, ErrorMessages.NRIC_LAST_LETTER);
+        }
+
+        if (!Character.isDigit(staff.getNric().charAt(0)) || !Character.isDigit(staff.getNric().charAt(1)) ||
+        !Character.isDigit(staff.getNric().charAt(2))){
+            Map<String, String> errorMap = new HashMap<>();
+            errorMap.put("nric", ErrorMessages.NRIC_FIRST_THREE);
+            throw new InputDataValidationException(errorMap, ErrorMessages.NRIC_FIRST_THREE);
+        }
+
         try{
            Staff existingStaff = null;
 
