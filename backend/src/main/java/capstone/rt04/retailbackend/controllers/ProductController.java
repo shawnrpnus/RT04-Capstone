@@ -82,11 +82,11 @@ public class ProductController {
 
 
     @PostMapping(ProductControllerRoutes.RETRIEVE_PRODUCTS_DETAILS_BY_CRITERIA)
-    public ResponseEntity<?> retrieveProductsDetailsByCriteria(@RequestBody ProductRetrieveRequest productRetrieveRequest) throws ProductNotFoundException {
+    public ResponseEntity<?> retrieveProductsDetailsByCriteria(@RequestBody ProductRetrieveRequest productRetrieveRequest) throws ProductNotFoundException, StyleNotFoundException {
         List<ProductDetailsResponse> products = productService.retrieveProductsDetailsByCriteria(productRetrieveRequest.getCategoryId(),
                 productRetrieveRequest.getTags(), productRetrieveRequest.getColours(), productRetrieveRequest.getSizes(),
                 productRetrieveRequest.getMinPrice(), productRetrieveRequest.getMaxPrice(),
-                productRetrieveRequest.getSortEnum());
+                productRetrieveRequest.getSortEnum(), productRetrieveRequest.getStyle());
         clearPdrRelationships(products, false);
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
@@ -243,6 +243,8 @@ public class ProductController {
                 review.setCustomer(null);
                 review.setStaff(null);
             }
+
+            pdr.getProduct().setStyles(null);
 
             pdr.getProduct().getCategory().setProducts(null);
             pdr.getProduct().getCategory().setParentCategory(null);
