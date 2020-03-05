@@ -366,7 +366,6 @@ export const updateShippingAddressDetails = (
           variant: "success",
           autoHideDuration: 1200
         });
-        history.push("/account/profile");
       })
       .catch(err => {
         dispatchErrorMapError(err, dispatch);
@@ -396,7 +395,6 @@ export const addShippingAddressDetails = (
           variant: "success",
           autoHideDuration: 1200
         });
-        //history.push("/account/profile");
       })
       .catch(err => {
         dispatchErrorMapError(err, dispatch);
@@ -431,7 +429,6 @@ export const removeShippingAddressDetails = (
           variant: "success",
           autoHideDuration: 1200
         });
-        history.push("/account/profile");
       })
       .catch(err => {
         dispatchErrorMapError(err, dispatch);
@@ -461,7 +458,6 @@ export const updateMeasurements = (
           autoHideDuration: 1200
         });
         setAddMeasurements(true);
-        // history.push("/account/profile");
       })
       .catch(err => {
         dispatchErrorMapError(err, dispatch);

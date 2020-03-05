@@ -167,7 +167,7 @@ function AccDropDownLinksAfterLogin(props) {
   return [
     <Link
       key="profile"
-      to="/account/profile"
+      to="/account/profile/info"
       className={classes ? classes.dropdownLink : null}
     >
       {Component ? (

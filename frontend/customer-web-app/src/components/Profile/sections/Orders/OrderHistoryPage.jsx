@@ -48,7 +48,7 @@ function OrderHistoryPage(props) {
 
   useEffect(() => {
     dispatch(retrieveCustomerTransactions(customer.customerId));
-  }, [customer]);
+  }, [customer.custoemrId]);
 
   return (
     <GridContainer>

@@ -45,6 +45,7 @@ import { useParams } from "react-router-dom";
 import { ShoppingCart } from "@material-ui/icons";
 import UpdateReservationPage from "components/Reservation/UpdateReservation/UpdateReservationPage";
 import OrderDetails from "components/Profile/sections/Orders/OrderDetails";
+import ReviewCardForProfilePage from "components/Reviews/ReviewCardForProfilePage";
 
 const useStyles = makeStyles(profilePageStyle);
 
@@ -102,7 +103,6 @@ export default function ProfilePage(props) {
     }
   ];
 
-  console.log(mode);
   if (mode === "viewOrder") {
     tabs.push({
       tabButton: "Order Details",

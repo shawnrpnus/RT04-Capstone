@@ -114,7 +114,7 @@ export default function AddressCard({
 
   const classes = useStyles();
   return (
-    <Card style={{ width: "28rem", marginTop: "0", boxShadow: "none" }}>
+    <Card style={{ marginTop: "5px", boxShadow: "none" }}>
       {shippingAddresses.map(function(item, i) {
         // console.log(item.default); //array[0]
         //console.log(i); //index
@@ -122,8 +122,7 @@ export default function AddressCard({
           <CardBody
             style={{
               border: ".5px solid #e8e7e7",
-              boxShadow: "0 2px 4px 0 rgba(155,155,155,.2)",
-              marginBottom: "30px"
+              boxShadow: "0 2px 4px 0 rgba(155,155,155,.2)"
             }}
             key={item.addressId}
           >

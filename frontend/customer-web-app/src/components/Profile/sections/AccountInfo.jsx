@@ -38,6 +38,8 @@ import AddressCard from "components/Profile/sections/Address/AddressCard";
 import AddAddress from "components/Profile/sections/Address/AddAddress";
 import AddCreditCard from "components/Profile/sections/CreditCard/AddCreditCard";
 import CreditCardCard from "components/Profile/sections/CreditCard/CreditCardCard";
+import ReviewCardForProfilePage from "components/Reviews/ReviewCardForProfilePage";
+import Divider from "@material-ui/core/Divider";
 
 const useStyles = makeStyles(signupPageStyle);
 const _ = require("lodash");
@@ -174,246 +176,293 @@ function AccountInfo(props) {
         text="Sending you an email..."
       >
         <GridContainer>
-          <GridItem xs={12} sm={12} md={5}>
-            <form className={classes.form}>
-              <CustomTextField
-                fieldLabel="First Name"
-                fieldName="firstName"
-                inputState={inputState}
-                onChange={onChange}
-                errors={errors}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment
-                      position="start"
-                      className={classes.inputAdornment}
-                    >
-                      <Face className={classes.inputAdornmentIcon} />
-                    </InputAdornment>
-                  )
-                }}
-              />
-              <CustomTextField
-                fieldLabel="Last Name"
-                fieldName="lastName"
-                inputState={inputState}
-                onChange={onChange}
-                errors={errors}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment
-                      position="start"
-                      className={classes.inputAdornment}
-                    >
-                      <Face className={classes.inputAdornmentIcon} />
-                    </InputAdornment>
-                  )
-                }}
-              />
-              <div className={classes.textCenter}>
-                <Button onClick={handleUpdateName} round color="primary">
-                  Save changes
-                </Button>
-              </div>
-              <CustomTextField
-                fieldLabel="Email"
-                fieldName="email"
-                inputRef={emailRef}
-                id={"emailfield"}
-                disabled={!changingEmail}
-                inputState={inputState}
-                onChange={onChange}
-                errors={errors}
-                placeholder="Enter a valid email..."
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment
-                      position="start"
-                      className={classes.inputAdornment}
-                    >
-                      <Email className={classes.inputAdornmentIcon} />
-                    </InputAdornment>
-                  )
-                }}
-              />
-              <div className={classes.textCenter}>
-                {changingEmail || _.get(errors, "email") ? (
-                  <React.Fragment>
-                    <Tooltip
-                      title="Note: Verification email will be sent to this new email"
-                      aria-label="add"
-                    >
-                      <Button onClick={handleUpdateEmail} round color="primary">
-                        Submit
-                      </Button>
-                    </Tooltip>
+          <GridItem xs={12} sm={12} md={6} style={{ padding: "0 40px" }}>
+            <h4>
+              <b>My Details</b>
+            </h4>
+            <form className={classes.form} style={{ marginTop: "15px" }}>
+              <GridContainer>
+                <GridItem md={12}>
+                  <CustomTextField
+                    fieldLabel="First Name"
+                    fieldName="firstName"
+                    inputState={inputState}
+                    onChange={onChange}
+                    errors={errors}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment
+                          position="start"
+                          className={classes.inputAdornment}
+                        >
+                          <Face className={classes.inputAdornmentIcon} />
+                        </InputAdornment>
+                      )
+                    }}
+                  />
+                </GridItem>
+                <GridItem md={12}>
+                  <CustomTextField
+                    fieldLabel="Last Name"
+                    fieldName="lastName"
+                    inputState={inputState}
+                    onChange={onChange}
+                    errors={errors}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment
+                          position="start"
+                          className={classes.inputAdornment}
+                        >
+                          <Face className={classes.inputAdornmentIcon} />
+                        </InputAdornment>
+                      )
+                    }}
+                  />
+                </GridItem>
+                <GridItem md={12}>
+                  <div className={classes.textCenter}>
                     <Button
-                      onClick={() => {
-                        setChangingEmail(false);
-                        resetInputState();
-                        dispatch(clearErrors());
-                      }}
-                      round
+                      onClick={handleUpdateName}
+                      color="primary"
+                      style={{ float: "right" }}
                     >
-                      Cancel
+                      Save changes
                     </Button>
-                  </React.Fragment>
-                ) : (
-                  <Button
-                    onClick={() => {
-                      setChangingEmail(true);
-                      setTimeout(() => {
-                        emailRef.current.focus();
-                      }, 100);
-                    }}
-                    round
-                    color="primary"
-                  >
-                    Change Email
-                  </Button>
-                )}
-              </div>
-              {changingPassword && (
-                <React.Fragment>
+                  </div>
+                </GridItem>
+                <GridItem md={12}>
                   <CustomTextField
-                    fieldLabel="Old Password"
-                    fieldName="oldPassword"
-                    type={showOldPassword ? "text" : "password"}
-                    autoFocus
+                    fieldLabel="Email"
+                    fieldName="email"
+                    inputRef={emailRef}
+                    id={"emailfield"}
+                    disabled={!changingEmail}
                     inputState={inputState}
                     onChange={onChange}
                     errors={errors}
-                    placeholder="Enter your old password..."
+                    placeholder="Enter a valid email..."
                     InputProps={{
                       startAdornment: (
                         <InputAdornment
                           position="start"
                           className={classes.inputAdornment}
                         >
-                          <Lock className={classes.inputAdornmentIcon} />
-                        </InputAdornment>
-                      ),
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <IconButton
-                            aria-label="toggle password visibility"
-                            onClick={handleClickShowOldPassword}
-                          >
-                            {showOldPassword ? (
-                              <Visibility />
-                            ) : (
-                              <VisibilityOff />
-                            )}
-                          </IconButton>
+                          <Email className={classes.inputAdornmentIcon} />
                         </InputAdornment>
                       )
                     }}
                   />
-                  <CustomTextField
-                    fieldLabel="New Password"
-                    fieldName="newPassword"
-                    type={showNewPassword ? "text" : "password"}
-                    inputState={inputState}
-                    onChange={onChange}
-                    errors={errors}
-                    placeholder="Enter a new password..."
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment
-                          position="start"
-                          className={classes.inputAdornment}
+                </GridItem>
+                <GridItem md={12}>
+                  <div className={classes.textCenter}>
+                    {changingEmail || _.get(errors, "email") ? (
+                      <React.Fragment>
+                        <Tooltip
+                          title="Note: Verification email will be sent to this new email"
+                          aria-label="add"
                         >
-                          <Lock className={classes.inputAdornmentIcon} />
-                        </InputAdornment>
-                      ),
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <IconButton
-                            aria-label="toggle password visibility"
-                            onClick={handleClickShowNewPassword}
+                          <Button
+                            onClick={handleUpdateEmail}
+                            color="success"
+                            style={{ float: "right" }}
                           >
-                            {showNewPassword ? (
-                              <Visibility />
-                            ) : (
-                              <VisibilityOff />
-                            )}
-                          </IconButton>
-                        </InputAdornment>
-                      )
-                    }}
-                  />
-                </React.Fragment>
-              )}
-              <div className={classes.textCenter}>
-                {changingPassword ? (
-                  <React.Fragment>
-                    <Tooltip
-                      title="Note: Verification email will be sent to this new email"
-                      aria-label="add"
-                    >
+                            Submit
+                          </Button>
+                        </Tooltip>
+                        <Button
+                          onClick={() => {
+                            setChangingEmail(false);
+                            resetInputState();
+                            dispatch(clearErrors());
+                          }}
+                          style={{ float: "right" }}
+                        >
+                          Cancel
+                        </Button>
+                      </React.Fragment>
+                    ) : (
                       <Button
-                        onClick={handleChangePassword}
-                        round
+                        onClick={() => {
+                          setChangingEmail(true);
+                          setTimeout(() => {
+                            emailRef.current.focus();
+                          }, 100);
+                        }}
                         color="primary"
+                        style={{ float: "right" }}
                       >
-                        Submit
+                        Change Email
                       </Button>
-                    </Tooltip>
-                    <Button
-                      onClick={() => {
-                        setChangingPassword(false);
-                        resetInputState();
-                        dispatch(clearErrors());
-                      }}
-                      round
-                    >
-                      Cancel
-                    </Button>
-                  </React.Fragment>
-                ) : (
-                  <Button
-                    onClick={() => {
-                      setChangingPassword(true);
-                    }}
-                    round
-                    color="primary"
-                  >
-                    Change Password
-                  </Button>
-                )}
-              </div>
+                    )}
+                  </div>
+                </GridItem>
+                <GridItem md={12}>
+                  {changingPassword && (
+                    <React.Fragment>
+                      <CustomTextField
+                        fieldLabel="Old Password"
+                        fieldName="oldPassword"
+                        type={showOldPassword ? "text" : "password"}
+                        autoFocus
+                        inputState={inputState}
+                        onChange={onChange}
+                        errors={errors}
+                        placeholder="Enter your old password..."
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment
+                              position="start"
+                              className={classes.inputAdornment}
+                            >
+                              <Lock className={classes.inputAdornmentIcon} />
+                            </InputAdornment>
+                          ),
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <IconButton
+                                aria-label="toggle password visibility"
+                                onClick={handleClickShowOldPassword}
+                              >
+                                {showOldPassword ? (
+                                  <Visibility />
+                                ) : (
+                                  <VisibilityOff />
+                                )}
+                              </IconButton>
+                            </InputAdornment>
+                          )
+                        }}
+                      />
+                      <CustomTextField
+                        fieldLabel="New Password"
+                        fieldName="newPassword"
+                        type={showNewPassword ? "text" : "password"}
+                        inputState={inputState}
+                        onChange={onChange}
+                        errors={errors}
+                        placeholder="Enter a new password..."
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment
+                              position="start"
+                              className={classes.inputAdornment}
+                            >
+                              <Lock className={classes.inputAdornmentIcon} />
+                            </InputAdornment>
+                          ),
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <IconButton
+                                aria-label="toggle password visibility"
+                                onClick={handleClickShowNewPassword}
+                              >
+                                {showNewPassword ? (
+                                  <Visibility />
+                                ) : (
+                                  <VisibilityOff />
+                                )}
+                              </IconButton>
+                            </InputAdornment>
+                          )
+                        }}
+                      />
+                    </React.Fragment>
+                  )}
+                </GridItem>
+                <GridItem md={12}>
+                  <div className={classes.textCenter}>
+                    {changingPassword ? (
+                      <React.Fragment>
+                        <Tooltip
+                          title="Note: Verification email will be sent to this new email"
+                          aria-label="add"
+                        >
+                          <Button
+                            onClick={handleChangePassword}
+                            color="success"
+                            style={{ float: "right" }}
+                          >
+                            Submit
+                          </Button>
+                        </Tooltip>
+                        <Button
+                          onClick={() => {
+                            setChangingPassword(false);
+                            resetInputState();
+                            dispatch(clearErrors());
+                          }}
+                          style={{ float: "right" }}
+                        >
+                          Cancel
+                        </Button>
+                      </React.Fragment>
+                    ) : (
+                      <Button
+                        onClick={() => {
+                          setChangingPassword(true);
+                        }}
+                        color="primary"
+                        style={{ float: "right" }}
+                      >
+                        Change Password
+                      </Button>
+                    )}
+                  </div>
+                </GridItem>
+              </GridContainer>
             </form>
+          </GridItem>
+          <GridItem xs={12} sm={12} md={6} style={{ padding: "0 40px" }}>
+            {addNewAddress === true || currAddress !== "" ? (
+              <React.Fragment>
+                <h4>My Address Book</h4>
+                <AddAddress
+                  addNewAddress={[addNewAddress, setAddNewAddress]}
+                  currAddress={[currAddress, setCurrAddress]}
+                />
+              </React.Fragment>
+            ) : addNewAddress === false ? (
+              <React.Fragment>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between"
+                  }}
+                >
+                  <h4>
+                    <b>My Address Book</b>
+                  </h4>
+                  <Button
+                    onClick={handleAddNewAddress}
+                    color="primary"
+                    style={{ float: "right" }}
+                  >
+                    Add New Address
+                  </Button>
+                </div>
+                <AddressCard
+                  addNewAddress={[addNewAddress, setAddNewAddress]}
+                  currAddress={[currAddress, setCurrAddress]}
+                />
+              </React.Fragment>
+            ) : (
+              ""
+            )}
+          </GridItem>
+          <GridItem xs={12} sm={12} md={6} style={{ padding: "0 40px" }}>
+            <h4>
+              <b>My Reviews</b>
+            </h4>
+            <ReviewCardForProfilePage />
+          </GridItem>
+          <GridItem xs={12} sm={12} md={6} style={{ padding: "0 40px" }}>
+            <h4>
+              <b>My Credit Cards</b>
+            </h4>
             <AddCreditCard />
             <CreditCardCard />
           </GridItem>
-          <GridItem xs={12} sm={12} md={2}></GridItem>
-          {addNewAddress === true ? (
-            <GridItem xs={12} sm={12} md={5}>
-              <AddAddress
-                addNewAddress={[addNewAddress, setAddNewAddress]}
-                currAddress={[currAddress, setCurrAddress]}
-              />
-            </GridItem>
-          ) : currAddress !== "" ? (
-            <GridItem xs={12} sm={12} md={5}>
-              <AddAddress
-                addNewAddress={[addNewAddress, setAddNewAddress]}
-                currAddress={[currAddress, setCurrAddress]}
-              />
-            </GridItem>
-          ) : addNewAddress === false ? (
-            <GridItem xs={12} sm={12} md={5}>
-              <Button onClick={handleAddNewAddress} round color="primary">
-                Add New Address
-              </Button>
-              <AddressCard
-                addNewAddress={[addNewAddress, setAddNewAddress]}
-                currAddress={[currAddress, setCurrAddress]}
-              />
-            </GridItem>
-          ) : (
-            ""
-          )}
         </GridContainer>
         <Dialog open={dialogOpen} onClose={handleCloseDialog}>
           <DialogTitle id="simple-dialog-title">Verify your email</DialogTitle>
