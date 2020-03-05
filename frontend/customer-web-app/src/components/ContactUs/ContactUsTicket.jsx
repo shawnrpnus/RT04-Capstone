@@ -31,6 +31,7 @@ import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import customSelectStyle from "../../assets/jss/material-kit-pro-react/customSelectStyle";
+import {useSnackbar} from "notistack";
 
 const useStyles = makeStyles(contactUsStyle);
 const useClassy = makeStyles(customSelectStyle);
@@ -42,6 +43,7 @@ function ContactUsTicket(props) {
   const history = useHistory();
   const location = useLocation();
   const classy = useClassy();
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   //Redux
   const dispatch = useDispatch();
@@ -91,7 +93,16 @@ function ContactUsTicket(props) {
       firstName,
       lastName
     );
-    dispatch(createNewContactUs(req, props.history));
+    dispatch(createNewContactUs(req, enqueueSnackbar,props.history));
+    setInputState({
+      contactUsCategory: "",
+      customerEmail: "",
+      content: "",
+      firstName: "",
+      lastName: ""
+    });
+    dispatch({type: "clearEnum"});
+
   };
 
   React.useEffect(() => {
@@ -189,6 +200,7 @@ function ContactUsTicket(props) {
                       }}
                       onChange={onChange}
                       name="contactUsCategory"
+                      value={inputState.contactUsCategory}
                     >
                       {enums.map(function(item, i) {
                         return (
@@ -237,8 +249,8 @@ function ContactUsTicket(props) {
                     title="Find us at the office"
                     description={
                       <p>
-                        Bld Mihail Kogalniceanu, nr. 8, <br /> 7652 Bucharest,{" "}
-                        <br /> Romania
+                        Marina Bay Financial Centre, <br /> 1 Straits View,{" "}
+                        <br /> Singapore
                       </p>
                     }
                     icon={PinDrop}
@@ -249,7 +261,7 @@ function ContactUsTicket(props) {
                     title="Give us a ring"
                     description={
                       <p>
-                        Michael Jordan <br /> +40 762 321 762 <br /> Mon - Fri,
+                        Shawn Roshan Pillay <br /> +65 9756 1233 <br /> Mon - Fri,
                         8:00-22:00
                       </p>
                     }
@@ -261,8 +273,8 @@ function ContactUsTicket(props) {
                     title="Legal Information"
                     description={
                       <p>
-                        Creative Tim Ltd. <br /> VAT · EN2341241 <br /> IBAN ·
-                        EN8732ENGB2300099123 <br /> Bank · Great Britain Bank
+                        apricot & nut Ltd. <br /> VAT · EN2341241 <br /> IBAN ·
+                        EN8732ENGB2300099123 <br /> Bank · United Overseas Bank
                       </p>
                     }
                     icon={BusinessCenter}

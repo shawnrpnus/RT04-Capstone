@@ -17,6 +17,11 @@ export default function(state = initialState, action) {
         ...state,
         currentContactUs: action.currentContactUs
       };
+    case action.type === "clearEnum":
+      return {
+        ...state,
+        allContactUsCategoryEnum: []
+      }
     default:
       return state;
   }

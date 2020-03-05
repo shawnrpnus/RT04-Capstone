@@ -4,6 +4,7 @@ import capstone.rt04.retailbackend.entities.Customer;
 import capstone.rt04.retailbackend.entities.Review;
 import capstone.rt04.retailbackend.request.review.ReviewCreateRequest;
 import capstone.rt04.retailbackend.response.GenericErrorResponse;
+import capstone.rt04.retailbackend.services.RelationshipService;
 import capstone.rt04.retailbackend.services.ReviewService;
 import capstone.rt04.retailbackend.services.ValidationService;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
@@ -26,10 +27,12 @@ public class ReviewController {
 
     private final ReviewService reviewService;
     private final ValidationService validationService;
+    private final RelationshipService relationshipService;
 
-    public ReviewController(ReviewService reviewService, ValidationService validationService) {
+    public ReviewController(ReviewService reviewService, ValidationService validationService, RelationshipService relationshipService) {
         this.reviewService = reviewService;
         this.validationService = validationService;
+        this.relationshipService = relationshipService;
     }
 
     @PostMapping(ReviewControllerRoutes.CREATE_NEW_REVIEW)
@@ -50,6 +53,20 @@ public class ReviewController {
         } catch (Exception ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @GetMapping(ReviewControllerRoutes.RETRIEVE_REVIEWS_BY_CUSTOMER_ID)
+    public ResponseEntity<?> retrieveReviewByCustomerId(@PathVariable Long customerId) {
+        List<Review> reviews = reviewService.retrieveReviewsByCustomerId(customerId);
+
+        for(Review r : reviews) {
+            Customer c = r.getCustomer();
+            relationshipService.clearCustomerRelationships(c);
+//            r.getCustomer().setReviews(null);
+            r.getProduct().setReviews(null);
+            r.setStaff(null);
+        }
+        return new ResponseEntity<>(reviews, HttpStatus.OK);
     }
 
     @GetMapping(ReviewControllerRoutes.RETRIEVE_ALL_REVIEW_BY_PRODUCT_ID)

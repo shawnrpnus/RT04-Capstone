@@ -9,9 +9,11 @@ import capstone.rt04.retailbackend.util.exceptions.review.CreateNewReviewExcepti
 import capstone.rt04.retailbackend.util.exceptions.review.ReviewNotDeletedException;
 import capstone.rt04.retailbackend.util.exceptions.review.ReviewNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.review.ReviewNotUpdatedException;
+import com.stripe.model.Person;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.management.relation.Relation;
 import javax.persistence.PersistenceException;
 import java.util.ArrayList;
 import java.util.List;
@@ -135,6 +137,12 @@ public class ReviewService {
             }
         }
         return false;
+    }
+
+    public List<Review> retrieveReviewsByCustomerId(Long customerId) {
+        List<Review> reviews = reviewRepository.findAllByCustomer_CustomerId(customerId);
+        lazilyLoadReview(reviews);
+        return reviews;
     }
 
     public void lazilyLoadReview(List<Review> reviews) {
