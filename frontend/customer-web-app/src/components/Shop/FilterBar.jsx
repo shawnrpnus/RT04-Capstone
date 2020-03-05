@@ -79,7 +79,7 @@ function FilterBar(props) {
 
   useEffect(() => {
     if (priceRange === null) {
-      dispatch(setPriceRange([0, 200]));
+      dispatch(setPriceRange([0, 1000]));
     }
     if (checkedColours === null) {
       dispatch(setCheckedColours(initialColoursState));
@@ -131,7 +131,7 @@ function FilterBar(props) {
   };
 
   const resetFilter = () => {
-    dispatch(setPriceRange([0, 200]));
+    dispatch(setPriceRange([0, 1000]));
     dispatch(setCheckedColours(initialColoursState));
     dispatch(setCheckedTags(initialTagsState));
     dispatch(setCheckedSizes(initialSizesState));
@@ -142,7 +142,7 @@ function FilterBar(props) {
       [],
       [],
       0,
-      200,
+      1000,
       sortingMap[Object.keys(sortingMap)[0]],
       null
     );
@@ -234,7 +234,7 @@ function FilterBar(props) {
             collapses={[
               {
                 title: `Price Range ${
-                  priceRange[0] !== 0 || priceRange[1] !== 200
+                  priceRange[0] !== 0 || priceRange[1] !== 1000
                     ? "(applied)"
                     : ""
                 }`,
@@ -265,7 +265,7 @@ function FilterBar(props) {
                       }}
                       valueLabelDisplay="auto"
                       min={0}
-                      max={200}
+                      max={1000}
                       style={{
                         borderColor: "#e91e63"
                       }}

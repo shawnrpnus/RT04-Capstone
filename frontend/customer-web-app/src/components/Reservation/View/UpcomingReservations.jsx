@@ -21,12 +21,13 @@ function UpcomingReservations(props) {
     dispatch(getUpcomingReservations(customer.customerId));
   }, [upcomingReservations]);
 
+  console.log("hello");
   return (
     <Card plain style={{ marginTop: "0px" }}>
       <CardBody plain>
         {upcomingReservations && upcomingReservations.length > 0 ? (
           upcomingReservations.map(reservation => (
-            <React.Fragment>
+            <React.Fragment key={reservation.reservationId}>
               <ReservationItem reservation={reservation} />
               <Divider />
             </React.Fragment>

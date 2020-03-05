@@ -110,7 +110,7 @@ function ReservationItem(props) {
           style={{ height: "200px", overflowY: "scroll" }}
         >
           {reservation.productVariants.map(productVariant => (
-            <React.Fragment>
+            <React.Fragment key={productVariant.productVariantId}>
               <ProductVariantCard productVariant={productVariant} />
               <Divider />
             </React.Fragment>

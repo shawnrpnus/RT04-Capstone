@@ -5,10 +5,15 @@ import { resetPassword } from "../../../redux/actions/staffActions";
 import ResetStaffPasswordRequest from "../../../models/staff/ResetStaffPasswordRequest";
 import { Button, ButtonToolbar } from "reactstrap";
 import * as PropTypes from "prop-types";
-import { Grid } from "@material-ui/core";
+import {Grid, TextField} from "@material-ui/core";
 import MaterialTextField from "../../../shared/components/Form/MaterialTextField";
 import ContentSaveIcon from "mdi-react/ContentSaveIcon";
 import CloseCircleIcon from "mdi-react/CloseCircleIcon";
+import withMaterialConfirmDialog from "../../Layout/page/withMaterialConfirmDialog";
+import withPage from "../../Layout/page/withPage";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import MaterialNumberSelect from "../../../shared/components/Form/MaterialNumberSelect";
+import {MuiPickersUtilsProvider} from "@material-ui/pickers";
 
 class ResetPasswordForm extends Component {
   static propTypes = {
@@ -51,52 +56,46 @@ class ResetPasswordForm extends Component {
     const hasErrors = Object.keys(this.props.errors).length !== 0;
 
     return (
-      <Grid
-        container
-        xs={12}
-        alignItems="center"
-        justify="center"
-        style={{ height: "100vh" }}
-      >
-        <div className="account__card">
-          <form className="material-form">
-            <div className="form__form-group">
-              <MaterialTextField
-                fieldLabel="Username"
-                onChange={this.onChange}
-                fieldName="username"
-                state={this.state}
-                errors={errors}
-                disabled={disabled}
-                autoFocus={true}
-              />
-            </div>
 
-            <ButtonToolbar className="form__button-toolbar">
-              <Button
+        <form className="material-form">
+          <Grid container spacing={3}>
+            <Grid item xs={12} md={6}>
+              <MaterialTextField
+                  fieldLabel="Enter username of staff"
+                  onChange={this.onChange}
+                  fieldName="username"
+                  state={this.state}
+                  errors={errors}
+                  disabled={disabled}
+                  autoFocus={true}
+              />
+            </Grid>
+          </Grid>
+
+          <ButtonToolbar className="form__button-toolbar">
+            <Button
                 color="primary"
                 className="icon"
                 onClick={e => this.handleSubmit(e)}
                 disabled={hasErrors}
-              >
-                <p>
-                  <ContentSaveIcon />
-                  Submit
-                </p>
-              </Button>
-              <Button type="button" className="icon" onClick={this.onCancel}>
-                <p>
-                  <CloseCircleIcon />
-                  Cancel
-                </p>
-              </Button>
-            </ButtonToolbar>
-          </form>
-        </div>
-      </Grid>
+            >
+              <p>
+                <ContentSaveIcon />
+                Submit
+              </p>
+            </Button>
+            <Button type="button" className="icon" onClick={this.onCancel}>
+              <p>
+                <CloseCircleIcon />
+                Cancel
+              </p>
+            </Button>
+          </ButtonToolbar>
+        </form>
     );
-  }
+
 }
+    }
 //mapping global state to this component
 const mapStateToProps = state => ({
   errors: state.errors
@@ -108,4 +107,7 @@ const mapDispatchToProps = {
   updateErrors
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(ResetPasswordForm);
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(withMaterialConfirmDialog(withPage(ResetPasswordForm, "Reset Staff Password")));

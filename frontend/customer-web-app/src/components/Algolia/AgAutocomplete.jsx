@@ -17,6 +17,8 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import { Lock, Visibility, VisibilityOff } from "@material-ui/icons";
 import IconButton from "@material-ui/core/IconButton";
 
+const _ = require("lodash");
+
 const AgAutocomplete = () => {
   return (
     <InstantSearch searchClient={searchClient} indexName="Apricot">
@@ -76,7 +78,7 @@ const SearchResult = props => {
           <img
             height="auto"
             width="100%"
-            src={productImages[0].productImageUrl}
+            src={_.get(productImages[0], "productImageUrl", "")}
             alt="ProdImage"
           />
         </GridItem>

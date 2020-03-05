@@ -67,63 +67,70 @@ router.post(
 
     filesArray.map((files, index) => {
       imageUrls = [];
-      files.map(({ originalname }, idx) => {
-        cloudinary.uploader
-          .upload(`./uploads/${originalname}`, {
-            public_id: originalname,
-            width: 500,
-            height: 500,
-            crop: "fit"
-            // tags: "basic_sample",
-            // effect: "saturation:-70"
-          })
-          .then(image => {
-            if (request.colourToImageUrlsMaps[index].imageUrls) {
-              request.colourToImageUrlsMaps[index].imageUrls.push(
-                image.secure_url
-              );
-            } else {
-              request.colourToImageUrlsMaps[index].imageUrls = [
-                image.secure_url
-              ];
-              delete request.colourToImageUrlsMaps[index].files;
-            }
-            if (index === filesArray.length - 1 && idx === files.length - 1) {
-              axios
-                .post(
-                  process.env.SPRING_API_URL + "/product/createNewProduct",
-                  request
-                )
-                .then(response => {
-                  console.log(request);
-                  return res.send(request);
-                })
-                .catch(err => {
-                  console.log(error);
-                  return res.status(400).send(err);
-                });
-            }
-          })
-          .catch(err => {
-            res.status(400).send(err);
-          });
-      });
+      Promise.all(
+        files.map(async ({ originalname }, idx) => {
+          await cloudinary.uploader
+            .upload(`./uploads/${originalname}`, {
+              public_id: originalname,
+              width: 500,
+              height: 500,
+              crop: "fit"
+              // tags: "basic_sample",
+              // effect: "saturation:-70"
+            })
+            .then(image => {
+              if (request.colourToImageUrlsMaps[index].imageUrls) {
+                request.colourToImageUrlsMaps[index].imageUrls.push(
+                  image.secure_url
+                );
+              } else {
+                request.colourToImageUrlsMaps[index].imageUrls = [
+                  image.secure_url
+                ];
+                delete request.colourToImageUrlsMaps[index].files;
+              }
+            })
+            .catch(err => {
+              res.status(400).send(err);
+            });
+        })
+      )
+        .then(async () => {
+          await axios
+            .post(
+              process.env.SPRING_API_URL + "/product/createNewProduct",
+              request
+            )
+            .then(response => {
+              console.log(request);
+              return res.send(request);
+            })
+            .catch(err => {
+              console.log(err);
+              return res.status(400).send(err);
+            });
+        })
+        .catch(err => {
+          console.log(err);
+        });
     });
 
-    request.colourToImageUrlsMaps.map((e, index) => {
-      request.colourToImageUrlsMaps[index].imageUrls = [];
-      delete request.colourToImageUrlsMaps[index].files;
-    });
-
-    axios
-      .post(process.env.SPRING_API_URL + "/product/createNewProduct", request)
-      .then(response => {
-        return res.send(request);
-      })
-      .catch(err => {
-        console.log(err);
-        return res.status(400).send(err);
+    if (filesArray.length === 0) {
+      request.colourToImageUrlsMaps.map((e, index) => {
+        request.colourToImageUrlsMaps[index].imageUrls = [];
+        delete request.colourToImageUrlsMaps[index].files;
       });
+
+      axios
+        .post(process.env.SPRING_API_URL + "/product/createNewProduct", request)
+        .then(response => {
+          return res.send(request);
+        })
+        .catch(err => {
+          console.log(err);
+          return res.status(400).send(err);
+        });
+    }
   }
 );
 

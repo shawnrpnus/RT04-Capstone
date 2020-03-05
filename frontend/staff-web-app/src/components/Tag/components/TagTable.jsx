@@ -103,8 +103,8 @@ class TagTable extends Component {
               title="All Tags"
               icons={tableIcons}
               columns={[
-                { title: "Tag Id", field: "tagId", editable: "never" },
-                { title: "Name", field: "name" },
+                // { title: "Tag Id", field: "tagId", editable: "never" },
+                { title: "Name", field: "name"},
                 {
                   title: "Products Linked",
                   field: "products",
@@ -136,8 +136,10 @@ class TagTable extends Component {
                 padding: "dense",
                 pageSizeOptions: [10, 20, 40],
                 actionsColumnIndex: -1,
-                headerStyle: { textAlign: "center" },
-                cellStyle: { textAlign: "center" }
+                // headerStyle: { textAlign: "center" },
+                // cellStyle: { textAlign: "center" },
+                // searchFieldStyle: {textAlign: "center", width: "100%"},
+                rowStyle: {textAlign:"center"}
               }}
             />
           ) : (
