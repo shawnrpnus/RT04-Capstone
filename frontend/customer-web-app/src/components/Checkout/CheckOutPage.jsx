@@ -63,8 +63,6 @@ import AddAddress from "components/Profile/sections/Address/AddAddress";
 import colourList from "assets/colours.json";
 import CheckoutProdVariantCard from "components/Checkout/CheckoutProdVariantCard";
 
-const jsonColorHexList = _.keyBy(colourList, "hex");
-
 const useStyles = makeStyles(checkoutStyle);
 
 export default function CheckOutPage() {

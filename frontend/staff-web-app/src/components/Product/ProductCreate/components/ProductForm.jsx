@@ -99,9 +99,11 @@ class ProductForm extends React.Component {
   //for text field: serial number, name, description, price, cost
   onChange = e => {
     const name = e.target.name;
+
+    this.setState({ [name]: e.target.value });
     // console.log(name);
     // console.log(e.target.value);
-    this.setState({ [name]: e.target.value }); //computed property name syntax
+    //computed property name syntax
     if (Object.keys(this.props.errors).length !== 0) {
       this.props.clearErrors();
     }
@@ -185,20 +187,23 @@ class ProductForm extends React.Component {
       colourToImageUrlsMaps,
       isLoading
     } = this.state;
+    const negative =
+      serialNumber.search("-") !== -1 ||
+      cost.search("-") !== -1 ||
+      price.search("-") !== -1;
+
     const disable =
       !serialNumber ||
       serialNumber.length < 5 ||
-      serialNumber.includes("-") ||
       !productName ||
       !price ||
-      price.includes("-") ||
       !cost ||
-      cost.includes("-") ||
       !categoryId ||
       sizes.length === 0 ||
       !description ||
       !colourToImageUrlsMaps ||
-      colourToImageUrlsMaps.length === 0;
+      colourToImageUrlsMaps.length === 0 ||
+      negative;
 
     return (
       <form className="material-form">
@@ -256,7 +261,7 @@ class ProductForm extends React.Component {
               rows="4"
               name="description"
               variant="outlined"
-              fullWidth="true"
+              fullWidth
               onChange={this.onChange}
               state={this.state}
               errors={errors}
@@ -453,6 +458,9 @@ class ProductForm extends React.Component {
             />
           </div>
         </React.Fragment>
+        <small style={{ color: "red" }}>
+          Serial number, price and cost cannot have '-' character
+        </small>
         <ButtonToolbar className="form__button-toolbar">
           <Button
             color="primary"
