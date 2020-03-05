@@ -229,12 +229,12 @@ class ProductCard extends PureComponent {
                 </Col>
               </Row>
               <div className="product-card__rate">
-                <StarIcon />
+                {/* <StarIcon />
                 <StarIcon />
                 <StarIcon />
                 <StarIcon />
                 <StarOutlineIcon />
-                <a className="product-card__link"></a>
+                <a className="product-card__link"></a> */}
               </div>
               <h1 className="product-card__price">
                 ${price.toFixed(2)}{" "}

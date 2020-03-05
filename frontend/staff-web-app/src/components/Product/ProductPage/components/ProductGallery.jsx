@@ -77,6 +77,7 @@ export default class ProductGallery extends PureComponent {
           src="/blank.png"
           style={{ border: "1px solid black" }}
           alt="product-img"
+          key={n + "img"}
         />
       </div>
     );
@@ -125,7 +126,11 @@ export default class ProductGallery extends PureComponent {
                   onClick={e => this.changeImg(i, e)}
                   className="product-gallery__img-preview"
                 >
-                  <img src={img.productImageUrl} alt="product-img" />
+                  <img
+                    src={img.productImageUrl}
+                    alt="product-img"
+                    style={{ height: "100%" }}
+                  />
                 </button>
               ))
             : _.times(5, n => this.showSmallBlank(n))}
