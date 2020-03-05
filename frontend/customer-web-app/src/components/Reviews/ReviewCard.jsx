@@ -12,7 +12,15 @@ import CardBody from "../UI/Card/CardBody";
 import GridContainer from "../Layout/components/Grid/GridContainer";
 import GridItem from "../Layout/components/Grid/GridItem";
 import Button from "@material-ui/core/Button";
-import {Add, Clear, Delete, Edit, Favorite, Reply, Star} from "@material-ui/icons";
+import {
+  Add,
+  Clear,
+  Delete,
+  Edit,
+  Favorite,
+  Reply,
+  Star
+} from "@material-ui/icons";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
 import Card from "../UI/Card/Card";
@@ -41,18 +49,22 @@ export default function ReviewCard(props) {
   const dispatch = useDispatch();
   const history = useHistory();
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
-  const [addNewReview, setAddNewReview] = useState(false);
-  const [editReview, setEditReview] = useState(false);
-  const [currReview, setCurrReview] = useState('');
+  const [addNewReview, setAddNewReview] = useState(false); //top right + ADD A REVIEW
+  // const [editReview, setEditReview] = useState(false); // <Edit/>
+  const [currReview, setCurrReview] = useState("");
 
   const currCustomer = useSelector(state => state.customer.loggedInCustomer);
   const currentProductId = useSelector(
     state => state.product.currentProductDetail.product.productId
   );
+  const canWrite = useSelector(state => state.review.canWrite);
   useEffect(() => {
     if (currCustomer !== null) {
       // wait for transaction to be made then test
-      // dispatch(checkIfCanWriteReview(currentProductId, currCustomer.customerId));
+      console.log("Rannnn");
+      dispatch(
+        checkIfCanWriteReview(currentProductId, currCustomer.customerId)
+      );
     }
   });
 
@@ -69,11 +81,13 @@ export default function ReviewCard(props) {
 
   const handleAddNewReview = () => {
     setAddNewReview(!addNewReview);
+    console.log(addNewReview);
   };
-  const handleEditReview = () => {
-    setEditReview(!editReview);
+  const handleEditReview = (item) => {
+    // setAddNewReview(!addNewReview);
+    setCurrReview(item);
   };
-  const handleCurrReview = (item) => {
+  const handleCurrReview = item => {
     setCurrReview(item);
     console.log(item);
   };
@@ -83,35 +97,56 @@ export default function ReviewCard(props) {
       <GridContainer justify="center">
         <GridItem xs={12} sm={10} md={8}>
           <div>
-            {addNewReview ? (
-            <h3 className={classes.title}>
-              Reviews
-              <Button
-                onClick={handleAddNewReview}
-                style={{ position: "absolute", right: "15px" }}
-              >
-                <Clear></Clear>Cancel
-              </Button>
-            </h3>) :
-              (<h3 className={classes.title}>
-              Reviews
-              <Button
-                onClick={handleAddNewReview}
-                style={{ position: "absolute", right: "15px" }}
-              >
-                <Add></Add>Add a review
-              </Button>
-            </h3>) }
+            {canWrite ? (
+              <div>
+                {addNewReview ? (
+                  <h3 className={classes.title}>
+                    Reviews
+                    <Button
+                      onClick={handleAddNewReview}
+                      style={{ position: "absolute", right: "15px" }}
+                    >
+                      <Clear></Clear>Cancel
+                    </Button>
+                  </h3>
+                ) : (
+                  <h3 className={classes.title}>
+                    Reviews
+                    <Button
+                      onClick={handleAddNewReview}
+                      style={{ position: "absolute", right: "15px" }}
+                    >
+                      <Add></Add>Add a review
+                    </Button>
+                  </h3>
+                )}
+              </div>
+            ) : (
+              ""
+            )}
+
             {addNewReview ? (
               <span>
-                <AddEditReview reviews={reviews} editReview={editReview} currReview={currReview} setCurrReview={setCurrReview}/>
+                <AddEditReview
+                  reviews={reviews}
+                  currReview={currReview}
+                  setCurrReview={setCurrReview}
+                  addNewReview={addNewReview}
+                  setAddNewReview={setAddNewReview}
+                />
               </span>
             ) : (
               ""
             )}
             {currReview ? (
               <span>
-                <AddEditReview reviews={reviews} editReview={editReview} currReview={currReview} setCurrReview={setCurrReview}/>
+                <AddEditReview
+                  reviews={reviews}
+                  currReview={currReview}
+                  setCurrReview={setCurrReview}
+                  addNewReview={addNewReview}
+                  setAddNewReview={setAddNewReview}
+                />
               </span>
             ) : (
               ""
@@ -142,7 +177,6 @@ export default function ReviewCard(props) {
                     " " +
                     dateTime.getFullYear();
 
-
                   if (item.staff) {
                     return (
                       <Media
@@ -156,7 +190,9 @@ export default function ReviewCard(props) {
                               currCustomer.customerId ? (
                               <span style={{ float: "right" }}>
                                 <Button>
-                                  <Edit onClick={() => handleCurrReview(item)}/>
+                                  <Edit
+                                    onClick={() => handleCurrReview(item)}
+                                  />
                                 </Button>
                                 <Button onClick={() => onDelete(item)}>
                                   <Delete />
@@ -207,7 +243,7 @@ export default function ReviewCard(props) {
                               currCustomer.customerId ? (
                               <span style={{ float: "right" }}>
                                 <Button>
-                                  <Edit onClick={handleEditReview} />
+                                  <Edit onClick={() => handleEditReview(item)} />
                                 </Button>
                                 <Button onClick={() => onDelete(item)}>
                                   <Delete />

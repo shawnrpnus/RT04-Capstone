@@ -44,6 +44,38 @@ const updateProductStockError = data => ({
   errorMap: data
 });
 
+
+export const simulateReorderingFromSupplier = (productStockIds, history) => {
+  return dispatch => {
+    //redux thunk passes dispatch
+    axios
+      .post(
+        PRODUCT_STOCK_BASE_URL + "/simulateReorderingFromSupplier",
+        productStockIds
+      )
+      .then(response => {
+        const { data } = jsog.decode(response);
+        // const productStockId = data.productStockId;
+        dispatch(simulateReorderingFromSupplierSuccess(data));
+        dispatch(retrieveProductStocksByParameter());
+        toast.success("Successfully Simulate Reordering from Supplier!", {
+          position: toast.POSITION.TOP_CENTER
+        });
+        history.push(`/productStock/viewAll`);
+      })
+      .catch(err => {
+        dispatch(updateProductStockError(err.response.data));
+        //console.log(err.response.data);
+      });
+  };
+};
+
+const simulateReorderingFromSupplierSuccess = data => ({
+  type: types.SIMULATE_REORDERING_FROM_SUPPLIER,
+  simulateOrderProductStocks: data
+});
+
+
 export const updateProductStockQty = (updateProductStockRequest, storeId) => {
   return dispatch => {
     //redux thunk passes dispatch

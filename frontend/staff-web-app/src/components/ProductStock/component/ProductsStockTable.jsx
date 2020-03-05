@@ -2,6 +2,7 @@ import React, { PureComponent } from "react";
 import { Link, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import {
+  Add,
   AddBox,
   Check,
   ChevronLeft,
@@ -21,8 +22,12 @@ import MaterialTable from "material-table";
 import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
 import withPage from "../../Layout/page/withPage";
 import ProductsStockDetails from "./ProductsStockDetails";
-import { retrieveProductStocksByParameter } from "../../../redux/actions/productStockActions";
+import {
+  retrieveProductStocksByParameter,
+  simulateReorderingFromSupplier
+} from "../../../redux/actions/productStockActions";
 import Checkbox from "@material-ui/core/Checkbox";
+import AddTagToProductsRequest from "../../../models/tag/AddTagToProductsRequest";
 
 const _ = require("lodash");
 
@@ -70,8 +75,17 @@ class ProductsStockTable extends PureComponent {
   handleCheckBox = (evt, data) => {
     evt.preventDefault();
     //data is the list of products selected
+    console.log(evt);
+    console.log(data);
+    let productStockIds = [];
+    data.forEach(element => {
+      productStockIds.push(element.productStockId);
+    });
+    console.log(productStockIds);
+    this.props.simulateReorderingFromSupplier(productStockIds,this.props.history);
+    // const req = new AddTagToProductsRequest(this.state.tagId, productStockIds);
+    // this.props.addTagToProducts(req, this.props.history);
 
-    this.state.selectedProductStocks.push(data);
   };
 
   render() {
@@ -134,14 +148,20 @@ class ProductsStockTable extends PureComponent {
                 cellStyle: { textAlign: "center" },
                 selection: true
               }}
-              //   actions={[
-              //     {
-              //       icon: Checkbox,
-              //       tooltip: "View Product Stocks Details",
-              //       onClick: (event, rowData) =>
-              //         this.handleCheckBox(event, rowData)
-              //     }
-              //   ]}
+              // selectionAction={{
+              //   tooltip: "Add Tag To Products",
+              //   icon: Add,
+              //   onClick: (evt, data) =>
+              //     this.handleAddTagToProducts(evt, data)
+              // }}
+                actions={[
+                  {
+                    icon: Checkbox,
+                    tooltip: "Simulate Order From Supplier",
+                    onClick: (event, rowData) =>
+                      this.handleCheckBox(event, rowData)
+                  }
+                ]}
             />
           ) : (
             renderLoader()
@@ -158,7 +178,8 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = {
-  retrieveProductStocksByParameter
+  retrieveProductStocksByParameter,
+  simulateReorderingFromSupplier
 };
 
 export default withRouter(

@@ -786,6 +786,20 @@ public class ProductService {
         return productStock;
     }
 
+    public List<ProductStock> simulateReorderingFromSupplier(List<Long> productStockIds) throws ProductStockNotFoundException {
+        List<ProductStock> productStocks = new ArrayList<>();
+
+        for(Long l : productStockIds) {
+            productStocks.add(retrieveProductStockById(l));
+        }
+
+        for(ProductStock ps : productStocks) {
+            ps.setQuantity(ps.getQuantity()+ps.getReorderQuantity());
+        }
+
+        return productStocks;
+    }
+
     public List<ProductImage> createProductImage(List<ProductImage> productImages, Long productVariantId) throws
             ProductVariantNotFoundException {
         ProductVariant productVariant = retrieveProductVariantById(productVariantId);

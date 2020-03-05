@@ -46,7 +46,7 @@ public class TimerService {
         this.restTemplate = builder.build();
     }
 
-    @Scheduled(fixedRate = intervalDay, initialDelay = 20000)
+//    @Scheduled(fixedRate = intervalDay, initialDelay = 20000)
     public void checkForLowStockProducts() throws ProductStockNotFoundException {
         //update size here for the set of automatically reordering from SUPPLIER -> WAREHOUSE
         List<Warehouse> warehouses = warehouseService.retrieveAllWarehouses();
@@ -64,7 +64,7 @@ public class TimerService {
 //        log.info("donee");
     }
 
-    @Scheduled(fixedRate = intervalDay, initialDelay = 10000)
+//    @Scheduled(fixedRate = intervalDay, initialDelay = 10000)
     public void monthlyReorderingForWarehouse() throws ProductStockNotFoundException {
 
         List<Warehouse> warehouses = warehouseService.retrieveAllWarehouses();
