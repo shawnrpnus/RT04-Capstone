@@ -2,6 +2,7 @@ package capstone.rt04.retailbackend.controllers;
 
 import capstone.rt04.retailbackend.entities.Product;
 import capstone.rt04.retailbackend.entities.ProductVariant;
+import capstone.rt04.retailbackend.entities.Review;
 import capstone.rt04.retailbackend.entities.Tag;
 import capstone.rt04.retailbackend.request.algolia.AlgoliaProductDetailsResponse;
 import capstone.rt04.retailbackend.request.product.ProductCreateRequest;
@@ -235,6 +236,13 @@ public class ProductController {
             for (Tag tag : pdr.getProduct().getTags()) {
                 tag.setProducts(null);
             }
+
+            for (Review review : pdr.getProduct().getReviews()) {
+                review.setProduct(null);
+                review.setCustomer(null);
+                review.setStaff(null);
+            }
+
             pdr.getProduct().getCategory().setProducts(null);
             pdr.getProduct().getCategory().setParentCategory(null);
             pdr.getProduct().getCategory().setChildCategories(null);
