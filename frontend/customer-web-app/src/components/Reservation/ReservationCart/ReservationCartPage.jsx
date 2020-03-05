@@ -93,7 +93,7 @@ export default function ReservationCartPage(props) {
                     Clear reservation cart
                   </Button>
                   {reservationCartItems.map(productVariant => (
-                    <React.Fragment>
+                    <React.Fragment key={productVariant.productVariantId}>
                       <ReservationCartItem productVariant={productVariant} />
                       {reservationCartItems.length > 1 && <Divider />}
                     </React.Fragment>

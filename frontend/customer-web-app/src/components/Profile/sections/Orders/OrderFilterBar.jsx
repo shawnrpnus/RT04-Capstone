@@ -198,6 +198,7 @@ function OrderFilterBar(props) {
                       margin="normal"
                       label="Start date"
                       value={orderStartDate}
+                      maxDate={orderEndDate}
                       onChange={date => {
                         dispatch(setOrderStartDate(date));
                       }}
@@ -210,6 +211,7 @@ function OrderFilterBar(props) {
                       margin="normal"
                       label="End date"
                       value={orderEndDate}
+                      minDate={orderStartDate}
                       onChange={date => {
                         dispatch(setOrderEndDate(date));
                       }}

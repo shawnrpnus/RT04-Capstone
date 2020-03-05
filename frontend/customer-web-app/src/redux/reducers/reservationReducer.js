@@ -34,9 +34,7 @@ export default function(state = initialState, action) {
     case types.UPDATE_UPCOMING_RESERVATIONS:
       return {
         ...state,
-        upcomingReservations: action.reservations.sort((a, b) =>
-          a.reservationDateTime.localeCompare(b.reservationDateTime)
-        )
+        upcomingReservations: action.reservations
       };
     case types.UPDATE_PAST_RESERVATIONS:
       return {

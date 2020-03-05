@@ -139,7 +139,13 @@ export const getUpcomingReservations = customerId => {
       })
       .then(response => {
         const data = jsog.decode(response.data);
-        dispatch(updateUpcomingReservations(data));
+        dispatch(
+          updateUpcomingReservations(
+            data.sort((a, b) =>
+              a.reservationDateTime.localeCompare(b.reservationDateTime)
+            )
+          )
+        );
       })
       .catch(err => {
         dispatchErrorMapError(err, dispatch);

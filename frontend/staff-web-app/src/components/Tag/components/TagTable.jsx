@@ -104,7 +104,7 @@ class TagTable extends Component {
               icons={tableIcons}
               columns={[
                 // { title: "Tag Id", field: "tagId", editable: "never" },
-                { title: "Name", field: "name"},
+                { title: "Name", field: "name" },
                 {
                   title: "Products Linked",
                   field: "products",
@@ -139,7 +139,7 @@ class TagTable extends Component {
                 // headerStyle: { textAlign: "center" },
                 // cellStyle: { textAlign: "center" },
                 // searchFieldStyle: {textAlign: "center", width: "100%"},
-                rowStyle: {textAlign:"center"}
+                rowStyle: { textAlign: "center" }
               }}
             />
           ) : (
