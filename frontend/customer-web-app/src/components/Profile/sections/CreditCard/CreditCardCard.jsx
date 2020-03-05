@@ -38,13 +38,8 @@ export default function CreditCardCard() {
 
   return (
     <div>
-      {/* <h4 style={{ marginBottom: 0 }}>Add New Address</h4> */}
-      {/* <small>
-        Please enter an address you would like to save and deliver your items
-        to.
-      </small> */}
       {creditCards.map(
-        ({ creditCardId, last4, expiryMonth, expiryYear, issuer }) => {
+        ({ creditCardId, last4, expiryMonth, expiryYear, issuer }, index) => {
           if (expiryMonth < 10) {
             expiryMonth = `0${expiryMonth}`;
           }
@@ -54,6 +49,7 @@ export default function CreditCardCard() {
               container
               alignItems="center"
               style={{ textAlign: "center", margin: "5% 0" }}
+              key={index}
             >
               <Grid item xs={10} className={classes.creditCardContainer}>
                 <Cards

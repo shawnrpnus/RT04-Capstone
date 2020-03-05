@@ -31,6 +31,7 @@ import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import customSelectStyle from "../../assets/jss/material-kit-pro-react/customSelectStyle";
+import Parallax from "components/UI/Parallax/Parallax.js";
 import { useSnackbar } from "notistack";
 
 const useStyles = makeStyles(contactUsStyle);
@@ -40,15 +41,11 @@ const _ = require("lodash");
 function ContactUsTicket(props) {
   //Hooks
   const classes = useStyles();
-  const history = useHistory();
-  const location = useLocation();
   const classy = useClassy();
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   //Redux
   const dispatch = useDispatch();
-  useEffect(() => dispatch(retrieveAllContactUsCategoryEnum()), []);
-
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const errors = useSelector(state => state.errors);
   const enums = useSelector(state => state.contactUs.allContactUsCategoryEnum);
 
@@ -62,9 +59,22 @@ function ContactUsTicket(props) {
     lastName: ""
   });
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    document.body.scrollTop = 0;
+  }, []);
+  useEffect(() => dispatch(retrieveAllContactUsCategoryEnum()), []);
+
+  const {
+    contactUsCategory,
+    customerEmail,
+    content,
+    firstName,
+    lastName
+  } = inputState;
+
   const onChange = e => {
     e.persist();
-    console.log(e);
     setInputState(inputState => ({
       ...inputState,
       [e.target.name]: e.target.value
@@ -75,42 +85,36 @@ function ContactUsTicket(props) {
   };
 
   const handleSubmit = () => {
-    const {
-      contactUsCategory,
-      customerEmail,
-      content,
-      firstName,
-      lastName
-    } = inputState;
     console.log(inputState);
     if (contactUsCategory === "Enquiry Type") {
       console.log("insideEnquiry");
     }
     const req = new CreateContactUsRequest(
-      contactUsCategory,
-      content,
       customerEmail,
+      content,
+      contactUsCategory,
       firstName,
       lastName
     );
-    dispatch(createNewContactUs(req, enqueueSnackbar, props.history));
-    setInputState({
-      contactUsCategory: "",
-      customerEmail: "",
-      content: "",
-      firstName: "",
-      lastName: ""
-    });
-    dispatch({ type: "clearEnum" });
+    dispatch(createNewContactUs(req, enqueueSnackbar, setInputState));
   };
 
-  React.useEffect(() => {
-    window.scrollTo(0, 0);
-    document.body.scrollTop = 0;
-  });
+  const disable =
+    !contactUsCategory || !customerEmail || !content || !firstName || !lastName;
 
   return (
     <React.Fragment>
+      <Parallax image={require("assets/img/bg6.jpg")} small>
+        <div style={{ width: "100%" }}>
+          <GridContainer>
+            <GridItem md={12} sm={12} style={{ textAlign: "center" }}>
+              <h2 className={classes.title} style={{ color: "white" }}>
+                Contact Us
+              </h2>
+            </GridItem>
+          </GridContainer>
+        </div>
+      </Parallax>
       <div>
         <div className={classNames(classes.main, classes.mainRaisedCustom)}>
           <div className={classes.contactContent}>
@@ -189,8 +193,7 @@ function ContactUsTicket(props) {
                       Enquiry Type
                     </InputLabel>
                     <Select
-                      style={{ minWidth: 120 }}
-                      defaultValue=""
+                      value={contactUsCategory}
                       MenuProps={{
                         className: classes.selectMenu
                       }}
@@ -199,9 +202,10 @@ function ContactUsTicket(props) {
                       }}
                       onChange={onChange}
                       name="contactUsCategory"
-                      value={inputState.contactUsCategory}
+                      fullWidth
+                      style={{ marginTop: "2%" }}
                     >
-                      {enums.map(function(item, i) {
+                      {enums.map(function(item, index) {
                         return (
                           <MenuItem
                             classes={{
@@ -209,6 +213,7 @@ function ContactUsTicket(props) {
                               selected: classy.selectMenuItemSelected
                             }}
                             value={item}
+                            key={index}
                           >
                             {item}
                           </MenuItem>
@@ -236,7 +241,13 @@ function ContactUsTicket(props) {
                       }}
                     />
                     <div className={classes.textCenter}>
-                      <Button color="primary" round onClick={handleSubmit}>
+                      <Button
+                        color="primary"
+                        round
+                        onClick={handleSubmit}
+                        disabled={disable}
+                        fullWidth
+                      >
                         Contact us
                       </Button>
                     </div>

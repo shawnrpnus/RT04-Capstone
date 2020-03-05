@@ -5,7 +5,7 @@ export default class CreateContactUsRequest {
   firstName;
   lastName;
 
-  constructor(contactUsCategory, customerEmail, content, firstName, lastName) {
+  constructor(customerEmail, content, contactUsCategory, firstName, lastName) {
     this.customerEmail = customerEmail;
     this.content = content;
     this.contactUsCategory = contactUsCategory;

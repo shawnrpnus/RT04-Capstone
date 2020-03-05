@@ -99,9 +99,11 @@ class ProductForm extends React.Component {
   //for text field: serial number, name, description, price, cost
   onChange = e => {
     const name = e.target.name;
+
+    this.setState({ [name]: e.target.value });
     // console.log(name);
     // console.log(e.target.value);
-    this.setState({ [name]: e.target.value }); //computed property name syntax
+    //computed property name syntax
     if (Object.keys(this.props.errors).length !== 0) {
       this.props.clearErrors();
     }
@@ -168,12 +170,11 @@ class ProductForm extends React.Component {
     this.props.createNewProduct(form, this.props.history, () =>
       this.setState({ isLoading: false })
     );
-    this.setState({ isLoading: true });
+    // this.setState({ isLoading: true });
   };
 
   render() {
     const { handleSubmit, errors, disabled } = this.props;
-    console.log(this.props);
     // const hasErrors = Object.keys(this.props.errors).length !== 0;
     const {
       serialNumber,
@@ -186,6 +187,11 @@ class ProductForm extends React.Component {
       colourToImageUrlsMaps,
       isLoading
     } = this.state;
+    const negative =
+      serialNumber.search("-") !== -1 ||
+      cost.search("-") !== -1 ||
+      price.search("-") !== -1;
+
     const disable =
       !serialNumber ||
       serialNumber.length < 5 ||
@@ -196,7 +202,8 @@ class ProductForm extends React.Component {
       sizes.length === 0 ||
       !description ||
       !colourToImageUrlsMaps ||
-      colourToImageUrlsMaps.length === 0;
+      colourToImageUrlsMaps.length === 0 ||
+      negative;
 
     return (
       <form className="material-form">
@@ -207,7 +214,7 @@ class ProductForm extends React.Component {
           <Grid item xs={12} md={4}>
             <MaterialTextField
               type="number"
-              fieldLabel="Serial Number"
+              fieldLabel="Serial Number *"
               onChange={this.onChange}
               fieldName="serialNumber"
               state={this.state}
@@ -219,7 +226,7 @@ class ProductForm extends React.Component {
           </Grid>
           <Grid item xs={12} md={4}>
             <MaterialTextField
-              fieldLabel="Name"
+              fieldLabel="Name *"
               onChange={this.onChange}
               fieldName="productName"
               state={this.state}
@@ -241,6 +248,7 @@ class ProductForm extends React.Component {
                   variant="standard"
                   label="Category"
                   fullWidth
+                  required
                 />
               )}
               errors={errors}
@@ -254,10 +262,11 @@ class ProductForm extends React.Component {
               rows="4"
               name="description"
               variant="outlined"
-              fullWidth="true"
+              fullWidth
               onChange={this.onChange}
               state={this.state}
               errors={errors}
+              required
             />
           </Grid>
           <Grid item xs={12} md={6}>
@@ -338,6 +347,7 @@ class ProductForm extends React.Component {
                     {...params}
                     variant="standard"
                     label="Colours"
+                    required
                     fullWidth
                     InputLabelProps={{
                       shrink: true
@@ -380,6 +390,7 @@ class ProductForm extends React.Component {
                   {...params}
                   variant="standard"
                   label="Sizes"
+                  required
                   // placeholder="Styles"
                   fullWidth
                   InputLabelProps={{
@@ -393,7 +404,7 @@ class ProductForm extends React.Component {
           <Grid item xs={12} md={3}>
             <MaterialTextField
               type="number"
-              fieldLabel="Price"
+              fieldLabel="Price *"
               onChange={this.onChange}
               fieldName="price"
               state={this.state}
@@ -403,7 +414,7 @@ class ProductForm extends React.Component {
           <Grid item xs={12} md={3}>
             <MaterialTextField
               type="number"
-              fieldLabel="Cost"
+              fieldLabel="Cost *"
               onChange={this.onChange}
               fieldName="cost"
               state={this.state}
@@ -451,6 +462,9 @@ class ProductForm extends React.Component {
             />
           </div>
         </React.Fragment>
+        <small style={{ color: "red" }}>
+          Serial number, price and cost cannot have '-' character
+        </small>
         <ButtonToolbar className="form__button-toolbar">
           <Button
             color="primary"

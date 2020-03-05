@@ -34,7 +34,7 @@ function ProductCard(props) {
         <CardHeader noShadow image>
           <Link to={`/shop/product/${product.productId}`}>
             <img
-              src={colourToImageAndSizes[activeColourIndex].image}
+              src={_.get(colourToImageAndSizes[activeColourIndex], "image", "")}
               alt="productImage"
               style={{ height: "auto", width: "100%", objectFit: "cover" }}
             />
@@ -95,20 +95,22 @@ function ProductCard(props) {
                 })}
               </GridItem>
               <GridItem md={12}>
-                {colourToImageAndSizes[activeColourIndex].sizes.map(
-                  (size, index) => {
-                    return (
-                      <Chip
-                        className={classes.sizeChip}
-                        key={product.productId + size}
-                        variant="outlined"
-                        size="small"
-                        label={size}
-                        style={{ marginRight: "3px" }}
-                      />
-                    );
-                  }
-                )}
+                {_.get(
+                  colourToImageAndSizes[activeColourIndex],
+                  "sizes",
+                  []
+                ).map((size, index) => {
+                  return (
+                    <Chip
+                      className={classes.sizeChip}
+                      key={product.productId + size}
+                      variant="outlined"
+                      size="small"
+                      label={size}
+                      style={{ marginRight: "3px" }}
+                    />
+                  );
+                })}
               </GridItem>
             </GridContainer>
           </div>

@@ -1,30 +1,31 @@
 package capstone.rt04.retailbackend.services;
 
-import capstone.rt04.retailbackend.repositories.*;
 import capstone.rt04.retailbackend.entities.ContactUs;
-import capstone.rt04.retailbackend.util.enums.ContactUsCategoryEnum;
-import capstone.rt04.retailbackend.util.exceptions.contactUs.CreateNewContactUsException;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
+import capstone.rt04.retailbackend.repositories.ContactUsRepository;
+import capstone.rt04.retailbackend.util.Constants;
+import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @Service
 @Transactional
-
+@Slf4j
 public class ContactUsService {
     // Add a new complaint/compliment/enquiry/support ticket with details of the issue and customer’s email for staff to reply to
 
-    private JavaMailSender javaMailSender;
+    private RestTemplate restTemplate;
+
     private final ValidationService validationService;
     private final ContactUsRepository contactUsRepository;
 
-    public ContactUsService(JavaMailSender javaMailSender, ValidationService validationService, ContactUsRepository contactUsRepository) {
-        this.javaMailSender = javaMailSender;
+    public ContactUsService(ValidationService validationService, ContactUsRepository contactUsRepository) {
         this.validationService = validationService;
         this.contactUsRepository = contactUsRepository;
 
@@ -42,6 +43,7 @@ public class ContactUsService {
 //        }
         if(errorMap == null) {
             contactUsRepository.save(contactUs);
+            sendContactUsNotification(contactUs);
             return contactUs;
         } else {
             throw new InputDataValidationException(errorMap, "Invalid Form");
@@ -49,12 +51,26 @@ public class ContactUsService {
 
     }
 
-    private void sendContactUsNotification(String contactUsEmail, long contactUsId) {
-        SimpleMailMessage msg = new SimpleMailMessage();
-        msg.setTo(contactUsEmail);
-        msg.setSubject("Contact Us Ticket");
-        msg.setText("We have received your message and will be replying to you shortly. Your Contact Us Number is" + contactUsId);
-        javaMailSender.send(msg);
+    private void sendContactUsNotification(ContactUs contactUs) {
+        restTemplate = new RestTemplate();
+        Map<String, String> request = new HashMap<>();
+        String fullName = contactUs.getFirstName() + " " + contactUs.getLastName();
+        String email = contactUs.getCustomerEmail();
+        request.put("email", email);
+        request.put("fullName", fullName);
+        request.put("contactUsCategory", contactUs.getContactUsCategory().toString());
+
+        String endpoint = Constants.NODE_API_URL + "/email/contactUsConfirmation";
+        try {
+            ResponseEntity<?> response = restTemplate.postForEntity(endpoint, request, Object.class);
+            if (response.getStatusCode().equals(HttpStatus.OK)) {
+                log.info("Email sent successfully to " + email);
+            } else {
+                log.error("Error sending email to " + email);
+            }
+        } catch (Exception ex){
+            log.error(ex.getMessage());
+        }
 
     }
 

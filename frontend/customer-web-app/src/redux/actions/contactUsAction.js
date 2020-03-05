@@ -52,7 +52,7 @@ const retrieveAllContactUsCategoryEnumError = data => ({
 export const createNewContactUs = (
   createContactUsRequest,
   enqueueSnackbar,
-  history
+  setInputState
 ) => {
   return dispatch => {
     //redux thunk passes dispatch
@@ -61,11 +61,17 @@ export const createNewContactUs = (
       .then(response => {
         const { data } = jsog.decode(response);
         dispatch(contactUsSuccess(data));
-        enqueueSnackbar("Ticket Submitted!", {
+        enqueueSnackbar("Ticket submitted!", {
           variant: "success",
-          autoHideDuration: 1200
+          autoHideDuration: 2000
         });
-        history.push("/contactUs/ticket");
+        setInputState({
+          contactUsCategory: "",
+          customerEmail: "",
+          content: "",
+          firstName: "",
+          lastName: ""
+        });
       })
       .catch(err => {
         dispatchErrorMapError(err, dispatch);
