@@ -18,7 +18,7 @@ public class PaymentWithSavedCardRequest {
 
     private Long totalAmount;
 
-    private Long shoppingCartId;
+    private Long storeId;
 
     private Address deliveryAddress;
 
