@@ -16,18 +16,18 @@ function LandingPage(props) {
       <h1 className={classes.title}>Fashion. Re-imagined.</h1>
       <h4>Reservations. Personalization. Convenience.</h4>
       <br />
-      <h6>Shop Now:</h6>
-      <div>
-        <Link to="/account/login">
-          <Button
-            color="white"
-            size="lg"
-            style={{ width: "125px", opacity: "0.9", marginRight: "2px" }}
-          >
-            Login
-          </Button>
-        </Link>
-      </div>
+      <h4>Shop Now!</h4>
+      {/*<div>*/}
+      {/*  <Link to="/account/login">*/}
+      {/*    <Button*/}
+      {/*      color="white"*/}
+      {/*      size="lg"*/}
+      {/*      style={{ width: "125px", opacity: "0.9", marginRight: "2px" }}*/}
+      {/*    >*/}
+      {/*      Login*/}
+      {/*    </Button>*/}
+      {/*  </Link>*/}
+      {/*</div>*/}
     </GridItem>
   );
 }
