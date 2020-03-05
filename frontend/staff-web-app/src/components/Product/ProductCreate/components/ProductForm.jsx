@@ -173,7 +173,6 @@ class ProductForm extends React.Component {
 
   render() {
     const { handleSubmit, errors, disabled } = this.props;
-    console.log(this.props);
     // const hasErrors = Object.keys(this.props.errors).length !== 0;
     const {
       serialNumber,
@@ -189,9 +188,12 @@ class ProductForm extends React.Component {
     const disable =
       !serialNumber ||
       serialNumber.length < 5 ||
+      serialNumber.includes("-") ||
       !productName ||
       !price ||
+      price.includes("-") ||
       !cost ||
+      cost.includes("-") ||
       !categoryId ||
       sizes.length === 0 ||
       !description ||
