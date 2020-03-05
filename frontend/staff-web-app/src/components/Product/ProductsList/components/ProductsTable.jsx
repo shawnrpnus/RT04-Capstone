@@ -86,6 +86,8 @@ class ProductsTable extends PureComponent {
     const salesmarketing =
       _.get(this.props, "staff.department.departmentName") ===
       "Sales and Marketing";
+    const warehouse =
+      _.get(this.props, "staff.department.departmentName") === "Warehouse";
     console.log(this.props);
 
     let data = [];
@@ -183,7 +185,7 @@ class ProductsTable extends PureComponent {
                       onClick: (event, rowData) =>
                         this.handleViewProductDetails(rowData.productId)
                     },
-                    !salesmarketing && store.storeId
+                    !salesmarketing && (store.storeId || warehouse)
                       ? {
                           icon: List,
                           tooltip: "View / Update Product Stocks",
