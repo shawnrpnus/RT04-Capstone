@@ -127,8 +127,6 @@ public class CustomerService {
 
     public Customer retrieveCustomerByEmail(String email) throws CustomerNotFoundException {
 
-        System.out.println(customerRepository.findAll());
-
         Customer customer = customerRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomerNotFoundException("Customer email: " + email + "does not exist!"));
 

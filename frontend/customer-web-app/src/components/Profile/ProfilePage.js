@@ -45,6 +45,7 @@ import { useParams } from "react-router-dom";
 import { ShoppingCart } from "@material-ui/icons";
 import UpdateReservationPage from "components/Reservation/UpdateReservation/UpdateReservationPage";
 import OrderDetails from "components/Profile/sections/Orders/OrderDetails";
+import ReviewCardForProfilePage from "components/Reviews/ReviewCardForProfilePage";
 
 const useStyles = makeStyles(profilePageStyle);
 
@@ -99,10 +100,15 @@ export default function ProfilePage(props) {
           </GridContainer>
         </div>
       )
+    },
+    {
+      tabButton: "Reviews",
+      tabIcon: People,
+      route: "/account/profile/reviews",
+      tabContent: <ReviewCardForProfilePage />
     }
   ];
 
-  console.log(mode);
   if (mode === "viewOrder") {
     tabs.push({
       tabButton: "Order Details",
@@ -155,8 +161,10 @@ export default function ProfilePage(props) {
                   ? 1
                   : mode === "personalize"
                   ? 2
-                  : mode === "viewOrder"
+                  : mode === "reviews"
                   ? 3
+                  : mode === "viewOrder"
+                  ? 4
                   : 0
               }
               tabs={tabs}

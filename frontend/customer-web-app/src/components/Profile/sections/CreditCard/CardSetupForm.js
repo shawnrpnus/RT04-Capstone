@@ -7,6 +7,7 @@ import CardSection from "components/ShoppingCart/CardSection";
 import { saveCard } from "redux/actions/customerActions";
 import axios from "axios";
 
+const _ = require("lodash");
 export default function CardSetupForm() {
   const stripe = useStripe();
   const elements = useElements();
@@ -71,9 +72,10 @@ export default function CardSetupForm() {
       });
   };
 
+  const cc = _.get(customer, "creditCards");
   return (
     <div style={{ padding: "5%" }}>
-      <CardSection />
+      <CardSection key={cc && cc.length} />
       <Button
         color="primary"
         fullWidth
