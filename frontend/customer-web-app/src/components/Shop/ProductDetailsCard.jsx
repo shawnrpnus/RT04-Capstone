@@ -107,6 +107,13 @@ function ProductDetailsCard(props) {
   };
 
   const addToWishlist = () => {
+    if (!customer) {
+      enqueueSnackbar("Please login to add to your wishlist!", {
+        variant: "error",
+        autoHideDuration: 1200
+      });
+      return;
+    }
     if (selectedSize === "None") {
       enqueueSnackbar("Please select a size", {
         variant: "error",
@@ -181,6 +188,7 @@ function ProductDetailsCard(props) {
             <Tooltip
               id="tooltip-top"
               title={
+                customer &&
                 isProductVariantInList(
                   getCurrentProductVariantId(),
                   customer.wishlistItems
@@ -197,7 +205,8 @@ function ProductDetailsCard(props) {
                 onMouseLeave={() => setIsHoverFavorite(false)}
                 onClick={addToWishlist}
               >
-                {isProductVariantInList(
+                {customer &&
+                isProductVariantInList(
                   getCurrentProductVariantId(),
                   customer.wishlistItems
                 ) ? (
@@ -339,7 +348,9 @@ function ProductDetailsCard(props) {
                 color="primary"
                 onClick={addToShoppingCart}
                 style={{ float: "right", width: "245px" }}
-                disabled={selectedStock <= 0 || selectedSize === "None"}
+                disabled={
+                  selectedStock <= 0 || selectedSize === "None" || !customer
+                }
               >
                 Add to Shopping Cart &nbsp; <ShoppingCart />
               </Button>
@@ -349,7 +360,7 @@ function ProductDetailsCard(props) {
                 color="primary"
                 onClick={addToReservationCart}
                 style={{ float: "right", width: "245px" }}
-                disabled={selectedSize === "None"}
+                disabled={selectedSize === "None" || !customer}
               >
                 Add to Reservation Cart &nbsp; <ShoppingCart />
               </Button>
