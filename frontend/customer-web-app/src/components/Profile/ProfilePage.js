@@ -4,9 +4,6 @@ import React, { useEffect } from "react";
 import classNames from "classnames";
 // @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles";
-import Tooltip from "@material-ui/core/Tooltip";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
 // @material-ui/icons
 import Camera from "@material-ui/icons/Camera";
 import Palette from "@material-ui/icons/Palette";
@@ -15,24 +12,9 @@ import People from "@material-ui/icons/People";
 import GridContainer from "components/Layout/components/Grid/GridContainer.js";
 import GridItem from "components/Layout/components/Grid/GridItem.js";
 import NavPills from "components/UI/NavPills/NavPills.js";
-import Card from "components/UI/Card/Card.js";
-import CardBody from "components/UI/Card/CardBody.js";
 import CardHeader from "components/UI/Card/CardHeader.js";
-import Badge from "components/UI/Badge/Badge.js";
-import Muted from "components/UI/Typography/Muted.js";
 import Parallax from "components/UI/Parallax/Parallax.js";
 import Clearfix from "components/UI/Clearfix/Clearfix.js";
-
-import oluEletu from "assets/img/examples/olu-eletu.jpg";
-import clemOnojeghuo from "assets/img/examples/clem-onojeghuo.jpg";
-import cynthiaDelRio from "assets/img/examples/cynthia-del-rio.jpg";
-import mariyaGeorgieva from "assets/img/examples/mariya-georgieva.jpg";
-import clemOnojegaw from "assets/img/examples/clem-onojegaw.jpg";
-import darrenColeshill from "assets/img/examples/darren-coleshill.jpg";
-import avatar from "assets/img/faces/avatar.jpg";
-import marc from "assets/img/faces/marc.jpg";
-import kendall from "assets/img/faces/kendall.jpg";
-import cardProfile2Square from "assets/img/faces/card-profile2-square.jpg";
 
 import profilePageStyle from "assets/jss/material-kit-pro-react/views/profilePageStyle.js";
 import AccountInfo from "components/Profile/sections/AccountInfo";
@@ -42,10 +24,7 @@ import { useDispatch, useSelector } from "react-redux";
 import OrderHistoryPage from "components/Profile/sections/Orders/OrderHistoryPage";
 import { clearErrors } from "redux/actions";
 import { useParams } from "react-router-dom";
-import { ShoppingCart } from "@material-ui/icons";
-import UpdateReservationPage from "components/Reservation/UpdateReservation/UpdateReservationPage";
 import OrderDetails from "components/Profile/sections/Orders/OrderDetails";
-import ReviewCardForProfilePage from "components/Reviews/ReviewCardForProfilePage";
 
 const useStyles = makeStyles(profilePageStyle);
 
