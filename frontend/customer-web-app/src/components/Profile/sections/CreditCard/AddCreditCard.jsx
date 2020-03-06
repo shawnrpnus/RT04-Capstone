@@ -11,7 +11,7 @@ import CardSetupForm from "components/Profile/sections/CreditCard/CardSetupForm"
 const useStyles = makeStyles(customCheckboxRadioSwitch);
 
 // do this to edit props (pass in props as a tuple)
-export default function AddCreditCard() {
+export default function AddCreditCard({ setIsLoading }) {
   //Hooks
   const classes = useStyles();
   const history = useHistory();
@@ -29,7 +29,7 @@ export default function AddCreditCard() {
         Please enter an address you would like to save and deliver your items
         to.
       </small> */}
-      <CardSetupForm />
+      <CardSetupForm setIsLoading={setIsLoading} />
     </div>
   );
 }

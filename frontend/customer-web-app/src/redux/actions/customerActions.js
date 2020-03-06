@@ -678,7 +678,7 @@ export const saveCard = saveCardRequest => {
   };
 };
 
-export const deleteCard = deleteCardRequest => {
+export const deleteCard = (deleteCardRequest, setIsLoading) => {
   return dispatch => {
     console.log(deleteCardRequest);
     axios
@@ -687,6 +687,7 @@ export const deleteCard = deleteCardRequest => {
         // Return customer
         console.log(response);
         dispatchUpdatedCustomer(response.data, dispatch);
+        setIsLoading(false);
       })
       .catch(err => {
         console.log(err);

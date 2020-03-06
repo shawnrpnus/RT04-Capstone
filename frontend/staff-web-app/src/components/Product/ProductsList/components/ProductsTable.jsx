@@ -17,7 +17,8 @@ import {
   Search,
   ViewColumn,
   Visibility,
-  List
+  List,
+  Delete
 } from "@material-ui/icons";
 import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
 import {
@@ -204,15 +205,17 @@ class ProductsTable extends PureComponent {
                             )
                         }
                       : null,
-                    {
-                      icon: DeleteOutline,
-                      tooltip: "Delete product",
-                      onClick: (event, rowData) =>
-                        this.handleDeleteProduct(rowData.productId)
-                    }
+                    salesmarketing
+                      ? {
+                          icon: Delete,
+                          tooltip: "Delete product",
+                          onClick: (event, rowData) =>
+                            this.handleDeleteProduct(rowData.productId)
+                        }
+                      : null
                   ]
                 : [this.props.selectionAction][0].icon === undefined
-                ? false
+                ? null
                 : [this.props.selectionAction]
             }
           />

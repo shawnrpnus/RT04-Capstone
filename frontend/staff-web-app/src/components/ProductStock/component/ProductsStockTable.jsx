@@ -28,6 +28,7 @@ import {
 } from "../../../redux/actions/productStockActions";
 import Checkbox from "@material-ui/core/Checkbox";
 import AddTagToProductsRequest from "../../../models/tag/AddTagToProductsRequest";
+import { Typography } from "@material-ui/core";
 
 const _ = require("lodash");
 
@@ -74,14 +75,14 @@ class ProductsStockTable extends PureComponent {
 
   handleCheckBox = (evt, data) => {
     evt.preventDefault();
-    //data is the list of products selected
-    console.log(evt);
-    console.log(data);
+    // data is the list of products selected
+    // console.log(evt);
+    // console.log(data);
     let productStockIds = [];
     data.forEach(element => {
       productStockIds.push(element.productStockId);
     });
-    console.log(productStockIds);
+    // console.log(productStockIds);
     this.props.simulateReorderingFromSupplier(
       productStockIds,
       this.props.history
@@ -91,13 +92,11 @@ class ProductsStockTable extends PureComponent {
   };
 
   render() {
-    const { renderLoader } = this.props;
-
-    console.log(this.props.productStocks);
+    const { renderLoader, productStocks, store } = this.props;
 
     let data = [];
-    if (this.props.productStocks) {
-      data = this.props.productStocks.map(productStock => {
+    if (productStocks) {
+      data = productStocks.map(productStock => {
         return {
           productStockId: productStock.productStockId,
           productName: productStock.productVariant.product.productName,
@@ -115,7 +114,7 @@ class ProductsStockTable extends PureComponent {
     return (
       <React.Fragment>
         <div className="table" style={{ verticalAlign: "middle" }}>
-          {this.props.productStocks ? (
+          {productStocks ? (
             <MaterialTable
               title="Product Stocks"
               style={{ boxShadow: "none" }}
@@ -169,8 +168,10 @@ class ProductsStockTable extends PureComponent {
                 }
               ]}
             />
-          ) : (
+          ) : _.get(store, "storeId", null) ? (
             renderLoader()
+          ) : (
+            <Typography> No store selected! </Typography>
           )}
         </div>
       </React.Fragment>
