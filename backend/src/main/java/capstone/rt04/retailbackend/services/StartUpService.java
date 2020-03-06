@@ -62,7 +62,7 @@ public class StartUpService {
     private static Long tShirtCategoryId;
     private static Long shortsCategoryId;
     private static Long shortsWCategoryId;
-    private static Long sportsShortsCategoryId;
+    private static Long casualShortsCategoryId;
     private static Long tShirtWCategoryId;
     private static Long jeansCategoryId;
     private static Long jeansWCategoryId;
@@ -72,6 +72,10 @@ public class StartUpService {
     private static Long maxiDressCategoryId;
     private static Long denimJeansWCategoryId;
     private static Long denimJeansCategoryId;
+    private static Long casualShortsWCategoryId;
+    private static Long denimShortsWCategoryId;
+    private static Long midiSkirtCategoryId;
+    private static Long workDressCategoryId;
 
     private Long customerId;
     private Long productVariantId26;
@@ -112,9 +116,9 @@ public class StartUpService {
     private void createCategoryIfNotFound() throws CategoryNotFoundException, CreateNewCategoryException, InputDataValidationException {
         List<Category> categories = categoryService.retrieveAllRootCategories();
         if (categories.size() == 0) {
-            Category category = categoryService.createNewCategory(new Category("Shoes"), null);
+           /* Category category = categoryService.createNewCategory(new Category("Shoes"), null);
             Category leafCategory = categoryService.createNewCategory(new Category("Sneakers"), category.getCategoryId());
-            sneakerCategoryId = leafCategory.getCategoryId();
+            sneakerCategoryId = leafCategory.getCategoryId();*/
 
             Category men = categoryService.createNewCategory(new Category("Men"), null); //root
             Category topsM = categoryService.createNewCategory(new Category("Tops"), men.getCategoryId());//sub
@@ -123,14 +127,14 @@ public class StartUpService {
             jeansCategoryId = jeans.getCategoryId();
             Category shirts = categoryService.createNewCategory(new Category("Shirts"), topsM.getCategoryId()); //leaf
             shirtCategoryId = shirts.getCategoryId();
-            Category tShirt = categoryService.createNewCategory(new Category("T-Shirt"), topsM.getCategoryId());//leaf
+            Category tShirt = categoryService.createNewCategory(new Category("T-Shirts"), topsM.getCategoryId());//leaf
             tShirtCategoryId = tShirt.getCategoryId();
-            Category poloTee = categoryService.createNewCategory(new Category("Polo Tee"), topsM.getCategoryId());//leaf
+            Category poloTee = categoryService.createNewCategory(new Category("Polo Tees"), topsM.getCategoryId());//leaf
             poloTeeCategoryId = poloTee.getCategoryId();
             Category bermudas = categoryService.createNewCategory(new Category("Bermudas"), shorts.getCategoryId());//leaf
             bermudasCategoryId = bermudas.getCategoryId();
-            Category sportsShorts = categoryService.createNewCategory(new Category("Sports"), shorts.getCategoryId());//leaf
-            sportsShortsCategoryId= sportsShorts.getCategoryId();
+            Category casualShorts = categoryService.createNewCategory(new Category("Casual"), shorts.getCategoryId());//leaf
+            casualShortsCategoryId = casualShorts.getCategoryId();
             Category denimJeans = categoryService.createNewCategory(new Category("Denim Jeans"), jeans.getCategoryId());
             denimJeansWCategoryId = denimJeans.getCategoryId();
 
@@ -138,21 +142,28 @@ public class StartUpService {
             Category topsW = categoryService.createNewCategory(new Category("Tops"), women.getCategoryId());
             Category shortsW = categoryService.createNewCategory(new Category("Shorts"), women.getCategoryId());
             shortsWCategoryId = shortsW.getCategoryId();
-
-            Category dresses = categoryService.createNewCategory(new Category("Dresses"), women.getCategoryId());
+            Category dresses = categoryService.createNewCategory(new Category("Dresses"), women.getCategoryId());//sub
             dressesCategoryId = dresses.getCategoryId();
-            Category skirts = categoryService.createNewCategory(new Category("Skirts"), women.getCategoryId());
+            Category skirts = categoryService.createNewCategory(new Category("Skirts"), women.getCategoryId());//sub
             skirtsCategoryId = skirts.getCategoryId();
-            Category jeansW = categoryService.createNewCategory(new Category("Jeans"), women.getCategoryId());
+            Category jeansW = categoryService.createNewCategory(new Category("Jeans"), women.getCategoryId());//sub
             jeansWCategoryId = jeansW.getCategoryId();
-            Category tShirtW = categoryService.createNewCategory(new Category("T-Shirt"), topsW.getCategoryId());
+            Category denimShortsW = categoryService.createNewCategory(new Category("Denim"), shortsW.getCategoryId());
+            denimShortsWCategoryId = denimShortsW.getCategoryId();
+            Category tShirtW = categoryService.createNewCategory(new Category("T-Shirts"), topsW.getCategoryId());
             tShirtWCategoryId = tShirtW.getCategoryId();
-            Category maxiDress = categoryService.createNewCategory(new Category("Maxi Dress"), dresses.getCategoryId());
+            Category maxiDress = categoryService.createNewCategory(new Category("Maxi Dresses"), dresses.getCategoryId());
             maxiDressCategoryId = maxiDress.getCategoryId();
-            Category miniSkirt = categoryService.createNewCategory(new Category("Mini Skirt"), skirts.getCategoryId());
+            Category workDress = categoryService.createNewCategory(new Category("Work Dresses"), dresses.getCategoryId());
+            workDressCategoryId = workDress.getCategoryId();
+            Category miniSkirt = categoryService.createNewCategory(new Category("Mini Skirts"), skirts.getCategoryId());
             miniSkirtCategoryId = miniSkirt.getCategoryId();
+            Category midiSkirt = categoryService.createNewCategory(new Category("Midi Skirts"), skirts.getCategoryId());
+            midiSkirtCategoryId = midiSkirt.getCategoryId();
             Category denimJeansW = categoryService.createNewCategory(new Category("Denim Jeans"), jeansW.getCategoryId());
             denimJeansWCategoryId = denimJeansW.getCategoryId();
+            Category casualWShorts = categoryService.createNewCategory(new Category("Casual"), shortsW.getCategoryId());
+            casualShortsWCategoryId = casualWShorts.getCategoryId();
 
         }
     }
@@ -197,7 +208,7 @@ public class StartUpService {
             colourToImageUrlsMaps.add(new ColourToImageUrlsMap("#1CD3A2", greenProductImageUrls));
             colourToImageUrlsMaps.add(new ColourToImageUrlsMap("#CB4154", redProductImageUrls));
 
-            Category category = categoryService.retrieveCategoryByCategoryId(sneakerCategoryId); //sneakers
+
 
             List<String> blackProductImageUrls1 = new ArrayList<>();
             blackProductImageUrls1.add("https://dynamic.zacdn.com/5DeJBIeeOl5Hy9GK7NKB3SkpGGg=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/hollister-6214-7275331-1.jpg");
@@ -268,7 +279,7 @@ public class StartUpService {
             navyProductImageUrls6.add("https://dynamic.zacdn.com/_LikHzLLNDJFkbypK2QJHDxIMjA=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/pomelo-9179-0082731-3.jpg");
             navyProductImageUrls6.add("https://dynamic.zacdn.com/wKE48QGcJbzzkPFFCJQWUuepySw=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/pomelo-9180-0082731-5.jpg");
             List<ColourToImageUrlsMap> colourToImageUrlsMaps6 = new ArrayList<>();
-            colourToImageUrlsMaps6.add(new ColourToImageUrlsMap("#1974D2", navyProductImageUrls6));
+            colourToImageUrlsMaps6.add(new ColourToImageUrlsMap("#000000", navyProductImageUrls6));
 
             List<String> orangeProductImageUrls7 = new ArrayList<>();
             orangeProductImageUrls7.add("https://dynamic.zacdn.com/HVuC2GnPmrdZuUoBxUanFpzFI3M=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/something-borrowed-2152-6477221-1.jpg");
@@ -420,38 +431,332 @@ public class StartUpService {
             colourToImageUrlsMaps15.add(new ColourToImageUrlsMap("#95918C", grayProductImageUrls15));
             colourToImageUrlsMaps15.add(new ColourToImageUrlsMap("#1A4876", midnightblueProductImageUrls15));
 
+            List<String> violetProductImageUrls16 = new ArrayList<>();
+            violetProductImageUrls16.add("https://dynamic.zacdn.com/LbREkDnput7LGBtReXeeZk-13tA=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-4702-7494221-1.jpg");
+            violetProductImageUrls16.add("https://dynamic.zacdn.com/X2r2Tdn4NKilNZp3AGHnsyK0fEg=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-4703-7494221-2.jpg");
+            violetProductImageUrls16.add("https://dynamic.zacdn.com/5Kpx42xUODUKQbACJZFYeWyXcZE=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-4703-7494221-3.jpg");
+            violetProductImageUrls16.add("https://dynamic.zacdn.com/os3RSNsLIqZFSZFlFzxYfjtiuxg=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-4703-7494221-4.jpg");
+            List<String> blackProductImageUrls16 = new ArrayList<>();
+            blackProductImageUrls16.add("https://dynamic.zacdn.com/hTWC4twRQz0PxE7lMifdWviA7NE=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-4833-0874221-1.jpg");
+            blackProductImageUrls16.add("https://dynamic.zacdn.com/db13SNNT1yCUaaawDwKQuMpllSY=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-4834-0874221-2.jpg");
+            blackProductImageUrls16.add("https://dynamic.zacdn.com/UibH5tm7OZDJ9KA4Eq-cwE5lEiY=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-4834-0874221-3.jpg");
+            blackProductImageUrls16.add("https://dynamic.zacdn.com/0i5aVoqQJejqwzlcorOHBagrFOs=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-4834-0874221-4.jpg");
+            List<ColourToImageUrlsMap> colourToImageUrlsMaps16 = new ArrayList<>();
+            colourToImageUrlsMaps16.add(new ColourToImageUrlsMap("#7366BD", violetProductImageUrls16));
+            colourToImageUrlsMaps16.add(new ColourToImageUrlsMap("#000000", blackProductImageUrls16));
+
+            List<String> biegeProductImageUrls17 = new ArrayList<>();
+            biegeProductImageUrls17.add("https://dynamic.zacdn.com/6MaYzUOtdkyBU1OS4JE_ChpicNs=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-5616-6862811-1.jpg");
+            biegeProductImageUrls17.add("https://dynamic.zacdn.com/2k7IsQy_aSOrXzIDHZJ_ebZQo1Q=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-5616-6862811-2.jpg");
+            biegeProductImageUrls17.add("https://dynamic.zacdn.com/HuWf0n_MLrxNVB0irnV4vS3sIRQ=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-5617-6862811-3.jpg");
+            biegeProductImageUrls17.add("https://dynamic.zacdn.com/rl5uR-rGRtH0owOgZio2PwMvmr4=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-5617-6862811-4.jpg");
+            List<String> blackProductImageUrls17 = new ArrayList<>();
+            blackProductImageUrls11.add("https://dynamic.zacdn.com/O-9taEorxb3-5J5CWPKFBJfu2Ck=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-5624-2172811-1.jpg");
+            blackProductImageUrls11.add("https://dynamic.zacdn.com/bez0cBpel1k7AruavxxgS-DEVpI=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-5624-2172811-2.jpg");
+            blackProductImageUrls11.add("https://dynamic.zacdn.com/Lfr5J-eQ0aqKIEWEkhqkSOoJt60=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-5625-2172811-3.jpg");
+            blackProductImageUrls11.add("https://dynamic.zacdn.com/PluowINt9W-kLGqB_sppxQ9UJuM=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-5625-2172811-4.jpg");
+            List<String> pinkProductImageUrls17 = new ArrayList<>();
+            pinkProductImageUrls17.add("https://dynamic.zacdn.com/pWK2vef9f2dXkJJO4RwRuQqNEqw=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-5628-4072811-1.jpg");
+            pinkProductImageUrls17.add("https://dynamic.zacdn.com/seRUwlQC37UxqbYUchwJOd-Nm0s=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-5629-4072811-2.jpg");
+            pinkProductImageUrls17.add("https://dynamic.zacdn.com/ZdDLWsDmT9_fAnquBEZvBcbS_ME=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-5629-4072811-3.jpg");
+            pinkProductImageUrls17.add("https://dynamic.zacdn.com/pQxlLKkPsKXUnLM9nFqczD9p5h8=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-5629-4072811-4.jpg");
+            List<ColourToImageUrlsMap> colourToImageUrlsMaps17 = new ArrayList<>();
+            colourToImageUrlsMaps17.add(new ColourToImageUrlsMap("#F5F5DC", biegeProductImageUrls17));
+            colourToImageUrlsMaps17.add(new ColourToImageUrlsMap("#FDDDE6", pinkProductImageUrls17));
+            colourToImageUrlsMaps17.add(new ColourToImageUrlsMap("#000000", blackProductImageUrls17));
+
+            List<String> blueProductImageUrls18 = new ArrayList<>();
+            blueProductImageUrls18.add("https://dynamic.zacdn.com/rztJ9Sqc0oQAgykIiitQWpWMFmU=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/something-borrowed-8996-1996621-1.jpg");
+            blueProductImageUrls18.add("https://dynamic.zacdn.com/3U7bNi11mvDbd4zl1I6Dhx8UVr8=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/something-borrowed-8997-1996621-2.jpg");
+            blueProductImageUrls18.add("https://dynamic.zacdn.com/N-khN2zSIoPF_mKXsmbK11VYVjk=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/something-borrowed-8997-1996621-3.jpg");
+            blueProductImageUrls18.add("https://dynamic.zacdn.com/w0rgpKpbKKEUCTifh5vJ1v7XAlE=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/something-borrowed-8997-1996621-4.jpg");
+            List<String> lightblueImageUrls18 = new ArrayList<>();
+            lightblueImageUrls18.add("https://dynamic.zacdn.com/-3po4sLQWbxLQRoTXuZprm5sOQk=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/something-borrowed-5799-6996621-1.jpg");
+            lightblueImageUrls18.add("https://dynamic.zacdn.com/s9oK1dqYdCBGxHdBEs1PslaxJUk=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/something-borrowed-5799-6996621-2.jpg");
+            lightblueImageUrls18.add("https://dynamic.zacdn.com/jY40HGuBgOpJRRGLxnkzpUs0Mf4=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/something-borrowed-5800-6996621-3.jpg");
+            lightblueImageUrls18.add("https://dynamic.zacdn.com/N0Actdh9hNDZs6o9YBo2NATIRnU=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/something-borrowed-5801-6996621-4.jpg");
+            List<ColourToImageUrlsMap> colourToImageUrlsMaps18 = new ArrayList<>();
+            colourToImageUrlsMaps18.add(new ColourToImageUrlsMap("#1F75FE", blueProductImageUrls18));
+            colourToImageUrlsMaps18.add(new ColourToImageUrlsMap("#ACE5EE", lightblueImageUrls18));
+
+            List<String> brownProductImageUrls19 = new ArrayList<>();
+            brownProductImageUrls19.add("https://dynamic.zacdn.com/z0kU5Ko_PN396SVPxCuo0Lv1cMc=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/pomelo-7153-1561521-1.jpg");
+            brownProductImageUrls19.add("https://dynamic.zacdn.com/MlacmgAPybJmknKVPBDzmHSBVJI=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/pomelo-7153-1561521-2.jpg");
+            brownProductImageUrls19.add("https://dynamic.zacdn.com/rABvJ3vqw0ZO_OjIQRUQjH7XkTM=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/pomelo-7154-1561521-3.jpg");
+            brownProductImageUrls19.add("https://dynamic.zacdn.com/9QcJ_zlx_ZefkcDSB3T0cIpW7CM=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/pomelo-7154-1561521-4.jpg");
+            List<String> lightblueImageUrls19 = new ArrayList<>();
+            lightblueImageUrls19.add("https://dynamic.zacdn.com/FZCirlVxxYQj9ajVJ3QIEXpGaAk=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/pomelo-7152-9661521-1.jpg");
+            lightblueImageUrls19.add("https://dynamic.zacdn.com/AYo6A0LO5fKfmtpp-Q3OX93FBD0=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/pomelo-7153-9661521-2.jpg");
+            lightblueImageUrls19.add("https://dynamic.zacdn.com/i2V7ClyUm2sxr0Lb0_47pMX7yuE=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/pomelo-7153-9661521-3.jpg");
+            lightblueImageUrls19.add("https://dynamic.zacdn.com/YphTvuRmb17xYKuS8tcibpNxZ28=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/pomelo-7153-9661521-4.jpg");
+            List<ColourToImageUrlsMap> colourToImageUrlsMaps19 = new ArrayList<>();
+            colourToImageUrlsMaps19.add(new ColourToImageUrlsMap("#D2B48C", brownProductImageUrls19));
+            colourToImageUrlsMaps19.add(new ColourToImageUrlsMap("#6699CC", lightblueImageUrls19));
+
+            List<String> orangeImageUrls20 = new ArrayList<>();
+            orangeImageUrls20.add("https://dynamic.zacdn.com/hXjmbwWVGLJYDzU3crsuwT_NMLo=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/esprit-4662-2872901-1.jpg");
+            orangeImageUrls20.add("https://dynamic.zacdn.com/GnzNoLH68iWsHXZkuPCd5hUo6vg=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/esprit-4662-2872901-2.jpg");
+            orangeImageUrls20.add("https://dynamic.zacdn.com/4zk1b2z1jpJ9iQF1bFVPtajOyCs=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/esprit-4663-2872901-3.jpg");
+            orangeImageUrls20.add("https://dynamic.zacdn.com/xlGfKgfvHXWQjxt46D5MFbwXGvA=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/esprit-4663-2872901-4.jpg");
+            List<ColourToImageUrlsMap> colourToImageUrlsMaps20 = new ArrayList<>();
+            colourToImageUrlsMaps20.add(new ColourToImageUrlsMap("#FFAE42", orangeImageUrls20));
+
+            List<String> pinkProductImageUrls21 = new ArrayList<>();
+            pinkProductImageUrls21.add("https://dynamic.zacdn.com/FQLYaNnbeJMMCB_IS-4Wy2Zs0gg=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/pomelo-1914-6586131-1.jpg");
+            pinkProductImageUrls21.add("https://dynamic.zacdn.com/nFQYifAtjwwjopo2SHRDmo_zhJQ=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/pomelo-1914-6586131-2.jpg");
+            pinkProductImageUrls21.add("https://dynamic.zacdn.com/ojruGhtgBeiakOi26B8Yqr8HFGY=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/pomelo-1914-6586131-3.jpg");
+            pinkProductImageUrls21.add("https://dynamic.zacdn.com/QJvvFw4L3FDbvKw2_4PMLHuaivY=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/pomelo-1914-6586131-4.jpg");
+            List<String> lavenderProductImageUrls21 = new ArrayList<>();
+            lavenderProductImageUrls21.add("https://dynamic.zacdn.com/qHUu-MixXvPk3GE8hao7002z8yc=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/pomelo-1915-7586131-1.jpg");
+            lavenderProductImageUrls21.add("https://dynamic.zacdn.com/EZxhVERUfFd5zQ1Nc6RhzGhris8=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/pomelo-1915-7586131-2.jpg");
+            lavenderProductImageUrls21.add("https://dynamic.zacdn.com/z34SzqcmU7XOz0Umk0p8tpisEPI=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/pomelo-1915-7586131-3.jpg");
+            lavenderProductImageUrls21.add("https://dynamic.zacdn.com/HHzOxp_YlbvlATcZeM30BQpv3Eg=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/pomelo-1916-7586131-5.jpg");
+            List<String> grayProductImageUrls21 = new ArrayList<>();
+            grayProductImageUrls21.add("https://dynamic.zacdn.com/TiUdGmlqNv90L1zN6cXm7Ejx0IQ=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/pomelo-1913-3586131-1.jpg");
+            grayProductImageUrls21.add("https://dynamic.zacdn.com/c68t4L5uGqLIu0DKU_eBSbTmrq4=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/pomelo-1913-3586131-2.jpg");
+            grayProductImageUrls21.add("https://dynamic.zacdn.com/Sz1iUph5Og2VQquoD2JXYPonMlk=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/pomelo-1913-3586131-3.jpg");
+            grayProductImageUrls21.add("https://dynamic.zacdn.com/ADtIuNA9wy06jVx6RCWfoYy8E6c=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/pomelo-1914-3586131-5.jpg");
+            List<ColourToImageUrlsMap> colourToImageUrlsMaps21 = new ArrayList<>();
+            colourToImageUrlsMaps21.add(new ColourToImageUrlsMap("#CDC5C2", grayProductImageUrls21));
+            colourToImageUrlsMaps21.add(new ColourToImageUrlsMap("#A2A2D0", lavenderProductImageUrls21));
+            colourToImageUrlsMaps21.add(new ColourToImageUrlsMap("#FDDDE6", pinkProductImageUrls21));
+
+            List<String> orangeyellowImageUrls22 = new ArrayList<>();
+            orangeyellowImageUrls22.add("https://dynamic.zacdn.com/VUTVIRn-vWcQmGVcrWKf7X8ewAo=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-basics-6401-8219221-1.jpg");
+            orangeyellowImageUrls22.add("https://dynamic.zacdn.com/Hs8D0eXR5TQ7LgAtY058ru-cnDI=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-basics-6402-8219221-2.jpg");
+            orangeyellowImageUrls22.add("https://dynamic.zacdn.com/dLxOUyn0kWr8hl1TCEopIBqD3yE=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-basics-6402-8219221-3.jpg");
+            orangeyellowImageUrls22.add("https://dynamic.zacdn.com/Mv9Vlmni1mgaZdBrvs4_uIoVrF4=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-basics-6402-8219221-4.jpg");
+            List<String> lightblueProductImageUrls22 = new ArrayList<>();
+            lightblueProductImageUrls22.add("https://dynamic.zacdn.com/0dqxDWCQ1gSYQSKgp2rlglKSAU0=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-basics-2228-7029221-1.jpg");
+            lightblueProductImageUrls22.add("https://dynamic.zacdn.com/p2zIoBTIdF8p1uizfGO00DcTugw=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-basics-2228-7029221-2.jpg");
+            lightblueProductImageUrls22.add("https://dynamic.zacdn.com/kGHPEHWIK655Nwbp-erVayX6pcA=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-basics-2229-7029221-3.jpg");
+            lightblueProductImageUrls22.add("https://dynamic.zacdn.com/Oqj6HidonqD9rfltgKpbtU7nO0k=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-basics-2229-7029221-4.jpg");
+            List<String> grayProductImageUrls22 = new ArrayList<>();
+            grayProductImageUrls22.add("https://dynamic.zacdn.com/1wHm5adV4yEXaeaqrl6h2nLXYQQ=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-basics-4836-0319221-1.jpg");
+            grayProductImageUrls22.add("https://dynamic.zacdn.com/UoSvqJFo6_RTjL3zlGk9-mTp3aM=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-basics-4837-0319221-2.jpg");
+            grayProductImageUrls22.add("https://dynamic.zacdn.com/zib2MCd2QjaQorkCcZv5Fmr9LZc=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-basics-4837-0319221-3.jpg");
+            grayProductImageUrls22.add("https://dynamic.zacdn.com/8uYyZrwMWcIj14EzHPF_TAIJtpA=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-basics-4837-0319221-4.jpg");
+            List<ColourToImageUrlsMap> colourToImageUrlsMaps22 = new ArrayList<>();
+            colourToImageUrlsMaps22.add(new ColourToImageUrlsMap("#F8D568", orangeyellowImageUrls22));
+            colourToImageUrlsMaps22.add(new ColourToImageUrlsMap("#ACE5EE", lightblueProductImageUrls22));
+            colourToImageUrlsMaps22.add(new ColourToImageUrlsMap("#95918C", grayProductImageUrls22));
+
+            List<String> blueImageUrls23 = new ArrayList<>();
+            blueImageUrls23.add("https://dynamic.zacdn.com/PD4lcLxw-nwv8IcRxnzaihRYyHQ=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/mango-3073-9102921-1.jpg");
+            blueImageUrls23.add("https://dynamic.zacdn.com/mi_Z9_3bDqf9gUYi5HaUexdO8gY=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/mango-3074-9102921-2.jpg");
+            blueImageUrls23.add("https://dynamic.zacdn.com/NHDB9-fIXCvpz-Wye1Ss2UJGdLQ=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/mango-3074-9102921-3.jpg");
+            blueImageUrls23.add("https://dynamic.zacdn.com/mP_DE5YJOrHz6kLv7y67MMQJjJ0=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/mango-3074-9102921-4.jpg");
+            List<ColourToImageUrlsMap> colourToImageUrlsMaps23 = new ArrayList<>();
+            colourToImageUrlsMaps23.add(new ColourToImageUrlsMap("#1F75FE", blueImageUrls23));
+
+            List<String> lightblueImageUrls24 = new ArrayList<>();
+            lightblueImageUrls24.add("https://dynamic.zacdn.com/Ta8tJ13CaD9hJO1Iani8xiu4rl0=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/mango-1610-8042431-1.jpg");
+            lightblueImageUrls24.add("https://dynamic.zacdn.com/K4T20yayOAko8Td7m5B_48fn9Zg=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/mango-1610-8042431-2.jpg");
+            lightblueImageUrls24.add("https://dynamic.zacdn.com/sMWSZAyFO3Q4ZwnH6G3S7aWQwoI=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/mango-1610-8042431-3.jpg");
+            lightblueImageUrls24.add("https://dynamic.zacdn.com/3lQ0KlruEZZLpndK3eRrlZ77Vs8=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/mango-1611-8042431-4.jpg");
+            List<ColourToImageUrlsMap> colourToImageUrlsMaps24 = new ArrayList<>();
+            colourToImageUrlsMaps24.add(new ColourToImageUrlsMap("#ACE5EE", lightblueImageUrls24));
+
+            List<String> pinkProductImageUrls25 = new ArrayList<>();
+            pinkProductImageUrls25.add("https://dynamic.zacdn.com/fXnYiEpJdIBUDtXfAy-_RJ7kghM=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/under-armour-1552-2342921-1.jpg");
+            pinkProductImageUrls25.add("https://dynamic.zacdn.com/KEipwdvz96VfDQ219ijhx49Xq24=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/under-armour-1552-2342921-2.jpg");
+            pinkProductImageUrls25.add("https://dynamic.zacdn.com/4O7KoacGIps27DXFcJAsI5dDsTc=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/under-armour-1552-2342921-3.jpg");
+            pinkProductImageUrls25.add("https://dynamic.zacdn.com/YroIgU1k2TKJpwEV2q-o1QvMyB4=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/under-armour-1552-2342921-4.jpg");
+            List<String> blackProductImageUrls25 = new ArrayList<>();
+            blackProductImageUrls25.add("https://dynamic.zacdn.com/BJjmQptcvAYGvB2z9H3ZSKKw_Lw=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/under-armour-1262-099099-1.jpg");
+            blackProductImageUrls25.add("https://dynamic.zacdn.com/OFYOb6gmolilPXvl01Cu2QmcO7M=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/under-armour-1262-099099-2.jpg");
+            blackProductImageUrls25.add("https://dynamic.zacdn.com/kyNwPC75a0VeUlEVEZAvWYjfZvs=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/under-armour-1263-099099-4.jpg");
+            blackProductImageUrls25.add("https://dynamic.zacdn.com/V_MbVMMG8y_iGHqPJtk0HuvoKqw=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/under-armour-1263-099099-3.jpg");
+            List<String> brightpinkProductImageUrls25 = new ArrayList<>();
+            brightpinkProductImageUrls25.add("https://dynamic.zacdn.com/NY9J10XEM3Dt9BX9oYLuRGywBdI=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/under-armour-2824-8486901-1.jpg");
+            brightpinkProductImageUrls25.add("https://dynamic.zacdn.com/TKJyW0EnEheEVVHP0W5PxdJr2OA=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/under-armour-2825-8486901-2.jpg");
+            brightpinkProductImageUrls25.add("https://dynamic.zacdn.com/1Br088bsVaeyiy5WlLrRm6bbre4=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/under-armour-2825-8486901-3.jpg");
+            brightpinkProductImageUrls25.add("https://dynamic.zacdn.com/IqL7PpxYi8Xn4jGA3zXbQrAn9_I=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/under-armour-2825-8486901-4.jpg");
+            List<String> brightblueProductImageUrls25 = new ArrayList<>();
+            brightblueProductImageUrls25.add("https://dynamic.zacdn.com/o-GuCTEV8VCuQ2PDyAmxtxE5KN4=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/under-armour-5221-5396901-1.jpg");
+            brightblueProductImageUrls25.add("https://dynamic.zacdn.com/1TSNs1p98UN8cYUX2jo0EQZOiSU=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/under-armour-5221-5396901-2.jpg");
+            brightblueProductImageUrls25.add("https://dynamic.zacdn.com/rxEwU1UVCNsG0UUEpgozS4ZNr6U=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/under-armour-5221-5396901-3.jpg");
+            brightblueProductImageUrls25.add("https://dynamic.zacdn.com/d-MkJEUY2KTmRLiSjNuALYMyPtQ=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/under-armour-5222-5396901-4.jpg");
+            List<ColourToImageUrlsMap> colourToImageUrlsMaps25 = new ArrayList<>();
+            colourToImageUrlsMaps25.add(new ColourToImageUrlsMap("#FDDDE6", pinkProductImageUrls25));
+            colourToImageUrlsMaps25.add(new ColourToImageUrlsMap("#F78FA7", brightpinkProductImageUrls25));
+            colourToImageUrlsMaps25.add(new ColourToImageUrlsMap("#000000", blackProductImageUrls25));
+            colourToImageUrlsMaps25.add(new ColourToImageUrlsMap("#78DBE2", brightblueProductImageUrls25));
+
+            List<String> pinkProductImageUrls26 = new ArrayList<>();
+            pinkProductImageUrls26.add("https://dynamic.zacdn.com/_UWenRBaSB0qpf2QV0ExpMxekWE=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/hollister-2595-9865331-1.jpg");
+            pinkProductImageUrls26.add("https://dynamic.zacdn.com/xOKH75ueIq558mhszMC9oFp4ILY=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/hollister-2595-9865331-2.jpg");
+            pinkProductImageUrls26.add("https://dynamic.zacdn.com/s4Sii5LUrEEvEaCTLZ_QniOzcCs=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/hollister-2595-9865331-3.jpg");
+            pinkProductImageUrls26.add("https://dynamic.zacdn.com/3P466gp3jE8aD59RbE8vvqf8SfU=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/hollister-2596-9865331-4.jpg");
+            List<String> grayImageUrls26 = new ArrayList<>();
+            grayImageUrls26.add("https://dynamic.zacdn.com/T7rFbZMWiM9j3Xdn9Zho50h1vTU=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/hollister-3391-4495331-1.jpg");
+            grayImageUrls26.add("https://dynamic.zacdn.com/RR_5j0QLMLJsTgauhs8Qe4LMLMc=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/hollister-3391-4495331-2.jpg");
+            grayImageUrls26.add("https://dynamic.zacdn.com/ixL0rnntaSmFEI4b3Hxz09P4G80=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/hollister-3391-4495331-3.jpg");
+            grayImageUrls26.add("https://dynamic.zacdn.com/kG5X4jfzvNO-g26z8Ue63nPCUFo=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/hollister-3391-4495331-4.jpg");
+            List<ColourToImageUrlsMap> colourToImageUrlsMaps26 = new ArrayList<>();
+            colourToImageUrlsMaps26.add(new ColourToImageUrlsMap("#FDDDE6", pinkProductImageUrls26));
+            colourToImageUrlsMaps26.add(new ColourToImageUrlsMap("#95918C",grayImageUrls26));
+
+            List<String> khakiProductImageUrls27 = new ArrayList<>();
+            khakiProductImageUrls27.add("https://dynamic.zacdn.com/yE30-dhZvB_ZxXOhfbsB47k8GWQ=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/superdry-0717-4370531-1.jpg");
+            khakiProductImageUrls27.add("https://dynamic.zacdn.com/xZWiS8kDcCx89BO5ZrmeHGKUS4I=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/superdry-0718-4370531-2.jpg");
+            khakiProductImageUrls27.add("https://dynamic.zacdn.com/_qhEjz2iEZN4RF1U_rVxT_89xfY=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/superdry-0718-4370531-3.jpg");
+            khakiProductImageUrls27.add("https://dynamic.zacdn.com/_kv--wChfRVeVhcbX2MmT_A-2to=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/superdry-0718-4370531-4.jpg");
+            List<String> blackImageUrls27 = new ArrayList<>();
+            blackImageUrls27.add("https://dynamic.zacdn.com/le9B2n7sbSC3Ug0uYlweJX5-Uhg=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/superdry-4715-6470531-1.jpg");
+            blackImageUrls27.add("https://dynamic.zacdn.com/oeFMpphVYQoGUTLofZtC7dLFwbg=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/superdry-4715-6470531-2.jpg");
+            blackImageUrls27.add("https://dynamic.zacdn.com/q73d2_XZAUImGq43vmDID7UC3sE=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/superdry-4715-6470531-3.jpg");
+            blackImageUrls27.add("https://dynamic.zacdn.com/qXqCS5vwjMf_GjTsUVzSLw_qHhM=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/superdry-4716-6470531-4.jpg");
+            List<ColourToImageUrlsMap> colourToImageUrlsMaps27 = new ArrayList<>();
+            colourToImageUrlsMaps27.add(new ColourToImageUrlsMap("#BDB76B", khakiProductImageUrls27));
+            colourToImageUrlsMaps27.add(new ColourToImageUrlsMap("#000000",blackImageUrls27));
+
+            List<String> blueProductImageUrls28 = new ArrayList<>();
+            blueProductImageUrls28.add("https://dynamic.zacdn.com/QLx3RnUh05lfAjiSDIrtW3Bcniw=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/tommy-hilfiger-4335-5107231-1.jpg");
+            blueProductImageUrls28.add("https://dynamic.zacdn.com/sxl2f4MUwDrU_lVDK5SZOnqVlg0=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/tommy-hilfiger-4336-5107231-2.jpg");
+            blueProductImageUrls28.add("https://dynamic.zacdn.com/jygkL0ODyvpUcceAaxOfz4APOOQ=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/tommy-hilfiger-4336-5107231-3.jpg");
+            blueProductImageUrls28.add("https://dynamic.zacdn.com/nGhuQoySxjQXqmaFF17F_S3azSM=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/tommy-hilfiger-4336-5107231-4.jpg");
+            List<String> lightblueImageUrls28 = new ArrayList<>();
+            lightblueImageUrls28.add("https://dynamic.zacdn.com/SDEgKKdBA-s42d6vAZKeGQyirVI=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/tommy-hilfiger-9829-5596231-1.jpg");
+            lightblueImageUrls28.add("https://dynamic.zacdn.com/xqR6fDmejErBrluN08nadqbHTsM=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/tommy-hilfiger-9829-5596231-2.jpg");
+            lightblueImageUrls28.add("https://dynamic.zacdn.com/mG1e2v1JQ0vlMv5rHD8JIeawhGI=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/tommy-hilfiger-9829-5596231-3.jpg");
+            lightblueImageUrls28.add("https://dynamic.zacdn.com/9d9z__0BpBplEfzY80pyB73waPk=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/tommy-hilfiger-9829-5596231-4.jpg");
+            List<ColourToImageUrlsMap> colourToImageUrlsMaps28 = new ArrayList<>();
+            colourToImageUrlsMaps28.add(new ColourToImageUrlsMap("#1F75FE", blueProductImageUrls28));
+            colourToImageUrlsMaps28.add(new ColourToImageUrlsMap("#ACE5EE",lightblueImageUrls28));
+
+            List<String> khakiImageUrls29 = new ArrayList<>();
+            khakiImageUrls29.add("https://dynamic.zacdn.com/WacxPLeg6raCmIflMThkhFl6fPU=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/burton-menswear-london-3061-2677631-1.jpg");
+            khakiImageUrls29.add("https://dynamic.zacdn.com/Q5lGbBiFc1L2_67e93UQRgnkVa4=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/burton-menswear-london-3061-2677631-2.jpg");
+            khakiImageUrls29.add("https://dynamic.zacdn.com/63edCYmcGmavYhWvP81-LeNKVg4=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/burton-menswear-london-3061-2677631-3.jpg");
+            khakiImageUrls29.add("https://dynamic.zacdn.com/nh8c5sxeLutfVBBSa6vn7avV0zM=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/burton-menswear-london-3062-2677631-4.jpg");
+            List<ColourToImageUrlsMap> colourToImageUrlsMaps29 = new ArrayList<>();
+            colourToImageUrlsMaps29.add(new ColourToImageUrlsMap("#BDB76B", khakiImageUrls29));
+
+            List<String> midnightblueProductImageUrls30 = new ArrayList<>();
+            midnightblueProductImageUrls30.add("https://dynamic.zacdn.com/SDT6ZWEwMtc8QIqijz3ZGQM7jLo=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/threads-by-the-produce-4832-7830431-1.jpg");
+            midnightblueProductImageUrls30.add("https://dynamic.zacdn.com/4W9cs7DaNcvsjSBF2uIXQZDKxIY=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/threads-by-the-produce-4832-7830431-2.jpg");
+            midnightblueProductImageUrls30.add("https://dynamic.zacdn.com/xdDLAgEtJbgyfoDggnkksn2WKOk=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/threads-by-the-produce-4833-7830431-3.jpg");
+            midnightblueProductImageUrls30.add("https://dynamic.zacdn.com/2SVTi_BV-cTr1tRMDukghOml_CM=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/threads-by-the-produce-4833-7830431-4.jpg");
+            List<String> lightblueImageUrls30 = new ArrayList<>();
+            lightblueImageUrls30.add("https://dynamic.zacdn.com/0MlqVHRAxAyrO18zIheqlb7DyCA=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/threads-by-the-produce-9001-1830431-1.jpg");
+            lightblueImageUrls30.add("https://dynamic.zacdn.com/ZehJhvK54rqxOrMLWhBqrtv_5dg=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/threads-by-the-produce-9002-1830431-2.jpg");
+            lightblueImageUrls30.add("https://dynamic.zacdn.com/vss2Mwei0GZjl6o6wbY7i7wsuZs=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/threads-by-the-produce-9002-1830431-3.jpg");
+            lightblueImageUrls30.add("https://dynamic.zacdn.com/XMvqpp7vf_z42y8fDMFHQNoAouI=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/threads-by-the-produce-9002-1830431-4.jpg");
+            List<ColourToImageUrlsMap> colourToImageUrlsMaps30 = new ArrayList<>();
+            colourToImageUrlsMaps30.add(new ColourToImageUrlsMap("#1A4876", midnightblueProductImageUrls30));
+            colourToImageUrlsMaps30.add(new ColourToImageUrlsMap("#78DBE2",lightblueImageUrls30));
+
+            List<String> blackImageUrls31 = new ArrayList<>();
+            blackImageUrls31.add("https://dynamic.zacdn.com/usOBy89hnEbNeNrsGFCrvjHFPzw=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/puma-0307-747699-1.jpg");
+            blackImageUrls31.add("https://dynamic.zacdn.com/s-4ZFnolxGJnx03JCbEm5evSzGA=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/puma-0307-747699-2.jpg");
+            blackImageUrls31.add("https://dynamic.zacdn.com/1tSm4AkW5PL9ANJkH4iwkW5-R_Q=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/puma-0307-747699-3.jpg");
+            blackImageUrls31.add("https://dynamic.zacdn.com/foiDca9tNc0Mpqaw8gmWURf2zoE=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/puma-0307-747699-4.jpg");
+            List<String> midnightblueProductImageUrls31 = new ArrayList<>();
+            midnightblueProductImageUrls31.add("https://dynamic.zacdn.com/YrLp6SxMuVzYdX1DSOm0Ub3kWaQ=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/puma-9182-317699-1.jpg");
+            midnightblueProductImageUrls31.add("https://dynamic.zacdn.com/gLrfj1dp0guelgmwAaenyH4gE7U=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/puma-9182-317699-2.jpg");
+            midnightblueProductImageUrls31.add("https://dynamic.zacdn.com/Q7ivXthH9BYRt6-s848ZXbZMAVk=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/puma-9183-317699-3.jpg");
+            midnightblueProductImageUrls31.add("https://dynamic.zacdn.com/9j7XJYwT-m2hsewwpTz2voc4VCU=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/puma-9183-317699-4.jpg");
+            List<String> redProductImageUrls31 = new ArrayList<>();
+            redProductImageUrls31.add("https://dynamic.zacdn.com/_ikYnCdQamDC4huUrXMDfYsNY30=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/puma-3653-717699-1.jpg");
+            redProductImageUrls31.add("https://dynamic.zacdn.com/q2fjLWfwK8IlQ6LRc7CchN9KR8M=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/puma-3653-717699-2.jpg");
+            redProductImageUrls31.add("https://dynamic.zacdn.com/h6GDn3z_7t0paj0x9psbPMV5Pt8=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/puma-3653-717699-3.jpg");
+            redProductImageUrls31.add("https://dynamic.zacdn.com/7b9R1ch4pFCjaZVNU2Zj9cw71Qk=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/puma-3653-717699-4.jpg");
+            List<ColourToImageUrlsMap> colourToImageUrlsMaps31 = new ArrayList<>();
+            colourToImageUrlsMaps31.add(new ColourToImageUrlsMap("#000000", blackImageUrls31));
+            colourToImageUrlsMaps31.add(new ColourToImageUrlsMap("#1A4876", midnightblueProductImageUrls31));
+            colourToImageUrlsMaps31.add(new ColourToImageUrlsMap("#EE204D", redProductImageUrls31));
+
+            List<String> grayImageUrls32 = new ArrayList<>();
+            grayImageUrls32.add("https://dynamic.zacdn.com/8hbfZYdlUIPVlZa3NfYxVcdPtjY=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/polo-ralph-lauren-5702-0306021-1.jpg");
+            grayImageUrls32.add("https://dynamic.zacdn.com/WFnI7SJrz1zTL7PhDMTVnxDkYMc=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/polo-ralph-lauren-5702-0306021-2.jpg");
+            grayImageUrls32.add("https://dynamic.zacdn.com/hmQR_7ZiamUG4JYAajo30gCzIlM=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/polo-ralph-lauren-5703-0306021-3.jpg");
+            grayImageUrls32.add("https://dynamic.zacdn.com/e6t4eraNUJahw_HlaWr-DpCHtw4=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/polo-ralph-lauren-5703-0306021-4.jpg");
+            List<ColourToImageUrlsMap> colourToImageUrlsMaps32 = new ArrayList<>();
+            colourToImageUrlsMaps32.add(new ColourToImageUrlsMap("#95918C", grayImageUrls32));
+
+            List<String> blackImageUrls33 = new ArrayList<>();
+            blackImageUrls33.add("https://dynamic.zacdn.com/ECuWvTrhi4vBBtvoSEMrwtOCx_I=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/hollister-4472-3765331-1.jpg");
+            blackImageUrls33.add("https://dynamic.zacdn.com/pusSzklmZgLW1dVHHwtzKFAgZYo=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/hollister-4472-3765331-2.jpg");
+            blackImageUrls33.add("https://dynamic.zacdn.com/FGncKT_RPjp1ZTLE5Pr0yoHZ44g=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/hollister-4472-3765331-3.jpg");
+            blackImageUrls33.add("https://dynamic.zacdn.com/ReUtOyXnB_Ndwy15EN5IQNNaj-U=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/hollister-4472-3765331-4.jpg");
+            List<String> whiteProductImageUrls33 = new ArrayList<>();
+            whiteProductImageUrls33.add("https://dynamic.zacdn.com/iYW8mQs_k1JCEihK2T00jV0sMtg=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/hollister-9553-0375331-1.jpg");
+            whiteProductImageUrls33.add("https://dynamic.zacdn.com/q0JHK6IywUSn_PX_F9HCdVHnWYE=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/hollister-9554-0375331-2.jpg");
+            whiteProductImageUrls33.add("https://dynamic.zacdn.com/NpcsjCuCwPwj-aXif9Yz1D5pM8c=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/hollister-9554-0375331-3.jpg");
+            whiteProductImageUrls33.add("https://dynamic.zacdn.com/U2_uWmfXQO6j6OrW6-BxppHlNIw=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/hollister-9554-0375331-4.jpg");
+            List<String> maroonProductImageUrls33 = new ArrayList<>();
+            maroonProductImageUrls33.add("https://dynamic.zacdn.com/_ikYnCdQamDC4huUrXMDfYsNY30=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/puma-3653-717699-1.jpg");
+            maroonProductImageUrls33.add("https://dynamic.zacdn.com/q2fjLWfwK8IlQ6LRc7CchN9KR8M=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/puma-3653-717699-2.jpg");
+            maroonProductImageUrls33.add("https://dynamic.zacdn.com/h6GDn3z_7t0paj0x9psbPMV5Pt8=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/puma-3653-717699-3.jpg");
+            maroonProductImageUrls33.add("https://dynamic.zacdn.com/7b9R1ch4pFCjaZVNU2Zj9cw71Qk=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/puma-3653-717699-4.jpg");
+            List<ColourToImageUrlsMap> colourToImageUrlsMaps33 = new ArrayList<>();
+            colourToImageUrlsMaps33.add(new ColourToImageUrlsMap("#FFFFFF", whiteProductImageUrls33));
+            colourToImageUrlsMaps33.add(new ColourToImageUrlsMap("#C8385A", maroonProductImageUrls33));
+            colourToImageUrlsMaps33.add(new ColourToImageUrlsMap("#000000", blackImageUrls33));
+
+            List<String> brownImageUrls34 = new ArrayList<>();
+            brownImageUrls34.add("https://dynamic.zacdn.com/jiQIgCpBgqOAuhQ7Zc79AOOadPU=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/topman-4501-6914821-1.jpg");
+            brownImageUrls34.add("https://dynamic.zacdn.com/7XJOs0kl0RCMFbpH7N-2FPF9m5w=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/topman-4502-6914821-4.jpg");
+            brownImageUrls34.add("https://dynamic.zacdn.com/Zqaq6fbZY2c6P7Fb9Y6o9WtgVQ4=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/topman-4502-6914821-2.jpg");
+            brownImageUrls34.add("https://dynamic.zacdn.com/rShlIuWpwSzwU7k7f0k2uiOrSjY=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/topman-4502-6914821-3.jpg");
+            List<ColourToImageUrlsMap> colourToImageUrlsMaps34 = new ArrayList<>();
+            colourToImageUrlsMaps34.add(new ColourToImageUrlsMap("#D2B48C", brownImageUrls34));
+
+            List<String> blueProductImageUrls35 = new ArrayList<>();
+            blueProductImageUrls35.add("https://dynamic.zacdn.com/KdZoiYO3I8-LB10QAT_ax_kk9XU=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-basics-5776-1617321-1.jpg");
+            blueProductImageUrls35.add("https://dynamic.zacdn.com/uNLk6li2JJ9SDJclzUApX3igGtc=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-basics-5777-1617321-4.jpg");
+            blueProductImageUrls35.add("https://dynamic.zacdn.com/XHXpYT4BUUZoarmF5sqEt5KgCG4=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-basics-5776-1617321-2.jpg");
+            blueProductImageUrls35.add("https://dynamic.zacdn.com/eKfLoVlaBg0y9YAZgHzmyxQv-h4=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-basics-5776-1617321-3.jpg");
+            List<String> lightblueImageUrls35 = new ArrayList<>();
+            lightblueImageUrls35.add("https://dynamic.zacdn.com/OXh1Hv0fDEzzcilTsWS_zgYBVoQ=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-basics-0736-2717321-1.jpg");
+            lightblueImageUrls35.add("https://dynamic.zacdn.com/GboRl1oYbU0DMjW8EaD1vfcikYg=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-basics-0736-2717321-2.jpg");
+            lightblueImageUrls35.add("https://dynamic.zacdn.com/5jjl1t1cY0OglSZybx8PZBT6pQU=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-basics-0737-2717321-3.jpg");
+            lightblueImageUrls35.add("https://dynamic.zacdn.com/x9WxZKaJXd7M2v5eOtf5gRlf_HY=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-basics-0737-2717321-4.jpg");
+            List<ColourToImageUrlsMap> colourToImageUrlsMaps35 = new ArrayList<>();
+            colourToImageUrlsMaps35.add(new ColourToImageUrlsMap("#F5F5DC", blueProductImageUrls35));
+            colourToImageUrlsMaps35.add(new ColourToImageUrlsMap("#ACE5EE", lightblueImageUrls35));
+
+
+
+
             Style vintage = styleService.retrieveStyleByStyleName("Vintage");
             Style bohemian = styleService.retrieveStyleByStyleName("Bohemian");
             Style chic = styleService.retrieveStyleByStyleName("Chic");
             Style artsy = styleService.retrieveStyleByStyleName("Artsy");
             Style sophisticated = styleService.retrieveStyleByStyleName("Sophisticated");
 
-            Product product = new Product("001000", "Oxford Shirt", "Adidas", BigDecimal.valueOf(109.90), BigDecimal.valueOf(49.90));
-            product.setCategory(category);
+            Product product = new Product("001000", "Oxford Shirt", "- Monochrome short sleeve oxford shirt\n" +
+                    "- Collared neckline\n" +
+                    "- Unlined\n" +
+                    "- Skinny fit\n" +
+                    "- Front button fastening", BigDecimal.valueOf(69.90), BigDecimal.valueOf(15.90));
+            Category category2 = categoryService.retrieveCategoryByCategoryId(shirtCategoryId);
+            Category category14 = categoryService.retrieveCategoryByCategoryId(tShirtCategoryId);
             product.getStyles().add(artsy);
             List<Long> productStyles = new ArrayList<>();
             productStyles.add(artsy.getStyleId());
-            Product newProduct = productService.createNewProduct(product, category.getCategoryId(), null, productStyles, sizes, colourToImageUrlsMaps1);
+            Product newProduct = productService.createNewProduct(product, category2.getCategoryId(), null, productStyles, sizes, colourToImageUrlsMaps1);
 
-            Product product2 = new Product("001100", "Micro Dot Shirt", " All over dot printed shirt\\n\" +\n" +
-                    "                    \"- Collar neckline\\n\" +\n" +
-                    "                    \"- Unlined\\n\" +\n" +
-                    "                    \"- Regular fit\\n\" +\n" +
-                    "                    \"- Button fastening\\n\" +\n" +
-                    "                    \"- Cotton", BigDecimal.valueOf(109.90), BigDecimal.valueOf(49.90));
-            Category category2 = categoryService.retrieveCategoryByCategoryId(shirtCategoryId); //shirt
+            Product product2 = new Product("001100", "Micro Dot Shirt", " All over dot printed shirt\n"  +
+                   "- Collar neckline\\n\" +\n" +
+                    "- Unlined\n" +
+                    "- Regular fit\n" +
+                    "- Button fastening\n" +
+                    "- Cotton", BigDecimal.valueOf(59.90), BigDecimal.valueOf(20.90));
             product2.setCategory(category2);
             product2.getStyles().add(artsy);
             List<Long> product2Styles = new ArrayList<>();
             product2Styles.add(artsy.getStyleId());
             Product newProduct2 = productService.createNewProduct(product2, category2.getCategoryId(), null, product2Styles, sizes, colourToImageUrlsMaps2);
 
-            Product product3 = new Product("001200", "Abercrombie & Fitch Polo Tee  ", "- Solid hue embroidered logo polo shirt\\n\" +\n" +
-                    "                    \"- Sizing runs one size larger\\n\" +\n" +
-                    "                    \"- Standard collared neckline\\n\" +\n" +
-                    "                    \"- Unlined\\n\" +\n" +
-                    "                    \"- Regular fit\\n\" +\n" +
-                    "                    \"- Front button fastening", BigDecimal.valueOf(109.90), BigDecimal.valueOf(49.90));
+            Product product3 = new Product("001200", "Abercrombie & Fitch Polo Tee ","- Embroidered logo polo shirt\n" +
+                    "- Sizing runs one size larger\n" +
+                    "- Standard collared neckline\n" +
+                    "- Unlined\n" +
+                    "- Regular fit\n" +
+                    "- Front button fastening\n" +
+                    "- Cotton blend" , BigDecimal.valueOf(99.00), BigDecimal.valueOf(40.00));
             Category category3 = categoryService.retrieveCategoryByCategoryId(poloTeeCategoryId);
             product3.setCategory(category3);
             product3.getStyles().add(chic);
@@ -459,12 +764,13 @@ public class StartUpService {
             product3Styles.add(chic.getStyleId());
             Product newProduct3 = productService.createNewProduct(product3, category3.getCategoryId(), null, product3Styles, sizes, colourToImageUrlsMaps3);
 
-            Product product4 = new Product("001300", "Strap Detail Maxi Dress", "- Pinafore dress with button detail\\n\" +\n" +
-                    "                    \"- Unlined\\n\" +\n" +
-                    "                    \"- Square neckline\\n\" +\n" +
-                    "                    \"- Regular fit\\n\" +\n" +
-                    "                    \"- Slip-on style\\n\" +\n" +
-                    "                    \"- Sleeveless", BigDecimal.valueOf(109.90), BigDecimal.valueOf(49.90));
+            Product product4 = new Product("001300", "Strap Detail Maxi Dress", "- Printed maxi dress with asymmetrical neckline\n" +
+                    "- Partial lining\n" +
+                    "- Cold shoulder neckline\n" +
+                    "- Regular fit\n" +
+                    "- Slip on style\n" +
+                    "- Self tie waist closure\n" +
+                    "- Cotton", BigDecimal.valueOf(55.00), BigDecimal.valueOf(15.00));
             Category category4 = categoryService.retrieveCategoryByCategoryId(maxiDressCategoryId);
             product4.setCategory(category4);
             product4.getStyles().add(artsy);
@@ -472,15 +778,15 @@ public class StartUpService {
             product4Styles.add(artsy.getStyleId());
             Product newProduct4 = productService.createNewProduct(product4, category4.getCategoryId(), null, product4Styles, sizes, colourToImageUrlsMaps4);
 
-            Product product5 = new Product("001400", "High Waist Denim Jeans", "- Solid tone high waisted skinny jeans\\n\" +\n" +
-                    "                   \"- Sizing runs one size larger\\n\" +\n" +
-                    "                   \"- High waist\\n\" +\n" +
-                    "                   \"- Skinny fit\\n\" +\n" +
-                    "                   \"- Fly zipper fastening\\n\" +\n" +
-                    "                   \"- Waist button fastening\\n\" +\n" +
-                    "                   \"- 2 side pockets\\n\" +\n" +
-                    "                   \"- 2 back patch pockets\\n\" +\n" +
-                    "                   \"- Cotton blend", BigDecimal.valueOf(60.00), BigDecimal.valueOf(10.00));
+            Product product5 = new Product("001400", "High Waist Denim Jeans", "- Solid tone high waisted skinny jeans\n" +
+                    "- Sizing runs one size larger\n" +
+                    "- High waist\n" +
+                    "- Skinny fit\n" +
+                    "- Fly zipper fastening\n" +
+                    "- Waist button fastening\n" +
+                    "- 2 side pockets\n" +
+                    "- 2 back patch pockets\n" +
+                    "- Cotton blend", BigDecimal.valueOf(80.00), BigDecimal.valueOf(30.00));
             Category category5 = categoryService.retrieveCategoryByCategoryId(denimJeansWCategoryId);
             product5.setCategory(category5);
             product5.getStyles().add(sophisticated);
@@ -492,12 +798,11 @@ public class StartUpService {
             product5Styles.add(vintage.getStyleId());
             Product newProduct5 = productService.createNewProduct(product5, category5.getCategoryId(), null, product5Styles, sizes, colourToImageUrlsMaps5);
 
-            Product product6 = new Product("001500", "Mini Open High Slit Skirt", "- Polyester\\n\" +\n" +
-                    "                    \"- Hits the upper thigh for a mini length\\n\" +\n" +
-                    "                    \"- Consists of a single side slit\\n\" +\n" +
-                    "                    \"- Classic, regular fit\\n\" +\n" +
-                    "                    \"The Model has height: 175 cm\\n\" +\n" +
-                    "                    \"Bust / Waist / Hips: 32-25-36\\n", BigDecimal.valueOf(25.00), BigDecimal.valueOf(3.99));
+            Product product6 = new Product("001500", "Mini Open High Slit Skirt", "- Monochrome A-line mini skirt\n" +
+                    "- Lined\n" +
+                    "- Regular fit\n" +
+                    "- Side zip fastening\n" +
+                    "- Polyblend", BigDecimal.valueOf(25.00), BigDecimal.valueOf(3.99));
             Category category6 = categoryService.retrieveCategoryByCategoryId(miniSkirtCategoryId);
             product6.setCategory(category6);
             product6.getStyles().add(artsy);
@@ -505,27 +810,26 @@ public class StartUpService {
             product6Styles.add(artsy.getStyleId());
             Product newProduct6 = productService.createNewProduct(product6, category6.getCategoryId(), null, product6Styles, sizes, colourToImageUrlsMaps6);
 
-            Product product7 = new Product("001600", "Double Slit Embroidered Maxi Dress", "- Embroidered maxi dress with tassels\\n\" +\n" +
-                    "                    \"- V neckline\\n\" +\n" +
-                    "                    \"- Relaxed fit\\n\" +\n" +
-                    "                    \"- Snap button fastening\\n\" +\n" +
-                    "                    \"- Stretchable elastic waist with self tie\\n\" +\n" +
-                    "                    \"- Adjustable straps\\n\" +\n" +
-                    "                    \"- Sleeveless\\n\" +\n" +
-                    "                    \"- Unlined\\n\" +\n" +
-                    "                    \"- Front slits \\n\" +\n" +
-                    "                    \"- Rayon", BigDecimal.valueOf(59.90), BigDecimal.valueOf(8.90));
+            Product product7 = new Product("001600", "Double Slit Embroidered Maxi Dress", "- Embroidered maxi dress with tassels\n" +
+                    "- V neckline\n" +
+                    "- Relaxed fit\n" +
+                    "- Snap button fastening\n" +
+                    "- Stretchable elastic waist with self tie\n" +
+                    "- Adjustable straps\n" +
+                    "- Sleeveless\n" +
+                    "- Unlined\n" +
+                    "- Front slits \n" +
+                    "- Rayon", BigDecimal.valueOf(59.90), BigDecimal.valueOf(11.90));
             product7.getStyles().add(bohemian);
             List<Long> product7Styles = new ArrayList<>();
             product7Styles.add(bohemian.getStyleId());
             Product newProduct7 = productService.createNewProduct(product7, category4.getCategoryId(), null, product7Styles, sizes, colourToImageUrlsMaps7);
 
-            Product product8 = new Product("001700", "Hollister Tech Core Tee", "- Logo graphic embroidery tee\\n\" +\n" +
-                    "                    \"- Sizing runs one size larger\\n\" +\n" +
-                    "                    \"- Crew neckline\\n\" +\n" +
-                    "                    \"- Unlined\\n\" +\n" +
-                    "                    \"- Regular fit\\n\" +\n" +
-                    "                    \"- Cotton blend", BigDecimal.valueOf(29.90), BigDecimal.valueOf(4.59));
+            Product product8 = new Product("001700", "Hollister Tech Core Tee", "- Embroidered brand logo graphic tee\n" +
+                    "- Sizing runs one size larger\n" +
+                    "- Round neckline\n" +
+                    "- Regular fit\n" +
+                    "- Cotton blend", BigDecimal.valueOf(49.90), BigDecimal.valueOf(9.59));
             product8.getStyles().add(chic);
             List<Long> product8Styles = new ArrayList<>();
             product8Styles.add(chic.getStyleId());
@@ -533,183 +837,342 @@ public class StartUpService {
             product8.setCategory(category8);
             Product newProduct8 = productService.createNewProduct(product8, category8.getCategoryId(), null, product8Styles, sizes, colourToImageUrlsMaps8);
 
-            Product product9 = new Product("001800", "Adidas Bos Tee", "- adidas performance\\n\" +\n" +
-                    "                    \"- Best for performance\\n\" +\n" +
-                    "                    \"- Brand logo sports tee\\n\" +\n" +
-                    "                    \"- Round neckline\\n\" +\n" +
-                    "                    \"- Slim fit\\n\" +\n" +
-                    "                    \"- Recycled polyblend", BigDecimal.valueOf(60.00), BigDecimal.valueOf(14.99));
+            Product product9 = new Product("001800", "Adidas Bos Tee", "- adidas performance\n" +
+                    "- Best for training\n" +
+                    "- Brand logo graphic tee\n" +
+                    "- Round neckline\n" +
+                    "- Slim fit\n" +
+                    "- Polyblend", BigDecimal.valueOf(39.90), BigDecimal.valueOf(14.99));
             product9.getStyles().add(artsy);
             List<Long> product9Styles = new ArrayList<>();
             product9Styles.add(artsy.getStyleId());
             Product newProduct9 = productService.createNewProduct(product9, category8.getCategoryId(), null, product9Styles, sizes, colourToImageUrlsMaps9);
 
-            Product product10 = new Product("001900", "Paperbag Belted Denim Shorts", "Liverpool FC", BigDecimal.valueOf(99.00), BigDecimal.valueOf(25.00));
+            Product product10 = new Product("001900", "Paperbag Belted Denim Shorts", "- Solid tone denim paperbag shorts\n" +
+                    "- High rise\n" +
+                    "- Regular fit\n" +
+                    "- Zip-fly and hook fastening\n" +
+                    "- Self tie waist closure\n" +
+                    "- 4 pockets\n" +
+                    "- Cotton blend", BigDecimal.valueOf(45.00), BigDecimal.valueOf(25.00));
             product10.getStyles().add(artsy);
             List<Long> product10Styles = new ArrayList<>();
             product10Styles.add(artsy.getStyleId());
-            Category category10 = categoryService.retrieveCategoryByCategoryId(shortsWCategoryId);
+            Category category10 = categoryService.retrieveCategoryByCategoryId(denimShortsWCategoryId);
             product10.setCategory(category10);
             Product newProduct10 = productService.createNewProduct(product10, category10.getCategoryId(), null, product10Styles, sizes, colourToImageUrlsMaps10);
 
-            Product product11 = new Product("002000", "Adidas Performance M20 Shorts", "- adidas performance\\n\" +\n" +
-                    "                    \"- Best for running\\n\" +\n" +
-                    "                    \"- Striped brand logo running shorts\\n\" +\n" +
-                    "                    \"- Climacool keeps you cool and dry in warm weather\\n\" +\n" +
-                    "                    \"- 360 degrees of reflectivity\\n\" +\n" +
-                    "                    \"- Mid rise\\n\" +\n" +
-                    "                    \"- Regular fit\\n\" +\n" +
-                    "                    \"- Drawstring and elasticated waistband fastening\\n\" +\n" +
-                    "                    \"- Recycled polyblend", BigDecimal.valueOf(99.00), BigDecimal.valueOf(25.00));
+            Product product11 = new Product("002000", "Adidas Performance M20 Shorts", "- adidas performance\n" +
+                    "- Best for running\n" +
+                    "- Striped brand logo running shorts\n" +
+                    "- Climacool keeps you cool and dry in warm weather\n" +
+                    "- 360 degrees of reflectivity\n" +
+                    "- Mid rise\n" +
+                    "- Regular fit\n" +
+                    "- Drawstring and elasticated waistband fastening\n" +
+                    "- Recycled polyblend\n", BigDecimal.valueOf(44.00), BigDecimal.valueOf(8.00));
+
+            Category category11 = categoryService.retrieveCategoryByCategoryId(casualShortsWCategoryId);
+            product11.setCategory(category11);
             product11.getStyles().add(artsy);
             List<Long> product11Styles = new ArrayList<>();
             product11Styles.add(artsy.getStyleId());
-            Product newProduct11 = productService.createNewProduct(product11, category10.getCategoryId(), null, product11Styles, sizes, colourToImageUrlsMaps11);
+            Product newProduct11 = productService.createNewProduct(product11, category11.getCategoryId(), null, product11Styles, sizes, colourToImageUrlsMaps11);
 
-            Product product12 = new Product("002100", "UA Tech Graphic Shorts", "- Best for training\\n\" +\n" +
-                    "                    \"- Solid-colored training shorts with brand logo\\n\" +\n" +
-                    "                    \"- Natural, ultra-soft UA Tech fabric\\n\" +\n" +
-                    "                    \"- Material wicks sweat & dries really fast\\n\" +\n" +
-                    "                    \"- Medium ris", BigDecimal.valueOf(9.99), BigDecimal.valueOf(1.50));
+            Product product12 = new Product("002100", "UA Tech Graphic Shorts", "- Best for training\n" +
+                    "- Solid-colored training shorts with brand logo\n" +
+                    "- Natural, ultra-soft UA Tech fabric\n" +
+                    "- Material wicks sweat & dries really fast\n" +
+                    "- Medium rise", BigDecimal.valueOf(28.90), BigDecimal.valueOf(5.80));
             product12.getStyles().add(chic);
             List<Long> product12Styles = new ArrayList<>();
             product12Styles.add(chic.getStyleId());
-            Category category12 = categoryService.retrieveCategoryByCategoryId(sportsShortsCategoryId);
+            Category category12 = categoryService.retrieveCategoryByCategoryId(casualShortsCategoryId);
             product12.setCategory(category12);
             Product newProduct12 = productService.createNewProduct(product12, category12.getCategoryId(), null, product12Styles, sizes, colourToImageUrlsMaps12);
 
-            Product product13 = new Product("002200", "Blue Skinny Bermudas", "- Solid tone skinny denim shorts\\n\" +\n" +
-                    "                    \"- Mid rise\\n\" +\n" +
-                    "                    \"- Skinny fit\\n\" +\n" +
-                    "                    \"- Button fastening\\n\" +\n" +
-                    "                    \"- 5 pocket design\\n\" +\n" +
-                    "                    \"- Cotton blend", BigDecimal.valueOf(65.90), BigDecimal.valueOf(19.90));
+            Product product13 = new Product("002200", "Blue Skinny Bermudas", "- Washed effect ripped bermuda denim shorts\n" +
+                    "- Mid rise\n" +
+                    "- Skinny fit\n" +
+                    "- Front zip and button fastening\n" +
+                    "- Five pocket style\n" +
+                    "- Cotton blend", BigDecimal.valueOf(49.90), BigDecimal.valueOf(15.90));
             product13.getStyles().add(bohemian);
             List<Long> product13Styles = new ArrayList<>();
             product13Styles.add(bohemian.getStyleId());
             Category category13 = categoryService.retrieveCategoryByCategoryId(bermudasCategoryId);
             product13.setCategory(category13);
-            Product newProduct13 = productService.createNewProduct(product13, category5.getCategoryId(), null, product13Styles, sizes, colourToImageUrlsMaps13);
+            Product newProduct13 = productService.createNewProduct(product13, category13.getCategoryId(), null, product13Styles, sizes, colourToImageUrlsMaps13);
 
-            Product product14 = new Product("002300", "Champion Logo T-Shirt", "- Brand logo graphic tee\\n\" +\n" +
-                    "                    \"- Round neckline\\n\" +\n" +
-                    "                    \"- Regular fit\\n\" +\n" +
-                    "                    \"- Cotton", BigDecimal.valueOf(259.00), BigDecimal.valueOf(56.00));
-            Category category14 = categoryService.retrieveCategoryByCategoryId(tShirtCategoryId); //jeans
-            product4.setCategory(category14);
+            Product product14 = new Product("002300", "Champion Logo T-Shirt", "- Casual tee with logo print\n" +
+                    "- Round neckline\n" +
+                    "- Regular fit\n" +
+                    "- Slip-on style\n" +
+                    "- Short sleeves\n" +
+                    "- Cotton", BigDecimal.valueOf(102.00), BigDecimal.valueOf(35.00));
+            product14.setCategory(category14);
             product14.getStyles().add(chic);
             List<Long> product14Styles = new ArrayList<>();
             product14Styles.add(chic.getStyleId());
             Product newProduct14 = productService.createNewProduct(product14, category14.getCategoryId(), null, product14Styles, sizes, colourToImageUrlsMaps14);
 
-            Product product15 = new Product("002400", "Tjm Tommy Flag Tee", "- Short sleeved tee with brand graphic print\\n\" +\n" +
-                    "                    \"- Crew neckline\\n\" +\n" +
-                    "                    \"- Unlined\\n\" +\n" +
-                    "                    \"- Regular fit\\n\" +\n" +
-                    "                    \"- Cotton", BigDecimal.valueOf(89.00), BigDecimal.valueOf(15.00));
+            Product product15 = new Product("002400", "Tjm Tommy Flag Tee", "- Short sleeved tee with brand graphic print\n" +
+                    "- Crew neckline\n" +
+                    "- Unlined\n" +
+                    "- Regular fit\n" +
+                    "- Cotton", BigDecimal.valueOf(89.00), BigDecimal.valueOf(15.00));
             product15.getStyles().add(chic);
             List<Long> product15Styles = new ArrayList<>();
             product15Styles.add(chic.getStyleId());
             Product newProduct15 = productService.createNewProduct(product15, category14.getCategoryId(), null, product15Styles, sizes, colourToImageUrlsMaps15);
-            /*
-            Product product16 = new Product("002500", "Avengers Socks", "Avengers", BigDecimal.valueOf(2.50), BigDecimal.valueOf(0.30));
+
+            Product product16 = new Product("002500", "Tulip Hem Midi Skirt", "- Solid tone wrap detail side tie midi skirt\n" +
+                    "- High rise\n" +
+                    "- Unlined\n" +
+                    "- Regular fit\n" +
+                    "- Zip and waist tie fastening\n" +
+                    "- Polyester", BigDecimal.valueOf(39.90), BigDecimal.valueOf(18.30));
             product16.getStyles().add(artsy);
             List<Long> product16Styles = new ArrayList<>();
             product16Styles.add(artsy.getStyleId());
-            Product newProduct16 = productService.createNewProduct(product16, category3.getCategoryId(), null, product16Styles, sizes, colourToImageUrlsMaps);
+            Category category16 = categoryService.retrieveCategoryByCategoryId(midiSkirtCategoryId);
+            product16.setCategory(category16);
+            Product newProduct16 = productService.createNewProduct(product16, category16.getCategoryId(), null, product16Styles, sizes, colourToImageUrlsMaps16);
 
-            Product product17 = new Product("002600", "Striped Shirt", "Blue Stripes Shirt ", BigDecimal.valueOf(50.00), BigDecimal.valueOf(15.00));
-            product17.getStyles().add(vintage);
+            Product product17 = new Product("002600", "Square Neck Fit And Flare Dress", "- Solid tone tie front strappy dress for work\n" +
+                    "- Unlined\n" +
+                    "- Square neckline\n" +
+                    "- Regular fit\n" +
+                    "- Side zip closure\n" +
+                    "- Self tie fastening\n" +
+                    "- Cotton", BigDecimal.valueOf(55.00), BigDecimal.valueOf(15.00));
+            product17.getStyles().add(chic);
             List<Long> product17Styles = new ArrayList<>();
             product17Styles.add(vintage.getStyleId());
-            Product newProduct17 = productService.createNewProduct(product17, category2.getCategoryId(), null, product17Styles, sizes, colourToImageUrlsMaps);
+            Category category17 = categoryService.retrieveCategoryByCategoryId(workDressCategoryId);
+            product17.setCategory(category17);
+            Product newProduct17 = productService.createNewProduct(product17, category17.getCategoryId(), null, product17Styles, sizes, colourToImageUrlsMaps17);
 
-            Product product18 = new Product("002700", "Abercrombie & Fitch Shirt", "A&F", BigDecimal.valueOf(99.00), BigDecimal.valueOf(12.00));
+          Product product18 = new Product("002700", "Distressed Frayed Denim Mini Skirt", "- Frayed hem distressed denim mini skirt\n" +
+                  "- Unlined\n" +
+                  "- Mid rise\n" +
+                  "- Regular fit\n" +
+                  "- Button and zip fastening\n" +
+                  "- Five pocket style\n" +
+                  "- Cotton blend", BigDecimal.valueOf(29.00), BigDecimal.valueOf(4.00));
             product18.getStyles().add(chic);
             List<Long> product18Styles = new ArrayList<>();
             product18Styles.add(chic.getStyleId());
-            Product newProduct18 = productService.createNewProduct(product18, category2.getCategoryId(), null, product18Styles, sizes, colourToImageUrlsMaps);
+            Product newProduct18 = productService.createNewProduct(product18, category6.getCategoryId(), null, product18Styles, sizes, colourToImageUrlsMaps18);
 
-            Product product19 = new Product("002800", "Abercrombie & Fitch T Shirt", "A&F", BigDecimal.valueOf(45), BigDecimal.valueOf(5.00));
+            Product product19 = new Product("002800", "Waist Tie Midi Skirt", "- Polyester\n" +
+                    "- A-line silhouette\n" +
+                    "- Breathable, flowy fabric\n" +
+                    "- Ties with a feminine bow\n" +
+                    "- Ties at the waist\n" +
+                    "- Hits at mid-calf for a midi length", BigDecimal.valueOf(34), BigDecimal.valueOf(12.00));
             product19.getStyles().add(chic);
             List<Long> product19Styles = new ArrayList<>();
             product19Styles.add(chic.getStyleId());
-            Product newProduct19 = productService.createNewProduct(product19, category6.getCategoryId(), null, product19Styles, sizes, colourToImageUrlsMaps);
+            Product newProduct19 = productService.createNewProduct(product19, category16.getCategoryId(), null, product19Styles, sizes, colourToImageUrlsMaps19);
 
-            Product product20 = new Product("002900", "Abercrombie & Fitch Jeans", "Beautiful Skirt", BigDecimal.valueOf(120.00), BigDecimal.valueOf(29.00));
+            Product product20 = new Product("002900", "Woven Light Midi Skirt", "- Floral print flowy midi skirt\n" +
+                    "- Sizing runs one size larger\n" +
+                    "- Lined\n" +
+                    "- Mid rise\n" +
+                    "- Regular fit\n" +
+                    "- Front button fastening\n" +
+                    "- Polyester", BigDecimal.valueOf(60.00), BigDecimal.valueOf(19.00));
             product20.getStyles().add(chic);
             List<Long> product20Styles = new ArrayList<>();
             product20Styles.add(chic.getStyleId());
-            Product newProduct20 = productService.createNewProduct(product20, category7.getCategoryId(), null, product20Styles, sizes, colourToImageUrlsMaps);
+            Product newProduct20 = productService.createNewProduct(product20, category16.getCategoryId(), null, product20Styles, sizes, colourToImageUrlsMaps20);
 
-            Product product21 = new Product("003000", "Ankle Socks", "Ankle Socks", BigDecimal.valueOf(5.00), BigDecimal.valueOf(0.50));
+            Product product21 = new Product("003000", "Mini A-Line Skirt", "- Polyester\n" +
+                    "- Spandex\n" +
+                    "- Rayon\n" +
+                    "- A-line silhouette\n" +
+                    "- Features a detachable belt detail", BigDecimal.valueOf(29.00), BigDecimal.valueOf(7.90));
             product21.getStyles().add(chic);
             List<Long> product21Styles = new ArrayList<>();
             product21Styles.add(chic.getStyleId());
-            Product newProduct21 = productService.createNewProduct(product21, category3.getCategoryId(), null, product21Styles, sizes, colourToImageUrlsMaps);
+            Product newProduct21 = productService.createNewProduct(product21, category6.getCategoryId(), null, product21Styles, sizes, colourToImageUrlsMaps21);
 
-            Product product22 = new Product("003100", "Docker Bermudas", "Bermudas", BigDecimal.valueOf(45.00), BigDecimal.valueOf(8.99));
-            Category category8 = categoryService.retrieveCategoryByCategoryId(bermudasCategoryId);
-            product22.setCategory(category8);
+            Product product22 = new Product("003100", "V Neck Fluted Sleeveless Dress", "- Paneled dress with frilled hem\n" +
+                    "- Unlined\n" +
+                    "- V-neckline\n" +
+                    "- Regular fit\n" +
+                    "- Back zip fastening\n" +
+                    "- Sleeveless\n" +
+                    "- Ruffled hem\n" +
+                    "- Polyester", BigDecimal.valueOf(25.00), BigDecimal.valueOf(5.99));
             product22.getStyles().add(vintage);
             List<Long> product22Styles = new ArrayList<>();
             product22Styles.add(vintage.getStyleId());
-            Product newProduct22 = productService.createNewProduct(product22, category8.getCategoryId(), null, product22Styles, sizes, colourToImageUrlsMaps);
+            Product newProduct22 = productService.createNewProduct(product22, category17.getCategoryId(), null, product22Styles, sizes, colourToImageUrlsMaps22);
 
-            Product product23 = new Product("003200", "Slim Fit Bermudas", "Slim Fit Skirt", BigDecimal.valueOf(29.90), BigDecimal.valueOf(10.00));
+            Product product23 = new Product("003200", "Mom Slim Jeans", "- Faded casual denim slim mom jeans\n" +
+                    "- Sizing runs one size larger\n" +
+                    "- High rise\n" +
+                    "- Unlined\n" +
+                    "- Slim fit\n" +
+                    "- Button and zip fastening", BigDecimal.valueOf(46.90), BigDecimal.valueOf(14.00));
             product23.getStyles().add(vintage);
             List<Long> product23Styles = new ArrayList<>();
             product23Styles.add(vintage.getStyleId());
-            Product newProduct23 = productService.createNewProduct(product23, category8.getCategoryId(), null, product23Styles, sizes, colourToImageUrlsMaps);
+            Product newProduct23 = productService.createNewProduct(product23, category5.getCategoryId(), null, product23Styles, sizes, colourToImageUrlsMaps23);
 
-            Product product24 = new Product("003300", "Regular Cut Bermudas", "Regular Cut", BigDecimal.valueOf(29.90), BigDecimal.valueOf(10.00));
+            Product product24 = new Product("003300", "Mom-Fit Jeans", "- Light wash mom jeans\n" +
+                    "- Sizing runs one size larger\n" +
+                    "- High rise\n" +
+                    "- Regular fit\n" +
+                    "- Button and zip fastening\n" +
+                    "- 5 pockets\n" +
+                    "- Cotton", BigDecimal.valueOf(46.90), BigDecimal.valueOf(14.00));
             product24.getStyles().add(vintage);
             List<Long> product24Styles = new ArrayList<>();
             product24Styles.add(vintage.getStyleId());
-            Product newProduct24 = productService.createNewProduct(product24, category8.getCategoryId(), null, product24Styles, sizes, colourToImageUrlsMaps);
+            Product newProduct24 = productService.createNewProduct(product24, category5.getCategoryId(), null, product24Styles, sizes, colourToImageUrlsMaps24);
 
-            Product product25 = new Product("003400", "Skinny Jeans", "Tight Fit", BigDecimal.valueOf(79.90), BigDecimal.valueOf(14.99));
+            Product product25 = new Product("003400", "Tech Mesh Shorts 3 Inch\n", "- Best for training\n" +
+                    "- Lightweight mesh\n" +
+                    "- HeatGear tech\n" +
+                    "- Solid-colour shorts with contrasting trim\n" +
+                    "- Mid rise\n" +
+                    "- Relaxed fit\n" +
+                    "- Elastic waistband\n" +
+                    "- Polyester", BigDecimal.valueOf(29.90), BigDecimal.valueOf(6.99));
             product25.getStyles().add(chic);
             List<Long> product25Styles = new ArrayList<>();
             product25Styles.add(chic.getStyleId());
-            Product newProduct25 = productService.createNewProduct(product25, category7.getCategoryId(), null, product25Styles, sizes, colourToImageUrlsMaps);
+            Product newProduct25 = productService.createNewProduct(product25, category11.getCategoryId(), null, product25Styles, sizes, colourToImageUrlsMaps25);
 
-            Product product26 = new Product("003500", "Parachute Dress", "Weew", BigDecimal.valueOf(59.90), BigDecimal.valueOf(14.90));
-            Category category9 = categoryService.retrieveCategoryByCategoryId(dressesCategoryId);
-            product26.setCategory(category9);
+            Product product26 = new Product("003500", "Cozy Rib Henley Asia Top", "- Henley top with rib detail\n" +
+                    "- Sizing runs one size larger\n" +
+                    "- Scoop neckline\n" +
+                    "- Slim fit\n" +
+                    "- Front button fastening\n" +
+                    "- Long sleeves\n" +
+                    "- Viscose blend", BigDecimal.valueOf(38.90), BigDecimal.valueOf(12.90));
             product26.getStyles().add(bohemian);
             List<Long> product26Styles = new ArrayList<>();
             product26Styles.add(bohemian.getStyleId());
-            Product newProduct26 = productService.createNewProduct(product26, category9.getCategoryId(), null, product26Styles, sizes, colourToImageUrlsMaps);
+            Product newProduct26 = productService.createNewProduct(product26, category8.getCategoryId(), null, product26Styles, sizes, colourToImageUrlsMaps26);
             productVariantId26 = newProduct26.getProductVariants().get(0).getProductVariantId();
 
-            Product product27 = new Product("003600", "Long Sleeve Dress", "Long Sleeve Dress", BigDecimal.valueOf(49.90), BigDecimal.valueOf(10.90));
+            Product product27 = new Product("003600", "SuperDry Glitter Emboss Entry Tee", "- Casual tee with embossed logo\n" +
+                    "- Round neckline\n" +
+                    "- Regular fit\n" +
+                    "- Slip-on style\n" +
+                    "- Short sleeves\n" +
+                    "- Cotton", BigDecimal.valueOf(59.90), BigDecimal.valueOf(10.90));
             product27.getStyles().add(sophisticated);
             List<Long> product27Styles = new ArrayList<>();
             product27Styles.add(sophisticated.getStyleId());
-            Product newProduct27 = productService.createNewProduct(product27, category9.getCategoryId(), null, product27Styles, sizes, colourToImageUrlsMaps);
+            Product newProduct27 = productService.createNewProduct(product27, category8.getCategoryId(), null, product27Styles, sizes, colourToImageUrlsMaps27);
             productVariantId27 = newProduct27.getProductVariants().get(0).getProductVariantId();
 
-            Product product28 = new Product("003700", "Short Sleeve Dress", "Short Sleeve Skirt", BigDecimal.valueOf(35.90), BigDecimal.valueOf(8.00));
+            Product product28 = new Product("003700", "Tommy Hilfiger Slim Garment Dyed Dobby Shirt", "- Solid tone long sleeve shirt with mini logo embroidery\n" +
+                    "- Unlined\n" +
+                    "- Collar neckline\n" +
+                    "- Slim fit\n" +
+                    "- Front button closure\n" +
+                    "- Cotton", BigDecimal.valueOf(150.90), BigDecimal.valueOf(50.00));
             product28.getStyles().add(sophisticated);
             List<Long> product28Styles = new ArrayList<>();
             product28Styles.add(sophisticated.getStyleId());
-            Product newProduct28 = productService.createNewProduct(product28, category9.getCategoryId(), null, product28Styles, sizes, colourToImageUrlsMaps);
+            Product newProduct28 = productService.createNewProduct(product28, category2.getCategoryId(), null, product28Styles, sizes, colourToImageUrlsMaps28);
             productVariantId28 = newProduct28.getProductVariants().get(0).getProductVariantId();
 
-            Product product29 = new Product("003800", "Sleeveless Dress", "Sleeveless Dress", BigDecimal.valueOf(49.90), BigDecimal.valueOf(12.00));
+            Product product29 = new Product("003800", "Burton Short Sleeve Khaki Arrow Oxford Shirt", "- Printed button-down shirt\n" +
+                    "- Collar neckline\n" +
+                    "- Regular fit\n" +
+                    "- Front button fastening\n" +
+                    "- 1 chest pocket\n" +
+                    "- Short sleeves\n" +
+                    "- Cotton", BigDecimal.valueOf(49.90), BigDecimal.valueOf(12.00));
             product29.getStyles().add(sophisticated);
             List<Long> product29Styles = new ArrayList<>();
             product29Styles.add(sophisticated.getStyleId());
-            Product newProduct29 = productService.createNewProduct(product29, category9.getCategoryId(), null, product29Styles, sizes, colourToImageUrlsMaps);
+            Product newProduct29 = productService.createNewProduct(product29, category2.getCategoryId(), null, product29Styles, sizes, colourToImageUrlsMaps29);
             productVariantId29 = newProduct29.getProductVariants().get(0).getProductVariantId();
 
-            Product product30 = new Product("003900", "Long Sleeve Shirt", "Long sleeve ", BigDecimal.valueOf(89.90), BigDecimal.valueOf(23.00));
+            Product product30 = new Product("003900", "Threads by the produce", "- Denim western style long sleeves shirt\n" +
+                    "- Collar neckline\n" +
+                    "- Regular fit\n" +
+                    "- Button fastening\n" +
+                    "- 2 pocket design\n" +
+                    "- Cotton", BigDecimal.valueOf(24.90), BigDecimal.valueOf(5.00));
             product30.getStyles().add(sophisticated);
             List<Long> product30Styles = new ArrayList<>();
             product30Styles.add(sophisticated.getStyleId());
-            Product newProduct30 = productService.createNewProduct(product30, category2.getCategoryId(), null, product30Styles, sizes, colourToImageUrlsMaps);
-            productVariantId30 = newProduct30.getProductVariants().get(0).getProductVariantId(); */
+            Product newProduct30 = productService.createNewProduct(product30, category2.getCategoryId(), null, product30Styles, sizes, colourToImageUrlsMaps30);
+            productVariantId30 = newProduct30.getProductVariants().get(0).getProductVariantId();
+
+            Product product31 = new Product("004000", "Puma Sportstyle Core ESS Pique Polo", "- Best for lifestyle\n" +
+                    "- Brand embroidered chest detail polo shirt\n" +
+                    "- Collared neckline\n" +
+                    "- Unlined\n" +
+                    "- Regular fit\n" +
+                    "- Button fastening\n" +
+                    "- Cotton blend", BigDecimal.valueOf(24.90), BigDecimal.valueOf(5.00));
+            product31.getStyles().add(chic);
+            List<Long> product31Styles = new ArrayList<>();
+            product31Styles.add(chic.getStyleId());
+            Product newProduct31 = productService.createNewProduct(product31, category3.getCategoryId(), null, product31Styles, sizes, colourToImageUrlsMaps31);
+
+            Product product32 = new Product("004100", "Ralph Polo Basic Mesh Polo Shirt", "- Brand logo oversized embroidery polo shirt\n" +
+                    "- Collar neckline\n" +
+                    "- Regular fit\n" +
+                    "- Button fastening\n" +
+                    "- Cotton", BigDecimal.valueOf(199.90), BigDecimal.valueOf(65.00));
+            product32.getStyles().add(artsy);
+            List<Long> product32Styles = new ArrayList<>();
+            product32Styles.add(artsy.getStyleId());
+            Product newProduct32 = productService.createNewProduct(product32, category3.getCategoryId(), null, product32Styles, sizes, colourToImageUrlsMaps32);
+
+            Product product33 = new Product("004200", "Hollister Slim Pop Icon Polo Shirt", "- Polo shirt with logo embroidery\n" +
+                    "- Sizing runs one size larger\n" +
+                    "- Collar neckline\n" +
+                    "- Slim fit\n" +
+                    "- Front button fastening\n" +
+                    "- Short cuffed sleeves\n" +
+                    "- Side hem splits\n" +
+                    "- Cotton blend", BigDecimal.valueOf(48.90), BigDecimal.valueOf(15.00));
+            product33.getStyles().add(sophisticated);
+            List<Long> product33Styles = new ArrayList<>();
+            product33Styles.add(sophisticated.getStyleId());
+            Product newProduct33 = productService.createNewProduct(product33, category3.getCategoryId(), null, product33Styles, sizes, colourToImageUrlsMaps33);
+
+            Product product34 = new Product("004300", "Topman Stone Stretch Skinny Chino Shorts", "- Skinny fit chino shorts\n" +
+                    "- Mid waist\n" +
+                    "- Skinny fit\n" +
+                    "- Waist button fastening\n" +
+                    "- Fly zipper fastening\n" +
+                    "- 2 side pockets\n" +
+                    "- 2 back welt pockets\n" +
+                    "- Cotton blend", BigDecimal.valueOf(50.90), BigDecimal.valueOf(18.00));
+            product34.getStyles().add(artsy);
+            List<Long> product34Styles = new ArrayList<>();
+            product34Styles.add(artsy.getStyleId());
+            Product newProduct34 = productService.createNewProduct(product34, category13.getCategoryId(), null, product34Styles, sizes, colourToImageUrlsMaps34);
+
+            Product product35 = new Product("004400", "Ripped Hem Denim Shorts", "- Denim shorts with rip detail\n" +
+                    "- Medium rise\n" +
+                    "- Regular fit\n" +
+                    "- Button & zip fastening\n" +
+                    "- 5-pocket style\n" +
+                    "- Frayed hem\n" +
+                    "- Belt loops\n" +
+                    "- Cotton", BigDecimal.valueOf(25.70), BigDecimal.valueOf(8.99));
+            product35.getStyles().add(chic);
+            List<Long> product35Styles = new ArrayList<>();
+            product35Styles.add(chic.getStyleId());
+            Product newProduct35 = productService.createNewProduct(product35, category13.getCategoryId(), null, product35Styles, sizes, colourToImageUrlsMaps35);
+
+
+
+
         }
     }
 

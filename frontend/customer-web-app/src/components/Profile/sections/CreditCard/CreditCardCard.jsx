@@ -16,7 +16,7 @@ import { deleteCard } from "redux/actions/customerActions";
 const useStyles = makeStyles(customCheckboxRadioSwitch);
 
 // do this to edit props (pass in props as a tuple)
-export default function CreditCardCard() {
+export default function CreditCardCard({ setIsLoading }) {
   //Hooks
   const classes = useStyles();
   const history = useHistory();
@@ -33,7 +33,8 @@ export default function CreditCardCard() {
   const handleDeleteCard = creditCardId => {
     console.log(customerId);
     console.log(creditCardId);
-    dispatch(deleteCard({ customerId, creditCardId }));
+    setIsLoading(true);
+    dispatch(deleteCard({ customerId, creditCardId }, setIsLoading));
   };
 
   return (

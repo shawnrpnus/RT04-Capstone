@@ -460,8 +460,8 @@ function AccountInfo(props) {
             <h4>
               <b>My Credit Cards</b>
             </h4>
-            <AddCreditCard />
-            <CreditCardCard />
+            <AddCreditCard setIsLoading={props.setIsLoading} />
+            <CreditCardCard setIsLoading={props.setIsLoading} />
           </GridItem>
         </GridContainer>
         <Dialog open={dialogOpen} onClose={handleCloseDialog}>

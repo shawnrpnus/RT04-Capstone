@@ -1,5 +1,5 @@
 /*eslint-disable*/
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 // nodejs library that concatenates classes
 import classNames from "classnames";
 // @material-ui/core components
@@ -25,6 +25,9 @@ import OrderHistoryPage from "components/Profile/sections/Orders/OrderHistoryPag
 import { clearErrors } from "redux/actions";
 import { useParams } from "react-router-dom";
 import OrderDetails from "components/Profile/sections/Orders/OrderDetails";
+import ReviewCardForProfilePage from "components/Reviews/ReviewCardForProfilePage";
+import Backdrop from "@material-ui/core/Backdrop";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 const useStyles = makeStyles(profilePageStyle);
 
@@ -49,13 +52,14 @@ export default function ProfilePage(props) {
     classes.imgFluid
   );
   const navImageClasses = classNames(classes.imgRounded, classes.imgGallery);
+  const [isLoading, setIsLoading] = useState(false);
 
   const tabs = [
     {
       tabButton: "Account",
       tabIcon: Palette,
       route: "/account/profile/info",
-      tabContent: <AccountInfo />
+      tabContent: <AccountInfo setIsLoading={setIsLoading} />
     },
     {
       tabButton: "Orders",
@@ -93,6 +97,13 @@ export default function ProfilePage(props) {
 
   return (
     <div>
+      <Backdrop
+        className={classes.backdrop}
+        style={{ zIndex: 100000000000000 }}
+        open={isLoading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
       <Parallax
         image={require("assets/img/examples/city.jpg")}
         filter="dark"

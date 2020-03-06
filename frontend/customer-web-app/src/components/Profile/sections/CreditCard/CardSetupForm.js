@@ -1,23 +1,20 @@
 import React, { useState } from "react";
 import { useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
 import { useDispatch, useSelector } from "react-redux";
+import axios from "axios";
 
 import Button from "components/UI/CustomButtons/Button.js";
 import CardSection from "components/ShoppingCart/CardSection";
 import { saveCard } from "redux/actions/customerActions";
-import axios from "axios";
 
 const _ = require("lodash");
-export default function CardSetupForm() {
+export default function CardSetupForm({ setIsLoading }) {
   const stripe = useStripe();
   const elements = useElements();
   const dispatch = useDispatch();
-
-  const clientSecretForCard = useSelector(
-    state => state.customer.clientSecretForCard
-  );
   const customer = useSelector(state => state.customer.loggedInCustomer);
 
+  console.log(setIsLoading);
   /*  
   Flow of events:
   1. Display card element from stripe
@@ -29,6 +26,7 @@ export default function CardSetupForm() {
   const handleSubmit = async event => {
     // We don't want to let default form submission happen here,
     // which would refresh the page.
+    setIsLoading(true);
     event.preventDefault();
 
     if (!stripe || !elements) {
@@ -66,6 +64,7 @@ export default function CardSetupForm() {
           // result.setupIntent.payment_method to your server to save the
           // card to a Customer
         }
+        setIsLoading(false);
       })
       .catch(err => {
         console.log(err);
