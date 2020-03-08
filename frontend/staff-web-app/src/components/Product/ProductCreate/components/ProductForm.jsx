@@ -170,7 +170,7 @@ class ProductForm extends React.Component {
     this.props.createNewProduct(form, this.props.history, () =>
       this.setState({ isLoading: false })
     );
-    // this.setState({ isLoading: true });
+    this.setState({ isLoading: true });
   };
 
   render() {
@@ -441,6 +441,7 @@ class ProductForm extends React.Component {
                   render: rowData => {
                     return (
                       <Field
+                        key={rowData.hex}
                         name={`${rowData.hex}-images`}
                         selectedColour={rowData.hex}
                         handleOnDrop={this.handleOnDrop}

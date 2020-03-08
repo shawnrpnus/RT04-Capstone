@@ -67,6 +67,7 @@ const tableIcons = {
   ThirdStateCheck: Remove,
   ViewColumn: ViewColumn
 };
+const _ = require("lodash");
 
 class StaffAccountCreateForm extends Component {
   static propTypes = {
@@ -88,10 +89,10 @@ class StaffAccountCreateForm extends Component {
 
   handleCheckBox = (evt, data) => {
     evt.preventDefault();
-    //data is the list of products selected
-    console.log(data.staffId);
-
-    this.state.staffIds.push(data.staffId);
+    let staffIds = data.map(e => e.staffId);
+    const req = new StaffAccountCreateRequest(staffIds);
+    this.props.createNewStaffAccount(req, this.props.history);
+    // this.state.staffIds.push(data.staffId);
   };
 
   onChange = e => {
@@ -115,9 +116,11 @@ class StaffAccountCreateForm extends Component {
 
   render() {
     const data = this.props.allStaff;
-    console.log(data);
+    console.log(this.state);
     const { history, renderLoader } = this.props;
     const hasErrors = Object.keys(this.props.errors).length !== 0;
+    const disable = this.state.staffIds.length === 0;
+    console.log(this.state.staffIds);
 
     return (
       <React.Fragment>
@@ -158,27 +161,27 @@ class StaffAccountCreateForm extends Component {
                 pageSizeOptions: [5, 10, 15],
                 actionsColumnIndex: -1,
                 headerStyle: { textAlign: "center" },
-                cellStyle: { textAlign: "center" }
+                cellStyle: { textAlign: "center" },
+                selection: true
               }}
             />
           ) : (
             renderLoader()
           )}
         </div>
-
-        <ButtonToolbar className="form__button-toolbar">
+        {/* <ButtonToolbar className="form__button-toolbar">
           <Button
             color="primary"
             className="icon"
             onClick={e => this.handleSubmit(e)}
-            disabled={hasErrors}
+            disabled={hasErrors || disable}
           >
             <p>
               <ContentSaveIcon />
               Submit
             </p>
           </Button>
-        </ButtonToolbar>
+        </ButtonToolbar> */}
       </React.Fragment>
     );
   }

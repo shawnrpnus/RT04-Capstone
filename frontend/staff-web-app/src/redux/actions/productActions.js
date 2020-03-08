@@ -40,7 +40,11 @@ export const createNewProduct = (
         history.push(`/product/viewAllProduct`);
       })
       .catch(err => {
+        toast.error("Error creating product!", {
+          position: toast.POSITION.TOP_CENTER
+        });
         dispatch(createProductError(err.response.data));
+        closeCircularProgress();
         console.log(err.response.data);
       });
   };
