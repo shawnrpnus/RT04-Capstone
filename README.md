@@ -4,8 +4,8 @@
 ### Setup
 1. Create MySQL8 databases: retaildb and retaildbtest
    ```
-   create schema retaildb`;
-   create schema retaildbtest`;
+   create schema retaildb;
+   create schema retaildbtest;
    ```
 2. Clone repository
    `git clone https://github.com/shawnrpnus/RT04-Capstone.git`
