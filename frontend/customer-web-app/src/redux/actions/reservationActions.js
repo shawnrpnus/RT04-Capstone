@@ -9,6 +9,7 @@ import { UPDATE_UPCOMING_RESERVATIONS } from "./types";
 import { UPDATE_PAST_RESERVATIONS } from "./types";
 import { SET_UPDATING_RESERVATION } from "./types";
 import { SET_UPDATED_PRODUCT_VARIANTS } from "./types";
+import { CLEAR_UPDATING_RESERVATION } from "redux/actions/types";
 
 const RESERVATION_BASE_URL = "/api/reservation";
 
@@ -52,12 +53,37 @@ const updateStoresWithStockStatus = data => ({
   storesWithStockStatus: data
 });
 
-export const getProductVariantStoreStockStatus = (customerId, storeId) => {
+export const getProductVariantStoreStockStatusForCart = (
+  customerId,
+  storeId
+) => {
   return dispatch => {
     axios
-      .get(RESERVATION_BASE_URL + "/getProdVariantStoreStockStatus", {
+      .get(RESERVATION_BASE_URL + "/getProdVariantStoreStockStatusForCart", {
         params: { customerId, storeId }
       })
+      .then(response => {
+        const data = jsog.decode(response.data);
+        dispatch(updateProductVariantStoreStockStatus(data));
+      })
+      .catch(err => {
+        dispatchErrorMapError(err, dispatch);
+      });
+  };
+};
+
+export const getProductVariantStoreStockStatusForReservation = (
+  reservationId,
+  storeId
+) => {
+  return dispatch => {
+    axios
+      .get(
+        RESERVATION_BASE_URL + "/getProdVariantStoreStockStatusForReservation",
+        {
+          params: { reservationId, storeId }
+        }
+      )
       .then(response => {
         const data = jsog.decode(response.data);
         dispatch(updateProductVariantStoreStockStatus(data));
@@ -85,7 +111,6 @@ export const getAvailSlotsForStore = storeId => {
       })
       .then(response => {
         const data = jsog.decode(response.data);
-        console.log(data);
         dispatch(updateAvailSlotsForStore(data));
       })
       .catch(err => {
@@ -265,4 +290,8 @@ export const retrieveReservationById = reservationId => {
 const setUpdatingReservation = data => ({
   type: SET_UPDATING_RESERVATION,
   reservation: data
+});
+
+export const clearUpdatingReservation = () => ({
+  type: CLEAR_UPDATING_RESERVATION
 });

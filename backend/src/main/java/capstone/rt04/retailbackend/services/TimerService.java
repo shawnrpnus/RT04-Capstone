@@ -1,13 +1,15 @@
 package capstone.rt04.retailbackend.services;
 
-import capstone.rt04.retailbackend.entities.*;
+import capstone.rt04.retailbackend.entities.Customer;
+import capstone.rt04.retailbackend.entities.ProductStock;
+import capstone.rt04.retailbackend.entities.ShoppingCart;
+import capstone.rt04.retailbackend.entities.Warehouse;
 import capstone.rt04.retailbackend.util.Constants;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductStockNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -46,11 +48,10 @@ public class TimerService {
         this.restTemplate = builder.build();
     }
 
-//    @Scheduled(fixedRate = intervalDay, initialDelay = 20000)
+    //    @Scheduled(fixedRate = intervalDay, initialDelay = 20000)
     public void checkForLowStockProducts() throws ProductStockNotFoundException {
         //update size here for the set of automatically reordering from SUPPLIER -> WAREHOUSE
         List<Warehouse> warehouses = warehouseService.retrieveAllWarehouses();
-
         for (Warehouse w : warehouses) {
             List<ProductStock> productStocks = productService.retrieveProductStockQuantityLessThanRequired(w.getWarehouseId());
 
@@ -64,7 +65,7 @@ public class TimerService {
 //        log.info("donee");
     }
 
-//    @Scheduled(fixedRate = intervalDay, initialDelay = 10000)
+    //    @Scheduled(fixedRate = intervalDay, initialDelay = 10000)
     public void monthlyReorderingForWarehouse() throws ProductStockNotFoundException {
 
         List<Warehouse> warehouses = warehouseService.retrieveAllWarehouses();
@@ -73,7 +74,7 @@ public class TimerService {
 //            log.info("asdf"+w.getDayOfMonth());
             LocalDate localDate = LocalDate.now();
 //            log.info("asdfasdf"+localDate.getDayOfMonth());
-            if(w.getDayOfMonth() != localDate.getDayOfMonth()) {
+            if (w.getDayOfMonth() != localDate.getDayOfMonth()) {
 //                log.info("DID THIS HAPPPEN");
                 continue;
             }

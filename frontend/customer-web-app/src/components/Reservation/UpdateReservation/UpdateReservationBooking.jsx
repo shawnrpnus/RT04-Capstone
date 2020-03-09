@@ -7,7 +7,8 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   createReservation,
   getAvailSlotsForStore,
-  getProductVariantStoreStockStatus,
+  getProductVariantStoreStockStatusForCart,
+  getProductVariantStoreStockStatusForReservation,
   retrieveReservationById,
   retrieveStoresWithStockStatusForCart,
   retrieveStoresWithStockStatusForReservation,
@@ -63,7 +64,7 @@ function UpdateReservationBooking(props) {
     if (customer.customerId) {
       dispatch(retrieveStoresWithStockStatusForReservation(reservationId));
     }
-  }, [storesWithStockStatus]);
+  }, [reservationId]);
 
   //****FOR UPDATING
   useEffect(() => {
@@ -74,11 +75,12 @@ function UpdateReservationBooking(props) {
 
   useEffect(() => {
     if (reservationToUpdate) {
+      console.log("RESERVATION TO UPDATE");
       setSelectedStoreId(reservationToUpdate.store.storeId);
       setSelectedTimeslot(reservationToUpdate.reservationDateTime);
       dispatch(
-        getProductVariantStoreStockStatus(
-          customer.customerId,
+        getProductVariantStoreStockStatusForReservation(
+          reservationId,
           reservationToUpdate.store.storeId
         ) //consumed in the cart
       );
@@ -90,7 +92,10 @@ function UpdateReservationBooking(props) {
   const onSelectStore = e => {
     setSelectedStoreId(e.target.value);
     dispatch(
-      getProductVariantStoreStockStatus(customer.customerId, e.target.value)
+      getProductVariantStoreStockStatusForReservation(
+        reservationId,
+        e.target.value
+      )
     );
     dispatch(getAvailSlotsForStore(e.target.value));
   };
@@ -126,93 +131,97 @@ function UpdateReservationBooking(props) {
       <h5>
         Note: Reservations can only be made between 1 and 48 hours in advance.
       </h5>
-      <GridContainer>
-        <GridItem md={12} sm={12}>
-          {/*<Button*/}
-          {/*  color="primary"*/}
-          {/*  style={{ marginBottom: "20px" }}*/}
-          {/*  onClick={() => setMode("choose")}*/}
-          {/*>*/}
-          {/*  Choose a store*/}
-          {/*</Button>*/}
-          {/*<Button color="primary" style={{ marginBottom: "20px" }}>*/}
-          {/*  Find me a store*/}
-          {/*</Button>*/}
+      {reservationToUpdate && (
+        <GridContainer>
+          <GridItem md={12} sm={12}>
+            {/*<Button*/}
+            {/*  color="primary"*/}
+            {/*  style={{ marginBottom: "20px" }}*/}
+            {/*  onClick={() => setMode("choose")}*/}
+            {/*>*/}
+            {/*  Choose a store*/}
+            {/*</Button>*/}
+            {/*<Button color="primary" style={{ marginBottom: "20px" }}>*/}
+            {/*  Find me a store*/}
+            {/*</Button>*/}
 
-          {/*Store picker, same for create update, but load with value in state*/}
-          <FormControl fullWidth className={selectClasses.selectFormControl}>
-            <InputLabel>Select a store</InputLabel>
-            <Select onChange={onSelectStore} value={selectedStoreId}>
-              {storesWithStockStatus &&
-                storesWithStockStatus.map(storeWithStock => (
-                  <MenuItem
-                    key={storeWithStock.store.storeId}
-                    value={storeWithStock.store.storeId}
-                    style={{ padding: "0" }}
-                  >
-                    <StoreCard storeWithStock={storeWithStock} />
-                  </MenuItem>
-                ))}
-            </Select>
-          </FormControl>
-        </GridItem>
-        <GridItem md={12} sm={12}>
-          {/*Time slot picker, same for create/update but load with value in state*/}
-          <FormControl fullWidth className={selectClasses.selectFormControl}>
-            {availSlotsForStore && (
-              <React.Fragment>
-                <InputLabel>Select an available time slot</InputLabel>
-                <Select
-                  onChange={e => setSelectedTimeslot(e.target.value)}
-                  value={selectedTimeslot}
-                  displayEmpty={true}
-                  renderValue={value => {
-                    if (availSlotsForStore.length === 0) {
-                      return "No time slots available";
-                    } else if (value === "") {
-                      return null;
-                    } else {
-                      return moment(value).format("D MMM h:mm A");
-                    }
-                  }}
-                >
-                  {availSlotsForStore.map(slot => (
-                    <MenuItem key={slot} value={slot}>
-                      {moment(slot).format("D MMM h:mm A")}
+            {/*Store picker, same for create update, but load with value in state*/}
+            <FormControl fullWidth className={selectClasses.selectFormControl}>
+              <InputLabel>Select a store</InputLabel>
+              <Select onChange={onSelectStore} value={selectedStoreId}>
+                {storesWithStockStatus &&
+                  storesWithStockStatus.map(storeWithStock => (
+                    <MenuItem
+                      key={storeWithStock.store.storeId}
+                      value={storeWithStock.store.storeId}
+                      style={{ padding: "0" }}
+                    >
+                      <StoreCard storeWithStock={storeWithStock} />
                     </MenuItem>
                   ))}
-                </Select>
-              </React.Fragment>
-            )}
-          </FormControl>
-        </GridItem>
-        <GridItem>
-          {selectedStoreId !== "" &&
-            selectedTimeslot !== "" &&
-            !fullyStocked && (
-              <h6 style={{ color: "red" }}>
-                Remove items that are out of stock, or choose another store
-              </h6>
-            )}
-          <Button
-            color="success"
-            style={{ marginBottom: "20px" }}
-            onClick={handleUpdateReservation}
-            disabled={
-              selectedStoreId === "" || selectedTimeslot === "" || !fullyStocked
-            }
-          >
-            Update Reservation
-          </Button>
-          <Button
-            color="primary"
-            style={{ marginBottom: "20px" }}
-            onClick={() => history.goBack()}
-          >
-            Cancel
-          </Button>
-        </GridItem>
-      </GridContainer>
+              </Select>
+            </FormControl>
+          </GridItem>
+          <GridItem md={12} sm={12}>
+            {/*Time slot picker, same for create/update but load with value in state*/}
+            <FormControl fullWidth className={selectClasses.selectFormControl}>
+              {availSlotsForStore && (
+                <React.Fragment>
+                  <InputLabel>Select an available time slot</InputLabel>
+                  <Select
+                    onChange={e => setSelectedTimeslot(e.target.value)}
+                    value={selectedTimeslot}
+                    displayEmpty={true}
+                    renderValue={value => {
+                      if (availSlotsForStore.length === 0) {
+                        return "No time slots available";
+                      } else if (value === "") {
+                        return null;
+                      } else {
+                        return moment(value).format("D MMM h:mm A");
+                      }
+                    }}
+                  >
+                    {availSlotsForStore.map(slot => (
+                      <MenuItem key={slot} value={slot}>
+                        {moment(slot).format("D MMM h:mm A")}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </React.Fragment>
+              )}
+            </FormControl>
+          </GridItem>
+          <GridItem>
+            {selectedStoreId !== "" &&
+              selectedTimeslot !== "" &&
+              !fullyStocked && (
+                <h6 style={{ color: "red" }}>
+                  Remove items that are out of stock, or choose another store
+                </h6>
+              )}
+            <Button
+              color="success"
+              style={{ marginBottom: "20px" }}
+              onClick={handleUpdateReservation}
+              disabled={
+                selectedStoreId === "" ||
+                selectedTimeslot === "" ||
+                !fullyStocked
+              }
+            >
+              Update Reservation
+            </Button>
+            <Button
+              color="primary"
+              style={{ marginBottom: "20px" }}
+              onClick={() => history.goBack()}
+            >
+              Cancel
+            </Button>
+          </GridItem>
+        </GridContainer>
+      )}
     </React.Fragment>
   );
 }
