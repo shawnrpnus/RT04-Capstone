@@ -63,6 +63,7 @@ function AccountInfo(props) {
     email: customer.email,
     oldPassword: "",
     newPassword: "",
+    confirmNewPassword: "",
     newEmail: "" //to keep for temporary use for showing in dialog,
   });
   const [changingEmail, setChangingEmail] = useState(false);
@@ -145,14 +146,12 @@ function AccountInfo(props) {
     const req = new ChangePasswordRequest(
       customer.customerId,
       inputState.oldPassword,
-      inputState.newPassword
+      inputState.newPassword,
+      inputState.confirmNewPassword
     );
-    dispatch(changePassword(req, enqueueSnackbar, setChangingPassword));
-    setInputState(inputState => ({
-      ...inputState,
-      oldPassword: "",
-      newPassword: ""
-    }));
+    dispatch(
+      changePassword(req, enqueueSnackbar, setChangingPassword, setInputState)
+    );
   };
 
   const handleClickShowOldPassword = () => {
@@ -367,6 +366,39 @@ function AccountInfo(props) {
                           )
                         }}
                       />
+                      <CustomTextField
+                        fieldLabel="Confirm New Password"
+                        fieldName="confirmNewPassword"
+                        type={showNewPassword ? "text" : "password"}
+                        inputState={inputState}
+                        onChange={onChange}
+                        errors={errors}
+                        placeholder="Confirm new password..."
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment
+                              position="start"
+                              className={classes.inputAdornment}
+                            >
+                              <Lock className={classes.inputAdornmentIcon} />
+                            </InputAdornment>
+                          ),
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <IconButton
+                                aria-label="toggle password visibility"
+                                onClick={handleClickShowNewPassword}
+                              >
+                                {showNewPassword ? (
+                                  <Visibility />
+                                ) : (
+                                  <VisibilityOff />
+                                )}
+                              </IconButton>
+                            </InputAdornment>
+                          )
+                        }}
+                      />
                     </React.Fragment>
                   )}
                 </GridItem>
@@ -386,6 +418,7 @@ function AccountInfo(props) {
                             Submit
                           </Button>
                         </Tooltip>
+
                         <Button
                           onClick={() => {
                             setChangingPassword(false);

@@ -238,7 +238,12 @@ export const updateEmail = (verificationCode, history) => {
   };
 };
 
-export const changePassword = (req, enqueueSnackbar, setChangingPassword) => {
+export const changePassword = (
+  req,
+  enqueueSnackbar,
+  setChangingPassword,
+  setInputState
+) => {
   return dispatch => {
     axios
       .post(CUSTOMER_BASE_URL + `/changePassword`, req)
@@ -249,6 +254,12 @@ export const changePassword = (req, enqueueSnackbar, setChangingPassword) => {
           autoHideDuration: 1200
         });
         setChangingPassword(false);
+        setInputState(inputState => ({
+          ...inputState,
+          oldPassword: "",
+          newPassword: "",
+          confirmNewPassword: ""
+        }));
       })
       .catch(err => {
         dispatchErrorMapError(err, dispatch);
