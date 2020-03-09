@@ -60,7 +60,7 @@ function ProductCard(props) {
         </CardHeader>
         <CardBody className={classes.cardBodyPlain}>
           <Link to={`/shop/product/${product.productId}`}>
-            <GridContainer justify="space-between" style={{ height: "60px" }}>
+            <GridContainer justify="space-between" style={{ height: "90px" }}>
               <GridItem xs={7}>
                 <h6 className={classes.cardTitle}>{product.productName}</h6>
               </GridItem>
