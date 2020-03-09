@@ -171,7 +171,7 @@ const renderLeafCategoryDrawerLinks = (
   const leafLinks = leafCategories.map(c => (
     <Link
       key={c.categoryId}
-      to={`shop/catalog/${rootName}/${subCategoryName}/${c.categoryName}`}
+      to={`/shop/catalog/${rootName}/${subCategoryName}/${c.categoryName}`}
       className={classes ? classes.dropdownLink : null}
     >
       {c.categoryName}
