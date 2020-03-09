@@ -18,9 +18,10 @@ import { Grid } from "@material-ui/core";
 import { ProductsTableRaw } from "../../Product/ProductsList/components/ProductsTable";
 import { ContextMenu } from "primereact/contextmenu";
 import CreateUpdateCategoryDialog from "./CreateUpdateCategoryDialog";
-import { Button, ButtonToolbar } from "reactstrap";
+import { Button } from "reactstrap";
 import { clearErrors } from "../../../redux/actions";
 import { deleteProduct } from "./../../../redux/actions/productActions";
+import withMaterialConfirmDialog from "./../../Layout/page/withMaterialConfirmDialog";
 
 const _ = require("lodash");
 
@@ -225,4 +226,4 @@ const mapDispatchToProps = {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(withPage(CategoryTree, "Category Management"));
+)(withMaterialConfirmDialog(withPage(CategoryTree, "Category Management")));

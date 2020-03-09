@@ -1,31 +1,24 @@
 import React, { Component } from "react";
-import PropTypes from "prop-types";
 import MomentUtils from "@date-io/moment";
 import { Grid } from "@material-ui/core";
-import MaterialTextField from "../../../shared/components/Form/MaterialTextField";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import {
   addTagToProducts,
-  createNewTag,
   deleteTagFromProducts,
-  retrieveAllTags,
-  updateTag
+  retrieveAllTags
 } from "../../../redux/actions/tagAction";
-import { Add, Check, Delete } from "@material-ui/icons";
+import { Add, Delete } from "@material-ui/icons";
 import { clearErrors } from "../../../redux/actions";
 import connect from "react-redux/es/connect/connect";
 import withPage from "../../Layout/page/withPage";
 import MaterialObjectSelect from "../../../shared/components/Form/MaterialObjectSelect";
-import MaterialTable from "material-table";
 import { ProductsTableRaw } from "../../Product/ProductsList/components/ProductsTable";
 import { retrieveProductsDetails } from "../../../redux/actions/productActions";
-import CreateUpdateTagRequest from "../../../models/CreateUpdateTagRequest";
 import AddTagToProductsRequest from "../../../models/tag/AddTagToProductsRequest";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
-import Col from "reactstrap/es/Col";
-import Row from "react-data-grid/lib/Row";
 import DeleteTagFromProductsRequest from "../../../models/tag/DeleteTagFromProductsRequest";
 import Button from "@material-ui/core/Button";
+import withMaterialConfirmDialog from "./../../Layout/page/withMaterialConfirmDialog";
 
 const _ = require("lodash");
 
@@ -76,7 +69,11 @@ class AddTagToProduct extends Component {
       productIds.push(element.productId);
     });
     const req = new DeleteTagFromProductsRequest(this.state.tagId, productIds);
-    this.props.deleteTagFromProducts(req, this.props.history);
+    this.props
+      .confirmDialog({
+        description: "Tag will be deleted for the selected products."
+      })
+      .then(() => this.props.deleteTagFromProducts(req, this.props.history));
   };
 
   handleChangeAddTo() {
@@ -219,4 +216,4 @@ const mapDispatchToProps = {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(withPage(AddTagToProduct, "Tag Management"));
+)(withMaterialConfirmDialog(withPage(AddTagToProduct, "Tag Management")));

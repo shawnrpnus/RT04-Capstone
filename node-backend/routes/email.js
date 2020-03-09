@@ -6,12 +6,12 @@ const mailGenerator = new Mailgen({
   theme: "default",
   product: {
     // Appears in header & footer of e-mails
-    name: "Apricot & Nut",
+    name: "apricot & nut",
     link: "http://localhost:3000",
     // Optional product logo
     logo:
       "https://res.cloudinary.com/rt04capstone/image/upload/v1583433855/rsz_1apricot-nut-logo-word_jzhocy.png",
-    copyright: "Copyright © 2020 Apricot & Nut. All rights reserved."
+    copyright: "Copyright © 2020 apricot & nut. All rights reserved."
   }
 });
 const transporter = Nodemailer.createTransport({
@@ -30,7 +30,7 @@ router.post("/sendVerificationEmail", async (req, res) => {
   const emailContent = {
     body: {
       name: `${fullName}`,
-      intro: "Welcome to Apricot & Nut.",
+      intro: "Welcome to apricot & nut.",
       action: {
         instructions:
           "Thank you for registering! Get started by verifying your account below",
@@ -71,7 +71,7 @@ router.post("/sendForgotPasswordEmail", async (req, res) => {
   const emailContent = {
     body: {
       name: `${fullName}`,
-      intro: "Welcome to Apricot & Nut.",
+      intro: "Welcome to apricot & nut",
       action: {
         instructions:
           "Forgot your password? Click the button below to reset it:",
@@ -164,11 +164,11 @@ router.post("/contactUsConfirmation", async (req, res) => {
       break;
     case "COMPLIMENT":
       response =
-        "Thank you for the compliment! On behalf of Apricot & Nut, we would like to express gratitude for your continuous support.";
+        "Thank you for the compliment! On behalf of apricot & nut, we would like to express gratitude for your continuous support.";
       break;
     default:
       response =
-        "Thank you for your feedback. Hope you had a wonderful experiencing shopping on Apricot & Nut";
+        "Thank you for your feedback. Hope you had a wonderful experiencing shopping on apricot & nut";
   }
 
   const emailContent = {
@@ -189,7 +189,7 @@ router.post("/contactUsConfirmation", async (req, res) => {
     {
       from: "rt04capstone@gmail.com",
       to: email,
-      subject: "Apricot & Nut - Feedback confirmation email",
+      subject: "apricot & nut - Feedback confirmation email",
       text: emailText,
       html: emailBody
     },

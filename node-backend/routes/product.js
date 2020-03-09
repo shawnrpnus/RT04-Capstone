@@ -96,7 +96,8 @@ router.post(
                     }
                   })
                   .catch(err => {
-                    res.status(400).send(err);
+                    console.log(err.response.data);
+                    res.status(400).send(JSON.stringify(err.response.data));
                   });
               })
             )
@@ -118,12 +119,13 @@ router.post(
             })
             .catch(err => {
               console.log("**********************");
-              console.log(err.message);
-              return res.status(400).send(err);
+              console.log(err.response.data);
+              return res.status(400).send(JSON.stringify(err.response.data));
             });
         })
         .catch(err => {
-          console.log(err);
+          console.log(err.response.data);
+          return res.status(400).send(JSON.stringify(err.response.data));
         });
     } else {
       request.colourToImageUrlsMaps.map((e, index) => {
