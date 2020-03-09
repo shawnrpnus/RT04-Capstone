@@ -28,6 +28,7 @@ import {
 import withPage from "../../../Layout/page/withPage";
 import colourList from "../../../../scss/colours.json";
 import ProductsStockDetails from "./ProductsStockDetails";
+import withMaterialConfirmDialog from "./../../../Layout/page/withMaterialConfirmDialog";
 
 const _ = require("lodash");
 
@@ -84,7 +85,11 @@ class ProductsTable extends PureComponent {
   };
 
   handleDeleteProduct = productId => {
-    this.props.deleteProduct(productId, _.get(this.props.store, "storeId"));
+    this.props
+      .confirmDialog({ description: "Selected product will be deleted" })
+      .then(() =>
+        this.props.deleteProduct(productId, _.get(this.props.store, "storeId"))
+      );
   };
 
   render() {
@@ -255,5 +260,5 @@ export default withRouter(
   connect(
     mapStateToProps,
     mapDispatchToProps
-  )(withPage(ProductsTable, "Product Management"))
+  )(withMaterialConfirmDialog(withPage(ProductsTable, "Product Management")))
 );
