@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 
 const STORE_BASE_URL = "/api/store";
 const jsog = require("jsog");
+const _ = require("lodash");
 
 export const clearCurrentStore = () => ({
   type: types.CLEAR_CURRENT_STORE
@@ -109,9 +110,10 @@ export const retrieveAllStores = () => {
       })
       .catch(err => {
         const { errorMap } = err.response.data;
-        toast.error(errorMap.message, {
-          position: toast.POSITION.TOP_CENTER
-        });
+        errorMap &&
+          toast.error(errorMap.message, {
+            position: toast.POSITION.TOP_CENTER
+          });
         dispatch(retrieveAllStoresError(err.response.data));
       });
   };

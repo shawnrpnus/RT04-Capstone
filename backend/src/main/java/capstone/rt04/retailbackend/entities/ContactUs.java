@@ -7,6 +7,7 @@ package capstone.rt04.retailbackend.entities;
 
 import capstone.rt04.retailbackend.util.ErrorMessages;
 import capstone.rt04.retailbackend.util.enums.ContactUsCategoryEnum;
+import capstone.rt04.retailbackend.util.enums.ContactUsStatusEnum;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.voodoodyne.jackson.jsog.JSOGGenerator;
 import lombok.EqualsAndHashCode;
@@ -62,10 +63,11 @@ public class ContactUs implements Serializable {
     @NotEmpty(message = ErrorMessages.EMAIL_REQUIRED)
     private String customerEmail;
 
-    private boolean acknowledged;
+    @NotNull(message = ErrorMessages.STATUS_REQUIRED)
+    private ContactUsStatusEnum status;
 
     public ContactUs() {
-        this.acknowledged = false;
+        this.status = ContactUsStatusEnum.PENDING_ACTION;
     }
 
     public ContactUs(ContactUsCategoryEnum contactUsCategory, String content, String customerEmail, String firstName, String lastName) {
