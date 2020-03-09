@@ -205,7 +205,13 @@ public class CustomerService {
         }
     }
 
-    public void changePassword(Long customerId, String oldPassword, String newPassword) throws CustomerNotFoundException, InvalidLoginCredentialsException {
+    public void changePassword(Long customerId, String oldPassword, String newPassword, String confirmNewPassword) throws CustomerNotFoundException, InvalidLoginCredentialsException, InputDataValidationException {
+        if (!confirmNewPassword.equals(newPassword)){
+            Map<String, String> errorMap = new HashMap<>();
+            errorMap.put("confirmNewPassword", ErrorMessages.NEW_PASSWORDS_DO_NOT_MATCH);
+            errorMap.put("newPassword", ErrorMessages.NEW_PASSWORDS_DO_NOT_MATCH);
+            throw new InputDataValidationException(errorMap, errorMap.toString());
+        }
         Customer customer = retrieveCustomerByCustomerId(customerId);
 
         if (encoder.matches(oldPassword, customer.getPassword())) {

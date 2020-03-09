@@ -13,6 +13,7 @@ public class ErrorMessages {
     public static final String NEW_PASSWORD_REQUIRED = "New password is required!";
     public static final String CONFIRM_NEW_PASSWORD_REQUIRED = "Please confirm your new password";
     public static final String PASSWORDS_MUST_MATCH = "Passwords must match!";
+    public static final String NEW_PASSWORDS_DO_NOT_MATCH = "New passwords do not match";
 
     public static final String OLD_PASSWORD_INCORRECT = "Old password is incorrect!";
     public static final String OLD_PASSWORD_REQUIRED = "Old password is required!";

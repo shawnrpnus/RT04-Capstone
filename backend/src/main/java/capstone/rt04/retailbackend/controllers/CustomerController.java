@@ -131,7 +131,8 @@ public class CustomerController {
 
         customerService.changePassword(customerChangePasswordRequest.getCustomerId(),
                 customerChangePasswordRequest.getOldPassword(),
-                customerChangePasswordRequest.getNewPassword());
+                customerChangePasswordRequest.getNewPassword(),
+                customerChangePasswordRequest.getConfirmNewPassword());
         Customer customer = customerService.retrieveCustomerByCustomerId(customerChangePasswordRequest.getCustomerId());
         relationshipService.clearCustomerRelationships(customer);
         return new ResponseEntity<>(customer, HttpStatus.OK);

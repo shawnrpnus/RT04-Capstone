@@ -135,7 +135,7 @@ public class CustomerControllerTest extends ApiTestSetup {
 
     @Test
     public void changePassword() {
-        CustomerChangePasswordRequest req = new CustomerChangePasswordRequest(createdCustomerId, "wrongPw", "newPassword");
+        CustomerChangePasswordRequest req = new CustomerChangePasswordRequest(createdCustomerId, "wrongPw", "newPassword", "newPassword");
         //wrong password
         given()
                 .contentType("application/json")

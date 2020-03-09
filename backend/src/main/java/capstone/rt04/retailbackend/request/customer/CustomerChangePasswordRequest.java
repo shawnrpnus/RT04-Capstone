@@ -25,4 +25,8 @@ public class CustomerChangePasswordRequest {
     @NotNull(message = ErrorMessages.NEW_PASSWORD_REQUIRED)
     @Size(min=1, message = ErrorMessages.NEW_PASSWORD_REQUIRED)
     private String newPassword;
+
+    @NotNull(message = ErrorMessages.CONFIRM_NEW_PASSWORD_REQUIRED)
+    @Size(min=1, message = ErrorMessages.CONFIRM_NEW_PASSWORD_REQUIRED)
+    private String confirmNewPassword;
 }

@@ -79,7 +79,7 @@ public class CustomerServiceTest extends ServiceTestSetup {
         Customer validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
         String newPasswordRaw = "password";
 
-        customerService.changePassword(validCustomer.getCustomerId(), "spiderman", newPasswordRaw);
+        customerService.changePassword(validCustomer.getCustomerId(), "spiderman", newPasswordRaw, newPasswordRaw);
 
         validCustomer = customerService.retrieveCustomerByEmail(VALID_CUST_EMAIL);
 
