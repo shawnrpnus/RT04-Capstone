@@ -1,31 +1,22 @@
 package capstone.rt04.retailbackend.controllers;
 
 import capstone.rt04.retailbackend.entities.*;
-import capstone.rt04.retailbackend.request.contactUs.CreateNewContactUsRequest;
 import capstone.rt04.retailbackend.request.customer.CreateReservationRequest;
 import capstone.rt04.retailbackend.request.customer.UpdateReservationRequest;
 import capstone.rt04.retailbackend.response.ReservationStockCheckResponse;
-import capstone.rt04.retailbackend.services.ContactUsService;
 import capstone.rt04.retailbackend.services.ReservationService;
 import capstone.rt04.retailbackend.services.ValidationService;
-import capstone.rt04.retailbackend.util.enums.ContactUsCategoryEnum;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
-import capstone.rt04.retailbackend.util.exceptions.category.CreateNewCategoryException;
-import capstone.rt04.retailbackend.util.exceptions.contactUs.CreateNewContactUsException;
 import capstone.rt04.retailbackend.util.exceptions.customer.CustomerNotFoundException;
-import capstone.rt04.retailbackend.util.exceptions.product.ProductStockNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
-import capstone.rt04.retailbackend.util.exceptions.reservation.CreateNewReservationException;
 import capstone.rt04.retailbackend.util.exceptions.reservation.ReservationNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
-import capstone.rt04.retailbackend.util.routeconstants.ContactUsControllerRoute;
 import capstone.rt04.retailbackend.util.routeconstants.CustomerControllerRoutes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.ZonedDateTime;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -89,9 +80,14 @@ public class ReservationController {
         return new ResponseEntity<>(updatedReservation, HttpStatus.OK);
     }
 
-    @GetMapping(CustomerControllerRoutes.GET_PROD_VARIANT_STORE_STOCK_STATUS)
-    public Map<Long, Map<String, Object>> getProdVariantStoreStockStatus(@RequestParam Long customerId, @RequestParam Long storeId) throws ProductVariantNotFoundException, StoreNotFoundException, CustomerNotFoundException {
-        return reservationService.getProdVariantStoreStockStatus(customerId, storeId);
+    @GetMapping(CustomerControllerRoutes.GET_PROD_VARIANT_STORE_STOCK_STATUS_FOR_CART)
+    public Map<Long, Map<String, Object>> getProdVariantStoreStockStatusForCart(@RequestParam Long customerId, @RequestParam Long storeId) throws ProductVariantNotFoundException, StoreNotFoundException, CustomerNotFoundException {
+        return reservationService.getProdVariantStoreStockStatusForCart(customerId, storeId);
+    }
+
+    @GetMapping(CustomerControllerRoutes.GET_PROD_VARIANT_STORE_STOCK_STATUS_FOR_RESERVATION)
+    public Map<Long, Map<String, Object>> getProdVariantStoreStockStatusForReservation(@RequestParam Long reservationId, @RequestParam Long storeId) throws ProductVariantNotFoundException, StoreNotFoundException, CustomerNotFoundException, ReservationNotFoundException {
+        return reservationService.getProdVariantStoreStockStatusForReservation(reservationId, storeId);
     }
 
     @GetMapping(CustomerControllerRoutes.GET_STORES_STOCK_STATUS_FOR_CART)

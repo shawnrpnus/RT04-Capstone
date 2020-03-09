@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   createReservation,
   getAvailSlotsForStore,
-  getProductVariantStoreStockStatus,
+  getProductVariantStoreStockStatusForCart,
   retrieveReservationById,
   retrieveStoresWithStockStatusForCart,
   updateReservation
@@ -59,7 +59,10 @@ function ReservationBooking(props) {
   const onSelectStore = e => {
     setSelectedStoreId(e.target.value);
     dispatch(
-      getProductVariantStoreStockStatus(customer.customerId, e.target.value)
+      getProductVariantStoreStockStatusForCart(
+        customer.customerId,
+        e.target.value
+      )
     );
     dispatch(getAvailSlotsForStore(e.target.value));
   };

@@ -48,6 +48,11 @@ export default function(state = initialState, action) {
         ...state,
         reservationToUpdate: action.reservation
       };
+    case types.CLEAR_UPDATING_RESERVATION:
+      return {
+        ...state,
+        reservationToUpdate: null
+      };
     default:
       return state;
   }

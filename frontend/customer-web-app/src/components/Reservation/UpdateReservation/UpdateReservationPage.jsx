@@ -27,6 +27,7 @@ import ReservationCartItem from "components/Reservation/ReservationCart/Reservat
 import ReservationBooking from "components/Reservation/ReservationBooking/ReservationBooking";
 import {
   clearProductVariantStoreStockStatus,
+  clearUpdatingReservation,
   retrieveReservationById
 } from "redux/actions/reservationActions";
 import { useParams } from "react-router-dom";
@@ -54,16 +55,13 @@ export default function UpdateReservationPage(props) {
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
 
+  //cleanUp
   useEffect(() => {
-    dispatch(clearProductVariantStoreStockStatus());
+    return () => {
+      dispatch(clearProductVariantStoreStockStatus());
+      dispatch(clearUpdatingReservation());
+    };
   }, []);
-
-  //For updating, get the reservation to update
-  useEffect(() => {
-    if (reservationId) {
-      dispatch(retrieveReservationById(reservationId));
-    }
-  }, [reservationId]);
 
   return (
     <div>

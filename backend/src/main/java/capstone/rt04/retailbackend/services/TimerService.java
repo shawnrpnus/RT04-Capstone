@@ -50,7 +50,6 @@ public class TimerService {
     public void checkForLowStockProducts() throws ProductStockNotFoundException {
         //update size here for the set of automatically reordering from SUPPLIER -> WAREHOUSE
         List<Warehouse> warehouses = warehouseService.retrieveAllWarehouses();
-
         for (Warehouse w : warehouses) {
             List<ProductStock> productStocks = productService.retrieveProductStockQuantityLessThanRequired(w.getWarehouseId());
 

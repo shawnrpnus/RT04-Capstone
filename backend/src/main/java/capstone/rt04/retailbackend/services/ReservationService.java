@@ -263,10 +263,21 @@ public class ReservationService {
         return reservationToCancel;
     }
 
-    public Map<Long, Map<String, Object>> getProdVariantStoreStockStatus(Long customerId, Long storeId) throws StoreNotFoundException, ProductVariantNotFoundException, CustomerNotFoundException {
+    //Get product variant stock, given the store
+    public Map<Long, Map<String, Object>> getProdVariantStoreStockStatusForCart(Long customerId, Long storeId) throws StoreNotFoundException, ProductVariantNotFoundException, CustomerNotFoundException {
         Customer customer = customerService.retrieveCustomerByCustomerId(customerId);
+        return getProdVariantStoreStockStatus(customer.getReservationCartItems(), storeId);
+    }
+
+    public Map<Long, Map<String, Object>> getProdVariantStoreStockStatusForReservation(Long reservationId, Long storeId) throws StoreNotFoundException, ProductVariantNotFoundException, CustomerNotFoundException, ReservationNotFoundException {
+        Reservation reservation = retrieveReservationByReservationId(reservationId);
+        return getProdVariantStoreStockStatus(reservation.getProductVariants(), storeId);
+    }
+
+
+    public Map<Long, Map<String, Object>> getProdVariantStoreStockStatus(List<ProductVariant> productVariants, Long storeId) {
         Map<Long, Map<String, Object>> result = new HashMap<>();
-        for (ProductVariant pv: customer.getReservationCartItems()) {
+        for (ProductVariant pv : productVariants) {
             ProductStock productStock = productService.retrieveProductStockByStoreIdAndProductVariantId(storeId, pv.getProductVariantId());
             String storeName = productStock.getStore().getStoreName();
             Map<String, Object> stockAndName = new HashMap<>();
@@ -291,21 +302,22 @@ public class ReservationService {
         return checkAllStoreStocksForGivenProductVariants(reservationItems);
     }
 
+    // Checking if store can fulfill the stock for a list of product variants
     private List<ReservationStockCheckResponse> checkAllStoreStocksForGivenProductVariants(List<ProductVariant> productVariants) throws ProductVariantNotFoundException, StoreNotFoundException {
         List<ReservationStockCheckResponse> result = new ArrayList<>();
         List<Store> allStores = storeService.retrieveAllStores();
         for (Store store : allStores) {
             int numItemsNoStock = 0;
-            for (ProductVariant reservationCartItem : productVariants){
+            for (ProductVariant reservationCartItem : productVariants) {
                 try {
                     checkStoreStockForProductVariant(store.getStoreId(), reservationCartItem.getProductVariantId());
-                } catch (InputDataValidationException ex){ //insufficient stock
+                } catch (InputDataValidationException ex) { //insufficient stock
                     numItemsNoStock++;
                 }
             }
-            if (numItemsNoStock == 0){
+            if (numItemsNoStock == 0) {
                 result.add(new ReservationStockCheckResponse(store, "In stock"));
-            } else if (numItemsNoStock == productVariants.size()){
+            } else if (numItemsNoStock == productVariants.size()) {
                 result.add(new ReservationStockCheckResponse(store, "Out of stock"));
             } else {
                 result.add(new ReservationStockCheckResponse(store, "Partially in stock"));
