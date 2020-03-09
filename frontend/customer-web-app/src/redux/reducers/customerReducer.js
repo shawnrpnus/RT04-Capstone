@@ -4,7 +4,8 @@ const initialState = {
   loggedInCustomer: null,
   isSendingEmail: false,
   verificationStatus: null,
-  clientSecret: null
+  clientSecret: null,
+  shoppingCartTooltipOpen: false
 };
 
 export default function(state = initialState, action) {
@@ -72,6 +73,16 @@ export default function(state = initialState, action) {
       return {
         ...state,
         clientSecret: action.clientSecret
+      };
+    case types.CART_TOOLTIP_OPEN:
+      return {
+        ...state,
+        shoppingCartTooltipOpen: true
+      };
+    case types.CART_TOOLTIP_CLOSE:
+      return {
+        ...state,
+        shoppingCartTooltipOpen: false
       };
     default:
       return state;

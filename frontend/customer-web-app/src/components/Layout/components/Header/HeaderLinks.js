@@ -33,6 +33,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { retrieveAllRootCategories } from "redux/actions/categoryActions";
 import AgAutocomplete from "components/Algolia/AgAutocomplete";
 import IconButton from "@material-ui/core/IconButton";
+import { ShoppingCartNavbar } from "components/Layout/components/Header/ShoppingCartNavbar";
 
 const useStyles = makeStyles(styles);
 
@@ -145,15 +146,7 @@ export default function HeaderLinks(props) {
           </Link>
         </ListItem>
         <ListItem className={classes.listItem}>
-          <Link
-            key="login"
-            to="/account/shoppingCart"
-            style={{ color: "inherit" }}
-          >
-            <Button className={classes.navLink} round color="transparent">
-              <ShoppingCart className={classes.icons} /> Shop
-            </Button>
-          </Link>
+          <ShoppingCartNavbar />
         </ListItem>
         <ListItem className={classes.listItem} style={{ float: "right" }}>
           <Link to="/account/reservation/cart" style={{ color: "inherit" }}>
