@@ -73,7 +73,7 @@ function ShoppingCartToolTipContent(props) {
   const customer = useSelector(state => state.customer.loggedInCustomer);
   return (
     <React.Fragment>
-      {customer && (
+      {customer && customer.onlineShoppingCart.shoppingCartItems.length > 0 ? (
         <GridContainer style={{ width: "105%" }}>
           <GridItem xs={12} style={{ maxHeight: "70vh", overflowY: "scroll" }}>
             {customer.onlineShoppingCart.shoppingCartItems.map(lineItem => (
@@ -97,6 +97,11 @@ function ShoppingCartToolTipContent(props) {
             </h6>
           </GridItem>
         </GridContainer>
+      ) : (
+        <h5 style={{ color: "black", textAlign: "center" }}>
+          Your shopping cart is empty. <br />
+          Add items to get started!
+        </h5>
       )}
     </React.Fragment>
   );
