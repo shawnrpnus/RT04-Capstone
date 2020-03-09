@@ -33,7 +33,7 @@ const MyAutoComplete = props => {
   const { hits, currentRefinement, refine } = props;
   return (
     <Autocomplete
-      style={{ width: "400px" }}
+      style={{ width: "100%" }}
       options={hits}
       // getOptionLabel={option => option.product.productName}
       renderOption={option => {

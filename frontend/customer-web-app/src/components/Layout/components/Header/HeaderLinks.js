@@ -94,35 +94,43 @@ export default function HeaderLinks(props) {
   const classes = useStyles();
   return (
     <React.Fragment>
-      <List className={classes.list + " " + classes.mrAuto}>
+      {/*<List className={classes.list + " " + classes.mrAuto}>*/}
+      {/*  {rootCategories &&*/}
+      {/*    rootCategories.map(rc => (*/}
+      {/*      <ListItem key={rc.categoryId} className={classes.listItem}>*/}
+      {/*        <CategoryNavbar category={rc} />*/}
+      {/*      </ListItem>*/}
+      {/*    ))}*/}
+
+      {/*  /!*<ListItem className={classes.listItem}>*!/*/}
+      {/*  /!*  <CustomDropdown*!/*/}
+      {/*  /!*    noLiPadding*!/*/}
+      {/*  /!*    navDropdown*!/*/}
+      {/*  /!*    hoverColor={dropdownHoverColor}*!/*/}
+      {/*  /!*    buttonText="Lookbook"*!/*/}
+      {/*  /!*    buttonProps={{*!/*/}
+      {/*  /!*      className: classes.navLink,*!/*/}
+      {/*  /!*      color: "transparent"*!/*/}
+      {/*  /!*    }}*!/*/}
+      {/*  /!*    buttonIcon={ViewCarousel}*!/*/}
+      {/*  /!*    dropdownList={[]}*!/*/}
+      {/*  /!*  />*!/*/}
+      {/*  /!*</ListItem>*!/*/}
+      {/*</List>*/}
+      <List className={classes.list} style={{ width: "100%" }}>
         {rootCategories &&
           rootCategories.map(rc => (
             <ListItem key={rc.categoryId} className={classes.listItem}>
               <CategoryNavbar category={rc} />
             </ListItem>
           ))}
-        {/*<ListItem className={classes.listItem}>*/}
-        {/*  <CustomDropdown*/}
-        {/*    noLiPadding*/}
-        {/*    navDropdown*/}
-        {/*    hoverColor={dropdownHoverColor}*/}
-        {/*    buttonText="Lookbook"*/}
-        {/*    buttonProps={{*/}
-        {/*      className: classes.navLink,*/}
-        {/*      color: "transparent"*/}
-        {/*    }}*/}
-        {/*    buttonIcon={ViewCarousel}*/}
-        {/*    dropdownList={[]}*/}
-        {/*  />*/}
-        {/*</ListItem>*/}
-      </List>
-      <List className={classes.list + " " + classes.mlAuto}>
-        <ListItem>
+        <ListItem style={{ paddingLeft: "100px" }}>
           <AgAutocomplete />
           {/*<IconButton color="white" justIcon round>*/}
           {/*  <Search className={classes.searchIcon} />*/}
           {/*</IconButton>*/}
         </ListItem>
+
         <ListItem className={classes.listItem}>
           <AccountNavbar />
         </ListItem>
@@ -136,7 +144,6 @@ export default function HeaderLinks(props) {
             </Button>
           </Link>
         </ListItem>
-
         <ListItem className={classes.listItem}>
           <Link
             key="login"
@@ -148,7 +155,7 @@ export default function HeaderLinks(props) {
             </Button>
           </Link>
         </ListItem>
-        <ListItem className={classes.listItem}>
+        <ListItem className={classes.listItem} style={{ float: "right" }}>
           <Link to="/account/reservation/cart" style={{ color: "inherit" }}>
             <Button className={classes.navLink} round color="transparent">
               Reservation

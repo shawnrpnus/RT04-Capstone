@@ -24,6 +24,8 @@ export default function CustomDropdown(props) {
   const [anchorEl, setAnchorEl] = React.useState(null);
 
   const handleClick = event => {
+    console.log(event);
+    console.log(anchorEl);
     if (anchorEl && anchorEl.contains(event.target)) {
       setAnchorEl(null);
     } else {
@@ -106,7 +108,7 @@ export default function CustomDropdown(props) {
         return (
           <MenuItem
             key={key}
-            onClick={() => handleCloseMenu(prop)}
+            // onClick={() => handleCloseMenu(prop)}
             className={dropdownItem}
           >
             {prop}

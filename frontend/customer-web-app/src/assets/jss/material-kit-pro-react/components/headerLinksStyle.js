@@ -6,6 +6,7 @@ import {
 } from "assets/jss/material-kit-pro-react.js";
 
 import tooltip from "assets/jss/material-kit-pro-react/tooltipsStyle.js";
+import { mrAuto } from "assets/jss/material-kit-pro-react";
 
 const headerLinksStyle = theme => ({
   list: {
@@ -206,7 +207,8 @@ const headerLinksStyle = theme => ({
     fontSize: theme.typography.pxToRem(12),
     border: "1px solid #dadde9"
   },
-  mlAuto
+  mlAuto,
+  mrAuto
 });
 
 export default headerLinksStyle;

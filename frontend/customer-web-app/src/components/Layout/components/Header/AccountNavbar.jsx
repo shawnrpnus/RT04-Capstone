@@ -92,6 +92,8 @@ function AccountToolTipContent(props) {
 // Renders dropdown menu when the drawer in responsive mode (smDown)
 function RenderAccountDropdownDrawer(props) {
   const { dropdownHoverColor, classes } = props;
+  const links = renderAccDropdownLinks(classes);
+  console.log(links);
   return (
     <CustomDropdown
       noLiPadding
@@ -103,7 +105,7 @@ function RenderAccountDropdownDrawer(props) {
         color: "transparent"
       }}
       buttonIcon={AccountCircle}
-      dropdownList={renderAccDropdownLinks(classes)}
+      dropdownList={links}
     />
   );
 }

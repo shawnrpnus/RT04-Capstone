@@ -13,7 +13,7 @@ import styles from "assets/jss/material-kit-pro-react/views/ecommerceSections/pr
 import { useDispatch, useSelector } from "react-redux";
 import ProductCard from "components/Shop/ProductCard";
 import { retrieveProductsDetails } from "redux/actions/productActions";
-import { useParams } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 import Parallax from "components/UI/Parallax/Parallax";
 import fashionImg from "assets/img/examples/clark-street-merc.jpg";
 import Fab from "@material-ui/core/Fab";
@@ -34,6 +34,7 @@ export default function ProductPage(props) {
   //Hooks
   const classes = useStyles();
   const { rootCategoryName, subCategoryName, leafCategoryName } = useParams();
+  const history = useHistory();
 
   //Redux
   const dispatch = useDispatch();
@@ -81,7 +82,17 @@ export default function ProductPage(props) {
   ) => {
     if (rootCategoryName && subCategoryName) {
       const rc = _.find(rootCategories, { categoryName: rootCategoryName });
-      const sc = _.find(rc.childCategories, { categoryName: subCategoryName });
+      if (!rc) {
+        history.push("/");
+        return;
+      }
+      const sc = _.find(rc.childCategories, {
+        categoryName: subCategoryName
+      });
+      if (!sc) {
+        history.push("/");
+        return;
+      }
       if (leafCategoryName) {
         return _.find(sc.childCategories, {
           categoryName: leafCategoryName
