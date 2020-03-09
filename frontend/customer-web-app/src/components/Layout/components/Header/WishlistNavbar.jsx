@@ -31,7 +31,7 @@ function WishlistNavbar(props) {
       <Hidden mdUp className={classes.hidden}>
         <Link to="/account/wishlist" style={{ color: "inherit" }}>
           <Button className={classes.navLink} round color="transparent">
-            Wishlist
+            <Favorite /> Wishlist
           </Button>
         </Link>
       </Hidden>
@@ -57,9 +57,6 @@ function WishlistToolTip(props) {
         <Link to="/account/wishlist" style={{ color: "inherit" }}>
           <Button className={classes.navLink} round color="transparent">
             <Favorite />
-            <Hidden mdUp implementation="css" className={classes.hidden}>
-              <div className={classes.collapse}>Wishlist</div>
-            </Hidden>
           </Button>
         </Link>
       </HtmlTooltip>

@@ -13,7 +13,7 @@ import GridItem from "components/Layout/components/Grid/GridItem";
 import { useSelector } from "react-redux";
 import ShoppingCart from "@material-ui/icons/ShoppingCart";
 import Divider from "@material-ui/core/Divider";
-import { Favorite } from "@material-ui/icons";
+import { Event, Favorite } from "@material-ui/icons";
 import ListItem from "@material-ui/core/ListItem";
 
 const _ = require("lodash");
@@ -31,7 +31,7 @@ function ReservationNavbar(props) {
       <Hidden mdUp className={classes.hidden}>
         <Link to="/account/reservation/cart" style={{ color: "inherit" }}>
           <Button className={classes.navLink} round color="transparent">
-            Reservation
+            <Event className={classes.icons} /> Reservation
           </Button>
         </Link>
       </Hidden>
@@ -58,7 +58,7 @@ function ReservationToolTip(props) {
       >
         <Link to="/account/reservation/cart" style={{ color: "inherit" }}>
           <Button className={classes.navLink} round color="transparent">
-            Reservation
+            <Event className={classes.icons} /> Reservation
           </Button>
         </Link>
       </HtmlTooltip>

@@ -29,7 +29,7 @@ function ShoppingCartNavbar(props) {
       <Hidden mdUp className={classes.hidden}>
         <Link to="/account/shoppingCart" style={{ color: "inherit" }}>
           <Button className={classes.navLink} round color="transparent">
-            Shopping Cart
+            <ShoppingCart className={classes.icons} /> Cart
           </Button>
         </Link>
       </Hidden>
