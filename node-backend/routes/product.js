@@ -97,7 +97,8 @@ router.post(
                   })
                   .catch(err => {
                     console.log(err.response.data);
-                    res.status(400).send(JSON.stringify(err.response.data));
+                    return res.status(400).send(JSON.stringify(err.response.data));
+                    // res.status(400).send(JSON.stringify(err.response.data));
                   });
               })
             )
