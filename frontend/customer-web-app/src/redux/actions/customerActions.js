@@ -9,7 +9,11 @@ import {
   UPDATE_SHIPPING_ADDRESS_SUCCESS,
   VERIFY_FAILURE,
   VERIFY_SUCCESS,
-  SAVE_CARD_SUCCESS
+  SAVE_CARD_SUCCESS,
+  CART_TOOLTIP_OPEN,
+  CART_TOOLTIP_CLOSE,
+  WISHLIST_TOOLTIP_OPEN,
+  WISHLIST_TOOLTIP_CLOSE
 } from "./types";
 import { UPDATE_CUSTOMER } from "redux/actions/types";
 import { dispatchErrorMapError } from "redux/actions/index";
@@ -590,6 +594,14 @@ export const moveWishlistToShoppingCartAPI = (customerId, enqueueSnackbar) => {
         console.log(err);
       });
   };
+};
+
+export const openWishlistTooltip = {
+  type: WISHLIST_TOOLTIP_OPEN
+};
+
+export const closeWishlistTooltip = {
+  type: WISHLIST_TOOLTIP_CLOSE
 };
 
 export const addToReservationCartAPI = (

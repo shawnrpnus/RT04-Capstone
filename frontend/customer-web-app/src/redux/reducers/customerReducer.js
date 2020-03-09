@@ -5,7 +5,8 @@ const initialState = {
   isSendingEmail: false,
   verificationStatus: null,
   clientSecret: null,
-  shoppingCartTooltipOpen: false
+  shoppingCartTooltipOpen: false,
+  wishlistTooltipOpen: false
 };
 
 export default function(state = initialState, action) {
@@ -83,6 +84,16 @@ export default function(state = initialState, action) {
       return {
         ...state,
         shoppingCartTooltipOpen: false
+      };
+    case types.WISHLIST_TOOLTIP_OPEN:
+      return {
+        ...state,
+        wishlistTooltipOpen: true
+      };
+    case types.WISHLIST_TOOLTIP_CLOSE:
+      return {
+        ...state,
+        wishlistTooltipOpen: false
       };
     default:
       return state;

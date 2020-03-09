@@ -34,6 +34,7 @@ import { retrieveAllRootCategories } from "redux/actions/categoryActions";
 import AgAutocomplete from "components/Algolia/AgAutocomplete";
 import IconButton from "@material-ui/core/IconButton";
 import { ShoppingCartNavbar } from "components/Layout/components/Header/ShoppingCartNavbar";
+import { WishlistNavbar } from "components/Layout/components/Header/WishlistNavbar";
 
 const useStyles = makeStyles(styles);
 
@@ -136,14 +137,7 @@ export default function HeaderLinks(props) {
           <AccountNavbar />
         </ListItem>
         <ListItem className={classes.listItem}>
-          <Link to="/account/wishlist" style={{ color: "inherit" }}>
-            <Button className={classes.navLink} round color="transparent">
-              <Favorite />
-              <Hidden mdUp implementation="css" className={classes.hidden}>
-                <div className={classes.collapse}>Wishlist</div>
-              </Hidden>
-            </Button>
-          </Link>
+          <WishlistNavbar />
         </ListItem>
         <ListItem className={classes.listItem}>
           <ShoppingCartNavbar />

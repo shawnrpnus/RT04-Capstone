@@ -22,7 +22,9 @@ import IconButton from "@material-ui/core/IconButton";
 import { isProductVariantInList } from "services/customerService";
 import {
   addToReservationCartAPI,
-  addToWishlistAPI
+  addToWishlistAPI,
+  closeWishlistTooltip,
+  openWishlistTooltip
 } from "redux/actions/customerActions";
 
 const _ = require("lodash");
@@ -138,6 +140,8 @@ function ProductDetailsCard(props) {
     }
     const customerId = customer.customerId;
     dispatch(addToWishlistAPI(customerId, productVariantId, enqueueSnackbar));
+    dispatch(openWishlistTooltip);
+    setTimeout(() => dispatch(closeWishlistTooltip), 1500);
   };
 
   const getCurrentProductVariantId = () => {
