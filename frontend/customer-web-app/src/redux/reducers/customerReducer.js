@@ -6,7 +6,8 @@ const initialState = {
   verificationStatus: null,
   clientSecret: null,
   shoppingCartTooltipOpen: false,
-  wishlistTooltipOpen: false
+  wishlistTooltipOpen: false,
+  reservationTooltipOpen: false
 };
 
 export default function(state = initialState, action) {
@@ -94,6 +95,16 @@ export default function(state = initialState, action) {
       return {
         ...state,
         wishlistTooltipOpen: false
+      };
+    case types.RESERVATION_TOOLTIP_OPEN:
+      return {
+        ...state,
+        reservationTooltipOpen: true
+      };
+    case types.RESERVATION_TOOLTIP_CLOSE:
+      return {
+        ...state,
+        reservationTooltipOpen: false
       };
     default:
       return state;

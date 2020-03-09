@@ -26,6 +26,10 @@ import {
   closeWishlistTooltip,
   openWishlistTooltip
 } from "redux/actions/customerActions";
+import {
+  closeReservationTooltip,
+  openReservationTooltip
+} from "redux/actions/reservationActions";
 
 const _ = require("lodash");
 const useStyles = makeStyles(productStyle);
@@ -172,6 +176,8 @@ function ProductDetailsCard(props) {
     dispatch(
       addToReservationCartAPI(customerId, productVariantId, enqueueSnackbar)
     );
+    dispatch(openReservationTooltip);
+    setTimeout(() => dispatch(closeReservationTooltip), 1500);
   };
 
   const selectedStock = _.get(

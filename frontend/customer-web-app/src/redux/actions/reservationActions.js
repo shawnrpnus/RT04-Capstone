@@ -10,6 +10,10 @@ import { UPDATE_PAST_RESERVATIONS } from "./types";
 import { SET_UPDATING_RESERVATION } from "./types";
 import { SET_UPDATED_PRODUCT_VARIANTS } from "./types";
 import { CLEAR_UPDATING_RESERVATION } from "redux/actions/types";
+import { WISHLIST_TOOLTIP_OPEN } from "./types";
+import { WISHLIST_TOOLTIP_CLOSE } from "./types";
+import { RESERVATION_TOOLTIP_OPEN } from "./types";
+import { RESERVATION_TOOLTIP_CLOSE } from "./types";
 
 const RESERVATION_BASE_URL = "/api/reservation";
 
@@ -295,3 +299,11 @@ const setUpdatingReservation = data => ({
 export const clearUpdatingReservation = () => ({
   type: CLEAR_UPDATING_RESERVATION
 });
+
+export const openReservationTooltip = {
+  type: RESERVATION_TOOLTIP_OPEN
+};
+
+export const closeReservationTooltip = {
+  type: RESERVATION_TOOLTIP_CLOSE
+};

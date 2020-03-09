@@ -35,6 +35,7 @@ import AgAutocomplete from "components/Algolia/AgAutocomplete";
 import IconButton from "@material-ui/core/IconButton";
 import { ShoppingCartNavbar } from "components/Layout/components/Header/ShoppingCartNavbar";
 import { WishlistNavbar } from "components/Layout/components/Header/WishlistNavbar";
+import { ReservationNavbar } from "components/Layout/components/Header/ReservationNavbar";
 
 const useStyles = makeStyles(styles);
 
@@ -143,11 +144,7 @@ export default function HeaderLinks(props) {
           <ShoppingCartNavbar />
         </ListItem>
         <ListItem className={classes.listItem} style={{ float: "right" }}>
-          <Link to="/account/reservation/cart" style={{ color: "inherit" }}>
-            <Button className={classes.navLink} round color="transparent">
-              Reservation
-            </Button>
-          </Link>
+          <ReservationNavbar />
         </ListItem>
       </List>
     </React.Fragment>
