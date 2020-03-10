@@ -5,6 +5,9 @@ import signupPageStyle from "assets/jss/material-kit-pro-react/views/signupPageS
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "components/UI/CustomButtons/Button";
 import { useSnackbar } from "notistack";
+import ClickAwayListener from "@material-ui/core/ClickAwayListener";
+import Paper from "@material-ui/core/Paper";
+import Popper from "@material-ui/core/Popper";
 import {
   addStylePreferences,
   deleteStylePreferences,
@@ -75,6 +78,8 @@ function Style(props) {
     style: ""
   });
 
+  const [popoverOpen, setPopoverOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
   const [hasAddStyle, setAddedStyle] = useState(false);
   const [updateMode, setUpdateMode] = useState(false);
   const [button0NotClicked, setButton0NotClicked] = useState(true);
@@ -185,7 +190,7 @@ function Style(props) {
   const cancelUpdateStylePreferences = () => {
     setAddedStyle(true);
     setUpdateMode(false);
-    console.log(customer); 
+    console.log(customer);
     const chosenAns0 = customer.style.gender;
     const chosenAns1 =
       questionBank[1].answers[customer.style.stylePreference.split(",")[0]];
@@ -251,6 +256,11 @@ function Style(props) {
     }
   };
 
+  const clearConfirmation = e => {
+    setAnchorEl(e.currentTarget);
+    setPopoverOpen(true);
+  };
+
   const handleDeleteStylePreferences = () => {
     setUpdateMode(false);
     const customerId = customer.customerId;
@@ -266,6 +276,7 @@ function Style(props) {
       answer2: questionBank[2].answers,
       answer3: questionBank[3].answers
     }));
+    setPopoverOpen(false);
   };
 
   return (
@@ -294,11 +305,7 @@ function Style(props) {
               <Button round color="primary" onClick={updateStyle}>
                 Redo Style Quiz
               </Button>
-              <Button
-                round
-                color="primary"
-                onClick={handleDeleteStylePreferences}
-              >
+              <Button round color="primary" onClick={clearConfirmation}>
                 Delete Style Preferences
               </Button>
             </div>
@@ -395,6 +402,22 @@ function Style(props) {
           </form>
         </div>
       )}
+      <Popper
+        open={popoverOpen}
+        anchorEl={anchorEl}
+        style={{ zIndex: "2000" }}
+        placement="bottom"
+      >
+        <ClickAwayListener onClickAway={() => setPopoverOpen(false)}>
+          <Paper style={{ padding: "5px" }}>
+            <h5 style={{ textAlign: "center", marginBottom: "0" }}>Clear?</h5>
+            <Button color="danger" onClick={handleDeleteStylePreferences}>
+              Yes
+            </Button>
+            <Button onClick={() => setPopoverOpen(false)}>No</Button>
+          </Paper>
+        </ClickAwayListener>
+      </Popper>
     </div>
   );
 }
