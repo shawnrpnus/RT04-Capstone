@@ -25,7 +25,9 @@ function Recommendations(props) {
     if (customer) {
       const style = {
         styleId: customer.style.styleId,
-        styleName: customer.style.styleName
+        styleName: customer.style.styleName,
+        stylePreference: customer.style.stylePreference,
+        gender: customer.style.gender
       };
       const req = new FilterProductRequest(
         null,

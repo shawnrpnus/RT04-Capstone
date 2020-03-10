@@ -46,9 +46,14 @@ public class Style implements Serializable {
     @OneToMany(mappedBy = "style")
     private List<Customer> customers;
 
+    private String stylePreference;
+    private String gender;
+
     public Style() {
         this.products = new ArrayList<>();
         this.customers = new ArrayList<>();
+        this.stylePreference = "";
+        this.gender = "";
     }
 
     public Style(String name) {
