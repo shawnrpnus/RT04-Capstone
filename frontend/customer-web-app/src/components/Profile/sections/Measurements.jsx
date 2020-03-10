@@ -9,7 +9,9 @@ import { makeStyles } from "@material-ui/core/styles";
 import Button from "components/UI/CustomButtons/Button";
 import UpdateMeasurementsRequest from "models/customer/UpdateMeasurementsRequest";
 import { useSnackbar } from "notistack";
-import GridItem from "components/Layout/components/Grid/GridItem";
+import ClickAwayListener from "@material-ui/core/ClickAwayListener";
+import Paper from "@material-ui/core/Paper";
+import Popper from "@material-ui/core/Popper";
 import {
   addMeasurements,
   updateMeasurements,
@@ -38,6 +40,8 @@ function Measurements(props) {
     height: ""
   });
 
+  const [popoverOpen, setPopoverOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
   const [hasAddMeasurements, setAddedMeasurements] = useState(true);
 
   //check if customer has added measurements
@@ -108,6 +112,12 @@ function Measurements(props) {
       hip: "",
       height: ""
     }));
+    setPopoverOpen(false);
+  };
+
+  const clearConfirmation = e => {
+    setAnchorEl(e.currentTarget);
+    setPopoverOpen(true);
   };
 
   //Misc
@@ -229,12 +239,8 @@ function Measurements(props) {
                   Update Measurements
                 </Button>
 
-                <Button
-                  onClick={handleDeleteMeasurements}
-                  round
-                  color="primary"
-                >
-                  Reset Measurements
+                <Button onClick={clearConfirmation} round color="primary">
+                  Delete Measurements
                 </Button>
               </React.Fragment>
             ) : (
@@ -245,6 +251,24 @@ function Measurements(props) {
               </React.Fragment>
             )}
           </div>
+          <Popper
+            open={popoverOpen}
+            anchorEl={anchorEl}
+            style={{ zIndex: "2000" }}
+            placement="bottom"
+          >
+            <ClickAwayListener onClickAway={() => setPopoverOpen(false)}>
+              <Paper style={{ padding: "5px" }}>
+                <h5 style={{ textAlign: "center", marginBottom: "0" }}>
+                  Delete?
+                </h5>
+                <Button color="danger" onClick={handleDeleteMeasurements}>
+                  Yes
+                </Button>
+                <Button onClick={() => setPopoverOpen(false)}>No</Button>
+              </Paper>
+            </ClickAwayListener>
+          </Popper>
         </form>
       </div>
     </div>

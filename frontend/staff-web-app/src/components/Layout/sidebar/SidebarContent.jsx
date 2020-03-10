@@ -123,15 +123,13 @@ class SidebarContent extends Component {
               />
             </SidebarCategory>
           )}
-          {/* {(salesmarketing || warehouse) && (
-            <SidebarCategory title="Warehouse" icon="apartment">
-              <SidebarLink
-                title="View Warehouse"
-                route="/warehouse/viewWarehouse"
-                onClick={this.hideSidebar}
-              />
-            </SidebarCategory>
-          )} */}
+          <SidebarCategory title="Feedback" icon="feedback">
+            <SidebarLink
+              title="View Feedback"
+              route="/feedback/viewAll"
+              onClick={this.hideSidebar}
+            />
+          </SidebarCategory>
         </ul>
       </div>
     );

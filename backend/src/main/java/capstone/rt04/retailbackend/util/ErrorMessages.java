@@ -60,4 +60,7 @@ public class ErrorMessages {
     public static final String CREATE_NEW_PRODUCT_FAILED = "Failed in creating new product!";
 
     public static final String SKU_TAKEN = "The product SKU is already exists!";
+
+    public static final String STATUS_REQUIRED = "Status is required!";
+
 }

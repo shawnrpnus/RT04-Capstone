@@ -7,6 +7,8 @@ import productReducer from "./productReducer";
 import productStockReducer from "./productStockReducer";
 import categoryReducer from "./categoryReducer";
 import staffReducer from "./staffReducer";
+import feedbackReducer from "./feedbackReducer";
+import utilReducer from "./utilReducer";
 
 const rootReducer = combineReducers({
   errors: errorReducer,
@@ -16,7 +18,9 @@ const rootReducer = combineReducers({
   product: productReducer,
   category: categoryReducer,
   staffEntity: staffReducer,
-  productStock: productStockReducer
+  productStock: productStockReducer,
+  feedback: feedbackReducer,
+  util: utilReducer
 });
 
 export default rootReducer;
