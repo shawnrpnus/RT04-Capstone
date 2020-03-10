@@ -92,7 +92,7 @@ export default function CreditCardCard({ setIsLoading }) {
                 <ClickAwayListener onClickAway={() => setPopoverOpen(false)}>
                   <Paper style={{ padding: "5px" }}>
                     <h5 style={{ textAlign: "center", marginBottom: "0" }}>
-                      Clear?
+                      Delete?
                     </h5>
                     <Button
                       color="danger"

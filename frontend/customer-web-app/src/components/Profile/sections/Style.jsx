@@ -410,7 +410,7 @@ function Style(props) {
       >
         <ClickAwayListener onClickAway={() => setPopoverOpen(false)}>
           <Paper style={{ padding: "5px" }}>
-            <h5 style={{ textAlign: "center", marginBottom: "0" }}>Clear?</h5>
+            <h5 style={{ textAlign: "center", marginBottom: "0" }}>Delete?</h5>
             <Button color="danger" onClick={handleDeleteStylePreferences}>
               Yes
             </Button>

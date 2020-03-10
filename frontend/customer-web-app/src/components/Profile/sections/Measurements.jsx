@@ -240,7 +240,7 @@ function Measurements(props) {
                 </Button>
 
                 <Button onClick={clearConfirmation} round color="primary">
-                  Reset Measurements
+                  Delete Measurements
                 </Button>
               </React.Fragment>
             ) : (
@@ -260,7 +260,7 @@ function Measurements(props) {
             <ClickAwayListener onClickAway={() => setPopoverOpen(false)}>
               <Paper style={{ padding: "5px" }}>
                 <h5 style={{ textAlign: "center", marginBottom: "0" }}>
-                  Clear?
+                  Delete?
                 </h5>
                 <Button color="danger" onClick={handleDeleteMeasurements}>
                   Yes
