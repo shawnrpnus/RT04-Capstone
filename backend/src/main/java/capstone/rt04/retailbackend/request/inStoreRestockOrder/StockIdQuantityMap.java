@@ -1,4 +1,4 @@
-package capstone.rt04.retailbackend.request.contactUs;
+package capstone.rt04.retailbackend.request.inStoreRestockOrder;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,9 +9,9 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ReplyToEmailRequest {
+public class StockIdQuantityMap {
 
-    private Long contactUsId;
+    private Long productStockId;
 
-    private String reply;
+    private Integer orderQuantity;
 }

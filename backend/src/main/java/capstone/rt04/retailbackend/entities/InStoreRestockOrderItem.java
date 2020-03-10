@@ -35,15 +35,14 @@ public class InStoreRestockOrderItem implements Serializable {
 
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
-    private ProductVariant productVariant;
+    private ProductStock productStock;
 
     public InStoreRestockOrderItem() {
     }
 
-
-    public InStoreRestockOrderItem(Integer quantity, ProductVariant productVariant) {
+    public InStoreRestockOrderItem(Integer quantity, ProductStock productStock) {
         this.quantity = quantity;
-        this.productVariant = productVariant;
+        this.productStock = productStock;
     }
 
 }
