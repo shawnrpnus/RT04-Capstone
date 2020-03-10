@@ -16,6 +16,11 @@ const _ = require("lodash");
 //Quiz Questions
 const questionBank = [
   {
+    id: 0,
+    question: "What is your gender",
+    answers: ["Male", "Female"]
+  },
+  {
     id: 1,
     question: "Which clothing color scheme do you love",
     answers: [
@@ -56,12 +61,14 @@ function Style(props) {
 
   //State
   const [inputState, setInputState] = useState({
-    question1: questionBank[0].question,
-    question2: questionBank[1].question,
-    question3: questionBank[2].question,
-    answer1: questionBank[0].answers,
-    answer2: questionBank[1].answers,
-    answer3: questionBank[2].answers,
+    question0: questionBank[0].question,
+    question1: questionBank[1].question,
+    question2: questionBank[2].question,
+    question3: questionBank[3].question,
+    answer0: questionBank[0].answers,
+    answer1: questionBank[1].answers,
+    answer2: questionBank[2].answers,
+    answer3: questionBank[3].answers,
     answers: [],
     error: "",
     test: [],
@@ -70,6 +77,7 @@ function Style(props) {
 
   const [hasAddStyle, setAddedStyle] = useState(false);
   const [updateMode, setUpdateMode] = useState(false);
+  const [button0NotClicked, setButton0NotClicked] = useState(true);
   const [button1NotClicked, setButton1NotClicked] = useState(true);
   const [button2NotClicked, setButton2NotClicked] = useState(true);
   const [button3NotClicked, setButton3NotClicked] = useState(true);
@@ -81,12 +89,19 @@ function Style(props) {
         setInputState(inputState => ({
           ...inputState,
           style: customer.style.styleName,
+          answer0: customer.style.gender,
           answer1:
-            questionBank[0].answers[customer.stylePreference.split(",")[0]],
+            questionBank[1].answers[
+              customer.style.stylePreference.split(",")[0]
+            ],
           answer2:
-            questionBank[1].answers[customer.stylePreference.split(",")[1]],
+            questionBank[2].answers[
+              customer.style.stylePreference.split(",")[1]
+            ],
           answer3:
-            questionBank[2].answers[customer.stylePreference.split(",")[2]]
+            questionBank[3].answers[
+              customer.style.stylePreference.split(",")[2]
+            ]
         }));
       }
       console.log(customer);
@@ -95,9 +110,16 @@ function Style(props) {
         style: customer.style.styleName
       }));
       setAddedStyle(true);
-      console.log(inputState);
     }
   }, [customer]);
+
+  const handleSelectAnswer0 = (text, index) => {
+    setButton0NotClicked(false);
+    setInputState(inputState => ({
+      ...inputState,
+      answer0: [text]
+    }));
+  };
 
   const handleSelectAnswer1 = (text, index) => {
     setButton1NotClicked(false);
@@ -135,9 +157,12 @@ function Style(props) {
     } else {
       const customerId = customer.customerId;
       const stylePreference = inputState.answers.toString();
-      const req = { customerId, stylePreference };
+      const gender = inputState.answer0.toString();
+      console.log(gender);
+      const req = { customerId, stylePreference, gender };
       dispatch(addStylePreferences(req, enqueueSnackbar, setAddedStyle));
       setAddedStyle(true);
+      setButton0NotClicked(true);
       setButton1NotClicked(true);
       setButton2NotClicked(true);
       setButton3NotClicked(true);
@@ -148,9 +173,10 @@ function Style(props) {
     setInputState(inputState => ({
       ...inputState,
       answers: [],
-      answer1: questionBank[0].answers,
-      answer2: questionBank[1].answers,
-      answer3: questionBank[2].answers
+      answer0: questionBank[0].answers,
+      answer1: questionBank[1].answers,
+      answer2: questionBank[2].answers,
+      answer3: questionBank[3].answers
     }));
     setAddedStyle(false);
     setUpdateMode(true);
@@ -159,15 +185,17 @@ function Style(props) {
   const cancelUpdateStylePreferences = () => {
     setAddedStyle(true);
     setUpdateMode(false);
-    console.log(customer);
+    console.log(customer); 
+    const chosenAns0 = customer.style.gender;
     const chosenAns1 =
-      questionBank[0].answers[customer.stylePreference.split(",")[0]];
+      questionBank[1].answers[customer.style.stylePreference.split(",")[0]];
     const chosenAns2 =
-      questionBank[1].answers[customer.stylePreference.split(",")[1]];
+      questionBank[2].answers[customer.style.stylePreference.split(",")[1]];
     const chosenAns3 =
-      questionBank[2].answers[customer.stylePreference.split(",")[2]];
+      questionBank[3].answers[customer.style.stylePreference.split(",")[2]];
     setInputState(inputState => ({
       ...inputState,
+      answer0: [chosenAns0],
       answer1: [chosenAns1],
       answer2: [chosenAns2],
       answer3: [chosenAns3]
@@ -179,10 +207,12 @@ function Style(props) {
     setInputState(inputState => ({
       ...inputState,
       answers: [],
-      answer1: questionBank[0].answers,
-      answer2: questionBank[1].answers,
-      answer3: questionBank[2].answers
+      answer0: questionBank[0].answers,
+      answer1: questionBank[1].answers,
+      answer2: questionBank[2].answers,
+      answer3: questionBank[3].answers
     }));
+    setButton0NotClicked(true);
     setButton1NotClicked(true);
     setButton2NotClicked(true);
     setButton3NotClicked(true);
@@ -190,12 +220,13 @@ function Style(props) {
 
   const handleUpdateStylePreferences = () => {
     if (
+      inputState.answer0.toString() == customer.style.gender &&
       inputState.answer1.toString() ==
-        questionBank[0].answers[customer.stylePreference.split(",")[0]] &&
+        questionBank[1].answers[customer.style.stylePreference.split(",")[0]] &&
       inputState.answer2.toString() ==
-        questionBank[1].answers[customer.stylePreference.split(",")[1]] &&
+        questionBank[2].answers[customer.style.stylePreference.split(",")[1]] &&
       inputState.answer3.toString() ==
-        questionBank[2].answers[customer.stylePreference.split(",")[2]]
+        questionBank[3].answers[customer.style.stylePreference.split(",")[2]]
     ) {
       enqueueSnackbar("No changes in style preferences", {
         variant: "error",
@@ -209,9 +240,11 @@ function Style(props) {
     } else {
       const customerId = customer.customerId;
       const stylePreference = inputState.answers.toString();
-      const req = { customerId, stylePreference };
+      const gender = inputState.answer0.toString();
+      const req = { customerId, stylePreference, gender };
       dispatch(updateStylePreferences(req, enqueueSnackbar, setAddedStyle));
       setAddedStyle(true);
+      setButton0NotClicked(true);
       setButton1NotClicked(true);
       setButton2NotClicked(true);
       setButton3NotClicked(true);
@@ -228,9 +261,10 @@ function Style(props) {
       ...inputState,
       answers: [],
       style: "",
-      answer1: questionBank[0].answers,
-      answer2: questionBank[1].answers,
-      answer3: questionBank[2].answers
+      answer0: questionBank[0].answers,
+      answer1: questionBank[1].answers,
+      answer2: questionBank[2].answers,
+      answer3: questionBank[3].answers
     }));
   };
 
@@ -247,6 +281,8 @@ function Style(props) {
               </i>
             </h5>
             <div>
+              <h6>{inputState.question0}</h6>
+              <Button color="rose">{inputState.answer0}</Button>
               <h6>{inputState.question1}</h6>
               <Button color="rose">{inputState.answer1}</Button>
               <h6>{inputState.question2}</h6>
@@ -271,10 +307,21 @@ function Style(props) {
       ) : (
         <div>
           <form>
+            <h6>{inputState.question0}</h6>
+            {inputState.answer0.map((text, index) => (
+              <Button
+                key={index}
+                color="rose"
+                onClick={() => handleSelectAnswer0(text, index)}
+              >
+                {text}
+              </Button>
+            ))}
             <h6>{inputState.question1}</h6>
             {inputState.answer1.map((text, index) => (
               <Button
                 key={index}
+                disabled={button0NotClicked}
                 color="rose"
                 onClick={() => handleSelectAnswer1(text, index)}
               >
@@ -309,6 +356,7 @@ function Style(props) {
                   <Button
                     onClick={handleUpdateStylePreferences}
                     round
+                    disabled={button0NotClicked}
                     color="primary"
                   >
                     Update Style Preferences
@@ -327,6 +375,7 @@ function Style(props) {
                   <Button
                     onClick={handleSubmitStylePreferences}
                     round
+                    disabled={button0NotClicked}
                     color="primary"
                   >
                     Find Out Your Style
@@ -334,7 +383,7 @@ function Style(props) {
 
                   <Button
                     onClick={cancelSubmitStylePreferences}
-                    disabled={button1NotClicked}
+                    disabled={button0NotClicked}
                     round
                     color="primary"
                   >

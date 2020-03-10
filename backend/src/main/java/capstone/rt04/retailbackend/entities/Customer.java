@@ -116,7 +116,6 @@ public class Customer implements Serializable {
 
     private String creditCardCustomerId;
 
-    private String stylePreference;
 
     public Customer() {
         this.createdDateTime = new Timestamp(System.currentTimeMillis());
@@ -130,7 +129,6 @@ public class Customer implements Serializable {
         this.wishlistItems = new ArrayList<>();
         this.reservationCartItems = new ArrayList<>();
         this.reservations = new ArrayList<>();
-        this.stylePreference = "";
     }
 
 

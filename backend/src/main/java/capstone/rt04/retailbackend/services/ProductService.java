@@ -327,9 +327,18 @@ public class ProductService {
 
                 if(style != null){
                     Style styleToCheck = styleService.retrieveStyleByStyleId(style.getStyleId());
-                    if (productVariant.getProduct().getStyles().contains(styleToCheck)){
-                        matchStyle=true;
+                    String gender = style.getGender();
+                    if (gender.equals("Male")) {
+                        gender = "Men";
+                    } else {
+                        gender = "Women";
                     }
+                    if(productVariant.getProduct().getStyles().contains(styleToCheck)) {
+                        if (productVariant.getProduct().getCategory().getParentCategory().getParentCategory().getCategoryName().equals(gender)) {
+                            matchStyle=true;
+                        }
+                    }
+
                 } else {
                     matchStyle=true;
                 }
