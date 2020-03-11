@@ -1,4 +1,4 @@
-import { STAFF_LOGIN } from "src/redux/actions/types";
+import {STAFF_LOGIN, STAFF_LOGOUT} from "src/redux/actions/types";
 import { SPRING_BACKEND_URL } from "src/constants/routes";
 import axios from "axios";
 import {dispatchErrorMapError} from "src/redux/actions/index";
@@ -30,3 +30,7 @@ export const staffLogin = (req, setSnackbarOpen) => {
       });
   };
 };
+
+export const staffLogout = {
+  type: STAFF_LOGOUT
+}

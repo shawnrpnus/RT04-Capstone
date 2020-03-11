@@ -5,14 +5,14 @@ import store from "src/redux/store";
 import { GalioProvider } from "galio-framework";
 import theme from "src/constants/Theme";
 import Screens from "src/navigation/Screens";
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer } from "@react-navigation/native";
 
 export default function App() {
   return (
     <Provider store={store}>
       <GalioProvider theme={theme}>
         <NavigationContainer>
-        <Screens/>
+          <Screens />
         </NavigationContainer>
       </GalioProvider>
     </Provider>
