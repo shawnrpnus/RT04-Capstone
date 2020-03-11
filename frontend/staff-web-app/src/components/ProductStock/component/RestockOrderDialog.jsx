@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { useHistory } from "react-router-dom";
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogActions from "@material-ui/core/DialogActions";
@@ -57,6 +58,7 @@ const tableIcons = {
 
 const RestockOrderDialog = ({ elements, store, open, onClose }) => {
   const dispatch = useDispatch();
+  const history = useHistory();
   const [items, setItems] = useState([]);
 
   useEffect(() => {
@@ -92,7 +94,7 @@ const RestockOrderDialog = ({ elements, store, open, onClose }) => {
         new StockIdQuantityMap(productStockId, orderQuantity)
       );
     });
-    dispatch(createRestockOrder({ storeId, stockIdQuantityMaps }));
+    dispatch(createRestockOrder({ storeId, stockIdQuantityMaps }, history));
   };
   console.log(items);
 

@@ -30,7 +30,11 @@ import {
   Delete
 } from "@material-ui/icons";
 import { useConfirm } from "material-ui-confirm";
-import { updateRestockOrder } from "../../../redux/actions/restockOrderAction";
+import {
+  updateRestockOrder,
+  deleteRestockOrder,
+  fulFillRestockOrder
+} from "../../../redux/actions/restockOrderAction";
 import StockIdQuantityMap from "../../../models/restockOrder/StockIdQuantityMap";
 
 const _ = require("lodash");
@@ -54,44 +58,43 @@ const tableIcons = {
   ViewColumn: ViewColumn
 };
 
-const UpdateRestockOrderDialog = ({
-  elements,
-  restockOrderId,
-  store,
-  open,
-  onClose
-}) => {
+const UpdateRestockOrderDialog = ({ element, open, onClose, isWarehouse }) => {
   const dispatch = useDispatch();
   const confirmDialog = useConfirm();
   const [items, setItems] = useState([]);
+  const {
+    inStoreRestockOrderId: restockOrderId,
+    inStoreRestockOrderItems,
+    disableEdit,
+    disableDelete,
+    store,
+    deliveryStatus
+  } = element;
+  const { storeId, address } = store;
+  const { buildingName, line1, line2, postalCode } = address;
+  const disableInTransit = deliveryStatus !== "PROCESSING";
 
   useEffect(() => {
-    setItems(elements);
+    setItems(inStoreRestockOrderItems);
   }, []);
 
   let data = [];
   if (items) {
     data = items.map(e => {
       const { productStock, inStoreRestockOrderItemId, quantity } = e;
-      const {
-        notificationLevel,
-        quantity: qty,
-        productStockId,
-        productVariant
-      } = productStock;
-      const status = notificationLevel >= qty ? "LOW STOCK" : "NORMAL";
+      const { productStockId, productVariant } = productStock;
       return {
         productStockId: productStockId,
         productName: _.get(productVariant, "product.productName", ""),
         sku: _.get(productVariant, "sku", ""),
         quantity: quantity,
         image: _.get(productVariant, "productImages[0].productImageUrl", ""),
-        status: status,
         inStoreRestockOrderItemId: inStoreRestockOrderItemId
       };
     });
   }
 
+  // For store only
   const onChange = (e, index) => {
     const elements = [...items];
     const value = e.target.value.replace(/[^0-9]/g, "");
@@ -99,27 +102,48 @@ const UpdateRestockOrderDialog = ({
     setItems(elements);
   };
 
+  // For store only
   const handleRemoveRestockOrder = index => {
     let elements = [...items];
     elements.splice(index, 1);
     setItems(elements);
   };
 
+  // For store only
   const handleUpdateRestockOrder = () => {
     const stockIdQuantityMaps = [];
-    items.map(item => {
-      const { productStock, quantity: orderQuantity } = item;
-      const { productStockId } = productStock;
-      stockIdQuantityMaps.push(
-        new StockIdQuantityMap(productStockId, orderQuantity)
+    if (items.length === 0) {
+      confirmDialog({
+        description: "No item in restock order, delete restock order?"
+      })
+        .then(() => {
+          return dispatch(deleteRestockOrder(restockOrderId, onClose));
+        })
+        .catch(err => {});
+    } else {
+      items.map(item => {
+        const { productStock, quantity: orderQuantity } = item;
+        const { productStockId } = productStock;
+        stockIdQuantityMaps.push(
+          new StockIdQuantityMap(productStockId, orderQuantity)
+        );
+      });
+      dispatch(
+        updateRestockOrder({ restockOrderId, stockIdQuantityMaps }, storeId)
       );
-    });
-    dispatch(
-      updateRestockOrder({ restockOrderId, stockIdQuantityMaps }, onClose)
-    );
+    }
   };
 
-  const { buildingName, line1, line2, postalCode } = store.address;
+  // For warehouse only
+  const handleFulFillRestockOrder = () => {
+    confirmDialog({
+      description: `Confirm dispatch of stocks to ${buildingName}`
+    })
+      .then(() => {
+        dispatch(fulFillRestockOrder(restockOrderId, onClose, buildingName));
+      })
+      .catch(err => {});
+  };
 
   return (
     <Dialog onClose={onClose} open={open} fullWidth maxWidth={"md"}>
@@ -161,25 +185,11 @@ const UpdateRestockOrderDialog = ({
               )
             },
             {
-              title: "Stock status",
-              field: "status",
-              render: ({ status }) => {
-                const style =
-                  status === "NORMAL"
-                    ? { backgroundColor: "#33ba0a" }
-                    : { backgroundColor: "#feaa4b" };
-                return (
-                  <Chip
-                    style={{ ...style, color: "white", width: "100%" }}
-                    label={status}
-                  />
-                );
-              }
-            },
-            {
               title: "Order quantity",
               field: "quantity",
               render: ({ productStockId, quantity, tableData }) => {
+                if (isWarehouse || disableEdit || disableDelete)
+                  return quantity;
                 return (
                   <TextField
                     name="orderQuantity"
@@ -204,20 +214,23 @@ const UpdateRestockOrderDialog = ({
             actionsColumnIndex: -1
           }}
           actions={[
-            {
-              icon: Delete,
-              tooltip: "Delete",
-              onClick: (e, rowData) => {
-                const { tableData } = rowData;
-                confirmDialog({
-                  description: "Remove item from restock order"
-                })
-                  .then(() => {
-                    handleRemoveRestockOrder(_.get(tableData, "id", ""));
-                  })
-                  .catch(err => {});
-              }
-            }
+            isWarehouse || disableEdit || disableDelete
+              ? null
+              : {
+                  icon: Delete,
+                  tooltip: "Delete",
+                  onClick: (e, rowData) => {
+                    const { tableData } = rowData;
+                    confirmDialog({
+                      description: "Remove item from restock order"
+                    })
+                      .then(() => {
+                        handleRemoveRestockOrder(_.get(tableData, "id", ""));
+                      })
+                      .catch(err => {});
+                  },
+                  disabled: disableEdit || disableDelete
+                }
           ]}
         />
       </DialogContent>
@@ -225,9 +238,23 @@ const UpdateRestockOrderDialog = ({
         <Button autoFocus onClick={onClose} color="secondary">
           Cancel
         </Button>
-        <Button color="primary" onClick={handleUpdateRestockOrder}>
-          Update restock request
-        </Button>
+        {isWarehouse ? (
+          <Button
+            color="primary"
+            onClick={handleFulFillRestockOrder}
+            disabled={disableInTransit}
+          >
+            Mark as in transit
+          </Button>
+        ) : (
+          <Button
+            color="primary"
+            onClick={handleUpdateRestockOrder}
+            disabled={disableEdit || disableDelete}
+          >
+            Update restock request
+          </Button>
+        )}
       </DialogActions>
     </Dialog>
   );

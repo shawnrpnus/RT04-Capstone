@@ -20,9 +20,7 @@ import {
   ShoppingCart
 } from "@material-ui/icons";
 import MaterialTable from "material-table";
-import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
 import Chip from "@material-ui/core/Chip";
-import Checkbox from "@material-ui/core/Checkbox";
 
 import withPage from "../../Layout/page/withPage";
 import {
@@ -58,17 +56,17 @@ const ProductsStockTable = props => {
   const history = useHistory();
 
   const [selectedProductStocks, setSelectedProductStocks] = useState([]);
-  const [selectedProductId, setSelectedProductId] = useState("");
   const [open, setOpen] = useState(false);
 
   const productStocks = useSelector(
     state => state.productStock.allProductStock
   );
 
+  const { renderLoader, store, staff } = props;
+  const warehouse =
+    _.get(staff, "department.departmentName", "") === "Warehouse";
+
   useEffect(() => {
-    const { store, staff } = props;
-    const warehouse =
-      _.get(staff, "department.departmentName", "") === "Warehouse";
     if (warehouse) {
       dispatch(retrieveProductStocksByParameter());
     } else if (_.get(store, "storeId", false)) {
@@ -76,23 +74,23 @@ const ProductsStockTable = props => {
     }
   }, [_.isEqual(productStocks)]);
 
-  const handleCheckBox = (evt, data) => {
+  const handleAddStock = (evt, data) => {
     evt.preventDefault();
-    // let productStockIds = [];
-    // data.forEach(element => {
-    //   productStockIds.push(element.productStockId);
-    // });
-    setSelectedProductStocks([...data]);
-    // dispatch(simulateReorderingFromSupplier(productStockIds, history));
-    setOpen(true);
-    // TODO: Open up a dialog for restocking
+    if (warehouse) {
+      let productStockIds = [];
+      data.forEach(element => {
+        productStockIds.push(element.productStockId);
+      });
+      dispatch(simulateReorderingFromSupplier(productStockIds, history));
+    } else {
+      setSelectedProductStocks([...data]);
+      setOpen(true);
+    }
   };
 
   const handleCloseDialog = () => {
     setOpen(false);
   };
-
-  const { renderLoader, store } = props;
 
   let data = [];
   if (productStocks) {
@@ -170,11 +168,17 @@ const ProductsStockTable = props => {
               selection: true
             }}
             actions={[
-              {
-                icon: ShoppingCart,
-                tooltip: "Create restock order",
-                onClick: (event, rowData) => handleCheckBox(event, rowData)
-              }
+              warehouse
+                ? {
+                    icon: Add,
+                    tooltip: "Simulate ordering from supplier",
+                    onClick: (event, rowData) => handleAddStock(event, rowData)
+                  }
+                : {
+                    icon: ShoppingCart,
+                    tooltip: "Create restock order",
+                    onClick: (event, rowData) => handleAddStock(event, rowData)
+                  }
             ]}
           />
         ) : (
