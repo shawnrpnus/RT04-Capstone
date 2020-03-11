@@ -1,16 +1,13 @@
 import * as types from "../actions/types";
 
-const initialState = {
-  loggedInStaff: null
-};
+const initialState = {};
 
 export default function(state = initialState, action) {
   switch (action.type) {
-    case types.STAFF_LOGIN:
-      return {
-        ...state,
-        loggedInStaff: action.staff
-      }
+    case types.GET_ERRORS:
+      return action.errorMap;
+    case types.CLEAR_ERRORS:
+      return initialState;
     default:
       return state;
   }

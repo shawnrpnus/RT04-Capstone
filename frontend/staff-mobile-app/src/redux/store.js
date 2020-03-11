@@ -1,6 +1,7 @@
 import { applyMiddleware, compose, createStore } from "redux";
 import { composeWithDevTools } from "redux-devtools-extension";
 import * as SecureStore from 'expo-secure-store';
+import { AsyncStorage } from 'react-native';
 // middlewares
 import thunk from "redux-thunk";
 // Import custom components
@@ -12,23 +13,23 @@ const initialState = {};
 const jsog = require("jsog");
 const _ = require("lodash");
 
-function saveToSecureStore(state) {
+async function saveToSecureStore(state) {
   try {
     const serializedState = jsog.stringify(state);
-    SecureStore.setItemAsync("state", serializedState);
+    await AsyncStorage.setItem("state", serializedState);
   } catch (e) {
     console.log(e);
   }
 }
 
-function loadFromSecureStore() {
+async function loadFromSecureStore() {
   try {
-    const serializedState = SecureStore.getItemAsync("state");
-    if (serializedState === null) return initialState;
+    const serializedState = await AsyncStorage.getItem("state");
+    if (!serializedState) return initialState;
     return jsog.parse(serializedState);
   } catch (e) {
     console.log(e);
-    return undefined;
+    return initialState;
   }
 }
 
