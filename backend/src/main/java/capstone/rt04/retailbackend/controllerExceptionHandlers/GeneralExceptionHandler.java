@@ -8,6 +8,9 @@ import capstone.rt04.retailbackend.util.exceptions.category.DeleteCategoryExcept
 import capstone.rt04.retailbackend.util.exceptions.category.UpdateCategoryException;
 import capstone.rt04.retailbackend.util.exceptions.contactUs.ContactUsNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.customer.*;
+import capstone.rt04.retailbackend.util.exceptions.inStoreRestockOrder.InStoreRestockOrderNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.inStoreRestockOrder.InStoreRestockOrderUpdateException;
+import capstone.rt04.retailbackend.util.exceptions.inStoreRestockOrder.InsufficientStockException;
 import capstone.rt04.retailbackend.util.exceptions.product.*;
 import capstone.rt04.retailbackend.util.exceptions.reservation.CreateNewReservationException;
 import capstone.rt04.retailbackend.util.exceptions.reservation.ReservationNotFoundException;
@@ -69,7 +72,7 @@ public class GeneralExceptionHandler extends ResponseEntityExceptionHandler {
             ProductNotFoundException.class, ProductStockNotFoundException.class, WarehouseNotFoundException.class,
             StoreNotFoundException.class, VerificationCodeNotFoundException.class, AlreadyVerifiedException.class,
             ProductImageNotFoundException.class, ProductVariantNotFoundException.class, ReservationNotFoundException.class,
-            StyleNotFoundException.class, ContactUsNotFoundException.class
+            StyleNotFoundException.class, ContactUsNotFoundException.class, InStoreRestockOrderNotFoundException.class
     })
     public final ResponseEntity<Object> handleNotFoundExceptions(Exception ex, WebRequest req) {
         return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
@@ -86,11 +89,8 @@ public class GeneralExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler({
-            VerificationCodeExpiredException.class,
-            InvalidCartTypeException.class,
-            WishlistException.class,
-            CreateNewReservationException.class,
-            DeleteProductVariantException.class
+            VerificationCodeExpiredException.class, InvalidCartTypeException.class, WishlistException.class, CreateNewReservationException.class,
+            DeleteProductVariantException.class, InStoreRestockOrderUpdateException.class, InsufficientStockException.class
     })
     public final ResponseEntity<Object> handleBadRequestExceptions(Exception ex, WebRequest req) {
         return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);

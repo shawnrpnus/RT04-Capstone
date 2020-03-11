@@ -7,5 +7,8 @@ public class InStoreRestockOrderControllerRoutes {
     public static final String RETRIEVE_IN_STORE_RESTOCK_ORDER_BY_ID = "/retrieveInStoreRestockOrderId/{inStoreRestockOrderId}";
     public static final String UPDATE_IN_STORE_RESTOCK_ORDER = "/updateInStoreRestockOrder";
     public static final String DELETE_IN_STORE_RESTOCK_ORDER = "/deleteInStoreRestockOrder/{inStoreRestockOrderId}";
+    public static final String FULFILL_IN_STORE_RESTOCK_ORDER = "/fulfillInStoreRestockOrder/{inStoreRestockOrderId}";
+    public static final String RECEIVE_STOCK = "/receiveStock/{inStoreRestockOrderId}";
+
 
 }

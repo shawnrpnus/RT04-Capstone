@@ -769,6 +769,10 @@ public class ProductService {
         return productStocks;
     }
 
+    public ProductStock retrieveProductStockByWarehouseAndProductVariantId(Long warehouseId, Long productVariantId) {
+        return productStockRepository.findByWarehouse_WarehouseIdAndProductVariant_ProductVariantId(warehouseId, productVariantId);
+    }
+
     public List<ProductStock> retrieveAllProductStock() {
         List<ProductStock> productStocks = (List<ProductStock>) productStockRepository.findAll();
         lazilyLoadProductStock(productStocks);

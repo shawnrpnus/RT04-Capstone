@@ -9,4 +9,8 @@ import java.util.List;
 public interface InStoreRestockOrderRepository extends CrudRepository<InStoreRestockOrder, Long> {
 
     List<InStoreRestockOrder> findAll();
+
+    List<InStoreRestockOrder> findAllByStore_StoreId(Long storeId);
+
+    List<InStoreRestockOrder> findAllByWarehouse_WarehouseId(Long warehouseId);
 }

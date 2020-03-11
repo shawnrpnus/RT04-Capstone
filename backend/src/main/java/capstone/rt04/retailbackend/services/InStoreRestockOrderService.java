@@ -4,7 +4,10 @@ import capstone.rt04.retailbackend.entities.*;
 import capstone.rt04.retailbackend.repositories.InStoreRestockOrderItemRepository;
 import capstone.rt04.retailbackend.repositories.InStoreRestockOrderRepository;
 import capstone.rt04.retailbackend.request.inStoreRestockOrder.StockIdQuantityMap;
+import capstone.rt04.retailbackend.util.enums.DeliveryStatusEnum;
 import capstone.rt04.retailbackend.util.exceptions.inStoreRestockOrder.InStoreRestockOrderNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.inStoreRestockOrder.InStoreRestockOrderUpdateException;
+import capstone.rt04.retailbackend.util.exceptions.inStoreRestockOrder.InsufficientStockException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductStockNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
@@ -12,8 +15,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @Transactional
@@ -57,11 +62,17 @@ public class InStoreRestockOrderService {
         InStoreRestockOrder inStoreRestockOrder = new InStoreRestockOrder(inStoreRestockOrderItems, store, warehouse);
         inStoreRestockOrderRepository.save(inStoreRestockOrder);
 
-        return retrieveAllInStoreRestockOrder();
+        return retrieveAllInStoreRestockOrder(store.getStoreId());
     }
 
-    public List<InStoreRestockOrder> retrieveAllInStoreRestockOrder() {
-        List<InStoreRestockOrder> inStoreRestockOrders = inStoreRestockOrderRepository.findAll();
+    public List<InStoreRestockOrder> retrieveAllInStoreRestockOrder(Long storeId) {
+        List<InStoreRestockOrder> inStoreRestockOrders;
+        System.out.println(storeId);
+        if (storeId == null) {
+            inStoreRestockOrders = inStoreRestockOrderRepository.findAll();
+        } else {
+            inStoreRestockOrders = inStoreRestockOrderRepository.findAllByStore_StoreId(storeId);
+        }
         lazilyLoadInStoreRestockOrder(inStoreRestockOrders);
         return inStoreRestockOrders;
     }
@@ -74,13 +85,17 @@ public class InStoreRestockOrderService {
         return inStoreRestockOrder;
     }
 
-    public List<InStoreRestockOrder> updateRestockOrder(Long inStoreRestockOrderId, List<StockIdQuantityMap> stockIdQuantityMaps) throws InStoreRestockOrderNotFoundException, ProductVariantNotFoundException, ProductStockNotFoundException {
+    public List<InStoreRestockOrder> updateRestockOrder(Long inStoreRestockOrderId, List<StockIdQuantityMap> stockIdQuantityMaps) throws InStoreRestockOrderNotFoundException, ProductVariantNotFoundException, ProductStockNotFoundException, InStoreRestockOrderUpdateException {
 
         InStoreRestockOrder inStoreRestockOrder = retrieveInStoreRestockOrderByInStoreRestockOrderId(inStoreRestockOrderId);
+        if (inStoreRestockOrder.getDeliveryStatus().equals(DeliveryStatusEnum.IN_TRANSIT)) {
+            throw new InStoreRestockOrderUpdateException("Unable to update restock order that is already in transit");
+        }
         List<InStoreRestockOrderItem> loopInStoreRestockOrderItems = new ArrayList<>(inStoreRestockOrder.getInStoreRestockOrderItems());
         List<StockIdQuantityMap> loopStockIdQuantityMaps = new ArrayList<>(stockIdQuantityMaps);
         Boolean presentInExistingList;
         ProductStock productStock;
+        Long storeId = inStoreRestockOrder.getStore().getStoreId();
 
         for (InStoreRestockOrderItem inStoreRestockOrderItem : loopInStoreRestockOrderItems) {
             presentInExistingList = Boolean.FALSE;
@@ -116,17 +131,64 @@ public class InStoreRestockOrderService {
             inStoreRestockOrderItemRepository.save(inStoreRestockOrderItem);
             inStoreRestockOrder.getInStoreRestockOrderItems().add(inStoreRestockOrderItem);
         }
-        return retrieveAllInStoreRestockOrder();
+        System.out.println(storeId);
+        return retrieveAllInStoreRestockOrder(storeId);
     }
 
-    public List<InStoreRestockOrder> fulfillRestockOrder() {
-        return retrieveAllInStoreRestockOrder();
+    public List<InStoreRestockOrder> fulfillRestockOrder(Long inStoreRestockOrderId) throws InStoreRestockOrderNotFoundException, InsufficientStockException {
+        InStoreRestockOrder inStoreRestockOrder = retrieveInStoreRestockOrderByInStoreRestockOrderId(inStoreRestockOrderId);
+        Long storeId = inStoreRestockOrder.getStore().getStoreId();
+        Warehouse warehouse = inStoreRestockOrder.getWarehouse();
+        Long productVariantId;
+        ProductStock productStock;
+
+        // Deduct all the stock from warehouse
+        for (InStoreRestockOrderItem inStoreRestockOrderItem : inStoreRestockOrder.getInStoreRestockOrderItems()) {
+            productVariantId = inStoreRestockOrderItem.getProductStock().getProductVariant().getProductVariantId();
+            productStock = productService.retrieveProductStockByWarehouseAndProductVariantId(warehouse.getWarehouseId(), productVariantId);
+            if (productStock.getQuantity() <inStoreRestockOrderItem.getQuantity() ) {
+                throw new InsufficientStockException("Insufficient stock for " + inStoreRestockOrderItem.getProductStock().getProductVariant().getSKU());
+            }
+            productStock.setQuantity(productStock.getQuantity() - inStoreRestockOrderItem.getQuantity());
+        }
+        inStoreRestockOrder.setDeliveryStatus(DeliveryStatusEnum.IN_TRANSIT);
+        // TODO : link the restock order to delivery
+        return retrieveAllInStoreRestockOrder(storeId);
     }
 
-    public List<InStoreRestockOrder> deleteInStoreRestockOrder() {
-        // can delete if no delivery
+    public List<InStoreRestockOrder> receiveStock(Long inStoreRestockOrderId) throws InStoreRestockOrderNotFoundException {
+        InStoreRestockOrder inStoreRestockOrder = retrieveInStoreRestockOrderByInStoreRestockOrderId(inStoreRestockOrderId);
+        Integer quantity;
+        ProductStock productStock;
+        Long storeId = inStoreRestockOrder.getStore().getStoreId();
+        // Update the quantity of product stock with the restock order line of the specified store
+        for (InStoreRestockOrderItem inStoreRestockOrderItem : inStoreRestockOrder.getInStoreRestockOrderItems()) {
+            productStock = inStoreRestockOrderItem.getProductStock();
+            quantity = inStoreRestockOrderItem.getQuantity() + productStock.getQuantity();
+            productStock.setQuantity(quantity);
+        }
+        // Set delivery to DELIVERED + time delivered
+        inStoreRestockOrder.setDeliveryStatus(DeliveryStatusEnum.DELIVERED);
+        inStoreRestockOrder.setDeliveryDateTime(new Timestamp(System.currentTimeMillis()));
+        return retrieveAllInStoreRestockOrder(storeId);
+    }
+
+    public List<InStoreRestockOrder> deleteInStoreRestockOrder(Long inStoreRestockOrderId) throws InStoreRestockOrderNotFoundException, InStoreRestockOrderUpdateException {
+        // delivery will only be set 24 hours later
         // can delete if less than 24 hours
-        return retrieveAllInStoreRestockOrder();
+        InStoreRestockOrder inStoreRestockOrder = retrieveInStoreRestockOrderByInStoreRestockOrderId(inStoreRestockOrderId);
+        if (inStoreRestockOrder.getDeliveryStatus().equals(DeliveryStatusEnum.IN_TRANSIT)) {
+            throw new InStoreRestockOrderUpdateException("Unable to update restock order that is already in transit");
+        }
+        Long storeId = inStoreRestockOrder.getStore().getStoreId();
+        Timestamp timestamp = new Timestamp(inStoreRestockOrder.getOrderDateTime().getTime() + TimeUnit.HOURS.toMillis(1));
+        Timestamp current = new Timestamp(System.currentTimeMillis());
+        // If order date + 1 > current date, cannot delete
+        if (timestamp.compareTo(current) < 0) {
+            inStoreRestockOrderItemRepository.deleteAll(inStoreRestockOrder.getInStoreRestockOrderItems());
+        }
+        inStoreRestockOrderRepository.delete(inStoreRestockOrder);
+        return retrieveAllInStoreRestockOrder(storeId);
     }
 
     private void lazilyLoadInStoreRestockOrder(List<InStoreRestockOrder> inStoreRestockOrders) {

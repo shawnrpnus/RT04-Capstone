@@ -16,14 +16,16 @@ import {
   Search,
   ViewColumn,
   Visibility,
-  Delete
+  Delete,
+  CheckSharp
 } from "@material-ui/icons";
 import MaterialTable from "material-table";
 import Chip from "@material-ui/core/Chip";
 // Redux
 import {
   retrieveAllRestockOrder,
-  deleteRestockOrder
+  deleteRestockOrder,
+  receiveStock
 } from "../../../redux/actions/restockOrderAction";
 import withPage from "../../Layout/page/withPage";
 import { useConfirm } from "material-ui-confirm";
@@ -57,9 +59,13 @@ const RestockOrderTable = props => {
 
   const [restockOrder, setRestockOrder] = useState({});
   const [open, setOpen] = useState(false);
+  const { renderLoader, store, staff } = props;
+  const { storeId } = store;
+  const warehouse =
+    _.get(staff, "department.departmentName", "") === "Warehouse";
 
   useEffect(() => {
-    dispatch(retrieveAllRestockOrder());
+    dispatch(retrieveAllRestockOrder(storeId));
   }, [_.isEqual(restockOrders)]);
 
   const openDialog = () => {
@@ -70,7 +76,6 @@ const RestockOrderTable = props => {
     setOpen(false);
   };
 
-  const { renderLoader, store } = props;
   let data = [];
   if (restockOrders) {
     data = restockOrders.map(restockOrder => {
@@ -85,6 +90,7 @@ const RestockOrderTable = props => {
       const currentDate = new Date(orderDateTime);
       const disableEdit =
         currentDate.setDate(currentDate.getDate() + 1) < new Date();
+      const disableDelete = deliveryStatus !== "PROCESSING";
       return {
         inStoreRestockOrderId: inStoreRestockOrderId,
         orderDateTime: date,
@@ -92,7 +98,9 @@ const RestockOrderTable = props => {
         storeName: store.storeName,
         inStoreRestockOrderItems: inStoreRestockOrderItems,
         numberOfItems: inStoreRestockOrderItems.length,
-        disableEdit: disableEdit
+        disableEdit: disableEdit,
+        disableDelete: disableDelete,
+        store: store
       };
     });
   }
@@ -107,6 +115,15 @@ const RestockOrderTable = props => {
           columns={[
             { title: "Restock Order ID", field: "inStoreRestockOrderId" },
             { title: "Store name", field: "storeName" },
+
+            {
+              title: "Date Created",
+              field: "orderDateTime"
+            },
+            {
+              title: "Number of items",
+              field: "numberOfItems"
+            },
             {
               title: "Delivery status",
               field: "deliveryStatus",
@@ -130,14 +147,6 @@ const RestockOrderTable = props => {
                   />
                 );
               }
-            },
-            {
-              title: "Date Created",
-              field: "orderDateTime"
-            },
-            {
-              title: "Number of items",
-              field: "numberOfItems"
             }
           ]}
           data={data}
@@ -153,34 +162,49 @@ const RestockOrderTable = props => {
           actions={[
             rowData => ({
               icon: Visibility,
-              tooltip: "Reply",
+              tooltip: "View details",
               onClick: (e, rowData) => {
                 setRestockOrder(rowData);
                 openDialog();
               },
               disabled: rowData.disableEdit
             }),
-            // rowData => ({
-            //   icon: CheckSharpIcon,
-            //   tooltip: "Mark as resolved",
-            //   onClick: (e, rowData) => {
-            //     const { contactUsId } = rowData;
-            //     dispatch(markAsResolved({ contactUsId, reply: null }));
-            //   },
-            //   disabled: rowData.status === "RESOLVED"
-            // }),
-            rowData => ({
-              icon: Delete,
-              tooltip: "Delete",
-              onClick: (e, rowData) => {
-                const { inStoreRestockOrderId } = rowData;
-                confirmDialog({
-                  description: "Selected restock order will be deleted"
-                }).then(() => {
-                  dispatch(deleteRestockOrder(inStoreRestockOrderId));
-                });
-              }
-            })
+            rowData =>
+              warehouse
+                ? null
+                : {
+                    icon: CheckSharp,
+                    tooltip: "Receive stock",
+                    onClick: (e, { inStoreRestockOrderId }) => {
+                      confirmDialog({
+                        description: "Receive stock from warehouse"
+                      })
+                        .then(() => {
+                          dispatch(
+                            receiveStock(inStoreRestockOrderId, storeId)
+                          );
+                        })
+                        .catch(() => {});
+                    },
+                    disabled: rowData.deliveryStatus !== "IN_TRANSIT"
+                  },
+            rowData =>
+              warehouse
+                ? null
+                : {
+                    icon: Delete,
+                    tooltip: "Delete",
+                    onClick: (e, { inStoreRestockOrderId }) => {
+                      confirmDialog({
+                        description: "Selected restock order will be deleted"
+                      })
+                        .then(() => {
+                          dispatch(deleteRestockOrder(inStoreRestockOrderId));
+                        })
+                        .catch(() => {});
+                    },
+                    disabled: rowData.disableEdit || rowData.disableDelete
+                  }
           ]}
         />
       ) : (
@@ -188,11 +212,11 @@ const RestockOrderTable = props => {
       )}
       {open && (
         <UpdateRestockOrderDialog
+          {...props}
           open={open}
           onClose={closeDialog}
-          elements={_.get(restockOrder, "inStoreRestockOrderItems", [])}
-          store={store}
-          restockOrderId={_.get(restockOrder, "inStoreRestockOrderId", "")}
+          element={restockOrder}
+          isWarehouse={warehouse}
         />
       )}
     </div>

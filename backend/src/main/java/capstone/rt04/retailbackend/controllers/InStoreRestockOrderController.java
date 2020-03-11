@@ -9,6 +9,8 @@ import capstone.rt04.retailbackend.request.inStoreRestockOrder.RestockUpdateRequ
 import capstone.rt04.retailbackend.services.InStoreRestockOrderService;
 import capstone.rt04.retailbackend.services.ValidationService;
 import capstone.rt04.retailbackend.util.exceptions.inStoreRestockOrder.InStoreRestockOrderNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.inStoreRestockOrder.InStoreRestockOrderUpdateException;
+import capstone.rt04.retailbackend.util.exceptions.inStoreRestockOrder.InsufficientStockException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductStockNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
@@ -36,8 +38,8 @@ public class InStoreRestockOrderController {
     }
 
     @GetMapping(RETRIEVE_ALL_IN_STORE_RESTOCK_ORDER)
-    public ResponseEntity<?> retrieveAllRestockOrder() {
-        List<InStoreRestockOrder> inStoreRestockOrders = inStoreRestockOrderService.retrieveAllInStoreRestockOrder();
+    public ResponseEntity<?> retrieveAllRestockOrder(@RequestParam(required=false) Long storeId) {
+        List<InStoreRestockOrder> inStoreRestockOrders = inStoreRestockOrderService.retrieveAllInStoreRestockOrder(storeId);
         clearRestockOrderRelationship(inStoreRestockOrders);
         return new ResponseEntity<>(inStoreRestockOrders, HttpStatus.OK);
     }
@@ -51,13 +53,33 @@ public class InStoreRestockOrderController {
     }
 
     @PostMapping(UPDATE_IN_STORE_RESTOCK_ORDER)
-    public ResponseEntity<?> updateRestockOrder(@RequestBody RestockUpdateRequest restockUpdateRequest) throws ProductStockNotFoundException, InStoreRestockOrderNotFoundException, ProductVariantNotFoundException {
+    public ResponseEntity<?> updateRestockOrder(@RequestBody RestockUpdateRequest restockUpdateRequest) throws ProductStockNotFoundException, InStoreRestockOrderNotFoundException, ProductVariantNotFoundException, InStoreRestockOrderUpdateException {
         List<InStoreRestockOrder> inStoreRestockOrders = inStoreRestockOrderService.updateRestockOrder(restockUpdateRequest.getRestockOrderId(),
                 restockUpdateRequest.getStockIdQuantityMaps());
         clearRestockOrderRelationship(inStoreRestockOrders);
         return new ResponseEntity<>(inStoreRestockOrders, HttpStatus.OK);
     }
 
+    @GetMapping(FULFILL_IN_STORE_RESTOCK_ORDER)
+    public ResponseEntity<?> fulfillRestockOrder(@PathVariable Long inStoreRestockOrderId) throws InStoreRestockOrderNotFoundException, InsufficientStockException {
+        List<InStoreRestockOrder> inStoreRestockOrders = inStoreRestockOrderService.fulfillRestockOrder(inStoreRestockOrderId);
+        clearRestockOrderRelationship(inStoreRestockOrders);
+        return new ResponseEntity<>(inStoreRestockOrders, HttpStatus.OK);
+    }
+
+    @GetMapping(RECEIVE_STOCK)
+    public ResponseEntity<?> receiveStock(@PathVariable Long inStoreRestockOrderId) throws InStoreRestockOrderNotFoundException {
+        List<InStoreRestockOrder> inStoreRestockOrders = inStoreRestockOrderService.receiveStock(inStoreRestockOrderId);
+        clearRestockOrderRelationship(inStoreRestockOrders);
+        return new ResponseEntity<>(inStoreRestockOrders, HttpStatus.OK);
+    }
+
+    @DeleteMapping(DELETE_IN_STORE_RESTOCK_ORDER)
+    public ResponseEntity<?> deleteRestockOrder(@PathVariable Long inStoreRestockOrderId) throws InStoreRestockOrderNotFoundException, InStoreRestockOrderUpdateException {
+        List<InStoreRestockOrder> inStoreRestockOrders = inStoreRestockOrderService.deleteInStoreRestockOrder(inStoreRestockOrderId);
+        clearRestockOrderRelationship(inStoreRestockOrders);
+        return new ResponseEntity<>(inStoreRestockOrders, HttpStatus.OK);
+    }
 
     private void clearRestockOrderRelationship(List<InStoreRestockOrder> inStoreRestockOrders) {
         for (InStoreRestockOrder inStoreRestockOrder : inStoreRestockOrders) {
