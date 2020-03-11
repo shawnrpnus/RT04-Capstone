@@ -73,7 +73,7 @@ export default function ShoppingCartPage() {
   //popper
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
-  
+
   // Updating shopping cart information
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -323,26 +323,23 @@ export default function ShoppingCartPage() {
               </h3>
             )}
             <Popper
-                open={popoverOpen}
-                anchorEl={anchorEl}
-                style={{ zIndex: "2000" }}
-                placement="bottom"
-              >
-                <ClickAwayListener onClickAway={() => setPopoverOpen(false)}>
-                  <Paper style={{ padding: "5px" }}>
-                    <h5 style={{ textAlign: "center", marginBottom: "0" }}>
-                      Clear?
-                    </h5>
-                    <Button
-                      color="danger"
-                      onClick={handleClearShoppingCart}
-                    >
-                      Yes
-                    </Button>
-                    <Button onClick={() => setPopoverOpen(false)}>No</Button>
-                  </Paper>
-                </ClickAwayListener>
-              </Popper>
+              open={popoverOpen}
+              anchorEl={anchorEl}
+              style={{ zIndex: "2000" }}
+              placement="bottom"
+            >
+              <ClickAwayListener onClickAway={() => setPopoverOpen(false)}>
+                <Paper style={{ padding: "5px" }}>
+                  <h5 style={{ textAlign: "center", marginBottom: "0" }}>
+                    Clear?
+                  </h5>
+                  <Button color="danger" onClick={handleClearShoppingCart}>
+                    Yes
+                  </Button>
+                  <Button onClick={() => setPopoverOpen(false)}>No</Button>
+                </Paper>
+              </ClickAwayListener>
+            </Popper>
           </Card>
           {/* {showCreditCardDialog && (
             <CreditCardDialog handleClose={setShowCreditCardDialog} />

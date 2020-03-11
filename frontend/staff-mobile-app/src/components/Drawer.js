@@ -5,9 +5,9 @@ import { Block, Text, theme } from "galio-framework";
 import Icon from "./Icon";
 import materialTheme from "src/constants/Theme";
 
-class DrawerItem extends React.Component {
-  renderIcon = () => {
-    const { title, focused } = this.props;
+function DrawerItem(props) {
+  const renderIcon = () => {
+    const { title, focused } = props;
 
     switch (title) {
       case "Home":
@@ -104,33 +104,32 @@ class DrawerItem extends React.Component {
         return null;
     }
   };
-  render() {
-    const { title, focused, navigation } = this.props;
-    return (
-      <TouchableOpacity
-        style={{ height: 55 }}
-        onPress={() => navigation.navigate(title)}
+
+  const { title, focused, navigation } = props;
+  return (
+    <TouchableOpacity
+      style={{ height: 55 }}
+      onPress={() => navigation.navigate(title)}
+    >
+      <Block
+        flex
+        row
+        style={[
+          styles.defaultStyle,
+          focused ? [styles.activeStyle, styles.shadow] : null
+        ]}
       >
-        <Block
-          flex
-          row
-          style={[
-            styles.defaultStyle,
-            focused ? [styles.activeStyle, styles.shadow] : null
-          ]}
-        >
-          <Block middle flex={0.1} style={{ marginRight: 28 }}>
-            {this.renderIcon()}
-          </Block>
-          <Block flex={0.9}>
-            <Text size={15} color={focused ? "white" : "black"}>
-              {title}
-            </Text>
-          </Block>
+        <Block middle flex={0.1} style={{ marginRight: 28 }}>
+          {renderIcon()}
         </Block>
-      </TouchableOpacity>
-    );
-  }
+        <Block flex={0.9}>
+          <Text size={15} color={focused ? "white" : "black"}>
+            {title}
+          </Text>
+        </Block>
+      </Block>
+    </TouchableOpacity>
+  );
 }
 
 export default DrawerItem;

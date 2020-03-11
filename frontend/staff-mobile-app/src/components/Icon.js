@@ -1,32 +1,33 @@
-import React from 'react';
-import * as Font from 'expo-font';
-import { createIconSetFromIcoMoon } from '@expo/vector-icons';
-import { Icon } from 'galio-framework';
+import React, { useState, useEffect } from "react";
+import * as Font from "expo-font";
+import { createIconSetFromIcoMoon } from "@expo/vector-icons";
+import { Icon } from "galio-framework";
 
-import GalioConfig from 'assets/fonts/galioExtra';
-const GalioExtra = require('assets/fonts/galioExtra.ttf');
-const IconGalioExtra = createIconSetFromIcoMoon(GalioConfig, 'GalioExtra');
+import GalioConfig from "assets/fonts/galioExtra";
+const GalioExtra = require("assets/fonts/galioExtra.ttf");
+const IconGalioExtra = createIconSetFromIcoMoon(GalioConfig, "GalioExtra");
 
-export default class IconExtra extends React.Component {
-  state = {
-    fontLoaded: false,
-  }
+export default function IconExtra(props) {
+  const [state, setState] = useState({
+    fontLoaded: false
+  });
 
-  async componentDidMount() {
+  useEffect(async () => {
     await Font.loadAsync({ GalioExtra: GalioExtra });
-    this.setState({ fontLoaded: true });
-  }
+    setState(prevState => ({ ...prevState, fontLoaded: true }));
+  }, []);
 
-  render() {
-    const { name, family, ...rest } = this.props;
-    
-    if (name && family && this.state.fontLoaded) {
-      if (family === 'GalioExtra') {
-        return <IconGalioExtra name={name} family={family} {...rest} />;
-      }
-      return <Icon name={name} family={family} {...rest} />;
-    }
+  const { name, family, ...rest } = props;
 
-    return null;
-  }
+  return (
+    <>
+      {name && family && state.fontLoaded ? (
+        family === "GalioExtra" ? (
+          <IconGalioExtra name={name} family={family} {...rest} />
+        ) : (
+          <Icon name={name} family={family} {...rest} />
+        )
+      ) : null}
+    </>
+  );
 }

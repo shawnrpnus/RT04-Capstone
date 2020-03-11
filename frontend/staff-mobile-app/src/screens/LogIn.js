@@ -24,14 +24,14 @@ export default function LogIn(props) {
   });
 
   const handleChange = (name, value) => {
-    setState({ [name]: value });
+    setState(prevState => ({ ...prevState, [name]: value }));
   };
 
   const toggleActive = name => {
     const { active } = state;
     active[name] = !active[name];
 
-    setState({ active });
+    setState(prevState => ({...prevState, active }));
   };
 
   const { navigation } = props;
