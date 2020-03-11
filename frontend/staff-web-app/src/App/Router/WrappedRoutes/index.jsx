@@ -9,6 +9,7 @@ import Staff from "./Staff";
 import ProductStock from "./ProductStock";
 import InventoryTable from "./Warehouse";
 import Feedback from "./Feedback";
+import Review from "./Review";
 import RestockOrder from "./RestockOrder";
 
 export default () => (
@@ -23,6 +24,7 @@ export default () => (
       <Route path="/productStock" component={ProductStock} />
       <Route path="/warehouse" component={InventoryTable} />
       <Route path="/feedback" component={Feedback} />
+      <Route path="/review" component={Review} />
       <Route path="/restockOrder" component={RestockOrder} />
     </div>
   </div>
