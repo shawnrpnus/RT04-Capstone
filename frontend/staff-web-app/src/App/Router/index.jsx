@@ -15,10 +15,10 @@ const Router = () => {
 
   return (
     <MainWrapper>
-      <Backdrop style={{ zIndex: 10000000 }} open={open}>
-        <CircularProgress color="inherit" />
-      </Backdrop>
       <main>
+        <Backdrop style={{ zIndex: 10000000 }} open={open}>
+          <CircularProgress color="inherit" />
+        </Backdrop>
         <Switch>
           <Route path="/login" component={StaffLoginForm} />
 

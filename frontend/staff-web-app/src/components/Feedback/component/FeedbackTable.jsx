@@ -16,7 +16,8 @@ import {
   SaveAlt,
   Search,
   ViewColumn,
-  Visibility
+  Visibility,
+  Delete
 } from "@material-ui/icons";
 import MaterialTable from "material-table";
 import Chip from "@material-ui/core/Chip";
@@ -25,10 +26,12 @@ import CheckSharpIcon from "@material-ui/icons/CheckSharp";
 // Redux
 import {
   retrieveAllFeedback,
-  markAsResolved
+  markAsResolved,
+  deleteFeedback
 } from "../../../redux/actions/feedbackAction";
 import withPage from "../../Layout/page/withPage";
 import FeedbackReplyDialog from "./FeedbackReplyDialog";
+import { useConfirm } from "material-ui-confirm";
 
 const _ = require("lodash");
 const tableIcons = {
@@ -54,6 +57,7 @@ const tableIcons = {
 const FeedbackTable = () => {
   const dispatch = useDispatch();
   const feedbacks = useSelector(state => state.feedback.feedbacks);
+  const confirmDialog = useConfirm();
 
   const [feedback, setFeedback] = useState({});
   const [open, setOpen] = useState(false);
@@ -61,7 +65,6 @@ const FeedbackTable = () => {
   useEffect(() => {
     dispatch(retrieveAllFeedback());
   }, [_.isEqual(feedbacks)]);
-  // const customer = useSelector(state => state.customer.loggedInCustomer);
 
   const toggleOpenDialog = () => {
     setOpen(!open);
@@ -133,12 +136,22 @@ const FeedbackTable = () => {
             icon: CheckSharpIcon,
             tooltip: "Mark as resolved",
             onClick: (e, rowData) => {
-              const { contactUsId, customerEmail } = rowData;
-              dispatch(
-                markAsResolved({ contactUsId, customerEmail, reply: null })
-              );
+              const { contactUsId } = rowData;
+              dispatch(markAsResolved({ contactUsId, reply: null }));
             },
             disabled: rowData.status === "RESOLVED"
+          }),
+          rowData => ({
+            icon: Delete,
+            tooltip: "Delete",
+            onClick: (e, rowData) => {
+              const { contactUsId } = rowData;
+              confirmDialog({
+                description: "Selected feedback will be deleted"
+              }).then(() => {
+                dispatch(deleteFeedback(contactUsId));
+              });
+            }
           })
         ]}
       />

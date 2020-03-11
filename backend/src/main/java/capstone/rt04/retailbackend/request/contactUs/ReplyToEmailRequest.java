@@ -13,7 +13,5 @@ public class ReplyToEmailRequest {
 
     private Long contactUsId;
 
-    private String customerEmail;
-
     private String reply;
 }
