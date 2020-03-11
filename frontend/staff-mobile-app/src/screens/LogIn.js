@@ -38,7 +38,7 @@ export default function LogIn(props) {
       start={{ x: 0, y: 0 }}
       end={{ x: 0.25, y: 1.1 }}
       locations={[0.2, 1]}
-      colors={["#FD9346","#FDA766" ]}
+      colors={["#F08B6A","#F8A175" ]}
       style={[styles.signin, { flex: 1, paddingTop: theme.SIZES.BASE * 4 }]}
     >
       <Block middle>
