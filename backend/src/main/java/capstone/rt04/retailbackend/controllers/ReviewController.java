@@ -14,6 +14,7 @@ import capstone.rt04.retailbackend.util.exceptions.review.CreateNewReviewExcepti
 import capstone.rt04.retailbackend.util.exceptions.review.ReviewNotDeletedException;
 import capstone.rt04.retailbackend.util.exceptions.review.ReviewNotFoundException;
 import capstone.rt04.retailbackend.util.routeconstants.ReviewControllerRoutes;
+import capstone.rt04.retailbackend.util.routeconstants.TagControllerRoutes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -78,6 +79,11 @@ public class ReviewController {
         } catch (Exception ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @GetMapping(ReviewControllerRoutes.RETRIEVE_ALL_REVIEWS)
+    public ResponseEntity<?> retrieveAllReviews() {
+        return new ResponseEntity<>(reviewService.retrieveAllReviews(), HttpStatus.OK);
     }
 
     @PostMapping(ReviewControllerRoutes.UPDATE_REVIEW)
