@@ -30,7 +30,6 @@ export const markAsResolved = request => {
     axios
       .post(FEEDBACK_BASE_URL + "/replyToEmail", request)
       .then(({ data }) => {
-        dispatch(closeCircularProgress());
         dispatch(retrieveAllFeedback());
         toast.success("Marked as resolved!", {
           position: toast.POSITION.TOP_CENTER
@@ -38,17 +37,17 @@ export const markAsResolved = request => {
       })
       .catch(err => {
         dispatchErrorMapError(err, dispatch);
-        dispatch(closeCircularProgress());
       });
+    dispatch(closeCircularProgress());
   };
 };
 
 export const replyToEmail = (request, onClose) => {
   return dispatch => {
+    dispatch(openCircularProgress());
     axios
       .post(FEEDBACK_BASE_URL + "/replyToEmail", request)
       .then(({ data }) => {
-        dispatch(closeCircularProgress());
         dispatch(retrieveAllFeedback());
         toast.success("Succesfully replied to email!", {
           position: toast.POSITION.TOP_CENTER
@@ -58,5 +57,24 @@ export const replyToEmail = (request, onClose) => {
       .catch(err => {
         dispatchErrorMapError(err, dispatch);
       });
+    dispatch(closeCircularProgress());
+  };
+};
+
+export const deleteFeedback = contactUsId => {
+  return dispatch => {
+    dispatch(openCircularProgress());
+    axios
+      .delete(FEEDBACK_BASE_URL + `/deleteContactUs/${contactUsId}`)
+      .then(({ data }) => {
+        dispatch(retrieveAllFeedback());
+        toast.success("Succesfully deleted feedback!", {
+          position: toast.POSITION.TOP_CENTER
+        });
+      })
+      .catch(err => {
+        dispatchErrorMapError(err, dispatch);
+      });
+    dispatch(closeCircularProgress());
   };
 };

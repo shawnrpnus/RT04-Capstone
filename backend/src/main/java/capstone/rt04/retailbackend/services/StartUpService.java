@@ -1374,9 +1374,9 @@ public class StartUpService {
         if (customerService.retrieveAllCustomers().size() == 0) {
             Customer customer = customerService.createNewCustomer(new Customer("Lila", "Facchini",
                     "lila@gmail.com", "password"));
+            customer.setVerified(true);
             customerId = customer.getCustomerId();
             customerService.retrieveCustomerByCustomerId(customerId);
-            customer.setVerified(true);
         }
     }
 

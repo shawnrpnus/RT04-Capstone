@@ -1,9 +1,5 @@
 import React from "react";
-
-import {
-  ProductsStockTable,
-  ProductStockContainer
-} from "../../../components/ProductStock";
+import { RestockOrderTable } from "../../../components/RestockOrder";
 import { Route, Switch } from "react-router-dom";
 import RetailRoute from "./../RetailRoute";
 
@@ -11,8 +7,8 @@ export default () => (
   <Switch>
     <RetailRoute
       exact
-      path="/productStock/viewAll"
-      component={ProductsStockTable}
+      path="/restockOrder/viewAll"
+      component={RestockOrderTable}
     />
   </Switch>
 );

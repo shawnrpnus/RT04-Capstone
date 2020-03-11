@@ -57,6 +57,26 @@ public class ContactUsService {
     }
 
     private void sendContactUsNotification(ContactUs contactUs) {
+        sendNodeEmail(contactUs, null);
+    }
+
+    public List<ContactUs> retrieveAllContactUs() {
+        return contactUsRepository.findAll();
+    }
+
+    public List<ContactUs> replyToEmail(Long contactUsId, String reply) throws ContactUsNotFoundException {
+        ContactUs contactUs = retrieveContactUsByContactUsId(contactUsId);
+        if (reply != null && reply.length() > 0) {
+            sendNodeEmail(contactUs, reply);
+            contactUs.setStatus(ContactUsStatusEnum.REPLIED);
+        } else {
+            // Mark resolved
+            contactUs.setStatus(ContactUsStatusEnum.RESOLVED);
+        }
+        return retrieveAllContactUs();
+    }
+
+    private void sendNodeEmail(ContactUs contactUs, String reply) {
         restTemplate = new RestTemplate();
         Map<String, String> request = new HashMap<>();
         String fullName = contactUs.getFirstName() + " " + contactUs.getLastName();
@@ -64,35 +84,15 @@ public class ContactUsService {
         request.put("email", email);
         request.put("fullName", fullName);
         request.put("contactUsCategory", contactUs.getContactUsCategory().toString());
+        request.put("reply", reply);
 
-        String endpoint = Constants.NODE_API_URL + "/email/contactUsConfirmation";
-        try {
-            ResponseEntity<?> response = restTemplate.postForEntity(endpoint, request, Object.class);
-            if (response.getStatusCode().equals(HttpStatus.OK)) {
-                log.info("Email sent successfully to " + email);
-            } else {
-                log.error("Error sending email to " + email);
-            }
-        } catch (Exception ex) {
-            log.error(ex.getMessage());
-        }
-    }
-
-    public List<ContactUs> retrieveAllContactUs() {
-        return contactUsRepository.findAll();
-    }
-
-    public List<ContactUs> replyToEmail(Long contactUsId, String reply, String customerEmail) throws ContactUsNotFoundException {
-        ContactUs contactUs = retrieveContactUsByContactUsId(contactUsId);
-        if (reply != null && reply.length() > 0) {
-            // Send email to customer if reply is not null
-            // Mark replied
-            contactUs.setStatus(ContactUsStatusEnum.REPLIED);
+        String endpoint = Constants.NODE_API_URL + "/email/replyToEmail";
+        ResponseEntity<?> response = restTemplate.postForEntity(endpoint, request, Object.class);
+        if (response.getStatusCode().equals(HttpStatus.OK)) {
+            log.info("Email sent successfully to " + email);
         } else {
-            // Mark resolved
-            contactUs.setStatus(ContactUsStatusEnum.RESOLVED);
+            log.error("Error sending email to " + email);
         }
-        return retrieveAllContactUs();
     }
 
     public List<ContactUs> deleteContactUs(Long contactUsId) throws ContactUsNotFoundException, ContactUsDeleteException {

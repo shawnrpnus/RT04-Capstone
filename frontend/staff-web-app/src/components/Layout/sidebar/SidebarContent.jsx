@@ -123,10 +123,17 @@ class SidebarContent extends Component {
               />
             </SidebarCategory>
           )}
-          <SidebarCategory title="Feedback" icon="feedback">
+          <SidebarCategory title="Feedback" icon="list">
             <SidebarLink
               title="View Feedback"
               route="/feedback/viewAll"
+              onClick={this.hideSidebar}
+            />
+          </SidebarCategory>
+          <SidebarCategory title="Restock Order" icon="list">
+            <SidebarLink
+              title="View Restock Order"
+              route="/restockOrder/viewAll"
               onClick={this.hideSidebar}
             />
           </SidebarCategory>

@@ -173,7 +173,7 @@ router.post("/contactUsConfirmation", async (req, res) => {
 
   const emailContent = {
     body: {
-      name: `${fullName}`,
+      name: fullName,
       intro: response,
       outro: [
         "Need help, or have questions?",
@@ -190,6 +190,42 @@ router.post("/contactUsConfirmation", async (req, res) => {
       from: "rt04capstone@gmail.com",
       to: email,
       subject: "apricot & nut - Feedback confirmation email",
+      text: emailText,
+      html: emailBody
+    },
+    (error, info) => {
+      if (error) {
+        console.log(error);
+        res.status(500).send({ message: "Email failed to send" });
+      } else {
+        res.status(200).send({ message: "Email Sent" });
+      }
+    }
+  );
+});
+
+router.post("/replyToEmail", async (req, res) => {
+  const { email, fullName, contactUsCategory, reply } = req.body;
+
+  const emailContent = {
+    body: {
+      name: fullName,
+      intro: reply,
+      outro: [
+        "\nNeed help, or have questions?",
+        "Just reply to this email, we'd love to help."
+      ]
+    }
+  };
+
+  const emailBody = mailGenerator.generate(emailContent);
+  const emailText = mailGenerator.generatePlaintext(emailContent);
+
+  transporter.sendMail(
+    {
+      from: "rt04capstone@gmail.com",
+      to: email,
+      subject: "apricot & nut - Support Ticket",
       text: emailText,
       html: emailBody
     },

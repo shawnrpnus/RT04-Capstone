@@ -29,7 +29,7 @@ const FeedbackDialog = ({ feedback, open, onClose }) => {
     setReply(e.target.value);
   };
   const handleReplyEmail = () => {
-    dispatch(replyToEmail({ contactUsId, customerEmail, reply }, onClose()));
+    dispatch(replyToEmail({ contactUsId, reply }, onClose));
   };
 
   let style;
@@ -127,7 +127,7 @@ const FeedbackDialog = ({ feedback, open, onClose }) => {
           multiline
           rows={3}
           rowsMax={6}
-          autofocus
+          autoFocus={true}
         />
       </DialogContent>
       <DialogActions>

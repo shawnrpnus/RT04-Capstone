@@ -64,7 +64,7 @@ public class ContactUsController {
     @PostMapping(REPLY_TO_EMAIL)
     public ResponseEntity<?> replyToEmail(@RequestBody ReplyToEmailRequest replyToEmailRequest) throws ContactUsNotFoundException {
         List<ContactUs> contactUsList = contactUsService.replyToEmail(replyToEmailRequest.getContactUsId(),
-                replyToEmailRequest.getReply(), replyToEmailRequest.getCustomerEmail());
+                replyToEmailRequest.getReply());
         return new ResponseEntity<>(contactUsList, HttpStatus.OK);
     }
 }

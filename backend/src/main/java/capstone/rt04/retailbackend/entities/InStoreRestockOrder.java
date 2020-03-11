@@ -17,6 +17,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -61,6 +62,8 @@ public class InStoreRestockOrder implements Serializable {
     private Warehouse warehouse;
 
     public InStoreRestockOrder() {
+        this.deliveries = new ArrayList<>();
+        this.inStoreRestockOrderItems =  new ArrayList<>();
         this.orderDateTime = new Timestamp(System.currentTimeMillis());
         this.deliveryStatus = DeliveryStatusEnum.PROCESSING;
     }
