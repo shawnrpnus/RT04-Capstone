@@ -11,6 +11,11 @@ export default function(state = initialState, action) {
         ...state,
         loggedInStaff: action.staff
       }
+    case types.LOAD_LOGGED_IN_STAFF:
+      return {
+        ...state,
+        loggedInStaff: action.staff
+      }
     default:
       return state;
   }

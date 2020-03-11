@@ -6,6 +6,7 @@ import { AsyncStorage } from 'react-native';
 import thunk from "redux-thunk";
 // Import custom components
 import rootReducer from "../redux/reducers";
+import {LOAD_LOGGED_IN_STAFF} from "src/redux/actions/types";
 
 const middleware = [thunk];
 const initialState = {};
@@ -22,35 +23,31 @@ async function saveToSecureStore(state) {
   }
 }
 
-async function loadFromSecureStore() {
-  try {
-    const serializedState = await AsyncStorage.getItem("state");
-    if (!serializedState) return initialState;
-    return jsog.parse(serializedState);
-  } catch (e) {
-    console.log(e);
-    return initialState;
-  }
-}
-
-let persistedState = loadFromSecureStore();
-
 /**
  * Create a Redux storeEntity that holds the app state.
  */
 let store = createStore(
   rootReducer,
-  persistedState,
+  {},
   composeWithDevTools(applyMiddleware(...middleware))
 );
 
-// if (window.navigator.userAgent.includes("Chrome")) {
-//   store = createStore(
-//     rootReducer,
-//     persistedState,
-//     composeWithDevTools(applyMiddleware(...middleware))
-//   );
-// }
+const loadLoggedInStaff = () => {
+  return dispatch => {
+    AsyncStorage.getItem("state", (err, result) => {
+      if (err){
+        console.log(err);
+        return initialState;
+      }
+      if (result){
+        dispatch({
+          type: LOAD_LOGGED_IN_STAFF,
+          staff: jsog.parse(result).staff.loggedInStaff
+        })
+      }
+    });
+  }
+}
 
 const unsubscribe = store.subscribe(() => {
   saveToSecureStore({
@@ -60,4 +57,29 @@ const unsubscribe = store.subscribe(() => {
   });
 });
 
+//populate store with logged in staff
+store.dispatch(loadLoggedInStaff());
+
 export default store;
+
+
+
+// async function loadFromSecureStore() {
+//   try {
+//     const serializedState = await AsyncStorage.getItem("state");
+//     if (!serializedState) return initialState;
+//     return jsog.parse(serializedState);
+//   } catch (e) {
+//     console.log(e);
+//     return initialState;
+//   }
+// }
+
+
+// if (window.navigator.userAgent.includes("Chrome")) {
+//   store = createStore(
+//     rootReducer,
+//     persistedState,
+//     composeWithDevTools(applyMiddleware(...middleware))
+//   );
+// }

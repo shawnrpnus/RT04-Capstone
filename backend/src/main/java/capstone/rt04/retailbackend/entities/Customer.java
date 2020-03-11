@@ -30,7 +30,7 @@ import java.util.List;
 @Getter
 @Setter
 @EqualsAndHashCode
-@ToString(exclude = {"verificationCode", "inStoreShoppingCart", "onlineShoppingCart", "preferredStyles", "reviews", "style"})
+@ToString(exclude = {"verificationCode", "inStoreShoppingCart", "onlineShoppingCart", "reviews", "style"})
 @JsonIdentityInfo(generator = JSOGGenerator.class)
 public class Customer implements Serializable {
 

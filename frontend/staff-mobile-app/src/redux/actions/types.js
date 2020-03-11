@@ -5,3 +5,4 @@ export const CLEAR_ERRORS = "CLEAR_ERRORS";
 //Staff
 export const STAFF_LOGIN = "STAFF_LOGIN";
 export const STAFF_LOGOUT = "STAFF_LOGOUT";
+export const LOAD_LOGGED_IN_STAFF = "LOAD_LOGGED_IN_STAFF";
