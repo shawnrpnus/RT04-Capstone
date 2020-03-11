@@ -25,6 +25,7 @@ export default function AppStack(props) {
                 name="Login"
                 component={LogIn}
                 options={{
+                    headerShown: false,
                     drawerIcon: ({ focused }) => (
                         <Icon
                             size={16}

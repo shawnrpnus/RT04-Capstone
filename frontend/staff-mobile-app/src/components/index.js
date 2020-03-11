@@ -1,5 +1,5 @@
 import Button from './Button';
-import Select from './Select';
+import Select from 'src/components/Select';
 import Icon from './Icon';
 import Tabs from './Tabs';
 import Drawer from './Drawer';

@@ -4,38 +4,34 @@ import {
   Dimensions,
   KeyboardAvoidingView,
   Alert,
-  Platform
+  Platform,
 } from "react-native";
 import { Block, Button, Input, Text, theme } from "galio-framework";
 
 import { LinearGradient } from "expo-linear-gradient";
 import materialTheme from "src/constants/Theme";
+import { Snackbar, Card, TextInput, HelperText } from "react-native-paper";
+import { View } from "react-native";
+import {useDispatch, useSelector} from "react-redux";
+import {staffLogin} from "src/redux/actions/staffActions";
+import {clearErrors} from "src/redux/actions";
 
-const { width } = Dimensions.get("window");
+const { width, height } = Dimensions.get("window");
+const _ = require("lodash");
 
 export default function LogIn(props) {
-  const [state, setState] = useState({
-    email: "-",
-    password: "-",
-    active: {
-      email: false,
-      password: false
-    }
-  });
-
-  const handleChange = (name, value) => {
-    setState({ [name]: value });
-  };
-
-  const toggleActive = name => {
-    const { active } = state;
-    active[name] = !active[name];
-
-    setState({ active });
-  };
-
   const { navigation } = props;
-  const { email, password } = state;
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+
+  const dispatch = useDispatch();
+  const errors = useSelector(state => state.errors);
+
+  const handleLogin = () => {
+    const staffLoginRequest = {username, password};
+    dispatch(staffLogin(staffLoginRequest, setSnackbarOpen));
+  }
 
   return (
     <LinearGradient
@@ -45,143 +41,84 @@ export default function LogIn(props) {
       colors={["#6C24AA", "#15002B"]}
       style={[styles.signin, { flex: 1, paddingTop: theme.SIZES.BASE * 4 }]}
     >
-      <Block flex middle>
-        <KeyboardAvoidingView behavior="padding" enabled>
-          <Block middle>
-            <Block
-              row
-              center
-              space="between"
-              style={{ marginVertical: theme.SIZES.BASE * 1.875 }}
-            >
-              <Block flex middle right>
-                <Button
-                  round
-                  onlyIcon
-                  iconSize={theme.SIZES.BASE * 1.625}
-                  icon="facebook"
-                  iconFamily="font-awesome"
-                  color={theme.COLORS.FACEBOOK}
-                  shadowless
-                  iconColor={theme.COLORS.WHITE}
-                  style={styles.social}
-                  onPress={() => Alert.alert("Not implemented")}
-                />
-              </Block>
-              <Block flex middle center>
-                <Button
-                  round
-                  onlyIcon
-                  iconSize={theme.SIZES.BASE * 1.625}
-                  icon="twitter"
-                  iconFamily="font-awesome"
-                  color={theme.COLORS.TWITTER}
-                  shadowless
-                  iconColor={theme.COLORS.WHITE}
-                  style={styles.social}
-                  onPress={() => Alert.alert("Not implemented")}
-                />
-              </Block>
-              <Block flex middle left>
-                <Button
-                  round
-                  onlyIcon
-                  iconSize={theme.SIZES.BASE * 1.625}
-                  icon="dribbble"
-                  iconFamily="font-awesome"
-                  color={theme.COLORS.DRIBBBLE}
-                  shadowless
-                  iconColor={theme.COLORS.WHITE}
-                  style={styles.social}
-                  onPress={() => Alert.alert("Not implemented")}
-                />
-              </Block>
-            </Block>
-          </Block>
-          <Block middle style={{ paddingVertical: theme.SIZES.BASE * 2.625 }}>
-            <Text center color="white" size={14}>
-              or be classical
+      <Block middle>
+        <KeyboardAvoidingView behaviour="padding" enabled>
+          <Block flex={2} middle style={{ justifyContent: "flex-end" }}>
+            <Text h1 color="white" style={{ marginBottom: 20 }}>
+              apricot & nut
             </Text>
           </Block>
-          <Block flex>
-            <Block center>
-              <Input
-                borderless
-                color="white"
-                placeholder="Email"
-                type="email-address"
-                autoCapitalize="none"
-                bgColor="transparent"
-                onBlur={() => toggleActive("email")}
-                onFocus={() => toggleActive("email")}
-                placeholderTextColor={materialTheme.COLORS.PLACEHOLDER}
-                onChangeText={text => handleChange("email", text)}
-                style={[
-                  styles.input,
-                  state.active.email ? styles.inputActive : null
-                ]}
-              />
-              <Input
-                password
-                viewPass
-                borderless
-                color="white"
-                iconColor="white"
-                placeholder="Password"
-                bgColor="transparent"
-                onBlur={() => toggleActive("password")}
-                onFocus={() => toggleActive("password")}
-                placeholderTextColor={materialTheme.COLORS.PLACEHOLDER}
-                onChangeText={text => handleChange("password", text)}
-                style={[
-                  styles.input,
-                  state.active.password ? styles.inputActive : null
-                ]}
-              />
-              <Text
-                color={theme.COLORS.WHITE}
-                size={theme.SIZES.FONT * 0.75}
-                onPress={() => Alert.alert("Not implemented")}
-                style={{
-                  alignSelf: "flex-end",
-                  lineHeight: theme.SIZES.FONT * 2
+          <Block
+            flex={3}
+            middle
+            card
+            shadow
+            style={{
+              backgroundColor: "rgba(255,255,255,0.90)",
+              width: width * 0.9,
+              paddingTop: 20
+            }}
+          >
+            <Block flex={1} style={{width: width * 0.75}}>
+              <TextInput
+                label="Username"
+                onChangeText={text => {
+                  setUsername(text)
+                  dispatch(clearErrors());
                 }}
-              >
-                Forgot your password?
-              </Text>
+                style={{ backgroundColor: "transparent"}}
+                error={!_.isEmpty(errors)}
+              />
+              <HelperText type="error" visible={!_.isEmpty(errors)}>
+                {errors.username}
+              </HelperText>
             </Block>
-            <Block flex top style={{ marginTop: 20 }}>
+
+            <Block flex={1} style={{width: width * 0.75, marginTop: 15}}>
+              <TextInput
+                label="Password"
+                secureTextEntry
+                onChangeText={text => {
+                  setPassword(text)
+                  dispatch(clearErrors());
+                }}
+                style={{ backgroundColor: "transparent"}}
+                error={!_.isEmpty(errors)}
+              />
+              <HelperText type="error" visible={!_.isEmpty(errors)}>
+                {errors.password}
+              </HelperText>
+            </Block>
+
+            <Block flex={2} middle>
               <Button
                 shadowless
                 color={materialTheme.COLORS.BUTTON_COLOR}
-                style={{ height: 48 }}
-                onPress={() =>
-                  Alert.alert(
-                    "Sign in action",
-                    `Email: ${email} Password: ${password}`
-                  )
-                }
+                style={{ marginTop: 0, height: 50, width: width * 0.75}}
+                onPress={handleLogin}
               >
-                SIGN IN
-              </Button>
-              <Button
-                color="transparent"
-                shadowless
-                onPress={() => navigation.navigate("Sign Up")}
-              >
-                <Text
-                  center
-                  color={theme.COLORS.WHITE}
-                  size={theme.SIZES.FONT * 0.75}
-                  style={{ marginTop: 20 }}
-                >
-                  {"Don't have an account? Sign Up"}
-                </Text>
+                LOG IN
               </Button>
             </Block>
           </Block>
+          <Block flex={2} />
         </KeyboardAvoidingView>
       </Block>
+      <Snackbar
+        visible={snackbarOpen}
+        duration={2000}
+        onDismiss={() => setSnackbarOpen(false)}
+        action={{
+          label: "Ok",
+          onPress: () => {
+            setSnackbarOpen(false);
+          }
+        }}
+        style={{ marginBottom: height - 70, backgroundColor: "green"}}
+
+      >
+        Logged in!
+      </Snackbar>
     </LinearGradient>
   );
 }
@@ -204,10 +141,10 @@ const styles = StyleSheet.create({
     shadowOpacity: 1
   },
   input: {
-    width: width * 0.9,
-    borderRadius: 0,
-    borderBottomWidth: 1,
-    borderBottomColor: materialTheme.COLORS.PLACEHOLDER
+    // width: width * 0.8,
+    borderRadius: 0
+    // borderBottomWidth: 1,
+    // borderBottomColor: materialTheme.COLORS.PLACEHOLDER
   },
   inputActive: {
     borderBottomColor: "white"

@@ -1,150 +1,149 @@
-import React from 'react';
-import { StyleSheet, Dimensions, FlatList, Animated } from 'react-native';
-import { Block, theme } from 'galio-framework';
+import React, { useEffect } from "react";
+import { StyleSheet, Dimensions, FlatList, Animated } from "react-native";
+import { Block, theme } from "galio-framework";
 
-const { width } = Dimensions.get('screen');
-import materialTheme from 'src/constants/Theme';
+const { width } = Dimensions.get("screen");
+import materialTheme from "src/constants/Theme";
 
 const defaultMenu = [
-  { id: 'popular', title: 'Popular', },
-  { id: 'beauty', title: 'Beauty', },
-  { id: 'cars', title: 'Cars', },
-  { id: 'motocycles', title: 'Motocycles', },
+  { id: "popular", title: "Popular" },
+  { id: "beauty", title: "Beauty" },
+  { id: "cars", title: "Cars" },
+  { id: "motocycles", title: "Motocycles" }
 ];
 
-export default class Tabs extends React.Component {
-  static defaultProps = {
-    data: defaultMenu,
-    initialIndex: null,
-  }
+export default function Tabs(props) {
+  const [state, setState] = useState({ active: null });
 
-  state = {
-    active: null,
-  }
+  useEffect(() => {
+    const { initialIndex } = props;
+    initialIndex && selectMenu(initialIndex);
+  }, []);
 
-  componentDidMount() {
-    const { initialIndex } = this.props;
-    initialIndex && this.selectMenu(initialIndex);
-  }
+  const animatedValue = new Animated.Value(1);
 
-  animatedValue = new Animated.Value(1);
+  const animate = () => {
+    animatedValue.setValue(0);
 
-  animate() {
-    this.animatedValue.setValue(0);
-
-    Animated.timing(this.animatedValue, {
+    Animated.timing(animatedValue, {
       toValue: 1,
-      duration: 300,
+      duration: 300
       // useNativeDriver: true, // color not supported
-    }).start()
-  }
+    }).start();
+  };
 
-  menuRef = React.createRef();
+  const menuRef = React.createRef();
 
-  onScrollToIndexFailed = () => {
-    this.menuRef.current.scrollToIndex({
+  const onScrollToIndexFailed = () => {
+    menuRef.current.scrollToIndex({
       index: 0,
       viewPosition: 0.5
     });
-  }
+  };
 
-  selectMenu = (id) => {
-    this.setState({ active: id });
+  const selectMenu = id => {
+    setState({ active: id });
 
-    this.menuRef.current.scrollToIndex({
-      index: this.props.data.findIndex(item => item.id === id),
+    menuRef.current.scrollToIndex({
+      index: props.data.findIndex(item => item.id === id),
       viewPosition: 0.5
     });
 
-    this.animate();
-    this.props.onChange && this.props.onChange(id);
-  }
+    animate();
+    props.onChange && props.onChange(id);
+  };
 
-  renderItem = (item) => {
-    const isActive = this.state.active === item.id;
+  const renderItem = item => {
+    const isActive = state.active === item.id;
 
-    const textColor = this.animatedValue.interpolate({
+    const textColor = animatedValue.interpolate({
       inputRange: [0, 1],
-      outputRange: [materialTheme.COLORS.MUTED, isActive ? materialTheme.COLORS.ACTIVE : materialTheme.COLORS.MUTED],
-      extrapolate: 'clamp',
+      outputRange: [
+        materialTheme.COLORS.MUTED,
+        isActive ? materialTheme.COLORS.ACTIVE : materialTheme.COLORS.MUTED
+      ],
+      extrapolate: "clamp"
     });
-    
-    const width = this.animatedValue.interpolate({
+
+    const width = animatedValue.interpolate({
       inputRange: [0, 1],
-      outputRange: ['0%', isActive ? '100%' : '0%'],
-      extrapolate: 'clamp',
+      outputRange: ["0%", isActive ? "100%" : "0%"],
+      extrapolate: "clamp"
     });
 
     return (
       <Block style={styles.titleContainer}>
         <Animated.Text
-          style={[
-            styles.menuTitle,
-            { color: textColor }
-          ]}
-          onPress={() => this.selectMenu(item.id)}>
+          style={[styles.menuTitle, { color: textColor }]}
+          onPress={() => selectMenu(item.id)}
+        >
           {item.title}
         </Animated.Text>
-        <Animated.View style={{ height: 2, width, backgroundColor: materialTheme.COLORS.ACTIVE }} />
+        <Animated.View
+          style={{
+            height: 2,
+            width,
+            backgroundColor: materialTheme.COLORS.ACTIVE
+          }}
+        />
       </Block>
-    )
-  }
+    );
+  };
 
-  renderMenu = () => {
-    const { data, ...props } = this.props;
+  const renderMenu = () => {
+    const { data, ...props } = props;
 
     return (
       <FlatList
         {...props}
         data={data}
         horizontal={true}
-        ref={this.menuRef}
-        extraData={this.state}
-        keyExtractor={(item) => item.id}
+        ref={menuRef}
+        extraData={state}
+        keyExtractor={item => item.id}
         showsHorizontalScrollIndicator={false}
-        onScrollToIndexFailed={this.onScrollToIndexFailed}
-        renderItem={({ item }) => this.renderItem(item)}
+        onScrollToIndexFailed={onScrollToIndexFailed}
+        renderItem={({ item }) => renderItem(item)}
         contentContainerStyle={styles.menu}
       />
-    )
-  }
+    );
+  };
 
-  render() {
-    return (
-      <Block style={styles.container}>
-        {this.renderMenu()}
-      </Block>
-    )
-  }
+  return <Block style={styles.container}>{renderMenu()}</Block>;
 }
+
+Tabs.defaultProps = {
+  data: defaultMenu,
+  initialIndex: null
+};
 
 const styles = StyleSheet.create({
   container: {
     width: width,
     backgroundColor: theme.COLORS.WHITE,
-    zIndex: 2,
+    zIndex: 2
   },
   shadow: {
     shadowColor: theme.COLORS.BLACK,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 8,
     shadowOpacity: 0.2,
-    elevation: 4,
+    elevation: 4
   },
   menu: {
     paddingHorizontal: theme.SIZES.BASE * 2.5,
     paddingTop: 8,
-    paddingBottom: 0,
+    paddingBottom: 0
   },
   titleContainer: {
-    alignItems: 'center',
+    alignItems: "center"
   },
   menuTitle: {
-    fontWeight: '300',
+    fontWeight: "300",
     fontSize: 16,
     lineHeight: 28,
     // paddingBottom: 8,
     paddingHorizontal: 16,
     color: materialTheme.COLORS.MUTED
-  },
+  }
 });

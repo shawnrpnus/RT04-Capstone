@@ -147,8 +147,9 @@ public class StaffController {
     }
 
     @PostMapping(StaffControllerRoutes.LOGIN_STAFF)
-    public ResponseEntity<?> staffLogin(@RequestBody StaffLoginRequest staffLoginRequest) throws InvalidStaffCredentialsException {
-      try {
+    public ResponseEntity<?> staffLogin(@RequestBody StaffLoginRequest staffLoginRequest) throws InvalidStaffCredentialsException, InputDataValidationException {
+      validationService.throwExceptionIfInvalidBean(staffLoginRequest);
+        try {
             Staff staff = staffService.staffLogin(staffLoginRequest.getUsername(), staffLoginRequest.getPassword());
             return new ResponseEntity<>(staff, HttpStatus.OK);
         } catch (InvalidStaffCredentialsException ex){
