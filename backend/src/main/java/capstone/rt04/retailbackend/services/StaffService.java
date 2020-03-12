@@ -5,8 +5,8 @@ import capstone.rt04.retailbackend.repositories.*;
 import capstone.rt04.retailbackend.util.ErrorMessages;
 import capstone.rt04.retailbackend.util.enums.RoleNameEnum;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
-import capstone.rt04.retailbackend.util.exceptions.customer.CustomerNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.staff.*;
+import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
 import org.springframework.core.env.Environment;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.management.relation.RoleNotFoundException;
 import javax.persistence.PersistenceException;
-import java.math.BigDecimal;
 import java.util.*;
 
 @Service
@@ -38,13 +37,12 @@ public class StaffService {
     private final PayrollRepository payrollRepository;
     private final ReviewRepository reviewRepository;
     private final RoleRepository roleRepository;
-    private final RosterRepository rosterRepository;
+    private final StoreRepository storeRepository;
+    private final WarehouseRepository warehouseRepository;
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
 
-
-
-    public StaffService(JavaMailSender javaMailSender, Environment environment, ValidationService validationService, StaffRepository staffRepository, AddressRepository addressRepository, VerificationCodeRepository verificationCodeRepository, AdvertisementRepository advertisementRepository, DeliveryRepository deliveryRepository, DepartmentRepository departmentRepository, StaffLeaveRepository staffLeaveRepository, ReviewRepository reviewRepository, PayrollRepository payrollRepository, RoleRepository roleRepository, RosterRepository rosterRepository) {
+    public StaffService(JavaMailSender javaMailSender, Environment environment, ValidationService validationService, StaffRepository staffRepository, AddressRepository addressRepository, VerificationCodeRepository verificationCodeRepository, AdvertisementRepository advertisementRepository, DeliveryRepository deliveryRepository, DepartmentRepository departmentRepository, StaffLeaveRepository staffLeaveRepository, ReviewRepository reviewRepository, PayrollRepository payrollRepository, RoleRepository roleRepository, StoreRepository storeRepository, WarehouseRepository warehouseRepository) {
         this.javaMailSender = javaMailSender;
         this.environment = environment;
         this.validationService = validationService;
@@ -58,48 +56,49 @@ public class StaffService {
         this.reviewRepository = reviewRepository;
         this.payrollRepository = payrollRepository;
         this.roleRepository = roleRepository;
-        this.rosterRepository = rosterRepository;
+        this.storeRepository = storeRepository;
+        this.warehouseRepository = warehouseRepository;
     }
 
-    public Role createNewRole (RoleNameEnum name) throws CreateRoleException{
+    public Role createNewRole(RoleNameEnum name) throws CreateRoleException {
 
-            Role newRole = new Role(name);
-            Role r = roleRepository.save(newRole);
-            return r;
+        Role newRole = new Role(name);
+        Role r = roleRepository.save(newRole);
+        return r;
 
 
     }
 
-    public Department createNewDepartment (String name) throws CreateDepartmentException {
+    public Department createNewDepartment(String name) throws CreateDepartmentException {
 
-            Department newDepartment = new Department(name);
-            Department d = departmentRepository.save(newDepartment);
-            return d;
+        Department newDepartment = new Department(name);
+        Department d = departmentRepository.save(newDepartment);
+        return d;
 
     }
 
     //staff entity: first categoryName, last categoryName, nric, username&password(to be configured by admin),leave remaining
     //for HR to create staff. HR supplies, first categoryName, last categoryName, nric, address, bank details,
     //role, department.
-    public Staff createNewStaff (Staff staff,Address staffAddress, Long roleId,Long departmentId)throws InputDataValidationException, CreateNewStaffException {
-      validationService.throwExceptionIfInvalidBean(staff);
-       validationService.throwExceptionIfInvalidBean(staffAddress);
+    public Staff createNewStaff(Staff staff, Address staffAddress, Long roleId, Long departmentId, Long storeId) throws InputDataValidationException, CreateNewStaffException, CreateNewStaffAccountException {
+        validationService.throwExceptionIfInvalidBean(staff);
+        validationService.throwExceptionIfInvalidBean(staffAddress);
 
-        if (!Character.isLetter(staff.getNric().charAt(3))){
+        if (!Character.isLetter(staff.getNric().charAt(3))) {
             Map<String, String> errorMap = new HashMap<>();
             errorMap.put("nric", ErrorMessages.NRIC_LAST_LETTER);
             throw new InputDataValidationException(errorMap, ErrorMessages.NRIC_LAST_LETTER);
         }
 
         if (!Character.isDigit(staff.getNric().charAt(0)) || !Character.isDigit(staff.getNric().charAt(1)) ||
-        !Character.isDigit(staff.getNric().charAt(2))){
+                !Character.isDigit(staff.getNric().charAt(2))) {
             Map<String, String> errorMap = new HashMap<>();
             errorMap.put("nric", ErrorMessages.NRIC_FIRST_THREE);
             throw new InputDataValidationException(errorMap, ErrorMessages.NRIC_FIRST_THREE);
         }
 
-        try{
-           Staff existingStaff = null;
+        try {
+            Staff existingStaff = null;
 
             try {
                 existingStaff = retrieveStaffByNRIC(staff.getNric());
@@ -120,16 +119,24 @@ public class StaffService {
                     .orElseThrow(() -> new RoleNotFoundException("Role does not exist"));
             Department d = departmentRepository.findById(departmentId)
                     .orElseThrow(() -> new DepartmentNotFoundException("Department does not exist"));
-
+            if (storeId != null) {
+                Store s = storeRepository.findById(storeId).orElseThrow(() -> new StoreNotFoundException("Store does not exist"));
+                staff.setStore(s);
+                s.getStaff().add(staff);
+            }
             staff.setAddress(staffAddress);
             staff.setRole(r);
             staff.setDepartment(d);
+
             Staff savedStaff = staffRepository.save(staff);
+            List<Long> staffId = new ArrayList<>();
+            staffId.add(savedStaff.getStaffId());
+            Staff configuredStaff = createNewStaffAccount(staffId).get(0);
 
-            return lazyLoadStaffFields(savedStaff);
+            return lazyLoadStaffFields(configuredStaff);
 
 
-        } catch (PersistenceException | RoleNotFoundException | DepartmentNotFoundException ex) {
+        } catch (PersistenceException | RoleNotFoundException | DepartmentNotFoundException | StoreNotFoundException ex) {
             throw new CreateNewStaffException(ex.getMessage());
         }
     }
@@ -142,7 +149,7 @@ public class StaffService {
 
         List<Staff> toReturn = new ArrayList<>();
         try {
-            for(Long id : staffIDs) {
+            for (Long id : staffIDs) {
                 Staff staff = retrieveStaffByStaffId(id);
                 if (staff.getUsername() != null) {
                     Map<String, String> errorMap = new HashMap<>();
@@ -162,7 +169,7 @@ public class StaffService {
 //            }
             }
             return toReturn;
-        }catch (StaffNotFoundException ex){
+        } catch (StaffNotFoundException ex) {
             Map<String, String> errorMap = new HashMap<>();
             errorMap.put("staffId", ErrorMessages.STAFF_DOES_NOT_EXIST);
             throw new CreateNewStaffAccountException(errorMap, ErrorMessages.STAFF_DOES_NOT_EXIST);
@@ -172,7 +179,7 @@ public class StaffService {
 
     //For IT department to reset for staff
     public Staff resetPassword(String username) throws StaffNotFoundException, InputDataValidationException {
-        if(username.isEmpty()){
+        if (username.isEmpty()) {
             Map<String, String> errorMap = new HashMap<>();
             errorMap.put("username", ErrorMessages.USERNAME_REQUIRED);
             throw new InputDataValidationException(errorMap, ErrorMessages.USERNAME_REQUIRED);
@@ -192,7 +199,7 @@ public class StaffService {
 //            }
 
             return staff;
-        }catch (StaffNotFoundException ex){
+        } catch (StaffNotFoundException ex) {
             Map<String, String> errorMap = new HashMap<>();
             errorMap.put("username", ErrorMessages.STAFF_DOES_NOT_EXIST);
             throw new StaffNotFoundException(errorMap, ErrorMessages.STAFF_DOES_NOT_EXIST);
@@ -201,12 +208,12 @@ public class StaffService {
 
     //for HR to retrieve all staff
     public List<Staff> retrieveAllStaff() {
-        List<Staff> allStaff= staffRepository.findAll();
+        List<Staff> allStaff = staffRepository.findAll();
 
         for (Staff staff : allStaff) {
             staff.getLeaves().size();
             staff.getRepliedReviews().size();
-            staff.getRoster();
+            staff.getStore();
             staff.getRole();
             staff.getDepartment();
             staff.getPayrolls().size();
@@ -218,21 +225,22 @@ public class StaffService {
         return allStaff;
     }
 
-    public List<Role>retrieveAllRoles(){
-        List<Role>allRoles = roleRepository.findAll();
-return allRoles;
-}
-    public List<Department> retrieveAllDepartments(){
+    public List<Role> retrieveAllRoles() {
+        List<Role> allRoles = roleRepository.findAll();
+        return allRoles;
+    }
+
+    public List<Department> retrieveAllDepartments() {
         List<Department> allDepartments = departmentRepository.findAll();
         return allDepartments;
 
     }
 
-    public List<Staff> retrieveStaffWithNoAccount(){
-        List<Staff> allStaff= staffRepository.findAll();
+    public List<Staff> retrieveStaffWithNoAccount() {
+        List<Staff> allStaff = staffRepository.findAll();
         List<Staff> toReturn = new ArrayList<>();
-        for(Staff s : allStaff){
-            if(s.getUsername() == null){
+        for (Staff s : allStaff) {
+            if (s.getUsername() == null) {
                 toReturn.add(s);
             }
 
@@ -258,7 +266,7 @@ return allRoles;
     }
 
     //For HR to update first categoryName, last categoryName, NRIC, username, bank details, department , role, address
-    public Staff updateStaffDetails(Staff staff, Role role, Department department, Address address)throws UpdateStaffDetailsException, InputDataValidationException {
+    public Staff updateStaffDetails(Staff staff, Role role, Department department, Address address) throws UpdateStaffDetailsException, InputDataValidationException {
         validationService.throwExceptionIfInvalidBean(staff);
         validationService.throwExceptionIfInvalidBean(address);
         try {
@@ -275,7 +283,7 @@ return allRoles;
             staffToUpdate.setAddress(address);
 
             return lazyLoadStaffFields(staffToUpdate);
-        }catch (StaffNotFoundException ex) {
+        } catch (StaffNotFoundException ex) {
             throw new UpdateStaffDetailsException("Staff does not exist");
         }
 
@@ -292,13 +300,13 @@ return allRoles;
     //staff logins with username
     public Staff staffLogin(String username, String password) throws InvalidStaffCredentialsException, InputDataValidationException {
 
-        if(username.isEmpty()){
+        if (username.isEmpty()) {
             Map<String, String> errorMap = new HashMap<>();
             errorMap.put("username", ErrorMessages.USERNAME_REQUIRED);
             throw new InputDataValidationException(errorMap, ErrorMessages.USERNAME_REQUIRED);
         }
 
-        if(password.isEmpty()){
+        if (password.isEmpty()) {
             Map<String, String> errorMap = new HashMap<>();
             errorMap.put("password", ErrorMessages.PASSWORD_REQUIRED);
             throw new InputDataValidationException(errorMap, ErrorMessages.PASSWORD_REQUIRED);
@@ -314,13 +322,13 @@ return allRoles;
                 System.out.println(staff.getPassword());
                 Map<String, String> errorMap = new HashMap<>();
                 errorMap.put("password", ErrorMessages.INCORRECT_PASSWORD);
-                throw new InvalidStaffCredentialsException(errorMap,ErrorMessages.STAFF_LOGIN_FAILED);
+                throw new InvalidStaffCredentialsException(errorMap, ErrorMessages.STAFF_LOGIN_FAILED);
             }
 
         } catch (StaffNotFoundException | java.lang.NumberFormatException ex) {
             Map<String, String> errorMap = new HashMap<>();
             errorMap.put("username", ErrorMessages.INCORRECT_USERNAME);
-            throw new InvalidStaffCredentialsException(errorMap,ErrorMessages.STAFF_LOGIN_FAILED);
+            throw new InvalidStaffCredentialsException(errorMap, ErrorMessages.STAFF_LOGIN_FAILED);
         }
     }
 
@@ -328,30 +336,30 @@ return allRoles;
         try {
             Staff staff = retrieveStaffByStaffId(staffId);
 
-            if(oldPassword.isEmpty()){
+            if (oldPassword.isEmpty()) {
                 Map<String, String> errorMap = new HashMap<>();
                 errorMap.put("oldPassword", ErrorMessages.OLD_PASSWORD_REQUIRED);
-                throw new InvalidStaffCredentialsException(errorMap,ErrorMessages.OLD_PASSWORD_REQUIRED);
+                throw new InvalidStaffCredentialsException(errorMap, ErrorMessages.OLD_PASSWORD_REQUIRED);
 
             }
 
-            if(newPassword.isEmpty()){
+            if (newPassword.isEmpty()) {
                 Map<String, String> errorMap = new HashMap<>();
                 errorMap.put("newPassword", ErrorMessages.NEW_PASSWORD_REQUIRED);
-                throw new InvalidStaffCredentialsException(errorMap,ErrorMessages.NEW_PASSWORD_REQUIRED);
+                throw new InvalidStaffCredentialsException(errorMap, ErrorMessages.NEW_PASSWORD_REQUIRED);
 
             }
 
-            if (encoder.matches(oldPassword,staff.getPassword()) || oldPassword.equals(staff.getPassword())) {
+            if (encoder.matches(oldPassword, staff.getPassword()) || oldPassword.equals(staff.getPassword())) {
 
                 staff.setPassword(encoder.encode(newPassword));
                 return retrieveStaffByStaffId(staffId);
             } else {
                 Map<String, String> errorMap = new HashMap<>();
                 errorMap.put("oldPassword", ErrorMessages.OLD_PASSWORD_INCORRECT);
-                throw new InvalidStaffCredentialsException(errorMap,ErrorMessages.OLD_PASSWORD_INCORRECT);
+                throw new InvalidStaffCredentialsException(errorMap, ErrorMessages.OLD_PASSWORD_INCORRECT);
             }
-        }catch(StaffNotFoundException ex){
+        } catch (StaffNotFoundException ex) {
             throw new StaffNotFoundException("Staff does not exist!");
         }
     }
@@ -361,8 +369,8 @@ return allRoles;
             Staff existingStaff = retrieveStaffByStaffId(staffId);
             Address a = existingStaff.getAddress();
 
-            if ((existingStaff.getAdvertisements() != null && existingStaff.getAdvertisements().size() >0)
-                    || (existingStaff.getDeliveries() != null && existingStaff.getDeliveries().size()>0)){
+            if ((existingStaff.getAdvertisements() != null && existingStaff.getAdvertisements().size() > 0)
+                    || (existingStaff.getDeliveries() != null && existingStaff.getDeliveries().size() > 0)) {
                 throw new StaffCannotDeleteException("Staff cannot be deleted due to existing associations "
                         + "(advertisments/deliveries) with the store");
             }
@@ -401,16 +409,17 @@ return allRoles;
                 r.setStaff(null);
                 reviewRepository.delete(r);
             }
-            existingStaff.setRepliedReviews(null);;
+            existingStaff.setRepliedReviews(null);
+            ;
             // ----------------------------------------------------
 
             // Clear relationship with advertisements, and delete advertisements
             //for (Advertisement ad : existingStaff.getAdvertisements()) {
-              //  ad.getCreator().getAdvertisements().remove(ad);
-              //  ad.setCreator(null);
-             //   advertisementRepository.delete(ad);
-          //  }
-         //   existingStaff.setAdvertisements(null);
+            //  ad.getCreator().getAdvertisements().remove(ad);
+            //  ad.setCreator(null);
+            //   advertisementRepository.delete(ad);
+            //  }
+            //   existingStaff.setAdvertisements(null);
             // ----------------------------------------------------
 
             staffRepository.delete(existingStaff);
@@ -421,14 +430,12 @@ return allRoles;
             return existingStaff;
 
 
-        } catch (StaffNotFoundException ex){
+        } catch (StaffNotFoundException ex) {
             throw new StaffNotFoundException("Staff not found");
         }
 
 
-
     }
-
 
 
     private Staff lazyLoadStaffFields(Staff staff) {
@@ -442,13 +449,11 @@ return allRoles;
     }
 
 
-
-
     private void sendEmail(String username, String password, String email) {
         SimpleMailMessage msg = new SimpleMailMessage();
         msg.setTo(email);
         msg.setSubject("Here are your account details");
-        msg.setText("Your Username:"+ username + " Your Password:" + password);
+        msg.setText("Your Username:" + username + " Your Password:" + password);
         javaMailSender.send(msg);
     }
 

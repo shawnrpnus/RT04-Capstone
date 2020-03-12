@@ -15,6 +15,7 @@ import capstone.rt04.retailbackend.util.exceptions.product.*;
 import capstone.rt04.retailbackend.util.exceptions.reservation.CreateNewReservationException;
 import capstone.rt04.retailbackend.util.exceptions.reservation.ReservationNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.shoppingcart.InvalidCartTypeException;
+import capstone.rt04.retailbackend.util.exceptions.staff.CreateNewStaffAccountException;
 import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.style.CreateNewStyleException;
 import capstone.rt04.retailbackend.util.exceptions.style.DeleteStyleException;
@@ -90,7 +91,7 @@ public class GeneralExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler({
             VerificationCodeExpiredException.class, InvalidCartTypeException.class, WishlistException.class, CreateNewReservationException.class,
-            DeleteProductVariantException.class, InStoreRestockOrderUpdateException.class, InsufficientStockException.class
+            DeleteProductVariantException.class, InStoreRestockOrderUpdateException.class, InsufficientStockException.class, CreateNewStaffAccountException.class
     })
     public final ResponseEntity<Object> handleBadRequestExceptions(Exception ex, WebRequest req) {
         return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);

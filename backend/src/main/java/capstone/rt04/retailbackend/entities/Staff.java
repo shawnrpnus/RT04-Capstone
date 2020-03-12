@@ -59,8 +59,6 @@ public class Staff implements Serializable {
     @Size(min =1 , message =ErrorMessages.EMAIL_REQUIRED)
     private String email;
 
-
-
     @Size(min = 6)
     private String password;
 
@@ -91,7 +89,7 @@ public class Staff implements Serializable {
     private List<Payroll> payrolls;
 
     @ManyToOne
-    private Roster roster;
+    private Store store;
 
     @OneToOne(optional = false)
     private Address address;

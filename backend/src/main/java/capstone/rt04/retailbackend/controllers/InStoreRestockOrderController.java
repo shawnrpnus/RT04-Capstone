@@ -91,7 +91,7 @@ public class InStoreRestockOrderController {
             inStoreRestockOrder.getStore().setProductStocks(null);
             inStoreRestockOrder.getStore().setReservations(null);
             inStoreRestockOrder.getStore().setInStoreRestockOrders(null);
-            inStoreRestockOrder.getStore().setRosters(null);
+//            inStoreRestockOrder.getStore().setRosters(null);
             inStoreRestockOrder.getStore().setTransactions(null);
 
             // TODO: Clear delivery
