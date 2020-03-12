@@ -1,8 +1,10 @@
 export default {
   COLORS: {
     DEFAULT: '#DCDCDC',
-    // PRIMARY: '#9C26B0',
-    PRIMARY: '#F8B681',
+    PRIMARY: '#F7B878',
+    SECONDARY: '#FBCEB1',
+    ACCENT_LIGHTER: '#824F1D',
+    ACCENT_DARKER: '#5A2C00',
     LABEL: '#FE2472',
     INFO: '#00BCD4',
     ERROR: '#F44336',
@@ -11,7 +13,7 @@ export default {
     MUTED: '#979797',
     INPUT: '#DCDCDC',
     ACTIVE: '#9C26B0',
-    BUTTON_COLOR: '#393939',
+    BUTTON_COLOR: '#5A2C00',
     PLACEHOLDER: '#9FA5AA',
     SWITCH_ON: '#9C26B0',
     SWITCH_OFF: '#D4D9DD',
@@ -21,7 +23,6 @@ export default {
     BORDER_COLOR: '#E7E7E7',
     BLOCK: '#E7E7E7',
     CAPTION: '#4A4A4A',
-    APRICOT_DARKER: '#F08B6A'
   },
   SIZES: {
     BLOCK_SHADOW_RADIUS: 2,

@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
     marginBottom: 6
   },
   activeStyle: {
-    backgroundColor: materialTheme.COLORS.APRICOT_DARKER,
+    backgroundColor: materialTheme.COLORS.ACCENT_LIGHTER,
     borderRadius: 4
   },
   shadow: {
