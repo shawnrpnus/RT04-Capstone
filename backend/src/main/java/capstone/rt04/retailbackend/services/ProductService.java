@@ -572,6 +572,15 @@ public class ProductService {
         return productVariant;
     }
 
+    public List<String> retrieveProductVariantSKUs(){
+        List<ProductVariant> PVs = productVariantRepository.findAll();
+        List<String> SKUs = new ArrayList<>();
+        for (ProductVariant pv: PVs){
+            SKUs.add(pv.getSKU());
+        }
+        return SKUs;
+    }
+
     public List<ProductVariant> retrieveProductVariantByProduct(Long productId) {
 
         List<ProductVariant> productVariants = productVariantRepository.findAllByProduct_ProductId(productId);
