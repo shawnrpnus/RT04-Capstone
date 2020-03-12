@@ -4,6 +4,8 @@ import capstone.rt04.retailbackend.entities.*;
 import capstone.rt04.retailbackend.repositories.InStoreRestockOrderItemRepository;
 import capstone.rt04.retailbackend.repositories.InStoreRestockOrderRepository;
 import capstone.rt04.retailbackend.request.inStoreRestockOrder.StockIdQuantityMap;
+import capstone.rt04.retailbackend.response.InStoreRestockOrderForWarehouse;
+import capstone.rt04.retailbackend.response.InStoreRestockOrderItemsForWarehouse;
 import capstone.rt04.retailbackend.util.enums.DeliveryStatusEnum;
 import capstone.rt04.retailbackend.util.exceptions.inStoreRestockOrder.InStoreRestockOrderNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.inStoreRestockOrder.InStoreRestockOrderUpdateException;
@@ -50,7 +52,6 @@ public class InStoreRestockOrderService {
 
         // Creating restock order item
         for (StockIdQuantityMap stockIdQuantityMap : stockIdQuantityMaps) {
-            // Chan change to SKU instead?
             productStock = productService.retrieveProductStockById(stockIdQuantityMap.getProductStockId());
             InStoreRestockOrderItem inStoreRestockOrderItem = new InStoreRestockOrderItem(stockIdQuantityMap.getOrderQuantity(), productStock);
             inStoreRestockOrderItemRepository.save(inStoreRestockOrderItem);
@@ -65,14 +66,39 @@ public class InStoreRestockOrderService {
         return retrieveAllInStoreRestockOrder(store.getStoreId());
     }
 
-    public List<InStoreRestockOrder> retrieveAllInStoreRestockOrder(Long storeId) {
-        List<InStoreRestockOrder> inStoreRestockOrders;
-        System.out.println(storeId);
-        if (storeId == null) {
-            inStoreRestockOrders = inStoreRestockOrderRepository.findAll();
-        } else {
-            inStoreRestockOrders = inStoreRestockOrderRepository.findAllByStore_StoreId(storeId);
+    @Transactional(readOnly = true)
+    public List<InStoreRestockOrderForWarehouse> retrieveAllInStoreRestockOrderForWarehouse() {
+        List<InStoreRestockOrder> inStoreRestockOrders = inStoreRestockOrderRepository.findAll();
+        List<InStoreRestockOrderForWarehouse> inStoreRestockOrdersForWarehouse = new ArrayList<>();
+        InStoreRestockOrder order;
+        InStoreRestockOrderItem item;
+        InStoreRestockOrderForWarehouse inStoreRestockOrderForWarehouse;
+        InStoreRestockOrderItemsForWarehouse inStoreRestockOrderItemsForWarehouse = new InStoreRestockOrderItemsForWarehouse();
+
+        // TODO: Find the stock in warehouse and return a custom object
+        for (InStoreRestockOrder inStoreRestockOrder : inStoreRestockOrders) {
+            order = inStoreRestockOrder;
+            inStoreRestockOrderForWarehouse = new InStoreRestockOrderForWarehouse(order.getInStoreRestockOrderId(), order.getOrderDateTime(), order.getDeliveryDateTime(),
+                    order.getDeliveryStatus(), new ArrayList<>(), order.getStore(), order.getWarehouse());
+            for (InStoreRestockOrderItem inStoreRestockOrderItem : inStoreRestockOrder.getInStoreRestockOrderItems()) {
+                item = inStoreRestockOrderItem;
+                for (ProductStock productStock : inStoreRestockOrderItem.getProductStock().getProductVariant().getProductStocks()) {
+                    if (productStock.getWarehouse() != null) {
+                        inStoreRestockOrderItemsForWarehouse = new InStoreRestockOrderItemsForWarehouse(item.getInStoreRestockOrderItemId(),
+                                item.getQuantity(), item.getProductStock(), productStock.getQuantity(), item.getDeliveryDateTime(),
+                                item.getDeliveryStatus(), item.getDelivery());
+                    }
+                }
+                inStoreRestockOrderForWarehouse.getInStoreRestockOrderItemsForWarehouse().add(inStoreRestockOrderItemsForWarehouse);
+            }
+            inStoreRestockOrdersForWarehouse.add(inStoreRestockOrderForWarehouse);
         }
+        return inStoreRestockOrdersForWarehouse;
+    }
+
+    public List<InStoreRestockOrder> retrieveAllInStoreRestockOrder(Long storeId) {
+        List<InStoreRestockOrder> inStoreRestockOrders = inStoreRestockOrderRepository.findAllByStore_StoreId(storeId);
+
         lazilyLoadInStoreRestockOrder(inStoreRestockOrders);
         return inStoreRestockOrders;
     }
@@ -141,22 +167,35 @@ public class InStoreRestockOrderService {
         Warehouse warehouse = inStoreRestockOrder.getWarehouse();
         Long productVariantId;
         ProductStock productStock;
+        Boolean insufficient = Boolean.FALSE;
 
         // Deduct all the stock from warehouse
         for (InStoreRestockOrderItem inStoreRestockOrderItem : inStoreRestockOrder.getInStoreRestockOrderItems()) {
+
+            if (inStoreRestockOrderItem.getDeliveryStatus() == DeliveryStatusEnum.DELIVERED ||
+                    inStoreRestockOrderItem.getDeliveryStatus() == DeliveryStatusEnum.IN_TRANSIT) continue;
+
             productVariantId = inStoreRestockOrderItem.getProductStock().getProductVariant().getProductVariantId();
             productStock = productService.retrieveProductStockByWarehouseAndProductVariantId(warehouse.getWarehouseId(), productVariantId);
-            if (productStock.getQuantity() <inStoreRestockOrderItem.getQuantity() ) {
-                throw new InsufficientStockException("Insufficient stock for " + inStoreRestockOrderItem.getProductStock().getProductVariant().getSKU());
+            if (productStock.getQuantity() < inStoreRestockOrderItem.getQuantity()) {
+                insufficient = Boolean.TRUE;
+                inStoreRestockOrderItem.setDeliveryStatus(DeliveryStatusEnum.DELAYED);
+                continue;
             }
             productStock.setQuantity(productStock.getQuantity() - inStoreRestockOrderItem.getQuantity());
+            inStoreRestockOrderItem.setDeliveryStatus(DeliveryStatusEnum.IN_TRANSIT);
         }
-        inStoreRestockOrder.setDeliveryStatus(DeliveryStatusEnum.IN_TRANSIT);
-        // TODO : link the restock order to delivery
+
+        if (insufficient) {
+            inStoreRestockOrder.setDeliveryStatus(DeliveryStatusEnum.PARTIALLY_IN_TRANSIT);
+        } else {
+            inStoreRestockOrder.setDeliveryStatus(DeliveryStatusEnum.IN_TRANSIT);
+        }
         return retrieveAllInStoreRestockOrder(storeId);
     }
 
     public List<InStoreRestockOrder> receiveStock(Long inStoreRestockOrderId) throws InStoreRestockOrderNotFoundException {
+        // TODO: Change to retrieve by delivery instead
         InStoreRestockOrder inStoreRestockOrder = retrieveInStoreRestockOrderByInStoreRestockOrderId(inStoreRestockOrderId);
         Integer quantity;
         ProductStock productStock;
@@ -193,7 +232,6 @@ public class InStoreRestockOrderService {
 
     private void lazilyLoadInStoreRestockOrder(List<InStoreRestockOrder> inStoreRestockOrders) {
         for (InStoreRestockOrder order : inStoreRestockOrders) {
-            order.getDeliveries().size();
             order.getInStoreRestockOrderItems().size();
         }
     }

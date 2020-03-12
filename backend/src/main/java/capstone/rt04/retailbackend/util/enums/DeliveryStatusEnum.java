@@ -13,5 +13,8 @@ public enum DeliveryStatusEnum {
     PROCESSING,
     IN_TRANSIT,
     DELIVERED,
-    FAILED  
+    PARTIALLY_FULFILLED,
+    PARTIALLY_IN_TRANSIT,
+    DELAYED,
+    FAILED
 }

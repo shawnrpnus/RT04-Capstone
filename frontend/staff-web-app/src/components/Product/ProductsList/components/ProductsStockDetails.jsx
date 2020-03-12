@@ -31,7 +31,6 @@ import { updateProductStockQty } from "../../../../redux/actions/productStockAct
 import { toast } from "react-toastify";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Backdrop from "@material-ui/core/Backdrop";
-import { Typography } from "@material-ui/core";
 
 const _ = require("lodash");
 

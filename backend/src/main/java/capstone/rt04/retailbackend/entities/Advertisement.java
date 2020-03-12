@@ -15,7 +15,6 @@ import lombok.ToString;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.sql.Timestamp;
 
 /**
  *
@@ -36,11 +35,12 @@ public class Advertisement implements Serializable {
     
     @NotNull
     @Column(nullable = false)
-    private String fileName;
+    private String advertisementImgUrl;
     
-    private Timestamp fromDateTime;
-    
-    private Timestamp toDateTime;
+//    private Timestamp fromDateTime;
+//    private Timestamp toDateTime;
+
+    private Boolean active;
     
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
@@ -49,8 +49,8 @@ public class Advertisement implements Serializable {
     public Advertisement() {
     }
 
-    public Advertisement(String fileName, Staff creator) {
-        this.fileName = fileName;
+    public Advertisement(String advertisementImgUrl, Staff creator) {
+        this.advertisementImgUrl = advertisementImgUrl;
         this.creator = creator;
     }
      

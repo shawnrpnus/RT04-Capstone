@@ -25,7 +25,8 @@ import Chip from "@material-ui/core/Chip";
 import {
   retrieveAllRestockOrder,
   deleteRestockOrder,
-  receiveStock
+  receiveStock,
+  getDeliveryStatusColour
 } from "../../../redux/actions/restockOrderAction";
 import withPage from "../../Layout/page/withPage";
 import { useConfirm } from "material-ui-confirm";
@@ -60,7 +61,7 @@ const RestockOrderTable = props => {
   const [restockOrder, setRestockOrder] = useState({});
   const [open, setOpen] = useState(false);
   const { renderLoader, store, staff } = props;
-  const { storeId } = store;
+  const storeId = _.get(store, "storeId", null);
   const warehouse =
     _.get(staff, "department.departmentName", "") === "Warehouse";
 
@@ -76,16 +77,22 @@ const RestockOrderTable = props => {
     setOpen(false);
   };
 
+  console.log(restockOrders);
+
   let data = [];
   if (restockOrders) {
     data = restockOrders.map(restockOrder => {
-      const {
+      let {
         inStoreRestockOrderId,
         orderDateTime,
         deliveryStatus,
         store,
-        inStoreRestockOrderItems
+        inStoreRestockOrderItems,
+        inStoreRestockOrderItemsForWarehouse
       } = restockOrder;
+      inStoreRestockOrderItems = inStoreRestockOrderItems
+        ? inStoreRestockOrderItems
+        : inStoreRestockOrderItemsForWarehouse;
       const date = dateformat(new Date(orderDateTime), "dd'-'mmm'-'yyyy");
       const currentDate = new Date(orderDateTime);
       const disableEdit =
@@ -128,18 +135,7 @@ const RestockOrderTable = props => {
               title: "Delivery status",
               field: "deliveryStatus",
               render: ({ deliveryStatus }) => {
-                let style;
-                switch (deliveryStatus) {
-                  case "IN_TRANSIT":
-                    style = { backgroundColor: "#1975d2" };
-                    break;
-                  case "PROCESSING":
-                    style = { backgroundColor: "#feaa4b" };
-                    break;
-                  default:
-                    // resolved
-                    style = { backgroundColor: "#33ba0a" };
-                }
+                const style = getDeliveryStatusColour(deliveryStatus);
                 return (
                   <Chip
                     style={{ ...style, color: "white" }}
