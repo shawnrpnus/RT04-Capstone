@@ -23,14 +23,13 @@ export default function LogIn(props) {
   const { navigation } = props;
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
 
   const dispatch = useDispatch();
   const errors = useSelector(state => state.errors);
 
   const handleLogin = () => {
     const staffLoginRequest = {username, password};
-    dispatch(staffLogin(staffLoginRequest, setSnackbarOpen));
+    dispatch(staffLogin(staffLoginRequest));
   }
 
   return (
@@ -38,13 +37,13 @@ export default function LogIn(props) {
       start={{ x: 0, y: 0 }}
       end={{ x: 0.25, y: 1.1 }}
       locations={[0.2, 1]}
-      colors={["#F08B6A","#F8A175" ]}
+      colors={[materialTheme.COLORS.PRIMARY, materialTheme.COLORS.SECONDARY ]}
       style={[styles.signin, { flex: 1, paddingTop: theme.SIZES.BASE * 4 }]}
     >
       <Block middle>
         <KeyboardAvoidingView behaviour="padding" enabled>
           <Block flex={2} middle style={{ justifyContent: "flex-end" }}>
-            <Text h1 color="white" style={{ marginBottom: 20 }}>
+            <Text h1 color="white" style={{ marginBottom: 20, color: materialTheme.COLORS.ACCENT_DARKER }}>
               apricot & nut
             </Text>
           </Block>
@@ -66,8 +65,9 @@ export default function LogIn(props) {
                   setUsername(text)
                   dispatch(clearErrors());
                 }}
+                theme={{ colors: { primary: materialTheme.COLORS.ACCENT_DARKER }}}
                 style={{ backgroundColor: "transparent"}}
-                error={!_.isEmpty(errors)}
+                error={!!_.get(errors, "username")}
               />
               <HelperText type="error" visible={!_.isEmpty(errors)}>
                 {errors.username}
@@ -82,8 +82,9 @@ export default function LogIn(props) {
                   setPassword(text)
                   dispatch(clearErrors());
                 }}
+                theme={{ colors: { primary: materialTheme.COLORS.ACCENT_DARKER }}}
                 style={{ backgroundColor: "transparent"}}
-                error={!_.isEmpty(errors)}
+                error={!!_.get(errors, "password")}
               />
               <HelperText type="error" visible={!_.isEmpty(errors)}>
                 {errors.password}
@@ -104,21 +105,6 @@ export default function LogIn(props) {
           <Block flex={2} />
         </KeyboardAvoidingView>
       </Block>
-      <Snackbar
-        visible={snackbarOpen}
-        duration={2000}
-        onDismiss={() => setSnackbarOpen(false)}
-        action={{
-          label: "Ok",
-          onPress: () => {
-            setSnackbarOpen(false);
-          }
-        }}
-        style={{ marginBottom: height - 70, backgroundColor: "green"}}
-
-      >
-        Logged in!
-      </Snackbar>
     </LinearGradient>
   );
 }

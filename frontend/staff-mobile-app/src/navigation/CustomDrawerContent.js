@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
     flex: 1
   },
   header: {
-    backgroundColor: materialTheme.COLORS.APRICOT_DARKER,
+    backgroundColor: materialTheme.COLORS.ACCENT_LIGHTER,
     paddingHorizontal: 28,
     paddingBottom: theme.SIZES.BASE,
     paddingTop: theme.SIZES.BASE * 2,

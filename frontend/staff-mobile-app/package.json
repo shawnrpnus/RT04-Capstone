@@ -24,6 +24,7 @@
     "galio-framework": "^0.6.3",
     "jsog": "^1.0.7",
     "lodash": "latest",
+    "moment": "^2.24.0",
     "react": "~16.9.0",
     "react-dom": "~16.9.0",
     "react-native": "https://github.com/expo/react-native/archive/sdk-36.0.0.tar.gz",

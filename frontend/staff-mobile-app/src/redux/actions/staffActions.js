@@ -17,13 +17,12 @@ const updateStaff = staff => ({
   staff: staff
 });
 
-export const staffLogin = (req, setSnackbarOpen) => {
+export const staffLogin = (req) => {
   return dispatch => {
     axios
       .post(STAFF_BASE_URL + "/loginStaff", req)
       .then(response => {
         dispatchUpdatedStaff(response.data, dispatch);
-        setSnackbarOpen(true);
       })
       .catch(err => {
         dispatchErrorMapError(err, dispatch);
