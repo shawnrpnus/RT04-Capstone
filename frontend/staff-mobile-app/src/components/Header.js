@@ -18,49 +18,6 @@ const iPhoneX = () =>
   Platform.OS === "ios" &&
   (height === 812 || width === 812 || height === 896 || width === 896);
 
-const ChatButton = ({ isWhite, style, navigation }) => (
-  <TouchableOpacity
-    style={[styles.button, style]}
-    onPress={() => navigation.navigate("Chat")}
-  >
-    <Icon
-      family="GalioExtra"
-      size={16}
-      name="chat-33"
-      color={theme.COLORS[isWhite ? "WHITE" : "ICON"]}
-    />
-    <Block middle style={styles.notify} />
-  </TouchableOpacity>
-);
-
-const BasketButton = ({ isWhite, style, navigation }) => (
-  <TouchableOpacity
-    style={[styles.button, style]}
-    onPress={() => navigation.navigate("Cart")}
-  >
-    <Icon
-      family="GalioExtra"
-      size={16}
-      name="basket-simple"
-      color={theme.COLORS[isWhite ? "WHITE" : "ICON"]}
-    />
-    <Block middle style={styles.notify} />
-  </TouchableOpacity>
-);
-
-const SearchButton = ({ isWhite, style, navigation }) => (
-  <TouchableOpacity
-    style={[styles.button, style]}
-    onPress={() => navigation.navigate("Search")}
-  >
-    <Icon
-      size={16}
-      family="entypo"
-      name="magnifying-glass"
-      color={theme.COLORS[isWhite ? "WHITE" : "ICON"]}
-    />
-  </TouchableOpacity>
-);
 
 function Header(props) {
   const navigation = useNavigation();
@@ -70,155 +27,13 @@ function Header(props) {
     return back ? navigation.goBack() : navigation.openDrawer();
   };
 
-  const renderRight = () => {
-    const { white, title, navigation, scene } = props;
-    // const { options } = scene.descriptor;
-    // const routeName = options.headerTitle; // wip
-
-    if (title === "Title") {
-      return [
-        <ChatButton
-          key="chat-search"
-          navigation={navigation}
-          isWhite={white}
-        />,
-        <BasketButton
-          key="basket-search"
-          navigation={navigation}
-          isWhite={white}
-        />
-      ];
-    }
-
-    switch (title) {
-      case "About":
-      case "Agreement":
-      case "Cart":
-      case "Categories":
-      case "Category":
-      case "Deals":
-      case "Home":
-      case "Woman":
-      case "Man":
-      case "Kids":
-      case "NewCollection":
-      case "Notifications":
-      case "Privacy":
-      case "Profile":
-      case "Search":
-      case "Settings":
-        return [
-          <ChatButton
-            key="chat-search"
-            navigation={navigation}
-            isWhite={white}
-          />,
-          <BasketButton
-            key="basket-search"
-            navigation={navigation}
-            isWhite={white}
-          />
-        ];
-      case "Product":
-        return [
-          <SearchButton
-            key="search-product"
-            navigation={navigation}
-            isWhite={white}
-          />,
-          <BasketButton
-            key="basket-product"
-            navigation={navigation}
-            isWhite={white}
-          />
-        ];
-      default:
-        break;
-    }
-  };
-
-  const renderSearch = () => {
-    const { navigation } = props;
-    return (
-      <Input
-        right
-        color="black"
-        style={styles.search}
-        placeholder="What are you looking for?"
-        onFocus={() => navigation.navigate("Search")}
-        iconContent={
-          <Icon
-            size={16}
-            color={theme.COLORS.MUTED}
-            name="magnifying-glass"
-            family="entypo"
-          />
-        }
-      />
-    );
-  };
-
-  const renderOptions = () => {
-    const { navigation, optionLeft, optionRight } = props;
-
-    return (
-      <Block row style={styles.tabs}>
-        <Button
-          shadowless
-          style={[styles.tab, styles.divider]}
-          onPress={() => navigation.navigate("Categories")}
-        >
-          <Block row middle>
-            <Icon name="grid" family="feather" style={{ paddingRight: 8 }} />
-            <Text size={16} style={styles.tabTitle}>
-              {optionLeft || "Categories"}
-            </Text>
-          </Block>
-        </Button>
-        <Button
-          shadowless
-          style={styles.tab}
-          onPress={() => navigation.navigate("Deals")}
-        >
-          <Block row middle>
-            <Icon
-              size={16}
-              name="camera-18"
-              family="GalioExtra"
-              style={{ paddingRight: 8 }}
-            />
-            <Text size={16} style={styles.tabTitle}>
-              {optionRight || "Best Deals"}
-            </Text>
-          </Block>
-        </Button>
-      </Block>
-    );
-  };
-
-  const renderTabs = () => {
-    const { tabs, tabIndex, navigation } = props;
-    const defaultTab = tabs && tabs[0] && tabs[0].id;
-
-    if (!tabs) return null;
-
-    return (
-      <Tabs
-        data={tabs || []}
-        initialIndex={tabIndex || defaultTab}
-        onChange={id => navigation.setParams({ tabId: id })}
-      />
-    );
-  };
 
   const renderHeader = () => {
     const { search, tabs, options } = props;
     if (search || tabs || options) {
       return (
         <Block center>
-          {search ? renderSearch() : null}
-          {options ? renderOptions() : null}
-          {tabs ? renderTabs() : null}
+
         </Block>
       );
     }

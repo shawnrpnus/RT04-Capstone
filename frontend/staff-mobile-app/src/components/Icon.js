@@ -12,9 +12,13 @@ export default function IconExtra(props) {
     fontLoaded: false
   });
 
-  useEffect(async () => {
-    await Font.loadAsync({ GalioExtra: GalioExtra });
-    setState(prevState => ({ ...prevState, fontLoaded: true }));
+  useEffect(() => {
+    async function fetchFonts() {
+      await Font.loadAsync({ GalioExtra: GalioExtra });
+    }
+    fetchFonts().then(
+      setState(prevState => ({ ...prevState, fontLoaded: true }))
+    );
   }, []);
 
   const { name, family, ...rest } = props;

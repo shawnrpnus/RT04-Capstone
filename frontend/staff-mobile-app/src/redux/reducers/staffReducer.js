@@ -1,4 +1,5 @@
 import * as types from "../actions/types";
+import {AsyncStorage} from "react-native";
 
 const initialState = {
   loggedInStaff: null
@@ -15,6 +16,12 @@ export default function(state = initialState, action) {
       return {
         ...state,
         loggedInStaff: action.staff
+      }
+    case types.STAFF_LOGOUT:
+      AsyncStorage.removeItem("state");
+      return {
+        ...state,
+        loggedInStaff: null
       }
     default:
       return state;
