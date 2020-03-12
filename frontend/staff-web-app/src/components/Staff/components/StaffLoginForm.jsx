@@ -10,9 +10,7 @@ import { Button } from "reactstrap";
 import { clearErrors, updateErrors } from "../../../redux/actions";
 import StaffLoginRequest from "../../../models/staff/StaffLoginRequest";
 import { retrieveAllStores } from "../../../redux/actions/storeActions";
-import { Grid, TextField, InputLabel, Typography } from "@material-ui/core";
-import Select from "@material-ui/core/Select";
-import MenuItem from "@material-ui/core/MenuItem";
+import Grid from "@material-ui/core/Grid";
 
 const _ = require("lodash");
 
@@ -33,10 +31,6 @@ class StaffLoginForm extends Component {
     };
   }
 
-  componentDidMount() {
-    this.props.retrieveAllStores();
-  }
-
   onChange = e => {
     const name = e.target.name;
     this.setState({ [name]: e.target.value }); //computed property name syntax
@@ -47,11 +41,6 @@ class StaffLoginForm extends Component {
 
   onClick = e => {
     this.props.history.push(`/resetPassword`);
-  };
-
-  onSelectStore = ({ target: input }) => {
-    const store = input.value;
-    this.setState({ store });
   };
 
   showPassword(e) {
@@ -114,33 +103,6 @@ class StaffLoginForm extends Component {
                     {/*  <Link to="/resetPassword">Forgot your password?</Link>*/}
                     {/*</div>*/}
                   </div>
-
-                  <Grid item xs={12} style={{ marginTop: "10%" }}>
-                    <small style={{ fontSize: 12 }}>
-                      Select a store if you're from the store department
-                    </small>{" "}
-                    <Select
-                      fullWidth
-                      onClick={this.onSelectStore}
-                      name="store"
-                      defaultValue={""}
-                    >
-                      <MenuItem key={"blank"} value={""}>
-                        <Typography style={{ visibility: "hidden" }}>
-                          blank
-                        </Typography>
-                      </MenuItem>
-                      {allStores &&
-                        allStores.map((store, index) => {
-                          return (
-                            <MenuItem key={index} value={store}>
-                              {store.storeName}
-                            </MenuItem>
-                          );
-                        })}
-                    </Select>
-                  </Grid>
-
                   <div className="form__form-group">
                     <Button
                       className="account__btn"

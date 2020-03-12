@@ -151,3 +151,29 @@ export const receiveStock = (inStoreRestockOrderId, storeId) => {
       });
   };
 };
+
+export const getDeliveryStatusColour = deliveryStatus => {
+  let style;
+  switch (deliveryStatus) {
+    case "IN_TRANSIT":
+      style = { backgroundColor: "#1975d2" };
+      break;
+    case "PROCESSING":
+      style = { backgroundColor: "#feaa4b" };
+      break;
+    case "DELAYED":
+      style = { backgroundColor: "#e1282d" };
+      break;
+    case "PARTIALLY_FULFILLED":
+      style = { backgroundColor: "#ff8c00" };
+      break;
+    case "PARTIALLY_IN_TRANSIT":
+      style = { backgroundColor: "#ff8c00" };
+      break;
+    default:
+      // resolved
+      style = { backgroundColor: "#33ba0a" };
+  }
+
+  return style;
+};

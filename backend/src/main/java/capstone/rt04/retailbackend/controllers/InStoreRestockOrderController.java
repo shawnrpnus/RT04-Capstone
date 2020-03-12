@@ -1,11 +1,10 @@
 package capstone.rt04.retailbackend.controllers;
 
-import capstone.rt04.retailbackend.entities.InStoreRestockOrder;
-import capstone.rt04.retailbackend.entities.InStoreRestockOrderItem;
-import capstone.rt04.retailbackend.entities.Product;
-import capstone.rt04.retailbackend.entities.ProductVariant;
+import capstone.rt04.retailbackend.entities.*;
 import capstone.rt04.retailbackend.request.inStoreRestockOrder.RestockCreateRequest;
 import capstone.rt04.retailbackend.request.inStoreRestockOrder.RestockUpdateRequest;
+import capstone.rt04.retailbackend.response.InStoreRestockOrderForWarehouse;
+import capstone.rt04.retailbackend.response.InStoreRestockOrderItemsForWarehouse;
 import capstone.rt04.retailbackend.services.InStoreRestockOrderService;
 import capstone.rt04.retailbackend.services.ValidationService;
 import capstone.rt04.retailbackend.util.exceptions.inStoreRestockOrder.InStoreRestockOrderNotFoundException;
@@ -39,9 +38,15 @@ public class InStoreRestockOrderController {
 
     @GetMapping(RETRIEVE_ALL_IN_STORE_RESTOCK_ORDER)
     public ResponseEntity<?> retrieveAllRestockOrder(@RequestParam(required=false) Long storeId) {
-        List<InStoreRestockOrder> inStoreRestockOrders = inStoreRestockOrderService.retrieveAllInStoreRestockOrder(storeId);
-        clearRestockOrderRelationship(inStoreRestockOrders);
-        return new ResponseEntity<>(inStoreRestockOrders, HttpStatus.OK);
+        if (storeId != null) {
+            List<InStoreRestockOrder> inStoreRestockOrders = inStoreRestockOrderService.retrieveAllInStoreRestockOrder(storeId);
+            clearRestockOrderRelationship(inStoreRestockOrders);
+            return new ResponseEntity<>(inStoreRestockOrders, HttpStatus.OK);
+        } else {
+            List<InStoreRestockOrderForWarehouse> inStoreRestockOrderForWarehouse = inStoreRestockOrderService.retrieveAllInStoreRestockOrderForWarehouse();
+            clearRestockOrderForWarehouseRelationship(inStoreRestockOrderForWarehouse);
+            return new ResponseEntity<>(inStoreRestockOrderForWarehouse, HttpStatus.OK);
+        }
     }
 
     @PostMapping(CREATE_IN_STORE_RESTOCK_ORDER)
@@ -88,13 +93,7 @@ public class InStoreRestockOrderController {
             inStoreRestockOrder.getWarehouse().setInStoreRestockOrders(null);
 
             // Store
-            inStoreRestockOrder.getStore().setProductStocks(null);
-            inStoreRestockOrder.getStore().setReservations(null);
-            inStoreRestockOrder.getStore().setInStoreRestockOrders(null);
-//            inStoreRestockOrder.getStore().setRosters(null);
-            inStoreRestockOrder.getStore().setTransactions(null);
-
-            // TODO: Clear delivery
+            clearStore(inStoreRestockOrder.getStore());
 
             // Product stock
             for (InStoreRestockOrderItem inStoreRestockOrderItem : inStoreRestockOrder.getInStoreRestockOrderItems()) {
@@ -102,17 +101,49 @@ public class InStoreRestockOrderController {
                 inStoreRestockOrderItem.getProductStock().setWarehouse(null);
                 // Product variant
                 ProductVariant productVariant = inStoreRestockOrderItem.getProductStock().getProductVariant();
-                productVariant.setProductStocks(null);
-                // Product
-                Product product = productVariant.getProduct();
-                product.setStyles(null);
-                product.setReviews(null);
-                product.setCategory(null);
-                product.setTags(null);
-                product.setPromoCodes(null);
-                product.setDiscounts(null);
-                product.setProductVariants(null);
+                clearProductVariant(productVariant);
             }
         }
+    }
+
+    private void clearRestockOrderForWarehouseRelationship(List<InStoreRestockOrderForWarehouse> inStoreRestockOrderForWarehouses ) {
+        for (InStoreRestockOrderForWarehouse inStoreRestockOrderForWarehouse : inStoreRestockOrderForWarehouses) {
+            // Warehouse
+            inStoreRestockOrderForWarehouse.getWarehouse().setProductStocks(null);
+            inStoreRestockOrderForWarehouse.getWarehouse().setInStoreRestockOrders(null);
+
+            // Store
+            clearStore(inStoreRestockOrderForWarehouse.getStore());
+
+            // Product stock
+            for (InStoreRestockOrderItemsForWarehouse inStoreRestockOrderItemsForWarehouse : inStoreRestockOrderForWarehouse.getInStoreRestockOrderItemsForWarehouse()) {
+                inStoreRestockOrderItemsForWarehouse.getProductStock().setStore(null);
+                inStoreRestockOrderItemsForWarehouse.getProductStock().setWarehouse(null);
+                // Product variant
+                ProductVariant productVariant = inStoreRestockOrderItemsForWarehouse.getProductStock().getProductVariant();
+                clearProductVariant(productVariant);
+            }
+        }
+    }
+
+    private void clearProductVariant(ProductVariant productVariant) {
+        productVariant.setProductStocks(null);
+        // Product
+        Product product = productVariant.getProduct();
+        product.setStyles(null);
+        product.setReviews(null);
+        product.setCategory(null);
+        product.setTags(null);
+        product.setPromoCodes(null);
+        product.setDiscounts(null);
+        product.setProductVariants(null);
+    }
+
+    private void clearStore(Store store) {
+        store.setProductStocks(null);
+        store.setReservations(null);
+        store.setInStoreRestockOrders(null);
+        store.setTransactions(null);
+        store.setStaff(null);
     }
 }

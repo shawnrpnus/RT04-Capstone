@@ -27,13 +27,15 @@ import {
   Search,
   ViewColumn,
   Visibility,
-  Delete
+  Delete,
+  FiberManualRecord
 } from "@material-ui/icons";
 import { useConfirm } from "material-ui-confirm";
 import {
   updateRestockOrder,
   deleteRestockOrder,
-  fulFillRestockOrder
+  fulFillRestockOrder,
+  getDeliveryStatusColour
 } from "../../../redux/actions/restockOrderAction";
 import StockIdQuantityMap from "../../../models/restockOrder/StockIdQuantityMap";
 
@@ -68,11 +70,13 @@ const UpdateRestockOrderDialog = ({ element, open, onClose, isWarehouse }) => {
     disableEdit,
     disableDelete,
     store,
-    deliveryStatus
+    deliveryStatus,
+    orderDateTime
   } = element;
   const { storeId, address } = store;
   const { buildingName, line1, line2, postalCode } = address;
-  const disableInTransit = deliveryStatus !== "PROCESSING";
+  const disableInTransit =
+    deliveryStatus === "DELIVERED" || deliveryStatus === "IN_TRANSIT";
 
   useEffect(() => {
     setItems(inStoreRestockOrderItems);
@@ -81,7 +85,13 @@ const UpdateRestockOrderDialog = ({ element, open, onClose, isWarehouse }) => {
   let data = [];
   if (items) {
     data = items.map(e => {
-      const { productStock, inStoreRestockOrderItemId, quantity } = e;
+      const {
+        productStock,
+        inStoreRestockOrderItemId,
+        quantity,
+        warehouseStockQuantity,
+        deliveryStatus
+      } = e;
       const { productStockId, productVariant } = productStock;
       return {
         productStockId: productStockId,
@@ -89,7 +99,9 @@ const UpdateRestockOrderDialog = ({ element, open, onClose, isWarehouse }) => {
         sku: _.get(productVariant, "sku", ""),
         quantity: quantity,
         image: _.get(productVariant, "productImages[0].productImageUrl", ""),
-        inStoreRestockOrderItemId: inStoreRestockOrderItemId
+        inStoreRestockOrderItemId: inStoreRestockOrderItemId,
+        warehouseStockQuantity: warehouseStockQuantity,
+        deliveryStatus: deliveryStatus
       };
     });
   }
@@ -145,12 +157,84 @@ const UpdateRestockOrderDialog = ({ element, open, onClose, isWarehouse }) => {
       .catch(err => {});
   };
 
+  const columns = [
+    { title: "Product stock ID.", field: "productStockId" },
+    { title: "SKU", field: "sku" },
+    { title: "Product name", field: "productName" },
+    {
+      title: "Image",
+      field: "image",
+      render: rowData => (
+        <img
+          style={{
+            width: "50%",
+            borderRadius: "10%"
+          }}
+          src={rowData.image}
+        />
+      )
+    },
+    {
+      title: "Order quantity",
+      field: "quantity",
+      render: ({ productStockId, quantity, tableData }) => {
+        if (isWarehouse || disableEdit || disableDelete) return quantity;
+        return (
+          <TextField
+            name="orderQuantity"
+            fullWidth
+            margin="normal"
+            value={quantity}
+            onChange={e => {
+              onChange(e, tableData.id);
+            }}
+            style={{ textAlign: "center" }}
+            inputProps={{ style: { textAlign: "center" } }}
+          />
+        );
+      }
+    },
+    {
+      title: "Warehouse stock",
+      field: "warehouseStockQuantity"
+    },
+    {
+      title: "Warehouse stock status",
+      // field: "deliveryStatus",
+      render: ({ warehouseStockQuantity, quantity }) => {
+        const insufficient = warehouseStockQuantity - quantity < 0;
+        let style;
+        if (insufficient) style = { color: "#e1282d" };
+        else style = { color: "#33ba0a" };
+        return <FiberManualRecord style={{ ...style, fontSize: 30 }} />;
+      }
+    },
+    {
+      title: "Line item delivery status",
+      field: "deliveryStatus",
+      render: ({ deliveryStatus }) => {
+        const style = getDeliveryStatusColour(deliveryStatus);
+        return (
+          <Chip
+            style={{ ...style, color: "white", width: "100%" }}
+            label={deliveryStatus}
+          />
+        );
+      }
+    }
+  ];
+
   return (
-    <Dialog onClose={onClose} open={open} fullWidth maxWidth={"md"}>
+    <Dialog
+      onClose={onClose}
+      open={open}
+      fullWidth
+      maxWidth={isWarehouse ? "lg" : "md"}
+    >
       <DialogTitle style={{ textAlign: "center" }}>Restock Order</DialogTitle>
       <DialogContent>
         <Grid container spacing={2}>
-          <Grid item xs={6}>
+          <Grid item xs={9}>
             <Typography style={{ fontWeight: "bold", fontStyle: "italic" }}>
               {buildingName}
             </Typography>
@@ -161,57 +245,45 @@ const UpdateRestockOrderDialog = ({ element, open, onClose, isWarehouse }) => {
               {postalCode}, Singapore
             </Typography>
           </Grid>
+          <Grid item xs={3} style={{ textAlign: "center" }}>
+            <Chip
+              style={{
+                ...getDeliveryStatusColour(deliveryStatus),
+                fontWeight: "bold",
+                color: "white",
+                marginBottom: "5%"
+              }}
+              label={deliveryStatus}
+            />
+            <Typography style={{ fontWeight: "bold" }}>
+              {orderDateTime}
+            </Typography>
+          </Grid>
         </Grid>
         <Divider style={{ marginTop: "5%" }} />
         <MaterialTable
           title=""
           style={{ boxShadow: "none" }}
           icons={tableIcons}
-          columns={[
-            { title: "Product stock ID.", field: "productStockId" },
-            { title: "SKU", field: "sku" },
-            { title: "Product name", field: "productName" },
-            {
-              title: "Image",
-              field: "image",
-              render: rowData => (
-                <img
-                  style={{
-                    width: "50%",
-                    borderRadius: "10%"
-                  }}
-                  src={rowData.image}
-                />
-              )
-            },
-            {
-              title: "Order quantity",
-              field: "quantity",
-              render: ({ productStockId, quantity, tableData }) => {
-                if (isWarehouse || disableEdit || disableDelete)
-                  return quantity;
-                return (
-                  <TextField
-                    name="orderQuantity"
-                    fullWidth
-                    margin="normal"
-                    value={quantity}
-                    onChange={e => {
-                      onChange(e, tableData.id);
-                    }}
-                    style={{ textAlign: "center" }}
-                    inputProps={{ style: { textAlign: "center" } }}
-                  />
-                );
-              }
-            }
-          ]}
+          columns={
+            isWarehouse
+              ? columns
+              : [
+                  ...columns.splice(0, columns.length - 3),
+                  columns[columns.length - 1]
+                ]
+          }
           data={data}
           options={{
             paging: false,
             headerStyle: { textAlign: "center" }, //change header padding
-            cellStyle: { textAlign: "center" },
-            actionsColumnIndex: -1
+            cellStyle: {
+              justifyContent: "center",
+              textAlign: "center",
+              alignItems: "center"
+            },
+            actionsColumnIndex: -1,
+            draggable: false
           }}
           actions={[
             isWarehouse || disableEdit || disableDelete
@@ -229,7 +301,12 @@ const UpdateRestockOrderDialog = ({ element, open, onClose, isWarehouse }) => {
                       })
                       .catch(err => {});
                   },
-                  disabled: disableEdit || disableDelete
+                  disabled: disableEdit || disableDelete,
+                  iconProps: {
+                    style: {
+                      justifyContent: "center"
+                    }
+                  }
                 }
           ]}
         />
@@ -244,7 +321,7 @@ const UpdateRestockOrderDialog = ({ element, open, onClose, isWarehouse }) => {
             onClick={handleFulFillRestockOrder}
             disabled={disableInTransit}
           >
-            Mark as in transit
+            Send out for delivery
           </Button>
         ) : (
           <Button

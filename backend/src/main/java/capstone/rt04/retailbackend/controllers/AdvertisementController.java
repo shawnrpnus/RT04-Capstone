@@ -68,9 +68,7 @@ public class AdvertisementController {
             staff.setAddress(null);
             staff.setLeaves(null);
             staff.setPayrolls(null);
-            staff.setRoster(null);
             staff.setDeliveries(null);
-
             staff.setAdvertisements(null);
         }
     }
