@@ -18,13 +18,12 @@ const { width, height } = Dimensions.get("window");
 export default function Autocomplete(props) {
   const { value, setValue, label, array, helperText, error } = props;
 
-  const [focused, setFocused] = useState(false);
+  const [focused, setFocused] = useState(true);
 
   const filteredOptions = array
     .filter(
       sku =>
-        sku.toLowerCase().includes(value.toLowerCase()) &&
-        value.trim().length > 0
+        sku.toLowerCase().includes(value.toLowerCase())
     )
     .map(sku => {
       return (
