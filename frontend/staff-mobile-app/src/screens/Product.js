@@ -29,7 +29,7 @@ function Product(props) {
   }, []);
 
   const handleSkuSearch = () => {
-    dispatch(retrieveProductVariantBySKU(SKU, navigation))
+    dispatch(retrieveProductVariantBySKU(SKU, navigation, setSKU))
   }
 
   return (

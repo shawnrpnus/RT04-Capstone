@@ -1,6 +1,7 @@
 import {
   ALL_SKU,
-  DISPLAY_PRODUCT_VARIANT, DISPLAY_STOCKS,
+  DISPLAY_PRODUCT_VARIANT,
+  DISPLAY_STOCKS,
   STAFF_LOGIN,
   STAFF_LOGOUT
 } from "src/redux/actions/types";
@@ -31,7 +32,7 @@ const allSku = data => ({
   SKUs: data
 });
 
-export const retrieveProductVariantBySKU = (sku, navigation) => {
+export const retrieveProductVariantBySKU = (sku, navigation, setSKU) => {
   const req = { sku };
   return dispatch => {
     axios
@@ -40,6 +41,7 @@ export const retrieveProductVariantBySKU = (sku, navigation) => {
         const pv = jsog.decode(response.data);
         dispatch(updateDisplayedProductVariant(pv));
         navigation.navigate("Product Details");
+        setSKU("");
       })
       .catch(err => {
         //either blank field error ({sku: notfound}) OR pv not found ({errorMessage: msg})
@@ -53,17 +55,20 @@ const updateDisplayedProductVariant = data => ({
   productVariant: data
 });
 
-export const retrieveStocksForProductVariant = (productVariantId) => {
+export const retrieveStocksForProductVariant = productVariantId => {
   return dispatch => {
-    axios.get(PRODUCT_VAR_BASE_URL + "/retrieveStocksForProductVariant", {params: {productVariantId}})
-        .then(response => {
-          const data = jsog.decode(response.data)
-          dispatch(updateStocksForProdVariant(data))
-        })
-  }
-}
+    axios
+      .get(PRODUCT_VAR_BASE_URL + "/retrieveStocksForProductVariant", {
+        params: { productVariantId }
+      })
+      .then(response => {
+        const data = jsog.decode(response.data);
+        dispatch(updateStocksForProdVariant(data));
+      });
+  };
+};
 
 const updateStocksForProdVariant = data => ({
   type: DISPLAY_STOCKS,
   stocks: data
-})
+});
