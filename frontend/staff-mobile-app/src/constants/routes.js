@@ -1,1 +1,2 @@
-export const SPRING_BACKEND_URL = "http://172.31.63.140:8080"
+const IP_ADDR = "192.168.1.120"
+export const SPRING_BACKEND_URL = `http://${IP_ADDR}:8080`

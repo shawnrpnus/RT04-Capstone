@@ -8,4 +8,6 @@ export const STAFF_LOGOUT = "STAFF_LOGOUT";
 export const LOAD_LOGGED_IN_STAFF = "LOAD_LOGGED_IN_STAFF";
 
 //Product Variant
-export const ALL_SKU = "ALL_SKU"
+export const ALL_SKU = "ALL_SKU";
+export const DISPLAY_PRODUCT_VARIANT = "DISPLAY_PRODUCT_VARIANT";
+export const DISPLAY_STOCKS = "DISPLAY_STOCKS";

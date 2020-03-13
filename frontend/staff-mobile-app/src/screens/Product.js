@@ -5,7 +5,11 @@ import { clearErrors } from "src/redux/actions";
 import { Dimensions } from "react-native";
 import materialTheme from "src/constants/Theme";
 import { useDispatch, useSelector } from "react-redux";
-import { retrieveAllSKUs } from "src/redux/actions/productVariantActions";
+import {
+  retrieveAllSKUs,
+  retrieveProductVariantBySKU,
+  retrieveStocksForProductVariant
+} from "src/redux/actions/productVariantActions";
 import Autocomplete from "src/components/Autocomplete";
 import { Portal } from "react-native-paper";
 
@@ -15,6 +19,7 @@ const { width, height } = Dimensions.get("window");
 function Product(props) {
   const [SKU, setSKU] = useState("");
 
+  const {navigation} = props;
   const dispatch = useDispatch();
   const errors = useSelector(state => state.errors);
   const allSKUs = useSelector(state => state.product.allSKUs);
@@ -22,6 +27,10 @@ function Product(props) {
   useEffect(() => {
     dispatch(retrieveAllSKUs());
   }, []);
+
+  const handleSkuSearch = () => {
+    dispatch(retrieveProductVariantBySKU(SKU, navigation))
+  }
 
   return (
     <Block flex={1} center>
@@ -55,18 +64,18 @@ function Product(props) {
                 value={SKU}
                 setValue={setSKU}
                 helperText={
-                  <HelperText type="error" visible={!!_.get(errors, "sku")}>
-                    {errors.sku}
+                  <HelperText type="error" visible={!!_.get(errors, "sku") || !!_.get(errors, "errorMessage")}>
+                    {errors.sku}{errors.errorMessage}
                   </HelperText>
                 }
-                error={!!_.get(errors, "sku")}
+                error={!!_.get(errors, "sku") || !!_.get(errors, "errorMessage")}
               />
             </Block>
             <Block flex={0.4} style={{width: "100%", zIndex: 0}}>
               <Button
                 color={materialTheme.COLORS.BUTTON_COLOR}
                 style={{ width: "100%", height: 50}}
-                onPress={() => console.log("PRESSED")}
+                onPress={handleSkuSearch}
               >
                 SEARCH
               </Button>

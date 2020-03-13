@@ -15,6 +15,7 @@ import CustomDrawerContent from "src/navigation/CustomDrawerContent";
 import Product from "src/screens/Product";
 import Reservation from "src/screens/Reservation";
 import CustomHeader from "src/components/CustomHeader";
+import ProductDetails from "src/screens/ProductDetails";
 
 const { width } = Dimensions.get("screen");
 
@@ -100,9 +101,7 @@ function HomeStack(props) {
         name="Home"
         component={Home}
         options={{
-          header: props => (
-            <CustomHeader title="Home" {...props} />
-          ),
+          header: props => <CustomHeader title="Home" {...props} />,
           headerStyle: { height: 100 }
         }}
       />
@@ -117,10 +116,15 @@ function ProductStack(props) {
         name="Product"
         component={Product}
         options={{
-          header: props => (
-            <CustomHeader title="Product" {...props} />
-          ),
+          header: props => <CustomHeader title="Product" {...props} />,
           headerStyle: { height: 100 }
+        }}
+      />
+      <Stack.Screen
+        name="Product Details"
+        component={ProductDetails}
+        options={{
+          header: props => <CustomHeader title="Product Details" back {...props} />
         }}
       />
     </Stack.Navigator>
