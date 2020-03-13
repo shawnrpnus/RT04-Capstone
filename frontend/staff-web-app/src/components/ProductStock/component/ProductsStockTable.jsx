@@ -1,6 +1,6 @@
-import React, { PureComponent } from "react";
-import { Link, withRouter } from "react-router-dom";
-import { connect } from "react-redux";
+import React, { useState, useEffect } from "react";
+import { Link, withRouter, useHistory } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import {
   Add,
   AddBox,
@@ -16,19 +16,18 @@ import {
   SaveAlt,
   Search,
   ViewColumn,
-  Visibility
+  Visibility,
+  ShoppingCart
 } from "@material-ui/icons";
 import MaterialTable from "material-table";
-import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
+import Chip from "@material-ui/core/Chip";
+
 import withPage from "../../Layout/page/withPage";
-import ProductsStockDetails from "./ProductsStockDetails";
 import {
   retrieveProductStocksByParameter,
   simulateReorderingFromSupplier
 } from "../../../redux/actions/productStockActions";
-import Checkbox from "@material-ui/core/Checkbox";
-import AddTagToProductsRequest from "../../../models/tag/AddTagToProductsRequest";
-import { Typography } from "@material-ui/core";
+import RestockOrderDialog from "./RestockOrderDialog";
 
 const _ = require("lodash");
 
@@ -52,146 +51,150 @@ const tableIcons = {
   ViewColumn: ViewColumn
 };
 
-// const jsonColorNameList = _.keyBy(colourList, "name");
-// const jsonColorHexList = _.keyBy(colourList, "hex");
+const ProductsStockTable = props => {
+  const dispatch = useDispatch();
+  const history = useHistory();
 
-class ProductsStockTable extends PureComponent {
-  state = {
-    // redirect: false,
-    selectedProductStocks: [],
-    selectedProductId: ""
-  };
+  const [selectedProductStocks, setSelectedProductStocks] = useState([]);
+  const [open, setOpen] = useState(false);
 
-  componentDidMount() {
-    const warehouse =
-      _.get(this.props, "staff.department.departmentName") === "Warehouse";
-    const store = this.props.store;
+  const productStocks = useSelector(
+    state => state.productStock.allProductStock
+  );
+
+  const { renderLoader, store, staff } = props;
+  const warehouse =
+    _.get(staff, "department.departmentName", "") === "Warehouse";
+
+  useEffect(() => {
     if (warehouse) {
-      this.props.retrieveProductStocksByParameter();
-    } else if (store.storeId) {
-      this.props.retrieveProductStocksByParameter(store.storeId);
+      dispatch(retrieveProductStocksByParameter());
+    } else if (_.get(store, "storeId", false)) {
+      dispatch(retrieveProductStocksByParameter(store.storeId));
     }
-  }
+  }, [_.isEqual(productStocks)]);
 
-  handleCheckBox = (evt, data) => {
+  const handleAddStock = (evt, data) => {
     evt.preventDefault();
-    // data is the list of products selected
-    // console.log(evt);
-    // console.log(data);
-    let productStockIds = [];
-    data.forEach(element => {
-      productStockIds.push(element.productStockId);
-    });
-    // console.log(productStockIds);
-    this.props.simulateReorderingFromSupplier(
-      productStockIds,
-      this.props.history
-    );
-    // const req = new AddTagToProductsRequest(this.state.tagId, productStockIds);
-    // this.props.addTagToProducts(req, this.props.history);
+    if (warehouse) {
+      let productStockIds = [];
+      data.forEach(element => {
+        productStockIds.push(element.productStockId);
+      });
+      dispatch(simulateReorderingFromSupplier(productStockIds, history));
+    } else {
+      setSelectedProductStocks([...data]);
+      setOpen(true);
+    }
   };
 
-  render() {
-    const { renderLoader, productStocks, store } = this.props;
+  const handleCloseDialog = () => {
+    setOpen(false);
+  };
 
-    let data = [];
-    if (productStocks) {
-      data = productStocks.map(productStock => {
-        return {
-          productStockId: productStock.productStockId,
-          productName: productStock.productVariant.product.productName,
-          sku: productStock.productVariant.sku,
-          quantity: productStock.quantity,
-          image: _.get(
-            productStock,
-            "productVariant.productImages[0].productImageUrl",
-            ""
-          )
-        };
-      });
-    }
-
-    return (
-      <React.Fragment>
-        <div className="table" style={{ verticalAlign: "middle" }}>
-          {productStocks ? (
-            <MaterialTable
-              title="Product Stocks"
-              style={{ boxShadow: "none" }}
-              icons={tableIcons}
-              columns={[
-                { title: "Product stock ID.", field: "productStockId" },
-                { title: "SKU", field: "sku" },
-                { title: "Product name", field: "productName" },
-                {
-                  title: "Image",
-                  field: "image",
-                  render: rowData => (
-                    // <Link
-                    //   to={`/product/viewProductDetails/${rowData.productId}`}
-                    // >
-                    <img
-                      style={{
-                        width: "50%",
-                        borderRadius: "10%"
-                      }}
-                      src={rowData.image}
-                    />
-                    // </Link>
-                  )
-                },
-                { title: "Current stock", field: "quantity" }
-              ]}
-              data={data}
-              options={{
-                filtering: true,
-                sorting: true,
-                pageSize: 20,
-                pageSizeOptions: [20, 50, 100],
-                actionsColumnIndex: -1,
-                headerStyle: { textAlign: "center" }, //change header padding
-                cellStyle: { textAlign: "center" },
-                selection: true
-              }}
-              // selectionAction={{
-              //   tooltip: "Add Tag To Products",
-              //   icon: Add,
-              //   onClick: (evt, data) =>
-              //     this.handleAddTagToProducts(evt, data)
-              // }}
-              actions={[
-                {
-                  icon: Checkbox,
-                  tooltip: "Simulate Order From Supplier",
-                  onClick: (event, rowData) =>
-                    this.handleCheckBox(event, rowData)
-                }
-              ]}
-            />
-          ) : _.get(store, "storeId", null) ? (
-            renderLoader()
-          ) : (
-            <Typography> No store selected! </Typography>
-          )}
-        </div>
-      </React.Fragment>
-    );
+  let data = [];
+  if (productStocks) {
+    data = productStocks.map(productStock => {
+      const {
+        productStockId,
+        productVariant,
+        quantity,
+        notificationLevel
+      } = productStock;
+      const status = notificationLevel >= quantity ? "LOW STOCK" : "NORMAL";
+      return {
+        productStockId: productStockId,
+        productName: _.get(productVariant, "product.productName", ""),
+        sku: _.get(productVariant, "sku", ""),
+        quantity: quantity,
+        image: _.get(productVariant, "productImages[0].productImageUrl", ""),
+        status: status
+      };
+    });
   }
-}
 
-const mapStateToProps = state => ({
-  productStocks: state.productStock.allProductStock,
-  errors: state.errors
-});
-
-const mapDispatchToProps = {
-  retrieveProductStocksByParameter,
-  simulateReorderingFromSupplier
+  return (
+    <React.Fragment>
+      <div className="table" style={{ verticalAlign: "middle" }}>
+        {productStocks ? (
+          <MaterialTable
+            title="Product Stocks"
+            style={{ boxShadow: "none" }}
+            icons={tableIcons}
+            columns={[
+              { title: "Product stock ID.", field: "productStockId" },
+              { title: "SKU", field: "sku" },
+              { title: "Product name", field: "productName" },
+              {
+                title: "Image",
+                field: "image",
+                render: rowData => (
+                  <img
+                    style={{
+                      width: "50%",
+                      borderRadius: "10%"
+                    }}
+                    src={rowData.image}
+                  />
+                )
+              },
+              { title: "Current stock", field: "quantity" },
+              {
+                title: "Stock status",
+                field: "status",
+                render: ({ status }) => {
+                  const style =
+                    status === "NORMAL"
+                      ? { backgroundColor: "#33ba0a" }
+                      : { backgroundColor: "#feaa4b" };
+                  return (
+                    <Chip
+                      style={{ ...style, color: "white", width: "100%" }}
+                      label={status}
+                    />
+                  );
+                }
+              }
+            ]}
+            data={data}
+            options={{
+              filtering: true,
+              sorting: true,
+              pageSize: 20,
+              pageSizeOptions: [20, 50, 100],
+              actionsColumnIndex: -1,
+              headerStyle: { textAlign: "center" }, //change header padding
+              cellStyle: { textAlign: "center" },
+              selection: true
+            }}
+            actions={[
+              warehouse
+                ? {
+                    icon: Add,
+                    tooltip: "Simulate ordering from supplier",
+                    onClick: (event, rowData) => handleAddStock(event, rowData)
+                  }
+                : {
+                    icon: ShoppingCart,
+                    tooltip: "Create restock order",
+                    onClick: (event, rowData) => handleAddStock(event, rowData)
+                  }
+            ]}
+          />
+        ) : (
+          renderLoader()
+        )}
+      </div>
+      {open && (
+        <RestockOrderDialog
+          open={open}
+          onClose={handleCloseDialog}
+          elements={selectedProductStocks}
+          store={store}
+        />
+      )}
+    </React.Fragment>
+  );
 };
 
-export default withRouter(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )(withPage(ProductsStockTable, "Product Stock Management"))
-);
+export default withPage(ProductsStockTable, "Product Stock Management");

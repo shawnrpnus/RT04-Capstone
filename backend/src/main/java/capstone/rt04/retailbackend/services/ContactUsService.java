@@ -3,6 +3,9 @@ package capstone.rt04.retailbackend.services;
 import capstone.rt04.retailbackend.entities.ContactUs;
 import capstone.rt04.retailbackend.repositories.ContactUsRepository;
 import capstone.rt04.retailbackend.util.Constants;
+import capstone.rt04.retailbackend.util.enums.ContactUsStatusEnum;
+import capstone.rt04.retailbackend.util.exceptions.contactUs.ContactUsDeleteException;
+import capstone.rt04.retailbackend.util.exceptions.contactUs.ContactUsNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -11,7 +14,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
+import javax.persistence.PersistenceException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -41,7 +46,7 @@ public class ContactUsService {
 //        } else {
 //            contactUsRepository.save(contactUs);
 //        }
-        if(errorMap == null) {
+        if (errorMap == null) {
             contactUsRepository.save(contactUs);
             sendContactUsNotification(contactUs);
             return contactUs;
@@ -52,6 +57,26 @@ public class ContactUsService {
     }
 
     private void sendContactUsNotification(ContactUs contactUs) {
+        sendNodeEmail(contactUs, null);
+    }
+
+    public List<ContactUs> retrieveAllContactUs() {
+        return contactUsRepository.findAll();
+    }
+
+    public List<ContactUs> replyToEmail(Long contactUsId, String reply) throws ContactUsNotFoundException {
+        ContactUs contactUs = retrieveContactUsByContactUsId(contactUsId);
+        if (reply != null && reply.length() > 0) {
+            sendNodeEmail(contactUs, reply);
+            contactUs.setStatus(ContactUsStatusEnum.REPLIED);
+        } else {
+            // Mark resolved
+            contactUs.setStatus(ContactUsStatusEnum.RESOLVED);
+        }
+        return retrieveAllContactUs();
+    }
+
+    private void sendNodeEmail(ContactUs contactUs, String reply) {
         restTemplate = new RestTemplate();
         Map<String, String> request = new HashMap<>();
         String fullName = contactUs.getFirstName() + " " + contactUs.getLastName();
@@ -59,19 +84,30 @@ public class ContactUsService {
         request.put("email", email);
         request.put("fullName", fullName);
         request.put("contactUsCategory", contactUs.getContactUsCategory().toString());
+        request.put("reply", reply);
 
-        String endpoint = Constants.NODE_API_URL + "/email/contactUsConfirmation";
-        try {
-            ResponseEntity<?> response = restTemplate.postForEntity(endpoint, request, Object.class);
-            if (response.getStatusCode().equals(HttpStatus.OK)) {
-                log.info("Email sent successfully to " + email);
-            } else {
-                log.error("Error sending email to " + email);
-            }
-        } catch (Exception ex){
-            log.error(ex.getMessage());
+        String endpoint = Constants.NODE_API_URL + "/email/replyToEmail";
+        ResponseEntity<?> response = restTemplate.postForEntity(endpoint, request, Object.class);
+        if (response.getStatusCode().equals(HttpStatus.OK)) {
+            log.info("Email sent successfully to " + email);
+        } else {
+            log.error("Error sending email to " + email);
         }
-
     }
+
+    public List<ContactUs> deleteContactUs(Long contactUsId) throws ContactUsNotFoundException, ContactUsDeleteException {
+        ContactUs contactUs = retrieveContactUsByContactUsId(contactUsId);
+        try {
+            contactUsRepository.delete(contactUs);
+        } catch (PersistenceException ex) {
+            throw new ContactUsDeleteException("Error deleting entry from database");
+        }
+        return retrieveAllContactUs();
+    }
+
+    public ContactUs retrieveContactUsByContactUsId(Long contactUsId) throws ContactUsNotFoundException {
+        return contactUsRepository.findById(contactUsId).orElseThrow(() -> new ContactUsNotFoundException("Entry does not exist"));
+    }
+
 
 }

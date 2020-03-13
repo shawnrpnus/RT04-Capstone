@@ -15,6 +15,7 @@ import lombok.ToString;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -43,10 +44,12 @@ public class Delivery implements Serializable {
     @ManyToMany //each txn can have multiple deliveries in case of failed deliveries
     private List<Transaction> customerOrdersToDeliver;
     
-    @ManyToMany
-    private List<InStoreRestockOrder> inStoreRestockOrders;
+    @OneToMany
+    private List<InStoreRestockOrderItem> inStoreRestockOrderItems;
 
     public Delivery() {
+        this.customerOrdersToDeliver = new ArrayList<>();
+        this.customerOrdersToDeliver = new ArrayList<>();
     }
 
     public Delivery(Date deliveryDate, Staff deliveryStaff) {

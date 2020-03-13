@@ -33,6 +33,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { retrieveAllRootCategories } from "redux/actions/categoryActions";
 import AgAutocomplete from "components/Algolia/AgAutocomplete";
 import IconButton from "@material-ui/core/IconButton";
+import { ShoppingCartNavbar } from "components/Layout/components/Header/ShoppingCartNavbar";
+import { WishlistNavbar } from "components/Layout/components/Header/WishlistNavbar";
+import { ReservationNavbar } from "components/Layout/components/Header/ReservationNavbar";
 
 const useStyles = makeStyles(styles);
 
@@ -94,66 +97,54 @@ export default function HeaderLinks(props) {
   const classes = useStyles();
   return (
     <React.Fragment>
-      <List className={classes.list + " " + classes.mrAuto}>
+      {/*<List className={classes.list + " " + classes.mrAuto}>*/}
+      {/*  {rootCategories &&*/}
+      {/*    rootCategories.map(rc => (*/}
+      {/*      <ListItem key={rc.categoryId} className={classes.listItem}>*/}
+      {/*        <CategoryNavbar category={rc} />*/}
+      {/*      </ListItem>*/}
+      {/*    ))}*/}
+
+      {/*  /!*<ListItem className={classes.listItem}>*!/*/}
+      {/*  /!*  <CustomDropdown*!/*/}
+      {/*  /!*    noLiPadding*!/*/}
+      {/*  /!*    navDropdown*!/*/}
+      {/*  /!*    hoverColor={dropdownHoverColor}*!/*/}
+      {/*  /!*    buttonText="Lookbook"*!/*/}
+      {/*  /!*    buttonProps={{*!/*/}
+      {/*  /!*      className: classes.navLink,*!/*/}
+      {/*  /!*      color: "transparent"*!/*/}
+      {/*  /!*    }}*!/*/}
+      {/*  /!*    buttonIcon={ViewCarousel}*!/*/}
+      {/*  /!*    dropdownList={[]}*!/*/}
+      {/*  /!*  />*!/*/}
+      {/*  /!*</ListItem>*!/*/}
+      {/*</List>*/}
+      <List className={classes.list} style={{ width: "100%" }}>
         {rootCategories &&
           rootCategories.map(rc => (
             <ListItem key={rc.categoryId} className={classes.listItem}>
               <CategoryNavbar category={rc} />
             </ListItem>
           ))}
-        {/*<ListItem className={classes.listItem}>*/}
-        {/*  <CustomDropdown*/}
-        {/*    noLiPadding*/}
-        {/*    navDropdown*/}
-        {/*    hoverColor={dropdownHoverColor}*/}
-        {/*    buttonText="Lookbook"*/}
-        {/*    buttonProps={{*/}
-        {/*      className: classes.navLink,*/}
-        {/*      color: "transparent"*/}
-        {/*    }}*/}
-        {/*    buttonIcon={ViewCarousel}*/}
-        {/*    dropdownList={[]}*/}
-        {/*  />*/}
-        {/*</ListItem>*/}
-      </List>
-      <List className={classes.list + " " + classes.mlAuto}>
-        <ListItem>
+        <ListItem style={{ paddingLeft: "100px" }}>
           <AgAutocomplete />
           {/*<IconButton color="white" justIcon round>*/}
           {/*  <Search className={classes.searchIcon} />*/}
           {/*</IconButton>*/}
         </ListItem>
+
         <ListItem className={classes.listItem}>
           <AccountNavbar />
         </ListItem>
         <ListItem className={classes.listItem}>
-          <Link to="/account/wishlist" style={{ color: "inherit" }}>
-            <Button className={classes.navLink} round color="transparent">
-              <Favorite />
-              <Hidden mdUp implementation="css" className={classes.hidden}>
-                <div className={classes.collapse}>Wishlist</div>
-              </Hidden>
-            </Button>
-          </Link>
-        </ListItem>
-
-        <ListItem className={classes.listItem}>
-          <Link
-            key="login"
-            to="/account/shoppingCart"
-            style={{ color: "inherit" }}
-          >
-            <Button className={classes.navLink} round color="transparent">
-              <ShoppingCart className={classes.icons} /> Shop
-            </Button>
-          </Link>
+          <WishlistNavbar />
         </ListItem>
         <ListItem className={classes.listItem}>
-          <Link to="/account/reservation/cart" style={{ color: "inherit" }}>
-            <Button className={classes.navLink} round color="transparent">
-              Reservation
-            </Button>
-          </Link>
+          <ShoppingCartNavbar />
+        </ListItem>
+        <ListItem className={classes.listItem} style={{ float: "right" }}>
+          <ReservationNavbar />
         </ListItem>
       </List>
     </React.Fragment>

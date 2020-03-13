@@ -165,11 +165,6 @@ public class StoreService {
         //clear r/s with RO & delete RO
         for (InStoreRestockOrder ro : storeToDelete.getInStoreRestockOrders()) {
             ro.getInStoreRestockOrderItems().clear();
-            List<Delivery> deliveries = ro.getDeliveries();
-            for (Delivery delivery : deliveries) {
-                delivery.getInStoreRestockOrders().remove(ro);
-            }
-            ro.setDeliveries(null);
             ro.getWarehouse().getInStoreRestockOrders().remove(ro);
             ro.setWarehouse(null);
             inStoreRestockOrderRepository.delete(ro);
@@ -198,7 +193,7 @@ public class StoreService {
             store.getInStoreRestockOrders().size();
             store.getProductStocks().size();
             store.getReservations().size();
-            store.getRosters().size();
+//            store.getRosters().size();
             store.getTransactions().size();
             store.getAddress();
         }

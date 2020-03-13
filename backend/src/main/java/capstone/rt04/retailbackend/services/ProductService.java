@@ -327,9 +327,18 @@ public class ProductService {
 
                 if(style != null){
                     Style styleToCheck = styleService.retrieveStyleByStyleId(style.getStyleId());
-                    if (productVariant.getProduct().getStyles().contains(styleToCheck)){
-                        matchStyle=true;
+                    String gender = style.getGender();
+                    if (gender.equals("Male")) {
+                        gender = "Men";
+                    } else {
+                        gender = "Women";
                     }
+                    if(productVariant.getProduct().getStyles().contains(styleToCheck)) {
+                        if (productVariant.getProduct().getCategory().getParentCategory().getParentCategory().getCategoryName().equals(gender)) {
+                            matchStyle=true;
+                        }
+                    }
+
                 } else {
                     matchStyle=true;
                 }
@@ -563,6 +572,15 @@ public class ProductService {
         return productVariant;
     }
 
+    public List<String> retrieveProductVariantSKUs(){
+        List<ProductVariant> PVs = productVariantRepository.findAll();
+        List<String> SKUs = new ArrayList<>();
+        for (ProductVariant pv: PVs){
+            SKUs.add(pv.getSKU());
+        }
+        return SKUs;
+    }
+
     public List<ProductVariant> retrieveProductVariantByProduct(Long productId) {
 
         List<ProductVariant> productVariants = productVariantRepository.findAllByProduct_ProductId(productId);
@@ -758,6 +776,10 @@ public class ProductService {
         }
         lazilyLoadProductStock(productStocks);
         return productStocks;
+    }
+
+    public ProductStock retrieveProductStockByWarehouseAndProductVariantId(Long warehouseId, Long productVariantId) {
+        return productStockRepository.findByWarehouse_WarehouseIdAndProductVariant_ProductVariantId(warehouseId, productVariantId);
     }
 
     public List<ProductStock> retrieveAllProductStock() {

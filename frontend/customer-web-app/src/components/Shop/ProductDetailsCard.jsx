@@ -11,15 +11,25 @@ import colours from "assets/colours";
 import Tooltip from "@material-ui/core/Tooltip";
 import Chip from "@material-ui/core/Chip";
 import { useDispatch, useSelector } from "react-redux";
-import { updateShoppingCart } from "redux/actions/shoppingCartActions";
+import {
+  closeCartTooltip,
+  openCartTooltip,
+  updateShoppingCart
+} from "redux/actions/shoppingCartActions";
 import UpdateShoppingCartRequest from "models/shoppingCart/UpdateShoppingCartRequest";
 import { useSnackbar } from "notistack";
 import IconButton from "@material-ui/core/IconButton";
 import { isProductVariantInList } from "services/customerService";
 import {
   addToReservationCartAPI,
-  addToWishlistAPI
+  addToWishlistAPI,
+  closeWishlistTooltip,
+  openWishlistTooltip
 } from "redux/actions/customerActions";
+import {
+  closeReservationTooltip,
+  openReservationTooltip
+} from "redux/actions/reservationActions";
 
 const _ = require("lodash");
 const useStyles = makeStyles(productStyle);
@@ -104,6 +114,8 @@ function ProductDetailsCard(props) {
       cartType
     );
     dispatch(updateShoppingCart(req, enqueueSnackbar));
+    dispatch(openCartTooltip);
+    setTimeout(() => dispatch(closeCartTooltip), 1500);
   };
 
   const addToWishlist = () => {
@@ -132,6 +144,8 @@ function ProductDetailsCard(props) {
     }
     const customerId = customer.customerId;
     dispatch(addToWishlistAPI(customerId, productVariantId, enqueueSnackbar));
+    dispatch(openWishlistTooltip);
+    setTimeout(() => dispatch(closeWishlistTooltip), 1500);
   };
 
   const getCurrentProductVariantId = () => {
@@ -162,6 +176,8 @@ function ProductDetailsCard(props) {
     dispatch(
       addToReservationCartAPI(customerId, productVariantId, enqueueSnackbar)
     );
+    dispatch(openReservationTooltip);
+    setTimeout(() => dispatch(closeReservationTooltip), 1500);
   };
 
   const selectedStock = _.get(

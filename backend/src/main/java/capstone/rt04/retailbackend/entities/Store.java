@@ -82,18 +82,17 @@ public class Store implements Serializable {
     
     @OneToMany(mappedBy = "store")
     private List<Transaction> transactions;
-    
+
     @OneToMany(mappedBy = "store")
-    private List<Roster> rosters;
-    
+    private List<Staff> staff;
+
     public Store() {
         this.reservations = new ArrayList<>();
         this.inStoreRestockOrders = new ArrayList<>();
         this.productStocks = new ArrayList<>();
         this.transactions = new ArrayList<>();
-        this.rosters = new ArrayList<>();
+        this.staff = new ArrayList<>();
     }
-    
 
     public Store(String storeName, Integer numChangingRooms, Integer numReservedChangingRooms, Time openingTime, Time closingTime, Integer numManagers, Integer numAssistants, Address address) {
         this();

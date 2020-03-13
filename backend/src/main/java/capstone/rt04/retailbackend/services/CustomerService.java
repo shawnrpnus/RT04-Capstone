@@ -518,7 +518,7 @@ public class CustomerService {
         return customer;
     }
 
-    public Customer addStyle(Long customerId, String stylePreference) throws CustomerNotFoundException, StyleNotFoundException {
+    public Customer addStyle(Long customerId, String stylePreference, String gender) throws CustomerNotFoundException, StyleNotFoundException {
         Customer customer = retrieveCustomerByCustomerId(customerId);
         String[] styleChoices = stylePreference.split(",");
         int vinCount = 0;
@@ -526,11 +526,11 @@ public class CustomerService {
         int chicCount = 0;
         int artCount = 0;
         int soCount = 0;
-        String styleChosen = "";
-        if (customer.getStyle() != null && customer.getStylePreference() != "") {
+
+        if (customer.getStyle() != null) {
             customer.setStyle(null);
         }
-        customer.setStylePreference(stylePreference);
+
         for (String styleChoice: styleChoices) {
             if (styleChoice.equals("0")) {
                 vinCount++;
@@ -547,22 +547,32 @@ public class CustomerService {
         if ((vinCount >= boCount) && (vinCount >= chicCount) && (vinCount >= artCount) && (vinCount >= soCount)) {
             Style vintage = styleService.retrieveStyleByStyleName("Vintage");
             customer.setStyle(vintage);
+            customer.getStyle().setStylePreference(stylePreference);
+            customer.getStyle().setGender(gender);
             vintage.getCustomers().add(customer);
         } else if ((boCount >= chicCount) && (boCount >= artCount) && (boCount >= soCount)) {
             Style bohemian = styleService.retrieveStyleByStyleName("Bohemian");
             customer.setStyle(bohemian);
+            customer.getStyle().setStylePreference(stylePreference);
+            customer.getStyle().setGender(gender);
             bohemian.getCustomers().add(customer);
         } else if ((chicCount >= artCount) && (chicCount >= soCount)) {
             Style chic = styleService.retrieveStyleByStyleName("Chic");
             customer.setStyle(chic);
+            customer.getStyle().setStylePreference(stylePreference);
+            customer.getStyle().setGender(gender);
             chic.getCustomers().add(customer);
         } else if (artCount >= soCount) {
             Style artsy = styleService.retrieveStyleByStyleName("Artsy");
             customer.setStyle(artsy);
+            customer.getStyle().setStylePreference(stylePreference);
+            customer.getStyle().setGender(gender);
             artsy.getCustomers().add(customer);
         } else {
             Style sophisticated = styleService.retrieveStyleByStyleName("Sophisticated");
             customer.setStyle(sophisticated);
+            customer.getStyle().setStylePreference(stylePreference);
+            customer.getStyle().setGender(gender);
             sophisticated.getCustomers().add(customer);
         }
 
@@ -574,7 +584,6 @@ public class CustomerService {
         Style style = styleService.retrieveStyleByStyleName(styleChosen);
         customer.setStyle(null);
         style.getCustomers().remove(customer);
-        customer.setStylePreference("");
         return lazyLoadCustomerFields(customer);
     }
 
@@ -690,7 +699,6 @@ public class CustomerService {
         customer.getReviews().size();
         customer.getVerificationCode();
         customer.getStyle();
-        customer.getStylePreference();
         customer.getReservationCartItems().size();
         if (customer.getOnlineShoppingCart() != null) {
             customer.getOnlineShoppingCart().getShoppingCartItems().size();

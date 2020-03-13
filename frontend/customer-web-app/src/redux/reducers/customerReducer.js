@@ -4,7 +4,10 @@ const initialState = {
   loggedInCustomer: null,
   isSendingEmail: false,
   verificationStatus: null,
-  clientSecret: null
+  clientSecret: null,
+  shoppingCartTooltipOpen: false,
+  wishlistTooltipOpen: false,
+  reservationTooltipOpen: false
 };
 
 export default function(state = initialState, action) {
@@ -72,6 +75,36 @@ export default function(state = initialState, action) {
       return {
         ...state,
         clientSecret: action.clientSecret
+      };
+    case types.CART_TOOLTIP_OPEN:
+      return {
+        ...state,
+        shoppingCartTooltipOpen: true
+      };
+    case types.CART_TOOLTIP_CLOSE:
+      return {
+        ...state,
+        shoppingCartTooltipOpen: false
+      };
+    case types.WISHLIST_TOOLTIP_OPEN:
+      return {
+        ...state,
+        wishlistTooltipOpen: true
+      };
+    case types.WISHLIST_TOOLTIP_CLOSE:
+      return {
+        ...state,
+        wishlistTooltipOpen: false
+      };
+    case types.RESERVATION_TOOLTIP_OPEN:
+      return {
+        ...state,
+        reservationTooltipOpen: true
+      };
+    case types.RESERVATION_TOOLTIP_CLOSE:
+      return {
+        ...state,
+        reservationTooltipOpen: false
       };
     default:
       return state;

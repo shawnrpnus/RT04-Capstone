@@ -51,6 +51,10 @@ import { saveCard } from "./../../redux/actions/customerActions";
 import UpdateShoppingCartRequest from "../../models/shoppingCart/UpdateShoppingCartRequest.js";
 import CreditCardDialog from "./CreditCardDialog.js";
 import colourList from "assets/colours.json";
+//popper
+import ClickAwayListener from "@material-ui/core/ClickAwayListener";
+import Paper from "@material-ui/core/Paper";
+import Popper from "@material-ui/core/Popper";
 
 const jsonColorHexList = _.keyBy(colourList, "hex");
 
@@ -65,6 +69,10 @@ export default function ShoppingCartPage() {
   const errors = useSelector(state => state.errors);
   const customer = useSelector(state => state.customer.loggedInCustomer);
   const clientSecret = useSelector(state => state.customer.clientSecret);
+
+  //popper
+  const [popoverOpen, setPopoverOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
 
   // Updating shopping cart information
   useEffect(() => {
@@ -102,6 +110,12 @@ export default function ShoppingCartPage() {
 
   const handleClearShoppingCart = () => {
     dispatch(clearShoppingCart(customer.customerId));
+    setPopoverOpen(false);
+  };
+
+  const clearConfirmation = e => {
+    setAnchorEl(e.currentTarget);
+    setPopoverOpen(true);
   };
 
   return (
@@ -248,7 +262,7 @@ export default function ShoppingCartPage() {
                     <Button
                       color="danger"
                       fullWidth
-                      onClick={handleClearShoppingCart}
+                      onClick={clearConfirmation}
                       style={{
                         margin: "5% 0",
                         fontSize: "20px"
@@ -308,6 +322,24 @@ export default function ShoppingCartPage() {
                 Your shopping cart is empty.
               </h3>
             )}
+            <Popper
+              open={popoverOpen}
+              anchorEl={anchorEl}
+              style={{ zIndex: "2000" }}
+              placement="bottom"
+            >
+              <ClickAwayListener onClickAway={() => setPopoverOpen(false)}>
+                <Paper style={{ padding: "5px" }}>
+                  <h5 style={{ textAlign: "center", marginBottom: "0" }}>
+                    Clear?
+                  </h5>
+                  <Button color="danger" onClick={handleClearShoppingCart}>
+                    Yes
+                  </Button>
+                  <Button onClick={() => setPopoverOpen(false)}>No</Button>
+                </Paper>
+              </ClickAwayListener>
+            </Popper>
           </Card>
           {/* {showCreditCardDialog && (
             <CreditCardDialog handleClose={setShowCreditCardDialog} />

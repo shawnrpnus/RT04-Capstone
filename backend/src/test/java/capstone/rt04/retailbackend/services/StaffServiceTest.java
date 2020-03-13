@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import capstone.rt04.retailbackend.entities.*;
 import capstone.rt04.retailbackend.repositories.DepartmentRepository;
 import capstone.rt04.retailbackend.repositories.RoleRepository;
+import capstone.rt04.retailbackend.repositories.StoreRepository;
 import capstone.rt04.retailbackend.util.ErrorMessages;
 import capstone.rt04.retailbackend.util.enums.RoleNameEnum;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
@@ -23,6 +24,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.math.BigDecimal;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -39,12 +41,15 @@ public class StaffServiceTest {
     protected static Role testRole;
     protected static String username;
     protected static Department testDepartment;
+    protected static Store testStore;
     protected static final String VALID_STAFF_EMAIL ="tonystark@gmail.com";
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
     @Autowired
     protected DepartmentRepository departmentRepository;
     @Autowired
     protected RoleRepository roleRepository;
+    @Autowired
+    protected StoreService storeService;
 
     //Valid staff ID/username
     protected static Long createdStaffId;
@@ -65,9 +70,12 @@ public class StaffServiceTest {
 
         testDepartment = staffService.createNewDepartment("ABC");
 
+        Store expectedValidStore = new Store("Store 1", 8, 4, Time.valueOf("10:00:00"), Time.valueOf("21:00:00"), 2, 6, null);
+        testStore = storeService.createNewStore(expectedValidStore);
+
         Address testAddress = new Address("aba", "aaa", 123456, "blah");
 
-        Staff testValidStaff = staffService.createNewStaff(expectedValidStaff,testAddress,testRole.getRoleId(),testDepartment.getDepartmentId());
+        Staff testValidStaff = staffService.createNewStaff(expectedValidStaff,testAddress,testRole.getRoleId(),testDepartment.getDepartmentId(), testStore.getStoreId());
         assertThat(testValidStaff.getStaffId()).isNotNull();
         assertThat(testValidStaff).isEqualTo(expectedValidStaff);
         createdStaffId = testValidStaff.getStaffId();
@@ -93,7 +101,7 @@ public class StaffServiceTest {
         Staff invalidStaff = new Staff("bob", "vance", 10, "S111111D",  "bob@Bob@com", salary);
 
         try {
-           staffService.createNewStaff(invalidStaff, a, testRole.getRoleId(), testDepartment.getDepartmentId());
+           staffService.createNewStaff(invalidStaff, a, testRole.getRoleId(), testDepartment.getDepartmentId(), testStore.getStoreId());
        } catch (InputDataValidationException ex) {
            Map<String, String> expectedErrorMap = new HashMap<>();
           expectedErrorMap.put("email", ErrorMessages.EMAIL_INVALID);

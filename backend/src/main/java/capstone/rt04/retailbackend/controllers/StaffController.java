@@ -40,16 +40,17 @@ public class StaffController {
     //Address will need to save in address repository cause it is new
     //role and department already exist in database from the start so no need to save
     @PostMapping(StaffControllerRoutes.CREATE_NEW_STAFF)
-    public ResponseEntity<?> createNewStaff(@RequestBody StaffCreateRequest staffCreateRequest) throws InputDataValidationException, CreateNewStaffException {
+    public ResponseEntity<?> createNewStaff(@RequestBody StaffCreateRequest staffCreateRequest) throws InputDataValidationException, CreateNewStaffException, CreateNewStaffAccountException {
 
         System.out.println(staffCreateRequest.getRoleId());
-            try {
-                Staff newStaff = staffService.createNewStaff(staffCreateRequest.getStaff(), staffCreateRequest.getStaffAddress(),
-                        staffCreateRequest.getRoleId(), staffCreateRequest.getDepartmentId());
-                return new ResponseEntity<>(newStaff, HttpStatus.CREATED);
-            }catch (InputDataValidationException ex) {
-                return new ResponseEntity<>(ex.getErrorMap(), HttpStatus.BAD_REQUEST);
-            }
+        try {
+            Staff newStaff = staffService.createNewStaff(staffCreateRequest.getStaff(), staffCreateRequest.getStaffAddress(),
+                    staffCreateRequest.getRoleId(), staffCreateRequest.getDepartmentId(), staffCreateRequest.getStoreId());
+            clearStaffRelationship(newStaff);
+            return new ResponseEntity<>(newStaff, HttpStatus.CREATED);
+        } catch (InputDataValidationException ex) {
+            return new ResponseEntity<>(ex.getErrorMap(), HttpStatus.BAD_REQUEST);
+        }
 
 
     }
@@ -59,18 +60,18 @@ public class StaffController {
         try {
             Role newRole = staffService.createNewRole(roleCreateRequest.getRoleName());
             return new ResponseEntity<>(newRole, HttpStatus.CREATED);
-        }catch (CreateRoleException ex){
+        } catch (CreateRoleException ex) {
             return new ResponseEntity<>(ex, HttpStatus.BAD_REQUEST);
         }
     }
 
 
     @PostMapping(StaffControllerRoutes.CREATE_NEW_DEPARTMENT)
-    public ResponseEntity<?> createNewDepartment(@RequestBody DepartmentCreateRequest departmentCreateRequest) throws CreateDepartmentException{
+    public ResponseEntity<?> createNewDepartment(@RequestBody DepartmentCreateRequest departmentCreateRequest) throws CreateDepartmentException {
         try {
             Department newDepartment = staffService.createNewDepartment(departmentCreateRequest.getDepartmentName());
             return new ResponseEntity<>(newDepartment, HttpStatus.CREATED);
-        } catch (CreateDepartmentException ex){
+        } catch (CreateDepartmentException ex) {
             return new ResponseEntity<>(ex, HttpStatus.BAD_REQUEST);
         }
     }
@@ -79,23 +80,24 @@ public class StaffController {
     //HR informs admin to create new staff account and provides admin with staff ID
     //Email will be sent to new staff containing username and password.
     //I did not include verification here
-    @PostMapping(StaffControllerRoutes.CREATE_NEW_STAFF_ACCOUNT)
-    public ResponseEntity<?> createNewStaffAccount(@RequestBody StaffAccountCreateRequest staffAccountCreateRequest) throws CreateNewStaffAccountException {
-
-        try {
-            List<Staff> staff = staffService.createNewStaffAccount(staffAccountCreateRequest.getStaffIds());
-            return new ResponseEntity<>(staff, HttpStatus.CREATED);
-        } catch (CreateNewStaffAccountException ex){
-            return new ResponseEntity<>(ex.getErrorMap(), HttpStatus.BAD_REQUEST);
-        }
-
-
-    }
+//    @PostMapping(StaffControllerRoutes.CREATE_NEW_STAFF_ACCOUNT)
+//    public ResponseEntity<?> createNewStaffAccount(@RequestBody StaffAccountCreateRequest staffAccountCreateRequest) throws CreateNewStaffAccountException {
+//
+//        try {
+//            List<Staff> staff = staffService.createNewStaffAccount(staffAccountCreateRequest.getStaffIds());
+//            return new ResponseEntity<>(staff, HttpStatus.CREATED);
+//        } catch (CreateNewStaffAccountException ex){
+//            return new ResponseEntity<>(ex.getErrorMap(), HttpStatus.BAD_REQUEST);
+//        }
+//
+//
+//    }
 
     @GetMapping(StaffControllerRoutes.RETRIEVE_STAFF_BY_ID)
     public ResponseEntity<?> retrieveStaffById(@PathVariable Long staffId) {
         try {
             Staff staff = staffService.retrieveStaffByStaffId(staffId);
+            clearStaffRelationship(staff);
             return new ResponseEntity<>(staff, HttpStatus.OK);
         } catch (StaffNotFoundException ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
@@ -108,6 +110,7 @@ public class StaffController {
     public ResponseEntity<?> retrieveAllStaff() {
         try {
             List<Staff> staff = staffService.retrieveAllStaff();
+            staff.forEach(this::clearStaffRelationship);
             return new ResponseEntity<>(staff, HttpStatus.OK);
         } catch (Exception ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -138,43 +141,43 @@ public class StaffController {
     @PostMapping(StaffControllerRoutes.UPDATE_STAFF)
     public ResponseEntity<?> updateStaff(@RequestBody StaffDetailsUpdateRequest staffDetailsUpdateRequest) throws StaffNotFoundException, InputDataValidationException {
         try {
-            Staff updatedStaff = staffService.updateStaffDetails(staffDetailsUpdateRequest.getStaff(),staffDetailsUpdateRequest.getRole(),
+            Staff updatedStaff = staffService.updateStaffDetails(staffDetailsUpdateRequest.getStaff(), staffDetailsUpdateRequest.getRole(),
                     staffDetailsUpdateRequest.getDepartment(), staffDetailsUpdateRequest.getAddress());
+            clearStaffRelationship(updatedStaff);
             return new ResponseEntity<>(updatedStaff, HttpStatus.OK);
-        }catch (UpdateStaffDetailsException ex){
+        } catch (UpdateStaffDetailsException ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
         }
     }
 
     @PostMapping(StaffControllerRoutes.LOGIN_STAFF)
-    public ResponseEntity<?> staffLogin(@RequestBody StaffLoginRequest staffLoginRequest) throws InvalidStaffCredentialsException {
-      try {
+    public ResponseEntity<?> staffLogin(@RequestBody StaffLoginRequest staffLoginRequest) throws InvalidStaffCredentialsException, InputDataValidationException {
+        validationService.throwExceptionIfInvalidBean(staffLoginRequest);
+        try {
             Staff staff = staffService.staffLogin(staffLoginRequest.getUsername(), staffLoginRequest.getPassword());
+            clearStaffRelationship(staff);
             return new ResponseEntity<>(staff, HttpStatus.OK);
-        } catch (InvalidStaffCredentialsException ex){
+        } catch (InvalidStaffCredentialsException ex) {
             return new ResponseEntity<>(ex.getErrorMap(), HttpStatus.BAD_REQUEST);
-        } catch(InputDataValidationException ex){
-          return new ResponseEntity<>(ex.getErrorMap(), HttpStatus.BAD_REQUEST);
-      }
+        } catch (InputDataValidationException ex) {
+            return new ResponseEntity<>(ex.getErrorMap(), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PostMapping(StaffControllerRoutes.CHANGE_STAFF_PASSWORD)
-    public ResponseEntity<?> changeStaffPassword(@RequestBody StaffChangePasswordRequest staffChangePasswordRequest) throws StaffNotFoundException, InvalidStaffCredentialsException {
-        Map<String, String> inputErrMap = validationService.generateErrorMap(staffChangePasswordRequest);
-        if (inputErrMap != null) {
-            return new ResponseEntity<>(inputErrMap, HttpStatus.BAD_REQUEST);
-        }
-
+    public ResponseEntity<?> changeStaffPassword(@RequestBody StaffChangePasswordRequest staffChangePasswordRequest) throws StaffNotFoundException, InvalidStaffCredentialsException, InputDataValidationException {
+        validationService.throwExceptionIfInvalidBean(staffChangePasswordRequest);
         try {
 
             staffService.changeStaffPassword(staffChangePasswordRequest.getStaffId(),
                     staffChangePasswordRequest.getOldPassword(),
                     staffChangePasswordRequest.getNewPassword());
             Staff staff = staffService.retrieveStaffByStaffId(staffChangePasswordRequest.getStaffId());
+            clearStaffRelationship(staff);
             return new ResponseEntity<>(staff, HttpStatus.OK);
-        } catch (StaffNotFoundException ex){
+        } catch (StaffNotFoundException ex) {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
-        } catch (InvalidStaffCredentialsException ex){
+        } catch (InvalidStaffCredentialsException ex) {
             return new ResponseEntity<>(ex.getErrorMap(), HttpStatus.BAD_REQUEST);
         }
     }
@@ -185,10 +188,11 @@ public class StaffController {
     public ResponseEntity<?> resetStaffPassword(@RequestBody ResetStaffPasswordRequest rq) throws StaffNotFoundException {
         try {
             Staff staff = staffService.resetPassword(rq.getUsername());
+            clearStaffRelationship(staff);
             return new ResponseEntity<>(staff, HttpStatus.OK);
-        }catch (StaffNotFoundException ex){
+        } catch (StaffNotFoundException ex) {
             return new ResponseEntity<>(ex.getErrorMap(), HttpStatus.NOT_FOUND);
-        }catch(InputDataValidationException ex){
+        } catch (InputDataValidationException ex) {
             return new ResponseEntity<>(ex.getErrorMap(), HttpStatus.BAD_REQUEST);
         }
     }
@@ -196,6 +200,7 @@ public class StaffController {
     @DeleteMapping(StaffControllerRoutes.DELETE_STAFF)
     public ResponseEntity<?> deleteCustomer(@PathVariable Long staffId) throws StaffCannotDeleteException, StaffNotFoundException {
         Staff deletedStaff = staffService.removeStaff(staffId);
+        clearStaffRelationship(deletedStaff);
         return new ResponseEntity<>(deletedStaff, HttpStatus.OK);
     }
 
@@ -204,12 +209,37 @@ public class StaffController {
     public ResponseEntity<?> retrieveStaffWithNoAccount() {
         try {
             List<Staff> staff = staffService.retrieveStaffWithNoAccount();
+            staff.forEach(this::clearStaffRelationship);
             return new ResponseEntity<>(staff, HttpStatus.OK);
         } catch (Exception ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
+    private void clearStaffRelationship(Staff staff) {
+        Store s = staff.getStore();
+        if (s != null) {
+            s.setProductStocks(null);
+            s.setReservations(null);
+            s.setInStoreRestockOrders(null);
+            s.setTransactions(null);
+            s.setStaff(null);
+        }
+        staff.setAdvertisements(null);
+        staff.setRepliedReviews(null);
+        staff.setLeaves(null);
+        staff.setPayrolls(null);
+        staff.setDeliveries(null);
+        staff.setPassword(null);
+        Department d = staff.getDepartment();
+        if (d != null) {
+            d.setStaffList(null);
+        }
+        Role r = staff.getRole();
+        if (r != null) {
+            r.setStaffList(null);
+        }
+    }
 
 
 }

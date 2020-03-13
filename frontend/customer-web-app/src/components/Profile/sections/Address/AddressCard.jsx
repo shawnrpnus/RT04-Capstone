@@ -26,6 +26,9 @@ import {
 import Button from "@material-ui/core/Button";
 import { useHistory } from "react-router-dom";
 import { useSnackbar } from "notistack";
+import ClickAwayListener from "@material-ui/core/ClickAwayListener";
+import Paper from "@material-ui/core/Paper";
+import Popper from "@material-ui/core/Popper";
 import RemoveShippingAddressRequest from "models/customer/RemoveShippingAddressRequest";
 
 const style = {
@@ -66,6 +69,8 @@ export default function AddressCard({
 
   //State
   // const [currAddress, setCurrAddress] = useState("");
+  const [popoverOpen, setPopoverOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
 
   const onChange = (e, i) => {
     e.persist();
@@ -110,6 +115,12 @@ export default function AddressCard({
       )
     );
     // setAddNewAddress(!addNewAddress);
+    setPopoverOpen(false);
+  };
+
+  const clearConfirmation = e => {
+    setAnchorEl(e.currentTarget);
+    setPopoverOpen(true);
   };
 
   const classes = useStyles();
@@ -154,7 +165,7 @@ export default function AddressCard({
                 <Button onClick={() => onEditAddress(item)} color="primary">
                   <Edit />
                 </Button>
-                <Button onClick={() => onDeleteAddress(item)} color="primary">
+                <Button onClick={clearConfirmation} color="primary">
                   <Delete />
                 </Button>
               </GridItem>
@@ -205,6 +216,27 @@ export default function AddressCard({
                     label="Set as default billing address"
                   />
                 )}
+                <Popper
+                  open={popoverOpen}
+                  anchorEl={anchorEl}
+                  style={{ zIndex: "2000" }}
+                  placement="bottom"
+                >
+                  <ClickAwayListener onClickAway={() => setPopoverOpen(false)}>
+                    <Paper style={{ padding: "5px" }}>
+                      <h5 style={{ textAlign: "center", marginBottom: "0" }}>
+                        Delete?
+                      </h5>
+                      <Button
+                        color="danger"
+                        onClick={() => onDeleteAddress(item)}
+                      >
+                        Yes
+                      </Button>
+                      <Button onClick={() => setPopoverOpen(false)}>No</Button>
+                    </Paper>
+                  </ClickAwayListener>
+                </Popper>
               </GridItem>
             </GridContainer>
           </CardBody>

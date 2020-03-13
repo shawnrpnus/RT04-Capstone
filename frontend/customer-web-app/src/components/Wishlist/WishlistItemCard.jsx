@@ -13,13 +13,21 @@ import {
   AddShoppingCartSharp
 } from "@material-ui/icons";
 import { useDispatch, useSelector } from "react-redux";
-import { removeFromWishlistAPI } from "redux/actions/customerActions";
+import {
+  addToReservationCartAPI,
+  removeFromWishlistAPI
+} from "redux/actions/customerActions";
 import Popper from "@material-ui/core/Popper";
 import Paper from "@material-ui/core/Paper";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import { useSnackbar } from "notistack";
 import UpdateShoppingCartRequest from "models/shoppingCart/UpdateShoppingCartRequest";
 import { updateShoppingCart } from "redux/actions/shoppingCartActions";
+import { isProductVariantInList } from "services/customerService";
+import {
+  closeReservationTooltip,
+  openReservationTooltip
+} from "redux/actions/reservationActions";
 
 const _ = require("lodash");
 const useStyles = makeStyles(wishtlistStyle);
@@ -75,6 +83,24 @@ function WishlistItemCard(props) {
       cartType
     );
     dispatch(updateShoppingCart(req, enqueueSnackbar, removeFromWishlistAPI));
+  };
+
+  const addToReservationCart = () => {
+    const productVariantId = productVariant.productVariantId;
+    const currentReservationCart = customer.reservationCartItems;
+    if (isProductVariantInList(productVariantId, currentReservationCart)) {
+      enqueueSnackbar("Already in reservation cart!", {
+        variant: "error",
+        autoHideDuration: 1200
+      });
+      return;
+    }
+    const customerId = customer.customerId;
+    dispatch(
+      addToReservationCartAPI(customerId, productVariantId, enqueueSnackbar)
+    );
+    dispatch(openReservationTooltip);
+    setTimeout(() => dispatch(closeReservationTooltip), 1500);
   };
 
   return (
@@ -134,7 +160,7 @@ function WishlistItemCard(props) {
                 <AddShoppingCartSharp />
                 Move to shopping cart
               </Button>
-              <Button color="primary">
+              <Button color="primary" onClick={addToReservationCart}>
                 <AddShoppingCartSharp />
                 Add to reservation cart
               </Button>

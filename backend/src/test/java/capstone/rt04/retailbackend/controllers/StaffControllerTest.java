@@ -80,7 +80,7 @@ public class StaffControllerTest{
 
         Address testAddress = new Address("aba", "aaa", 123456, "blah");
 
-        StaffCreateRequest staffCreateRequest = new StaffCreateRequest(expectedValidStaff, testAddress, testRole.getRoleId(), testDepartment.getDepartmentId());
+        StaffCreateRequest staffCreateRequest = new StaffCreateRequest(expectedValidStaff, testAddress, testRole.getRoleId(), testDepartment.getDepartmentId(), null);
 
         Staff createdStaff = given().
                 contentType("application/json").
@@ -123,7 +123,7 @@ public class StaffControllerTest{
         Staff invalidStaff = new Staff("bob", "vance", 10, "S111111D", "bob@Bob@com",BigDecimal.valueOf(10000));
 
 
-        StaffCreateRequest staffCreateRequest = new StaffCreateRequest(invalidStaff, a, testRole.getRoleId(), testDepartment.getDepartmentId());
+        StaffCreateRequest staffCreateRequest = new StaffCreateRequest(invalidStaff, a, testRole.getRoleId(), testDepartment.getDepartmentId(), null);
 
         given().
                 contentType("application/json").

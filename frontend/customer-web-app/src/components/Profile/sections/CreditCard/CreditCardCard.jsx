@@ -11,6 +11,9 @@ import "react-credit-cards/es/styles-compiled.css";
 import Grid from "@material-ui/core/Grid";
 import IconButton from "@material-ui/core/IconButton";
 import CancelIcon from "@material-ui/icons/Cancel";
+import ClickAwayListener from "@material-ui/core/ClickAwayListener";
+import Paper from "@material-ui/core/Paper";
+import Popper from "@material-ui/core/Popper";
 import { deleteCard } from "redux/actions/customerActions";
 
 const useStyles = makeStyles(customCheckboxRadioSwitch);
@@ -22,6 +25,9 @@ export default function CreditCardCard({ setIsLoading }) {
   const history = useHistory();
 
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  const [popoverOpen, setPopoverOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+
   //Redux
   const dispatch = useDispatch();
   const errors = useSelector(state => state.errors);
@@ -35,6 +41,12 @@ export default function CreditCardCard({ setIsLoading }) {
     console.log(creditCardId);
     setIsLoading(true);
     dispatch(deleteCard({ customerId, creditCardId }, setIsLoading));
+    setPopoverOpen(false);
+  };
+
+  const clearConfirmation = e => {
+    setAnchorEl(e.currentTarget);
+    setPopoverOpen(true);
   };
 
   return (
@@ -65,12 +77,33 @@ export default function CreditCardCard({ setIsLoading }) {
               </Grid>
               <Grid item xs={2}>
                 <IconButton
-                  onClick={() => handleDeleteCard(creditCardId)}
+                  onClick={clearConfirmation}
                   style={{ marginTop: "-15%" }}
                 >
                   <CancelIcon style={{ color: "red" }} />
                 </IconButton>
               </Grid>
+              <Popper
+                open={popoverOpen}
+                anchorEl={anchorEl}
+                style={{ zIndex: "2000" }}
+                placement="bottom"
+              >
+                <ClickAwayListener onClickAway={() => setPopoverOpen(false)}>
+                  <Paper style={{ padding: "5px" }}>
+                    <h5 style={{ textAlign: "center", marginBottom: "0" }}>
+                      Delete?
+                    </h5>
+                    <Button
+                      color="danger"
+                      onClick={() => handleDeleteCard(creditCardId)}
+                    >
+                      Yes
+                    </Button>
+                    <Button onClick={() => setPopoverOpen(false)}>No</Button>
+                  </Paper>
+                </ClickAwayListener>
+              </Popper>
             </Grid>
           );
         }

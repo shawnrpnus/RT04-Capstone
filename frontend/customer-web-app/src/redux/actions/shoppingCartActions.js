@@ -1,5 +1,9 @@
 import axios from "axios";
-import { UPDATE_SHOPPING_CART_SUCCESS } from "redux/actions/types";
+import {
+  CART_TOOLTIP_CLOSE,
+  CART_TOOLTIP_OPEN,
+  UPDATE_SHOPPING_CART_SUCCESS
+} from "redux/actions/types";
 import { dispatchErrorMapError } from "redux/actions/index";
 import { PAYMENT_SUCCESS, SAVE_CARD_SUCCESS } from "./types";
 
@@ -124,4 +128,12 @@ export const clearShoppingCart = customerId => {
         console.log(err);
       });
   };
+};
+
+export const openCartTooltip = {
+  type: CART_TOOLTIP_OPEN
+};
+
+export const closeCartTooltip = {
+  type: CART_TOOLTIP_CLOSE
 };

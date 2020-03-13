@@ -50,6 +50,7 @@ if (window.navigator.userAgent.includes("Chrome")) {
   );
 }
 
+// Adds a change listener. It will be called any time an action is dispatched
 const unsubscribe = store.subscribe(() => {
   saveToLocalStorage({
     staffEntity: {

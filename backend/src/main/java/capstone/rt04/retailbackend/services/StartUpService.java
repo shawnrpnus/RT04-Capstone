@@ -84,6 +84,9 @@ public class StartUpService {
     private Long productVariantId29;
     private Long productVariantId30;
 
+    private Long warehouseId;
+    private Long store1Id;
+    private Long store2Id;
 
     public StartUpService(ProductService productService, CategoryService categoryService, WarehouseService warehouseService, TagService tagService, StyleService styleService, StoreService storeService, StaffService staffService, SizeDetailsService sizeDetailsService, ShoppingCartService shoppingCartService, CustomerService customerService, AddressRepository addressRepository, SizeDetailsRepository sizeDetailsRepository) {
         this.productService = productService;
@@ -717,9 +720,6 @@ public class StartUpService {
             colourToImageUrlsMaps35.add(new ColourToImageUrlsMap("#F5F5DC", blueProductImageUrls35));
             colourToImageUrlsMaps35.add(new ColourToImageUrlsMap("#ACE5EE", lightblueImageUrls35));
 
-
-
-
             Style vintage = styleService.retrieveStyleByStyleName("Vintage");
             Style bohemian = styleService.retrieveStyleByStyleName("Bohemian");
             Style chic = styleService.retrieveStyleByStyleName("Chic");
@@ -1179,19 +1179,22 @@ public class StartUpService {
     private void createWarehouseAndStoreIfNotFound() throws InputDataValidationException, CreateNewProductStockException, WarehouseNotFoundException, StoreNotFoundException, ProductVariantNotFoundException {
         if (warehouseService.retrieveAllWarehouses().size() == 0) {
 
-            warehouseService.createWarehouse(new Warehouse(),
+            Warehouse w = warehouseService.createWarehouse(new Warehouse(),
                     new Address("Pasir Ris Drive 1", "#01-01", 510144, "Pasir Ris Building"));
+            warehouseId = w.getWarehouseId();
             List<Warehouse> warehouses = warehouseService.retrieveAllWarehouses();
 
-            storeService.createNewStore(new Store("Store 1", 8, 4,
+            Store s1 = storeService.createNewStore(new Store("Store 1", 8, 4,
                     Time.valueOf("10:00:00"), Time.valueOf("21:00:00"), 2, 6,
                     new Address("310 Orchard Rd", "", 238864, "Apricot N' Nut - Tang Plaza")));
+            store1Id = s1.getStoreId();
 
-            storeService.createNewStore(new Store("Store 2", 5, 2,
+            Store s2 = storeService.createNewStore(new Store("Store 2", 5, 2,
                     Time.valueOf("10:00:00"), Time.valueOf("21:00:00"), 1, 3,
                     new Address("270 Orchard Rd", "", 238857, "Apricot N' Nut - Orchard")));
-            List<Store> stores = storeService.retrieveAllStores();
+            store2Id = s2.getStoreId();
 
+            List<Store> stores = storeService.retrieveAllStores();
             productService.assignProductStock(warehouses, stores, null);
         }
     }
@@ -1218,44 +1221,44 @@ public class StartUpService {
         Role role2 = staffService.createNewRole(RoleNameEnum.ASSISTANT_MANAGER);
         Role role3 = staffService.createNewRole(RoleNameEnum.MANAGER);
         Role role4 = staffService.createNewRole(RoleNameEnum.DIRECTOR);
-        List<Long>staffToConfigure =new ArrayList<>();
+//        List<Long>staffToConfigure =new ArrayList<>();
 
 
         Staff staff = new Staff("Ware", "house", 2, "116C", "geogrelee@gmail.com", BigDecimal.valueOf(10000));
         Address a1 = new Address("2E Hong San Walk", "#03-08", 612140, "Palm Garden");
-        Staff newStaff = staffService.createNewStaff(staff, a1, role1.getRoleId(), departmentWarehouse.getDepartmentId());
+        Staff newStaff = staffService.createNewStaff(staff, a1, role1.getRoleId(), departmentWarehouse.getDepartmentId(), null);
 
-        Staff staff2 = new Staff("IT", "STAFF", 13, "213C", "annabeltwe@gmail.com", BigDecimal.valueOf(10000));
-        Address a2 = new Address("Block 235 Chua Chu Kang Ave 2", "#15-234", 689051, "-");
-        Staff newStaff2 = staffService.createNewStaff(staff2, a2, role2.getRoleId(), departmentIT.getDepartmentId());
+//        Staff staff2 = new Staff("IT", "STAFF", 13, "213C", "annabeltwe@gmail.com", BigDecimal.valueOf(10000));
+//        Address a2 = new Address("Block 235 Chua Chu Kang Ave 2", "#15-234", 689051, "-");
+//        Staff newStaff2 = staffService.createNewStaff(staff2, a2, role2.getRoleId(), departmentIT.getDepartmentId());
 
 
         Staff staff3 = new Staff("HR", "STAFF", 1, "131Z", "Caiyl@gmail.com", BigDecimal.valueOf(10000));
         Address a3 = new Address("Block 234 Bishan South", "#30-08", 321140, "Palm Garden");
-        Staff newStaff3 = staffService.createNewStaff(staff3, a3, role1.getRoleId(), departmentHR.getDepartmentId());
+        Staff newStaff3 = staffService.createNewStaff(staff3, a3, role1.getRoleId(), departmentHR.getDepartmentId(), null);
 
 
         Staff staff4 = new Staff("Sales", "Marketing", 20, "971C", "rayquaza@gmail.com", BigDecimal.valueOf(10000));
         Address a4 = new Address("Block 130 Taman Jurong", "#15-02", 231334, "-");
-        Staff newStaff4 = staffService.createNewStaff(staff4, a4, role1.getRoleId(), departmentSalesMarketing.getDepartmentId());
+        Staff newStaff4 = staffService.createNewStaff(staff4, a4, role1.getRoleId(), departmentSalesMarketing.getDepartmentId(),null);
 
 
-        Staff staff5 = new Staff("St", "ore", 14, "187E", "tonychan@hotmail.com" ,BigDecimal.valueOf(10000));
+        Staff staff5 = new Staff("Store1", "Staff", 14, "187E", "tonychan@hotmail.com" ,BigDecimal.valueOf(10000));
         staff5.setAddress(new Address ("Block 2 Ang Mo Kio Avenue 5","#11-05",321140,"-"));
-        Staff newStaff5 = staffService.createNewStaff(staff5, staff5.getAddress(), role3.getRoleId(), departmentStore.getDepartmentId());
+        Staff newStaff5 = staffService.createNewStaff(staff5, staff5.getAddress(), role3.getRoleId(), departmentStore.getDepartmentId(), store1Id);
 
 
-        Staff staff6 = new Staff("St", "ore", 2, "312Z", "SergioEs@gmail.com",BigDecimal.valueOf(10000) );
+        Staff staff6 = new Staff("Store2", "Staff", 2, "312Z", "SergioEs@gmail.com",BigDecimal.valueOf(10000) );
         staff6.setAddress(new Address ("Block 567 Bishan South","#20-08",321567,"-"));
-        Staff newStaff6 = staffService.createNewStaff(staff6, staff6.getAddress(), role1.getRoleId(), departmentStore.getDepartmentId());
+        Staff newStaff6 = staffService.createNewStaff(staff6, staff6.getAddress(), role1.getRoleId(), departmentStore.getDepartmentId(), store2Id);
 
-        staffToConfigure.add(newStaff.getStaffId());
-        staffToConfigure.add(newStaff2.getStaffId());
-        staffToConfigure.add(newStaff3.getStaffId());
-        staffToConfigure.add(newStaff4.getStaffId());
-        staffToConfigure.add(newStaff5.getStaffId());
-        staffToConfigure.add(newStaff6.getStaffId());
-        staffService.createNewStaffAccount(staffToConfigure);
+//        staffToConfigure.add(newStaff.getStaffId());
+//        staffToConfigure.add(newStaff2.getStaffId());
+//        staffToConfigure.add(newStaff3.getStaffId());
+//        staffToConfigure.add(newStaff4.getStaffId());
+//        staffToConfigure.add(newStaff5.getStaffId());
+//        staffToConfigure.add(newStaff6.getStaffId());
+//        staffService.createNewStaffAccount(staffToConfigure);
 
 //
 //        Staff staff7 = new Staff("Jay", "Wang", 10, "560D", "WangDaXia@gmail.com",BigDecimal.valueOf(10000) );
@@ -1374,9 +1377,9 @@ public class StartUpService {
         if (customerService.retrieveAllCustomers().size() == 0) {
             Customer customer = customerService.createNewCustomer(new Customer("Lila", "Facchini",
                     "lila@gmail.com", "password"));
+            customer.setVerified(true);
             customerId = customer.getCustomerId();
             customerService.retrieveCustomerByCustomerId(customerId);
-            customer.setVerified(true);
         }
     }
 

@@ -102,11 +102,13 @@ export default function CustomDropdown(props) {
               {prop}
             </MenuItem>
           );
+        } else if (prop.type.name === "CustomDropdown") {
+          return prop;
         }
         return (
           <MenuItem
             key={key}
-            onClick={() => handleCloseMenu(prop)}
+            // onClick={() => handleClose(prop)}
             className={dropdownItem}
           >
             {prop}
@@ -158,7 +160,7 @@ export default function CustomDropdown(props) {
               {innerDropDown ? (
                 dropDownMenu
               ) : (
-                <ClickAwayListener onClickAway={handleClose}>
+                <ClickAwayListener onClickAway={handleClose} touchEvent={false}>
                   {dropDownMenu}
                 </ClickAwayListener>
               )}

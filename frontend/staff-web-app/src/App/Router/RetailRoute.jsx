@@ -6,7 +6,7 @@ const _ = require("lodash");
 
 const RetailRoute = ({ component: Component, render, ...rest }) => {
   let staff = useSelector(state => state.staffEntity.loggedInStaff);
-  let store = useSelector(state => state.staffEntity.selectedStore);
+  let store = staff.store;
 
   return (
     <SecureRoute

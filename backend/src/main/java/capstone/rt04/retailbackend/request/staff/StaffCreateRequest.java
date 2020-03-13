@@ -16,5 +16,6 @@ public class StaffCreateRequest {
     private Address staffAddress;
     private Long roleId;
     private Long departmentId;
+    private Long storeId;
 
 }

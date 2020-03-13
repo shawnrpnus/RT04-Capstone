@@ -1,12 +1,11 @@
 import React from "react";
-import * as PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 
 import headersStyle from "assets/jss/material-kit-pro-react/views/sectionsSections/headersStyle";
 import CustomDropdown from "components/UI/CustomDropdown/CustomDropdown";
 import Button from "components/UI/CustomButtons/Button";
-import { AccountCircle } from "@material-ui/icons";
+import { AccountCircle, ShoppingBasket } from "@material-ui/icons";
 import Hidden from "@material-ui/core/Hidden";
 import Tooltip from "@material-ui/core/Tooltip";
 import Divider from "@material-ui/core/Divider";
@@ -14,10 +13,9 @@ import typographyStyle from "assets/jss/material-kit-pro-react/views/componentsS
 import classNames from "classnames";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
-import { useDispatch, useSelector } from "react-redux";
-import { customerLogout } from "redux/actions/customerActions";
 import GridItem from "components/Layout/components/Grid/GridItem";
 import GridContainer from "components/Layout/components/Grid/GridContainer";
+
 const jsog = require("jsog");
 
 const useHeaderStyles = makeStyles(headersStyle);
@@ -33,9 +31,10 @@ function CategoryNavbar(props) {
         <RenderCategoryToolTip classes={classes} category={category} />
       </Hidden>
       <Hidden mdUp className={classes.hidden}>
-        <RenderAccountDropdownDrawer
+        <RenderCategoryDropdownDrawer
           dropdownHoverColor={dropdownHoverColor}
           classes={classes}
+          category={category}
         />
       </Hidden>
     </React.Fragment>
@@ -119,72 +118,70 @@ function SubCategoryColumn(props) {
 }
 
 // Renders dropdown menu when the drawer in responsive mode (smDown)
-function RenderAccountDropdownDrawer(props) {
-  const { dropdownHoverColor, classes } = props;
+function RenderCategoryDropdownDrawer(props) {
+  const { dropdownHoverColor, classes, category } = props;
+  const subs = renderSubCategoryDrawerLinks(
+    classes,
+    category.childCategories,
+    category.categoryName
+  );
   return (
     <CustomDropdown
       noLiPadding
       navDropdown
       hoverColor={dropdownHoverColor}
-      buttonText="Account"
+      buttonText={category.categoryName}
       buttonProps={{
         className: classes.navLink,
         color: "transparent"
       }}
-      buttonIcon={AccountCircle}
-      dropdownList={renderAccDropdownLinks(classes)}
+      buttonIcon={ShoppingBasket}
+      dropdownList={subs}
     />
   );
 }
 
-// Standard links in tooltip and drawer
-const renderAccDropdownLinks = (classes, Component, componentProps) => {
-  return [
-    <Link
-      key="login"
-      to="/account/login"
-      className={classes ? classes.dropdownLink : null}
-    >
-      {Component ? <Component {...componentProps}>Login</Component> : "Login"}
-    </Link>,
-    <Link
-      key="register"
-      to="/account/register"
-      className={classes ? classes.dropdownLink : null}
-    >
-      {Component ? (
-        <Component {...componentProps}>Register</Component>
-      ) : (
-        "Register"
+const renderSubCategoryDrawerLinks = (classes, childCategories, rootName) => {
+  return childCategories.map(c => (
+    <CustomDropdown
+      key={c.categoryId}
+      noLiPadding
+      navDropdown
+      buttonText={c.categoryName}
+      buttonProps={{
+        className: classes.navLink,
+        color: "transparent"
+      }}
+      dropdownList={renderLeafCategoryDrawerLinks(
+        classes,
+        c.childCategories,
+        c.categoryName,
+        rootName
       )}
-    </Link>
-  ];
+    />
+  ));
 };
 
-function AccDropDownLinksAfterLogin(props) {
-  const { classes, Component, componentProps } = props;
-  const dispatch = useDispatch();
-  return [
+const renderLeafCategoryDrawerLinks = (
+  classes,
+  leafCategories,
+  subCategoryName,
+  rootName
+) => {
+  const leafLinks = leafCategories.map(c => (
     <Link
-      key="profile"
-      to="/account/profile/info"
+      key={c.categoryId}
+      to={`/shop/catalog/${rootName}/${subCategoryName}/${c.categoryName}`}
       className={classes ? classes.dropdownLink : null}
     >
-      {Component ? (
-        <Component {...componentProps}>My Profile</Component>
-      ) : (
-        "My Profile"
-      )}
-    </Link>,
-    <Link
-      key="logout"
-      to="/"
-      className={classes ? classes.dropdownLink : null}
-      onClick={() => dispatch(customerLogout())}
-    >
-      {Component ? <Component {...componentProps}>Logout</Component> : "Logout"}
+      {c.categoryName}
     </Link>
-  ];
+  ));
+  return leafLinks;
+};
+
+function CategoryDrawerDropdown(props) {
+  const { classes, category } = props;
 }
 
 export default CategoryNavbar;

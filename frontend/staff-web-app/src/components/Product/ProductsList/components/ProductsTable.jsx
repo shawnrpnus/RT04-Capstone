@@ -64,9 +64,10 @@ class ProductsTable extends PureComponent {
   componentDidMount() {
     // TODO: Retrieve store ID from cookie to input as argument
     const { store, retrieveProductsDetails } = this.props;
-    if (_.get(store, "storeId")) {
-      console.log("retrieving for store ", store.storeId);
-      retrieveProductsDetails(store.storeId);
+    const storeId = _.get(store, "storeId");
+    if (storeId) {
+      console.log("retrieving for store ", storeId);
+      retrieveProductsDetails(storeId);
     } else {
       console.log("retrieving for warehouse");
       retrieveProductsDetails();
@@ -100,6 +101,7 @@ class ProductsTable extends PureComponent {
       "Sales and Marketing";
     const warehouse =
       _.get(this.props, "staff.department.departmentName") === "Warehouse";
+    const storeId = _.get(store, "storeId", null);
 
     let data = [];
     if (products) {
@@ -200,7 +202,7 @@ class ProductsTable extends PureComponent {
                         this.handleViewProductDetails(rowData.productId)
                     },
 
-                    !salesmarketing && (store.storeId || warehouse)
+                    !salesmarketing && (storeId || warehouse)
                       ? {
                           icon: List,
                           tooltip: "View / Update Product Stocks",
@@ -235,7 +237,7 @@ class ProductsTable extends PureComponent {
             }}
             key={selectedProductId}
             selectedProductId={selectedProductId}
-            storeId={store.storeId}
+            storeId={storeId}
           />
         )}
       </div>
