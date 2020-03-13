@@ -6,6 +6,7 @@ public class ProductVariantControllerRoutes {
     public static final String RETRIEVE_PRODUCT_VARIANT_BY_PRODUCT = "/retrieveProductVariantByProduct/{productId}";
     public static final String RETRIEVE_ALL_PRODUCT_VARIANTS = "/retrieveAllProductVariant";
     public static final String RETRIEVE_PRODUCT_VARIANT_BY_SKU = "/retrieveProductVariantBySku";
+    public static final String RETRIEVE_STOCKS_FOR_PROD_VARIANT = "/retrieveStocksForProductVariant";
     public static final String RETRIEVE_ALL_SKUS = "/retrieveAllSku";
     public static final String CREATE_MULTIPLE_PRODUCT_VARIANTS = "/createMultipleProductVariants";
     public static final String UPDATE_PRODUCT_VARIANT = "/updateProductVariant";

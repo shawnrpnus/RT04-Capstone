@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping(ProductVariantControllerRoutes.PRODUCT_VARIANT_BASE_ROUTE)
@@ -94,6 +95,11 @@ public class ProductVariantController {
         ProductVariant pv = productService.retrieveProductVariantBySku(req.getSku());
         clearProductVariantRelationships(pv);
         return new ResponseEntity<>(pv, HttpStatus.OK);
+    }
+
+    @GetMapping(ProductVariantControllerRoutes.RETRIEVE_STOCKS_FOR_PROD_VARIANT)
+    public List<Map<String, String>> retrieveStocksForProductVariant(@RequestParam Long productVariantId) throws ProductVariantNotFoundException {
+        return productService.retrieveStocksForProductVariant(productVariantId);
     }
 
     @GetMapping(ProductVariantControllerRoutes.RETRIEVE_ALL_SKUS)

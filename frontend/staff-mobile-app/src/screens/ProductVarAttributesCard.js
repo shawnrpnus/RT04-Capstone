@@ -31,15 +31,13 @@ function ProductVarAttributesCard(props) {
           <Text h4 bold>
             {productVariant.product.productName}
           </Text>
-          <Text h4 style={{ marginBottom: 10 }}>
-            ${productVariant.product.price}
-          </Text>
+          <Text h4>${productVariant.product.price}</Text>
         </Block>
         <Text h6 style={{ marginBottom: 10 }}>
           {productVariant.sku}
         </Text>
 
-        <Block flex row style={{ alignItems: "center" }}>
+        <Block flex row style={{ alignItems: "center", marginBottom: 10 }}>
           <Text h5 bold>
             Colour:{" "}
           </Text>
@@ -54,12 +52,16 @@ function ProductVarAttributesCard(props) {
           </Svg>
           <Text h5>{colours[productVariant.colour].name}</Text>
         </Block>
-        <Text h5>
+        <Text h5 style={{marginBottom: 10}}>
           <Text h5 bold>
             Size:
           </Text>{" "}
           {productVariant.sizeDetails.productSize}
         </Text>
+        <Text h5 bold>
+          Description
+        </Text>
+        <Text h5>{productVariant.product.description}</Text>
       </Block>
     </Block>
   );

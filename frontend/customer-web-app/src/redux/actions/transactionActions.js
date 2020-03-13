@@ -5,7 +5,7 @@ import {
   UPDATE_DISPLAYED_TRANSACTIONS,
   UPDATE_VIEWED_TRANSACTION
 } from "redux/actions/types";
-import {ADD_SHIPPING_ADDRESS_AT_CHECKOUT_SUCCESS} from "./types";
+import { ADD_SHIPPING_ADDRESS_AT_CHECKOUT_SUCCESS } from "./types";
 
 const jsog = require("jsog");
 const TRANSACTION_BASE_URL = "/api/transaction";
@@ -71,7 +71,10 @@ export const addShippingAddressDetailsAtCheckout = (
   return dispatch => {
     //redux thunk passes dispatch
     axios
-      .post("/api/customer" + "/addShippingAddressAtCheckout", addUpdateAddressRequest)
+      .post(
+        "/api/customer" + "/addShippingAddressAtCheckout",
+        addUpdateAddressRequest
+      )
       .then(response => {
         const { data } = jsog.decode(response);
         dispatch(addShippingAddressAtCheckoutSuccess(data));

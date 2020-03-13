@@ -41,8 +41,12 @@ export default function AddNewAddressForCheckOut({
     line2: editCurrAddress ? editCurrAddress.line2 : "",
     postalCode: editCurrAddress ? editCurrAddress.postalCode : "",
     buildingName: editCurrAddress ? editCurrAddress.buildingName : "",
-    default: editCurrAddress ? editCurrAddress.default : currCustomer.shippingAddresses.length === 0,
-    billing: editCurrAddress ? editCurrAddress.billing : currCustomer.shippingAddresses.length === 0,
+    default: editCurrAddress
+      ? editCurrAddress.default
+      : currCustomer.shippingAddresses.length === 0,
+    billing: editCurrAddress
+      ? editCurrAddress.billing
+      : currCustomer.shippingAddresses.length === 0,
     addressId: editCurrAddress ? editCurrAddress.addressId : null
   });
 
@@ -186,7 +190,7 @@ export default function AddNewAddressForCheckOut({
             )
           }}
         />
-       
+
         <FormControlLabel
           control={
             <Checkbox

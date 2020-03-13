@@ -68,12 +68,12 @@ function ProductDetails(props) {
                 <Block flex row style={{ marginTop: 10, borderTop: "black" }}>
                   <Block flex={0.5} center>
                     <Text h5 bold>
-                      Store
+                      Location
                     </Text>
                   </Block>
                   <Block flex={0.5} center>
                     <Text h5 bold>
-                      Stock
+                      Quantity
                     </Text>
                   </Block>
                 </Block>

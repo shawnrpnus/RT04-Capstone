@@ -235,10 +235,9 @@ export default function AddressCardForCheckOut({
 
                   <GridItem xs={12}>
                     <Button size="sm" onClick={() => onEditAddress(item)}>
-                      <Edit/>
+                      <Edit />
                       Edit address
                     </Button>
-
                   </GridItem>
                 </GridContainer>
               </CardBody>
