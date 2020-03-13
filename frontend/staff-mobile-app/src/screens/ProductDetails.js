@@ -80,7 +80,7 @@ function ProductDetails(props) {
                 {stocks &&
                   stocks.map(stock => {
                     return (
-                      <Block flex row>
+                      <Block flex row key={stock.storeName + stock.quantity}>
                         <Block flex={0.5} center>
                           <Text h5>
                             {stock.storeName}

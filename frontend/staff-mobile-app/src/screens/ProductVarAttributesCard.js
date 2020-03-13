@@ -27,11 +27,15 @@ function ProductVarAttributesCard(props) {
       }}
     >
       <Block flex={1} style={{ width: "100%" }}>
-        <Block flex row space="between">
-          <Text h4 bold>
-            {productVariant.product.productName}
-          </Text>
-          <Text h4>${productVariant.product.price}</Text>
+        <Block flex row >
+          <Block flex={0.7}>
+            <Text h4 bold>
+              {productVariant.product.productName}
+            </Text>
+          </Block>
+          <Block flex={0.3} right>
+            <Text h4>${productVariant.product.price}</Text>
+          </Block>
         </Block>
         <Text h6 style={{ marginBottom: 10 }}>
           {productVariant.sku}
@@ -52,7 +56,7 @@ function ProductVarAttributesCard(props) {
           </Svg>
           <Text h5>{colours[productVariant.colour].name}</Text>
         </Block>
-        <Text h5 style={{marginBottom: 10}}>
+        <Text h5 style={{ marginBottom: 10 }}>
           <Text h5 bold>
             Size:
           </Text>{" "}
