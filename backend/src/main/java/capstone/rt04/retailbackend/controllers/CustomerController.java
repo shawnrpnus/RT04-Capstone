@@ -196,6 +196,14 @@ public class CustomerController {
         return new ResponseEntity<>(customer, HttpStatus.OK);
     }
 
+    @PostMapping(CustomerControllerRoutes.ADD_SHIPPING_ADDRESS_AT_CHECKOUT)
+    public ResponseEntity<?> addShippingAddressAtCheckout(@RequestBody AddUpdateShippingAddressRequest addUpdateShippingAddressRequest) throws CustomerNotFoundException, InputDataValidationException {
+        Map<String, String> inputErrMap = validationService.generateErrorMap(addUpdateShippingAddressRequest);
+        if (inputErrMap != null) return new ResponseEntity<>(inputErrMap, HttpStatus.BAD_REQUEST);
+        Address address = customerService.addShippingAddressAtCheckout(addUpdateShippingAddressRequest.getCustomerId(), addUpdateShippingAddressRequest.getShippingAddress());
+        return new ResponseEntity<>(address, HttpStatus.OK);
+    }
+
     @PostMapping(CustomerControllerRoutes.ADD_SHIPPING_ADDRESS)
     public ResponseEntity<?> addShippingAddress(@RequestBody AddUpdateShippingAddressRequest addUpdateShippingAddressRequest) throws CustomerNotFoundException, InputDataValidationException {
         Map<String, String> inputErrMap = validationService.generateErrorMap(addUpdateShippingAddressRequest);

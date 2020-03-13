@@ -2,7 +2,8 @@ import * as types from "../actions/types";
 
 const initialState = {
   displayedTransactions: null,
-  viewedTransaction: null
+  viewedTransaction: null,
+  currAddress: null
 };
 
 export default function(state = initialState, action) {
@@ -16,6 +17,11 @@ export default function(state = initialState, action) {
       return {
         ...state,
         viewedTransaction: action.transaction
+      };
+    case types.ADD_SHIPPING_ADDRESS_AT_CHECKOUT_SUCCESS:
+      return {
+        ...state,
+        currAddress: action.currAddress
       };
     default:
       return state;

@@ -62,6 +62,8 @@ import AddressCardForCheckOut from "./AddressCardForCheckOut";
 import AddAddress from "components/Profile/sections/Address/AddAddress";
 import colourList from "assets/colours.json";
 import CheckoutProdVariantCard from "components/Checkout/CheckoutProdVariantCard";
+import AddNewAddressForCheckOut from "./AddNewAddressForCheckout";
+import { refreshCustomerId } from "../../redux/actions/customerActions";
 
 const useStyles = makeStyles(checkoutStyle);
 
@@ -72,7 +74,13 @@ export default function CheckOutPage() {
   // Redux mapping state to props
   const errors = useSelector(state => state.errors);
   const customer = useSelector(state => state.customer.loggedInCustomer);
-
+  const currAddress = useSelector(state => state.transaction.currAddress);
+  const [billingAsShipping, setBillingAsShipping] = useState(
+    customer.shippingAddresses.length === 0
+  );
+  useEffect(() => {
+    dispatch(refreshCustomerId(customer.customerId));
+  }, [currAddress]);
   const stripe = useStripe();
   const elements = useElements();
   const history = useHistory();
@@ -92,6 +100,7 @@ export default function CheckOutPage() {
   const [currShippingAddress, setCurrShippingAddress] = useState(null);
   const [currBillingAddress, setCurrBillingAddress] = useState(null);
   const [addCard, setAddCard] = useState(false);
+  const [editCurrAddress, setEditCurrAddress] = useState("");
 
   useEffect(() => {}, [customer, clientSecret]);
 
@@ -279,15 +288,29 @@ export default function CheckOutPage() {
                             <Grid item container xs={12}>
                               <Grid item xs={false} md={2} />
                               <Grid item xs={12} md={8}>
-                                {/*<AddAddress*/}
-                                {/*  addNewAddress={[*/}
-                                {/*    addNewAddress,*/}
-                                {/*    setAddNewAddress*/}
-                                {/*  ]}*/}
-                                {/*  currAddress={[*/}
-                                {/*    */}
-                                {/*  ]}*/}
-                                {/*/>*/}
+                                <AddNewAddressForCheckOut
+                                  addNewAddress={[
+                                    addNewAddress,
+                                    setAddNewAddress
+                                  ]}
+                                  currShippingAddress={[
+                                    currShippingAddress,
+                                    setCurrShippingAddress
+                                  ]}
+                                  currBillingAddress={[
+                                    currBillingAddress,
+                                    setCurrBillingAddress
+                                  ]}
+                                  currAddress={currAddress}
+                                  billingAsShipping={[
+                                    billingAsShipping,
+                                    setBillingAsShipping
+                                  ]}
+                                  editCurrAddress={[
+                                    editCurrAddress,
+                                    setEditCurrAddress
+                                  ]}
+                                />
                               </Grid>
                               <Grid item xs={false} md={2} />
                             </Grid>
@@ -304,6 +327,15 @@ export default function CheckOutPage() {
                                     setCurrShippingAddress
                                   }
                                   setCurrBillingAddress={setCurrBillingAddress}
+                                  currAddress={currAddress}
+                                  billingAsShipping={[
+                                    billingAsShipping,
+                                    setBillingAsShipping
+                                  ]}
+                                  editCurrAddress={[
+                                    editCurrAddress,
+                                    setEditCurrAddress
+                                  ]}
                                 />
                               </Grid>
                             </Grid>
@@ -409,6 +441,7 @@ export default function CheckOutPage() {
                   {customer.onlineShoppingCart.shoppingCartItems.map(
                     (cartItem, index) => (
                       <CheckoutProdVariantCard
+                        key={index}
                         cartItem={cartItem}
                         index={index}
                         customer={customer}
