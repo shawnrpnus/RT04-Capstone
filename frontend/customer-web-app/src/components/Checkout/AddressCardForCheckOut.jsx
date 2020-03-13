@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useSnackbar } from "notistack";
 import AddUpdateAddressRequest from "../../models/customer/AddUpdateAddressRequest";
 import {
+  refreshCustomerId,
   removeShippingAddressDetails,
   updateShippingAddress
 } from "../../redux/actions/customerActions";
@@ -36,7 +37,10 @@ const useStyles = makeStyles(style);
 export default function AddressCardForCheckOut({
   addNewAddress: [addNewAddress, setAddNewAddress],
   setCurrShippingAddress,
-  setCurrBillingAddress
+  setCurrBillingAddress,
+  currAddress: currAddress,
+  billingAsShipping: [billingAsShipping, setBillingAsShipping],
+  editCurrAddress: [editCurrAddress, setEditCurrAddress]
 }) {
   const classes = useStyles();
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
@@ -51,6 +55,21 @@ export default function AddressCardForCheckOut({
     state => state.customer.loggedInCustomer.shippingAddresses
   );
   const [showOneAddress, setShowOneAddress] = useState(true);
+
+  useEffect(() => {
+    if (billingAsShipping) {
+      if (currAddress != null) {
+        setShownShippingAddress(currAddress);
+        setShownBillingAddress(currAddress);
+      }
+    } else {
+      if (currAddress != null) {
+        setShownShippingAddress(currAddress);
+      }
+    }
+
+    // dispatch(refreshCustomerId(currCustomer.customerId));
+  }, [currAddress]);
 
   const shippingAddresses = unsortedShippingAddresses.sort((a, b) => {
     const result = b.default - a.default + b.billing - a.billing;
@@ -74,7 +93,7 @@ export default function AddressCardForCheckOut({
   useEffect(() => {
     setCurrShippingAddress(shownShippingAddress);
     setCurrBillingAddress(shownBillingAddress);
-  }, [shownShippingAddress, shownBillingAddress]);
+  });
 
   const changeShippingOrBilling = address => {
     if (mode === "changeShipping") {
@@ -83,6 +102,16 @@ export default function AddressCardForCheckOut({
       setShownBillingAddress(address);
     }
     setMode(null);
+  };
+
+  const handleAddNewAddress = () => {
+    setAddNewAddress(!addNewAddress);
+  };
+
+  const onEditAddress = item => {
+    setEditCurrAddress(item);
+    setAddNewAddress(!addNewAddress);
+    // console.log(currAddress);
   };
 
   return (
@@ -137,14 +166,20 @@ export default function AddressCardForCheckOut({
                     </GridItem>
 
                     <GridItem xs={12} sm={12} md={12}>
-                      {item.default ? (
-                        <small>This is your default shipping address</small>
+                      {index === 0 ? (
+                        <div>
+                          <small>This is your shipping address</small>
+                          <br />
+                        </div>
                       ) : (
                         ""
                       )}
-                      <br />
-                      {item.billing ? (
-                        <small>This is your default billing address</small>
+
+                      {index === 1 ? (
+                        <div>
+                          <small>This is your billing address</small>
+                          <br />
+                        </div>
                       ) : (
                         ""
                       )}
@@ -153,15 +188,24 @@ export default function AddressCardForCheckOut({
                 </CardBody>
               </React.Fragment>
             ) : (
-              <Button>
-                Add a {index === 0 ? "shipping" : index === 1 ? "billing" : ""}{" "}
-                address
-              </Button>
+              ""
             );
           })}{" "}
+          <Button onClick={handleAddNewAddress}>
+            {/*Add a {index === 0 ? "shipping" : index === 1 ? "billing" : ""}{" "}*/}
+            {/*address*/}
+            Add New address
+          </Button>
         </React.Fragment>
       ) : (
         <React.Fragment>
+          <h5>
+            {mode === "changeShipping"
+              ? "Select your Shipping Address"
+              : mode === "changeBilling"
+              ? "Select your Billing Address"
+              : ""}{" "}
+          </h5>
           {shippingAddresses.map(function(item, i) {
             return (
               <CardBody
@@ -173,7 +217,7 @@ export default function AddressCardForCheckOut({
                 key={item.addressId}
               >
                 <GridContainer>
-                  <GridItem xs={12} sm={10} md={10}>
+                  <GridItem xs={9} sm={9} md={9}>
                     <h6 className={classes.cardSubtitle}>
                       {item.buildingName !== null ? item.buildingName : ""}
                     </h6>
@@ -182,11 +226,19 @@ export default function AddressCardForCheckOut({
                     Singapore, S{item.postalCode}
                     <br />
                   </GridItem>
-
-                  <GridItem xs={12}>
+                  <GridItem style={{ paddingLeft: "0" }} xs={3} sm={3} md={3}>
+                    {" "}
                     <Button onClick={() => changeShippingOrBilling(item)}>
                       Select
                     </Button>
+                  </GridItem>
+
+                  <GridItem xs={12}>
+                    <Button size="sm" onClick={() => onEditAddress(item)}>
+                      <Edit/>
+                      Edit address
+                    </Button>
+
                   </GridItem>
                 </GridContainer>
               </CardBody>

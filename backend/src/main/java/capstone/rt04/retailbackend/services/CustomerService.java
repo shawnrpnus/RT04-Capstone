@@ -409,6 +409,22 @@ public class CustomerService {
         return lazyLoadCustomerFields(customer);
     }
 
+    public Address addShippingAddressAtCheckout(Long customerId, Address shippingAddress) throws CustomerNotFoundException, InputDataValidationException {
+        validationService.throwExceptionIfInvalidBean(shippingAddress);
+        Customer customer = retrieveCustomerByCustomerId(customerId);
+
+        if (shippingAddress.isDefault()) {
+            customer = setOtherAddressesToNonDefault(customerId);
+        }
+        if (shippingAddress.isBilling()) {
+            customer = setOtherAddressesToNonBilling(customerId);
+        }
+        addressRepository.save(shippingAddress);
+        customer.addShippingAddress(shippingAddress);
+        return shippingAddress;
+    }
+
+
     private Customer setOtherAddressesToNonDefault(Long customerId) throws CustomerNotFoundException {
         Customer customer = retrieveCustomerByCustomerId(customerId);
         for (Address addr : customer.getShippingAddresses()) {
