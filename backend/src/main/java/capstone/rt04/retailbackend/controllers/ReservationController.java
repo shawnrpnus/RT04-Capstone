@@ -14,9 +14,11 @@ import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
 import capstone.rt04.retailbackend.util.routeconstants.CustomerControllerRoutes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.ZonedDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -111,8 +113,20 @@ public class ReservationController {
         return new ResponseEntity<>(reservation, HttpStatus.OK);
     }
 
+    @GetMapping(CustomerControllerRoutes.GET_RESERVATIONS_FOR_STORE)
+    public ResponseEntity<?> getReservationsForStore(@RequestParam Long storeId) {
+        List<Reservation> reservations = reservationService.getUpcomingReservationsForStore(storeId);
+        reservations.forEach(this::clearReservationRelationships);
+        reservations.sort((r1, r2) ->
+                r1.getReservationDateTime().equals(r2.getReservationDateTime())
+                ? 0
+                : r1.getReservationDateTime().before(r2.getReservationDateTime())
+                ? -1 : 1);
+        return new ResponseEntity<>(reservations, HttpStatus.OK);
+    }
 
-    private void clearReservationStockCheckResponseRelationships(ReservationStockCheckResponse rscp){
+
+    private void clearReservationStockCheckResponseRelationships(ReservationStockCheckResponse rscp) {
         Store store = rscp.getStore();
         store.setProductStocks(null);
         store.setInStoreRestockOrders(null);
@@ -121,16 +135,16 @@ public class ReservationController {
     }
 
 
-    private void clearReservationRelationships(Reservation reservation){
-        if (reservation.getProductVariants() != null){
-            for (ProductVariant pv : reservation.getProductVariants()){
+    private void clearReservationRelationships(Reservation reservation) {
+        if (reservation.getProductVariants() != null) {
+            for (ProductVariant pv : reservation.getProductVariants()) {
                 pv.getProduct().setProductVariants(null);
                 pv.getProduct().setCategory(null);
                 pv.getProduct().setStyles(null);
                 pv.setProductStocks(null);
             }
         }
-        if (reservation.getCustomer()!=null) {
+        if (reservation.getCustomer() != null) {
             reservation.getCustomer().setPassword(null);
             reservation.getCustomer().setVerificationCode(null);
             reservation.getCustomer().setInStoreShoppingCart(null);
@@ -144,6 +158,7 @@ public class ReservationController {
         if (reservation.getStore() != null) {
             reservation.getStore().setReservations(null);
             reservation.getStore().setProductStocks(null);
+            reservation.getStore().setStaff(null);
         }
     }
 

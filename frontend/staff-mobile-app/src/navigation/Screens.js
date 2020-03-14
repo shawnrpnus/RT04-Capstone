@@ -13,9 +13,10 @@ import Home from "src/screens/Home";
 import { useSelector } from "react-redux";
 import CustomDrawerContent from "src/navigation/CustomDrawerContent";
 import Product from "src/screens/Product";
-import Reservation from "src/screens/Reservation";
+import ReservationDetail from "src/screens/Reservation/ReservationDetail";
 import CustomHeader from "src/components/CustomHeader";
 import ProductDetails from "src/screens/ProductDetails/ProductDetails";
+import Reservations from "src/screens/Reservation/Reservations";
 
 const { width } = Dimensions.get("screen");
 
@@ -87,8 +88,8 @@ function AppDrawer(props) {
       />
       <Drawer.Screen
         name="ReservationStack"
-        drawerLabel="Reservation"
-        component={Reservation}
+        drawerLabel="ReservationDetail"
+        component={ReservationStack}
       />
     </Drawer.Navigator>
   );
@@ -110,23 +111,45 @@ function HomeStack(props) {
 }
 
 function ProductStack(props) {
-  return (
-    <Stack.Navigator mode="card" headerMode="screen">
-      <Stack.Screen
-        name="Product"
-        component={Product}
-        options={{
-          header: props => <CustomHeader title="Product" {...props} />,
-          headerStyle: { height: 100 }
-        }}
-      />
-      <Stack.Screen
-        name="Product Details"
-        component={ProductDetails}
-        options={{
-          header: props => <CustomHeader title="Product Details" back {...props} />
-        }}
-      />
-    </Stack.Navigator>
-  );
+    return (
+        <Stack.Navigator mode="card" headerMode="screen">
+            <Stack.Screen
+                name="Product"
+                component={Product}
+                options={{
+                    header: props => <CustomHeader title="Product" {...props} />,
+                    headerStyle: { height: 100 }
+                }}
+            />
+            <Stack.Screen
+                name="Product Details"
+                component={ProductDetails}
+                options={{
+                    header: props => <CustomHeader title="Product Details" back {...props} />
+                }}
+            />
+        </Stack.Navigator>
+    );
+}
+
+function ReservationStack(props) {
+    return (
+        <Stack.Navigator mode="card" headerMode="screen">
+            <Stack.Screen
+                name="Reservations"
+                component={Reservations}
+                options={{
+                    header: props => <CustomHeader title="Reservations" {...props} />,
+                    headerStyle: { height: 100 }
+                }}
+            />
+            <Stack.Screen
+                name="Reservation Details"
+                component={ReservationDetail}
+                options={{
+                    header: props => <CustomHeader title="Reservation Details" back {...props} />
+                }}
+            />
+        </Stack.Navigator>
+    );
 }
