@@ -97,6 +97,8 @@ public class StaffService {
             throw new InputDataValidationException(errorMap, ErrorMessages.NRIC_FIRST_THREE);
         }
 
+
+
         try {
             Staff existingStaff = null;
 
