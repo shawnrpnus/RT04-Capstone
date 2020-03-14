@@ -83,7 +83,7 @@ export const retrieveProductStockById = async productStockId => {
     );
     return jsog.decode(response.data);
   } catch (err) {
-    dispatchErrorMapError(err, dispatch);
     console.log(err);
+    return null;
   }
 };

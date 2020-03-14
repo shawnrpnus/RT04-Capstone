@@ -48,13 +48,17 @@ function Product(props) {
   const handleQRScanned = async ({ type, data }) => {
     setModalVisible(false);
     const productStock = await retrieveProductStockById(data);
-    dispatch(
-      retrieveProductVariantBySKU(
-        productStock.productVariant.sku,
-        navigation,
-        setSKU
-      )
-    );
+    if (productStock) {
+      dispatch(
+        retrieveProductVariantBySKU(
+          productStock.productVariant.sku,
+          navigation,
+          setSKU
+        )
+      );
+    } else {
+      Alert.alert("Error", "Invalid QR Code!\nPlease scan QR codes from our stores.", null, { cancelable: false });
+    }
   };
 
   return (
