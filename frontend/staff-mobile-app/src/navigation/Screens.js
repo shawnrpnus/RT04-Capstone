@@ -15,6 +15,7 @@ import CustomDrawerContent from "src/navigation/CustomDrawerContent";
 import Product from "src/screens/Product";
 import Reservation from "src/screens/Reservation";
 import CustomHeader from "src/components/CustomHeader";
+import ProductDetails from "src/screens/ProductDetails/ProductDetails";
 
 const { width } = Dimensions.get("screen");
 
@@ -47,10 +48,12 @@ export default function AppStack(props) {
 }
 
 function AppDrawer(props) {
-    const {navigation: baseNavigation} = props;
+  const { navigation: baseNavigation } = props;
   return (
     <Drawer.Navigator
-      drawerContent={props => <CustomDrawerContent {...props} baseNavigation={baseNavigation}/>}
+      drawerContent={props => (
+        <CustomDrawerContent {...props} baseNavigation={baseNavigation} />
+      )}
       drawerContentOptions={{
         activeTintColor: "white",
         inactiveTintColor: "#000",
@@ -77,8 +80,16 @@ function AppDrawer(props) {
         drawerLabel="Home"
         component={HomeStack}
       />
-      <Drawer.Screen name="Product" component={Product} />
-      <Drawer.Screen name="Reservation" component={Reservation} />
+      <Drawer.Screen
+        name="ProductStack"
+        drawerLabel="Product"
+        component={ProductStack}
+      />
+      <Drawer.Screen
+        name="ReservationStack"
+        drawerLabel="Reservation"
+        component={Reservation}
+      />
     </Drawer.Navigator>
   );
 }
@@ -90,8 +101,30 @@ function HomeStack(props) {
         name="Home"
         component={Home}
         options={{
-          header: props => <CustomHeader search options title="Home" {...props} />,
-          headerStyle: {height: 100}
+          header: props => <CustomHeader title="Home" {...props} />,
+          headerStyle: { height: 100 }
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
+
+function ProductStack(props) {
+  return (
+    <Stack.Navigator mode="card" headerMode="screen">
+      <Stack.Screen
+        name="Product"
+        component={Product}
+        options={{
+          header: props => <CustomHeader title="Product" {...props} />,
+          headerStyle: { height: 100 }
+        }}
+      />
+      <Stack.Screen
+        name="Product Details"
+        component={ProductDetails}
+        options={{
+          header: props => <CustomHeader title="Product Details" back {...props} />
         }}
       />
     </Stack.Navigator>

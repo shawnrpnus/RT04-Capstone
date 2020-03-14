@@ -30,6 +30,7 @@ export const staffLogin = (req) => {
   };
 };
 
+
 export const staffLogout = {
   type: STAFF_LOGOUT
 }

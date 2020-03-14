@@ -21,6 +21,7 @@ public class CustomerControllerRoutes {
     public static final String DELETE_MEASUREMENTS = "/deleteMeasurements/{customerId}";
     public static final String ADD_CREDIT_CARD = "/addCreditCard";
     public static final String REMOVE_CREDIT_CARD = "/removeCreditCard";
+    public static final String ADD_SHIPPING_ADDRESS_AT_CHECKOUT = "/addShippingAddressAtCheckout";
     public static final String ADD_SHIPPING_ADDRESS = "/addShippingAddress";
     public static final String UPDATE_SHIPPING_ADDRESS = "/updateShippingAddress";
     public static final String REMOVE_SHIPPING_ADDRESS = "/removeShippingAddress/{customerId}/{shippingAddressId}";

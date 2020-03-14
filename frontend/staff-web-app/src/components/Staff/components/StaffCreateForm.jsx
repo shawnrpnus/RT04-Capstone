@@ -7,6 +7,7 @@ import {
   retrieveAllRoles,
   retrieveAllDepartments
 } from "../../../redux/actions/staffActions";
+import { retrieveAllStores } from "../../../redux/actions/storeActions";
 import Address from "../../../models/address";
 import Staff from "../../../models/staff/staff";
 import StaffCreateRequest from "../../../models/staff/StaffCreateRequest";
@@ -33,6 +34,7 @@ class StaffCreateForm extends Component {
   componentDidMount() {
     this.props.retrieveAllRoles();
     this.props.retrieveAllDepartments();
+    this.props.retrieveAllStores();
   }
 
   onSelectRole = (event, selectedRole) => {
@@ -45,6 +47,12 @@ class StaffCreateForm extends Component {
     if (selectedDepartment === null) return;
     console.log(selectedDepartment);
     this.setState({ departmentId: selectedDepartment.departmentId });
+  };
+
+  onSelectStore = (event, selectedStore) => {
+    if (selectedStore === null) return;
+    console.log(selectedStore);
+    this.setState({ storeId: selectedStore.storeId });
   };
 
   constructor(props) {
@@ -62,7 +70,8 @@ class StaffCreateForm extends Component {
       line1: "",
       line2: "",
       buildingName: "",
-      postalCode: ""
+      postalCode: "",
+      storeId: ""
     };
   }
 
@@ -117,7 +126,8 @@ class StaffCreateForm extends Component {
       staff,
       this.state.roleId,
       this.state.departmentId,
-      staffAddress
+      staffAddress,
+      this.state.storeId
     );
 
     this.props.createNewStaff(req, this.props.history);
@@ -149,6 +159,10 @@ class StaffCreateForm extends Component {
       <MuiPickersUtilsProvider utils={MomentUtils}>
         <form className="material-form">
           <Grid container spacing={3}>
+            <Grid item xs={12} md={12}>
+              <h4>Personal Details</h4>
+            </Grid>
+
             <Grid item xs={12} md={6}>
               <MaterialTextField
                 fieldLabel="First Name"
@@ -198,74 +212,6 @@ class StaffCreateForm extends Component {
             </Grid>
 
             <Grid item xs={12} md={6}>
-              <Autocomplete
-                id="tags-standard"
-                options={this.props.allDepartments}
-                getOptionLabel={option => option.departmentName}
-                onChange={(event, value) =>
-                  this.onSelectDepartment(event, value)
-                }
-                getOptionSelected={(option, value) =>
-                  option.departmentId === value.departmentId
-                }
-                renderInput={params => (
-                  <TextField
-                    {...params}
-                    variant="standard"
-                    label="Department"
-                    fullWidth
-                  />
-                )}
-                errors={errors}
-              />
-            </Grid>
-
-            <Grid item xs={12} md={6}>
-              <Autocomplete
-                id="tags-standard"
-                options={this.props.allRoles}
-                getOptionLabel={option => option.roleName}
-                onChange={(event, value) => this.onSelectRole(event, value)}
-                getOptionSelected={(option, value) =>
-                  option.roleId === value.roleId
-                }
-                renderInput={params => (
-                  <TextField
-                    {...params}
-                    variant="standard"
-                    label="Role"
-                    fullWidth
-                  />
-                )}
-                errors={errors}
-              />
-            </Grid>
-
-            <Grid item xs={12} md={6}>
-              <MaterialTextField
-                fieldLabel="Salary"
-                onChange={this.onChange}
-                fieldName="salary"
-                state={this.state}
-                errors={errors}
-                disabled={disabled}
-                autoFocus={true}
-              />
-            </Grid>
-
-            <Grid item xs={12} md={6}>
-              <MaterialNumberSelect
-                onChange={this.onChange}
-                state={this.state}
-                fieldLabel="Leave Remaining"
-                fieldName="leaveRemaining"
-                optionStart={1}
-                optionEnd={20}
-                disabled={disabled}
-              />
-            </Grid>
-
-            <Grid item xs={12} md={6}>
               <MaterialTextField
                 type="number"
                 fieldLabel="Postal Code"
@@ -311,6 +257,101 @@ class StaffCreateForm extends Component {
                 disabled={disabled}
               />
             </Grid>
+
+            <Grid item xs={12} md={12}>
+              <h4>Employment Details</h4>
+            </Grid>
+
+            <Grid item xs={12} md={6}>
+              <Autocomplete
+                id="tags-standard"
+                options={this.props.allDepartments}
+                getOptionLabel={option => option.departmentName}
+                onChange={(event, value) =>
+                  this.onSelectDepartment(event, value)
+                }
+                getOptionSelected={(option, value) =>
+                  option.departmentId === value.departmentId
+                }
+                renderInput={params => (
+                  <TextField
+                    {...params}
+                    variant="standard"
+                    label="Department"
+                    fullWidth
+                  />
+                )}
+                errors={errors}
+              />
+            </Grid>
+
+            <Grid item xs={12} md={6}>
+              <Autocomplete
+                id="tags-standard"
+                options={this.props.allRoles}
+                getOptionLabel={option => option.roleName}
+                onChange={(event, value) => this.onSelectRole(event, value)}
+                getOptionSelected={(option, value) =>
+                  option.roleId === value.roleId
+                }
+                renderInput={params => (
+                  <TextField
+                    {...params}
+                    variant="standard"
+                    label="Role"
+                    fullWidth
+                  />
+                )}
+                errors={errors}
+              />
+            </Grid>
+
+            <Grid item xs={12} md={6}>
+              <Autocomplete
+                id="tags-standard"
+                options={this.props.allStores}
+                getOptionLabel={option => option.storeName}
+                onChange={(event, value) => this.onSelectStore(event, value)}
+                getOptionSelected={(option, value) =>
+                  option.storeId === value.storeId
+                }
+                renderInput={params => (
+                  <TextField
+                    {...params}
+                    variant="standard"
+                    label="Store"
+                    fullWidth
+                  />
+                )}
+                errors={errors}
+              />
+            </Grid>
+
+            <Grid item xs={12} md={6}>
+              <MaterialTextField
+                fieldLabel="Salary"
+                onChange={this.onChange}
+                fieldName="salary"
+                state={this.state}
+                errors={errors}
+                disabled={disabled}
+                autoFocus={true}
+              />
+            </Grid>
+
+            <Grid item xs={12} md={6}>
+              <MaterialNumberSelect
+                onChange={this.onChange}
+                state={this.state}
+                fieldLabel="Leave Remaining"
+                fieldName="leaveRemaining"
+                optionStart={1}
+                optionEnd={20}
+                disabled={disabled}
+              />
+            </Grid>
+
+            <Grid item xs={12} md={6}></Grid>
           </Grid>
 
           <ButtonToolbar className="form__button-toolbar">
@@ -341,6 +382,7 @@ class StaffCreateForm extends Component {
 const mapStateToProps = state => ({
   allRoles: state.staffEntity.allRoles,
   allDepartments: state.staffEntity.allDepartments,
+  allStores: state.storeEntity.allStores,
   errors: state.errors
 });
 
@@ -349,7 +391,8 @@ const mapDispatchToProps = {
   clearErrors,
   updateErrors,
   retrieveAllRoles,
-  retrieveAllDepartments
+  retrieveAllDepartments,
+  retrieveAllStores
 };
 
 export default connect(

@@ -9,6 +9,7 @@ import StaffLoginForm from "../../components/Staff/components/StaffLoginForm";
 import SecureRoute from "./SecureRoute";
 import Backdrop from "@material-ui/core/Backdrop";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import QrCodes from "../../components/QR/QrCodes";
 
 const Router = () => {
   const open = useSelector(state => state.util.circularProgressOpen);
@@ -21,7 +22,7 @@ const Router = () => {
         </Backdrop>
         <Switch>
           <Route path="/login" component={StaffLoginForm} />
-
+          <SecureRoute path="/qrCodes" component={QrCodes} />
           <SecureRoute path="/" component={WrappedRoutes} />
         </Switch>
       </main>

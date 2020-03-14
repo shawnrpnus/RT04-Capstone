@@ -75,8 +75,8 @@ public class ProductService {
 
         //check whether serial number is unique
         List<Product> products = retrieveAllProducts();
-        for(Product p : products){
-            if(p.getSerialNumber().equals(product.getSerialNumber())){
+        for (Product p : products) {
+            if (p.getSerialNumber().equals(product.getSerialNumber())) {
                 Map<String, String> errorMap = new HashMap<>();
                 errorMap.put("serialNumber", ErrorMessages.SERIAL_NUMBER_UNIQUE);
                 throw new InputDataValidationException(errorMap, ErrorMessages.SERIAL_NUMBER_UNIQUE);
@@ -297,7 +297,7 @@ public class ProductService {
             matchCategory = false;
             matchStyle = false;
 
-            if (categoryId == null){
+            if (categoryId == null) {
                 matchCategory = true;
             } else if (checkIfCategoryIsInside(product.getCategory(), categoryId)) {
                 matchCategory = true;
@@ -308,23 +308,23 @@ public class ProductService {
 
             for (ProductVariant productVariant : product.getProductVariants()) {
 
-                if (colours != null && colours.size() > 0){
-                    if(colours.contains(productVariant.getColour())){
+                if (colours != null && colours.size() > 0) {
+                    if (colours.contains(productVariant.getColour())) {
                         matchColour = true;
                     }
-                } else if (colours == null || colours.size() == 0){
-                    matchColour= true;
+                } else if (colours == null || colours.size() == 0) {
+                    matchColour = true;
                 }
 
-                if (sizes != null && sizes.size() > 0){
-                    if (sizes.contains(productVariant.getSizeDetails().getProductSize())){
+                if (sizes != null && sizes.size() > 0) {
+                    if (sizes.contains(productVariant.getSizeDetails().getProductSize())) {
                         matchSize = true;
                     }
-                } else if(sizes == null || sizes.size() == 0){
+                } else if (sizes == null || sizes.size() == 0) {
                     matchSize = true;
                 }
 
-                if(style != null){
+                if (style != null) {
                     Style styleToCheck = styleService.retrieveStyleByStyleId(style.getStyleId());
                     String gender = style.getGender();
                     if (gender.equals("Male")) {
@@ -332,14 +332,14 @@ public class ProductService {
                     } else {
                         gender = "Women";
                     }
-                    if(productVariant.getProduct().getStyles().contains(styleToCheck)) {
+                    if (productVariant.getProduct().getStyles().contains(styleToCheck)) {
                         if (productVariant.getProduct().getCategory().getParentCategory().getParentCategory().getCategoryName().equals(gender)) {
-                            matchStyle=true;
+                            matchStyle = true;
                         }
                     }
 
                 } else {
-                    matchStyle=true;
+                    matchStyle = true;
                 }
 
 //                if (colours != null && colours.size() > 0) {
@@ -569,6 +569,32 @@ public class ProductService {
         productVariants.add(productVariant);
         lazilyLoadProductVariant(productVariants);
         return productVariant;
+    }
+
+    public List<String> retrieveProductVariantSKUs() {
+        List<ProductVariant> PVs = productVariantRepository.findAll();
+        List<String> SKUs = new ArrayList<>();
+        for (ProductVariant pv : PVs) {
+            SKUs.add(pv.getSKU());
+        }
+        return SKUs;
+    }
+
+    public List<Map<String, String>> retrieveStocksForProductVariant(Long productVariantId) throws ProductVariantNotFoundException {
+        ProductVariant pv = productVariantRepository.findById(productVariantId)
+                .orElseThrow(() -> new ProductVariantNotFoundException("Product variant does not exist"));
+        List<Map<String, String>> result = new ArrayList<>();
+        for (ProductStock ps : pv.getProductStocks()){
+            Map<String, String> map = new HashMap<>();
+            if (ps.getStore() != null) {
+                map.put("storeName", ps.getStore().getStoreName());
+            } else if (ps.getWarehouse() != null){
+                map.put("storeName", "Warehouse");
+            }
+            map.put("quantity", ps.getQuantity().toString());
+            result.add(map);
+        }
+        return result;
     }
 
     public List<ProductVariant> retrieveProductVariantByProduct(Long productId) {
@@ -831,13 +857,13 @@ public class ProductService {
     public List<ProductStock> simulateReorderingFromSupplier(List<Long> productStockIds) throws ProductStockNotFoundException {
         List<ProductStock> productStocks = new ArrayList<>();
 
-        for(Long l : productStockIds) {
+        for (Long l : productStockIds) {
             productStocks.add(retrieveProductStockById(l));
         }
 
-        for(ProductStock ps : productStocks) {
-            if(ps.getNotificationLevel() >= ps.getQuantity()) {
-                ps.setQuantity(ps.getQuantity()+ps.getReorderQuantity());
+        for (ProductStock ps : productStocks) {
+            if (ps.getNotificationLevel() >= ps.getQuantity()) {
+                ps.setQuantity(ps.getQuantity() + ps.getReorderQuantity());
             }
         }
 

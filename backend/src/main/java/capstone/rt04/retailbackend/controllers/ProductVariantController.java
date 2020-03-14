@@ -1,9 +1,12 @@
 package capstone.rt04.retailbackend.controllers;
 
+import capstone.rt04.retailbackend.entities.Product;
 import capstone.rt04.retailbackend.entities.ProductVariant;
 import capstone.rt04.retailbackend.request.productVariant.ProductVariantCreateRequest;
+import capstone.rt04.retailbackend.request.productVariant.RetrieveBySkuRequest;
 import capstone.rt04.retailbackend.response.GenericErrorResponse;
 import capstone.rt04.retailbackend.services.ProductService;
+import capstone.rt04.retailbackend.services.ValidationService;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.product.*;
 import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
@@ -14,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping(ProductVariantControllerRoutes.PRODUCT_VARIANT_BASE_ROUTE)
@@ -21,9 +25,11 @@ import java.util.List;
 public class ProductVariantController {
 
     private final ProductService productService;
+    private final ValidationService validationService;
 
-    public ProductVariantController(ProductService productService) {
+    public ProductVariantController(ProductService productService, ValidationService validationService) {
         this.productService = productService;
+        this.validationService = validationService;
     }
 
     @GetMapping(ProductVariantControllerRoutes.RETRIEVE_PRODUCT_VARIANT_BY_ID)
@@ -79,7 +85,36 @@ public class ProductVariantController {
 
     @DeleteMapping(ProductVariantControllerRoutes.DELETE_PRODUCT_VARIANT)
     public ResponseEntity<?> deleteProductVariant(@PathVariable Long productVariantId) throws ProductVariantNotFoundException, ProductStockNotFoundException, DeleteProductVariantException {
-            ProductVariant productVariant = productService.deleteProductVariant(productVariantId);
-            return new ResponseEntity<>(productVariant, HttpStatus.OK);
+        ProductVariant productVariant = productService.deleteProductVariant(productVariantId);
+        return new ResponseEntity<>(productVariant, HttpStatus.OK);
+    }
+
+    @PostMapping(ProductVariantControllerRoutes.RETRIEVE_PRODUCT_VARIANT_BY_SKU)
+    public ResponseEntity<?> retrieveProdVarBySku(@RequestBody RetrieveBySkuRequest req) throws ProductVariantNotFoundException, InputDataValidationException {
+        validationService.throwExceptionIfInvalidBean(req);
+        ProductVariant pv = productService.retrieveProductVariantBySku(req.getSku());
+        clearProductVariantRelationships(pv);
+        return new ResponseEntity<>(pv, HttpStatus.OK);
+    }
+
+    @GetMapping(ProductVariantControllerRoutes.RETRIEVE_STOCKS_FOR_PROD_VARIANT)
+    public List<Map<String, String>> retrieveStocksForProductVariant(@RequestParam Long productVariantId) throws ProductVariantNotFoundException {
+        return productService.retrieveStocksForProductVariant(productVariantId);
+    }
+
+    @GetMapping(ProductVariantControllerRoutes.RETRIEVE_ALL_SKUS)
+    public List<String> retrieveAllSku(){
+        return productService.retrieveProductVariantSKUs();
+    }
+
+    private void clearProductVariantRelationships(ProductVariant pv){
+        Product p = pv.getProduct();
+        p.setCategory(null);
+        p.setStyles(null);
+        p.setPromoCodes(null);
+        p.setReviews(null);
+        p.setTags(null);
+        p.setProductVariants(null);
+        pv.setProductStocks(null);
     }
 }

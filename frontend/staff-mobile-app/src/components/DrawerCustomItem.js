@@ -15,7 +15,7 @@ function DrawerCustomItem(props) {
   const renderIcon = () => {
     const { title, focused } = props;
     switch (title) {
-      case "Product":
+      case "ProductStack":
         return (
           <Icon
             size={14}
@@ -24,7 +24,7 @@ function DrawerCustomItem(props) {
             color={focused ? "white" : materialTheme.COLORS.MUTED}
           />
         );
-      case "Reservation":
+      case "ReservationStack":
         return (
           <Icon
             size={16}
@@ -81,9 +81,9 @@ function DrawerCustomItem(props) {
           <Text size={15} color={focused ? "white" : "black"}>
             {title === "HomeStack"
               ? "Home"
-              : title === "Product"
+              : title === "ProductStack"
               ? "Product"
-              : title === "Reservation"
+              : title === "ReservationStack"
               ? "Reservation"
               : title}
           </Text>
