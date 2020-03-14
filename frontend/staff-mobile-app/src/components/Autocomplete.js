@@ -12,14 +12,16 @@ import { Block } from "galio-framework";
 import materialTheme from "src/constants/Theme";
 import { Dimensions } from "react-native";
 import { FlatList } from "react-native";
-import { useDispatch } from "react-redux";
-import {clearErrors} from "src/redux/actions";
+import { useDispatch, useSelector } from "react-redux";
+import { clearErrors } from "src/redux/actions";
 
+const _ = require("lodash");
 const { width, height } = Dimensions.get("window");
 
 export default function Autocomplete(props) {
   const dispatch = useDispatch();
   const { value, setValue, label, array, helperText, error } = props;
+  const errors = useSelector(state => state.errors);
 
   const [focused, setFocused] = useState(true);
 
@@ -71,14 +73,19 @@ export default function Autocomplete(props) {
         <TextInput
           label={label}
           // mode="outlined"
-          onFocus={() => setFocused(true)}
-          onKeyPress={() => setFocused(true)}
+          onFocus={() => {
+            setFocused(true);
+          }}
+          onKeyPress={() => {
+            setFocused(true);
+          }}
           // onBlur={() => setFocused(false)}
           value={value}
           error={error}
           onChangeText={text => {
             setValue(text);
-            dispatch(clearErrors());
+            if (!_.isEmpty(errors)) dispatch(clearErrors());
+            console.log(_.isEmpty(errors));
           }}
           theme={{
             colors: { primary: materialTheme.COLORS.ACCENT_DARKER }
@@ -87,7 +94,7 @@ export default function Autocomplete(props) {
         />
         {helperText}
       </Block>
-      {focused && list}
+      {focused && _.isEmpty(errors) && list}
     </>
   );
 }

@@ -7,7 +7,7 @@ import {
   retrieveAllRoles,
   retrieveAllDepartments
 } from "../../../redux/actions/staffActions";
-import {retrieveAllStores} from "../../../redux/actions/storeActions";
+import { retrieveAllStores } from "../../../redux/actions/storeActions";
 import Address from "../../../models/address";
 import Staff from "../../../models/staff/staff";
 import StaffCreateRequest from "../../../models/staff/StaffCreateRequest";
@@ -49,7 +49,7 @@ class StaffCreateForm extends Component {
     this.setState({ departmentId: selectedDepartment.departmentId });
   };
 
-  onSelectStore= (event, selectedStore) => {
+  onSelectStore = (event, selectedStore) => {
     if (selectedStore === null) return;
     console.log(selectedStore);
     this.setState({ storeId: selectedStore.storeId });
@@ -159,9 +159,8 @@ class StaffCreateForm extends Component {
       <MuiPickersUtilsProvider utils={MomentUtils}>
         <form className="material-form">
           <Grid container spacing={3}>
-
             <Grid item xs={12} md={12}>
-            <h4>Personal Details</h4>
+              <h4>Personal Details</h4>
             </Grid>
 
             <Grid item xs={12} md={6}>
@@ -214,48 +213,48 @@ class StaffCreateForm extends Component {
 
             <Grid item xs={12} md={6}>
               <MaterialTextField
-                  type="number"
-                  fieldLabel="Postal Code"
-                  onChange={this.onChange}
-                  fieldName="postalCode"
-                  state={this.state}
-                  errors={errors}
-                  disabled={disabled}
-                  onBlur={this.onBlur}
-                  InputProps={postalCodeProps}
+                type="number"
+                fieldLabel="Postal Code"
+                onChange={this.onChange}
+                fieldName="postalCode"
+                state={this.state}
+                errors={errors}
+                disabled={disabled}
+                onBlur={this.onBlur}
+                InputProps={postalCodeProps}
               />
             </Grid>
 
             <Grid item xs={12} md={6}>
               <MaterialTextField
-                  fieldLabel="Building Name"
-                  onChange={this.onChange}
-                  fieldName="buildingName"
-                  state={this.state}
-                  errors={errors}
-                  disabled={disabled}
+                fieldLabel="Building Name"
+                onChange={this.onChange}
+                fieldName="buildingName"
+                state={this.state}
+                errors={errors}
+                disabled={disabled}
               />
             </Grid>
 
             <Grid item xs={12} md={6}>
               <MaterialTextField
-                  fieldLabel="Address Line 1"
-                  onChange={this.onChange}
-                  fieldName="line1"
-                  state={this.state}
-                  errors={errors}
-                  disabled={disabled}
+                fieldLabel="Address Line 1"
+                onChange={this.onChange}
+                fieldName="line1"
+                state={this.state}
+                errors={errors}
+                disabled={disabled}
               />
             </Grid>
 
             <Grid item xs={12} md={6}>
               <MaterialTextField
-                  fieldLabel="Address Line 2"
-                  onChange={this.onChange}
-                  fieldName="line2"
-                  state={this.state}
-                  errors={errors}
-                  disabled={disabled}
+                fieldLabel="Address Line 2"
+                onChange={this.onChange}
+                fieldName="line2"
+                state={this.state}
+                errors={errors}
+                disabled={disabled}
               />
             </Grid>
 
@@ -309,22 +308,22 @@ class StaffCreateForm extends Component {
 
             <Grid item xs={12} md={6}>
               <Autocomplete
-                  id="tags-standard"
-                  options={this.props.allStores}
-                  getOptionLabel={option => option.storeName}
-                  onChange={(event, value) => this.onSelectStore(event, value)}
-                  getOptionSelected={(option, value) =>
-                      option.storeId === value.storeId
-                  }
-                  renderInput={params => (
-                      <TextField
-                          {...params}
-                          variant="standard"
-                          label="Store"
-                          fullWidth
-                      />
-                  )}
-                  errors={errors}
+                id="tags-standard"
+                options={this.props.allStores}
+                getOptionLabel={option => option.storeName}
+                onChange={(event, value) => this.onSelectStore(event, value)}
+                getOptionSelected={(option, value) =>
+                  option.storeId === value.storeId
+                }
+                renderInput={params => (
+                  <TextField
+                    {...params}
+                    variant="standard"
+                    label="Store"
+                    fullWidth
+                  />
+                )}
+                errors={errors}
               />
             </Grid>
 
@@ -353,8 +352,6 @@ class StaffCreateForm extends Component {
             </Grid>
 
             <Grid item xs={12} md={6}></Grid>
-
-
           </Grid>
 
           <ButtonToolbar className="form__button-toolbar">
