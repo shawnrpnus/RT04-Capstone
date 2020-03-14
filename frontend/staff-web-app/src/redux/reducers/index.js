@@ -11,6 +11,7 @@ import feedbackReducer from "./feedbackReducer";
 import utilReducer from "./utilReducer";
 import reviewReducer from "./reviewReducer";
 import restockOrderReducer from "./restockOrderReducer";
+import deliveryReducer from "./deliveryReducer";
 
 const rootReducer = combineReducers({
   errors: errorReducer,
@@ -24,6 +25,7 @@ const rootReducer = combineReducers({
   feedback: feedbackReducer,
   reviewEntity: reviewReducer,
   restockOrder: restockOrderReducer,
+  delivery: deliveryReducer,
   util: utilReducer
 });
 

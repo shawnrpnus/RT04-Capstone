@@ -66,6 +66,8 @@ export const updateRestockOrder = (request, storeId) => {
         dispatch(closeCircularProgress());
       })
       .catch(err => {
+        console.log(err);
+
         toast.error(err.response.data.errorMessage, {
           position: toast.POSITION.TOP_CENTER
         });
@@ -91,6 +93,7 @@ export const deleteRestockOrder = (inStoreRestockOrderId, onClose, storeId) => {
         onClose();
       })
       .catch(err => {
+        console.log(err);
         toast.error(err.response.data.errorMessage, {
           position: toast.POSITION.TOP_CENTER
         });
@@ -131,49 +134,36 @@ export const fulFillRestockOrder = (
   };
 };
 
-export const receiveStock = (inStoreRestockOrderId, storeId) => {
-  return dispatch => {
-    dispatch(openCircularProgress());
-    axios
-      .get(RESTOCK_ORDER_BASE_URL + `/receiveStock/${inStoreRestockOrderId}`)
-      .then(({ data }) => {
-        dispatch(retrieveAllRestockOrder(storeId));
-        toast.success(`Stocks has been received from warehouse!`, {
-          position: toast.POSITION.TOP_CENTER
-        });
-        dispatch(closeCircularProgress());
-      })
-      .catch(err => {
-        toast.error(err.response.data.errorMessage, {
-          position: toast.POSITION.TOP_CENTER
-        });
-        dispatch(closeCircularProgress());
-      });
-  };
-};
-
 export const getDeliveryStatusColour = deliveryStatus => {
   let style;
   switch (deliveryStatus) {
-    case "IN_TRANSIT":
-      style = { backgroundColor: "#1975d2" };
-      break;
     case "PROCESSING":
-      style = { backgroundColor: "#feaa4b" };
+      style = { backgroundColor: "#f65a5a" };
       break;
     case "DELAYED":
       style = { backgroundColor: "#e1282d" };
       break;
-    case "PARTIALLY_FULFILLED":
+    case "PARTIALLY FULFILLED":
       style = { backgroundColor: "#ff8c00" };
       break;
-    case "PARTIALLY_IN_TRANSIT":
-      style = { backgroundColor: "#ff8c00" };
+    case "IN TRANSIT":
+      style = { backgroundColor: "#1975d2" };
+      break;
+    case "PARTIALLY IN TRANSIT":
+      style = { backgroundColor: "#19d2d2" };
+      break;
+    case "TO BE DELIVERED":
+      style = { backgroundColor: "#008b8b" };
+      break;
+    case "PARTIALLY TO BE DELIVERED":
+      style = { backgroundColor: "#66a8a6" };
+      break;
+    case "TO DELIVER":
+      style = { backgroundColor: "orange" };
       break;
     default:
       // resolved
       style = { backgroundColor: "#33ba0a" };
   }
-
   return style;
 };

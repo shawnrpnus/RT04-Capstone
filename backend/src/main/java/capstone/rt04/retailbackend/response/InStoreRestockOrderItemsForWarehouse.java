@@ -2,7 +2,7 @@ package capstone.rt04.retailbackend.response;
 
 import capstone.rt04.retailbackend.entities.Delivery;
 import capstone.rt04.retailbackend.entities.ProductStock;
-import capstone.rt04.retailbackend.util.enums.DeliveryStatusEnum;
+import capstone.rt04.retailbackend.util.enums.ItemDeliveryStatusEnum;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,9 +26,11 @@ public class InStoreRestockOrderItemsForWarehouse {
 
     private Timestamp deliveryDateTime;
 
-    private DeliveryStatusEnum deliveryStatus;
+    private ItemDeliveryStatusEnum itemDeliveryStatus;
 
     private Delivery delivery;
+
+    private InStoreRestockOrderForWarehouse inStoreRestockOrderForWarehouse;
 
 
 }

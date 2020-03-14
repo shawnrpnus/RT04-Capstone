@@ -14,7 +14,7 @@ import lombok.ToString;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,7 +35,7 @@ public class Delivery implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long deliveryId;
     
-    private Date deliveryDate;
+    private Timestamp deliveryDateTime;
     
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
@@ -49,11 +49,12 @@ public class Delivery implements Serializable {
 
     public Delivery() {
         this.customerOrdersToDeliver = new ArrayList<>();
-        this.customerOrdersToDeliver = new ArrayList<>();
+        this.inStoreRestockOrderItems = new ArrayList<>();
     }
 
-    public Delivery(Date deliveryDate, Staff deliveryStaff) {
-        this.deliveryDate = deliveryDate;
+    public Delivery(Timestamp deliveryDateTime, Staff deliveryStaff) {
+        this();
+        this.deliveryDateTime = deliveryDateTime;
         this.deliveryStaff = deliveryStaff;
     }
     
