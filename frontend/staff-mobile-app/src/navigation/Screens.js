@@ -15,7 +15,7 @@ import CustomDrawerContent from "src/navigation/CustomDrawerContent";
 import Product from "src/screens/Product";
 import Reservation from "src/screens/Reservation";
 import CustomHeader from "src/components/CustomHeader";
-import ProductDetails from "src/screens/ProductDetails";
+import ProductDetails from "src/screens/ProductDetails/ProductDetails";
 
 const { width } = Dimensions.get("screen");
 
