@@ -11,6 +11,7 @@ import InventoryTable from "./Warehouse";
 import Feedback from "./Feedback";
 import Review from "./Review";
 import RestockOrder from "./RestockOrder";
+import Delivery from "./Delivery";
 
 export default () => (
   <div>
@@ -26,6 +27,7 @@ export default () => (
       <Route path="/feedback" component={Feedback} />
       <Route path="/review" component={Review} />
       <Route path="/restockOrder" component={RestockOrder} />
+      <Route path="/delivery" component={Delivery} />
     </div>
   </div>
 );

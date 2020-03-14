@@ -5,7 +5,7 @@
  */
 package capstone.rt04.retailbackend.entities;
 
-import capstone.rt04.retailbackend.util.enums.DeliveryStatusEnum;
+import capstone.rt04.retailbackend.util.enums.ItemDeliveryStatusEnum;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.voodoodyne.jackson.jsog.JSOGGenerator;
 import lombok.EqualsAndHashCode;
@@ -35,7 +35,7 @@ public class InStoreRestockOrderItem implements Serializable {
 
     private Timestamp deliveryDateTime;
 
-    private DeliveryStatusEnum deliveryStatus;
+    private ItemDeliveryStatusEnum itemDeliveryStatus;
 
     private Integer quantity;
 
@@ -46,8 +46,12 @@ public class InStoreRestockOrderItem implements Serializable {
     @JoinColumn(nullable = false)
     private ProductStock productStock;
 
+    @ManyToOne
+    @JoinColumn
+    private InStoreRestockOrder inStoreRestockOrder;
+
     public InStoreRestockOrderItem() {
-        this.deliveryStatus = DeliveryStatusEnum.PROCESSING;
+        this.itemDeliveryStatus = ItemDeliveryStatusEnum.PROCESSING;
     }
 
     public InStoreRestockOrderItem(Integer quantity, ProductStock productStock) {

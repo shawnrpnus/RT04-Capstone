@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import dateformat from "dateformat";
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogActions from "@material-ui/core/DialogActions";
@@ -75,8 +76,15 @@ const UpdateRestockOrderDialog = ({ element, open, onClose, isWarehouse }) => {
   } = element;
   const { storeId, address } = store;
   const { buildingName, line1, line2, postalCode } = address;
-  const disableInTransit =
-    deliveryStatus === "DELIVERED" || deliveryStatus === "IN_TRANSIT";
+  const disableDelivery =
+    deliveryStatus === "DELIVERED" || // complete order + delivery
+    deliveryStatus === "IN_TRANSIT" || // completed delivery
+    deliveryStatus === "TO_BE_DELIVERED" || // completed packing up stock for delivery
+    !inStoreRestockOrderItems.some(
+      e =>
+        e.itemDeliveryStatus === "PROCESSING" ||
+        e.itemDeliveryStatus === "DELAYED"
+    );
 
   useEffect(() => {
     setItems(inStoreRestockOrderItems);
@@ -85,23 +93,30 @@ const UpdateRestockOrderDialog = ({ element, open, onClose, isWarehouse }) => {
   let data = [];
   if (items) {
     data = items.map(e => {
-      const {
+      let {
         productStock,
         inStoreRestockOrderItemId,
         quantity,
         warehouseStockQuantity,
-        deliveryStatus
+        itemDeliveryStatus,
+        deliveryDateTime
       } = e;
+      deliveryDateTime = deliveryDateTime
+        ? dateformat(new Date(deliveryDateTime), "dd'-'mmm'-'yyyy")
+        : "";
       const { productStockId, productVariant } = productStock;
+      const insufficient = warehouseStockQuantity - quantity < 0;
       return {
         productStockId: productStockId,
         productName: _.get(productVariant, "product.productName", ""),
         sku: _.get(productVariant, "sku", ""),
         quantity: quantity,
+        deliveryDateTime: deliveryDateTime,
         image: _.get(productVariant, "productImages[0].productImageUrl", ""),
         inStoreRestockOrderItemId: inStoreRestockOrderItemId,
         warehouseStockQuantity: warehouseStockQuantity,
-        deliveryStatus: deliveryStatus
+        itemDeliveryStatus: itemDeliveryStatus.split("_").join(" "),
+        insufficient: insufficient
       };
     });
   }
@@ -129,20 +144,33 @@ const UpdateRestockOrderDialog = ({ element, open, onClose, isWarehouse }) => {
         description: "No item in restock order, delete restock order?"
       })
         .then(() => {
-          return dispatch(deleteRestockOrder(restockOrderId, onClose));
+          return dispatch(deleteRestockOrder(restockOrderId, onClose, storeId));
         })
         .catch(err => {});
     } else {
       items.map(item => {
         const { productStock, quantity: orderQuantity } = item;
         const { productStockId } = productStock;
-        stockIdQuantityMaps.push(
-          new StockIdQuantityMap(productStockId, orderQuantity)
-        );
+        if (orderQuantity > 0)
+          stockIdQuantityMaps.push(
+            new StockIdQuantityMap(productStockId, orderQuantity)
+          );
       });
-      dispatch(
-        updateRestockOrder({ restockOrderId, stockIdQuantityMaps }, storeId)
-      );
+      if (stockIdQuantityMaps.length === 0) {
+        confirmDialog({
+          description: "No item in restock order, delete restock order?"
+        })
+          .then(() => {
+            return dispatch(
+              deleteRestockOrder(restockOrderId, onClose, storeId)
+            );
+          })
+          .catch(err => {});
+      } else {
+        dispatch(
+          updateRestockOrder({ restockOrderId, stockIdQuantityMaps }, storeId)
+        );
+      }
     }
   };
 
@@ -199,10 +227,13 @@ const UpdateRestockOrderDialog = ({ element, open, onClose, isWarehouse }) => {
       field: "warehouseStockQuantity"
     },
     {
+      title: "Delivery date",
+      field: "deliveryDateTime"
+    },
+    {
       title: "Warehouse stock status",
-      // field: "deliveryStatus",
-      render: ({ warehouseStockQuantity, quantity }) => {
-        const insufficient = warehouseStockQuantity - quantity < 0;
+      field: "insufficient",
+      render: ({ insufficient }) => {
         let style;
         if (insufficient) style = { color: "#e1282d" };
         else style = { color: "#33ba0a" };
@@ -211,13 +242,13 @@ const UpdateRestockOrderDialog = ({ element, open, onClose, isWarehouse }) => {
     },
     {
       title: "Line item delivery status",
-      field: "deliveryStatus",
-      render: ({ deliveryStatus }) => {
-        const style = getDeliveryStatusColour(deliveryStatus);
+      field: "itemDeliveryStatus",
+      render: ({ itemDeliveryStatus }) => {
+        const style = getDeliveryStatusColour(itemDeliveryStatus);
         return (
           <Chip
             style={{ ...style, color: "white", width: "100%" }}
-            label={deliveryStatus}
+            label={itemDeliveryStatus}
           />
         );
       }
@@ -225,12 +256,7 @@ const UpdateRestockOrderDialog = ({ element, open, onClose, isWarehouse }) => {
   ];
 
   return (
-    <Dialog
-      onClose={onClose}
-      open={open}
-      fullWidth
-      maxWidth={isWarehouse ? "lg" : "md"}
-    >
+    <Dialog onClose={onClose} open={open} fullWidth maxWidth={"lg"}>
       <DialogTitle style={{ textAlign: "center" }}>Restock Order</DialogTitle>
       <DialogContent>
         <Grid container spacing={2}>
@@ -248,16 +274,17 @@ const UpdateRestockOrderDialog = ({ element, open, onClose, isWarehouse }) => {
           <Grid item xs={3} style={{ textAlign: "center" }}>
             <Chip
               style={{
-                ...getDeliveryStatusColour(deliveryStatus),
+                ...getDeliveryStatusColour(deliveryStatus.split("_").join(" ")),
                 fontWeight: "bold",
                 color: "white",
                 marginBottom: "5%"
               }}
-              label={deliveryStatus}
+              label={deliveryStatus.split("_").join(" ")}
             />
             <Typography style={{ fontWeight: "bold" }}>
-              {orderDateTime}
+              Order date : {orderDateTime}
             </Typography>
+            {/* TODO: differentiate order & delivery date time */}
           </Grid>
         </Grid>
         <Divider style={{ marginTop: "5%" }} />
@@ -269,7 +296,8 @@ const UpdateRestockOrderDialog = ({ element, open, onClose, isWarehouse }) => {
             isWarehouse
               ? columns
               : [
-                  ...columns.splice(0, columns.length - 3),
+                  ...columns.splice(0, columns.length - 4),
+                  ...columns.splice(columns.length - 3, 1),
                   columns[columns.length - 1]
                 ]
           }
@@ -319,7 +347,7 @@ const UpdateRestockOrderDialog = ({ element, open, onClose, isWarehouse }) => {
           <Button
             color="primary"
             onClick={handleFulFillRestockOrder}
-            disabled={disableInTransit}
+            disabled={disableDelivery}
           >
             Send out for delivery
           </Button>

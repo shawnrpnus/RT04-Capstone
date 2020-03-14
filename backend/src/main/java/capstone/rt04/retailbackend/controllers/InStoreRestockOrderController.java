@@ -37,7 +37,7 @@ public class InStoreRestockOrderController {
     }
 
     @GetMapping(RETRIEVE_ALL_IN_STORE_RESTOCK_ORDER)
-    public ResponseEntity<?> retrieveAllRestockOrder(@RequestParam(required=false) Long storeId) {
+    public ResponseEntity<?> retrieveAllRestockOrder(@RequestParam(required = false) Long storeId) {
         if (storeId != null) {
             List<InStoreRestockOrder> inStoreRestockOrders = inStoreRestockOrderService.retrieveAllInStoreRestockOrder(storeId);
             clearRestockOrderRelationship(inStoreRestockOrders);
@@ -72,12 +72,12 @@ public class InStoreRestockOrderController {
         return new ResponseEntity<>(inStoreRestockOrders, HttpStatus.OK);
     }
 
-    @GetMapping(RECEIVE_STOCK)
-    public ResponseEntity<?> receiveStock(@PathVariable Long inStoreRestockOrderId) throws InStoreRestockOrderNotFoundException {
-        List<InStoreRestockOrder> inStoreRestockOrders = inStoreRestockOrderService.receiveStock(inStoreRestockOrderId);
-        clearRestockOrderRelationship(inStoreRestockOrders);
-        return new ResponseEntity<>(inStoreRestockOrders, HttpStatus.OK);
-    }
+//    @GetMapping(RECEIVE_STOCK)
+//    public ResponseEntity<?> receiveStock(@PathVariable Long inStoreRestockOrderId) throws InStoreRestockOrderNotFoundException {
+//        List<InStoreRestockOrder> inStoreRestockOrders = inStoreRestockOrderService.receiveStock(inStoreRestockOrderId);
+//        clearRestockOrderRelationship(inStoreRestockOrders);
+//        return new ResponseEntity<>(inStoreRestockOrders, HttpStatus.OK);
+//    }
 
     @DeleteMapping(DELETE_IN_STORE_RESTOCK_ORDER)
     public ResponseEntity<?> deleteRestockOrder(@PathVariable Long inStoreRestockOrderId) throws InStoreRestockOrderNotFoundException, InStoreRestockOrderUpdateException {
@@ -102,11 +102,13 @@ public class InStoreRestockOrderController {
                 // Product variant
                 ProductVariant productVariant = inStoreRestockOrderItem.getProductStock().getProductVariant();
                 clearProductVariant(productVariant);
+                inStoreRestockOrderItem.setInStoreRestockOrder(null);
+                inStoreRestockOrderItem.setDelivery(null);
             }
         }
     }
 
-    private void clearRestockOrderForWarehouseRelationship(List<InStoreRestockOrderForWarehouse> inStoreRestockOrderForWarehouses ) {
+    private void clearRestockOrderForWarehouseRelationship(List<InStoreRestockOrderForWarehouse> inStoreRestockOrderForWarehouses) {
         for (InStoreRestockOrderForWarehouse inStoreRestockOrderForWarehouse : inStoreRestockOrderForWarehouses) {
             // Warehouse
             inStoreRestockOrderForWarehouse.getWarehouse().setProductStocks(null);
@@ -116,17 +118,19 @@ public class InStoreRestockOrderController {
             clearStore(inStoreRestockOrderForWarehouse.getStore());
 
             // Product stock
-            for (InStoreRestockOrderItemsForWarehouse inStoreRestockOrderItemsForWarehouse : inStoreRestockOrderForWarehouse.getInStoreRestockOrderItemsForWarehouse()) {
-                inStoreRestockOrderItemsForWarehouse.getProductStock().setStore(null);
-                inStoreRestockOrderItemsForWarehouse.getProductStock().setWarehouse(null);
+            for (InStoreRestockOrderItemsForWarehouse inStoreRestockOrderItemForWarehouse : inStoreRestockOrderForWarehouse.getInStoreRestockOrderItemsForWarehouse()) {
+                inStoreRestockOrderItemForWarehouse.getProductStock().setStore(null);
+                inStoreRestockOrderItemForWarehouse.getProductStock().setWarehouse(null);
                 // Product variant
-                ProductVariant productVariant = inStoreRestockOrderItemsForWarehouse.getProductStock().getProductVariant();
+                ProductVariant productVariant = inStoreRestockOrderItemForWarehouse.getProductStock().getProductVariant();
                 clearProductVariant(productVariant);
+                inStoreRestockOrderItemForWarehouse.setInStoreRestockOrderForWarehouse(null);
+                inStoreRestockOrderItemForWarehouse.setDelivery(null);
             }
         }
     }
 
-    private void clearProductVariant(ProductVariant productVariant) {
+    public void clearProductVariant(ProductVariant productVariant) {
         productVariant.setProductStocks(null);
         // Product
         Product product = productVariant.getProduct();
@@ -139,7 +143,7 @@ public class InStoreRestockOrderController {
         product.setProductVariants(null);
     }
 
-    private void clearStore(Store store) {
+    public void clearStore(Store store) {
         store.setProductStocks(null);
         store.setReservations(null);
         store.setInStoreRestockOrders(null);
