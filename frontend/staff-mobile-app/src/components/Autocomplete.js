@@ -12,19 +12,19 @@ import { Block } from "galio-framework";
 import materialTheme from "src/constants/Theme";
 import { Dimensions } from "react-native";
 import { FlatList } from "react-native";
+import { useDispatch } from "react-redux";
+import {clearErrors} from "src/redux/actions";
 
 const { width, height } = Dimensions.get("window");
 
 export default function Autocomplete(props) {
+  const dispatch = useDispatch();
   const { value, setValue, label, array, helperText, error } = props;
 
   const [focused, setFocused] = useState(true);
 
   const filteredOptions = array
-    .filter(
-      sku =>
-        sku.toLowerCase().includes(value.toLowerCase())
-    )
+    .filter(sku => sku.toLowerCase().includes(value.toLowerCase()))
     .map(sku => {
       return (
         <TouchableOpacity
@@ -32,7 +32,6 @@ export default function Autocomplete(props) {
           onPress={() => {
             setFocused(false);
             setValue(sku);
-            console.log(sku)
           }}
         >
           <Text style={styles.autocompleteText}>{sku}</Text>
@@ -74,11 +73,12 @@ export default function Autocomplete(props) {
           // mode="outlined"
           onFocus={() => setFocused(true)}
           onKeyPress={() => setFocused(true)}
-          onBlur={() => setFocused(false)}
+          // onBlur={() => setFocused(false)}
           value={value}
           error={error}
           onChangeText={text => {
             setValue(text);
+            dispatch(clearErrors());
           }}
           theme={{
             colors: { primary: materialTheme.COLORS.ACCENT_DARKER }
@@ -87,7 +87,7 @@ export default function Autocomplete(props) {
         />
         {helperText}
       </Block>
-      {focused ? list : null}
+      {focused && list}
     </>
   );
 }
