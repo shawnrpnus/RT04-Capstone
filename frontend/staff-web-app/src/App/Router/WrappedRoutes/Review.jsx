@@ -5,10 +5,6 @@ import { ReviewTable } from "../../../components/Review";
 
 export default () => (
   <Switch>
-      <RetailRoute
-          exact
-          path="/review/viewAll"
-          component={ReviewTable}
-      />
+    <RetailRoute exact path="/review/viewAll" component={ReviewTable} />
   </Switch>
 );

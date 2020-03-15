@@ -39,7 +39,8 @@
     "redux": "^4.0.5",
     "redux-devtools-extension": "latest",
     "redux-thunk": "^2.3.0",
-    "react-native-svg": "9.13.3"
+    "react-native-svg": "9.13.3",
+    "expo-barcode-scanner": "~8.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",

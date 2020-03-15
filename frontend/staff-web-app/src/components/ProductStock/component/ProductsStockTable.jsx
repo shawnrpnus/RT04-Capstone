@@ -28,8 +28,10 @@ import {
   simulateReorderingFromSupplier
 } from "../../../redux/actions/productStockActions";
 import RestockOrderDialog from "./RestockOrderDialog";
+import { FaQrcode } from "react-icons/fa";
 
 const _ = require("lodash");
+const jsog = require("jsog");
 
 const tableIcons = {
   Add: AddBox,
@@ -86,6 +88,19 @@ const ProductsStockTable = props => {
       setSelectedProductStocks([...data]);
       setOpen(true);
     }
+  };
+
+  const generateQR = (event, rowData) => {
+    event.preventDefault();
+    const productStockIds = rowData.map(row => row.productStockId);
+    const productStocksToGenerateQR = productStocks.filter(productStock =>
+      productStockIds.includes(productStock.productStockId)
+    );
+    localStorage.setItem(
+      "productStocks",
+      jsog.stringify(productStocksToGenerateQR)
+    );
+    window.open(`${process.env.PUBLIC_URL}/qrCodes`);
   };
 
   const handleCloseDialog = () => {
@@ -178,7 +193,12 @@ const ProductsStockTable = props => {
                     icon: ShoppingCart,
                     tooltip: "Create restock order",
                     onClick: (event, rowData) => handleAddStock(event, rowData)
-                  }
+                  },
+              {
+                icon: FaQrcode,
+                tooltip: "Generate QR Code(s)",
+                onClick: (event, rowData) => generateQR(event, rowData)
+              }
             ]}
           />
         ) : (

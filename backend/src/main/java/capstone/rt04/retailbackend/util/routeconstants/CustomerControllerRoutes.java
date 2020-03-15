@@ -49,6 +49,6 @@ public class CustomerControllerRoutes {
     public static final String GET_STORES_STOCK_STATUS_FOR_CART = "/getStoresStockStatusForCart";
     public static final String RETRIEVE_RESERVATION_BY_ID = "/retrieveReservationById";
     public static final String GET_STORES_STOCK_STATUS_FOR_RESERVATION = "/getStoresStockStatusForReservation";
-
+    public static final String GET_RESERVATIONS_FOR_STORE = "/getReservationsForStore";
 
 }

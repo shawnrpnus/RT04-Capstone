@@ -138,15 +138,31 @@ class SidebarContent extends Component {
             />
           </SidebarCategory>
           {salesmarketing && (
-              <SidebarCategory title="Reviews" icon="list">
-                <SidebarLink
-                    title="View All"
-                    route="/review/viewAll"
-                    onClick={this.hideSidebar}
-                />
-              </SidebarCategory>
+            <SidebarCategory title="Reviews" icon="list">
+              <SidebarLink
+                title="View All"
+                route="/review/viewAll"
+                onClick={this.hideSidebar}
+              />
+            </SidebarCategory>
           )}
-          
+          <SidebarCategory title="Delivery" icon="list">
+            <SidebarLink
+              title="View Store Orders"
+              route="/delivery/viewAllRestockOrderItem"
+              onClick={this.hideSidebar}
+            />
+            <SidebarLink
+              title="View Customer Orders"
+              // route="/delivery/viewAllrestockOrderItem"
+              // onClick={this.hideSidebar}
+            />
+            <SidebarLink
+              title="View Delivery"
+              route="/delivery/viewAllDelivery"
+              onClick={this.hideSidebar}
+            />
+          </SidebarCategory>
         </ul>
       </div>
     );

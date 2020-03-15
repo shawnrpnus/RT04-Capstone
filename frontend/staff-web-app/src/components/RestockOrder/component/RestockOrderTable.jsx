@@ -25,7 +25,6 @@ import Chip from "@material-ui/core/Chip";
 import {
   retrieveAllRestockOrder,
   deleteRestockOrder,
-  receiveStock,
   getDeliveryStatusColour
 } from "../../../redux/actions/restockOrderAction";
 import withPage from "../../Layout/page/withPage";
@@ -77,14 +76,13 @@ const RestockOrderTable = props => {
     setOpen(false);
   };
 
-  console.log(restockOrders);
-
   let data = [];
   if (restockOrders) {
     data = restockOrders.map(restockOrder => {
       let {
         inStoreRestockOrderId,
         orderDateTime,
+        deliveryDateTime,
         deliveryStatus,
         store,
         inStoreRestockOrderItems,
@@ -93,15 +91,19 @@ const RestockOrderTable = props => {
       inStoreRestockOrderItems = inStoreRestockOrderItems
         ? inStoreRestockOrderItems
         : inStoreRestockOrderItemsForWarehouse;
-      const date = dateformat(new Date(orderDateTime), "dd'-'mmm'-'yyyy");
+      orderDateTime = dateformat(new Date(orderDateTime), "dd'-'mmm'-'yyyy");
+      deliveryDateTime = deliveryDateTime
+        ? dateformat(new Date(deliveryDateTime), "dd'-'mmm'-'yyyy")
+        : "";
       const currentDate = new Date(orderDateTime);
       const disableEdit =
         currentDate.setDate(currentDate.getDate() + 1) < new Date();
       const disableDelete = deliveryStatus !== "PROCESSING";
       return {
         inStoreRestockOrderId: inStoreRestockOrderId,
-        orderDateTime: date,
-        deliveryStatus: deliveryStatus,
+        orderDateTime: orderDateTime,
+        deliveryDateTime: deliveryDateTime,
+        deliveryStatus: deliveryStatus.split("_").join(" "),
         storeName: store.storeName,
         inStoreRestockOrderItems: inStoreRestockOrderItems,
         numberOfItems: inStoreRestockOrderItems.length,
@@ -132,6 +134,10 @@ const RestockOrderTable = props => {
               field: "numberOfItems"
             },
             {
+              title: "Completed",
+              field: "deliveryDateTime"
+            },
+            {
               title: "Delivery status",
               field: "deliveryStatus",
               render: ({ deliveryStatus }) => {
@@ -153,7 +159,8 @@ const RestockOrderTable = props => {
             pageSizeOptions: [10, 20, 40],
             actionsColumnIndex: -1,
             headerStyle: { textAlign: "center" }, //change header padding
-            cellStyle: { textAlign: "center" }
+            cellStyle: { textAlign: "center" },
+            draggable: false
           }}
           actions={[
             rowData => ({
@@ -162,28 +169,8 @@ const RestockOrderTable = props => {
               onClick: (e, rowData) => {
                 setRestockOrder(rowData);
                 openDialog();
-              },
-              disabled: rowData.disableEdit
+              }
             }),
-            rowData =>
-              warehouse
-                ? null
-                : {
-                    icon: CheckSharp,
-                    tooltip: "Receive stock",
-                    onClick: (e, { inStoreRestockOrderId }) => {
-                      confirmDialog({
-                        description: "Receive stock from warehouse"
-                      })
-                        .then(() => {
-                          dispatch(
-                            receiveStock(inStoreRestockOrderId, storeId)
-                          );
-                        })
-                        .catch(() => {});
-                    },
-                    disabled: rowData.deliveryStatus !== "IN_TRANSIT"
-                  },
             rowData =>
               warehouse
                 ? null
@@ -195,11 +182,17 @@ const RestockOrderTable = props => {
                         description: "Selected restock order will be deleted"
                       })
                         .then(() => {
-                          dispatch(deleteRestockOrder(inStoreRestockOrderId));
+                          dispatch(
+                            deleteRestockOrder(
+                              inStoreRestockOrderId,
+                              closeDialog,
+                              storeId
+                            )
+                          );
                         })
                         .catch(() => {});
                     },
-                    disabled: rowData.disableEdit || rowData.disableDelete
+                    disabled: rowData.disableDelete
                   }
           ]}
         />

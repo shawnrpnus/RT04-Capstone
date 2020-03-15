@@ -60,6 +60,7 @@ const RestockOrderDialog = ({ elements, store, open, onClose }) => {
   const dispatch = useDispatch();
   const history = useHistory();
   const [items, setItems] = useState([]);
+  const disabled = items.some(e => !e.orderQuantity);
 
   useEffect(() => {
     setItems(elements);
@@ -96,7 +97,6 @@ const RestockOrderDialog = ({ elements, store, open, onClose }) => {
     });
     dispatch(createRestockOrder({ storeId, stockIdQuantityMaps }, history));
   };
-  console.log(items);
 
   const { buildingName, line1, line2, postalCode } = store.address;
 
@@ -191,7 +191,11 @@ const RestockOrderDialog = ({ elements, store, open, onClose }) => {
         <Button autoFocus onClick={onClose} color="secondary">
           Cancel
         </Button>
-        <Button color="primary" onClick={handleCreateRestockOrder}>
+        <Button
+          color="primary"
+          onClick={handleCreateRestockOrder}
+          disabled={disabled}
+        >
           Submit restock request
         </Button>
       </DialogActions>
