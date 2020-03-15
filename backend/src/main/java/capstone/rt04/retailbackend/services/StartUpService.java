@@ -37,7 +37,7 @@ import java.util.List;
 import static capstone.rt04.retailbackend.util.Constants.ONLINE_SHOPPING_CART;
 
 @Component
-@Profile("dev")
+@Profile({"dev", "prod"})
 public class StartUpService {
 
     private final ProductService productService;
