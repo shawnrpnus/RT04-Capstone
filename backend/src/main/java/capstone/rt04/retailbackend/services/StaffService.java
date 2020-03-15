@@ -268,24 +268,38 @@ public class StaffService {
     }
 
     //For HR to update first categoryName, last categoryName, NRIC, username, bank details, department , role, address
-    public Staff updateStaffDetails(Staff staff, Role role, Department department, Address address) throws UpdateStaffDetailsException, InputDataValidationException {
+    public Staff updateStaffDetails(Staff staff, Long roleId, Long departmentId, Address address, Long storeId) throws UpdateStaffDetailsException, InputDataValidationException {
         validationService.throwExceptionIfInvalidBean(staff);
         validationService.throwExceptionIfInvalidBean(address);
         try {
             Staff staffToUpdate = retrieveStaffByStaffId(staff.getStaffId());
+            Address oldAddress = staffToUpdate.getAddress();
             addressRepository.save(address);
 
             staffToUpdate.setFirstName(staff.getFirstName());
             staffToUpdate.setLastName(staff.getLastName());
             staffToUpdate.setNric(staff.getNric());
             staffToUpdate.setEmail(staff.getEmail());
-            staffToUpdate.setBankDetails(staff.getBankDetails());
-            staffToUpdate.setDepartment(department);
-            staffToUpdate.setRole(role);
+            staffToUpdate.setLeaveRemaining(staff.getLeaveRemaining());
             staffToUpdate.setAddress(address);
+            addressRepository.delete(oldAddress);
+
+            Role r = roleRepository.findById(roleId)
+                    .orElseThrow(() -> new RoleNotFoundException("Role does not exist"));
+            Department d = departmentRepository.findById(departmentId)
+                    .orElseThrow(() -> new DepartmentNotFoundException("Department does not exist"));
+
+            staffToUpdate.setDepartment(d);
+            staffToUpdate.setRole(r);
+
+            if (storeId != null) {
+                Store s = storeRepository.findById(storeId).orElseThrow(() -> new StoreNotFoundException("Store does not exist"));
+                staffToUpdate.setStore(s);
+                s.getStaff().add(staffToUpdate);
+            }
 
             return lazyLoadStaffFields(staffToUpdate);
-        } catch (StaffNotFoundException ex) {
+        } catch (StaffNotFoundException | RoleNotFoundException | DepartmentNotFoundException | StoreNotFoundException ex) {
             throw new UpdateStaffDetailsException("Staff does not exist");
         }
 

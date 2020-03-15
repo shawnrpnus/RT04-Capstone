@@ -2,6 +2,7 @@ import * as types from "../actions/types";
 
 const initialState = {
   currentStaff: null,
+  retrievedStaff:null,
   allStaff: null,
   staffWithNoAccount: null,
   allRoles: null,
@@ -20,10 +21,17 @@ export default function(state = initialState, action) {
         ...state,
         currentStaff: action.staffEntity
       };
-    case types.RETRIEVE_STAFF:
+
+    case types.UPDATE_STAFF:
       return {
         ...state,
         currentStaff: action.staffEntity
+      };
+
+    case types.RETRIEVE_STAFF:
+      return {
+        ...state,
+        retrievedStaff: action.retrievedStaff
       };
 
     case types.RETRIEVE_ALL_ROLES:
@@ -73,16 +81,17 @@ export default function(state = initialState, action) {
     case types.STAFF_LOGOUT:
       return initialState;
 
-    case types.UPDATE_STAFF:
-      return {
-        ...state,
-        loggedInStaff: action.staff
-      };
 
     case types.RETRIEVE_STAFF_WITH_NO_ACCOUNT:
       return {
         ...state,
         staffWithNoAccount: action.staffEntity
+      };
+
+    case types.CLEAR_CURRENT_STAFF:
+      return {
+        ...state,
+        currentStaff: null
       };
 
     default:

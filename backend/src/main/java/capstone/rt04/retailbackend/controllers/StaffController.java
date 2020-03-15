@@ -141,11 +141,13 @@ public class StaffController {
     @PostMapping(StaffControllerRoutes.UPDATE_STAFF)
     public ResponseEntity<?> updateStaff(@RequestBody StaffDetailsUpdateRequest staffDetailsUpdateRequest) throws StaffNotFoundException, InputDataValidationException {
         try {
-            Staff updatedStaff = staffService.updateStaffDetails(staffDetailsUpdateRequest.getStaff(), staffDetailsUpdateRequest.getRole(),
-                    staffDetailsUpdateRequest.getDepartment(), staffDetailsUpdateRequest.getAddress());
+            Staff updatedStaff = staffService.updateStaffDetails(staffDetailsUpdateRequest.getStaff(), staffDetailsUpdateRequest.getRoleId(),
+                    staffDetailsUpdateRequest.getDepartmentId(), staffDetailsUpdateRequest.getAddress(), staffDetailsUpdateRequest.getStoreId());
             clearStaffRelationship(updatedStaff);
             return new ResponseEntity<>(updatedStaff, HttpStatus.OK);
-        } catch (UpdateStaffDetailsException ex) {
+        } catch (InputDataValidationException ex) {
+            return new ResponseEntity<>(ex.getErrorMap(), HttpStatus.BAD_REQUEST);
+        } catch (UpdateStaffDetailsException ex){
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
         }
     }

@@ -17,8 +17,9 @@ import capstone.rt04.retailbackend.entities.*;
 @NoArgsConstructor
 public class StaffDetailsUpdateRequest {
     private Staff staff;
-    private Role role;
-    private Department department;
+    private Long roleId;
+    private Long departmentId;
     private Address address;
+    private Long storeId;
 
 }

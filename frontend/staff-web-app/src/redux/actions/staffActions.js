@@ -15,10 +15,10 @@ export const retrieveStaffById = (staffId, history) => {
         dispatch(retrieveStaffSuccess(data));
       })
       .catch(err => {
-        toast.error("Store Not Found!", {
+        toast.error("Staff Not Found!", {
           position: toast.POSITION.TOP_CENTER
         });
-        history.push(`/store/viewAll`);
+        history.push(`/staff/viewAll`);
         dispatch(retrieveStaffError(err.response.data));
       });
   };
@@ -26,7 +26,7 @@ export const retrieveStaffById = (staffId, history) => {
 
 const retrieveStaffSuccess = data => ({
   type: types.RETRIEVE_STAFF,
-  staffEntity: data
+  retrievedStaff: data
 });
 
 const retrieveStaffError = data => ({
@@ -88,6 +88,37 @@ const createStaffSuccess = data => ({
 const createStaffError = data => ({
   type: types.GET_ERRORS,
   errorMap: data
+});
+
+export const updateStaff = (staffDetailsUpdateRequest, history) => {
+    return dispatch => {
+        //redux thunk passes dispatch
+        axios
+            .post(STAFF_BASE_URL + "/updateStaffDetails", staffDetailsUpdateRequest)
+            .then(response => {
+                const { data } = jsog.decode(response);
+                const storeId = data.storeId;
+                dispatch(updateStaffSuccess(data));
+                toast.success("Staff Updated!", {
+                    position: toast.POSITION.TOP_CENTER
+                });
+                // history.push(`/staff/view/${staffId}`);
+            })
+            .catch(err => {
+                dispatch(updateStaffError(err.response.data));
+                //console.log(err.response.data);
+            });
+    };
+};
+
+const updateStaffSuccess = data => ({
+    type: types.UPDATE_STAFF,
+    staffEntity: data
+});
+
+const updateStaffError = data => ({
+    type: types.GET_ERRORS,
+    errorMap: data
 });
 
 export const createNewStaffAccount = (staffAccountCreateRequest, history) => {
@@ -326,4 +357,8 @@ const retrieveSuccess = data => ({
 const retrieveError = data => ({
   type: GET_ERRORS,
   errorMap: data
+});
+
+export const clearCurrentStaff = () => ({
+    type: types.CLEAR_CURRENT_STAFF
 });
