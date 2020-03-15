@@ -19,7 +19,7 @@ export default function Footer(props) {
   const { children, content, theme, big, className } = props;
   const classes = useStyles();
   const themeType =
-    theme === "transparent" || theme == undefined ? false : true;
+    theme === "transparent" || theme === undefined ? false : true;
   const footerClasses = classNames({
     [classes.footer]: true,
     [classes[theme]]: themeType,

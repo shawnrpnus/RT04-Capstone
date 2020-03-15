@@ -17,6 +17,7 @@ import {
 } from "./types";
 import { UPDATE_CUSTOMER } from "redux/actions/types";
 import { dispatchErrorMapError } from "redux/actions/index";
+axios.defaults.baseURL = process.env.REACT_APP_SPRING_API_URL;
 
 const CUSTOMER_BASE_URL = "/api/customer";
 

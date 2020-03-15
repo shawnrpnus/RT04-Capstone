@@ -56,7 +56,7 @@ export default function AddressCard({
     const result = b.default - a.default + b.billing - a.billing;
     if (b.default) return 1;
     if (a.default) return -1;
-    if (result == 0 && b.default && !a.default) {
+    if (result === 0 && b.default && !a.default) {
       return 1;
     } else {
       return result;

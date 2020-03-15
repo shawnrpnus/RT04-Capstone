@@ -88,8 +88,8 @@ function Style(props) {
   const [button3NotClicked, setButton3NotClicked] = useState(true);
 
   useEffect(() => {
-    if (customer.style != null) {
-      if (hasAddStyle == false) {
+    if (customer.style !== null) {
+      if (hasAddStyle === false) {
         //when customer logged in
         setInputState(inputState => ({
           ...inputState,
@@ -225,12 +225,12 @@ function Style(props) {
 
   const handleUpdateStylePreferences = () => {
     if (
-      inputState.answer0.toString() == customer.style.gender &&
-      inputState.answer1.toString() ==
+      inputState.answer0.toString() === customer.style.gender &&
+      inputState.answer1.toString() ===
         questionBank[1].answers[customer.style.stylePreference.split(",")[0]] &&
-      inputState.answer2.toString() ==
+      inputState.answer2.toString() ===
         questionBank[2].answers[customer.style.stylePreference.split(",")[1]] &&
-      inputState.answer3.toString() ==
+      inputState.answer3.toString() ===
         questionBank[3].answers[customer.style.stylePreference.split(",")[2]]
     ) {
       enqueueSnackbar("No changes in style preferences", {

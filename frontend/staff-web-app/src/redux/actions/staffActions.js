@@ -2,6 +2,7 @@ import axios from "axios";
 import * as types from "./types";
 import { toast } from "react-toastify";
 import { GET_ERRORS } from "./types";
+axios.defaults.baseURL = process.env.REACT_APP_SPRING_API_URL;
 
 const STAFF_BASE_URL = "/api/staff";
 const jsog = require("jsog");

@@ -9,5 +9,5 @@ public interface AdvertisementRepository extends CrudRepository<Advertisement, L
 
     List<Advertisement> findAll();
 
-    Advertisement findByActive(Boolean active);
+    List<Advertisement> findAllByActive(Boolean active);
 }

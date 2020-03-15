@@ -41,7 +41,10 @@ function Product(props) {
     if (status === "granted") {
       setModalVisible(true);
     } else {
-      Alert.alert("Camera permission not granted", { cancelable: true });
+      // Alert.alert("Camera permission not granted", { cancelable: true });
+      Alert.alert("Camera permission not granted", null, null, {
+        cancelable: true
+      });
     }
   };
 
@@ -57,7 +60,12 @@ function Product(props) {
         )
       );
     } else {
-      Alert.alert("Error", "Invalid QR Code!\nPlease scan QR codes from our stores.", null, { cancelable: false });
+      Alert.alert(
+        "Error",
+        "Invalid QR Code!\nPlease scan QR codes from our stores.",
+        null,
+        { cancelable: false }
+      );
     }
   };
 

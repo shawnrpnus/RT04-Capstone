@@ -6,6 +6,7 @@ import {
   UPDATE_VIEWED_TRANSACTION
 } from "redux/actions/types";
 import { ADD_SHIPPING_ADDRESS_AT_CHECKOUT_SUCCESS } from "./types";
+axios.defaults.baseURL = process.env.REACT_APP_SPRING_API_URL;
 
 const jsog = require("jsog");
 const TRANSACTION_BASE_URL = "/api/transaction";

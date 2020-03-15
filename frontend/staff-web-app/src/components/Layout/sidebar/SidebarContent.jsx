@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import * as PropTypes from "prop-types";
 import SidebarLink from "./SidebarLink";
 import SidebarCategory from "./SidebarCategory";
+import { FaAdversal } from "react-icons/fa";
+
 const _ = require("lodash");
 
 class SidebarContent extends Component {
@@ -163,10 +165,18 @@ class SidebarContent extends Component {
               onClick={this.hideSidebar}
             />
           </SidebarCategory>
+          {salesmarketing && (
+            <SidebarCategory title="Advertisement" customIcon={<FaAdversal />}>
+              <SidebarLink
+                title="View Advertisement"
+                route="/advertisement/viewAllAdvertisement"
+                onClick={this.hideSidebar}
+              />
+            </SidebarCategory>
+          )}
         </ul>
       </div>
     );
   }
 }
-
 export default SidebarContent;

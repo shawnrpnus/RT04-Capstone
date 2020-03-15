@@ -12,6 +12,7 @@ import utilReducer from "./utilReducer";
 import reviewReducer from "./reviewReducer";
 import restockOrderReducer from "./restockOrderReducer";
 import deliveryReducer from "./deliveryReducer";
+import advertisementReducer from "./advertisementReducer";
 
 const rootReducer = combineReducers({
   errors: errorReducer,
@@ -26,6 +27,7 @@ const rootReducer = combineReducers({
   reviewEntity: reviewReducer,
   restockOrder: restockOrderReducer,
   delivery: deliveryReducer,
+  advertisement: advertisementReducer,
   util: utilReducer
 });
 
