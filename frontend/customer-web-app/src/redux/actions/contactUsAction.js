@@ -4,6 +4,7 @@ import { emailSent } from "./customerActions";
 import { EMAIL_SENT } from "./types";
 import { CONTACT_US_SUCCESS } from "./types";
 import { GET_ERRORS } from "./types";
+axios.defaults.baseURL = process.env.REACT_APP_SPRING_API_URL;
 
 const CONTACT_US_BASE_URL = "/api/contactUs";
 

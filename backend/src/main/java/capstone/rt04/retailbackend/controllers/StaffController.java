@@ -1,31 +1,25 @@
 package capstone.rt04.retailbackend.controllers;
 
-import capstone.rt04.retailbackend.entities.*;
-import capstone.rt04.retailbackend.request.customer.CustomerChangePasswordRequest;
-import capstone.rt04.retailbackend.request.customer.CustomerLoginRequest;
-import capstone.rt04.retailbackend.request.customer.CustomerResetPasswordRequest;
+import capstone.rt04.retailbackend.entities.Department;
+import capstone.rt04.retailbackend.entities.Role;
+import capstone.rt04.retailbackend.entities.Staff;
+import capstone.rt04.retailbackend.entities.Store;
 import capstone.rt04.retailbackend.request.staff.*;
 import capstone.rt04.retailbackend.response.GenericErrorResponse;
 import capstone.rt04.retailbackend.services.StaffService;
 import capstone.rt04.retailbackend.services.ValidationService;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
-import capstone.rt04.retailbackend.util.exceptions.customer.*;
 import capstone.rt04.retailbackend.util.exceptions.staff.*;
-import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
-import capstone.rt04.retailbackend.util.routeconstants.CustomerControllerRoutes;
 import capstone.rt04.retailbackend.util.routeconstants.StaffControllerRoutes;
-import capstone.rt04.retailbackend.util.routeconstants.StoreControllerRoutes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping(StaffControllerRoutes.STAFF_BASE_ROUTE)
-@CrossOrigin(origins = {"http://localhost:3000"})
+@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"})
 public class StaffController {
 
     private final StaffService staffService;
@@ -141,11 +135,13 @@ public class StaffController {
     @PostMapping(StaffControllerRoutes.UPDATE_STAFF)
     public ResponseEntity<?> updateStaff(@RequestBody StaffDetailsUpdateRequest staffDetailsUpdateRequest) throws StaffNotFoundException, InputDataValidationException {
         try {
-            Staff updatedStaff = staffService.updateStaffDetails(staffDetailsUpdateRequest.getStaff(), staffDetailsUpdateRequest.getRole(),
-                    staffDetailsUpdateRequest.getDepartment(), staffDetailsUpdateRequest.getAddress());
+            Staff updatedStaff = staffService.updateStaffDetails(staffDetailsUpdateRequest.getStaff(), staffDetailsUpdateRequest.getRoleId(),
+                    staffDetailsUpdateRequest.getDepartmentId(), staffDetailsUpdateRequest.getAddress(), staffDetailsUpdateRequest.getStoreId());
             clearStaffRelationship(updatedStaff);
             return new ResponseEntity<>(updatedStaff, HttpStatus.OK);
-        } catch (UpdateStaffDetailsException ex) {
+        } catch (InputDataValidationException ex) {
+            return new ResponseEntity<>(ex.getErrorMap(), HttpStatus.BAD_REQUEST);
+        } catch (UpdateStaffDetailsException ex){
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
         }
     }

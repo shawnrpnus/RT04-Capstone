@@ -13,6 +13,7 @@ import {
   SET_PRICE_RANGE,
   SET_SELECTED_SORT
 } from "redux/actions/types";
+axios.defaults.baseURL = process.env.REACT_APP_SPRING_API_URL;
 
 export const setPriceRange = data => ({
   type: SET_PRICE_RANGE,

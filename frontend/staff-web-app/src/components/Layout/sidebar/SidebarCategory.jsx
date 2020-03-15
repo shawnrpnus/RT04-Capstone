@@ -28,7 +28,7 @@ export default class SidebarCategory extends Component {
   };
 
   render() {
-    const { title, icon, isNew, children } = this.props;
+    const { title, icon, isNew, children, customIcon } = this.props;
     const { collapse } = this.state;
     const categoryClass = classNames({
       "sidebar__category-wrap": true,
@@ -39,11 +39,8 @@ export default class SidebarCategory extends Component {
     return (
       <div>
         <button className={categoryClass} type="button" onClick={this.toggle}>
-          {icon ? (
-            <span className={`sidebar__link-icon lnr lnr-${icon}`} />
-          ) : (
-            ""
-          )}
+          {icon && <span className={`sidebar__link-icon lnr lnr-${icon}`} />}
+          {customIcon && customIcon}
           <p className="sidebar__link-title">
             {title}
             {isNew && <span className="sidebar__category-new" />}

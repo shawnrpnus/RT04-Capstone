@@ -1,6 +1,7 @@
 package capstone.rt04.retailbackend.controllers;
 
-import capstone.rt04.retailbackend.entities.*;
+import capstone.rt04.retailbackend.entities.Address;
+import capstone.rt04.retailbackend.entities.Customer;
 import capstone.rt04.retailbackend.request.customer.*;
 import capstone.rt04.retailbackend.services.CustomerService;
 import capstone.rt04.retailbackend.services.RelationshipService;
@@ -15,17 +16,15 @@ import capstone.rt04.retailbackend.util.routeconstants.CustomerControllerRoutes;
 import com.stripe.exception.StripeException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @SuppressWarnings("Duplicates")
 @RestController
 @RequestMapping(CustomerControllerRoutes.CUSTOMER_BASE_ROUTE)
-@CrossOrigin(origins = {"http://localhost:3000"})
+@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"})
 public class CustomerController {
 
     private final CustomerService customerService;

@@ -13,4 +13,4 @@ web-report/
 # macOS
 .DS_Store
 
-/config.js
+config.js

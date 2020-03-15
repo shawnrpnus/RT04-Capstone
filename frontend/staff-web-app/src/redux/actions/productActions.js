@@ -1,15 +1,7 @@
 import axios from "axios";
 import { toast } from "react-toastify";
 import * as types from "./types";
-
-// import {
-//   // CREATE_PRODUCT,
-//   RETRIEVE_PRODUCT_BY_ID,
-//   GET_ERRORS,
-//   // RETRIEVE_ALL_PRODUCTS,
-//   RETRIEVE_ALL_PRODUCTS_FOR_CATEGORY,
-//   RETRIEVE_PRODUCTS_DETAILS, default as types
-// } from "./types";
+axios.defaults.baseURL = process.env.REACT_APP_SPRING_API_URL;
 
 const PRODUCT_BASE_URL = "/api/product";
 const CATEGORY_BASE_URL = "/api/category";

@@ -1,23 +1,16 @@
 package capstone.rt04.retailbackend.controllers;
 
-import capstone.rt04.retailbackend.entities.Customer;
-import capstone.rt04.retailbackend.entities.Product;
 import capstone.rt04.retailbackend.entities.Transaction;
-import capstone.rt04.retailbackend.entities.TransactionLineItem;
-import capstone.rt04.retailbackend.request.transaction.TransactionCreateRequest;
 import capstone.rt04.retailbackend.request.transaction.TransactionRetrieveRequest;
 import capstone.rt04.retailbackend.response.GenericErrorResponse;
 import capstone.rt04.retailbackend.services.RelationshipService;
 import capstone.rt04.retailbackend.services.TransactionService;
-import capstone.rt04.retailbackend.util.exceptions.customer.CustomerNotFoundException;
-import capstone.rt04.retailbackend.util.exceptions.shoppingcart.InvalidCartTypeException;
 import capstone.rt04.retailbackend.util.exceptions.transaction.TransactionNotFoundException;
 import capstone.rt04.retailbackend.util.routeconstants.TransactionControllerRoutes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -25,7 +18,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(TransactionControllerRoutes.TRANSACTION_BASE_ROUTE)
-@CrossOrigin(origins = {"http://localhost:3000"})
+@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"})
 public class TransactionController {
 
     private final TransactionService transactionService;

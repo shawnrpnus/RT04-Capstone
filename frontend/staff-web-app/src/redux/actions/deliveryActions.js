@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 import * as types from "./types";
 import { dispatchErrorMapError } from "./index";
 import { openCircularProgress, closeCircularProgress } from "./utilActions";
+axios.defaults.baseURL = process.env.REACT_APP_SPRING_API_URL;
 
 const RESTOCK_ORDER_BASE_URL = "/api/inStoreRestockOrder";
 const DELIVERY_BASE_URL = "/api/delivery";

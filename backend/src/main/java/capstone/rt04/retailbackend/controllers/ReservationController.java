@@ -24,8 +24,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping(CustomerControllerRoutes.RESERVATION_BASE_ROUTE)
-@CrossOrigin(origins = {"http://localhost:3000"})
-
+@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"})
 public class ReservationController {
 
     private final ReservationService reservationService;

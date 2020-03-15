@@ -2,6 +2,7 @@ import axios from "axios";
 import * as types from "./types";
 import { toast } from "react-toastify";
 import { retrieveProductsDetails } from "./productActions";
+axios.defaults.baseURL = process.env.REACT_APP_SPRING_API_URL;
 
 const PRODUCT_STOCK_BASE_URL = "/api/productStock";
 const jsog = require("jsog");

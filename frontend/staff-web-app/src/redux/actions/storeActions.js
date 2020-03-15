@@ -1,6 +1,7 @@
 import axios from "axios";
 import * as types from "./types";
 import { toast } from "react-toastify";
+axios.defaults.baseURL = process.env.REACT_APP_SPRING_API_URL;
 
 const STORE_BASE_URL = "/api/store";
 const jsog = require("jsog");

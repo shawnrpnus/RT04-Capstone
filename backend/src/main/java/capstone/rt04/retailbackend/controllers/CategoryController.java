@@ -27,7 +27,7 @@ import static capstone.rt04.retailbackend.util.routeconstants.CategoryController
 
 @RestController
 @RequestMapping(CATEGORY_BASE_ROUTE)
-@CrossOrigin(origins = {"http://localhost:3000"})
+@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"})
 public class CategoryController {
 
     private final CategoryService categoryService;

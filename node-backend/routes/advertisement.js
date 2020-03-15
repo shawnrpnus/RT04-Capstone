@@ -41,18 +41,18 @@ router.post(
   upload.single("advertisement"),
   async (req, res) => {
     const request = JSON.parse(req.body.request);
-    const image = req.files.image;
-    const { originalname } = image;
+    const file = req.file;
+    const { originalname } = file;
 
     cloudinary.uploader
       .upload(`./uploads/${originalname}`, {
         public_id: originalname,
         width: 1000,
-        height: 500,
+        height: 517,
         crop: "fit"
       })
       .then(image => {
-        request.imageUrl = image.secure_url;
+        request.advertisementImgUrl = image.secure_url;
         axios
           .post(
             process.env.SPRING_API_URL + "/advertisement/createAdvertisement",
@@ -63,11 +63,13 @@ router.post(
             return res.send(request);
           })
           .catch(err => {
-            return res.status(400).send(err);
+            console.log(err.response.data);
+            res.status(400).send(err.response.data);
           });
       })
       .catch(err => {
-        res.status(400).send(err.response.data.errorMessage);
+        console.log(err.response.data);
+        res.status(400).send(err);
       });
   }
 );

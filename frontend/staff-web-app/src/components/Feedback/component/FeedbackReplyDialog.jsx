@@ -7,7 +7,7 @@ import DialogContent from "@material-ui/core/DialogContent";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import Chip from "@material-ui/core/Chip";
-import { replyToEmail } from "../../../redux/actions/feedbackAction";
+import { replyToEmail } from "../../../redux/actions/feedbackActions";
 import { Grid } from "@material-ui/core";
 
 const _ = require("lodash");

@@ -1,6 +1,7 @@
 import axios from "axios";
 import { dispatchErrorMapError } from "redux/actions/index";
 import { RETRIEVE_ROOT_CATEGORIES } from "redux/actions/types";
+axios.defaults.baseURL = process.env.REACT_APP_SPRING_API_URL;
 
 const jsog = require("jsog");
 const CATEGORY_BASE_URL = "/api/category";

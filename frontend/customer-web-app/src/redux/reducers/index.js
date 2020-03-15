@@ -9,6 +9,7 @@ import filterBarReducer from "redux/reducers/filterBarReducer";
 import reservationReducer from "redux/reducers/reservationReducer";
 import reviewReducer from "./reviewReducer";
 import transactionReducer from "redux/reducers/transactionReducer";
+import advertisementReducer from "./advertisementReducer";
 
 const rootReducer = combineReducers({
   customer: customerReducer,
@@ -20,6 +21,7 @@ const rootReducer = combineReducers({
   tag: tagReducer,
   filterBar: filterBarReducer,
   reservation: reservationReducer,
+  advertisement: advertisementReducer,
   transaction: transactionReducer
 });
 
