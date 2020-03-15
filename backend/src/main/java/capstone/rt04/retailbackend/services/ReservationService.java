@@ -25,10 +25,7 @@ import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -362,6 +359,19 @@ public class ReservationService {
                 throw new InputDataValidationException(errorMap, errorMap.toString());
             }
         }
+    }
+
+    public List<Reservation> getUpcomingReservationsForStore(Long storeId){
+        List<Reservation> reservations = reservationRepository.findAllByStore_StoreId(storeId);
+        List<Reservation> result = new LinkedList<>();
+        long now = System.currentTimeMillis();
+        long nowMinus15Minutes = now - + TimeUnit.MINUTES.toMillis(15);
+        for (Reservation r : reservations){
+            if (r.getReservationDateTime().after(new Timestamp(nowMinus15Minutes)) && !r.isAttended()){
+                result.add(r);
+            }
+        }
+        return result;
     }
 
 }
