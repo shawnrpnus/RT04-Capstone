@@ -29,19 +29,10 @@ services:
         # networks:
         #     - backend
 
-    #customer-web:
-        #container_name: customer-web
-        #build:
-        #    context: frontend/customer-web-app
-        #   dockerfile: Dockerfile
-        #ports:
-        #    - "3000:3000"
-        #restart: always
-
     db:
         image: mysql:8.0
         volumes:
-           - db_data:/var/lib/mysql
+            - db_data:/var/lib/mysql
         container_name: db
         ports:
             - "3308:3306"
@@ -53,6 +44,14 @@ services:
             MYSQL_DATABASE: retaildb
         # networks:
         #     - backend
-        
+
 volumes:
     db_data:
+    #customer-web:
+    #container_name: customer-web
+    #build:
+    #    context: frontend/customer-web-app
+    #   dockerfile: Dockerfile
+    #ports:
+    #    - "3000:3000"
+    #restart: always
