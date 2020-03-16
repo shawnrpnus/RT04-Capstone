@@ -1,17 +1,16 @@
 import * as types from "../actions/types";
 
 const initialState = {
-  advertisements: []
+  instagramPosts: []
 };
 
 export default function(state = initialState, action) {
   switch (action.type) {
-    case types.RETRIEVE_ALL_ADVERTISEMENT:
+    case types.RETRIEVE_ALL_INSTAGRAM_POST:
       return {
         ...state,
-        advertisements: action.advertisements
+        instagramPosts: action.instagramPosts
       };
-
     default:
       return state;
   }

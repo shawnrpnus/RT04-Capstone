@@ -1,6 +1,9 @@
 package capstone.rt04.retailbackend.services;
 
 import capstone.rt04.retailbackend.entities.*;
+import capstone.rt04.retailbackend.response.ColourToSizeImageMap;
+import capstone.rt04.retailbackend.response.ProductDetailsResponse;
+import capstone.rt04.retailbackend.response.SizeToProductVariantAndStockMap;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -64,6 +67,50 @@ public class RelationshipService {
         }
     }
 
+    public void clearPdrRelationships(List<ProductDetailsResponse> PDRs, boolean needProductProductVariants) {
+        for (ProductDetailsResponse pdr : PDRs) {
+            if (!needProductProductVariants) {
+                pdr.getProduct().setProductVariants(null);
+            } else {
+                for (ProductVariant pv : pdr.getProduct().getProductVariants()) {
+                    pv.setProductStocks(null);
+                }
+            }
+            for (Tag tag : pdr.getProduct().getTags()) {
+                tag.setProducts(null);
+            }
+
+            for (Review review : pdr.getProduct().getReviews()) {
+                review.setProduct(null);
+                review.setCustomer(null);
+                review.setStaff(null);
+            }
+
+            for (Style style : pdr.getProduct().getStyles()) {
+                style.setProducts(null);
+                style.setCustomers(null);
+            }
+
+            pdr.getProduct().getCategory().setProducts(null);
+            pdr.getProduct().getCategory().setParentCategory(null);
+            pdr.getProduct().getCategory().setChildCategories(null);
+            for (ColourToSizeImageMap csiMap : pdr.getColourToSizeImageMaps()) {
+                for (SizeToProductVariantAndStockMap spvsMap : csiMap.getSizeMaps()) {
+                    if (spvsMap.getProductStock() != null) {
+                        spvsMap.getProductStock().setStore(null);
+                        if (spvsMap.getProductStock().getProductVariant() != null) {
+                            spvsMap.getProductStock().getProductVariant().setProductStocks(null);
+                            spvsMap.getProductStock().getProductVariant().setProductImages(null);
+                            spvsMap.getProductStock().getProductVariant().setProduct(null);
+                            spvsMap.getProductStock().getProductVariant().setSizeDetails(null);
+                            spvsMap.getProductStock().setWarehouse(null);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     public void clearTransactionRelationships(Transaction transaction) {
         for (TransactionLineItem transactionLineItem : transaction.getTransactionLineItems()) {
             ProductVariant productVariant = transactionLineItem.getProductVariant();
@@ -113,4 +160,11 @@ public class RelationshipService {
         store.setTransactions(null);
         store.setStaff(null);
     }
+
+    public void clearCategoryRelationships(Category category) {
+        category.setProducts(null);
+        category.setChildCategories(null);
+        category.setParentCategory(null);
+    }
+
 }

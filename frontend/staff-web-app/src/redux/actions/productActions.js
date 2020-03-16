@@ -70,7 +70,8 @@ export const retrieveProductById = (
         }
       })
       .catch(err => {
-        dispatch(retrieveProductByIdError(err.response.data));
+        // dispatch(retrieveProductByIdError(err.response.data));
+        console.log(err);
       });
   };
 };
@@ -94,7 +95,6 @@ export const retrieveProductsDetails = (storeOrWarehouseId, categoryId) => {
       })
       .then(response => {
         const { data } = jsog.decode(response);
-        console.log(data);
         if (categoryId) {
           dispatch(retrieveProductsDetailsForCategorySuccess(data));
         } else {

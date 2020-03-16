@@ -172,6 +172,16 @@ class SidebarContent extends Component {
                 route="/advertisement/viewAllAdvertisement"
                 onClick={this.hideSidebar}
               />
+              <SidebarLink
+                title="View Instagram"
+                route="/advertisement/viewInstagramByHashtag"
+                onClick={this.hideSidebar}
+              />
+              <SidebarLink
+                title="Instagram Post Management"
+                route="/advertisement/viewAllInstagramPost"
+                onClick={this.hideSidebar}
+              />
             </SidebarCategory>
           )}
         </ul>

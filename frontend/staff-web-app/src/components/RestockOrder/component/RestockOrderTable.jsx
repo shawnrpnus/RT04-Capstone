@@ -192,7 +192,7 @@ const RestockOrderTable = props => {
                         })
                         .catch(() => {});
                     },
-                    disabled: rowData.disableDelete
+                    disabled: rowData.disableDelete || rowData.disableEdit
                   }
           ]}
         />
