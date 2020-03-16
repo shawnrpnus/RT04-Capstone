@@ -24,7 +24,7 @@ import java.util.Map;
 @SuppressWarnings("Duplicates")
 @RestController
 @RequestMapping(CustomerControllerRoutes.CUSTOMER_BASE_ROUTE)
-@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"})
+//@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"})
 public class CustomerController {
 
     private final CustomerService customerService;

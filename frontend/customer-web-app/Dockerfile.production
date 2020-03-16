@@ -1,8 +1,8 @@
-FROM node:current-slim
+FROM node:current
 
 WORKDIR /apricot/customer-web-app
 
-COPY package*.json .
+COPY package*.json ./
 
 RUN npm install
 

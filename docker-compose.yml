@@ -2,6 +2,7 @@ version: "3.7"
 
 services:
     spring-backend:
+        # image: shawnroshan/apricot.and.nut:spring-backend
         container_name: spring-backend
         build:
             context: backend
@@ -17,6 +18,7 @@ services:
         #     - frontend
 
     node-backend:
+        # image: shawnroshan/apricot.and.nut:node-backend
         container_name: node-backend
         build:
             context: node-backend
@@ -33,11 +35,13 @@ services:
             context: frontend/customer-web-app
             dockerfile: Dockerfile
         ports:
-            - "5000:5000"
+            - "3000:3000"
         restart: always
 
     db:
         image: mysql:8.0
+        volumes:
+            - db_data: /var/lib/mysql
         container_name: db
         ports:
             - "3306:3306"
