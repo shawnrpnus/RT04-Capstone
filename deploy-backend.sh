@@ -29,7 +29,7 @@ scp -i ~/.ssh/apricot-ssh-key ./docker-compose.yml apricot@34.87.36.207:~
 ssh -i ~/.ssh/apricot-ssh-key apricot@34.87.36.207 << EOF
     sudo docker login
     sudo docker-compose pull
-    sudo docker-compose up --build -d
+    sudo docker-compose up --build --force-recreate -d
 EOF
 
 echo ""
@@ -37,3 +37,6 @@ echo ====================================
 echo Deployed at http://34.87.36.207:8080
 echo ====================================
 echo ""
+
+# scp -i ~/.ssh/apricot-ssh-key ./backend/src/main/resources/scripts/update.sql apricot@34.87.36.207:~
+# sudo docker exec -i db mysql --user=root --password=password --database=retaildb <./update.sql
