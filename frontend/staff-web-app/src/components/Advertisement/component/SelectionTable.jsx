@@ -134,11 +134,12 @@ const SelectionTable = props => {
         }}
         variant="outlined"
         onChange={onChange}
+        autoFocus={true}
       />
       <Button
         variant="contained"
         color="primary"
-        autoFocus={true}
+        fullWidth
         onClick={handleSearchTag}
       >
         Search
