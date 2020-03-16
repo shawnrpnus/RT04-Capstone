@@ -4,13 +4,13 @@ import { connect } from "react-redux";
 import { clearErrors, updateErrors } from "../../../redux/actions";
 import {
     retrieveStaffById,
-    updateStaff,
     deleteStaff,
     retrieveAllRoles,
-    retrieveAllDepartments
+    retrieveAllDepartments,
+    updateStaff
 } from "../../../redux/actions/staffActions";
 import Address from "../../../models/address";
-import Staff from "../../../models/staff/staff";
+import staffUpdate from "../../../models/staff/staffUpdate";
 import MomentUtils from "@date-io/moment";
 import { Grid, TextField } from "@material-ui/core";
 import MaterialTextField from "../../../shared/components/Form/MaterialTextField";
@@ -31,6 +31,8 @@ import DeleteIcon from "mdi-react/DeleteIcon";
 import TableEyeIcon from "mdi-react/TableEyeIcon";
 import withMaterialConfirmDialog from "../../Layout/page/withMaterialConfirmDialog";
 
+const _ = require("lodash");
+
 class StaffViewEditPage extends Component {
 
     static propTypes = {
@@ -47,9 +49,7 @@ class StaffViewEditPage extends Component {
         this.props.retrieveAllDepartments();
         this.props.retrieveAllStores();
         const staffId = this.props.match.params.staffId;
-        console.log(staffId);
         this.props.retrieveStaffById(staffId, this.props.history);
-        console.log(this.props.currentStaff);
     }
 
     componentDidUpdate(prevProps, prevState, snapshot){
@@ -72,10 +72,10 @@ class StaffViewEditPage extends Component {
                 line2: currentStaff.address.line2,
                 buildingName:currentStaff.address.buildingName ,
                 postalCode:  currentStaff.address.postalCode,
-                storeId: (currentStaff && currentStaff.store) ? currentStaff.store.storeId :"-",
+                storeId: (currentStaff && currentStaff.store) ? currentStaff.store.storeId :"",
                 departmentName:currentStaff.department.departmentName,
                 roleName: currentStaff.role.roleName,
-                storeName:(currentStaff && currentStaff.store) ? currentStaff.store.storeName :"-"
+                storeName:(currentStaff && currentStaff.store) ? currentStaff.store.storeName :""
             });
 
         }
@@ -101,6 +101,11 @@ class StaffViewEditPage extends Component {
         if (selectedDepartment === null) return;
         console.log(selectedDepartment);
         this.setState({departmentId: selectedDepartment.departmentId});
+        if(selectedDepartment.departmentName==="Warehouse" || selectedDepartment.departmentName==="Store"){
+            this.setState({ displayStore: true });
+        } else{
+            this.setState({ displayStore: false });
+        }
     };
 
     onSelectStore = (event, selectedStore) => {
@@ -165,7 +170,8 @@ class StaffViewEditPage extends Component {
     handleSubmit = e => {
         e.preventDefault();
 
-        const staff = new Staff(
+        const staff = new staffUpdate(
+            this.state.staffId,
             this.state.firstName,
             this.state.lastName,
             this.state.leaveRemaining,
@@ -202,6 +208,9 @@ class StaffViewEditPage extends Component {
 
         const hasErrors = Object.keys(this.props.errors).length !== 0;
 
+        const department = _.get(currentStaff, "department.departmentName", "");
+        const showStore = department === "Warehouse" || department === "Store";
+
         const postalCodeProps = {
             endAdornment: (
                 <InputAdornment position="end">
@@ -228,8 +237,6 @@ class StaffViewEditPage extends Component {
                 : "";
 
         const routeStaffId = parseInt(this.props.match.params.staffId);
-
-        console.log(currentStaff);
         return (
 
             <React.Fragment>
@@ -351,6 +358,30 @@ class StaffViewEditPage extends Component {
                                 <h4>Employment Details</h4>
                             </Grid>
 
+                            <Grid item xs={12} md={6}>
+                                <MaterialTextField
+                                    fieldLabel="Salary"
+                                    onChange={this.onChange}
+                                    fieldName="salary"
+                                    state={this.state}
+                                    errors={errors}
+                                    disabled={ mode === "view"}
+                                    autoFocus={true}
+                                />
+                            </Grid>
+
+                            <Grid item xs={12} md={6}>
+                                <MaterialNumberSelect
+                                    onChange={this.onChange}
+                                    state={this.state}
+                                    fieldLabel="Leave Remaining"
+                                    fieldName="leaveRemaining"
+                                    optionStart={1}
+                                    optionEnd={20}
+                                    disabled={ mode === "view"}
+                                />
+                            </Grid>
+
 
 
                             <Grid item xs={12} md={6}>
@@ -379,18 +410,21 @@ class StaffViewEditPage extends Component {
                                     getOptionSelected={(option, value) =>
                                         option.departmentId === value.departmentId
                                     }
+
+
                                     renderInput={params => (
                                         <TextField
                                             {...params}
                                             variant="standard"
-                                            label="Department"
+                                            label= "Department"
+                                            placeholder={this.state.departmentName}
                                             fullWidth
                                         />
                                     )}
                                     errors={errors}
-                                    disabled={ mode === "view"}
                                 />
-                                    )}
+                                )}
+
                             </Grid>
 
                             <Grid item xs={12} md={6}>
@@ -421,19 +455,20 @@ class StaffViewEditPage extends Component {
                                             {...params}
                                             variant="standard"
                                             label="Role"
+                                            placeholder={this.state.roleName}
                                             fullWidth
                                         />
                                     )}
                                     errors={errors}
-                                    disabled={ mode === "view"}
                                 />
+
                                     )}
                             </Grid>
 
 
                             <Grid item xs={12} md={6}>
                                 {mode==="view" ? (
-                                    <Grid item xs={12} md={6}>
+                                    showStore && <Grid item xs={12} md={6}>
                                         <MaterialTextField
                                             fieldLabel="Store"
                                             onChange={this.onChange}
@@ -444,8 +479,9 @@ class StaffViewEditPage extends Component {
                                             autoFocus={true}
                                         />
                                     </Grid>
+
                                 ):(
-                                <Autocomplete
+                                    this.state.displayStore && <Autocomplete
                                     id="tags-standard"
                                     options={this.props.allStores}
                                     getOptionLabel={option => option.storeName}
@@ -458,37 +494,13 @@ class StaffViewEditPage extends Component {
                                             {...params}
                                             variant="standard"
                                             label="Store"
+                                            placeholder={this.state.storeName}
                                             fullWidth
                                         />
                                     )}
                                     errors={errors}
-                                    disabled={ mode === "view"}
                                 />
                                     )}
-                            </Grid>
-
-                            <Grid item xs={12} md={6}>
-                                <MaterialTextField
-                                    fieldLabel="Salary"
-                                    onChange={this.onChange}
-                                    fieldName="salary"
-                                    state={this.state}
-                                    errors={errors}
-                                    disabled={ mode === "view"}
-                                    autoFocus={true}
-                                />
-                            </Grid>
-
-                            <Grid item xs={12} md={6}>
-                                <MaterialNumberSelect
-                                    onChange={this.onChange}
-                                    state={this.state}
-                                    fieldLabel="Leave Remaining"
-                                    fieldName="leaveRemaining"
-                                    optionStart={1}
-                                    optionEnd={20}
-                                    disabled={ mode === "view"}
-                                />
                             </Grid>
                         </Grid>
 
@@ -497,7 +509,7 @@ class StaffViewEditPage extends Component {
                                 <Button
                                     color="primary"
                                     className="icon"
-                                    // onClick={e => handleSubmit(e, this.state)}
+                                    onClick={e => this.handleSubmit(e)}
                                     disabled={hasErrors}
                                 >
                                     <p>
