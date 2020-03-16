@@ -72,7 +72,7 @@ export const createNewStaff = (staffCreateRequest, history) => {
         toast.success("Staff Created!", {
           position: toast.POSITION.TOP_CENTER
         });
-        history.push(`/staff/viewAll`); // TODO: update redirect path
+        history.push(`/staff/viewAll`);
       })
       .catch(err => {
         dispatch(createStaffError(err.response.data));
@@ -98,12 +98,14 @@ export const updateStaff = (staffDetailsUpdateRequest, history) => {
             .post(STAFF_BASE_URL + "/updateStaffDetails", staffDetailsUpdateRequest)
             .then(response => {
                 const { data } = jsog.decode(response);
-                const storeId = data.storeId;
+                const staffId = data.staffId;
                 dispatch(updateStaffSuccess(data));
                 toast.success("Staff Updated!", {
                     position: toast.POSITION.TOP_CENTER
                 });
-                // history.push(`/staff/view/${staffId}`);
+
+                history.push(`/staff/view/${staffId}`);
+                window.location.reload(false);
             })
             .catch(err => {
                 dispatch(updateStaffError(err.response.data));

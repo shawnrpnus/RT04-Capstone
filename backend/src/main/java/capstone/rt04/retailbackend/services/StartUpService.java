@@ -15,10 +15,7 @@ import capstone.rt04.retailbackend.util.exceptions.product.CreateNewProductExcep
 import capstone.rt04.retailbackend.util.exceptions.product.CreateNewProductStockException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.shoppingcart.InvalidCartTypeException;
-import capstone.rt04.retailbackend.util.exceptions.staff.CreateDepartmentException;
-import capstone.rt04.retailbackend.util.exceptions.staff.CreateNewStaffAccountException;
-import capstone.rt04.retailbackend.util.exceptions.staff.CreateNewStaffException;
-import capstone.rt04.retailbackend.util.exceptions.staff.CreateRoleException;
+import capstone.rt04.retailbackend.util.exceptions.staff.*;
 import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.style.CreateNewStyleException;
 import capstone.rt04.retailbackend.util.exceptions.style.StyleNotFoundException;
@@ -30,6 +27,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
+import javax.management.relation.RoleNotFoundException;
 import java.math.BigDecimal;
 import java.sql.Time;
 import java.util.ArrayList;
@@ -105,7 +103,7 @@ public class StartUpService {
     }
 
     @PostConstruct
-    public void init() throws InputDataValidationException, CreateNewCategoryException, CategoryNotFoundException, CreateNewProductException, ProductVariantNotFoundException, CreateNewProductStockException, WarehouseNotFoundException, StoreNotFoundException, CreateNewTagException, CreateNewStyleException, CreateNewStaffException, CreateRoleException, CreateDepartmentException, CreateNewCustomerException, CustomerNotFoundException, InvalidCartTypeException, StripeException, CreateNewStaffAccountException, StyleNotFoundException {
+    public void init() throws InputDataValidationException, CreateNewCategoryException, CategoryNotFoundException, CreateNewProductException, ProductVariantNotFoundException, CreateNewProductStockException, WarehouseNotFoundException, StoreNotFoundException, CreateNewTagException, CreateNewStyleException, CreateNewStaffException, CreateRoleException, CreateDepartmentException, CreateNewCustomerException, CustomerNotFoundException, InvalidCartTypeException, StripeException, CreateNewStaffAccountException, StyleNotFoundException, RoleNotFoundException, DepartmentNotFoundException {
         createWarehouseAndStoreIfNotFound();
         createCategoryIfNotFound();
         createStaffIfNotFound();
@@ -1208,7 +1206,7 @@ public class StartUpService {
         tagService.createNewTag(new Tag("New Arrival"));
     }
 
-    private void createStaffIfNotFound() throws CreateNewStaffException, InputDataValidationException, CreateRoleException, CreateDepartmentException, CreateNewStaffAccountException {
+    private void createStaffIfNotFound() throws CreateNewStaffException, InputDataValidationException, CreateRoleException, CreateDepartmentException, CreateNewStaffAccountException, RoleNotFoundException, DepartmentNotFoundException {
         if (staffService.retrieveAllStaff().size() != 0) return;
         Product product = new Product("0010", "Stan Smith", "Adidas", BigDecimal.valueOf(109.90), BigDecimal.valueOf(49.90));
         Department departmentHR = staffService.createNewDepartment("HR");
@@ -1216,7 +1214,6 @@ public class StartUpService {
         Department departmentStore = staffService.createNewDepartment("Store");
         Department departmentWarehouse = staffService.createNewDepartment("Warehouse");
         Department departmentSalesMarketing = staffService.createNewDepartment("Sales and Marketing");
-        Department departmentCustomerService = staffService.createNewDepartment("Customer Service");
 
         Role role1 = staffService.createNewRole(RoleNameEnum.ASSISTANT);
         Role role2 = staffService.createNewRole(RoleNameEnum.ASSISTANT_MANAGER);
