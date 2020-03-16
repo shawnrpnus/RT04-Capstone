@@ -1,10 +1,11 @@
+import axios from "axios";
 import {
   DISPLAY_PRODUCTS,
   GET_ERRORS,
   VIEW_SINGLE_PRODUCT
 } from "redux/actions/types";
-import axios from "axios";
 import { dispatchErrorMapError } from "redux/actions/index";
+axios.defaults.baseURL = process.env.REACT_APP_SPRING_API_URL;
 
 const jsog = require("jsog");
 const PRODUCT_BASE_URL = "/api/product";

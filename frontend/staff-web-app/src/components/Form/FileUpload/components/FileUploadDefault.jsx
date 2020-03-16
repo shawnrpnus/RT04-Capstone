@@ -1,28 +1,27 @@
-import React from 'react';
-import {
-  Card, CardBody, Col, Button, ButtonToolbar,
-} from 'reactstrap';
-import { Field, reduxForm } from 'redux-form';
-import * as PropTypes from 'prop-types';
-import renderDropZoneField from '../../../../shared/components/Form/DropZone';
+import React from "react";
+import { Card, CardBody, Col, Button, ButtonToolbar } from "reactstrap";
+import { Field, reduxForm } from "redux-form";
+import * as PropTypes from "prop-types";
+import renderDropZoneField from "../../../../shared/components/Form/DropZone";
 
 const FileUploadDefault = ({ handleSubmit, reset, t }) => (
   <Col md={12} lg={6}>
     <Card className="card--not-full-height">
       <CardBody>
         <div className="card__title">
-          <h5 className="bold-text">{t('forms.file_upload.file_upload_default')}</h5>
+          <h5 className="bold-text">
+            {t("forms.file_upload.file_upload_default")}
+          </h5>
           <h5 className="subhead">For files upload</h5>
         </div>
         <form className="form" onSubmit={handleSubmit}>
-          <Field
-            name="files"
-            component={renderDropZoneField}
-          />
+          <Field name="files" component={renderDropZoneField} />
           <ButtonToolbar className="form__button-toolbar">
-            <Button color="primary" type="submit">Submit</Button>
+            <Button color="primary" type="submit">
+              Submit
+            </Button>
             <Button type="reset" onClick={reset}>
-                  Cancel
+              Cancel
             </Button>
           </ButtonToolbar>
         </form>
@@ -34,9 +33,9 @@ const FileUploadDefault = ({ handleSubmit, reset, t }) => (
 FileUploadDefault.propTypes = {
   handleSubmit: PropTypes.func.isRequired,
   reset: PropTypes.func.isRequired,
-  t: PropTypes.func.isRequired,
+  t: PropTypes.func.isRequired
 };
 
 export default reduxForm({
-  form: 'file_upload_default', // a unique identifier for this Form
+  form: "file_upload_default" // a unique identifier for this Form
 })(FileUploadDefault);

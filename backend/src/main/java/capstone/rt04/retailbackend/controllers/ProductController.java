@@ -29,7 +29,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(ProductControllerRoutes.PRODUCT_BASE_ROUTE)
-@CrossOrigin(origins = {"http://localhost:3000"})
+@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"})
 @Slf4j
 public class ProductController {
 

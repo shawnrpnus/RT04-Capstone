@@ -14,7 +14,6 @@ import capstone.rt04.retailbackend.util.exceptions.review.CreateNewReviewExcepti
 import capstone.rt04.retailbackend.util.exceptions.review.ReviewNotDeletedException;
 import capstone.rt04.retailbackend.util.exceptions.review.ReviewNotFoundException;
 import capstone.rt04.retailbackend.util.routeconstants.ReviewControllerRoutes;
-import capstone.rt04.retailbackend.util.routeconstants.TagControllerRoutes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +22,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(ReviewControllerRoutes.REVIEW_BASE_ROUTE)
-@CrossOrigin(origins = {"http://localhost:3000"})
+@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"})
 public class ReviewController {
 
     private final ReviewService reviewService;

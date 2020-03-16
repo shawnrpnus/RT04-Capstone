@@ -12,6 +12,7 @@ import Feedback from "./Feedback";
 import Review from "./Review";
 import RestockOrder from "./RestockOrder";
 import Delivery from "./Delivery";
+import Advertisement from "./Advertisement";
 
 export default () => (
   <div>
@@ -28,6 +29,7 @@ export default () => (
       <Route path="/review" component={Review} />
       <Route path="/restockOrder" component={RestockOrder} />
       <Route path="/delivery" component={Delivery} />
+      <Route path="/advertisement" component={Advertisement} />
     </div>
   </div>
 );

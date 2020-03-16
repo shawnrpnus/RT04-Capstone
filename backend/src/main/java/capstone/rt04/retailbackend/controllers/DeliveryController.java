@@ -5,6 +5,7 @@ import capstone.rt04.retailbackend.request.delivery.DeliveryForRestockOrderCreat
 import capstone.rt04.retailbackend.request.delivery.ReceiveRestockOrderRequest;
 import capstone.rt04.retailbackend.services.DeliveryService;
 import capstone.rt04.retailbackend.services.InStoreRestockOrderService;
+import capstone.rt04.retailbackend.services.RelationshipService;
 import capstone.rt04.retailbackend.services.ValidationService;
 import capstone.rt04.retailbackend.util.exceptions.delivery.DeliveryHasAlreadyBeenConfirmedException;
 import capstone.rt04.retailbackend.util.exceptions.inStoreRestockOrder.InStoreRestockOrderItemNotFoundException;
@@ -20,24 +21,22 @@ import static capstone.rt04.retailbackend.util.routeconstants.DeliveryController
 
 @RestController
 @RequestMapping(DELIVERY_BASE_ROUTE)
-@CrossOrigin(origins = {"http://localhost:3000"})
-
+@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"})
 public class DeliveryController {
 
     private final DeliveryService deliveryService;
     private final InStoreRestockOrderService inStoreRestockOrderService;
     private final ValidationService validationService;
+    private final RelationshipService relationshipService;
 
-    private final InStoreRestockOrderController inStoreRestockOrderController;
 
     public DeliveryController(DeliveryService deliveryService, @Lazy InStoreRestockOrderService inStoreRestockOrderService, ValidationService validationService,
-                              @Lazy InStoreRestockOrderController inStoreRestockOrderController) {
+                              RelationshipService relationshipService, RelationshipService relationshipService1) {
         this.deliveryService = deliveryService;
         this.inStoreRestockOrderService = inStoreRestockOrderService;
         this.validationService = validationService;
-        this.inStoreRestockOrderController = inStoreRestockOrderController;
+        this.relationshipService = relationshipService1;
     }
-
 
     /*
     ----------- DELIVERY -----------
@@ -89,37 +88,25 @@ public class DeliveryController {
 
             productStock = item.getProductStock();
             // Store
-            inStoreRestockOrderController.clearStore(productStock.getStore());
+            relationshipService.clearStoreRelationships(productStock.getStore());
             // Warehouse
             productStock.setWarehouse(null);
             // Product variant
             productVariant = productStock.getProductVariant();
-            inStoreRestockOrderController.clearProductVariant(productVariant);
+            relationshipService.clearProductVariantRelationships(productVariant);
         }
 
     }
 
     private void clearDeliveriesRelationships(List<Delivery> deliveries) {
         for(Delivery delivery : deliveries) {
-            clearStaff(delivery.getDeliveryStaff());
+            relationshipService.clearStaffRelationships(delivery.getDeliveryStaff());
             for(InStoreRestockOrderItem item : delivery.getInStoreRestockOrderItems()) {
                 item.setDelivery(null);
                 item.setInStoreRestockOrder(null);
-                inStoreRestockOrderController.clearProductVariant(item.getProductStock().getProductVariant());
-                inStoreRestockOrderController.clearStore(item.getProductStock().getStore());
+                relationshipService.clearProductVariantRelationships(item.getProductStock().getProductVariant());
+                relationshipService.clearStoreRelationships(item.getProductStock().getStore());
             };
         }
-    }
-
-    public void clearStaff(Staff staff) {
-        staff.setPayrolls(null);
-        staff.setDeliveries(null);
-        staff.setAdvertisements(null);
-        staff.setLeaves(null);
-        staff.setAddress(null);
-        staff.setRepliedReviews(null);
-        staff.setStore(null);
-        staff.setRole(null);
-        staff.setDepartment(null);
     }
 }

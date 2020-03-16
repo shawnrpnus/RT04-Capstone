@@ -24,6 +24,7 @@ import capstone.rt04.retailbackend.util.exceptions.warehouse.WarehouseNotFoundEx
 import com.stripe.exception.StripeException;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import javax.management.relation.RoleNotFoundException;
@@ -35,7 +36,7 @@ import java.util.List;
 import static capstone.rt04.retailbackend.util.Constants.ONLINE_SHOPPING_CART;
 
 @Component
-@Profile("dev")
+@Profile({"dev", "prod"})
 public class StartUpService {
 
     private final ProductService productService;
@@ -1370,13 +1371,13 @@ public class StartUpService {
         }
     }
 
-    private void createCustomerIfNotFound() throws InputDataValidationException, CreateNewCustomerException, CustomerNotFoundException, StripeException {
+    @Transactional
+    public void createCustomerIfNotFound() throws InputDataValidationException, CreateNewCustomerException, CustomerNotFoundException, StripeException {
         if (customerService.retrieveAllCustomers().size() == 0) {
             Customer customer = customerService.createNewCustomer(new Customer("Lila", "Facchini",
                     "lila@gmail.com", "password"));
             customer.setVerified(true);
             customerId = customer.getCustomerId();
-            customerService.retrieveCustomerByCustomerId(customerId);
         }
     }
 

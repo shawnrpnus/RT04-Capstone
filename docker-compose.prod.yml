@@ -1,0 +1,9 @@
+version: "3.7"
+
+services:
+    node-backend:
+        dockerfile: Dockerfile.production
+
+    customer-web:
+        build:
+            dockerfile: Dockerfile.production

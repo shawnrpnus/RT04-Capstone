@@ -28,7 +28,7 @@ import {
   retrieveAllFeedback,
   markAsResolved,
   deleteFeedback
-} from "../../../redux/actions/feedbackAction";
+} from "../../../redux/actions/feedbackActions";
 import withPage from "../../Layout/page/withPage";
 import FeedbackReplyDialog from "./FeedbackReplyDialog";
 import { useConfirm } from "material-ui-confirm";

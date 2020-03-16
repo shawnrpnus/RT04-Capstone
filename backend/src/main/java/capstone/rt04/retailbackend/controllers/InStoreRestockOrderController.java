@@ -6,6 +6,7 @@ import capstone.rt04.retailbackend.request.inStoreRestockOrder.RestockUpdateRequ
 import capstone.rt04.retailbackend.response.InStoreRestockOrderForWarehouse;
 import capstone.rt04.retailbackend.response.InStoreRestockOrderItemsForWarehouse;
 import capstone.rt04.retailbackend.services.InStoreRestockOrderService;
+import capstone.rt04.retailbackend.services.RelationshipService;
 import capstone.rt04.retailbackend.services.ValidationService;
 import capstone.rt04.retailbackend.util.exceptions.inStoreRestockOrder.InStoreRestockOrderNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.inStoreRestockOrder.InStoreRestockOrderUpdateException;
@@ -23,17 +24,18 @@ import static capstone.rt04.retailbackend.util.routeconstants.InStoreRestockOrde
 
 @RestController
 @RequestMapping(IN_STORE_RESTOCK_ORDER_BASE_ROUTE)
-@CrossOrigin(origins = {"http://localhost:3000"})
-
+@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"})
 public class InStoreRestockOrderController {
 
     private final InStoreRestockOrderService inStoreRestockOrderService;
     private final ValidationService validationService;
+    private final RelationshipService relationshipService;
 
 
-    public InStoreRestockOrderController(InStoreRestockOrderService inStoreRestockOrderService, ValidationService validationService) {
+    public InStoreRestockOrderController(InStoreRestockOrderService inStoreRestockOrderService, ValidationService validationService, RelationshipService relationshipService) {
         this.inStoreRestockOrderService = inStoreRestockOrderService;
         this.validationService = validationService;
+        this.relationshipService = relationshipService;
     }
 
     @GetMapping(RETRIEVE_ALL_IN_STORE_RESTOCK_ORDER)
@@ -93,7 +95,7 @@ public class InStoreRestockOrderController {
             inStoreRestockOrder.getWarehouse().setInStoreRestockOrders(null);
 
             // Store
-            clearStore(inStoreRestockOrder.getStore());
+            relationshipService.clearStoreRelationships(inStoreRestockOrder.getStore());
 
             // Product stock
             for (InStoreRestockOrderItem inStoreRestockOrderItem : inStoreRestockOrder.getInStoreRestockOrderItems()) {
@@ -101,7 +103,7 @@ public class InStoreRestockOrderController {
                 inStoreRestockOrderItem.getProductStock().setWarehouse(null);
                 // Product variant
                 ProductVariant productVariant = inStoreRestockOrderItem.getProductStock().getProductVariant();
-                clearProductVariant(productVariant);
+                relationshipService.clearProductVariantRelationships(productVariant);
                 inStoreRestockOrderItem.setInStoreRestockOrder(null);
                 inStoreRestockOrderItem.setDelivery(null);
             }
@@ -115,7 +117,7 @@ public class InStoreRestockOrderController {
             inStoreRestockOrderForWarehouse.getWarehouse().setInStoreRestockOrders(null);
 
             // Store
-            clearStore(inStoreRestockOrderForWarehouse.getStore());
+            relationshipService.clearStoreRelationships(inStoreRestockOrderForWarehouse.getStore());
 
             // Product stock
             for (InStoreRestockOrderItemsForWarehouse inStoreRestockOrderItemForWarehouse : inStoreRestockOrderForWarehouse.getInStoreRestockOrderItemsForWarehouse()) {
@@ -123,31 +125,11 @@ public class InStoreRestockOrderController {
                 inStoreRestockOrderItemForWarehouse.getProductStock().setWarehouse(null);
                 // Product variant
                 ProductVariant productVariant = inStoreRestockOrderItemForWarehouse.getProductStock().getProductVariant();
-                clearProductVariant(productVariant);
+                relationshipService.clearProductVariantRelationships(productVariant);
                 inStoreRestockOrderItemForWarehouse.setInStoreRestockOrderForWarehouse(null);
                 inStoreRestockOrderItemForWarehouse.setDelivery(null);
             }
         }
     }
 
-    public void clearProductVariant(ProductVariant productVariant) {
-        productVariant.setProductStocks(null);
-        // Product
-        Product product = productVariant.getProduct();
-        product.setStyles(null);
-        product.setReviews(null);
-        product.setCategory(null);
-        product.setTags(null);
-        product.setPromoCodes(null);
-        product.setDiscounts(null);
-        product.setProductVariants(null);
-    }
-
-    public void clearStore(Store store) {
-        store.setProductStocks(null);
-        store.setReservations(null);
-        store.setInStoreRestockOrders(null);
-        store.setTransactions(null);
-        store.setStaff(null);
-    }
 }

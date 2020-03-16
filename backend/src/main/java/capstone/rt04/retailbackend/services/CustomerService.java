@@ -12,6 +12,7 @@ import capstone.rt04.retailbackend.util.exceptions.style.StyleNotFoundException;
 import com.stripe.exception.StripeException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
@@ -41,6 +42,12 @@ public class CustomerService {
 
     private JavaMailSender javaMailSender;
     private RestTemplate restTemplate;
+
+    @Value("${node.backend.url}")
+    private String NODE_API_URL;
+
+    @Value("${customer.web.url}")
+    private String CUSTOMER_WEB_URL;
 
     private final Environment environment;
 
@@ -262,12 +269,12 @@ public class CustomerService {
         restTemplate = new RestTemplate();
         Map<String, String> request = new HashMap<>();
         String fullName = firstName + " " + lastName;
-        String link = Constants.FRONTEND_URL + path + code;
+        String link = CUSTOMER_WEB_URL + path + code;
         request.put("link", link);
         request.put("email", email);
         request.put("fullName", fullName);
 
-        String endpoint = Constants.NODE_API_URL + "/email/sendVerificationEmail";
+        String endpoint = NODE_API_URL + "/email/sendVerificationEmail";
         try {
             ResponseEntity<?> response = restTemplate.postForEntity(endpoint, request, Object.class);
             if (response.getStatusCode().equals(HttpStatus.OK)) {
@@ -284,12 +291,12 @@ public class CustomerService {
         restTemplate = new RestTemplate();
         Map<String, String> request = new HashMap<>();
         String fullName = firstName + " " + lastName;
-        String link = Constants.FRONTEND_URL + path + code;
+        String link = CUSTOMER_WEB_URL + path + code;
         request.put("link", link);
         request.put("email", email);
         request.put("fullName", fullName);
 
-        String endpoint = Constants.NODE_API_URL + "/email/sendForgotPasswordEmail";
+        String endpoint = NODE_API_URL + "/email/sendForgotPasswordEmail";
         try {
             ResponseEntity<?> response = restTemplate.postForEntity(endpoint, request, Object.class);
             if (response.getStatusCode().equals(HttpStatus.OK)) {

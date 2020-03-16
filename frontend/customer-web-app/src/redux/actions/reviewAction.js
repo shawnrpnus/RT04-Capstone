@@ -14,6 +14,7 @@ import {
   RETRIEVE_REVIEW_BY_CUSTOMER_ID_SUCCESS,
   UPDATE_REVIEW_BY_REVIEW_ID_SUCCESS
 } from "./types";
+axios.defaults.baseURL = process.env.REACT_APP_SPRING_API_URL;
 
 const jsog = require("jsog");
 const REVIEW_BASE_URL = "/api/review";

@@ -22,8 +22,7 @@ import static capstone.rt04.retailbackend.util.routeconstants.ContactUsControlle
 
 @RestController
 @RequestMapping(CONTACT_US_BASE_ROUTE)
-@CrossOrigin(origins = {"http://localhost:3000"})
-
+@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"})
 public class ContactUsController {
 
     private final ContactUsService contactUsService;

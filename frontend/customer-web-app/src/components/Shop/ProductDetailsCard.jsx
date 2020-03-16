@@ -287,8 +287,8 @@ function ProductDetailsCard(props) {
                       height="32"
                       style={{
                         fill: cis.colour,
-                        strokeWidth: cis.colour == "#FFFFFF" ? 0.5 : 0,
-                        stroke: cis.colour == "#FFFFFF" ? "black" : "none"
+                        strokeWidth: cis.colour === "#FFFFFF" ? 0.5 : 0,
+                        stroke: cis.colour === "#FFFFFF" ? "black" : "none"
                       }}
                     />
                   </svg>

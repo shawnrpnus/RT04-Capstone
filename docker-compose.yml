@@ -1,0 +1,49 @@
+version: "3.7"
+
+services:
+    spring-backend:
+        container_name: spring-backend
+        build:
+            context: backend
+            dockerfile: Dockerfile
+        ports:
+            - "8080:8080"
+        restart: always
+        depends_on:
+            - db
+            - node-backend
+        # networks:
+        #     - backend
+        #     - frontend
+
+    node-backend:
+        container_name: node-backend
+        build:
+            context: node-backend
+            dockerfile: Dockerfile
+        ports:
+            - "5000:5000"
+        restart: always
+        # networks:
+        #     - backend
+
+    customer-web:
+        container_name: customer-web
+        build:
+            context: frontend/customer-web-app
+            dockerfile: Dockerfile
+        ports:
+            - "5000:5000"
+        restart: always
+
+    db:
+        image: mysql:8.0
+        container_name: db
+        ports:
+            - "3306:3306"
+        restart: always
+        environment:
+            MYSQL_ROOT_PASSWORD: password
+            MYSQL_DATABASE: retaildb
+        # networks:
+        #     - backend

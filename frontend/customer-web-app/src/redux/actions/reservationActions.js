@@ -14,6 +14,7 @@ import { WISHLIST_TOOLTIP_OPEN } from "./types";
 import { WISHLIST_TOOLTIP_CLOSE } from "./types";
 import { RESERVATION_TOOLTIP_OPEN } from "./types";
 import { RESERVATION_TOOLTIP_CLOSE } from "./types";
+axios.defaults.baseURL = process.env.REACT_APP_SPRING_API_URL;
 
 const RESERVATION_BASE_URL = "/api/reservation";
 

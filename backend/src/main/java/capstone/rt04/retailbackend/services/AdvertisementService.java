@@ -32,6 +32,7 @@ public class AdvertisementService {
         Staff staff = staffService.retrieveStaffByStaffId(staffId);
         Advertisement advertisement = new Advertisement(advertisementImgUrl, staff);
         if (retrieveAllAdvertisement().size() == 0) {
+            System.out.println("First advertisement set to active");
             advertisement.setActive(Boolean.TRUE);
         }
         advertisementRepository.save(advertisement);
@@ -48,6 +49,11 @@ public class AdvertisementService {
         return advertisements;
     }
 
+    public List<Advertisement> retrieveAllActiveAdvertisement() {
+        List<Advertisement> advertisements = advertisementRepository.findAllByActive(Boolean.TRUE);
+        return advertisements;
+    }
+
     public Advertisement retrieveAdvertisementById(Long advertisementId) throws AdvertisementNotFoundException {
         Advertisement advertisement = advertisementRepository.findById(advertisementId).orElseThrow(() ->
                 new AdvertisementNotFoundException("Advertisement with ID " + advertisementId + " not found!"));
@@ -55,11 +61,14 @@ public class AdvertisementService {
     }
 
     public List<Advertisement> activateAdvertisement(Long advertisementId) throws AdvertisementNotFoundException {
-        // Find the current advertisement that is active and disable it & activate the selected one
-        Advertisement activeAdvertisement = advertisementRepository.findByActive(Boolean.TRUE);
         Advertisement advertisement = retrieveAdvertisementById(advertisementId);
         advertisement.setActive(Boolean.TRUE);
-        activeAdvertisement.setActive(Boolean.FALSE);
+        return retrieveAllAdvertisement();
+    }
+
+    public List<Advertisement> disableAdvertisement(Long advertisementId) throws AdvertisementNotFoundException {
+        Advertisement advertisement = retrieveAdvertisementById(advertisementId);
+        advertisement.setActive(Boolean.FALSE);
         return retrieveAllAdvertisement();
     }
 

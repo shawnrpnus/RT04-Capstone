@@ -46,7 +46,7 @@ function Measurements(props) {
 
   //check if customer has added measurements
   useEffect(() => {
-    if (customer.measurements == null) {
+    if (customer.measurements === null) {
       console.log(customer);
       setAddedMeasurements(false);
     } else {
@@ -77,11 +77,11 @@ function Measurements(props) {
 
   const handleUpdateMeasurements = () => {
     if (
-      inputState.shoulder == customer.measurements.shoulder &&
-      inputState.waist == customer.measurements.waist &&
-      inputState.chest == customer.measurements.chest &&
-      inputState.hip == customer.measurements.hip &&
-      inputState.height == customer.measurements.height
+      inputState.shoulder === customer.measurements.shoulder &&
+      inputState.waist === customer.measurements.waist &&
+      inputState.chest === customer.measurements.chest &&
+      inputState.hip === customer.measurements.hip &&
+      inputState.height === customer.measurements.height
     ) {
       enqueueSnackbar("No changes in measurements", {
         variant: "error",
