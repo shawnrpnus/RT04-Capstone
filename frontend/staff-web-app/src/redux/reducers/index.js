@@ -13,6 +13,7 @@ import reviewReducer from "./reviewReducer";
 import restockOrderReducer from "./restockOrderReducer";
 import deliveryReducer from "./deliveryReducer";
 import advertisementReducer from "./advertisementReducer";
+import instagramReducer from "./instagramReducer";
 
 const rootReducer = combineReducers({
   errors: errorReducer,
@@ -28,6 +29,7 @@ const rootReducer = combineReducers({
   restockOrder: restockOrderReducer,
   delivery: deliveryReducer,
   advertisement: advertisementReducer,
+  instagram: instagramReducer,
   util: utilReducer
 });
 

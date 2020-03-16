@@ -4,7 +4,6 @@ import { useConfirm } from "material-ui-confirm";
 import { makeStyles } from "@material-ui/core/styles";
 
 import {
-  Add,
   AddBox,
   Check,
   ChevronLeft,
@@ -18,19 +17,19 @@ import {
   SaveAlt,
   Search,
   ViewColumn,
+  Delete,
   Block
 } from "@material-ui/icons";
 import { AiOutlineSelect } from "react-icons/ai";
 import MaterialTable from "material-table";
 import Button from "@material-ui/core/Button";
 import Chip from "@material-ui/core/Chip";
-import ReplyIcon from "@material-ui/icons/Reply";
-import CheckSharpIcon from "@material-ui/icons/CheckSharp";
 // Redux
 import {
   retrieveAllAdvertisement,
   activateAdvertisement,
-  disableAdvertisement
+  disableAdvertisement,
+  deleteAdvertisement
 } from "../../../redux/actions/advertisementActions";
 import withPage from "../../Layout/page/withPage";
 import AdvertisementUploadDialog from "./AdvertisementUploadDialog";
@@ -159,7 +158,20 @@ const AdvertisementTable = props => {
                   onClick: (e, { advertisementId }) => {
                     dispatch(activateAdvertisement(advertisementId));
                   }
-                }
+                },
+          {
+            icon: Delete,
+            tooltip: "Delete",
+            onClick: (e, { advertisementId }) => {
+              confirmDialog({
+                description: "The selected advertisement will be deleted"
+              })
+                .then(() => {
+                  dispatch(deleteAdvertisement(advertisementId));
+                })
+                .catch(() => null);
+            }
+          }
         ]}
       />
       {open && (

@@ -1,7 +1,7 @@
 import axios from "axios";
 import * as types from "./types";
 import { toast } from "react-toastify";
-import { retrieveAllProducts, retrieveProductsDetails } from "./productActions";
+import { retrieveProductsDetails } from "./productActions";
 axios.defaults.baseURL = process.env.REACT_APP_SPRING_API_URL;
 
 const TAG_BASE_URL = "/api/tag/";
