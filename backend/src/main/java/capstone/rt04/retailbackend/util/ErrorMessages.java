@@ -48,6 +48,7 @@ public class ErrorMessages {
     public static final String STAFF_DOES_NOT_EXIST = "Staff does not exist!";
     public static final String INCORRECT_PASSWORD = "Password is wrong!";
     public static final String INCORRECT_USERNAME = "Username is wrong!";
+    public static final String STORE_CANNOT_ASSIGN= "Do not assign a store to HR or IT!";
 
     public static final String SERIAL_NUMBER_REQUIRED = "Serial number is required!";
     public static final String PRODUCT_NAME_REQUIRED = "Product name is required!";

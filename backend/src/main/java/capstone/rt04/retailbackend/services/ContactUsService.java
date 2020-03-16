@@ -8,6 +8,7 @@ import capstone.rt04.retailbackend.util.exceptions.contactUs.ContactUsDeleteExce
 import capstone.rt04.retailbackend.util.exceptions.contactUs.ContactUsNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,9 @@ public class ContactUsService {
     // Add a new complaint/compliment/enquiry/support ticket with details of the issue and customer’s email for staff to reply to
 
     private RestTemplate restTemplate;
+
+    @Value("${node.backend.url}")
+    private String NODE_API_URL;
 
     private final ValidationService validationService;
     private final ContactUsRepository contactUsRepository;
@@ -86,7 +90,7 @@ public class ContactUsService {
         request.put("contactUsCategory", contactUs.getContactUsCategory().toString());
         request.put("reply", reply);
 
-        String endpoint = Constants.NODE_API_URL + "/email/replyToEmail";
+        String endpoint = NODE_API_URL + "/email/replyToEmail";
         ResponseEntity<?> response = restTemplate.postForEntity(endpoint, request, Object.class);
         if (response.getStatusCode().equals(HttpStatus.OK)) {
             log.info("Email sent successfully to " + email);

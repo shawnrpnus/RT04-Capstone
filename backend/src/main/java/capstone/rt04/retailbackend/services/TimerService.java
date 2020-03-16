@@ -7,6 +7,7 @@ import capstone.rt04.retailbackend.entities.Warehouse;
 import capstone.rt04.retailbackend.util.Constants;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductStockNotFoundException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +34,12 @@ public class TimerService {
     private final ProductService productService;
     private final WarehouseService warehouseService;
     private RestTemplate restTemplate;
+
+    @Value("${node.backend.url}")
+    private String NODE_API_URL;
+
+    @Value("${customer.web.url}")
+    private String CUSTOMER_WEB_URL;
 
     private final Integer unattendedTimeLimit = 4;
 
@@ -112,11 +119,11 @@ public class TimerService {
                     String email = customer.getEmail();
                     Map<String, String> request = new HashMap<>();
                     String fullName = customer.getFirstName();
-                    String link = Constants.FRONTEND_URL + "/account/shoppingCart";
+                    String link = CUSTOMER_WEB_URL + "/account/shoppingCart";
                     request.put("link", link);
                     request.put("email", email);
                     request.put("fullName", fullName);
-                    String endpoint = Constants.NODE_API_URL + "/email/sendUnattendedCartEmail";
+                    String endpoint = NODE_API_URL + "/email/sendUnattendedCartEmail";
                     ResponseEntity<?> response = restTemplate.postForEntity(endpoint, request, Object.class);
                     if (response.getStatusCode().equals(HttpStatus.OK)) {
                         log.info("Email sent successfully to " + email);

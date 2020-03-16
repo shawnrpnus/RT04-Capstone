@@ -13,10 +13,16 @@ import ButtonToolbar from "reactstrap/es/ButtonToolbar";
 import StaffChangePasswordRequest from "../../../models/staff/StaffChangePasswordRequest";
 import { changePassword } from "../../../redux/actions/staffActions";
 
+const _ = require("lodash");
+
 class StaffDetailsPage extends Component {
   static propTypes = {
     errors: PropTypes.object
   };
+
+  componentDidMount() {
+    this.handleChangeViewDetails();
+  }
 
   constructor(props) {
     super(props);
@@ -37,6 +43,7 @@ class StaffDetailsPage extends Component {
       postalCode: this.props.loggedInStaff.address.postalCode,
       departmentName: this.props.loggedInStaff.department.departmentName,
       roleName: this.props.loggedInStaff.role.roleName,
+      storeName:(this.props.loggedInStaff && this.props.loggedInStaff.store) ? this.props.loggedInStaff.store.storeName :"",
       oldPassword: "",
       newPassword: ""
     };
@@ -73,6 +80,9 @@ class StaffDetailsPage extends Component {
   render() {
     const { errors, disabled } = this.props;
     const hasErrors = Object.keys(this.props.errors).length !== 0;
+    const department = _.get(this.props.loggedInStaff, "department.departmentName", "");
+    const showStore = department === "Warehouse" || department === "Store";
+
     return (
       <React.Fragment>
         <div className="card__title">
@@ -107,6 +117,10 @@ class StaffDetailsPage extends Component {
         {this.state.mode ? (
           <form className="material-form">
             <Grid container spacing={3}>
+              <Grid item xs={12} md={12}>
+                <h4>Personal Details</h4>
+              </Grid>
+
               <Grid item xs={12} md={6}>
                 <MaterialTextField
                   fieldLabel="ID"
@@ -175,6 +189,77 @@ class StaffDetailsPage extends Component {
                   autoFocus={true}
                 />
               </Grid>
+
+              <Grid item xs={12} md={6}>
+                <MaterialTextField
+                    fieldLabel="Postal Code"
+                    onChange={this.onChange}
+                    fieldName="postalCode"
+                    state={this.state}
+                    errors={errors}
+                    disabled={true}
+                />
+              </Grid>
+
+              <Grid item xs={12} md={6}>
+                <MaterialTextField
+                    fieldLabel="Building Name"
+                    onChange={this.onChange}
+                    fieldName="buildingName"
+                    state={this.state}
+                    errors={errors}
+                    disabled={true}
+                />
+              </Grid>
+
+              <Grid item xs={12} md={6}>
+                <MaterialTextField
+                    fieldLabel="Address Line 1"
+                    onChange={this.onChange}
+                    fieldName="line1"
+                    state={this.state}
+                    errors={errors}
+                    disabled={true}
+                />
+              </Grid>
+
+              <Grid item xs={12} md={6}>
+                <MaterialTextField
+                    fieldLabel="Address Line 2"
+                    onChange={this.onChange}
+                    fieldName="line2"
+                    state={this.state}
+                    errors={errors}
+                    disabled={true}
+                />
+              </Grid>
+
+              <Grid item xs={12} md={12}>
+                <h4>Employment Details</h4>
+              </Grid>
+
+              <Grid item xs={12} md={6}>
+                <MaterialTextField
+                    fieldLabel="Salary"
+                    onChange={this.onChange}
+                    fieldName="salary"
+                    state={this.state}
+                    errors={errors}
+                    disabled={true}
+                />
+              </Grid>
+
+              <Grid item xs={12} md={6}>
+                <MaterialTextField
+                    onChange={this.onChange}
+                    state={this.state}
+                    fieldLabel="Leave Remaining"
+                    fieldName="leaveRemaining"
+                    disabled={true}
+                    errors={errors}
+                />
+              </Grid>
+
               <Grid item xs={12} md={6}>
                 <MaterialTextField
                   fieldLabel="Department"
@@ -197,71 +282,23 @@ class StaffDetailsPage extends Component {
                   autoFocus={true}
                 />
               </Grid>
-              <Grid item xs={12} md={6}>
-                <MaterialTextField
-                  fieldLabel="Salary"
-                  onChange={this.onChange}
-                  fieldName="salary"
-                  state={this.state}
-                  errors={errors}
-                  disabled={true}
-                />
-              </Grid>
 
-              <Grid item xs={12} md={6}>
-                <MaterialTextField
+              {showStore && (
+                  <Grid item xs={12} md={6}>
+              <MaterialTextField
+                  fieldLabel="Store"
                   onChange={this.onChange}
+                  fieldName="storeName"
                   state={this.state}
-                  fieldLabel="Leave Remaining"
-                  fieldName="leaveRemaining"
-                  disabled={true}
                   errors={errors}
-                />
-              </Grid>
+                  disabled={true}
+                  autoFocus={true}
+              />
+            </Grid>
+              )}
 
-              <Grid item xs={12} md={6}>
-                <MaterialTextField
-                  fieldLabel="Postal Code"
-                  onChange={this.onChange}
-                  fieldName="postalCode"
-                  state={this.state}
-                  errors={errors}
-                  disabled={true}
-                />
-              </Grid>
 
-              <Grid item xs={12} md={6}>
-                <MaterialTextField
-                  fieldLabel="Building Name"
-                  onChange={this.onChange}
-                  fieldName="buildingName"
-                  state={this.state}
-                  errors={errors}
-                  disabled={true}
-                />
-              </Grid>
 
-              <Grid item xs={12} md={6}>
-                <MaterialTextField
-                  fieldLabel="Address Line 1"
-                  onChange={this.onChange}
-                  fieldName="line1"
-                  state={this.state}
-                  errors={errors}
-                  disabled={true}
-                />
-              </Grid>
-
-              <Grid item xs={12} md={6}>
-                <MaterialTextField
-                  fieldLabel="Address Line 2"
-                  onChange={this.onChange}
-                  fieldName="line2"
-                  state={this.state}
-                  errors={errors}
-                  disabled={true}
-                />
-              </Grid>
             </Grid>
           </form>
         ) : (

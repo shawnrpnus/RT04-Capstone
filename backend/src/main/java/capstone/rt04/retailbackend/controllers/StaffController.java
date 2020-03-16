@@ -34,7 +34,7 @@ public class StaffController {
     //Address will need to save in address repository cause it is new
     //role and department already exist in database from the start so no need to save
     @PostMapping(StaffControllerRoutes.CREATE_NEW_STAFF)
-    public ResponseEntity<?> createNewStaff(@RequestBody StaffCreateRequest staffCreateRequest) throws InputDataValidationException, CreateNewStaffException, CreateNewStaffAccountException {
+    public ResponseEntity<?> createNewStaff(@RequestBody StaffCreateRequest staffCreateRequest) throws InputDataValidationException, CreateNewStaffException, CreateNewStaffAccountException, javax.management.relation.RoleNotFoundException {
 
         System.out.println(staffCreateRequest.getRoleId());
         try {
@@ -44,6 +44,8 @@ public class StaffController {
             return new ResponseEntity<>(newStaff, HttpStatus.CREATED);
         } catch (InputDataValidationException ex) {
             return new ResponseEntity<>(ex.getErrorMap(), HttpStatus.BAD_REQUEST);
+        } catch (DepartmentNotFoundException ex) {
+            return new ResponseEntity<>(ex, HttpStatus.BAD_REQUEST);
         }
 
 
