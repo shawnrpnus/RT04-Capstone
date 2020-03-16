@@ -98,7 +98,8 @@ public class CustomerService {
             shoppingCartService.initializeShoppingCarts(savedCustomer.getCustomerId());
             stripeService.createStripeCustomer(savedCustomer.getCustomerId());
             VerificationCode vCode = generateVerificationCode(savedCustomer.getCustomerId());
-            if (Arrays.asList(environment.getActiveProfiles()).contains("dev")) {
+            if (Arrays.asList(environment.getActiveProfiles()).contains("dev") ||
+                Arrays.asList(environment.getActiveProfiles()).contains("prod")) {
                 nodeSendEmailVerificationLink("/account/verify/", vCode.getCode(), savedCustomer.getEmail(), savedCustomer.getFirstName(), savedCustomer.getLastName());
             }
             return lazyLoadCustomerFields(customer);
