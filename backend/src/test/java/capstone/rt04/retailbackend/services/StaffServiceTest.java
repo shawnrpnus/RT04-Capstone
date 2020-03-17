@@ -148,12 +148,12 @@ public class StaffServiceTest {
         Staff validStaff = staffService.retrieveStaffByStaffId(createdStaffId);
         String newPasswordRaw = "password12345";
 
-        staffService.changeStaffPassword(validStaff.getStaffId(), createdStaffPassword, newPasswordRaw);
+        staffService.changeStaffPassword(validStaff.getStaffId(), createdStaffPassword, newPasswordRaw, newPasswordRaw);
         validStaff = staffService.retrieveStaffByStaffId(createdStaffId);
         assertThat(encoder.matches(newPasswordRaw, validStaff.getPassword())).isTrue();
 
         try {
-            staffService.changeStaffPassword(validStaff.getStaffId(), "wrongoldpassword",newPasswordRaw);
+            staffService.changeStaffPassword(validStaff.getStaffId(), "wrongoldpassword",newPasswordRaw, newPasswordRaw);
         } catch (InvalidStaffCredentialsException ex) {
             Map<String, String> expectedErrorMap = new HashMap<>();
             expectedErrorMap.put("password", ErrorMessages.OLD_PASSWORD_INCORRECT);

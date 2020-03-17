@@ -191,7 +191,7 @@ public class StaffControllerTest{
     @Test
     public void changePassword() {
          //Valid staff ID, invalid staff old password
-        StaffChangePasswordRequest req = new StaffChangePasswordRequest(createdStaffId, "INVALID OLD PW", "NEW PW");
+        StaffChangePasswordRequest req = new StaffChangePasswordRequest(createdStaffId, "INVALID OLD PW", "NEW PW", "NEW PW");
         given()
                 .contentType("application/json")
                 .body(req)
@@ -200,7 +200,7 @@ public class StaffControllerTest{
 
         //Successful change
         String newPasswordRaw = "password";
-        req =  new StaffChangePasswordRequest(createdStaffId, VALID_STAFF_PASSWORD, newPasswordRaw);
+        req =  new StaffChangePasswordRequest(createdStaffId, VALID_STAFF_PASSWORD, newPasswordRaw, newPasswordRaw);
         System.out.println("This is original hashed:"+VALID_STAFF_PASSWORD);
         Staff s = given()
                 .contentType("application/json")
