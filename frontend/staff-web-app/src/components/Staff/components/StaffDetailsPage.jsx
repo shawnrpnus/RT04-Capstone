@@ -43,10 +43,13 @@ class StaffDetailsPage extends Component {
       postalCode: this.props.loggedInStaff.address.postalCode,
       departmentName: this.props.loggedInStaff.department.departmentName,
       roleName: this.props.loggedInStaff.role.roleName,
-      storeName:(this.props.loggedInStaff && this.props.loggedInStaff.store) ? this.props.loggedInStaff.store.storeName :"",
+      storeName:
+        this.props.loggedInStaff && this.props.loggedInStaff.store
+          ? this.props.loggedInStaff.store.storeName
+          : "",
       oldPassword: "",
       newPassword: "",
-      confirmPassword:""
+      confirmPassword: ""
     };
   }
 
@@ -82,7 +85,11 @@ class StaffDetailsPage extends Component {
   render() {
     const { errors, disabled } = this.props;
     const hasErrors = Object.keys(this.props.errors).length !== 0;
-    const department = _.get(this.props.loggedInStaff, "department.departmentName", "");
+    const department = _.get(
+      this.props.loggedInStaff,
+      "department.departmentName",
+      ""
+    );
     const showStore = department === "Warehouse" || department === "Store";
 
     return (
@@ -194,45 +201,45 @@ class StaffDetailsPage extends Component {
 
               <Grid item xs={12} md={6}>
                 <MaterialTextField
-                    fieldLabel="Postal Code"
-                    onChange={this.onChange}
-                    fieldName="postalCode"
-                    state={this.state}
-                    errors={errors}
-                    disabled={true}
+                  fieldLabel="Postal Code"
+                  onChange={this.onChange}
+                  fieldName="postalCode"
+                  state={this.state}
+                  errors={errors}
+                  disabled={true}
                 />
               </Grid>
 
               <Grid item xs={12} md={6}>
                 <MaterialTextField
-                    fieldLabel="Building Name"
-                    onChange={this.onChange}
-                    fieldName="buildingName"
-                    state={this.state}
-                    errors={errors}
-                    disabled={true}
+                  fieldLabel="Building Name"
+                  onChange={this.onChange}
+                  fieldName="buildingName"
+                  state={this.state}
+                  errors={errors}
+                  disabled={true}
                 />
               </Grid>
 
               <Grid item xs={12} md={6}>
                 <MaterialTextField
-                    fieldLabel="Address Line 1"
-                    onChange={this.onChange}
-                    fieldName="line1"
-                    state={this.state}
-                    errors={errors}
-                    disabled={true}
+                  fieldLabel="Address Line 1"
+                  onChange={this.onChange}
+                  fieldName="line1"
+                  state={this.state}
+                  errors={errors}
+                  disabled={true}
                 />
               </Grid>
 
               <Grid item xs={12} md={6}>
                 <MaterialTextField
-                    fieldLabel="Address Line 2"
-                    onChange={this.onChange}
-                    fieldName="line2"
-                    state={this.state}
-                    errors={errors}
-                    disabled={true}
+                  fieldLabel="Address Line 2"
+                  onChange={this.onChange}
+                  fieldName="line2"
+                  state={this.state}
+                  errors={errors}
+                  disabled={true}
                 />
               </Grid>
 
@@ -242,23 +249,23 @@ class StaffDetailsPage extends Component {
 
               <Grid item xs={12} md={6}>
                 <MaterialTextField
-                    fieldLabel="Salary"
-                    onChange={this.onChange}
-                    fieldName="salary"
-                    state={this.state}
-                    errors={errors}
-                    disabled={true}
+                  fieldLabel="Salary"
+                  onChange={this.onChange}
+                  fieldName="salary"
+                  state={this.state}
+                  errors={errors}
+                  disabled={true}
                 />
               </Grid>
 
               <Grid item xs={12} md={6}>
                 <MaterialTextField
-                    onChange={this.onChange}
-                    state={this.state}
-                    fieldLabel="Leave Remaining"
-                    fieldName="leaveRemaining"
-                    disabled={true}
-                    errors={errors}
+                  onChange={this.onChange}
+                  state={this.state}
+                  fieldLabel="Leave Remaining"
+                  fieldName="leaveRemaining"
+                  disabled={true}
+                  errors={errors}
                 />
               </Grid>
 
@@ -286,21 +293,18 @@ class StaffDetailsPage extends Component {
               </Grid>
 
               {showStore && (
-                  <Grid item xs={12} md={6}>
-              <MaterialTextField
-                  fieldLabel="Store"
-                  onChange={this.onChange}
-                  fieldName="storeName"
-                  state={this.state}
-                  errors={errors}
-                  disabled={true}
-                  autoFocus={true}
-              />
-            </Grid>
+                <Grid item xs={12} md={6}>
+                  <MaterialTextField
+                    fieldLabel="Store"
+                    onChange={this.onChange}
+                    fieldName="storeName"
+                    state={this.state}
+                    errors={errors}
+                    disabled={true}
+                    autoFocus={true}
+                  />
+                </Grid>
               )}
-
-
-
             </Grid>
           </form>
         ) : (
@@ -333,13 +337,13 @@ class StaffDetailsPage extends Component {
               <Grid item xs={12} md={6}></Grid>
               <Grid item xs={12} md={6}>
                 <MaterialTextField
-                    fieldLabel="Confirm New Password"
-                    onChange={this.onChange}
-                    fieldName="confirmPassword"
-                    state={this.state}
-                    errors={errors}
-                    disabled={disabled}
-                    type="password"
+                  fieldLabel="Confirm New Password"
+                  onChange={this.onChange}
+                  fieldName="confirmPassword"
+                  state={this.state}
+                  errors={errors}
+                  disabled={disabled}
+                  type="password"
                 />
               </Grid>
             </Grid>

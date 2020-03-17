@@ -27,7 +27,7 @@ class SidebarContent extends Component {
     return (
       <div className="sidebar__content">
         <ul className="sidebar__block">
-          { hr && (
+          {hr && (
             <SidebarCategory title="Staff" icon="users">
               {hr && (
                 <React.Fragment>
@@ -44,11 +44,10 @@ class SidebarContent extends Component {
                   />
 
                   <SidebarLink
-                      title="Reset Staff Password"
-                      route="/staff/resetPassword"
-                      onClick={this.hideSidebar}
+                    title="Reset Staff Password"
+                    route="/staff/resetPassword"
+                    onClick={this.hideSidebar}
                   />
-
                 </React.Fragment>
               )}
             </SidebarCategory>
