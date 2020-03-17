@@ -45,7 +45,8 @@ class StaffDetailsPage extends Component {
       roleName: this.props.loggedInStaff.role.roleName,
       storeName:(this.props.loggedInStaff && this.props.loggedInStaff.store) ? this.props.loggedInStaff.store.storeName :"",
       oldPassword: "",
-      newPassword: ""
+      newPassword: "",
+      confirmPassword:""
     };
   }
 
@@ -62,7 +63,8 @@ class StaffDetailsPage extends Component {
     const req = new StaffChangePasswordRequest(
       this.state.staffId,
       this.state.oldPassword,
-      this.state.newPassword
+      this.state.newPassword,
+      this.state.confirmPassword
     );
 
     this.props.changePassword(req, this.props.history);
@@ -306,7 +308,7 @@ class StaffDetailsPage extends Component {
             <Grid container spacing={3}>
               <Grid item xs={12} md={6}>
                 <MaterialTextField
-                  fieldLabel="Old password"
+                  fieldLabel="Old Password"
                   onChange={this.onChange}
                   fieldName="oldPassword"
                   state={this.state}
@@ -319,13 +321,25 @@ class StaffDetailsPage extends Component {
               <Grid item xs={12} md={6}></Grid>
               <Grid item xs={12} md={6}>
                 <MaterialTextField
-                  fieldLabel="New password"
+                  fieldLabel="New Password"
                   onChange={this.onChange}
                   fieldName="newPassword"
                   state={this.state}
                   errors={errors}
                   disabled={disabled}
                   type="password"
+                />
+              </Grid>
+              <Grid item xs={12} md={6}></Grid>
+              <Grid item xs={12} md={6}>
+                <MaterialTextField
+                    fieldLabel="Confirm New Password"
+                    onChange={this.onChange}
+                    fieldName="confirmPassword"
+                    state={this.state}
+                    errors={errors}
+                    disabled={disabled}
+                    type="password"
                 />
               </Grid>
             </Grid>

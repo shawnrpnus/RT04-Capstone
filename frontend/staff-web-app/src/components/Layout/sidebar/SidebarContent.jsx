@@ -27,23 +27,8 @@ class SidebarContent extends Component {
     return (
       <div className="sidebar__content">
         <ul className="sidebar__block">
-          {(it || hr) && (
+          { hr && (
             <SidebarCategory title="Staff" icon="users">
-              {it && (
-                <React.Fragment>
-                  <SidebarLink
-                    title="Configure Staff Account"
-                    route="/staff/createAccount"
-                    onClick={this.hideSidebar}
-                  />
-
-                  <SidebarLink
-                    title="Reset Staff Password"
-                    route="/staff/resetPassword"
-                    onClick={this.hideSidebar}
-                  />
-                </React.Fragment>
-              )}
               {hr && (
                 <React.Fragment>
                   <SidebarLink
@@ -57,6 +42,13 @@ class SidebarContent extends Component {
                     route="/staff/viewAll"
                     onClick={this.hideSidebar}
                   />
+
+                  <SidebarLink
+                      title="Reset Staff Password"
+                      route="/staff/resetPassword"
+                      onClick={this.hideSidebar}
+                  />
+
                 </React.Fragment>
               )}
             </SidebarCategory>

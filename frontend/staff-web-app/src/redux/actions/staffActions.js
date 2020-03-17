@@ -169,7 +169,7 @@ export const changePassword = (staffChangePasswordRequest, history) => {
         toast.success("Staff password changed!", {
           position: toast.POSITION.TOP_CENTER
         });
-        history.push(`/staff/viewProfile`); // TODO: update redirect path
+        history.push(`/`); // TODO: update redirect path
       })
       .catch(err => {
         dispatch(changeStaffPasswordError(err.response.data));

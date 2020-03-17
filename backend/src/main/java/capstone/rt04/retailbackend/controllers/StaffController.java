@@ -169,7 +169,8 @@ public class StaffController {
 
             staffService.changeStaffPassword(staffChangePasswordRequest.getStaffId(),
                     staffChangePasswordRequest.getOldPassword(),
-                    staffChangePasswordRequest.getNewPassword());
+                    staffChangePasswordRequest.getNewPassword(),
+                    staffChangePasswordRequest.getConfirmPassword());
             Staff staff = staffService.retrieveStaffByStaffId(staffChangePasswordRequest.getStaffId());
             clearStaffRelationship(staff);
             return new ResponseEntity<>(staff, HttpStatus.OK);

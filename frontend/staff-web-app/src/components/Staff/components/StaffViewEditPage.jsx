@@ -105,6 +105,7 @@ class StaffViewEditPage extends Component {
             this.setState({ displayStore: true });
         } else{
             this.setState({ displayStore: false });
+            this.setState({ storeId: null });
         }
     };
 

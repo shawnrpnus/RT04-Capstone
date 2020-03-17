@@ -379,7 +379,7 @@ public class StaffService {
         }
     }
 
-    public Staff changeStaffPassword(Long staffId, String oldPassword, String newPassword) throws StaffNotFoundException, InvalidStaffCredentialsException {
+    public Staff changeStaffPassword(Long staffId, String oldPassword, String newPassword, String confirmPassword) throws StaffNotFoundException, InvalidStaffCredentialsException {
         try {
             Staff staff = retrieveStaffByStaffId(staffId);
 
@@ -395,6 +395,12 @@ public class StaffService {
                 errorMap.put("newPassword", ErrorMessages.NEW_PASSWORD_REQUIRED);
                 throw new InvalidStaffCredentialsException(errorMap, ErrorMessages.NEW_PASSWORD_REQUIRED);
 
+            }
+
+            if(!newPassword.equals(confirmPassword)){
+                Map<String, String> errorMap = new HashMap<>();
+                errorMap.put("confirmPassword", ErrorMessages.NEW_PASSWORDS_DO_NOT_MATCH);
+                throw new InvalidStaffCredentialsException(errorMap, ErrorMessages.NEW_PASSWORDS_DO_NOT_MATCH);
             }
 
             if (encoder.matches(oldPassword, staff.getPassword()) || oldPassword.equals(staff.getPassword())) {
