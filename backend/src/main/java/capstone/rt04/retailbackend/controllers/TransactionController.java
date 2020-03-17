@@ -18,7 +18,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(TransactionControllerRoutes.TRANSACTION_BASE_ROUTE)
-@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"})
+//@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"})
 public class TransactionController {
 
     private final TransactionService transactionService;

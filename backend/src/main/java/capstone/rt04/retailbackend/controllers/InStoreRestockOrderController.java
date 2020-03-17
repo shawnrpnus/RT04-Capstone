@@ -24,7 +24,7 @@ import static capstone.rt04.retailbackend.util.routeconstants.InStoreRestockOrde
 
 @RestController
 @RequestMapping(IN_STORE_RESTOCK_ORDER_BASE_ROUTE)
-@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"})
+//@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"})
 public class InStoreRestockOrderController {
 
     private final InStoreRestockOrderService inStoreRestockOrderService;

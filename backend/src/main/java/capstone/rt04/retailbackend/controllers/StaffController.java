@@ -19,7 +19,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(StaffControllerRoutes.STAFF_BASE_ROUTE)
-@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"})
+//@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"})
 public class StaffController {
 
     private final StaffService staffService;
