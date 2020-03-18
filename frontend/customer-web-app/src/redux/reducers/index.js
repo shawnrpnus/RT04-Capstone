@@ -1,7 +1,7 @@
 import { combineReducers } from "redux";
 import customerReducer from "redux/reducers/customerReducer";
 import errorReducer from "redux/reducers/errorReducer";
-import contactUsReducer from "./contactUsReducer";
+import contactUsReducer from "redux/reducers/contactUsReducer";
 import categoryReducer from "redux/reducers/categoryReducer";
 import productReducer from "redux/reducers/productReducer";
 import tagReducer from "redux/reducers/tagReducer";
@@ -9,7 +9,8 @@ import filterBarReducer from "redux/reducers/filterBarReducer";
 import reservationReducer from "redux/reducers/reservationReducer";
 import reviewReducer from "./reviewReducer";
 import transactionReducer from "redux/reducers/transactionReducer";
-import advertisementReducer from "./advertisementReducer";
+import advertisementReducer from "redux/reducers/advertisementReducer";
+import instagramReducer from "redux/reducers/instagramReducer";
 
 const rootReducer = combineReducers({
   customer: customerReducer,
@@ -22,7 +23,8 @@ const rootReducer = combineReducers({
   filterBar: filterBarReducer,
   reservation: reservationReducer,
   advertisement: advertisementReducer,
-  transaction: transactionReducer
+  transaction: transactionReducer,
+  instagram: instagramReducer
 });
 
 export default rootReducer;

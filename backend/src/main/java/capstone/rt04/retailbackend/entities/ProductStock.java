@@ -10,7 +10,6 @@ import com.voodoodyne.jackson.jsog.JSOGGenerator;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -24,7 +23,7 @@ import java.io.Serializable;
 @Getter
 @Setter
 @EqualsAndHashCode
-@ToString(exclude = "productVariant")
+//@ToString(exclude = "productVariant")
 @JsonIdentityInfo(generator = JSOGGenerator.class)
 public class ProductStock implements Serializable {
 

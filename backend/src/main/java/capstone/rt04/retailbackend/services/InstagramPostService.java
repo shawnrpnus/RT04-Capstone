@@ -10,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -37,13 +39,15 @@ public class InstagramPostService {
     public List<InstagramPost> retrieveAllInstagramPost() {
         List<InstagramPost> instagramPosts = instagramPostRepository.findAll();
         lazilyLoadInstagramPost(instagramPosts);
+        Collections.sort(instagramPosts, Comparator.comparing(InstagramPost::getInstagramPostId).reversed());
         return instagramPostRepository.findAll();
     }
 
     public List<InstagramPost> retrieveAllActiveInstagramPost() {
         List<InstagramPost> instagramPosts = instagramPostRepository.findAllByActive(Boolean.TRUE);
         lazilyLoadInstagramPost(instagramPosts);
-        return instagramPostRepository.findAll();
+        Collections.sort(instagramPosts, Comparator.comparing(InstagramPost::getInstagramPostId).reversed());
+        return instagramPosts;
     }
 
     public InstagramPost retrieveInstagramPostById(Long instagramPostId) throws InstagramPostNotFoundException {

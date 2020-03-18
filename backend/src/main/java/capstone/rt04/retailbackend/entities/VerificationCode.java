@@ -25,7 +25,7 @@ import java.sql.Timestamp;
 @Getter
 @Setter
 @EqualsAndHashCode
-@ToString
+// @ToString
 @JsonIdentityInfo(generator = JSOGGenerator.class)
 public class VerificationCode implements Serializable {
 

@@ -21,7 +21,7 @@ import java.io.Serializable;
 @Getter
 @Setter
 @EqualsAndHashCode
-@ToString
+// @ToString
 public class BankDetails implements Serializable {
 
     private String branchNumber;

@@ -87,12 +87,9 @@ const DeliveryTable = props => {
         customerOrdersToDeliver,
         inStoreRestockOrderItems
       } = item;
-
+      let date = { ...deliveryDateTime };
       if (deliveryDateTime)
-        deliveryDateTime = dateformat(
-          new Date(deliveryDateTime),
-          "dd'-'mmm'-'yyyy"
-        );
+        date = dateformat(new Date(deliveryDateTime), "dd'-'mmm'-'yyyy");
       const { firstName, lastName } = deliveryStaff;
       const status = inStoreRestockOrderItems.some(
         e => e.itemDeliveryStatus !== "DELIVERED"
@@ -102,7 +99,7 @@ const DeliveryTable = props => {
       const name = `${firstName} ${lastName}`;
       return {
         deliveryId: deliveryId,
-        deliveryDateTime: deliveryDateTime,
+        deliveryDateTime: date,
         deliveryStaff: deliveryStaff,
         deliveryStaffName: name,
         customerOrdersToDeliver: customerOrdersToDeliver,

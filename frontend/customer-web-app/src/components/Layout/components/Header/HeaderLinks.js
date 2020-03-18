@@ -97,29 +97,29 @@ export default function HeaderLinks(props) {
   const classes = useStyles();
   return (
     <React.Fragment>
-      {/*<List className={classes.list + " " + classes.mrAuto}>*/}
-      {/*  {rootCategories &&*/}
-      {/*    rootCategories.map(rc => (*/}
-      {/*      <ListItem key={rc.categoryId} className={classes.listItem}>*/}
-      {/*        <CategoryNavbar category={rc} />*/}
-      {/*      </ListItem>*/}
-      {/*    ))}*/}
+      {/* <List className={classes.list + " " + classes.mrAuto}>
+        {rootCategories &&
+          rootCategories.map(rc => (
+            <ListItem key={rc.categoryId} className={classes.listItem}>
+              <CategoryNavbar category={rc} />
+            </ListItem>
+          ))}
 
-      {/*  /!*<ListItem className={classes.listItem}>*!/*/}
-      {/*  /!*  <CustomDropdown*!/*/}
-      {/*  /!*    noLiPadding*!/*/}
-      {/*  /!*    navDropdown*!/*/}
-      {/*  /!*    hoverColor={dropdownHoverColor}*!/*/}
-      {/*  /!*    buttonText="Lookbook"*!/*/}
-      {/*  /!*    buttonProps={{*!/*/}
-      {/*  /!*      className: classes.navLink,*!/*/}
-      {/*  /!*      color: "transparent"*!/*/}
-      {/*  /!*    }}*!/*/}
-      {/*  /!*    buttonIcon={ViewCarousel}*!/*/}
-      {/*  /!*    dropdownList={[]}*!/*/}
-      {/*  /!*  />*!/*/}
-      {/*  /!*</ListItem>*!/*/}
-      {/*</List>*/}
+        <ListItem className={classes.listItem}>
+          <CustomDropdown
+            noLiPadding
+            navDropdown
+            hoverColor={dropdownHoverColor}
+            buttonText="Lookbook"
+            buttonProps={{
+              className: classes.navLink,
+              color: "transparent"
+            }}
+            buttonIcon={ViewCarousel}
+            dropdownList={[]}
+          />
+        </ListItem>
+      </List> */}
       <List className={classes.list} style={{ width: "100%" }}>
         {rootCategories &&
           rootCategories.map(rc => (
@@ -127,6 +127,13 @@ export default function HeaderLinks(props) {
               <CategoryNavbar category={rc} />
             </ListItem>
           ))}
+        <ListItem className={classes.listItem}>
+          <Link to="/lookbook">
+            <Button className={classes.navLink} round color="transparent">
+              <div style={{ color: "#555555" }}>Lookbook</div>
+            </Button>
+          </Link>
+        </ListItem>
         <ListItem style={{ paddingLeft: "100px" }}>
           <AgAutocomplete />
           {/*<IconButton color="white" justIcon round>*/}
