@@ -2,7 +2,8 @@ import React, { Component } from "react";
 import * as PropTypes from "prop-types";
 import SidebarLink from "./SidebarLink";
 import SidebarCategory from "./SidebarCategory";
-import { FaAdversal } from "react-icons/fa";
+import { FaAdversal, FaBox } from "react-icons/fa";
+import { MdFeedback, MdRateReview, MdLocalShipping } from "react-icons/md";
 
 const _ = require("lodash");
 
@@ -108,15 +109,16 @@ class SidebarContent extends Component {
             </SidebarCategory>
           )}
           {(store || warehouse) && (
-            <SidebarCategory title="Product Stocks" icon="list">
+            <SidebarCategory title="Product Stocks" customIcon={<FaBox />}>
               <SidebarLink
                 title="View All"
+                FaBox
                 route="/productStock/viewAll"
                 onClick={this.hideSidebar}
               />
             </SidebarCategory>
           )}
-          <SidebarCategory title="Feedback" icon="list">
+          <SidebarCategory title="Feedback" customIcon={<MdFeedback />}>
             <SidebarLink
               title="View Feedback"
               route="/feedback/viewAll"
@@ -131,7 +133,7 @@ class SidebarContent extends Component {
             />
           </SidebarCategory>
           {salesmarketing && (
-            <SidebarCategory title="Reviews" icon="list">
+            <SidebarCategory title="Reviews" customIcon={<MdRateReview />}>
               <SidebarLink
                 title="View All"
                 route="/review/viewAll"
@@ -139,7 +141,7 @@ class SidebarContent extends Component {
               />
             </SidebarCategory>
           )}
-          <SidebarCategory title="Delivery" icon="list">
+          <SidebarCategory title="Delivery" customIcon={<MdLocalShipping />}>
             <SidebarLink
               title="View Store Orders"
               route="/delivery/viewAllRestockOrderItem"

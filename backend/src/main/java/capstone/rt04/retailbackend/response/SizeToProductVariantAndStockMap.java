@@ -6,7 +6,7 @@ import lombok.*;
 
 @Getter
 @Setter
-@ToString
+// @ToString
 @AllArgsConstructor
 @NoArgsConstructor
 public class SizeToProductVariantAndStockMap {

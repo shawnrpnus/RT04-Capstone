@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { Link } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
+import { useDispatch, useSelector } from "react-redux";
 import classNames from "classnames";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
@@ -7,21 +9,18 @@ import styles from "assets/jss/material-kit-pro-react/views/componentsSections/f
 import GridContainer from "components/Layout/components/Grid/GridContainer.js";
 import GridItem from "components/Layout/components/Grid/GridItem.js";
 import Footer from "components/Layout/components/Footer/components/Footer.js";
-
-import face1 from "assets/img/faces/card-profile6-square.jpg";
-import face2 from "assets/img/faces/christian.jpg";
-import face3 from "assets/img/faces/card-profile4-square.jpg";
-import face4 from "assets/img/faces/card-profile1-square.jpg";
-import face5 from "assets/img/faces/marc.jpg";
-import face6 from "assets/img/faces/kendall.jpg";
-import face7 from "assets/img/faces/card-profile5-square.jpg";
-import face8 from "assets/img/faces/card-profile2-square.jpg";
-import { Link } from "react-router-dom";
+import { retrieveAllActiveInstagramPost } from "./../../../../redux/actions/instagramActions";
 
 const useStyles = makeStyles(styles);
 
 export default function FooterSection() {
   const classes = useStyles();
+  const dispatch = useDispatch();
+  const instagramPosts = useSelector(state => state.instagram.instagramPosts);
+
+  useEffect(() => {
+    dispatch(retrieveAllActiveInstagramPost());
+  }, []);
 
   return (
     <Footer
@@ -127,78 +126,25 @@ export default function FooterSection() {
         <GridItem xs={12} sm={4} md={4}>
           <h5>Instagram Feed</h5>
           <div className={classes.galleryFeed}>
-            <img
-              src={face1}
-              className={classNames(
-                classes.img,
-                classes.imgRaised,
-                classes.imgRounded
-              )}
-              alt="..."
-            />
-            <img
-              src={face2}
-              className={classNames(
-                classes.img,
-                classes.imgRaised,
-                classes.imgRounded
-              )}
-              alt="..."
-            />
-            <img
-              src={face3}
-              className={classNames(
-                classes.img,
-                classes.imgRaised,
-                classes.imgRounded
-              )}
-              alt="..."
-            />
-            <img
-              src={face4}
-              className={classNames(
-                classes.img,
-                classes.imgRaised,
-                classes.imgRounded
-              )}
-              alt="..."
-            />
-            <img
-              src={face5}
-              className={classNames(
-                classes.img,
-                classes.imgRaised,
-                classes.imgRounded
-              )}
-              alt="..."
-            />
-            <img
-              src={face6}
-              className={classNames(
-                classes.img,
-                classes.imgRaised,
-                classes.imgRounded
-              )}
-              alt="..."
-            />
-            <img
-              src={face7}
-              className={classNames(
-                classes.img,
-                classes.imgRaised,
-                classes.imgRounded
-              )}
-              alt="..."
-            />
-            <img
-              src={face8}
-              className={classNames(
-                classes.img,
-                classes.imgRaised,
-                classes.imgRounded
-              )}
-              alt="..."
-            />
+            {instagramPosts.map(({ instagramImgUrl, shortCode }) => {
+              return (
+                <a
+                  key={shortCode}
+                  href={`https://www.instagram.com/p/${shortCode}`}
+                  target="_blank"
+                >
+                  <img
+                    src={instagramImgUrl}
+                    className={classNames(
+                      classes.img,
+                      classes.imgRaised,
+                      classes.imgRounded
+                    )}
+                    alt={`https://www.instagram.com/p/${shortCode}`}
+                  />
+                </a>
+              );
+            })}
           </div>
         </GridItem>
       </GridContainer>

@@ -61,8 +61,9 @@ class AddProductVariantForm extends PureComponent {
   onSubmit = e => {
     e.preventDefault();
     let { productId, colours, sizes } = { ...this.state };
-    colours = _.map(colours, "hex");
-    const colourToImageUrlsMaps = colours.map(colour => ({
+    const colourList = [...colours];
+    colourList = _.map(colours, "hex");
+    const colourToImageUrlsMaps = colourList.map(colour => ({
       colour,
       imageUrls: []
     }));

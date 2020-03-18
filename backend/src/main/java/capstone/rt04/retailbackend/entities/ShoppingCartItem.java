@@ -23,7 +23,7 @@ import java.io.Serializable;
 @Getter
 @Setter
 @EqualsAndHashCode
-@ToString
+// @ToString
 @JsonIdentityInfo(generator = JSOGGenerator.class)
 public class ShoppingCartItem implements Serializable {
 

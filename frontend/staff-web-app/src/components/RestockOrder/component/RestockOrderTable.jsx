@@ -89,8 +89,8 @@ const RestockOrderTable = props => {
         inStoreRestockOrderItemsForWarehouse
       } = restockOrder;
       inStoreRestockOrderItems = inStoreRestockOrderItems
-        ? inStoreRestockOrderItems
-        : inStoreRestockOrderItemsForWarehouse;
+        ? [...inStoreRestockOrderItems]
+        : [...inStoreRestockOrderItemsForWarehouse];
       orderDateTime = dateformat(new Date(orderDateTime), "dd'-'mmm'-'yyyy");
       deliveryDateTime = deliveryDateTime
         ? dateformat(new Date(deliveryDateTime), "dd'-'mmm'-'yyyy")

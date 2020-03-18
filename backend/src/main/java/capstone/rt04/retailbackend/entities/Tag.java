@@ -11,7 +11,6 @@ import com.voodoodyne.jackson.jsog.JSOGGenerator;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -27,7 +26,7 @@ import java.util.List;
 @Getter
 @Setter
 @EqualsAndHashCode
-@ToString(exclude = "products")
+//(exclude = "products")
 @JsonIdentityInfo(generator = JSOGGenerator.class)
 public class Tag implements Serializable {
 

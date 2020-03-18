@@ -31,7 +31,7 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @EqualsAndHashCode
-@ToString
+// @ToString
 @JsonIdentityInfo(generator = JSOGGenerator.class)
 public class Measurements implements Serializable {
 

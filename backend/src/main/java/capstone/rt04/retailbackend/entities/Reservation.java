@@ -10,7 +10,6 @@ import com.voodoodyne.jackson.jsog.JSOGGenerator;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -26,7 +25,7 @@ import java.util.List;
 @Getter
 @Setter
 @EqualsAndHashCode
-@ToString(exclude = {"productVariants", "customer", "store"})
+//@ToString(exclude = {"productVariants", "customer", "store"})
 @JsonIdentityInfo(generator = JSOGGenerator.class)
 public class Reservation implements Serializable {
 

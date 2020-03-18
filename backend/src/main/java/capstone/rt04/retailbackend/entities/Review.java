@@ -26,7 +26,7 @@ import java.sql.Timestamp;
 @Getter
 @Setter
 @EqualsAndHashCode
-@ToString
+//
 @JsonIdentityInfo(generator = JSOGGenerator.class)
 public class Review implements Serializable {
 
