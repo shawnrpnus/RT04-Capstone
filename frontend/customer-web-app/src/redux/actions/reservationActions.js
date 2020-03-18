@@ -157,7 +157,16 @@ export const createReservation = (
         });
         history.push("/account/reservation/upcoming");
       })
-      .catch(err => dispatchErrorMapError(err, dispatch));
+      .catch(err => {
+        const errorMap = _.get(err, "response.data", null);
+        if (_.get(errorMap, "reservationDateTime")) {
+          enqueueSnackbar(_.get(errorMap, "reservationDateTime"), {
+            variant: "error",
+            autoHideDuration: 1200
+          });
+        }
+        dispatchErrorMapError(err, dispatch);
+      });
   };
 };
 
