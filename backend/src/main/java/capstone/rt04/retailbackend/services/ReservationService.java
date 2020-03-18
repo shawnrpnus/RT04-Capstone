@@ -345,6 +345,13 @@ public class ReservationService {
         return dateTime;
     }
 
+    public Reservation updateReservationStatus(Long reservationId, Boolean isHandled, Boolean isAttended) throws ReservationNotFoundException {
+        Reservation reservation = retrieveReservationByReservationId(reservationId);
+        if (isHandled != null) reservation.setHandled(isHandled);
+        if (isAttended != null) reservation.setAttended(isAttended);
+        return reservation;
+    }
+
     private boolean isTimestampFromNowTo48h(Timestamp timestamp) {
         long now = System.currentTimeMillis();
         long nowPlus1Hour = now + TimeUnit.HOURS.toMillis(1);
@@ -375,7 +382,7 @@ public class ReservationService {
         long now = System.currentTimeMillis();
         long nowMinus15Minutes = now - + TimeUnit.MINUTES.toMillis(15);
         for (Reservation r : reservations){
-            if (r.getReservationDateTime().after(new Timestamp(nowMinus15Minutes)) && !r.isAttended()){
+            if (r.getReservationDateTime().after(new Timestamp(nowMinus15Minutes))){
                 result.add(r);
             }
         }

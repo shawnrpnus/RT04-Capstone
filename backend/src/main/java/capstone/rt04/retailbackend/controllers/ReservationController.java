@@ -3,6 +3,7 @@ package capstone.rt04.retailbackend.controllers;
 import capstone.rt04.retailbackend.entities.*;
 import capstone.rt04.retailbackend.request.customer.CreateReservationRequest;
 import capstone.rt04.retailbackend.request.customer.UpdateReservationRequest;
+import capstone.rt04.retailbackend.request.customer.UpdateReservationStatusRequest;
 import capstone.rt04.retailbackend.response.ReservationStockCheckResponse;
 import capstone.rt04.retailbackend.services.ReservationService;
 import capstone.rt04.retailbackend.services.ValidationService;
@@ -122,6 +123,13 @@ public class ReservationController {
                 : r1.getReservationDateTime().before(r2.getReservationDateTime())
                 ? -1 : 1);
         return new ResponseEntity<>(reservations, HttpStatus.OK);
+    }
+
+    @PostMapping(CustomerControllerRoutes.UPDATE_RESERVATION_STATUS)
+    public ResponseEntity<?> updateReservationStatus(@RequestBody UpdateReservationStatusRequest req) throws ReservationNotFoundException {
+        Reservation reservation = reservationService.updateReservationStatus(req.getReservationId(), req.getIsHandled(), req.getIsAttended());
+        clearReservationRelationships(reservation);
+        return new ResponseEntity<>(reservation, HttpStatus.OK);
     }
 
 
