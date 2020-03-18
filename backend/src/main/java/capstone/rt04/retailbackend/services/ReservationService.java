@@ -73,7 +73,7 @@ public class ReservationService {
         List<Timestamp> reservedTimeSlots = getReservedTimeslotsForStore(storeId);
         if (reservedTimeSlots.contains(reservationDateTime)) {
             Map<String, String> errorMap = new HashMap<>();
-            errorMap.put("reservationDateTime", reservationDateTime + " is already taken at " + store.getStoreName());
+            errorMap.put("reservationDateTime","This time slot is already taken at " + store.getStoreName());
             throw new InputDataValidationException(errorMap, errorMap.get("reservationDateTime"));
         }
 
@@ -207,7 +207,7 @@ public class ReservationService {
         // Check that timeslot is not taken
         List<Timestamp> reservedTimeSlots = getReservedTimeslotsForStore(newStoreId);
         if (reservedTimeSlots.contains(newDateTime)) {
-            errorMap.put("reservationDateTime", newDateTime + " is already taken at " + newStore.getStoreName());
+            errorMap.put("reservationDateTime", "This time slot is already taken at " + newStore.getStoreName());
             throw new InputDataValidationException(errorMap, errorMap.get("reservationDateTime"));
         }
         reservationToUpdate.setReservationDateTime(newDateTime);
