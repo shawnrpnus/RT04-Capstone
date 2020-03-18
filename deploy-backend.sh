@@ -33,9 +33,9 @@ ssh -i ~/.ssh/apricot-ssh-key apricot@34.87.36.207 << EOF
 EOF
 
 echo ""
-echo ====================================
-echo Deployed at http://34.87.36.207:8080
-echo ====================================
+echo ===============================
+echo Deployed at http://34.87.36.207
+echo ===============================
 echo ""
 
 # scp -i ~/.ssh/apricot-ssh-key ./backend/src/main/resources/scripts/update.sql apricot@34.87.36.207:~
