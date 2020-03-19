@@ -12,7 +12,7 @@ import { Grid } from "@material-ui/core";
 
 const _ = require("lodash");
 
-const FeedbackDialog = ({ feedback, open, onClose }) => {
+const FeedbackReplyDialog = ({ feedback, open, onClose }) => {
   const {
     status,
     contactUsId,
@@ -146,4 +146,4 @@ const FeedbackDialog = ({ feedback, open, onClose }) => {
   );
 };
 
-export default FeedbackDialog;
+export default FeedbackReplyDialog;

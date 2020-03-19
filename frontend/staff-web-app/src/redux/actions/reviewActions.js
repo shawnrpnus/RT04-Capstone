@@ -15,12 +15,13 @@ export const retrieveAllReviews = () => {
         dispatch(retrieveAllReviewsSuccess(data));
       })
       .catch(err => {
-        const { errorMap } = err.response.data;
-        errorMap &&
-          toast.error(errorMap.message, {
-            position: toast.POSITION.TOP_CENTER
-          });
-        dispatch(retrieveAllReviewsError(err.response.data));
+        console.log(err);
+        // const { errorMap } = err.response.data;
+        // errorMap &&
+        //   toast.error(errorMap.message, {
+        //     position: toast.POSITION.TOP_CENTER
+        //   });
+        // dispatch(retrieveAllReviewsError(err.response.data));
       });
   };
 };

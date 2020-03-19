@@ -22,7 +22,7 @@ public class PromoCodeService {
     private final ProductService productService;
     private final PromoCodeRepository promoCodeRepository;
 
-    public PromoCodeService(@Lazy ProductService productService, ValidationService validationService, PromoCodeRepository promoCodeRepository) {
+    public PromoCodeService(@Lazy ProductService productService, ValidationService validationService, @Lazy PromoCodeRepository promoCodeRepository) {
         this.productService = productService;
         this.validationService = validationService;
         this.promoCodeRepository = promoCodeRepository;

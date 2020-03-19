@@ -2,11 +2,10 @@ package capstone.rt04.retailbackend.services;
 
 import capstone.rt04.retailbackend.entities.ContactUs;
 import capstone.rt04.retailbackend.repositories.ContactUsRepository;
-import capstone.rt04.retailbackend.util.Constants;
 import capstone.rt04.retailbackend.util.enums.ContactUsStatusEnum;
+import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.contactUs.ContactUsDeleteException;
 import capstone.rt04.retailbackend.util.exceptions.contactUs.ContactUsNotFoundException;
-import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;

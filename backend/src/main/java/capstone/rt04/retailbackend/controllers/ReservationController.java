@@ -1,10 +1,13 @@
 package capstone.rt04.retailbackend.controllers;
 
-import capstone.rt04.retailbackend.entities.*;
+import capstone.rt04.retailbackend.entities.ProductVariant;
+import capstone.rt04.retailbackend.entities.Reservation;
+import capstone.rt04.retailbackend.entities.Store;
 import capstone.rt04.retailbackend.request.customer.CreateReservationRequest;
 import capstone.rt04.retailbackend.request.customer.UpdateReservationRequest;
 import capstone.rt04.retailbackend.request.customer.UpdateReservationStatusRequest;
 import capstone.rt04.retailbackend.response.ReservationStockCheckResponse;
+import capstone.rt04.retailbackend.services.RelationshipService;
 import capstone.rt04.retailbackend.services.ReservationService;
 import capstone.rt04.retailbackend.services.ValidationService;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
@@ -15,11 +18,9 @@ import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
 import capstone.rt04.retailbackend.util.routeconstants.CustomerControllerRoutes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.ZonedDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -30,11 +31,13 @@ public class ReservationController {
 
     private final ReservationService reservationService;
     private final ValidationService validationService;
+    private final RelationshipService relationshipService;
 
 
-    public ReservationController(ReservationService contactUsService, ValidationService validationService) {
+    public ReservationController(ReservationService contactUsService, ValidationService validationService, RelationshipService relationshipService) {
         this.reservationService = contactUsService;
         this.validationService = validationService;
+        this.relationshipService = relationshipService;
     }
 
     @PostMapping(CustomerControllerRoutes.CREATE_RESERVATION)
@@ -138,7 +141,7 @@ public class ReservationController {
         store.setProductStocks(null);
         store.setInStoreRestockOrders(null);
         store.setReservations(null);
-
+        store.setStaff(null);
     }
 
 
@@ -167,7 +170,6 @@ public class ReservationController {
             reservation.getStore().setProductStocks(null);
             reservation.getStore().setStaff(null);
         }
+        relationshipService.clearStoreRelationships(reservation.getStore());
     }
-
-
 }

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import {
-  Add,
   AddBox,
   Check,
   ChevronLeft,
@@ -16,7 +15,6 @@ import {
   SaveAlt,
   Search,
   ViewColumn,
-  Visibility,
   Delete
 } from "@material-ui/icons";
 import MaterialTable from "material-table";

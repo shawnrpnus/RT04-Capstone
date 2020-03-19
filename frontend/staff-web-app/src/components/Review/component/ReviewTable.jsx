@@ -63,16 +63,18 @@ class ReviewTable extends PureComponent {
   render() {
     const { history, allReviews, renderLoader } = this.props;
 
+    console.log(allReviews);
+
     let data = [];
     if (allReviews) {
       data = allReviews.map(review => {
         return {
           reviewId: review.reviewId,
-          product: review.product,
+          product: review.product.productName,
           rating: review.rating,
           response: review.response,
-          customer: review.customer,
-          date: review.createdDateTime
+          customer: review.customer.customerName,
+          createdDateTime: review.createdDateTime
         };
       });
     }
@@ -97,7 +99,7 @@ class ReviewTable extends PureComponent {
                 { title: "Rating", field: "rating" },
                 { title: "Response", field: "response" },
                 { title: "Customer", field: "customer" },
-                { title: "Date", field: "createdDateTime" }
+                { title: "Created date time", field: "createdDateTime" }
               ]}
               actions={[
                 {
