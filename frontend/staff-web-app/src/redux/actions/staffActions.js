@@ -92,36 +92,36 @@ const createStaffError = data => ({
 });
 
 export const updateStaff = (staffDetailsUpdateRequest, history) => {
-    return dispatch => {
-        //redux thunk passes dispatch
-        axios
-            .post(STAFF_BASE_URL + "/updateStaffDetails", staffDetailsUpdateRequest)
-            .then(response => {
-                const { data } = jsog.decode(response);
-                const staffId = data.staffId;
-                dispatch(updateStaffSuccess(data));
-                toast.success("Staff Updated!", {
-                    position: toast.POSITION.TOP_CENTER
-                });
+  return dispatch => {
+    //redux thunk passes dispatch
+    axios
+      .post(STAFF_BASE_URL + "/updateStaffDetails", staffDetailsUpdateRequest)
+      .then(response => {
+        const { data } = jsog.decode(response);
+        const staffId = data.staffId;
+        dispatch(updateStaffSuccess(data));
+        toast.success("Staff Updated!", {
+          position: toast.POSITION.TOP_CENTER
+        });
 
-                history.push(`/staff/view/${staffId}`);
-                window.location.reload(false);
-            })
-            .catch(err => {
-                dispatch(updateStaffError(err.response.data));
-                //console.log(err.response.data);
-            });
-    };
+        history.push(`/staff/view/${staffId}`);
+        window.location.reload(false);
+      })
+      .catch(err => {
+        dispatch(updateStaffError(err.response.data));
+        //console.log(err.response.data);
+      });
+  };
 };
 
 const updateStaffSuccess = data => ({
-    type: types.UPDATE_STAFF,
-    staffEntity: data
+  type: types.UPDATE_STAFF,
+  staffEntity: data
 });
 
 const updateStaffError = data => ({
-    type: types.GET_ERRORS,
-    errorMap: data
+  type: types.GET_ERRORS,
+  errorMap: data
 });
 
 export const createNewStaffAccount = (staffAccountCreateRequest, history) => {
@@ -363,5 +363,5 @@ const retrieveError = data => ({
 });
 
 export const clearCurrentStaff = () => ({
-    type: types.CLEAR_CURRENT_STAFF
+  type: types.CLEAR_CURRENT_STAFF
 });

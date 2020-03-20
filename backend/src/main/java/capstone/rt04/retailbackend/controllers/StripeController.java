@@ -24,7 +24,7 @@ import static capstone.rt04.retailbackend.util.Constants.ONLINE_SHOPPING_CART;
 
 @Controller
 @RequestMapping("/")
-@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"})
+//@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"})
 public class StripeController {
 
     @Autowired

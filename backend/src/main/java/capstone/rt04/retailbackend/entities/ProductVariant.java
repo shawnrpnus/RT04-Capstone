@@ -26,7 +26,7 @@ import java.util.List;
 @Getter
 @Setter
 @EqualsAndHashCode
-@ToString(exclude = "product")
+//@ToString(exclude = "product")
 @JsonIdentityInfo(generator = JSOGGenerator.class)
 public class ProductVariant implements Serializable {
 

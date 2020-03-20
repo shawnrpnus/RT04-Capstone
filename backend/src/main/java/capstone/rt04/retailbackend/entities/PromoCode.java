@@ -30,7 +30,7 @@ import java.util.List;
 @Getter
 @Setter
 @EqualsAndHashCode
-@ToString(exclude = "products")
+//@ToString(exclude = "products")
 @JsonIdentityInfo(generator = JSOGGenerator.class)
 public class PromoCode implements Serializable {
 

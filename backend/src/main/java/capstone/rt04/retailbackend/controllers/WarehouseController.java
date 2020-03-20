@@ -18,7 +18,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(WarehouseControllerRoutes.WAREHOUSE_BASE_ROUTE)
-@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"})
+//@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"})
 public class WarehouseController {
 
     @Autowired

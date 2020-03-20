@@ -36,6 +36,10 @@ const fileFilter = (req, file, cb) => {
 
 const upload = multer({ storage: storage, fileFilter: fileFilter });
 
+router.get("/", (req, res) => {
+  res.send("Node backend working");
+});
+
 router.post(
   "/createAdvertisement",
   upload.single("advertisement"),

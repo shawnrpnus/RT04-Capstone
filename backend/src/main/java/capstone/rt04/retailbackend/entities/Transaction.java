@@ -12,7 +12,6 @@ import com.voodoodyne.jackson.jsog.JSOGGenerator;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.commons.lang3.RandomStringUtils;
 
 import javax.persistence.*;
@@ -30,7 +29,7 @@ import java.util.List;
 @Getter
 @Setter
 @EqualsAndHashCode
-@ToString(exclude = "customer")
+//@ToString(exclude = "customer")
 @JsonIdentityInfo(generator = JSOGGenerator.class)
 public class Transaction implements Serializable {
 

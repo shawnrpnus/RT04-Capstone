@@ -21,7 +21,7 @@ import static capstone.rt04.retailbackend.util.routeconstants.DeliveryController
 
 @RestController
 @RequestMapping(DELIVERY_BASE_ROUTE)
-@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"})
+//@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"})
 public class DeliveryController {
 
     private final DeliveryService deliveryService;

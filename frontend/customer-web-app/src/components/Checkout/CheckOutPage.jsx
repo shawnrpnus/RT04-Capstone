@@ -438,16 +438,18 @@ export default function CheckOutPage() {
                 </Grid>
                 <Grid item md={1} />
                 <Grid item md={5}>
-                  {customer.onlineShoppingCart.shoppingCartItems.map(
-                    (cartItem, index) => (
-                      <CheckoutProdVariantCard
-                        key={index}
-                        cartItem={cartItem}
-                        index={index}
-                        customer={customer}
-                      />
-                    )
-                  )}
+                  {_.get(
+                    customer,
+                    "onlineShoppingCart.shoppingCartItems",
+                    []
+                  ).map((cartItem, index) => (
+                    <CheckoutProdVariantCard
+                      key={index}
+                      cartItem={cartItem}
+                      index={index}
+                      customer={customer}
+                    />
+                  ))}
                 </Grid>
               </Grid>
             </CardBody>

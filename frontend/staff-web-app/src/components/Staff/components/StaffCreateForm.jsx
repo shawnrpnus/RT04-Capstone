@@ -35,13 +35,11 @@ class StaffCreateForm extends Component {
     clearErrors: PropTypes.func
   };
 
-
   componentDidMount() {
     this.props.retrieveAllRoles();
     this.props.retrieveAllDepartments();
     this.props.retrieveAllStores();
   }
-
 
   onSelectRole = (event, selectedRole) => {
     if (selectedRole === null) return;
@@ -53,9 +51,12 @@ class StaffCreateForm extends Component {
     if (selectedDepartment === null) return;
     console.log(selectedDepartment);
     this.setState({ departmentId: selectedDepartment.departmentId });
-    if(selectedDepartment.departmentName==="Warehouse" || selectedDepartment.departmentName==="Store"){
+    if (
+      selectedDepartment.departmentName === "Warehouse" ||
+      selectedDepartment.departmentName === "Store"
+    ) {
       this.setState({ displayStore: true });
-    } else{
+    } else {
       this.setState({ displayStore: false });
       this.setState({ storeId: null });
     }
@@ -276,25 +277,25 @@ class StaffCreateForm extends Component {
 
             <Grid item xs={12} md={6}>
               <MaterialTextField
-                  fieldLabel="Salary"
-                  onChange={this.onChange}
-                  fieldName="salary"
-                  state={this.state}
-                  errors={errors}
-                  disabled={disabled}
-                  autoFocus={true}
+                fieldLabel="Salary"
+                onChange={this.onChange}
+                fieldName="salary"
+                state={this.state}
+                errors={errors}
+                disabled={disabled}
+                autoFocus={true}
               />
             </Grid>
 
             <Grid item xs={12} md={6}>
               <MaterialNumberSelect
-                  onChange={this.onChange}
-                  state={this.state}
-                  fieldLabel="Leave Remaining"
-                  fieldName="leaveRemaining"
-                  optionStart={1}
-                  optionEnd={20}
-                  disabled={disabled}
+                onChange={this.onChange}
+                state={this.state}
+                fieldLabel="Leave Remaining"
+                fieldName="leaveRemaining"
+                optionStart={1}
+                optionEnd={20}
+                disabled={disabled}
               />
             </Grid>
 
@@ -317,7 +318,6 @@ class StaffCreateForm extends Component {
                     fullWidth
                   />
                 )}
-
                 errors={errors}
               />
             </Grid>
@@ -343,31 +343,28 @@ class StaffCreateForm extends Component {
               />
             </Grid>
 
-
-
             {this.state.displayStore && (
-            <Grid item xs={12} md={6}>
-               <Autocomplete
-                id="tags-standard"
-                options={this.props.allStores}
-                getOptionLabel={option => option.storeName}
-                onChange={(event, value) => this.onSelectStore(event, value)}
-                getOptionSelected={(option, value) =>
-                  option.storeId === value.storeId
-                }
-                renderInput={params => (
-                  <TextField
-                    {...params}
-                    variant="standard"
-                    label="Store"
-                    fullWidth
-                  />
-                )}
-                errors={errors}
-              />
-            </Grid>
+              <Grid item xs={12} md={6}>
+                <Autocomplete
+                  id="tags-standard"
+                  options={this.props.allStores}
+                  getOptionLabel={option => option.storeName}
+                  onChange={(event, value) => this.onSelectStore(event, value)}
+                  getOptionSelected={(option, value) =>
+                    option.storeId === value.storeId
+                  }
+                  renderInput={params => (
+                    <TextField
+                      {...params}
+                      variant="standard"
+                      label="Store"
+                      fullWidth
+                    />
+                  )}
+                  errors={errors}
+                />
+              </Grid>
             )}
-
           </Grid>
 
           <ButtonToolbar className="form__button-toolbar">

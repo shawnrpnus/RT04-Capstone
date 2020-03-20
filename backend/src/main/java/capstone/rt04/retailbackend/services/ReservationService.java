@@ -20,10 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.time.Instant;
-import java.time.LocalTime;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -53,6 +50,8 @@ public class ReservationService {
     //dateTime must be in format 'YYYY-MM-DD hh:mm:ss'
     public Reservation createReservationFromReservationCart(Long customerId, Long storeId, String dateTime) throws CustomerNotFoundException, StoreNotFoundException, InputDataValidationException, ProductVariantNotFoundException {
         //check between 1 and 48h in advance
+        //Timestamp always in UTC
+        //String comes in Singapore time +0800
         Timestamp reservationDateTime = checkReservationTiming(dateTime);
 
         Customer customer = customerService.retrieveCustomerByCustomerId(customerId);
@@ -74,7 +73,7 @@ public class ReservationService {
         List<Timestamp> reservedTimeSlots = getReservedTimeslotsForStore(storeId);
         if (reservedTimeSlots.contains(reservationDateTime)) {
             Map<String, String> errorMap = new HashMap<>();
-            errorMap.put("reservationDateTime", reservationDateTime + " is already taken at " + store.getStoreName());
+            errorMap.put("reservationDateTime","This time slot is already taken at " + store.getStoreName());
             throw new InputDataValidationException(errorMap, errorMap.get("reservationDateTime"));
         }
 
@@ -123,11 +122,11 @@ public class ReservationService {
         LocalTime openingTime = store.getOpeningTime().toLocalTime();
         LocalTime closingTime = store.getClosingTime().toLocalTime();
 
-        ZonedDateTime now = ZonedDateTime.now();
+        ZonedDateTime now = ZonedDateTime.now(ZoneId.of("Singapore"));
         ZonedDateTime nowPlus1Hour = now.plusHours(1);
         nowPlus1Hour = nowPlus1Hour.truncatedTo(ChronoUnit.HOURS).plusMinutes((15 * ((nowPlus1Hour.getMinute()) / 15)) + 15);
         ZonedDateTime nowPlus48Hour = now.plusHours(48);
-        nowPlus48Hour = nowPlus48Hour.truncatedTo(ChronoUnit.HOURS).plusMinutes((15 * ((nowPlus1Hour.getMinute()) / 15)) + 15);
+        nowPlus48Hour = nowPlus48Hour.truncatedTo(ChronoUnit.HOURS).plusMinutes((15 * ((nowPlus1Hour.getMinute()) / 15)));
 
         List<ZonedDateTime> reservedZoneDateTimes = new ArrayList<>();
         for (Timestamp reservedTimestamp : reservedSlots) {
@@ -208,7 +207,7 @@ public class ReservationService {
         // Check that timeslot is not taken
         List<Timestamp> reservedTimeSlots = getReservedTimeslotsForStore(newStoreId);
         if (reservedTimeSlots.contains(newDateTime)) {
-            errorMap.put("reservationDateTime", newDateTime + " is already taken at " + newStore.getStoreName());
+            errorMap.put("reservationDateTime", "This time slot is already taken at " + newStore.getStoreName());
             throw new InputDataValidationException(errorMap, errorMap.get("reservationDateTime"));
         }
         reservationToUpdate.setReservationDateTime(newDateTime);
@@ -323,8 +322,16 @@ public class ReservationService {
         return result;
     }
 
-    private Timestamp checkReservationTiming(String reservationDateTime) throws InputDataValidationException {
-        Timestamp dateTime = Timestamp.valueOf(reservationDateTime);
+    public Timestamp checkReservationTiming(String reservationDateTime) throws InputDataValidationException {
+        //reservationDateTime is in format YYYY-MM-DD HH:mm:ss
+
+        //By default will read as UTC time since no timezone specified
+        String isoString = reservationDateTime.replace(" ", "T");
+        LocalDateTime ldt = LocalDateTime.parse(isoString);
+        //Convert to SG time zone i.e. adding +0800 to the string
+        ZonedDateTime zonedDateTime= ZonedDateTime.of(ldt, ZoneId.of("Singapore"));
+        //Get the UTC time for the zoned date time
+        Timestamp dateTime = Timestamp.from(zonedDateTime.toInstant());
         long now = System.currentTimeMillis();
         long nowPlus1Hour = now + TimeUnit.HOURS.toMillis(1);
         long nowPlus48Hour = now + TimeUnit.HOURS.toMillis(48);
@@ -334,7 +341,15 @@ public class ReservationService {
             errorMap.put("reservationDateTime", "Reservation must be between 1 to 48 hours in advance");
             throw new InputDataValidationException(errorMap, errorMap.toString());
         }
+
         return dateTime;
+    }
+
+    public Reservation updateReservationStatus(Long reservationId, Boolean isHandled, Boolean isAttended) throws ReservationNotFoundException {
+        Reservation reservation = retrieveReservationByReservationId(reservationId);
+        if (isHandled != null) reservation.setHandled(isHandled);
+        if (isAttended != null) reservation.setAttended(isAttended);
+        return reservation;
     }
 
     private boolean isTimestampFromNowTo48h(Timestamp timestamp) {
@@ -367,7 +382,7 @@ public class ReservationService {
         long now = System.currentTimeMillis();
         long nowMinus15Minutes = now - + TimeUnit.MINUTES.toMillis(15);
         for (Reservation r : reservations){
-            if (r.getReservationDateTime().after(new Timestamp(nowMinus15Minutes)) && !r.isAttended()){
+            if (r.getReservationDateTime().after(new Timestamp(nowMinus15Minutes))){
                 result.add(r);
             }
         }
