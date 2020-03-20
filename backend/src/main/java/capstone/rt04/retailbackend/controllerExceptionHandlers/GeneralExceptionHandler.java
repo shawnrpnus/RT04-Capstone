@@ -17,6 +17,7 @@ import capstone.rt04.retailbackend.util.exceptions.reservation.CreateNewReservat
 import capstone.rt04.retailbackend.util.exceptions.reservation.ReservationNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.shoppingcart.InvalidCartTypeException;
 import capstone.rt04.retailbackend.util.exceptions.staff.CreateNewStaffAccountException;
+import capstone.rt04.retailbackend.util.exceptions.staff.StaffNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.style.CreateNewStyleException;
 import capstone.rt04.retailbackend.util.exceptions.style.DeleteStyleException;
@@ -76,7 +77,7 @@ public class GeneralExceptionHandler extends ResponseEntityExceptionHandler {
             ProductImageNotFoundException.class, ProductVariantNotFoundException.class, ReservationNotFoundException.class,
             StyleNotFoundException.class, ContactUsNotFoundException.class, InStoreRestockOrderNotFoundException.class,
             AdvertisementNotFoundException.class, InStoreRestockOrderItemNotFoundException.class,
-            InstagramPostNotFoundException.class
+            InstagramPostNotFoundException.class, StaffNotFoundException.class
     })
     public final ResponseEntity<Object> handleNotFoundExceptions(Exception ex, WebRequest req) {
         return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);

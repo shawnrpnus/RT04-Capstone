@@ -1,10 +1,6 @@
 package capstone.rt04.retailbackend.services;
 
-import capstone.rt04.retailbackend.entities.Customer;
-import capstone.rt04.retailbackend.entities.ProductStock;
-import capstone.rt04.retailbackend.entities.ShoppingCart;
-import capstone.rt04.retailbackend.entities.Warehouse;
-import capstone.rt04.retailbackend.util.Constants;
+import capstone.rt04.retailbackend.entities.*;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductStockNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,6 +29,8 @@ public class TimerService {
     private final JavaMailSender javaMailSender;
     private final ProductService productService;
     private final WarehouseService warehouseService;
+    private final ReservationService reservationService;
+    private final StoreService storeService;
     private RestTemplate restTemplate;
 
     @Value("${node.backend.url}")
@@ -51,11 +49,13 @@ public class TimerService {
     private static final int interval10Minutes = 10 * intervalMinute;
 
     public TimerService(CustomerService customerService, JavaMailSender javaMailSender,
-                        ProductService productService, WarehouseService warehouseService, RestTemplateBuilder builder) {
+                        ProductService productService, WarehouseService warehouseService, ReservationService reservationService, StoreService storeService, RestTemplateBuilder builder) {
         this.customerService = customerService;
         this.javaMailSender = javaMailSender;
         this.productService = productService;
         this.warehouseService = warehouseService;
+        this.reservationService = reservationService;
+        this.storeService = storeService;
         this.restTemplate = builder.build();
     }
 
@@ -131,6 +131,18 @@ public class TimerService {
                         log.error("Error sending email to " + email);
                     }
                 }
+            }
+        }
+    }
+
+    @Scheduled(fixedRate = 60 * 1000, initialDelay = 5000)
+    public void checkCloseReservations(){
+        List<Store> stores = storeService.retrieveAllStores();
+        for (Store store : stores) {
+            List<Reservation> closeReservations = reservationService.getCloseReservationsForStore(store.getStoreId());
+            if (closeReservations.size() > 0){
+                reservationService.sendExpoPushNotif(store.getStoreId());
+                log.info("Push notification sent");
             }
         }
     }

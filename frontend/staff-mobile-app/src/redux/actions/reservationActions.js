@@ -45,7 +45,9 @@ export const retrieveReservation = (reservationId, navigation) => {
       })
       .then(response => {
         updateDisplayedReservation(response, dispatch);
-        navigation.navigate("Reservation Details");
+        if (navigation) {
+          navigation.navigate("Reservation Details");
+        }
       })
       .catch(err => {
         dispatchErrorMapError(err, dispatch);
@@ -73,7 +75,7 @@ export const updateReservationStatus = (
       .post(RESERVATION_BASE_URL + "/updateReservationStatus", req)
       .then(response => {
         updateDisplayedReservation(response, dispatch);
-        retrieveUpcomingReservations(storeId, null)(dispatch)
+        retrieveUpcomingReservations(storeId, null)(dispatch);
       })
       .catch(err => {
         dispatchErrorMapError(err, dispatch);

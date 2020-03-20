@@ -1,18 +1,55 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Block, Card, Text } from "galio-framework";
-import { useSelector } from "react-redux";
-import { Dimensions } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
+import { Dimensions, Platform } from "react-native";
 import Theme from "src/constants/Theme";
 import { Divider } from "react-native-paper";
+import {
+  dispatchUpdatedStaff,
+  registerForPushNotifications
+} from "src/redux/actions/staffActions";
+import {Notifications} from "expo";
+import {retrieveUpcomingReservations} from "src/redux/actions/reservationActions";
+import {not} from "react-native-reanimated";
 
 const _ = require("lodash");
 const moment = require("moment");
 const { width, height } = Dimensions.get("window");
 
 function Home(props) {
+  const {navigation} = props;
+  const dispatch = useDispatch();
   const staff = useSelector(state => state.staff.loggedInStaff);
   const store = _.get(staff, "store");
   const address = _.get(staff, "store.address");
+  const [pushNotifGenerated, setPushNotifGenerated] = useState(false);
+
+  useEffect(() => {
+    const registerPushNotificationToken = async () => {
+      if (staff && !pushNotifGenerated) {
+        let response = await registerForPushNotifications(staff.staffId);
+        if (response != null) {
+          dispatchUpdatedStaff(response.data, dispatch);
+        }
+        setPushNotifGenerated(true);
+      }
+    };
+    registerPushNotificationToken();
+    const notificationSubscription = Notifications.addListener(
+        handleNotification
+    );
+  }, [staff]);
+
+  const handleNotification = notification => {
+    console.log("home notif")
+    if (staff && notification.data.type === "reservationReminder") {
+      dispatch(retrieveUpcomingReservations(staff.store.storeId, null));
+    }
+    if (notification.origin === "selected"){
+      navigation.navigate("ReservationStack");
+    }
+  }
+
   return (
     <Block flex>
       {staff && (

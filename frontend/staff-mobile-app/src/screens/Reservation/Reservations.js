@@ -45,7 +45,7 @@ function Reservations(props) {
             />
           ))}
         {reservations && reservations.length === 0 && (
-          <Text h4>There are no upcoming reservations</Text>
+          <Text h4 style={{textAlign: "center", marginTop: 40}}>There are no upcoming reservations</Text>
         )}
       </ScrollView>
     </Block>
