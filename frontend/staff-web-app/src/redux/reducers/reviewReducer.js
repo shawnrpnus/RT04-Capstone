@@ -1,7 +1,7 @@
 import * as types from "../actions/types";
 
 const initialState = {
-  currentReview: [],
+  // currentReview: [],
   allReviews: []
 };
 
@@ -12,11 +12,11 @@ export default function(state = initialState, action) {
         ...state,
         allReviews: action.reviewEntities
       };
-    case types.DELETE_REVIEW:
-      return {
-        ...state,
-        currentReview: action.deletedReview
-      };
+    // case types.DELETE_REVIEW:
+    //   return {
+    //     ...state,
+    //     currentReview: action.deletedReview
+    //   };
     default:
       return state;
   }

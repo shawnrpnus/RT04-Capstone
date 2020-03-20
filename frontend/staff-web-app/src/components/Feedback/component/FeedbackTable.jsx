@@ -15,11 +15,11 @@ import {
   SaveAlt,
   Search,
   ViewColumn,
-  Delete
+  Delete,
+  Reply
 } from "@material-ui/icons";
 import MaterialTable from "material-table";
 import Chip from "@material-ui/core/Chip";
-import ReplyIcon from "@material-ui/icons/Reply";
 import CheckSharpIcon from "@material-ui/icons/CheckSharp";
 // Redux
 import {
@@ -122,7 +122,7 @@ const FeedbackTable = () => {
         }}
         actions={[
           rowData => ({
-            icon: ReplyIcon,
+            icon: Reply,
             tooltip: "Reply",
             onClick: (e, rowData) => {
               setFeedback(rowData);

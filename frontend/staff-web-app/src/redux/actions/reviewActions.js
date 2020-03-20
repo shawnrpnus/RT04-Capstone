@@ -1,10 +1,17 @@
 import axios from "axios";
 import * as types from "./types";
 import { toast } from "react-toastify";
+import { dispatchErrorMapError } from "./index";
+import { openCircularProgress, closeCircularProgress } from "./utilActions";
 axios.defaults.baseURL = process.env.REACT_APP_SPRING_API_URL;
 
 const REVIEW_BASE_URL = "/api/review";
 const jsog = require("jsog");
+
+const retrieveAllReviewsSuccess = data => ({
+  type: types.RETRIEVE_ALL_REVIEWS,
+  reviewEntities: data
+});
 
 export const retrieveAllReviews = () => {
   return dispatch => {
@@ -26,41 +33,63 @@ export const retrieveAllReviews = () => {
   };
 };
 
-const retrieveAllReviewsSuccess = data => ({
-  type: types.RETRIEVE_ALL_REVIEWS,
-  reviewEntities: data
-});
-
-const retrieveAllReviewsError = data => ({
-  type: types.GET_ERRORS,
-  errorMap: data
-});
-
-export const deleteReview = (reviewId, history) => {
+export const deleteReview = reviewId => {
   return dispatch => {
+    dispatch(openCircularProgress());
     axios
       .delete(REVIEW_BASE_URL + "/deleteReview/" + reviewId)
       .then(response => {
-        const { data } = jsog.decode(response);
         toast.success("Review Deleted!", {
           position: toast.POSITION.TOP_CENTER
         });
-        dispatch(deleteReviewSuccess(data));
-        retrieveAllReviews()(dispatch);
-        history.push(`/review/viewAll`);
+        dispatch(retrieveAllReviews());
+        dispatch(closeCircularProgress());
       })
       .catch(err => {
-        dispatch(deleteReviewError(err.response.data));
+        console.log(err.response);
+        dispatchErrorMapError(err.response.data);
+        dispatch(closeCircularProgress());
       });
   };
 };
 
-const deleteReviewSuccess = data => ({
-  type: types.DELETE_REVIEW,
-  deletedReview: data
-});
+export const respondToReview = (request, onClose) => {
+  return dispatch => {
+    dispatch(openCircularProgress());
+    axios
+      .post(REVIEW_BASE_URL + "/respondToReview", request)
+      .then(response => {
+        toast.success("Responded to review!", {
+          position: toast.POSITION.TOP_CENTER
+        });
+        dispatch(retrieveAllReviews());
+        dispatch(closeCircularProgress());
+        onClose();
+      })
+      .catch(err => {
+        console.log(err.response);
+        dispatchErrorMapError(err.response.data);
+        dispatch(closeCircularProgress());
+      });
+  };
+};
 
-const deleteReviewError = data => ({
-  type: types.GET_ERRORS,
-  errorMap: data
-});
+export const deleteReviewResponse = reviewId => {
+  return dispatch => {
+    dispatch(openCircularProgress());
+    axios
+      .delete(REVIEW_BASE_URL + `/deleteReviewResponse/${reviewId}`)
+      .then(response => {
+        toast.success("Response to review removed!", {
+          position: toast.POSITION.TOP_CENTER
+        });
+        dispatch(retrieveAllReviews());
+        dispatch(closeCircularProgress());
+      })
+      .catch(err => {
+        console.log(err.response);
+        dispatchErrorMapError(err.response.data);
+        dispatch(closeCircularProgress());
+      });
+  };
+};

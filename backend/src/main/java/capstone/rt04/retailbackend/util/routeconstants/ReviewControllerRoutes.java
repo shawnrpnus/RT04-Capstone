@@ -10,4 +10,8 @@ public class ReviewControllerRoutes {
     public static final String DELETE_REVIEW = "/deleteReview/{reviewId}";
     public static final String CHECK_IF_CAN_WRITE_REVIEW = "/checkIfCanWriteReview/{productId}/{customerId}";
     public static final String RETRIEVE_REVIEWS_BY_CUSTOMER_ID = "/retrieveReviewsByCustomerId/{customerId}";
+
+    public static final String RESPOND_TO_REVIEW = "/respondToReview";
+    public static final String DELETE_REVIEW_RESPONSE = "/deleteReviewResponse/{reviewId}";
+
 }

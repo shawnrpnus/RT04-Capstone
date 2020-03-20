@@ -140,10 +140,7 @@ public class RelationshipService {
     }
 
     // Maintain product details
-    public void clearProductVariantRelationships(ProductVariant productVariant) {
-        productVariant.setProductStocks(null);
-        // Product
-        Product product = productVariant.getProduct();
+    public void clearProductRelationships(Product product) {
         product.setStyles(null);
         product.setReviews(null);
         product.setCategory(null);
@@ -151,6 +148,13 @@ public class RelationshipService {
         product.setPromoCodes(null);
         product.setDiscounts(null);
         product.setProductVariants(null);
+    }
+
+    // Maintain product details
+    public void clearProductVariantRelationships(ProductVariant productVariant) {
+        productVariant.setProductStocks(null);
+        // Product
+        clearProductRelationships(productVariant.getProduct());
     }
 
     public void clearStoreRelationships(Store store) {
