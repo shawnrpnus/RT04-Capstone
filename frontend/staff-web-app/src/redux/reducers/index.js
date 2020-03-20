@@ -3,6 +3,7 @@ import sidebarReducer from "./sidebarReducer";
 import storeReducer from "./storeReducer";
 import errorReducer from "./errorReducer";
 import tagReducer from "./tagReducer";
+import promoCodeReducer from "./promoCodeReducer";
 import productReducer from "./productReducer";
 import productStockReducer from "./productStockReducer";
 import categoryReducer from "./categoryReducer";
@@ -20,6 +21,7 @@ const rootReducer = combineReducers({
   sidebar: sidebarReducer,
   storeEntity: storeReducer,
   tag: tagReducer,
+  promoCode: promoCodeReducer,
   product: productReducer,
   category: categoryReducer,
   staffEntity: staffReducer,

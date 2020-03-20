@@ -72,6 +72,30 @@ function ReservationDetail(props) {
     );
   };
 
+  let showFAB = true;
+
+  if (reservation && reservation.handled && reservation.attended) {
+    showFAB = false;
+  }
+
+  let FABactions = [];
+
+  if (reservation && !reservation.attended) {
+    FABactions.push({
+      icon: "account-check",
+      label: "Mark as attended",
+      onPress: () => confirmationAttended()
+    });
+  }
+
+  if (reservation && !reservation.handled) {
+    FABactions.push({
+      icon: "hand-okay",
+      label: "Mark as handled",
+      onPress: () => confirmationHandle()
+    });
+  }
+
   return (
     <Provider>
       <Block flex={1}>
@@ -128,31 +152,25 @@ function ReservationDetail(props) {
                 </Text>
               </Block>
               {reservation.productVariants.map(productVariant => (
-                <ReservationItemCard productVariant={productVariant} />
+                <ReservationItemCard
+                  key={productVariant.productVariantId}
+                  productVariant={productVariant}
+                />
               ))}
             </>
           )}
         </ScrollView>
       </Block>
       <Portal>
-        <FAB.Group
-          open={open}
-          fabStyle={{ backgroundColor: Theme.COLORS.PRIMARY }}
-          icon="gesture-tap"
-          actions={[
-            {
-              icon: "account-check",
-              label: "Mark as attended",
-              onPress: () => confirmationAttended()
-            },
-            {
-              icon: "hand-okay",
-              label: "Mark as handled",
-              onPress: () => confirmationHandle()
-            }
-          ]}
-          onStateChange={({ open }) => setOpen(open)}
-        />
+        {showFAB && (
+          <FAB.Group
+            open={open}
+            fabStyle={{ backgroundColor: Theme.COLORS.PRIMARY }}
+            icon="gesture-tap"
+            actions={FABactions}
+            onStateChange={({ open }) => setOpen(open)}
+          />
+        )}
       </Portal>
     </Provider>
   );

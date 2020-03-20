@@ -1,16 +1,19 @@
 package capstone.rt04.retailbackend.services;
 
-import capstone.rt04.retailbackend.entities.Product;
-import capstone.rt04.retailbackend.entities.PromoCode;
+import capstone.rt04.retailbackend.entities.*;
 import capstone.rt04.retailbackend.repositories.PromoCodeRepository;
+import capstone.rt04.retailbackend.util.ErrorMessages;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
-import capstone.rt04.retailbackend.util.exceptions.product.ProductNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.promoCode.CreateNewPromoCodeException;
 import capstone.rt04.retailbackend.util.exceptions.promoCode.PromoCodeNotFoundException;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.PersistenceException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,30 +31,41 @@ public class PromoCodeService {
         this.promoCodeRepository = promoCodeRepository;
     }
 
-    public PromoCode createNewPromoCode(PromoCode promoCode) throws InputDataValidationException, ProductNotFoundException {
+    public PromoCode createNewPromoCode(PromoCode promoCode) throws InputDataValidationException, CreateNewPromoCodeException {
 
-        Map<String, String> errorMap = validationService.generateErrorMap(promoCode);
+        validationService.throwExceptionIfInvalidBean(promoCode);
 
-        if (errorMap == null) {
+        try {
+            PromoCode existingPromoCode = null;
+
             try {
-                List<Product> products = new ArrayList<>(promoCode.getProducts());
-                Product product = null;
-                promoCode.getProducts().clear();
-
-                for (Product prod : products) {
-                    product = productService.retrieveProductById(prod.getProductId());
-                    promoCode.addProduct(product);
-                }
-                promoCodeRepository.save(promoCode);
-
-                return promoCode;
-            } catch (ProductNotFoundException ex) {
-                throw new ProductNotFoundException("Unable to find certain products to link to the promo code " + ex.getMessage());
+                existingPromoCode = retrievePromoCodeByName(promoCode.getPromoCodeName());
+            } catch (PromoCodeNotFoundException ex) {
             }
-        } else {
-            throw new InputDataValidationException(errorMap, "Invalid Promo Code");
-        }
 
+            if (existingPromoCode != null) {
+                Map<String, String> errorMap = new HashMap<>();
+                errorMap.put("promoCodeName", ErrorMessages.PROMO_CODE_TAKEN);
+                throw new InputDataValidationException(errorMap, ErrorMessages.PROMO_CODE_TAKEN);
+            }
+
+            if(promoCode.getPercentageDiscount()==null){
+                promoCode.setPercentageDiscount( BigDecimal.valueOf(0));
+            }
+
+            if(promoCode.getFlatDiscount()==null){
+                promoCode.setFlatDiscount( BigDecimal.valueOf(0));
+            }
+            PromoCode savedPC = promoCodeRepository.save(promoCode);
+            return savedPC;
+        } catch (PersistenceException ex) {
+        throw new CreateNewPromoCodeException(ex.getMessage());
+    }
+
+    }
+
+    public PromoCode retrievePromoCodeByName(String name) throws PromoCodeNotFoundException {
+        return promoCodeRepository.findByPromoCodeName(name).orElse(null);
     }
 
     public PromoCode updatePromoCode(PromoCode newPromoCode) throws PromoCodeNotFoundException {
@@ -69,10 +83,10 @@ public class PromoCodeService {
 
     public PromoCode deletePromoCode(Long promoCodeId) throws PromoCodeNotFoundException {
         PromoCode promoCodeToRemove = retrievePromoCodeById(promoCodeId);
-        for (Product product : promoCodeToRemove.getProducts()) {
-            product.getPromoCodes().remove(promoCodeToRemove);
+        for (Transaction transaction : promoCodeToRemove.getTransactions()) {
+            transaction.setPromoCode(null);
         }
-        promoCodeToRemove.setProducts(null);
+        promoCodeToRemove.setTransactions(null);
         promoCodeRepository.delete(promoCodeToRemove);
 
         return promoCodeToRemove;
@@ -81,18 +95,18 @@ public class PromoCodeService {
     public PromoCode retrievePromoCodeById(Long promoCodeId) throws PromoCodeNotFoundException {
         PromoCode promoCode = promoCodeRepository.findById(promoCodeId)
                 .orElseThrow(() -> new PromoCodeNotFoundException("Promo code " + promoCodeId + " not found!"));
-        promoCode.getProducts().size();
+        promoCode.getTransactions().size();
         return promoCode;
     }
 
-    public List<PromoCode> retrieveListOfPromoCodesByIds(List<Long> promoCodeIds) {
-        List<PromoCode> promoCodes = (List<PromoCode>) promoCodeRepository.findAllById(promoCodeIds);
+    public List<PromoCode> retrieveAllPromoCodes() {
+        List<PromoCode> promoCodes = (List<PromoCode>) promoCodeRepository.findAll();
         return lazilyLoadPromoCode(promoCodes);
     }
 
     private List<PromoCode> lazilyLoadPromoCode(List<PromoCode> promoCodes) {
         for (PromoCode promoCode : promoCodes) {
-            promoCode.getProducts().size();
+            promoCode.getTransactions().size();
         }
         return promoCodes;
     }

@@ -121,7 +121,6 @@ public class RelationshipService {
             transactionLineItem.getProductVariant().getProduct().setStyles(null);
             product.setTags(null);
             product.setReviews(null);
-            product.setPromoCodes(null);
             product.setDiscounts(null);
         }
         transaction.setCustomer(null);
@@ -145,7 +144,6 @@ public class RelationshipService {
         product.setReviews(null);
         product.setCategory(null);
         product.setTags(null);
-        product.setPromoCodes(null);
         product.setDiscounts(null);
         product.setProductVariants(null);
     }

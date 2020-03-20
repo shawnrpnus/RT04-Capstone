@@ -100,6 +100,24 @@ class SidebarContent extends Component {
             </SidebarCategory>
           )}
           {(salesmarketing || store || warehouse) && (
+              <SidebarCategory title="Promo Code" icon="code">
+                {salesmarketing && (
+                    <React.Fragment>
+                    <SidebarLink
+                        title="Manage"
+                        route="/promoCode/create"
+                        onClick={this.hideSidebar}
+                    />
+                    <SidebarLink
+                  title="View All"
+                  route="/promoCode/viewAll"
+                  onClick={this.hideSidebar}
+                  />
+                    </React.Fragment>
+                )}
+              </SidebarCategory>
+          )}
+          {(salesmarketing || store || warehouse) && (
             <SidebarCategory title="Category" icon="list">
               <SidebarLink
                 title="View All"
@@ -118,14 +136,16 @@ class SidebarContent extends Component {
               />
             </SidebarCategory>
           )}
+
           <SidebarCategory title="Feedback" customIcon={<MdFeedback />}>
+
             <SidebarLink
               title="View Feedback"
               route="/feedback/viewAll"
               onClick={this.hideSidebar}
             />
           </SidebarCategory>
-          <SidebarCategory title="Restock Order" icon="list">
+          <SidebarCategory title="Restock Order" icon="file-add">
             <SidebarLink
               title="View Restock Order"
               route="/restockOrder/viewAll"
@@ -133,7 +153,9 @@ class SidebarContent extends Component {
             />
           </SidebarCategory>
           {salesmarketing && (
+
             <SidebarCategory title="Reviews" customIcon={<MdRateReview />}>
+
               <SidebarLink
                 title="View All"
                 route="/review/viewAll"
@@ -141,7 +163,9 @@ class SidebarContent extends Component {
               />
             </SidebarCategory>
           )}
+
           <SidebarCategory title="Delivery" customIcon={<MdLocalShipping />}>
+
             <SidebarLink
               title="View Store Orders"
               route="/delivery/viewAllRestockOrderItem"

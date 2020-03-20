@@ -417,7 +417,6 @@ public class ProductService {
             product.getTags().size();
             product.getReviews().size();
             product.getDiscounts().size();
-            product.getPromoCodes().size();
             product.getProductVariants().size();
             product.getStyles().size();
         }
@@ -460,7 +459,6 @@ public class ProductService {
         productToRemove.getCategory().getProducts().remove(productToRemove);
         productToRemove.getTags().forEach(tag -> tag.getProducts().remove(productToRemove));
         productToRemove.getStyles().forEach(style -> style.getProducts().remove(productToRemove));
-        productToRemove.getPromoCodes().forEach(promoCode -> promoCode.getProducts().remove(productToRemove));
         productToRemove.getDiscounts().forEach(discount -> discount.getProducts().remove(productToRemove));
 
         productRepository.delete(productToRemove);
@@ -1020,42 +1018,42 @@ public class ProductService {
         }
     }
 
-    public void addOrRemovePromoCode(Long promoCodeId, Long
-            productId, List<PromoCode> promoCodes, List<Product> products, Boolean isAppend) throws
-            PromoCodeNotFoundException, ProductNotFoundException, PromoCodeNotFoundException, PromoCodeNotFoundException, PromoCodeNotFoundException {
-        // Adding / removing promoCode for a list of products
-        if (promoCodeId != null) {
-            PromoCode promoCode = promoCodeService.retrievePromoCodeById(promoCodeId);
-            Product product = null;
-
-            for (Product prod : products) {
-                product = retrieveProductById(prod.getProductId());
-                if (isAppend) {
-                    promoCode.getProducts().add(product);
-                    product.getPromoCodes().add(promoCode);
-                } else {
-                    promoCode.getProducts().remove(product);
-                    product.getPromoCodes().remove(promoCode);
-                }
-            }
-        }
-        // Adding / removing a list of promoCodes for a product
-        else if (productId != null) {
-            Product product = retrieveProductById(productId);
-            PromoCode promoCode = null;
-
-            for (PromoCode code : promoCodes) {
-                promoCode = promoCodeService.retrievePromoCodeById(code.getPromoCodeId());
-                if (isAppend) {
-                    product.getPromoCodes().add(promoCode);
-                    promoCode.getProducts().add(product);
-                } else {
-                    product.getPromoCodes().remove(promoCode);
-                    promoCode.getProducts().remove(product);
-                }
-            }
-        }
-    }
+//    public void addOrRemovePromoCode(Long promoCodeId, Long
+//            productId, List<PromoCode> promoCodes, List<Product> products, Boolean isAppend) throws
+//            PromoCodeNotFoundException, ProductNotFoundException, PromoCodeNotFoundException, PromoCodeNotFoundException, PromoCodeNotFoundException {
+//        // Adding / removing promoCode for a list of products
+//        if (promoCodeId != null) {
+//            PromoCode promoCode = promoCodeService.retrievePromoCodeById(promoCodeId);
+//            Product product = null;
+//
+//            for (Product prod : products) {
+//                product = retrieveProductById(prod.getProductId());
+//                if (isAppend) {
+//                    promoCode.getProducts().add(product);
+//                    product.getPromoCodes().add(promoCode);
+//                } else {
+//                    promoCode.getProducts().remove(product);
+//                    product.getPromoCodes().remove(promoCode);
+//                }
+//            }
+//        }
+//        // Adding / removing a list of promoCodes for a product
+//        else if (productId != null) {
+//            Product product = retrieveProductById(productId);
+//            PromoCode promoCode = null;
+//
+//            for (PromoCode code : promoCodes) {
+//                promoCode = promoCodeService.retrievePromoCodeById(code.getPromoCodeId());
+//                if (isAppend) {
+//                    product.getPromoCodes().add(promoCode);
+//                    promoCode.getProducts().add(product);
+//                } else {
+//                    product.getPromoCodes().remove(promoCode);
+//                    promoCode.getProducts().remove(product);
+//                }
+//            }
+//        }
+//    }
 
     public void addOrRemoveDiscount(Long discountId, Long
             productId, List<Discount> discounts, List<Product> products, Boolean isAppend) throws
