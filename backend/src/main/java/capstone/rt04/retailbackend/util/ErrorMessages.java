@@ -25,7 +25,12 @@ public class ErrorMessages {
     public static final String VERIFICATION_CODE_EXPIRED = "Verification code has expired!";
     public static final String ALREADY_VERIFIED = "Customer has already been verified!";
 
-    public static final String PROMO_CODE_REQUIRED = "Promo code is required!";
+    public static final String PROMO_CODE_NAME_REQUIRED = "Promo code name is required!";
+    public static final String PROMO_CODE_TAKEN = "Promo code is already created!";
+    public static final String NUM_REMAINING_REQUIRED = "Quantity is required!";
+    public static final String ENTER_DISCOUNT= "Enter the promo discount!";
+    public static final String ENTER_MIN= "Minimum amount needed!";
+    public static final String INVALID_DISCOUNT= "Decimal minimum: 0.00!";
     public static final String PRODUCTS_REQUIRED = "Products are required!";
     public static final String TAG_REQUIRED = "Tag is required!";
     public static final String SERIAL_NUMBER_UNIQUE ="Serial number must be unique";

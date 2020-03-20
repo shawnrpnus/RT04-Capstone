@@ -32,8 +32,7 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 class StaffCreateForm extends Component {
   static propTypes = {
     errors: PropTypes.object,
-    clearErrors: PropTypes.func,
-    disabled: PropTypes.bool
+    clearErrors: PropTypes.func
   };
 
 

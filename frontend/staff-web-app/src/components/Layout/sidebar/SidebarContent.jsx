@@ -100,6 +100,24 @@ class SidebarContent extends Component {
             </SidebarCategory>
           )}
           {(salesmarketing || store || warehouse) && (
+              <SidebarCategory title="Promo Code" icon="code">
+                {salesmarketing && (
+                    <React.Fragment>
+                    <SidebarLink
+                        title="Manage"
+                        route="/promoCode/create"
+                        onClick={this.hideSidebar}
+                    />
+                    <SidebarLink
+                  title="View All"
+                  route="/promoCode/viewAll"
+                  onClick={this.hideSidebar}
+                  />
+                    </React.Fragment>
+                )}
+              </SidebarCategory>
+          )}
+          {(salesmarketing || store || warehouse) && (
             <SidebarCategory title="Category" icon="list">
               <SidebarLink
                 title="View All"
@@ -117,14 +135,14 @@ class SidebarContent extends Component {
               />
             </SidebarCategory>
           )}
-          <SidebarCategory title="Feedback" icon="list">
+          <SidebarCategory title="Feedback" icon="bullhorn">
             <SidebarLink
               title="View Feedback"
               route="/feedback/viewAll"
               onClick={this.hideSidebar}
             />
           </SidebarCategory>
-          <SidebarCategory title="Restock Order" icon="list">
+          <SidebarCategory title="Restock Order" icon="file-add">
             <SidebarLink
               title="View Restock Order"
               route="/restockOrder/viewAll"
@@ -132,7 +150,7 @@ class SidebarContent extends Component {
             />
           </SidebarCategory>
           {salesmarketing && (
-            <SidebarCategory title="Reviews" icon="list">
+            <SidebarCategory title="Reviews" icon="bubble">
               <SidebarLink
                 title="View All"
                 route="/review/viewAll"
@@ -140,7 +158,7 @@ class SidebarContent extends Component {
               />
             </SidebarCategory>
           )}
-          <SidebarCategory title="Delivery" icon="list">
+          <SidebarCategory title="Delivery" icon="rocket">
             <SidebarLink
               title="View Store Orders"
               route="/delivery/viewAllRestockOrderItem"

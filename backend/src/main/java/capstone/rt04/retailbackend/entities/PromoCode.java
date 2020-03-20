@@ -5,6 +5,7 @@
  */
 package capstone.rt04.retailbackend.entities;
 
+import capstone.rt04.retailbackend.util.ErrorMessages;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.voodoodyne.jackson.jsog.JSOGGenerator;
 import lombok.EqualsAndHashCode;
@@ -38,62 +39,44 @@ public class PromoCode implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long promoCodeId;
 
-    @NotNull
+    @NotNull (message = ErrorMessages.PROMO_CODE_NAME_REQUIRED)
     @Column(nullable = false)
+    @Size(min = 1, message = ErrorMessages.PROMO_CODE_NAME_REQUIRED )
     private String promoCodeName;
 
-    @NotNull
-    @Column(nullable = false, precision = 11, scale = 2)
-    @DecimalMin("0.00")
+
+    @Column(precision = 11, scale = 2)
+    @DecimalMin("0.00" )
     private BigDecimal flatDiscount;
 
-    @NotNull
-    @Column(nullable = false, precision = 11, scale = 2)
+
+    @Column(precision = 11, scale = 2)
     @DecimalMin("0.00")
     private BigDecimal percentageDiscount;
 
-    @NotNull
+    @NotNull(message =ErrorMessages.ENTER_MIN)
     @Column(nullable = false, precision = 11, scale = 2)
     @DecimalMin("0.00")
     private BigDecimal minimumPurchase;
 
-    @NotNull
+    @NotNull(message =ErrorMessages.NUM_REMAINING_REQUIRED)
     @Column(nullable = false)
     private Integer numRemaining;
 
-    @ManyToMany
-    @Size(min = 1)
-    private List<Product> products;
+    @OneToMany(mappedBy = "promoCode")
+    private List<Transaction> transactions;
 
     public PromoCode() {
-        this.products = new ArrayList<>();
+        this.transactions = new ArrayList<>();
     }
 
-    public PromoCode(String promoCodeName, BigDecimal flatDiscount, BigDecimal percentageDiscount, BigDecimal minimumPurchase, Integer numRemaining, List<Product> products) {
+    public PromoCode(String promoCodeName, BigDecimal flatDiscount, BigDecimal percentageDiscount, BigDecimal minimumPurchase, Integer numRemaining) {
         this();
         this.promoCodeName = promoCodeName;
         this.flatDiscount = flatDiscount;
         this.percentageDiscount = percentageDiscount;
         this.minimumPurchase = minimumPurchase;
         this.numRemaining = numRemaining;
-        this.products = products;
     }
-
-    public void addProduct(Product product)
-    {
-        if(product != null)
-        {
-            if(!this.products.contains(product))
-            {
-                this.products.add(product);
-
-                if(!product.getPromoCodes().contains(this))
-                {
-                    product.getPromoCodes().add(this);
-                }
-            }
-        }
-    }
-    
 
 }

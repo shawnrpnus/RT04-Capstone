@@ -121,7 +121,6 @@ public class ProductStockController {
         Product product = productStock.getProductVariant().getProduct();
         product.setProductVariants(null);
         product.setDiscounts(null);
-        product.setPromoCodes(null);
         product.setTags(null);
         product.setCategory(null);
         product.setReviews(null);
