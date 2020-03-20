@@ -83,7 +83,6 @@ public class InstagramPostController {
     private void clearInstagramPostRelationships(List<InstagramPost> instagramPosts) {
         for (InstagramPost instagramPost : instagramPosts) {
             for (Product product : instagramPost.getAssociatedProducts()) {
-                product.setPromoCodes(null);
                 product.setDiscounts(null);
                 product.setReviews(null);
                 product.setTags(null);

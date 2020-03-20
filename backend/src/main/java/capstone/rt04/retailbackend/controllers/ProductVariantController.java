@@ -111,7 +111,6 @@ public class ProductVariantController {
         Product p = pv.getProduct();
         p.setCategory(null);
         p.setStyles(null);
-        p.setPromoCodes(null);
         p.setReviews(null);
         p.setTags(null);
         p.setProductVariants(null);

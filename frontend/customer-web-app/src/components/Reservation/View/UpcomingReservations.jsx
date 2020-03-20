@@ -21,7 +21,6 @@ function UpcomingReservations(props) {
     dispatch(getUpcomingReservations(customer.customerId));
   }, []);
 
-  console.log("hello");
   return (
     <Card plain style={{ marginTop: "0px" }}>
       <CardBody plain>

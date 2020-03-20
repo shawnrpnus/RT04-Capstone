@@ -13,9 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.PersistenceException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @Transactional
@@ -83,21 +81,21 @@ public class ReviewService {
     }
 
     public List<Review> retrieveAllReviews() {
-        return lazilyLoadReview(reviewRepository.findAll());
+        List<Review> reviews = reviewRepository.findAll();
+        Collections.sort(reviews, Comparator.comparing(Review::getReviewId).reversed());
+        return lazilyLoadReview(reviews);
     }
 
 
-    public Review updateReview(Review review, Long customerId, Long productId) throws InputDataValidationException, ReviewNotUpdatedException, ReviewNotFoundException, CustomerNotFoundException, ProductNotFoundException {
+    public Review updateReview(Review review, Long customerId, Long productId) throws ReviewNotUpdatedException, CustomerNotFoundException, ProductNotFoundException {
         Customer customer = customerService.retrieveCustomerByCustomerId(customerId);
         Product p = productService.retrieveProductById(productId);
         review.setCustomer(customer);
         review.setProduct(p);
         Map<String, String> errorMap = validationService.generateErrorMap(review);
 
-
         if (errorMap == null) {
             try {
-
                 Review reviewToUpdate = retrieveReviewById(review.getReviewId());
                 reviewToUpdate.setRating(review.getRating());
                 reviewToUpdate.setResponse(review.getResponse());
@@ -140,6 +138,18 @@ public class ReviewService {
         List<Review> reviews = reviewRepository.findAllByCustomer_CustomerId(customerId);
         lazilyLoadReview(reviews);
         return reviews;
+    }
+
+    public List<Review> respondToReview(Long reviewId, String response) throws ReviewNotFoundException {
+        Review review = retrieveReviewById(reviewId);
+        review.setResponse(response);
+        return retrieveAllReviews();
+    }
+
+    public List<Review> deleteReviewResponse(Long reviewId) throws ReviewNotFoundException {
+        Review review = retrieveReviewById(reviewId);
+        review.setResponse(null);
+        return retrieveAllReviews();
     }
 
     public List<Review> lazilyLoadReview(List<Review> reviews) {

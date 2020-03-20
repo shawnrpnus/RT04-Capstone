@@ -73,9 +73,6 @@ public class Product implements Serializable {
     private List<Discount> discounts;
 
     @ManyToMany(mappedBy = "products")
-    private List<PromoCode> promoCodes;
-
-    @ManyToMany(mappedBy = "products")
     private List<Tag> tags;
 
     @ManyToOne(optional = false)
@@ -95,7 +92,6 @@ public class Product implements Serializable {
 
     public Product() {
         this.discounts = new ArrayList<>();
-        this.promoCodes = new ArrayList<>();
         this.tags = new ArrayList<>();
         this.reviews = new ArrayList<>();
         this.productVariants = new ArrayList<>();
