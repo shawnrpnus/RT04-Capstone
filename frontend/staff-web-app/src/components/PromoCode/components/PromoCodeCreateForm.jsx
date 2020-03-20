@@ -49,9 +49,11 @@ class PromoCodeCreateForm extends Component {
 
     handleFlatDiscount() {
         this.setState({ mode: true });
+        this.setState({ percentageDiscount: "" });
     }
     handlePercentageDiscount() {
         this.setState({ mode: false });
+        this.setState({ flatDiscount: "" });
     }
 
     onCancel = () => {

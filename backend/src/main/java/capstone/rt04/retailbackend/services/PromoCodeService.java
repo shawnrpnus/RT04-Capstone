@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.PersistenceException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -48,6 +49,13 @@ public class PromoCodeService {
                 throw new InputDataValidationException(errorMap, ErrorMessages.PROMO_CODE_TAKEN);
             }
 
+            if(promoCode.getPercentageDiscount()==null){
+                promoCode.setPercentageDiscount( BigDecimal.valueOf(0));
+            }
+
+            if(promoCode.getFlatDiscount()==null){
+                promoCode.setFlatDiscount( BigDecimal.valueOf(0));
+            }
             PromoCode savedPC = promoCodeRepository.save(promoCode);
             return savedPC;
         } catch (PersistenceException ex) {
