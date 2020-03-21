@@ -89,6 +89,13 @@ class PromoCodeTable extends Component {
                             ]}
                             actions={[
                                 {
+                                    icon: Edit,
+                                    tooltip: "Update Promo Code",
+                                    onClick: (event, rowData) =>
+                                        history.push(`/promoCode/update/${rowData.promoCodeId}`)
+                                },
+
+                                {
                                     icon: Delete,
                                     tooltip: "Delete Promo Code",
                                     onClick: (event, rowData) => this.handleDelete(rowData.promoCodeId)

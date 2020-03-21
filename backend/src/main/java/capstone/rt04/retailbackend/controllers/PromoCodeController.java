@@ -1,14 +1,20 @@
 package capstone.rt04.retailbackend.controllers;
 
 import capstone.rt04.retailbackend.entities.PromoCode;
+import capstone.rt04.retailbackend.entities.Staff;
 import capstone.rt04.retailbackend.request.promoCode.PromoCodeCreateRequest;
+import capstone.rt04.retailbackend.request.promoCode.PromoCodeUpdateRequest;
+import capstone.rt04.retailbackend.request.staff.StaffDetailsUpdateRequest;
 import capstone.rt04.retailbackend.response.GenericErrorResponse;
 import capstone.rt04.retailbackend.services.PromoCodeService;
 import capstone.rt04.retailbackend.services.ValidationService;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.promoCode.CreateNewPromoCodeException;
 import capstone.rt04.retailbackend.util.exceptions.promoCode.PromoCodeNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.staff.StaffNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.staff.UpdateStaffDetailsException;
 import capstone.rt04.retailbackend.util.routeconstants.PromoCodeControllerRoutes;
+import capstone.rt04.retailbackend.util.routeconstants.StaffControllerRoutes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -68,4 +74,17 @@ public class PromoCodeController {
         PromoCode deletedPromoCode = promoCodeService.deletePromoCode(promoCodeId);
         return new ResponseEntity<>(deletedPromoCode, HttpStatus.OK);
     }
+
+    @PostMapping(PromoCodeControllerRoutes.UPDATE_PROMOCODE)
+    public ResponseEntity<?> updatePromoCode(@RequestBody PromoCodeUpdateRequest promoCodeUpdateRequest) throws PromoCodeNotFoundException, InputDataValidationException {
+        try {
+            PromoCode updatedPromoCode = promoCodeService.updatePromoCode(promoCodeUpdateRequest.getNewPromoCode());
+            return new ResponseEntity<>(updatedPromoCode, HttpStatus.OK);
+        } catch (InputDataValidationException ex) {
+            return new ResponseEntity<>(ex.getErrorMap(), HttpStatus.BAD_REQUEST);
+        } catch (PromoCodeNotFoundException ex){
+            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
+        }
+    }
+
 }

@@ -1,6 +1,7 @@
 import axios from "axios";
 import * as types from "./types";
 import { toast } from "react-toastify";
+import {retrieveAllTags} from "./tagAction";
 axios.defaults.baseURL = process.env.REACT_APP_SPRING_API_URL;
 
 const PROMOCODE_BASE_URL = "/api/promoCode";
@@ -88,6 +89,65 @@ const deletePromoCodeSuccess = data => ({
 });
 
 const deletePromoCodeError = data => ({
+    type: types.GET_ERRORS,
+    errorMap: data
+});
+
+export const updatePromoCode = (promoCodeUpdateRequest, history) => {
+    return dispatch => {
+        //redux thunk passes dispatch
+        axios
+            .post(PROMOCODE_BASE_URL + "/updatePromoCode", promoCodeUpdateRequest)
+            .then(response => {
+                const { data } = jsog.decode(response);
+                dispatch(updatePromoCodeSuccess(data));
+                toast.success("Promo Code Updated!", {
+                    position: toast.POSITION.TOP_CENTER
+                });
+                retrieveAllPromoCodes()(dispatch);
+                history.push(`/promoCode/viewAll`);
+            })
+            .catch(err => {
+                dispatch(updatePromoCodeError(err.response.data));
+                // console.log(err.response.data);
+            });
+    };
+};
+
+const updatePromoCodeSuccess = data => ({
+    type: types.UPDATE_PROMOCODE,
+    updatedPromoCode: data
+});
+
+const updatePromoCodeError = data => ({
+    type: types.GET_ERRORS,
+    errorMap: data
+});
+
+export const retrievePromoCodeById = (promoCodeId, history) => {
+    return dispatch => {
+        axios
+            .get(PROMOCODE_BASE_URL + "/retrievePromoCodeById/" + promoCodeId)
+            .then(response => {
+                const { data } = jsog.decode(response);
+                dispatch(retrievePromoCodeSuccess(data));
+            })
+            .catch(err => {
+                toast.error("Promo Code Not Found!", {
+                    position: toast.POSITION.TOP_CENTER
+                });
+                history.push(`/promoCode/viewAll`);
+                dispatch(retrievePromoCodeError(err.response.data));
+            });
+    };
+};
+
+const retrievePromoCodeSuccess = data => ({
+    type: types.RETRIEVE_PROMOCODE,
+    retrievedPromoCode: data
+});
+
+const retrievePromoCodeError = data => ({
     type: types.GET_ERRORS,
     errorMap: data
 });

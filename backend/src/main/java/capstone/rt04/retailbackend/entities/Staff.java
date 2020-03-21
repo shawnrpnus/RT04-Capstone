@@ -76,6 +76,8 @@ public class Staff implements Serializable {
     @Column(nullable = false)
     private BigDecimal salary;
 
+    private String pushNotificationToken;
+
     @OneToMany(mappedBy = "applicant")
     private List<StaffLeave> leaves;
 

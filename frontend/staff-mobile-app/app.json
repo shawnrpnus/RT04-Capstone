@@ -7,9 +7,9 @@
     "platforms": ["ios", "android", "web"],
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/images/apricot-nut-logo-word.png",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/images/apricot-nut-logo-word.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -21,7 +21,9 @@
       "supportsTablet": true
     },
     "android": {
-      "permissions": ["CAMERA"]
+      "package": "com.rt04capstone.apricotstaff",
+      "permissions": ["CAMERA"],
+      "googleServicesFile": "./google-services.json"
     }
   }
 }

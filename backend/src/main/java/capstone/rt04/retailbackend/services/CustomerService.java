@@ -8,6 +8,7 @@ import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.customer.*;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.shoppingcart.InvalidCartTypeException;
+import capstone.rt04.retailbackend.util.exceptions.staff.StaffNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.style.StyleNotFoundException;
 import com.stripe.exception.StripeException;
 import lombok.extern.slf4j.Slf4j;
@@ -615,6 +616,11 @@ public class CustomerService {
         return lazyLoadCustomerFields(customer);
     }
 
+    public Customer registerPushNotificationToken (Long customerId, String token) throws CustomerNotFoundException {
+        Customer customer = retrieveCustomerByCustomerId(customerId);
+        customer.setPushNotificationToken(token);
+        return customer;
+    }
 
     //method used just for test case removal
     public Customer removeCustomer(Long customerId) throws CustomerNotFoundException, CustomerCannotDeleteException {

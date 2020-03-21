@@ -102,17 +102,19 @@ class SidebarContent extends Component {
           {(salesmarketing || store || warehouse) && (
             <SidebarCategory title="Promo Code" icon="code">
               {salesmarketing && (
-                <SidebarLink
-                  title="Manage"
-                  route="/promoCode/create"
-                  onClick={this.hideSidebar}
-                />
+                <>
+                  <SidebarLink
+                    title="Manage"
+                    route="/promoCode/create"
+                    onClick={this.hideSidebar}
+                  />
+                  <SidebarLink
+                    title="View All"
+                    route="/promoCode/viewAll"
+                    onClick={this.hideSidebar}
+                  />
+                </>
               )}
-              <SidebarLink
-                title="View All"
-                route="/promoCode/viewAll"
-                onClick={this.hideSidebar}
-              />
             </SidebarCategory>
           )}
           {(salesmarketing || store || warehouse) && (

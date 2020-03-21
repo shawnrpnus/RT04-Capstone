@@ -7,6 +7,7 @@ import thunk from "redux-thunk";
 // Import custom components
 import rootReducer from "../redux/reducers";
 import {LOAD_LOGGED_IN_STAFF} from "src/redux/actions/types";
+import {SplashScreen} from "expo";
 
 const middleware = [thunk];
 const initialState = {};
@@ -44,6 +45,8 @@ const loadLoggedInStaff = () => {
           type: LOAD_LOGGED_IN_STAFF,
           staff: jsog.parse(result).staff.loggedInStaff
         })
+      } else {
+        SplashScreen.hide();
       }
     });
   }
@@ -58,6 +61,7 @@ const unsubscribe = store.subscribe(() => {
 });
 
 //populate store with logged in staff
+SplashScreen.preventAutoHide()
 store.dispatch(loadLoggedInStaff());
 
 export default store;

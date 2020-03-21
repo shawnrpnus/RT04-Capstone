@@ -22,11 +22,10 @@ import java.util.Map;
 public class PromoCodeService {
 
     private final ValidationService validationService;
-    private final ProductService productService;
     private final PromoCodeRepository promoCodeRepository;
 
-    public PromoCodeService(@Lazy ProductService productService, ValidationService validationService, @Lazy PromoCodeRepository promoCodeRepository) {
-        this.productService = productService;
+    public PromoCodeService(ValidationService validationService, PromoCodeRepository promoCodeRepository) {
+
         this.validationService = validationService;
         this.promoCodeRepository = promoCodeRepository;
     }
@@ -68,17 +67,30 @@ public class PromoCodeService {
         return promoCodeRepository.findByPromoCodeName(name).orElse(null);
     }
 
-    public PromoCode updatePromoCode(PromoCode newPromoCode) throws PromoCodeNotFoundException {
+    public PromoCode updatePromoCode(PromoCode newPromoCode) throws PromoCodeNotFoundException, InputDataValidationException {
+        validationService.throwExceptionIfInvalidBean(newPromoCode);
         PromoCode promoCode = retrievePromoCodeById(newPromoCode.getPromoCodeId());
 
+        List<PromoCode> allPromoCode = (List<PromoCode>) promoCodeRepository.findAll();
+        for(PromoCode p : allPromoCode){
+            if((p.getPromoCodeId()!=newPromoCode.getPromoCodeId()) && p.getPromoCodeName().equals(newPromoCode.getPromoCodeName())){
+                Map<String, String> errorMap = new HashMap<>();
+                errorMap.put("promoCodeName", ErrorMessages.PROMO_CODE_TAKEN);
+                throw new InputDataValidationException(errorMap, ErrorMessages.PROMO_CODE_TAKEN);
+            }
+        }
+        
+        System.out.println(newPromoCode.getFlatDiscount());
+        System.out.println(newPromoCode.getPercentageDiscount());
+
         promoCode.setFlatDiscount(newPromoCode.getFlatDiscount());
+        promoCode.setPercentageDiscount(newPromoCode.getPercentageDiscount());
         promoCode.setMinimumPurchase(newPromoCode.getMinimumPurchase());
         promoCode.setNumRemaining(newPromoCode.getNumRemaining());
-        promoCode.setPercentageDiscount(newPromoCode.getPercentageDiscount());
-        promoCode.setPromoCodeId(newPromoCode.getPromoCodeId());
         promoCode.setPromoCodeName(newPromoCode.getPromoCodeName());
 
-        return promoCode;
+        PromoCode saved = promoCodeRepository.save(promoCode);
+        return saved;
     }
 
     public PromoCode deletePromoCode(Long promoCodeId) throws PromoCodeNotFoundException {

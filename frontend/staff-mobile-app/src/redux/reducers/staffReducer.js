@@ -1,5 +1,6 @@
 import * as types from "../actions/types";
 import {AsyncStorage} from "react-native";
+import {SplashScreen} from "expo";
 
 const initialState = {
   loggedInStaff: null

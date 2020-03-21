@@ -2,12 +2,14 @@ import {STAFF_LOGIN, STAFF_LOGOUT} from "src/redux/actions/types";
 import { SPRING_BACKEND_URL } from "src/constants/routes";
 import axios from "axios";
 import {dispatchErrorMapError} from "src/redux/actions/index";
+import { Notifications } from 'expo';
+import * as Permissions from 'expo-permissions';
 
 const jsog = require("jsog");
 
 const STAFF_BASE_URL = SPRING_BACKEND_URL + "/api/staff";
 
-const dispatchUpdatedStaff = (staffResponseData, dispatch) => {
+export const dispatchUpdatedStaff = (staffResponseData, dispatch) => {
   const staff = jsog.decode(staffResponseData);
   dispatch(updateStaff(staff));
 };
@@ -33,4 +35,26 @@ export const staffLogin = (req) => {
 
 export const staffLogout = {
   type: STAFF_LOGOUT
+}
+
+export const registerForPushNotifications= async (staffId) => {
+  const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+
+  if (status !== 'granted') {
+    alert('No notification permissions!');
+    return null;
+  }
+
+  let token = await Notifications.getExpoPushTokenAsync();
+
+  const req = {
+    staffId,
+    token: token
+  }
+  try {
+    return await axios.post(STAFF_BASE_URL + "/registerPushNotificationToken", req)
+  } catch (err){
+    console.log(err)
+    return null;
+  }
 }

@@ -215,6 +215,13 @@ public class StaffController {
         }
     }
 
+    @PostMapping(StaffControllerRoutes.REGISTER_PUSH_NOTIF_TOKEN)
+    public ResponseEntity<?> registerPushNotifToken(@RequestBody RegisterPushNotifTokenRequest req) throws StaffNotFoundException {
+        Staff staff = staffService.registerPushNotificationToken(req.getStaffId(), req.getToken());
+        clearStaffRelationship(staff);
+        return new ResponseEntity<>(staff, HttpStatus.OK);
+    }
+
     private void clearStaffRelationship(Staff staff) {
         Store s = staff.getStore();
         if (s != null) {

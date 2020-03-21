@@ -2,7 +2,9 @@ package capstone.rt04.retailbackend.controllers;
 
 import capstone.rt04.retailbackend.entities.Address;
 import capstone.rt04.retailbackend.entities.Customer;
+import capstone.rt04.retailbackend.entities.Staff;
 import capstone.rt04.retailbackend.request.customer.*;
+import capstone.rt04.retailbackend.request.customer.RegisterPushNotifTokenRequest;
 import capstone.rt04.retailbackend.services.CustomerService;
 import capstone.rt04.retailbackend.services.RelationshipService;
 import capstone.rt04.retailbackend.services.ShoppingCartService;
@@ -11,8 +13,10 @@ import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.customer.*;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.shoppingcart.InvalidCartTypeException;
+import capstone.rt04.retailbackend.util.exceptions.staff.StaffNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.style.StyleNotFoundException;
 import capstone.rt04.retailbackend.util.routeconstants.CustomerControllerRoutes;
+import capstone.rt04.retailbackend.util.routeconstants.StaffControllerRoutes;
 import com.stripe.exception.StripeException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -317,7 +321,12 @@ public class CustomerController {
         relationshipService.clearCustomerRelationships(customer);
         return new ResponseEntity<>(customer, HttpStatus.OK);
     }
-    
 
+    @PostMapping(CustomerControllerRoutes.REGISTER_PUSH_NOTIFICATION_TOKEN)
+    public ResponseEntity<?> registerPushNotifToken(@RequestBody RegisterPushNotifTokenRequest req) throws CustomerNotFoundException {
+        Customer customer = customerService.registerPushNotificationToken(req.getCustomerId(), req.getToken());
+        relationshipService.clearCustomerRelationships(customer);
+        return new ResponseEntity<>(customer, HttpStatus.OK);
+    }
 
 }

@@ -14,4 +14,6 @@ public interface StaffRepository extends CrudRepository<Staff, Long> {
     Optional<Staff> findByUsername(String username);
 
     List<Staff> findAll();
+
+    List<Staff> findAllByStore_StoreId(Long storeId);
 }
