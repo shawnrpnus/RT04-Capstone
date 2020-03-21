@@ -35,11 +35,12 @@ export const markAsResolved = request => {
         toast.success("Marked as resolved!", {
           position: toast.POSITION.TOP_CENTER
         });
+        dispatch(closeCircularProgress());
       })
       .catch(err => {
         dispatchErrorMapError(err, dispatch);
+        dispatch(closeCircularProgress());
       });
-    dispatch(closeCircularProgress());
   };
 };
 
@@ -54,11 +55,12 @@ export const replyToEmail = (request, onClose) => {
           position: toast.POSITION.TOP_CENTER
         });
         onClose();
+        dispatch(closeCircularProgress());
       })
       .catch(err => {
         dispatchErrorMapError(err, dispatch);
+        dispatch(closeCircularProgress());
       });
-    dispatch(closeCircularProgress());
   };
 };
 
@@ -72,10 +74,11 @@ export const deleteFeedback = contactUsId => {
         toast.success("Succesfully deleted feedback!", {
           position: toast.POSITION.TOP_CENTER
         });
+        dispatch(closeCircularProgress());
       })
       .catch(err => {
         dispatchErrorMapError(err, dispatch);
+        dispatch(closeCircularProgress());
       });
-    dispatch(closeCircularProgress());
   };
 };

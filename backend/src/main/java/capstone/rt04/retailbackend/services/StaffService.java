@@ -490,6 +490,12 @@ public class StaffService {
 
     }
 
+    public Staff registerPushNotificationToken (Long staffId, String token) throws StaffNotFoundException {
+        Staff staff = retrieveStaffByStaffId(staffId);
+        staff.setPushNotificationToken(token);
+        return staff;
+    }
+
 
     private Staff lazyLoadStaffFields(Staff staff) {
         staff.getAdvertisements().size();

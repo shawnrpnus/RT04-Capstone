@@ -7,7 +7,6 @@ axios.defaults.baseURL = process.env.REACT_APP_SPRING_API_URL;
 
 const NODE_URL = process.env.REACT_APP_NODE_API_URL;
 const ADVERTISEMENT_BASE_URL = "/api/advertisement";
-const INSTAGRAM_BASE_URL = "/api/instagramPost";
 const jsog = require("jsog");
 
 const handleRetrieveAllAdvertisement = data => ({

@@ -25,6 +25,7 @@ public class PromoCodeService {
     private final PromoCodeRepository promoCodeRepository;
 
     public PromoCodeService(ValidationService validationService, PromoCodeRepository promoCodeRepository) {
+
         this.validationService = validationService;
         this.promoCodeRepository = promoCodeRepository;
     }
