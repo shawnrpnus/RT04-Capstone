@@ -52,4 +52,6 @@ public class CustomerControllerRoutes {
     public static final String GET_RESERVATIONS_FOR_STORE = "/getReservationsForStore";
     public static final String UPDATE_RESERVATION_STATUS = "/updateReservationStatus";
 
+    public static final String REGISTER_PUSH_NOTIFICATION_TOKEN = "/registerPushNotificationToken";
+
 }

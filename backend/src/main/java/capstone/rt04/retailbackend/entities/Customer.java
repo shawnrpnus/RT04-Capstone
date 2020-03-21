@@ -80,6 +80,8 @@ public class Customer implements Serializable {
     
     @OneToOne(cascade = CascadeType.REMOVE)
     private VerificationCode verificationCode;
+
+    private String pushNotificationToken;
     
     @OneToMany(cascade = CascadeType.REMOVE)
     private List<CreditCard> creditCards;
