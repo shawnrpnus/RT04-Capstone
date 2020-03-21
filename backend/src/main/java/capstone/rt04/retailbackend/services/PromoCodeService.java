@@ -71,6 +71,15 @@ public class PromoCodeService {
         validationService.throwExceptionIfInvalidBean(newPromoCode);
         PromoCode promoCode = retrievePromoCodeById(newPromoCode.getPromoCodeId());
 
+        List<PromoCode> allPromoCode = (List<PromoCode>) promoCodeRepository.findAll();
+        for(PromoCode p : allPromoCode){
+            if(p.getPromoCodeName().equals(newPromoCode.getPromoCodeName())){
+                Map<String, String> errorMap = new HashMap<>();
+                errorMap.put("promoCodeName", ErrorMessages.PROMO_CODE_TAKEN);
+                throw new InputDataValidationException(errorMap, ErrorMessages.PROMO_CODE_TAKEN);
+            }
+        }
+
         System.out.println(newPromoCode.getFlatDiscount());
         System.out.println(newPromoCode.getPercentageDiscount());
 
