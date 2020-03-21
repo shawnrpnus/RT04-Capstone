@@ -14,6 +14,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
+import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -52,6 +53,7 @@ public class PromoCode implements Serializable {
 
     @Column(precision = 11, scale = 2)
     @DecimalMin("0.00")
+    @DecimalMax(value = "100.00", message = ErrorMessages.INVALID_PERCENTAGE_DISCOUNT)
     private BigDecimal percentageDiscount;
 
     @NotNull(message =ErrorMessages.ENTER_MIN)

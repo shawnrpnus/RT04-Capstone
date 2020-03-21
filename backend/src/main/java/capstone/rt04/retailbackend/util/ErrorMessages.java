@@ -30,7 +30,7 @@ public class ErrorMessages {
     public static final String NUM_REMAINING_REQUIRED = "Quantity is required!";
     public static final String ENTER_DISCOUNT= "Enter the promo discount!";
     public static final String ENTER_MIN= "Minimum amount needed!";
-    public static final String INVALID_DISCOUNT= "Decimal minimum: 0.00!";
+    public static final String INVALID_PERCENTAGE_DISCOUNT= "Please enter a discount that is less than 100%!";
     public static final String PRODUCTS_REQUIRED = "Products are required!";
     public static final String TAG_REQUIRED = "Tag is required!";
     public static final String SERIAL_NUMBER_UNIQUE ="Serial number must be unique";

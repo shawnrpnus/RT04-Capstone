@@ -108,9 +108,6 @@ export const updatePromoCode = (promoCodeUpdateRequest, history) => {
                 history.push(`/promoCode/viewAll`);
             })
             .catch(err => {
-                toast.error(err.response.data.errorMessage.toString(), {
-                    position: toast.POSITION.TOP_CENTER
-                });
                 dispatch(updatePromoCodeError(err.response.data));
                 // console.log(err.response.data);
             });

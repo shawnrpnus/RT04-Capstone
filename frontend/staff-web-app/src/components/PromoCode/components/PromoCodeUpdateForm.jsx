@@ -69,8 +69,8 @@ class PromoCodeUpdateForm extends Component {
         this.handlePercentageDiscount = this.handlePercentageDiscount.bind(this);
         this.state = {
             promoCodeName: currentPromoCode ? currentPromoCode.promoCodeName : "",
-            flatDiscount: currentPromoCode ? currentPromoCode.flatDiscount : "",
-            percentageDiscount: currentPromoCode ? currentPromoCode.percentageDiscount : "",
+            flatDiscount: 0,
+            percentageDiscount: 0,
             minimumPurchase: currentPromoCode ? currentPromoCode.minimumPurchase : "",
             numRemaining: currentPromoCode ? currentPromoCode.numRemaining : "",
             originalFlatDiscount: currentPromoCode ? currentPromoCode.flatDiscount : "",
@@ -123,7 +123,10 @@ class PromoCodeUpdateForm extends Component {
             );
 
             this.props.updatePromoCode(req, this.props.history);
-        }else {
+        }
+
+
+        else {
 
             const newPromoCode = new promoCodeToUpdate(
                 this.props.currentPromoCode.promoCodeId,
