@@ -104,7 +104,7 @@ class SidebarContent extends Component {
                 {salesmarketing && (
                     <React.Fragment>
                     <SidebarLink
-                        title="Manage"
+                        title="Create"
                         route="/promoCode/create"
                         onClick={this.hideSidebar}
                     />

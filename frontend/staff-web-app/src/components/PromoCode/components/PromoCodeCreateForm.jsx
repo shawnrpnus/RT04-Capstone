@@ -1,8 +1,8 @@
-import React, { Component, PureComponent } from "react";
+import React, { Component } from "react";
 import withPage from "../../Layout/page/withPage";
 import { connect } from "react-redux";
 import { clearErrors, updateErrors } from "../../../redux/actions";
-import { Grid, TextField } from "@material-ui/core";
+import { Grid} from "@material-ui/core";
 import MaterialTextField from "../../../shared/components/Form/MaterialTextField";
 import { Button, ButtonToolbar } from "reactstrap";
 import * as PropTypes from "prop-types";
@@ -11,13 +11,11 @@ import CloseCircleIcon from "mdi-react/CloseCircleIcon";
 import PromoCode from "../../../models/promoCode/promoCode";
 import PromoCodeCreateRequest from "../../../models/promoCode/PromoCodeCreateRequest";
 import {createPromoCode} from "../../../redux/actions/promoCodeActions";
-import ButtonGroup from "@material-ui/core/ButtonGroup";
 
 class PromoCodeCreateForm extends Component {
     static propTypes = {
         errors: PropTypes.object,
-        clearErrors: PropTypes.func,
-        disabled: PropTypes.bool
+        clearErrors: PropTypes.func
     };
 
     componentDidMount() {
@@ -81,6 +79,7 @@ class PromoCodeCreateForm extends Component {
     render() {
         const {errors} = this.props;
         const hasErrors = Object.keys(this.props.errors).length !== 0;
+
         return (
 
                 <form className="material-form">
@@ -122,21 +121,22 @@ class PromoCodeCreateForm extends Component {
 
                     <Grid item xs={12} md={6}>
 
-
-                            <Button
-                                outline color="info"
-                                size="sm"
-                                onClick={this.handleFlatDiscount}
-                            >
-                                Flat Discount
-                            </Button>
-                            <Button
-                                outline color="info"
-                                size="sm"
-                                onClick={this.handlePercentageDiscount}
-                            >
-                                Percentage Discount
-                            </Button>
+                        <Button
+                            outline color="info"
+                            active={this.state.mode}
+                            size="sm"
+                            onClick={this.handleFlatDiscount}
+                        >
+                            Flat Discount
+                        </Button>
+                        <Button
+                            outline color="info"
+                            size="sm"
+                            active={!this.state.mode}
+                            onClick={this.handlePercentageDiscount}
+                        >
+                            Percentage Discount
+                        </Button>
 
 
                     </Grid>

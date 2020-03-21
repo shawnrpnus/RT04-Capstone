@@ -22,11 +22,9 @@ import java.util.Map;
 public class PromoCodeService {
 
     private final ValidationService validationService;
-    private final ProductService productService;
     private final PromoCodeRepository promoCodeRepository;
 
-    public PromoCodeService(@Lazy ProductService productService, ValidationService validationService, PromoCodeRepository promoCodeRepository) {
-        this.productService = productService;
+    public PromoCodeService(ValidationService validationService, PromoCodeRepository promoCodeRepository) {
         this.validationService = validationService;
         this.promoCodeRepository = promoCodeRepository;
     }
@@ -68,17 +66,21 @@ public class PromoCodeService {
         return promoCodeRepository.findByPromoCodeName(name).orElse(null);
     }
 
-    public PromoCode updatePromoCode(PromoCode newPromoCode) throws PromoCodeNotFoundException {
+    public PromoCode updatePromoCode(PromoCode newPromoCode) throws PromoCodeNotFoundException, InputDataValidationException {
+        validationService.throwExceptionIfInvalidBean(newPromoCode);
         PromoCode promoCode = retrievePromoCodeById(newPromoCode.getPromoCodeId());
 
+        System.out.println(newPromoCode.getFlatDiscount());
+        System.out.println(newPromoCode.getPercentageDiscount());
+
         promoCode.setFlatDiscount(newPromoCode.getFlatDiscount());
+        promoCode.setPercentageDiscount(newPromoCode.getPercentageDiscount());
         promoCode.setMinimumPurchase(newPromoCode.getMinimumPurchase());
         promoCode.setNumRemaining(newPromoCode.getNumRemaining());
-        promoCode.setPercentageDiscount(newPromoCode.getPercentageDiscount());
-        promoCode.setPromoCodeId(newPromoCode.getPromoCodeId());
         promoCode.setPromoCodeName(newPromoCode.getPromoCodeName());
 
-        return promoCode;
+        PromoCode saved = promoCodeRepository.save(promoCode);
+        return saved;
     }
 
     public PromoCode deletePromoCode(Long promoCodeId) throws PromoCodeNotFoundException {
