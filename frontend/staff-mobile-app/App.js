@@ -15,7 +15,7 @@ import { useNavigation } from "@react-navigation/native";
 
 const jsog = require("jsog");
 
-export default function App() {
+export default function App(props) {
   useEffect(() => {
     if (Platform.OS === "android") {
       Notifications.createChannelAndroidAsync("reservation", {

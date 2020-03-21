@@ -69,7 +69,7 @@ export default function Autocomplete(props) {
 
   return (
     <>
-      <Block flex={1}>
+      <Block flex={1} style={{width: "100%"}}>
         <TextInput
           label={label}
           // mode="outlined"

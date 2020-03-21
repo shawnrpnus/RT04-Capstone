@@ -1,23 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { Block, Card, Text } from "galio-framework";
 import { useDispatch, useSelector } from "react-redux";
-import { Dimensions, Platform } from "react-native";
+import { Dimensions, ImageBackground, Platform } from "react-native";
 import Theme from "src/constants/Theme";
 import { Divider } from "react-native-paper";
 import {
   dispatchUpdatedStaff,
   registerForPushNotifications
 } from "src/redux/actions/staffActions";
-import {Notifications} from "expo";
-import {retrieveUpcomingReservations} from "src/redux/actions/reservationActions";
-import {not} from "react-native-reanimated";
+import {Notifications, SplashScreen} from "expo";
+import { retrieveUpcomingReservations } from "src/redux/actions/reservationActions";
+import fashion_bg from "assets/images/fashion-bg.jpg";
 
 const _ = require("lodash");
 const moment = require("moment");
 const { width, height } = Dimensions.get("window");
 
 function Home(props) {
-  const {navigation} = props;
+  const { navigation } = props;
   const dispatch = useDispatch();
   const staff = useSelector(state => state.staff.loggedInStaff);
   const store = _.get(staff, "store");
@@ -27,6 +27,7 @@ function Home(props) {
   useEffect(() => {
     const registerPushNotificationToken = async () => {
       if (staff && !pushNotifGenerated) {
+        SplashScreen.hide();
         let response = await registerForPushNotifications(staff.staffId);
         if (response != null) {
           dispatchUpdatedStaff(response.data, dispatch);
@@ -36,43 +37,48 @@ function Home(props) {
     };
     registerPushNotificationToken();
     const notificationSubscription = Notifications.addListener(
-        handleNotification
+      handleNotification
     );
   }, [staff]);
 
   const handleNotification = notification => {
-    console.log("home notif")
+    console.log("home notif");
     if (staff && notification.data.type === "reservationReminder") {
       dispatch(retrieveUpcomingReservations(staff.store.storeId, null));
     }
-    if (notification.origin === "selected"){
+    if (notification.origin === "selected") {
       navigation.navigate("ReservationStack");
     }
-  }
+  };
 
   return (
     <Block flex>
       {staff && (
         <>
-          <Block flex={0.04} />
           <Block
-            flex={0.2}
+            flex={0.4}
             center
             middle
             card
             shadow
             style={{
               backgroundColor: Theme.COLORS.SECONDARY,
-              width: width * 0.9,
-              marginBottom: 20
+              width: width
             }}
           >
-            <Text h4 bold>
-              Welcome,
-            </Text>
-            <Text h4>
-              {staff.firstName} {staff.lastName}
-            </Text>
+            <ImageBackground
+              source={fashion_bg}
+              style={{ height: "100%", width: "100%", resizeMode: "cover" }}
+            >
+              <Block flex middle style={{backgroundColor: "rgba(0,0,0,0.4)"}}>
+                <Text h2 bold style={{color: "white"}}>
+                  Welcome,
+                </Text>
+                <Text h2 style={{color: "white"}}>
+                  {staff.firstName} {staff.lastName}
+                </Text>
+              </Block>
+            </ImageBackground>
           </Block>
           <Block
             flex={0.6}
@@ -81,8 +87,8 @@ function Home(props) {
             shadow
             style={{
               backgroundColor: "rgba(255, 255, 255, 1)",
-              width: width * 0.9,
-              marginBottom: 20,
+              width: width,
+              borderRadius: 0,
               padding: 20
             }}
           >
