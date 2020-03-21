@@ -22,6 +22,18 @@ export default function(state = initialState, action) {
                 ...state,
                 currentPromoCode: action.deletedPromoCode
             };
+
+        case types.UPDATE_PROMOCODE:
+            return {
+                ...state,
+                currentPromoCode: action.updatedPromoCode
+            };
+
+        case types.RETRIEVE_PROMOCODE:
+            return {
+                ...state,
+                currentPromoCode: action.retrievedPromoCode
+            };
         default:
             return state;
     }
