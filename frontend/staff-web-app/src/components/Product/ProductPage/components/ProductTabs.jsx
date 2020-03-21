@@ -34,7 +34,7 @@ export default class ProductTabs extends PureComponent {
       Object.keys(this.props.tags).length > 0
     ) {
       tags = this.props.tags.map(function(value, i) {
-        return <Chip style={{ margin: "0 10px" }} label={value.name} />;
+        return <Chip key={i} style={{ margin: "0 10px" }} label={value.name} />;
       });
     }
 
@@ -45,7 +45,9 @@ export default class ProductTabs extends PureComponent {
       Object.keys(this.props.styles).length > 0
     ) {
       styles = this.props.styles.map(function(value, i) {
-        return <Chip style={{ margin: "0 10px" }} label={value.styleName} />;
+        return (
+          <Chip key={i} style={{ margin: "0 10px" }} label={value.styleName} />
+        );
       });
     }
 

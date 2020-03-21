@@ -9,8 +9,8 @@ public class ProductControllerRoutes {
     public static final String RETRIEVE_PRODUCTS_DETAILS_BY_CRITERIA = "/retrieveProductsDetailsByCriteria";
     public static final String CREATE_PRODUCT = "/createNewProduct";
     public static final String UPDATE_PRODUCT = "/updateProduct";
-    public static final String ADD_REMOVE_PROMOCODE_TO_A_PRODUCT = "/addOrRemovePromoCodeToAProduct";
-    public static final String ADD_REMOVE_PROMOCODE_FOR_A_LIST_OF_PRODUCTS = "/addOrRemovePromoCodeForAListOfProducts";
+    public static final String ADD_REMOVE_DISCOUNT_TO_A_PRODUCT = "/addOrRemovePromoCodeToAProduct";
+    public static final String ADD_REMOVE_DISCOUNT_FOR_A_LIST_OF_PRODUCTS = "/addOrRemoveDiscountForAListOfProducts";
     public static final String ADD_REMOVE_TAG_TO_PRODUCT = "/addOrRemoveTagToAProduct";
     public static final String ADD_REMOVE_TAG_FOR_A_LIST_OF_PRODUCTS = "/addOrRemoveTagForAListOfProducts";
     public static final String DELETE_PRODUCT = "/deleteProduct/{productId}";

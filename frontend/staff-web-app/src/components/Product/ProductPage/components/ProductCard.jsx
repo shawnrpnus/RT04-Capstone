@@ -290,7 +290,7 @@ class ProductCard extends PureComponent {
                       {colourSizeMap[selectedColour].sizeMaps.map(
                         ({ size, productVariantId }, index) => {
                           const active =
-                            selectedSize &&
+                            selectedSize !== "" &&
                             selectedSize.toString() ===
                               productVariantId.toString();
                           return (

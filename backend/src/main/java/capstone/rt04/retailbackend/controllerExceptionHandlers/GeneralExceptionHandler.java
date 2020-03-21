@@ -10,6 +10,7 @@ import capstone.rt04.retailbackend.util.exceptions.category.UpdateCategoryExcept
 import capstone.rt04.retailbackend.util.exceptions.contactUs.ContactUsNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.customer.*;
 import capstone.rt04.retailbackend.util.exceptions.delivery.DeliveryHasAlreadyBeenConfirmedException;
+import capstone.rt04.retailbackend.util.exceptions.discount.DiscountNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.inStoreRestockOrder.InStoreRestockOrderItemNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.inStoreRestockOrder.InStoreRestockOrderNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.inStoreRestockOrder.InStoreRestockOrderUpdateException;
@@ -81,7 +82,7 @@ public class GeneralExceptionHandler extends ResponseEntityExceptionHandler {
             ProductImageNotFoundException.class, ProductVariantNotFoundException.class, ReservationNotFoundException.class,
             StyleNotFoundException.class, ContactUsNotFoundException.class, InStoreRestockOrderNotFoundException.class,
             AdvertisementNotFoundException.class, InStoreRestockOrderItemNotFoundException.class,
-            InstagramPostNotFoundException.class, ReviewNotFoundException.class
+            InstagramPostNotFoundException.class, ReviewNotFoundException.class, DiscountNotFoundException.class
     })
     public final ResponseEntity<Object> handleNotFoundExceptions(Exception ex, WebRequest req) {
         return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);

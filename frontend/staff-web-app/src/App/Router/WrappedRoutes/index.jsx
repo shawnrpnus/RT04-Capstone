@@ -14,6 +14,7 @@ import RestockOrder from "./RestockOrder";
 import Delivery from "./Delivery";
 import Advertisement from "./Advertisement";
 import PromoCode from "./PromoCode";
+import Discount from "./Discount";
 
 export default () => (
   <div>
@@ -31,7 +32,8 @@ export default () => (
       <Route path="/restockOrder" component={RestockOrder} />
       <Route path="/delivery" component={Delivery} />
       <Route path="/advertisement" component={Advertisement} />
-      <Route path ="/promoCode" component ={PromoCode}/>
+      <Route path="/promoCode" component={PromoCode} />
+      <Route path="/discount" component={Discount} />
     </div>
   </div>
 );

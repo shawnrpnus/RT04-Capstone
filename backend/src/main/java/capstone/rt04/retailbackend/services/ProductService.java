@@ -14,9 +14,7 @@ import capstone.rt04.retailbackend.util.enums.SizeEnum;
 import capstone.rt04.retailbackend.util.enums.SortEnum;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.category.CategoryNotFoundException;
-import capstone.rt04.retailbackend.util.exceptions.discount.DiscountNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.product.*;
-import capstone.rt04.retailbackend.util.exceptions.promoCode.PromoCodeNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.style.StyleNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.tag.TagNotFoundException;
@@ -28,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.PersistenceException;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.*;
 
 @Service
@@ -51,20 +50,20 @@ public class ProductService {
     private final ProductStockRepository productStockRepository;
     private final ProductVariantRepository productVariantRepository;
 
-    public ProductService(ValidationService validationService, TagService tagService, CategoryService categoryService, StyleService styleService,
+    public ProductService(ValidationService validationService, TagService tagService, CategoryService categoryService, DiscountService discountService, StyleService styleService,
                           StoreService storeService, ProductRepository productRepository, ProductVariantRepository productVariantRepository,
-                          ProductStockRepository productStockRepository, ProductImageRepository productImageRepository, DiscountService discountService,
-                          PromoCodeService promoCodeService, WarehouseService warehouseService, SizeDetailsService sizeDetailsService, @Lazy TransactionService transactionService) {
+                          ProductStockRepository productStockRepository, ProductImageRepository productImageRepository, PromoCodeService promoCodeService,
+                          WarehouseService warehouseService, SizeDetailsService sizeDetailsService, @Lazy TransactionService transactionService) {
         this.validationService = validationService;
         this.tagService = tagService;
         this.categoryService = categoryService;
+        this.discountService = discountService;
         this.styleService = styleService;
         this.storeService = storeService;
         this.productRepository = productRepository;
         this.productVariantRepository = productVariantRepository;
         this.productStockRepository = productStockRepository;
         this.productImageRepository = productImageRepository;
-        this.discountService = discountService;
         this.promoCodeService = promoCodeService;
         this.warehouseService = warehouseService;
         this.sizeDetailsService = sizeDetailsService;
@@ -204,6 +203,23 @@ public class ProductService {
             productDetailsResponse = new ProductDetailsResponse();
             colours.clear();
 
+            for (Discount discount : product.getDiscounts()) {
+                // TODO: Retrieve active discount and set the discounted price
+                Timestamp current = new Timestamp(System.currentTimeMillis());
+                // Haven't reach discount end date but already past the discount start date => active
+                if (discount.getToDateTime().compareTo(current) >= 0 && discount.getFromDateTime().compareTo(current) <= 0) {
+                    if (discount.getFlatDiscount() != null) {
+                        // If flat rate discount >= price, don't apply the flat rate discount
+                        if (discount.getFlatDiscount().compareTo(product.getPrice()) >= 0) break;
+                        productDetailsResponse.setDiscountedPrice(product.getPrice().subtract(discount.getFlatDiscount()));
+                    } else {
+                        productDetailsResponse.setDiscountedPrice(product.getPrice().
+                                multiply(BigDecimal.ONE.subtract(discount.getPercentageDiscount())));
+                    }
+                    break;
+                }
+            }
+
             for (ProductVariant productVariant : product.getProductVariants()) {
                 // Find product stock that belongs to the specified store/ warehouse
 
@@ -288,7 +304,7 @@ public class ProductService {
             productsByTag = productRepository.findAllByTagsIn(tags);
         }
 
-        Boolean matchColour, matchSize, matchPriceRange, matchCategory, matchTag, matchStyle;
+        Boolean matchColour, matchSize, matchPriceRange, matchCategory, matchStyle;
 
         for (Product product : productsByTag) {
             matchSize = false;
@@ -341,34 +357,6 @@ public class ProductService {
                 } else {
                     matchStyle = true;
                 }
-
-//                if (colours != null && colours.size() > 0) {
-//                    if (colours.contains(productVariant.getColour())) {
-//                        matchColour = true;
-//                        if (sizes != null && sizes.size() > 0) {
-//                            for (SizeEnum size : sizes) {
-//                                if (size.equals(productVariant.getSizeDetails().getProductSize())) {
-//                                    matchSize = true;
-//                                    break;
-//                                }
-//                            }
-//                        } else {
-//                            matchSize = true;
-//                        }
-//                    }
-//                } else {
-//                    matchColour = true;
-//                    if (sizes != null && sizes.size() > 0) {
-//                        for (SizeEnum size : sizes) {
-//                            if (size.equals(productVariant.getSizeDetails().getProductSize())) {
-//                                matchSize = true;
-//                                break;
-//                            }
-//                        }
-//                    } else {
-//                        matchSize = true;
-//                    }
-//                }
             }
             if (matchColour && matchSize && matchPriceRange && matchCategory && matchStyle) {
                 products.add(product);
@@ -387,9 +375,6 @@ public class ProductService {
             // Latest arrival
             Collections.sort(products, Comparator.comparing(Product::getProductId).reversed());
         }
-
-        System.out.println(products.size());
-
         lazilyLoadProduct(products);
         return products;
     }
@@ -434,14 +419,6 @@ public class ProductService {
         addOrRemoveTag(null, newProduct.getProductId(), newProduct.getTags(), null);
         addOrRemoveStyle(null, newProduct.getProductId(), newProduct.getStyles(), null);
         changeCategoryForProduct(newProduct.getCategory().getCategoryId(), newProduct.getProductId());
-
-//        product.setProductVariants(newProduct.getProductVariants()); -> createProductVariant / deleteProductVariant
-//        product.setPromoCodes(newProduct.getPromoCodes()); -> add/remove promoCode
-//        product.setCategory(newProduct.getCategory());
-//        product.setTags(newProduct.getTags()); -> add/remove discount
-//        product.setStyles();
-//        product.setDiscounts();
-//        product.setReviews();
         return product;
     }
 
@@ -582,11 +559,11 @@ public class ProductService {
         ProductVariant pv = productVariantRepository.findById(productVariantId)
                 .orElseThrow(() -> new ProductVariantNotFoundException("Product variant does not exist"));
         List<Map<String, String>> result = new ArrayList<>();
-        for (ProductStock ps : pv.getProductStocks()){
+        for (ProductStock ps : pv.getProductStocks()) {
             Map<String, String> map = new HashMap<>();
             if (ps.getStore() != null) {
                 map.put("storeName", ps.getStore().getStoreName());
-            } else if (ps.getWarehouse() != null){
+            } else if (ps.getWarehouse() != null) {
                 map.put("storeName", "Warehouse");
             }
             map.put("quantity", ps.getQuantity().toString());
@@ -969,7 +946,7 @@ public class ProductService {
     }
 
     public void addOrRemoveTag(Long tagId, Long productId, List<Tag> tags, List<Product> products) throws
-            ProductNotFoundException, TagNotFoundException, TagNotFoundException, TagNotFoundException {
+            ProductNotFoundException, TagNotFoundException {
         // Adding / removing tag for a list of products
         if (tagId != null) {
             Tag tag = tagService.retrieveTagByTagId(tagId);
@@ -1018,81 +995,60 @@ public class ProductService {
         }
     }
 
-//    public void addOrRemovePromoCode(Long promoCodeId, Long
-//            productId, List<PromoCode> promoCodes, List<Product> products, Boolean isAppend) throws
-//            PromoCodeNotFoundException, ProductNotFoundException, PromoCodeNotFoundException, PromoCodeNotFoundException, PromoCodeNotFoundException {
-//        // Adding / removing promoCode for a list of products
-//        if (promoCodeId != null) {
-//            PromoCode promoCode = promoCodeService.retrievePromoCodeById(promoCodeId);
-//            Product product = null;
+    // TODO : Delete if not going to add discounts by a product
+//    public void addOrRemoveDiscount(Long inputDiscountId, Long inputProductId, List<Long> discountIds, List<Long> productIds, Boolean isAppend)
+//            throws ProductNotFoundException, DiscountNotFoundException {
+//        // Adding / removing discount for a list of products
+//        if (inputDiscountId != null) {
+//            Discount discount = discountService.retrieveDiscountById(inputDiscountId);
+//            List<Product> discountProducts = discount.getProducts();
+//            List<Product> persistentInputProducts = new ArrayList<>();
 //
-//            for (Product prod : products) {
-//                product = retrieveProductById(prod.getProductId());
-//                if (isAppend) {
-//                    promoCode.getProducts().add(product);
-//                    product.getPromoCodes().add(promoCode);
+//            for (Long productId : productIds) {
+//                persistentInputProducts.add(retrieveProductById(productId));
+//            }
+//
+//            for (Product discountProduct : new ArrayList<>(discountProducts)) {
+//                if (persistentInputProducts.contains(discountProduct)) {
+//                    persistentInputProducts.remove(discountProduct);
 //                } else {
-//                    promoCode.getProducts().remove(product);
-//                    product.getPromoCodes().remove(promoCode);
+//                    discountProduct.getDiscounts().remove(discount);
+//                    discount.getProducts().remove(discountProduct);
 //                }
 //            }
-//        }
-//        // Adding / removing a list of promoCodes for a product
-//        else if (productId != null) {
-//            Product product = retrieveProductById(productId);
-//            PromoCode promoCode = null;
 //
-//            for (PromoCode code : promoCodes) {
-//                promoCode = promoCodeService.retrievePromoCodeById(code.getPromoCodeId());
-//                if (isAppend) {
-//                    product.getPromoCodes().add(promoCode);
-//                    promoCode.getProducts().add(product);
+//            for (Product product : persistentInputProducts) {
+//                product.getDiscounts().add(discount);
+//                discount.getProducts().add(product);
+//            }
+//        }
+//        // Adding / removing a list of discounts for a product
+//        else if (inputProductId != null) {
+//            Product product = retrieveProductById(inputProductId);
+//            List<Discount> productDiscounts = product.getDiscounts();
+//            List<Discount> persistentInputDiscounts = new ArrayList<>();
+//
+//            for (Long discountId : discountIds) {
+//                persistentInputDiscounts.add(discountService.retrieveDiscountById(discountId));
+//            }
+//
+//            for (Discount productDiscount : new ArrayList<>(productDiscounts)) {
+//                if (persistentInputDiscounts.contains(productDiscount)) {
+//                    persistentInputDiscounts.remove(productDiscount);
 //                } else {
-//                    product.getPromoCodes().remove(promoCode);
-//                    promoCode.getProducts().remove(product);
+//                    product.getDiscounts().remove(productDiscount);
+//                    productDiscount.getProducts().remove(product);
 //                }
+//            }
+//            for (Discount discount : persistentInputDiscounts) {
+//                product.getDiscounts().add(discount);
+//                discount.getProducts().add(product);
 //            }
 //        }
 //    }
 
-    public void addOrRemoveDiscount(Long discountId, Long
-            productId, List<Discount> discounts, List<Product> products, Boolean isAppend) throws
-            ProductNotFoundException, DiscountNotFoundException, DiscountNotFoundException, DiscountNotFoundException, DiscountNotFoundException {
-        // Adding / removing discount for a list of products
-        if (discountId != null) {
-            Discount discount = discountService.retrieveDiscountById(discountId);
-            Product product = null;
-
-            for (Product prod : products) {
-                product = retrieveProductById(prod.getProductId());
-                if (isAppend) {
-                    discount.getProducts().add(product);
-                    product.getDiscounts().add(discount);
-                } else {
-                    discount.getProducts().remove(product);
-                    product.getDiscounts().remove(discount);
-                }
-            }
-        }
-        // Adding / removing a list of discounts for a product
-        else if (productId != null) {
-            Product product = retrieveProductById(productId);
-            Discount discount = null;
-            for (Discount disc : discounts) {
-                discount = discountService.retrieveDiscountById(disc.getDiscountId());
-                if (isAppend) {
-                    product.getDiscounts().add(discount);
-                    discount.getProducts().add(product);
-                } else {
-                    product.getDiscounts().remove(discount);
-                    discount.getProducts().remove(product);
-                }
-            }
-        }
-    }
-
     public void addOrRemoveStyle(Long styleId, Long productId, List<Style> styles, List<Product> products) throws
-            ProductNotFoundException, TagNotFoundException, StyleNotFoundException {
+            ProductNotFoundException, StyleNotFoundException {
         // Adding / removing style for a list of products
         if (styleId != null) {
             Style style = styleService.retrieveStyleByStyleId(styleId);

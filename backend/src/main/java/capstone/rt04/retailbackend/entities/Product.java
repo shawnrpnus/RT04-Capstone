@@ -12,7 +12,6 @@ import com.voodoodyne.jackson.jsog.JSOGGenerator;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 import javax.persistence.*;
 import javax.validation.constraints.DecimalMin;
@@ -134,6 +133,22 @@ public class Product implements Serializable {
                 if(!style.getProducts().contains(this))
                 {
                     style.getProducts().add(this);
+                }
+            }
+        }
+    }
+
+    public void addDiscount(Discount discount)
+    {
+        if(discount != null)
+        {
+            if(!this.discounts.contains(discount))
+            {
+                this.discounts.add(discount);
+
+                if(!discount.getProducts().contains(this))
+                {
+                    discount.getProducts().add(this);
                 }
             }
         }
