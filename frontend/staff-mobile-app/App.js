@@ -24,12 +24,8 @@ export default function App(props) {
         vibrate: [0, 250, 250, 250]
       });
     }
-    Notifications.addListener(handleNotification);
   }, []);
 
-  const handleNotification = notification => {
-    console.log(notification);
-  };
   return (
     <Provider store={store}>
       <GalioProvider theme={theme}>

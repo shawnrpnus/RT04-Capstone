@@ -1,11 +1,32 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { Notifications } from "expo";
+import {Provider} from "react-redux";
+import {GalioProvider} from "galio-framework";
+import { NavigationContainer } from "@react-navigation/native";
+import Screens from "src/navigation/Screens";
+
 
 export default function App() {
+  useEffect(() => {
+    if (Platform.OS === "android") {
+      Notifications.createChannelAndroidAsync("reservation", {
+        name: "Reservation",
+        sound: true,
+        vibrate: [0, 250, 250, 250]
+      });
+    }
+  }, []);
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-    </View>
+      <Provider store={store}>
+        <GalioProvider theme={theme}>
+          <NavigationContainer>
+            {/*<PushNotificationHandler />*/}
+            <Screens />
+          </NavigationContainer>
+        </GalioProvider>
+      </Provider>
   );
 }
 
