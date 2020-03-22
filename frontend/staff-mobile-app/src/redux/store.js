@@ -38,13 +38,15 @@ const loadLoggedInStaff = () => {
     AsyncStorage.getItem("state", (err, result) => {
       if (err){
         console.log(err);
+        SplashScreen.hide();
         return initialState;
       }
-      if (result){
+      if (_.get(result, "staff.loggedInStaff")){
         dispatch({
           type: LOAD_LOGGED_IN_STAFF,
           staff: jsog.parse(result).staff.loggedInStaff
         })
+        console.log(result)
       } else {
         SplashScreen.hide();
       }
@@ -61,7 +63,6 @@ const unsubscribe = store.subscribe(() => {
 });
 
 //populate store with logged in staff
-SplashScreen.preventAutoHide()
 store.dispatch(loadLoggedInStaff());
 
 export default store;
