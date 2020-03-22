@@ -5,6 +5,9 @@ import {Provider} from "react-redux";
 import {GalioProvider} from "galio-framework";
 import { NavigationContainer } from "@react-navigation/native";
 import Screens from "src/navigation/Screens";
+import store from "src/redux/store";
+import theme from "src/constants/Theme";
+
 
 
 export default function App() {
@@ -22,7 +25,6 @@ export default function App() {
       <Provider store={store}>
         <GalioProvider theme={theme}>
           <NavigationContainer>
-            {/*<PushNotificationHandler />*/}
             <Screens />
           </NavigationContainer>
         </GalioProvider>

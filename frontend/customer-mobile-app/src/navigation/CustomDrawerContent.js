@@ -5,19 +5,19 @@ import { ScrollView, StyleSheet } from "react-native";
 import DrawerCustomItem from "src/components/DrawerCustomItem";
 import materialTheme from "src/constants/Theme";
 
-const screens = ["HomeStack", "ProductStack", "ReservationStack"];
+const screens = ["ShopStack", "ProfileStack"];
 
 function CustomDrawerContent(props) {
   const { navigation, state } = props;
 
-  const staff = useSelector(state => state.staff.loggedInStaff);
+  const customer = useSelector(state => state.customer.loggedInCustomer);
   return (
     <Block style={styles.container}>
       <Block flex={0.1} style={styles.header}>
         <Block style={styles.profile}>
-          {staff && (
+          {customer && (
             <Text h4 color={"white"}>
-              {staff.firstName} {staff.lastName}
+              {customer.firstName} {customer.lastName}
             </Text>
           )}
         </Block>
@@ -47,7 +47,7 @@ function CustomDrawerContent(props) {
         <DrawerCustomItem
           title="Log Out"
           navigation={navigation}
-          focused={state.index === 4}
+          focused={state.index === 3}
         />
       </Block>
     </Block>

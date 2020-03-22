@@ -13,21 +13,22 @@ import Home from "src/screens/Home";
 import { useSelector } from "react-redux";
 import CustomDrawerContent from "src/navigation/CustomDrawerContent";
 import Product from "src/screens/Product";
-import ReservationDetail from "src/screens/Reservation/ReservationDetail";
 import CustomHeader from "src/components/CustomHeader";
 import ProductDetails from "src/screens/ProductDetails/ProductDetails";
-import Reservations from "src/screens/Reservation/Reservations";
+import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
+import { MaterialCommunityIcons } from "react-native-vector-icons";
 
 const { width } = Dimensions.get("screen");
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
+const Tab = createMaterialBottomTabNavigator();
 
 export default function AppStack(props) {
-  const staff = useSelector(state => state.staff.loggedInStaff);
+  const customer = useSelector(state => state.customer.loggedInCustomer);
   return (
-    <Stack.Navigator initialRouteName={staff ? "AppDrawer" : "Login"}>
-      {!staff ? (
+    <Stack.Navigator initialRouteName={customer ? "AppDrawer" : "Login"}>
+      {!customer ? (
         <Stack.Screen
           name="Login"
           component={LogIn}
@@ -74,35 +75,31 @@ function AppDrawer(props) {
           fontWeight: "normal"
         }
       }}
-      initialRouteName="HomeStack"
+      initialRouteName="ShopStack"
     >
+        <Drawer.Screen
+            name="ShopStack"
+            drawerLabel="Shop"
+            component={ShopStack}
+        />
       <Drawer.Screen
-        name="HomeStack"
-        drawerLabel="Home"
-        component={HomeStack}
+        name="ProfileStack"
+        drawerLabel="Profile"
+        component={ProfileStack}
       />
-      <Drawer.Screen
-        name="ProductStack"
-        drawerLabel="Product"
-        component={ProductStack}
-      />
-      <Drawer.Screen
-        name="ReservationStack"
-        drawerLabel="ReservationDetail"
-        component={ReservationStack}
-      />
+      {/*<Drawer.Screen name="TransactionStack" drawerLabel="Transactions" component={}/>*/}
     </Drawer.Navigator>
   );
 }
 
-function HomeStack(props) {
+function ProfileStack(props) {
   return (
     <Stack.Navigator mode="card" headerMode="screen">
       <Stack.Screen
-        name="Home"
+        name="Profile"
         component={Home}
         options={{
-          header: props => <CustomHeader title="Home" {...props} />,
+          header: props => <CustomHeader title="Profile" {...props} />,
           headerStyle: { height: 100 }
         }}
       />
@@ -110,14 +107,14 @@ function HomeStack(props) {
   );
 }
 
-function ProductStack(props) {
+function ShopStack(props) {
   return (
-    <Stack.Navigator mode="card" headerMode="screen">
+    <Stack.Navigator mode="card" headerMode="screen" initialRouteName="Shop">
       <Stack.Screen
-        name="Product"
-        component={Product}
+        name="Shop"
+        component={ProductScanTabs}
         options={{
-          header: props => <CustomHeader title="Product" {...props} />,
+          header: props => <CustomHeader title="Shop" {...props} />,
           headerStyle: { height: 100 }
         }}
       />
@@ -134,26 +131,33 @@ function ProductStack(props) {
   );
 }
 
-function ReservationStack(props) {
+function ProductScanTabs(props) {
   return (
-    <Stack.Navigator mode="card" headerMode="screen">
-      <Stack.Screen
-        name="Reservations"
-        component={Reservations}
+    <Tab.Navigator
+      initialRouteName="Add to Cart"
+      activeColor={theme.COLORS.PRIMARY}
+      barStyle={{ backgroundColor: theme.COLORS.CAPTION }}
+    >
+      <Tab.Screen
+        name="Add to Cart"
+        component={Product}
         options={{
-          header: props => <CustomHeader title="Reservations" {...props} />,
-          headerStyle: { height: 100 }
-        }}
-      />
-      <Stack.Screen
-        name="Reservation Details"
-        component={ReservationDetail}
-        options={{
-          header: props => (
-            <CustomHeader title="Reservation Details" back {...props} />
+          tabBarLabel: "Add to Cart",
+          tabBarIcon: ({ color }) => (
+            <MaterialCommunityIcons name="cart-plus" color={color} size={26} />
           )
         }}
       />
-    </Stack.Navigator>
+      <Tab.Screen
+        name="View Details"
+        component={Product}
+        options={{
+          tabBarLabel: "View Details",
+          tabBarIcon: ({ color }) => (
+            <MaterialCommunityIcons name="magnify" color={color} size={26} />
+          )
+        }}
+      />
+    </Tab.Navigator>
   );
 }
