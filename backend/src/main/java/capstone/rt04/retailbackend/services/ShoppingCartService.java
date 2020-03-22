@@ -69,7 +69,7 @@ public class ShoppingCartService {
             Customer customer = customerService.retrieveCustomerByCustomerId(customerId);
             if (shoppingCartItem.getProductVariant().getProductVariantId().equals(productVariantId)) {
                 if (quantity > 0) { //set to whatever input quantity
-                        shoppingCartItem.setQuantity(quantity);
+                    shoppingCartItem.setQuantity(quantity);
                     shoppingCart.setLastUpdated(new Timestamp(System.currentTimeMillis()));
                 } else if (quantity == 0) { // delete
                     shoppingCartItem.setProductVariant(null);
