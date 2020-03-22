@@ -164,6 +164,7 @@ public class ReservationController {
             reservation.getCustomer().setReservations(null);
             reservation.getCustomer().setTransactions(null);
             reservation.getCustomer().setStyle(null);
+            reservation.getCustomer().setReviews(null);
         }
         if (reservation.getStore() != null) {
             reservation.getStore().setReservations(null);

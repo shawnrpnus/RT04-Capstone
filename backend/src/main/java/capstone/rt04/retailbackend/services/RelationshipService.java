@@ -138,7 +138,7 @@ public class RelationshipService {
         staff.setDepartment(null);
     }
 
-    // Maintain product details
+    // Only maintain product details
     public void clearProductRelationships(Product product) {
         product.setStyles(null);
         product.setReviews(null);
@@ -148,7 +148,7 @@ public class RelationshipService {
         product.setProductVariants(null);
     }
 
-    // Maintain product details
+    // Clear product variant but maintain product details
     public void clearProductVariantRelationships(ProductVariant productVariant) {
         productVariant.setProductStocks(null);
         // Product

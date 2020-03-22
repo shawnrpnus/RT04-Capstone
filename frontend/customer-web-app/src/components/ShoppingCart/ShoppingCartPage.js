@@ -1,55 +1,35 @@
 /*eslint-disable*/
 import React, { useEffect, useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
+// redux
+import { useDispatch, useSelector } from "react-redux";
 // nodejs library that concatenates classes
 import classNames from "classnames";
 // @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Divider from "@material-ui/core/Divider";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import Tooltip from "@material-ui/core/Tooltip";
 import Grid from "@material-ui/core/Grid";
 import CancelIcon from "@material-ui/icons/Cancel";
 import IconButton from "@material-ui/core/IconButton";
-import AddIcon from "@material-ui/icons/Add";
 import AddBoxIcon from "@material-ui/icons/AddBox";
 import MinusBoxIcon from "@material-ui/icons/IndeterminateCheckBox";
-import RemoveIcon from "@material-ui/icons/Remove";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
-
-// @material-ui/icons
-import Favorite from "@material-ui/icons/Favorite";
-import Close from "@material-ui/icons/Close";
-import Remove from "@material-ui/icons/Remove";
-import Add from "@material-ui/icons/Add";
-import KeyboardArrowRight from "@material-ui/icons/KeyboardArrowRight";
-
-// redux
-import { useDispatch, useSelector } from "react-redux";
-
 // core components
 import Parallax from "components/UI/Parallax/Parallax.js";
 import GridContainer from "components/Layout/components/Grid/GridContainer.js";
 import GridItem from "components/Layout/components/Grid/GridItem.js";
-
 import Button from "components/UI/CustomButtons/Button.js";
 import Card from "components/UI/Card/Card";
-import CardHeader from "components/UI/Card/CardHeader";
 import CardBody from "components/UI/Card/CardBody";
-
 import shoppingCartStyle from "assets/jss/material-kit-pro-react/views/shoppingCartStyle.js";
-import wishtlistStyle from "assets/jss/material-kit-pro-react/views/wishlistStyle.js";
 
 import {
   updateShoppingCart,
   clearShoppingCart
 } from "./../../redux/actions/shoppingCartActions";
-import { saveCard } from "./../../redux/actions/customerActions";
 import UpdateShoppingCartRequest from "../../models/shoppingCart/UpdateShoppingCartRequest.js";
-import CreditCardDialog from "./CreditCardDialog.js";
 import colourList from "assets/colours.json";
 //popper
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
@@ -66,9 +46,7 @@ export default function ShoppingCartPage() {
   // Redux dispatch to call actions
   const dispatch = useDispatch();
   // Redux mapping state to props
-  const errors = useSelector(state => state.errors);
   const customer = useSelector(state => state.customer.loggedInCustomer);
-  const clientSecret = useSelector(state => state.customer.clientSecret);
 
   //popper
   const [popoverOpen, setPopoverOpen] = useState(false);
@@ -86,7 +64,6 @@ export default function ShoppingCartPage() {
     );
   }, [customer]);
 
-  const [showCreditCardDialog, setShowCreditCardDialog] = useState(false);
   const [shoppingCartItems, setShoppingCartItems] = useState(
     _.get(customer, "onlineShoppingCart.shoppingCartItems", [])
   );
@@ -161,7 +138,7 @@ export default function ShoppingCartPage() {
                       } = cartItem.productVariant;
                       const { quantity } = cartItem;
                       return (
-                        <div>
+                        <div key={index}>
                           <Card plain>
                             <GridContainer
                               alignItems="center"
@@ -199,7 +176,11 @@ export default function ShoppingCartPage() {
                                 </GridItem>
                               </GridItem>
                               {/* Quantity */}
-                              <GridItem md={1} style={{ textAlign: "right" }}>
+                              <GridItem
+                                xs={4}
+                                md={1}
+                                style={{ textAlign: "right" }}
+                              >
                                 <IconButton
                                   className={classes.buttonTopMargin}
                                   onClick={e =>
@@ -212,10 +193,14 @@ export default function ShoppingCartPage() {
                                   <MinusBoxIcon />
                                 </IconButton>
                               </GridItem>
-                              <GridItem md={1}>
+                              <GridItem xs={4} md={1}>
                                 <h3>{quantity}</h3>
                               </GridItem>
-                              <GridItem md={1} style={{ textAlign: "left" }}>
+                              <GridItem
+                                xs={4}
+                                md={1}
+                                style={{ textAlign: "left" }}
+                              >
                                 <IconButton
                                   className={classes.buttonTopMargin}
                                   onClick={e =>
@@ -258,7 +243,7 @@ export default function ShoppingCartPage() {
                       );
                     })}
                   </Grid>
-                  <Grid item md={3}>
+                  <Grid item xs={12} md={3}>
                     <Button
                       color="danger"
                       fullWidth
@@ -290,15 +275,6 @@ export default function ShoppingCartPage() {
                             </Typography>
                           </Grid>
                         </Grid>
-
-                        {/* <Typography className={classes.pos} color="textSecondary">
-                        adjective
-                      </Typography>
-                      <Typography variant="body2" component="p">
-                        well meaning and kindly.
-                        <br />
-                        {'"a benevolent smile"'}
-                      </Typography> */}
                       </CardContent>
                       <CardActions>
                         <Button
@@ -341,9 +317,6 @@ export default function ShoppingCartPage() {
               </ClickAwayListener>
             </Popper>
           </Card>
-          {/* {showCreditCardDialog && (
-            <CreditCardDialog handleClose={setShowCreditCardDialog} />
-          )} */}
         </div>
       </div>
     </div>

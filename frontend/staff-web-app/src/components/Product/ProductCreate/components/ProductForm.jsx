@@ -111,8 +111,14 @@ class ProductForm extends React.Component {
 
   onChangeNumber = e => {
     const name = e.target.name;
-    const value = e.target.value.replace(/[^0-9].[^0-9]/, "");
-    if (value.split(".").length < 3) {
+    const stateValue = this.state[name];
+    let value = e.target.value;
+    const lastChar = e.target.value.substr(value.length - 1, 1);
+    if (lastChar === "." && !stateValue.includes(".")) {
+      this.setState({ [name]: value });
+    } else {
+      value = parseFloat(e.target.value).toString();
+      if (value === "NaN") value = "";
       this.setState({ [name]: value });
     }
 
@@ -123,7 +129,7 @@ class ProductForm extends React.Component {
 
   onChangeSerialNumber = e => {
     const name = e.target.name;
-    const value = e.target.value.replace(/[^0-9]/, "");
+    const value = e.target.value.replace(/\D/, "");
     this.setState({ [name]: value });
 
     if (Object.keys(this.props.errors).length !== 0) {
@@ -418,6 +424,7 @@ class ProductForm extends React.Component {
 
           <Grid item xs={12} md={3}>
             <MaterialTextField
+              // type="number"
               fieldLabel="Price *"
               onChange={this.onChangeNumber}
               fieldName="price"

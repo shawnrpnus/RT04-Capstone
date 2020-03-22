@@ -5,7 +5,6 @@ import {
   UPDATE_SHOPPING_CART_SUCCESS
 } from "redux/actions/types";
 import { dispatchErrorMapError } from "redux/actions/index";
-import { PAYMENT_SUCCESS, SAVE_CARD_SUCCESS } from "./types";
 axios.defaults.baseURL = process.env.REACT_APP_SPRING_API_URL;
 
 const CUSTOMER_BASE_URL = "/api/customer";
@@ -40,10 +39,11 @@ export const updateShoppingCart = (
             autoHideDuration: 1200
           });
         } else {
-          enqueueSnackbar("Item Added!", {
-            variant: "success",
-            autoHideDuration: 1200
-          });
+          enqueueSnackbar &&
+            enqueueSnackbar("Item Added!", {
+              variant: "success",
+              autoHideDuration: 1200
+            });
         }
       })
       .catch(err => {

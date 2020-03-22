@@ -100,22 +100,43 @@ class SidebarContent extends Component {
             </SidebarCategory>
           )}
           {(salesmarketing || store || warehouse) && (
-              <SidebarCategory title="Promo Code" icon="code">
-                {salesmarketing && (
-                    <React.Fragment>
-                    <SidebarLink
-                        title="Create"
-                        route="/promoCode/create"
-                        onClick={this.hideSidebar}
-                    />
-                    <SidebarLink
-                  title="View All"
-                  route="/promoCode/viewAll"
-                  onClick={this.hideSidebar}
+            <SidebarCategory title="Promo Code" icon="code">
+              {salesmarketing && (
+                <>
+                  <SidebarLink
+                    title="Manage"
+                    route="/promoCode/create"
+                    onClick={this.hideSidebar}
                   />
-                    </React.Fragment>
-                )}
-              </SidebarCategory>
+                  <SidebarLink
+                    title="View All"
+                    route="/promoCode/viewAll"
+                    onClick={this.hideSidebar}
+                  />
+                </>
+              )}
+            </SidebarCategory>
+          )}
+          {(salesmarketing || store || warehouse) && (
+            <SidebarCategory title="Discount" icon="code">
+              {salesmarketing && (
+                <SidebarLink
+                  title="Create Discount"
+                  route="/discount/discountForm"
+                  onClick={this.hideSidebar}
+                />
+              )}
+              <SidebarLink
+                title="View All Discounts"
+                route="/discount/viewAllDiscounts"
+                onClick={this.hideSidebar}
+              />
+              <SidebarLink
+                title="Manage Products"
+                route="/discount/associateProducts"
+                onClick={this.hideSidebar}
+              />
+            </SidebarCategory>
           )}
           {(salesmarketing || store || warehouse) && (
             <SidebarCategory title="Category" icon="list">
@@ -138,7 +159,6 @@ class SidebarContent extends Component {
           )}
 
           <SidebarCategory title="Feedback" customIcon={<MdFeedback />}>
-
             <SidebarLink
               title="View Feedback"
               route="/feedback/viewAll"
@@ -153,9 +173,7 @@ class SidebarContent extends Component {
             />
           </SidebarCategory>
           {salesmarketing && (
-
             <SidebarCategory title="Reviews" customIcon={<MdRateReview />}>
-
               <SidebarLink
                 title="View All"
                 route="/review/viewAll"
@@ -165,7 +183,6 @@ class SidebarContent extends Component {
           )}
 
           <SidebarCategory title="Delivery" customIcon={<MdLocalShipping />}>
-
             <SidebarLink
               title="View Store Orders"
               route="/delivery/viewAllRestockOrderItem"
