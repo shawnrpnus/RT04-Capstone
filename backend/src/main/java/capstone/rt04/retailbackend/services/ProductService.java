@@ -205,24 +205,11 @@ public class ProductService {
 
             for (Discount discount : product.getDiscounts()) {
                 // TODO: Retrieve active discount and set the discounted price
-                Timestamp current = new Timestamp(System.currentTimeMillis());
-                // Haven't reach discount end date but already past the discount start date => active
-                if (discount.getToDateTime().compareTo(current) >= 0 && discount.getFromDateTime().compareTo(current) <= 0) {
-                    if (discount.getFlatDiscount() != null) {
-                        // If flat rate discount >= price, don't apply the flat rate discount
-                        if (discount.getFlatDiscount().compareTo(product.getPrice()) >= 0) break;
-                        productDetailsResponse.setDiscountedPrice(product.getPrice().subtract(discount.getFlatDiscount()));
-                    } else {
-                        productDetailsResponse.setDiscountedPrice(product.getPrice().
-                                multiply(BigDecimal.ONE.subtract(discount.getPercentageDiscount())));
-                    }
-                    break;
-                }
+                applyDiscount(discount, product, productDetailsResponse);
             }
 
             for (ProductVariant productVariant : product.getProductVariants()) {
                 // Find product stock that belongs to the specified store/ warehouse
-
                 /**
                  ** storeOrWarehouseId === storeId
                  ** By default return warehouse stock if no store ID provided
@@ -276,6 +263,26 @@ public class ProductService {
             productDetailsResponses.add(productDetailsResponse);
         }
         return productDetailsResponses;
+    }
+
+    @Transactional(readOnly = true)
+    public BigDecimal applyDiscount(Discount discount, Product product, ProductDetailsResponse productDetailsResponse) {
+        Timestamp current = new Timestamp(System.currentTimeMillis());
+        // Haven't reach discount end date but already past the discount start date => active
+        BigDecimal discountedPrice;
+        if (discount.getToDateTime().compareTo(current) >= 0 && discount.getFromDateTime().compareTo(current) <= 0) {
+            if (discount.getFlatDiscount() != null) {
+                // If flat rate discount >= price, don't apply the flat rate discount
+                if (discount.getFlatDiscount().compareTo(product.getPrice()) >= 0) return null;
+                discountedPrice = product.getPrice().subtract(discount.getFlatDiscount());
+            } else {
+                discountedPrice = product.getPrice().multiply(BigDecimal.ONE.subtract(discount.getPercentageDiscount()));
+            }
+            if (productDetailsResponse != null) productDetailsResponse.setDiscountedPrice(discountedPrice);
+            return discountedPrice;
+        }
+        // If no discount, return null
+        return null;
     }
 
     public Product retrieveProductById(Long productId) throws ProductNotFoundException {

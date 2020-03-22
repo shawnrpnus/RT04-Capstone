@@ -24,13 +24,14 @@ function CheckoutProdVariantCard(props) {
     colour,
     productVariantId
   } = cartItem.productVariant;
+  const { productName, discountedPrice, price } = product;
   const { quantity } = cartItem;
   return (
     <div>
       <Card plain>
         <GridContainer alignItems="center" style={{ textAlign: "center" }}>
           {/* Photo */}
-          <Grid item md={2}>
+          <Grid item xs={12} md={2}>
             {/* Modified CSS */}
             <div className={classes.imgContainer}>
               <img
@@ -40,24 +41,39 @@ function CheckoutProdVariantCard(props) {
             </div>
           </Grid>
           {/* Name */}
-          <GridItem container md={6} style={{ textAlign: "left" }}>
+          <GridItem xs={12} container md={6} style={{ textAlign: "left" }}>
             <GridItem md={12}>
-              <h3 className={classes.productName}>{product.productName}</h3>
+              <h3 className={classes.productName}>{productName}</h3>
             </GridItem>
-            <GridItem md={12}>
-              <h3 style={{ marginTop: "10px" }}>${product.price}</h3>
+            <GridItem xs={6} md={12}>
+              <h3 style={{ marginTop: "10px" }}>
+                {discountedPrice && <span>${discountedPrice}</span>}
+                <span className={discountedPrice && classes.discountedPrice}>
+                  ${price}
+                </span>
+              </h3>
             </GridItem>
             <GridItem md={12}>
               {jsonColorHexList[colour].name}, {sizeDetails.productSize}
             </GridItem>
           </GridItem>
           {/* Quantity */}
-          <GridItem md={1}>
+          <GridItem xs={6} md={1}>
             <h3>{quantity}</h3>
           </GridItem>
           {/* Amount */}
-          <GridItem md={3}>
-            <h3>${(product.price * quantity).toFixed(2)}</h3>
+          <GridItem xs={6} md={3}>
+            {discountedPrice && (
+              <h3 style={{ marginBottom: discountedPrice ? 0 : "10px" }}>
+                ${(discountedPrice * quantity).toFixed(2)}
+              </h3>
+            )}
+            <h3
+              className={discountedPrice && classes.discountedPrice}
+              style={{ marginTop: discountedPrice ? 0 : "20px" }}
+            >
+              ${(price * quantity).toFixed(2)}
+            </h3>
           </GridItem>
         </GridContainer>
       </Card>

@@ -63,6 +63,8 @@ export default function UpdateReservationPage(props) {
     };
   }, []);
 
+  console.log(customer);
+
   return (
     <div>
       {/*<div className={classNames(classes.main, classes.mainRaised)}>*/}

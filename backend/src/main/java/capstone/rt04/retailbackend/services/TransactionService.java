@@ -11,12 +11,16 @@ import capstone.rt04.retailbackend.util.exceptions.customer.AddressNotFoundExcep
 import capstone.rt04.retailbackend.util.exceptions.customer.CustomerNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.shoppingcart.InvalidCartTypeException;
 import capstone.rt04.retailbackend.util.exceptions.transaction.TransactionNotFoundException;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 @Service
 @Transactional
@@ -28,13 +32,17 @@ public class TransactionService {
 
     private final CustomerService customerService;
     private final ShoppingCartService shoppingCartService;
+    private final ProductService productService;
 
-    public TransactionService(TransactionRepository transactionRepository, TransactionLineItemRepository transactionLineItemRepository, AddressRepository addressRepository, CustomerService customerService, ShoppingCartService shoppingCartService) {
+    public TransactionService(TransactionRepository transactionRepository, TransactionLineItemRepository transactionLineItemRepository,
+                              AddressRepository addressRepository, CustomerService customerService, ShoppingCartService shoppingCartService,
+                              @Lazy ProductService productService) {
         this.transactionRepository = transactionRepository;
         this.transactionLineItemRepository = transactionLineItemRepository;
         this.addressRepository = addressRepository;
         this.customerService = customerService;
         this.shoppingCartService = shoppingCartService;
+        this.productService = productService;
     }
 
     /*create new transaction - not the actual one; simplified just for testing other use cases*/
@@ -183,13 +191,26 @@ public class TransactionService {
         List<TransactionLineItem> transactionLineItems = new ArrayList<>();
         List<ShoppingCartItem> shoppingCartItems = new ArrayList<>(shoppingCart.getShoppingCartItems());
         Integer totalQuantity = 0;
+        BigDecimal finalPrice;
+        BigDecimal quantity;
 
         // Transferring to transaction line item
         for (ShoppingCartItem shoppingCartItem : shoppingCartItems) {
-            transactionLineItem = new TransactionLineItem(shoppingCartItem.getProductVariant().getProduct().getPrice().multiply(new BigDecimal(shoppingCartItem.getQuantity())),
+            quantity = new BigDecimal(shoppingCartItem.getQuantity());
+            transactionLineItem = new TransactionLineItem(shoppingCartItem.getProductVariant().getProduct().getPrice().multiply(quantity),
                     shoppingCartItem.getQuantity(), null, shoppingCartItem.getProductVariant());
             //TODO: Update final subtotal based on discount and promo code
-            transactionLineItem.setFinalSubTotal(transactionLineItem.getInitialSubTotal());
+
+            for (Discount discount : shoppingCartItem.getProductVariant().getProduct().getDiscounts()) {
+                finalPrice = productService.applyDiscount(discount, shoppingCartItem.getProductVariant().getProduct(), null);
+                if (finalPrice != null) {
+                    transactionLineItem.setFinalSubTotal(finalPrice.multiply(quantity));
+                    break;
+                } else {
+                    transactionLineItem.setFinalSubTotal(transactionLineItem.getInitialSubTotal());
+                }
+            }
+
             totalQuantity += shoppingCartItem.getQuantity();
             transactionLineItemRepository.save(transactionLineItem);
             transactionLineItems.add(transactionLineItem);
@@ -233,7 +254,7 @@ public class TransactionService {
         transaction.getTransactionLineItems().addAll(transactionLineItems);
         transaction.setInitialTotalPrice(shoppingCart.getInitialTotalAmount());
         // TODO: Add DISCOUNT / PROMOCODE Logic here, for now final = initial
-        transaction.setFinalTotalPrice(shoppingCart.getInitialTotalAmount());
+        transaction.setFinalTotalPrice(shoppingCart.getFinalTotalAmount());
         transaction.setTotalQuantity(totalQuantity);
         transaction.setCollectionMode(CollectionModeEnum.DELIVERY);
         transaction.setDeliveryStatus(DeliveryStatusEnum.PROCESSING);

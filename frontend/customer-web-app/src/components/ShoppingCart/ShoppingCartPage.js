@@ -56,6 +56,17 @@ export default function ShoppingCartPage() {
   useEffect(() => {
     window.scrollTo(0, 0);
     document.body.scrollTop = 0;
+    _.get(customer, "onlineShoppingCart.shoppingCartItems", []).map(item => {
+      const request = new UpdateShoppingCartRequest(
+        -1,
+        item.productVariant.productVariantId,
+        customer.customerId,
+        "online"
+      );
+      console.log("updating ");
+      console.log(request);
+      dispatch(updateShoppingCart(request));
+    });
   }, []);
 
   useEffect(() => {
@@ -128,7 +139,6 @@ export default function ShoppingCartPage() {
                 <Grid container spacing={3}>
                   <Grid item md={9}>
                     {shoppingCartItems.map((cartItem, index) => {
-                      // console.log(cartItem);
                       const {
                         productImages,
                         product,
@@ -136,6 +146,9 @@ export default function ShoppingCartPage() {
                         colour,
                         productVariantId
                       } = cartItem.productVariant;
+                      const { productName, discountedPrice, price } = product;
+                      console.log(product);
+
                       const { quantity } = cartItem;
                       return (
                         <div key={index}>
@@ -162,12 +175,22 @@ export default function ShoppingCartPage() {
                               >
                                 <GridItem md={12}>
                                   <h3 className={classes.productName}>
-                                    {product.productName}
+                                    {productName}
                                   </h3>
                                 </GridItem>
                                 <GridItem md={12}>
                                   <h3 style={{ marginTop: "10px" }}>
-                                    ${product.price}
+                                    {discountedPrice && (
+                                      <span>${discountedPrice}</span>
+                                    )}
+                                    <span
+                                      className={
+                                        discountedPrice &&
+                                        classes.discountedPrice
+                                      }
+                                    >
+                                      ${price}
+                                    </span>
                                   </h3>
                                 </GridItem>
                                 <GridItem md={12}>
@@ -215,8 +238,24 @@ export default function ShoppingCartPage() {
                               </GridItem>
                               {/* Amount */}
                               <GridItem md={2}>
-                                <h3>
-                                  ${(product.price * quantity).toFixed(2)}
+                                {discountedPrice && (
+                                  <h3
+                                    style={{
+                                      marginBottom: discountedPrice ? 0 : "10px"
+                                    }}
+                                  >
+                                    ${(discountedPrice * quantity).toFixed(2)}
+                                  </h3>
+                                )}
+                                <h3
+                                  className={
+                                    discountedPrice && classes.discountedPrice
+                                  }
+                                  style={{
+                                    marginTop: discountedPrice ? 0 : "20px"
+                                  }}
+                                >
+                                  ${(price * quantity).toFixed(2)}
                                 </h3>
                               </GridItem>
                               {/* Action */}
@@ -236,9 +275,7 @@ export default function ShoppingCartPage() {
                               </GridItem>
                             </GridContainer>
                           </Card>
-                          {index !== shoppingCartItems.length - 1 && (
-                            <Divider style={{ margin: "0 5%" }} />
-                          )}
+                          <Divider style={{ margin: "0 5%" }} />
                         </div>
                       );
                     })}
@@ -255,7 +292,7 @@ export default function ShoppingCartPage() {
                     >
                       Clear Shopping Cart
                     </Button>
-                    <Card>
+                    <Card style={{ margin: 0 }}>
                       <CardContent>
                         <Typography variant="h4" gutterBottom>
                           Total <Divider style={{ margin: "1% 0" }} />
@@ -269,7 +306,7 @@ export default function ShoppingCartPage() {
                           </Grid>
                           <Grid item xs={6} style={{ textAlign: "right" }}>
                             <Typography variant="h6" component="h2">
-                              {customer.onlineShoppingCart.initialTotalAmount.toFixed(
+                              {customer.onlineShoppingCart.finalTotalAmount.toFixed(
                                 2
                               )}
                             </Typography>

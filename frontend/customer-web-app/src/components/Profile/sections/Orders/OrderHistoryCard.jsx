@@ -39,9 +39,12 @@ function OrderHistoryCard(props) {
 
   const lineItems = transaction.transactionLineItems;
 
-  const productVariants = transaction.transactionLineItems.map(lineItem => {
-    return lineItem.productVariant;
-  });
+  console.log(transaction);
+
+  // const productVariants = transaction.transactionLineItems.map(lineItem => {
+  //   return lineItem.productVariant;
+  // });
+
   return (
     <Card
       plain
@@ -103,6 +106,8 @@ function OrderHistoryCard(props) {
                     key={lineItem.productVariant.productVariantId}
                     productVariant={lineItem.productVariant}
                     quantity={lineItem.quantity}
+                    initialSubTotal={lineItem.initialSubTotal}
+                    finalSubTotal={lineItem.finalSubTotal}
                   />
                 );
               })}
