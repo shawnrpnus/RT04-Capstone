@@ -41,12 +41,12 @@ const loadLoggedInStaff = () => {
         SplashScreen.hide();
         return initialState;
       }
-      if (_.get(result, "staff.loggedInStaff")){
+      if (_.get(jsog.parse(result), "staff.loggedInStaff")){
         dispatch({
           type: LOAD_LOGGED_IN_STAFF,
           staff: jsog.parse(result).staff.loggedInStaff
         })
-        console.log(result)
+        //console.log(result)
       } else {
         SplashScreen.hide();
       }
