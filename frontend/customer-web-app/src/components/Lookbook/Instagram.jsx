@@ -31,45 +31,47 @@ const Instagram = () => {
     <div className={classes.team}>
       <div className={classes.container}>
         <GridContainer>
-          {instagramPosts.map(({ instagramImgUrl, associatedProducts }) => {
-            return (
-              <GridItem xs={12} sm={4} md={4}>
-                <Card plain profile>
-                  <CardHeader image plain>
-                    <a href="#pablo" onClick={e => e.preventDefault()}>
-                      <img src={instagramImgUrl} alt="..." />
-                    </a>
-                    <div
-                      className={classes.coloredShadow}
-                      style={{
-                        backgroundImage: `url(${instagramImgUrl})`,
-                        opacity: "1"
-                      }}
-                    />
-                  </CardHeader>
-                  <CardBody plain>
-                    {/* <h4 className={classes.cardTitle}>Alec Thompson</h4> */}
-                    {associatedProducts.map(
-                      ({ productName, productId }, index) => {
-                        return (
-                          <Muted>
-                            <Link to={`/shop/product/${productId}`}>
-                              <h6 className={classes.cardCategory}>
-                                {productName}
-                              </h6>
-                              {index < associatedProducts.length - 1 && (
-                                <Divider className={classes.divider} />
-                              )}
-                            </Link>
-                          </Muted>
-                        );
-                      }
-                    )}
-                  </CardBody>
-                </Card>
-              </GridItem>
-            );
-          })}
+          {instagramPosts.map(
+            ({ instagramImgUrl, associatedProducts }, index) => {
+              return (
+                <GridItem xs={12} sm={4} md={4} key={index}>
+                  <Card plain profile>
+                    <CardHeader image plain>
+                      <a href="#pablo" onClick={e => e.preventDefault()}>
+                        <img src={instagramImgUrl} alt="..." />
+                      </a>
+                      <div
+                        className={classes.coloredShadow}
+                        style={{
+                          backgroundImage: `url(${instagramImgUrl})`,
+                          opacity: "1"
+                        }}
+                      />
+                    </CardHeader>
+                    <CardBody plain>
+                      {/* <h4 className={classes.cardTitle}>Alec Thompson</h4> */}
+                      {associatedProducts.map(
+                        ({ productName, productId }, index) => {
+                          return (
+                            <Muted key={index}>
+                              <Link to={`/shop/product/${productId}`}>
+                                <h6 className={classes.cardCategory}>
+                                  {productName}
+                                </h6>
+                                {index < associatedProducts.length - 1 && (
+                                  <Divider className={classes.divider} />
+                                )}
+                              </Link>
+                            </Muted>
+                          );
+                        }
+                      )}
+                    </CardBody>
+                  </Card>
+                </GridItem>
+              );
+            }
+          )}
         </GridContainer>
       </div>
     </div>

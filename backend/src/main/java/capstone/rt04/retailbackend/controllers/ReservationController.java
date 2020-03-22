@@ -148,10 +148,7 @@ public class ReservationController {
     private void clearReservationRelationships(Reservation reservation) {
         if (reservation.getProductVariants() != null) {
             for (ProductVariant pv : reservation.getProductVariants()) {
-                pv.getProduct().setProductVariants(null);
-                pv.getProduct().setCategory(null);
-                pv.getProduct().setStyles(null);
-                pv.setProductStocks(null);
+                relationshipService.clearCustomerReservationOrWishlist(pv);
             }
         }
         if (reservation.getCustomer() != null) {

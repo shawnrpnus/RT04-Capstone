@@ -42,7 +42,7 @@ function ProductDetailsCard(props) {
 
   const extractProductInformation = productDetail => {
     if (!productDetail) return {};
-    const { product, colourToSizeImageMaps } = productDetail;
+    const { product, colourToSizeImageMaps, discountedPrice } = productDetail;
 
     // below used to link image set to colour clicked by mapping this list of objects to
     // colour boxes and the image set + size boxes
@@ -67,14 +67,16 @@ function ProductDetailsCard(props) {
     return {
       product,
       colourToImageAndSizes,
-      colourAndSizeToVariantAndStockMap
+      colourAndSizeToVariantAndStockMap,
+      discountedPrice
     };
   };
 
   const {
     product,
     colourToImageAndSizes,
-    colourAndSizeToVariantAndStockMap
+    colourAndSizeToVariantAndStockMap,
+    discountedPrice
   } = extractProductInformation(productDetail);
 
   const [activeColourIndex, setActiveColourIndex] = useState(0);
@@ -185,7 +187,6 @@ function ProductDetailsCard(props) {
     `${selectedColour}.${selectedSize}.productStock.quantity`
   );
 
-  console.log(colourAndSizeToVariantAndStockMap);
   return (
     <React.Fragment>
       <GridContainer>
@@ -235,7 +236,12 @@ function ProductDetailsCard(props) {
               </IconButton>
             </Tooltip>
           </h2>
-          <h3 className={classes.mainPrice}>${product.price}</h3>
+          <h3 className={classes.mainPrice}>
+            {discountedPrice && <span>${discountedPrice}</span>}
+            <span className={discountedPrice && classes.discountedPrice}>
+              ${product.price}
+            </span>
+          </h3>
           <Accordion
             active={[0]}
             activeColor="rose"
@@ -247,8 +253,12 @@ function ProductDetailsCard(props) {
                     {product.description}
                     <br />
                     <br />
-                    {product.tags.map(tag => (
-                      <Chip label={tag.name} style={{ marginRight: "3px" }} />
+                    {product.tags.map((tag, index) => (
+                      <Chip
+                        key={index}
+                        label={tag.name}
+                        style={{ marginRight: "3px" }}
+                      />
                     ))}
                   </p>
                 )
@@ -304,12 +314,15 @@ function ProductDetailsCard(props) {
                     colourAndSizeToVariantAndStockMap,
                     `${selectedColour}.${size}.productStock.quantity`
                   );
-                  console.log(selectedColour);
-                  console.log(size);
-                  console.log(stock);
+                  // console.log(selectedColour);
+                  // console.log(size);
+                  // console.log(stock);
                   const hasStock = stock > 0;
                   return (
-                    <Tooltip title={hasStock ? "In stock" : "Out of stock"}>
+                    <Tooltip
+                      key={index}
+                      title={hasStock ? "In stock" : "Out of stock"}
+                    >
                       <svg
                         key={size + index}
                         width="40"

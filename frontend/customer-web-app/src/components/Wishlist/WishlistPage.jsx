@@ -79,6 +79,8 @@ export default function WishlistPage(props) {
     );
   };
 
+  console.log(wishlistItems);
+
   return (
     <div>
       <Parallax
@@ -107,7 +109,7 @@ export default function WishlistPage(props) {
           <Card plain>
             <CardBody plain>
               {wishlistItems.length > 0 ? (
-                <React.Fragment>
+                <>
                   <Button
                     color="primary"
                     style={{ float: "right" }}
@@ -125,13 +127,13 @@ export default function WishlistPage(props) {
                     <DeleteSharp />
                     Clear wishlist
                   </Button>
-                  {wishlistItems.map(productVariant => (
-                    <React.Fragment>
+                  {wishlistItems.map((productVariant, index) => (
+                    <React.Fragment key={index}>
                       <WishlistItemCard productVariant={productVariant} />
                       <Divider />
                     </React.Fragment>
                   ))}
-                </React.Fragment>
+                </>
               ) : (
                 <h3 style={{ textAlign: "center" }}>Your wishlist is empty.</h3>
               )}

@@ -88,6 +88,8 @@ public class Product implements Serializable {
     @ManyToMany(mappedBy = "products")
     private List<Style> styles;
 
+    @Transient
+    private BigDecimal discountedPrice;
 
     public Product() {
         this.discounts = new ArrayList<>();

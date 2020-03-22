@@ -51,6 +51,7 @@ function ReservationCartItem(props) {
     setAnchorEl(e.currentTarget);
     setPopoverOpen(true);
   };
+  const { productName, discountedPrice, price } = product;
 
   const storeStockandName =
     prodVariantToStoreStock[productVariant.productVariantId];
@@ -71,10 +72,15 @@ function ReservationCartItem(props) {
         <GridItem md={8} xs={8}>
           <GridContainer>
             <GridItem md={12}>
-              <h3 className={classes.title}>{product.productName}</h3>
+              <h3 className={classes.title}>{productName}</h3>
             </GridItem>
             <GridItem md={12}>
-              <h3 style={{ marginTop: "10px" }}>${product.price}</h3>
+              <h3 style={{ marginTop: "10px" }}>
+                {discountedPrice && <span>${discountedPrice}</span>}
+                <span className={discountedPrice && classes.discountedPrice}>
+                  ${price}
+                </span>
+              </h3>
             </GridItem>
             <GridItem md={12}>
               <h5>

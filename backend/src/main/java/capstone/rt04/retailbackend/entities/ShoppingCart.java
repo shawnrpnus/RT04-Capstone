@@ -5,12 +5,12 @@
  */
 package capstone.rt04.retailbackend.entities;
 
+import capstone.rt04.retailbackend.services.ProductService;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.voodoodyne.jackson.jsog.JSOGGenerator;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
  * @author shawn
  */
 @Entity
@@ -36,15 +35,15 @@ public class ShoppingCart implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long shoppingCartId;
-    
+
     @NotNull
     @Column(nullable = false)
     private BigDecimal initialTotalAmount;
-    
+
     private BigDecimal finalTotalAmount;
 
     private Timestamp lastUpdated;
-    
+
     @OneToMany
     private List<ShoppingCartItem> shoppingCartItems;
 
@@ -54,18 +53,36 @@ public class ShoppingCart implements Serializable {
         this.shoppingCartItems = new ArrayList<>();
     }
 
-    public void calculateAndSetInitialTotal(){
-        BigDecimal total = BigDecimal.ZERO;
-        for (ShoppingCartItem item : this.getShoppingCartItems()){
-            Integer quantity = item.getQuantity();
-            BigDecimal unitPrice = item.getProductVariant().getProduct().getPrice();
-            BigDecimal subTotal = unitPrice.multiply(new BigDecimal(quantity));
-            total = total.add(subTotal);
-        }
-        this.setInitialTotalAmount(total);
-    }
-    
-    
+    public void calculateAndSetInitialTotal(ProductService productService) {
+        BigDecimal initialTotal = BigDecimal.ZERO;
+        BigDecimal finalTotal = BigDecimal.ZERO;
+        BigDecimal discountedPrice;
+        BigDecimal subTotal;
+        BigDecimal quantity;
 
-    
+        for (ShoppingCartItem item : this.getShoppingCartItems()) {
+            quantity = new BigDecimal(item.getQuantity());
+            discountedPrice = null;
+
+            for(Discount discount : item.getProductVariant().getProduct().getDiscounts()) {
+                discountedPrice = productService.applyDiscount(discount, item.getProductVariant().getProduct(), null);
+                if (discountedPrice != null) break;
+            }
+            BigDecimal unitPrice = item.getProductVariant().getProduct().getPrice();
+            subTotal = unitPrice.multiply(quantity);
+            // original total with non-discounted price
+            initialTotal = initialTotal.add(subTotal);
+
+            if (discountedPrice != null) unitPrice = discountedPrice;
+
+            subTotal = unitPrice.multiply(quantity);
+            // total with discounted price
+            finalTotal = finalTotal.add(subTotal);
+        }
+
+        this.setInitialTotalAmount(initialTotal);
+        this.setFinalTotalAmount(finalTotal);
+    }
+
+
 }

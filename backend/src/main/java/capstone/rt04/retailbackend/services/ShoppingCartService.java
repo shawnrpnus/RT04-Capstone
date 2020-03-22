@@ -66,30 +66,26 @@ public class ShoppingCartService {
         ShoppingCart shoppingCart = retrieveShoppingCart(customerId, cartType);
 
         for (ShoppingCartItem shoppingCartItem : shoppingCart.getShoppingCartItems()) {
+            Customer customer = customerService.retrieveCustomerByCustomerId(customerId);
             if (shoppingCartItem.getProductVariant().getProductVariantId().equals(productVariantId)) {
                 if (quantity > 0) { //set to whatever input quantity
-                    shoppingCartItem.setQuantity(quantity);
+                        shoppingCartItem.setQuantity(quantity);
                     shoppingCart.setLastUpdated(new Timestamp(System.currentTimeMillis()));
-                    shoppingCart.calculateAndSetInitialTotal();
-                    Customer customer = customerService.retrieveCustomerByCustomerId(customerId);
-                    return customerService.lazyLoadCustomerFields(customer);
-                } else if (quantity == 0){ // delete
+                } else if (quantity == 0) { // delete
                     shoppingCartItem.setProductVariant(null);
                     shoppingCart.getShoppingCartItems().remove(shoppingCartItem);
                     shoppingCartItemRepository.delete(shoppingCartItem);
                     shoppingCart.setLastUpdated(new Timestamp(System.currentTimeMillis()));
-                    shoppingCart.calculateAndSetInitialTotal();
-                    Customer customer = customerService.retrieveCustomerByCustomerId(customerId);
-                    return customerService.lazyLoadCustomerFields(customer);
                 }
+                shoppingCart.calculateAndSetInitialTotal(productService);
+                return customerService.lazyLoadCustomerFields(customer);
             }
         }
         // does not exist in cart, so add  (first time adding)
         ShoppingCartItem shoppingCartItem = createShoppingCartItem(quantity, productVariantId);
         shoppingCart.getShoppingCartItems().add(shoppingCartItem);
         shoppingCart.setLastUpdated(new Timestamp(System.currentTimeMillis()));
-        shoppingCart.calculateAndSetInitialTotal();
-        System.out.println(shoppingCart);
+        shoppingCart.calculateAndSetInitialTotal(productService);
         Customer customer = customerService.retrieveCustomerByCustomerId(customerId);
         return customerService.lazyLoadCustomerFields(customer);
     }
@@ -98,9 +94,9 @@ public class ShoppingCartService {
         ShoppingCart shoppingCart = retrieveShoppingCart(customerId, cartType);
         List<ShoppingCartItem> shoppingCartItems = shoppingCart.getShoppingCartItems();
         shoppingCart.setShoppingCartItems(new ArrayList<>());
-        shoppingCart.calculateAndSetInitialTotal();
+        shoppingCart.calculateAndSetInitialTotal(productService);
         Customer customer = customerService.retrieveCustomerByCustomerId(customerId);
-        for (ShoppingCartItem shoppingCartItem : shoppingCartItems){
+        for (ShoppingCartItem shoppingCartItem : shoppingCartItems) {
             shoppingCartItem.setProductVariant(null);
             shoppingCartItemRepository.delete(shoppingCartItem);
         }

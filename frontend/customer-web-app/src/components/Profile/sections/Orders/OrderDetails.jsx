@@ -118,6 +118,9 @@ function OrderDetails(props) {
                           key={lineItem.productVariant.productVariantId}
                           productVariant={lineItem.productVariant}
                           quantity={lineItem.quantity}
+                          initialSubTotal={lineItem.initialSubTotal}
+                          finalSubTotal={lineItem.finalSubTotal}
+                          detail={true}
                         />
                       </GridItem>
                       <GridItem md={3}>

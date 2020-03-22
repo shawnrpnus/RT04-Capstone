@@ -139,6 +139,12 @@ const styles = {
   },
   textRight: {
     textAlign: "right"
+  },
+  discountedPrice: {
+    color: "grey",
+    textDecorationLine: "line-through",
+    fontSize: "15px",
+    marginLeft: "1%"
   }
 };
 
