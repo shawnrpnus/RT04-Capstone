@@ -15,38 +15,11 @@ const _ = require("lodash");
 const moment = require("moment");
 const { width, height } = Dimensions.get("window");
 
-function Home(props) {
+function Profile(props) {
   const { navigation } = props;
   const dispatch = useDispatch();
   const customer = useSelector(state => state.customer.loggedInCustomer);
-  const [pushNotifGenerated, setPushNotifGenerated] = useState(false);
 
-  useEffect(() => {
-    const registerPushNotificationToken = async () => {
-      if (customer && !pushNotifGenerated) {
-        SplashScreen.hide();
-        let response = await registerForPushNotifications(customer.customerId);
-        if (response != null) {
-          dispatchUpdatedCustomer(response.data, dispatch);
-        }
-        setPushNotifGenerated(true);
-      }
-    };
-    registerPushNotificationToken();
-    // const notificationSubscription = Notifications.addListener(
-    //   handleNotification
-    // );
-  }, [customer]);
-
-  // const handleNotification = notification => {
-  //   console.log("home notif");
-  //   if (customer && notification.data.type === "reservationReminder") {
-  //     dispatch(retrieveUpcomingReservations(staff.store.storeId, null));
-  //   }
-  //   if (notification.origin === "selected") {
-  //     navigation.navigate("ReservationStack");
-  //   }
-  // };
 
   return (
     <Block flex>
@@ -131,4 +104,4 @@ function Home(props) {
   );
 }
 
-export default Home;
+export default Profile;

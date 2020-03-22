@@ -9,7 +9,7 @@ import theme from "src/constants/Theme";
 // screens
 
 import LogIn from "src/screens/LogIn";
-import Home from "src/screens/Home";
+import Profile from "src/screens/Profile";
 import { useSelector } from "react-redux";
 import CustomDrawerContent from "src/navigation/CustomDrawerContent";
 import Product from "src/screens/Product";
@@ -97,7 +97,7 @@ function ProfileStack(props) {
     <Stack.Navigator mode="card" headerMode="screen">
       <Stack.Screen
         name="Profile"
-        component={Home}
+        component={Profile}
         options={{
           header: props => <CustomHeader title="Profile" {...props} />,
           headerStyle: { height: 100 }

@@ -14,7 +14,13 @@ import {
 import Autocomplete from "src/components/Autocomplete";
 import { Portal } from "react-native-paper";
 import { BarCodeScanner } from "expo-barcode-scanner";
-import {useRoute} from "@react-navigation/native";
+import { useRoute } from "@react-navigation/native";
+import { SplashScreen } from "expo";
+import {
+  dispatchUpdatedCustomer,
+  registerForPushNotifications,
+  updateShoppingCart
+} from "src/redux/actions/customerActions";
 
 const _ = require("lodash");
 const { width, height } = Dimensions.get("window");
@@ -22,17 +28,35 @@ const { width, height } = Dimensions.get("window");
 function Product(props) {
   const [SKU, setSKU] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
-  const [cameraPermission, setCameraPermission] = useState(null);
+  const [pushNotifGenerated, setPushNotifGenerated] = useState(false);
   const route = useRoute();
 
   const { navigation } = props;
   const dispatch = useDispatch();
   const errors = useSelector(state => state.errors);
   const allSKUs = useSelector(state => state.product.allSKUs);
+  const customer = useSelector(state => state.customer.loggedInCustomer);
 
   useEffect(() => {
     dispatch(retrieveAllSKUs());
   }, []);
+
+  useEffect(() => {
+    const registerPushNotificationToken = async () => {
+      if (customer && !pushNotifGenerated) {
+        SplashScreen.hide();
+        let response = await registerForPushNotifications(customer.customerId);
+        if (response != null) {
+          dispatchUpdatedCustomer(response.data, dispatch);
+        }
+        setPushNotifGenerated(true);
+      }
+    };
+    registerPushNotificationToken();
+    // const notificationSubscription = Notifications.addListener(
+    //   handleNotification
+    // );
+  }, [customer]);
 
   const handleSkuSearch = () => {
     alert(route.name);
@@ -54,7 +78,7 @@ function Product(props) {
   const handleQRScanned = async ({ type, data }) => {
     setModalVisible(false);
     const productStock = await retrieveProductStockById(data);
-    if (productStock) {
+    if (productStock && route.name === "View Details") {
       dispatch(
         retrieveProductVariantBySKU(
           productStock.productVariant.sku,
@@ -62,6 +86,33 @@ function Product(props) {
           setSKU
         )
       );
+    } else if (productStock && route.name === "Add to Cart") {
+      if (productStock.quantity === 0) {
+        Alert.alert(
+          "Out of Stock",
+          "Product is out of stock! View details to search for stores with stock",
+          null,
+          { cancelable: false }
+        );
+      } else {
+        const productVariantId = productStock.productVariant.productVariantId;
+        const shoppingCartItems = customer.inStoreShoppingCart.shoppingCartItems;
+        const prodVariantIdToCartItem = _.keyBy(
+            shoppingCartItems,
+            "productVariant.productVariantId"
+        );
+        let quantity = 1;
+        if (prodVariantIdToCartItem.hasOwnProperty(productVariantId)) {
+          quantity = prodVariantIdToCartItem[productVariantId].quantity + 1;
+        }
+        dispatch(
+          updateShoppingCart(
+            quantity,
+            productVariantId,
+            customer.customerId
+          )
+        );
+      }
     } else {
       Alert.alert(
         "Error",
@@ -89,14 +140,12 @@ function Product(props) {
             }}
           >
             <Block flex={0.5} middle canter>
-              <Text h4 bold style={{marginBottom: 10}}>
+              <Text h4 bold style={{ marginBottom: 10 }}>
                 {route.name}
               </Text>
-              <Text h4 >
-                Enter SKU
-              </Text>
+              <Text h4>Enter SKU</Text>
             </Block>
-            <Block flex={2} center style={{ width: width*0.8, zIndex: 1 }}>
+            <Block flex={2} center style={{ width: width * 0.8, zIndex: 1 }}>
               <Autocomplete
                 array={allSKUs}
                 label="SKU"
@@ -121,7 +170,7 @@ function Product(props) {
             <Block flex={0.4} center style={{ width: "100%", zIndex: 0 }}>
               <Button
                 color={materialTheme.COLORS.BUTTON_COLOR}
-                style={{ width: width*0.8, height: 50 }}
+                style={{ width: width * 0.8, height: 50 }}
                 onPress={handleSkuSearch}
               >
                 {route.name.toUpperCase()}

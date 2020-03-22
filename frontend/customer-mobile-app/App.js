@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { Notifications } from "expo";
+import { Notifications, SplashScreen } from "expo";
 import {Provider} from "react-redux";
 import {GalioProvider} from "galio-framework";
 import { NavigationContainer } from "@react-navigation/native";
@@ -12,6 +12,7 @@ import theme from "src/constants/Theme";
 
 export default function App() {
   useEffect(() => {
+    SplashScreen.preventAutoHide()
     if (Platform.OS === "android") {
       Notifications.createChannelAndroidAsync("reservation", {
         name: "Reservation",

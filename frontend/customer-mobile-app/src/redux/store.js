@@ -38,9 +38,12 @@ const loadLoggedInCustomer = () => {
     AsyncStorage.getItem("state", (err, result) => {
       if (err){
         console.log(err);
+        SplashScreen.hide();
         return initialState;
       }
-      if (result){
+      console.log(result)
+      if (_.get(jsog.parse(result), "customer.loggedInCustomer")){
+        console.log("HERE")
         dispatch({
           type: LOAD_LOGGED_IN_CUSTOMER,
           customer: jsog.parse(result).customer.loggedInCustomer
@@ -61,7 +64,6 @@ const unsubscribe = store.subscribe(() => {
 });
 
 //populate store with logged in customer
-SplashScreen.preventAutoHide()
 store.dispatch(loadLoggedInCustomer());
 
 export default store;

@@ -6,7 +6,7 @@ import { GalioProvider } from "galio-framework";
 import theme from "src/constants/Theme";
 import Screens from "src/navigation/Screens";
 import { NavigationContainer } from "@react-navigation/native";
-import { Notifications } from "expo";
+import {Notifications, SplashScreen} from "expo";
 import {
   retrieveReservation,
   retrieveUpcomingReservations
@@ -17,6 +17,7 @@ const jsog = require("jsog");
 
 export default function App(props) {
   useEffect(() => {
+    SplashScreen.preventAutoHide()
     if (Platform.OS === "android") {
       Notifications.createChannelAndroidAsync("reservation", {
         name: "Reservation",
