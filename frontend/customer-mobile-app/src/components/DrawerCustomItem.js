@@ -5,7 +5,7 @@ import { Block, Text, theme } from "galio-framework";
 import Icon from "./Icon";
 import materialTheme from "src/constants/Theme";
 import {useDispatch} from "react-redux";
-import {staffLogout} from "src/redux/actions/staffActions";
+import {customerLogout} from "src/redux/actions/customerActions";
 import { StackActions } from '@react-navigation/native';
 
 function DrawerCustomItem(props) {
@@ -15,7 +15,7 @@ function DrawerCustomItem(props) {
   const renderIcon = () => {
     const { title, focused } = props;
     switch (title) {
-      case "ProductStack":
+      case "ShopStack":
         return (
           <Icon
             size={14}
@@ -24,16 +24,7 @@ function DrawerCustomItem(props) {
             color={focused ? "white" : materialTheme.COLORS.MUTED}
           />
         );
-      case "ReservationStack":
-        return (
-          <Icon
-            size={16}
-            name="calendar"
-            family="entypo"
-            color={focused ? "white" : materialTheme.COLORS.MUTED}
-          />
-        );
-      case "HomeStack":
+      case "ProfileStack":
         return (
           <Icon
             size={16}
@@ -57,7 +48,7 @@ function DrawerCustomItem(props) {
   };
 
   const logout = () => {
-    dispatch(staffLogout);
+    dispatch(customerLogout);
   }
 
 
@@ -79,12 +70,10 @@ function DrawerCustomItem(props) {
         </Block>
         <Block flex={0.9}>
           <Text size={15} color={focused ? "white" : "black"}>
-            {title === "HomeStack"
-              ? "Home"
-              : title === "ProductStack"
-              ? "Product"
-              : title === "ReservationStack"
-              ? "Reservation"
+            {title === "ProfileStack"
+              ? "Profile"
+              : title === "ShopStack"
+              ? "Shop"
               : title}
           </Text>
         </Block>
