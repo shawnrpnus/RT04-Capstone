@@ -10,7 +10,7 @@ const _ = require("lodash");
 const { width, height } = Dimensions.get("window");
 
 function AddToCart(props) {
-  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertOpen, setAlertOpen] = useState(null);
 
   const dispatch = useDispatch();
   const customer = useSelector(state => state.customer.loggedInCustomer);
@@ -42,9 +42,9 @@ function AddToCart(props) {
   const handleQRScanned = async ({ type, data }) => {
     console.log(alertOpen);
     if (!alertOpen) {
+      setAlertOpen(true);
       const productStock = await retrieveProductStockById(data);
       if (productStock) {
-        setAlertOpen(true);
         if (productStock.quantity === 0) {
           Alert.alert(
             "Out of Stock",
@@ -82,7 +82,6 @@ function AddToCart(props) {
           );
         }
       } else {
-        setAlertOpen(true);
         Alert.alert(
           "Error",
           "Invalid QR Code!\nPlease scan QR codes from our stores.",
