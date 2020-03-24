@@ -109,6 +109,7 @@ const AdvertisementTable = props => {
           {
             title: "Preview image",
             field: "advertisementImgUrl",
+            filtering: false,
             render: rowData => (
               <img
                 className={classes.image}
