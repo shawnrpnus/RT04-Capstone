@@ -6,7 +6,8 @@ import {
   StyleSheet,
   Picker,
   ScrollView,
-  TouchableOpacity
+  TouchableOpacity,
+    Alert
 } from "react-native";
 import Svg, { Rect } from "react-native-svg";
 import colourList from "assets/colours.json";
@@ -36,6 +37,20 @@ function ShoppingCartItem(props) {
       )
     );
   };
+
+  const showDeleteConfirmationAlert = () => {
+    Alert.alert(
+        "Remove item",
+        "Are you sure you want to remove this item?",
+        [{
+          text: "Cancel",
+          style: "cancel"
+        }, {
+          text: "Remove",
+          onPress: () => handleQuantityChange(0)
+        }]
+    )
+  }
 
   const qtyOptions = Array.from({ length: 21 - 1 }, (v, k) => k + 1);
 
@@ -73,7 +88,7 @@ function ShoppingCartItem(props) {
             <Text h5 bold style={{ fontSize: 20 }}>
               {productVariant.product.productName}
             </Text>
-            <TouchableOpacity onPress={() => handleQuantityChange(0)}>
+            <TouchableOpacity onPress={showDeleteConfirmationAlert}>
               <Feather name="x" size={28} />
             </TouchableOpacity>
           </Block>
