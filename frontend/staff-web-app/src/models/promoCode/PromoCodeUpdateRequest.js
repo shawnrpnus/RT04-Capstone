@@ -1,7 +1,7 @@
 export default class PromoCodeUpdateRequest {
-    newPromoCode;
+  newPromoCode;
 
-    constructor(newPromoCode) {
-        this.newPromoCode = newPromoCode;
-    }
+  constructor(newPromoCode) {
+    this.newPromoCode = newPromoCode;
+  }
 }

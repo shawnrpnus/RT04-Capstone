@@ -1,14 +1,12 @@
 package capstone.rt04.retailbackend.services;
 
-import capstone.rt04.retailbackend.entities.Customer;
-import capstone.rt04.retailbackend.entities.ProductVariant;
-import capstone.rt04.retailbackend.entities.ShoppingCart;
-import capstone.rt04.retailbackend.entities.ShoppingCartItem;
+import capstone.rt04.retailbackend.entities.*;
 import capstone.rt04.retailbackend.repositories.ShoppingCartItemRepository;
 import capstone.rt04.retailbackend.repositories.ShoppingCartRepository;
 import capstone.rt04.retailbackend.util.exceptions.customer.CustomerNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.shoppingcart.InvalidCartTypeException;
+import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,14 +24,16 @@ public class ShoppingCartService {
 
     private final ProductService productService;
     private final CustomerService customerService;
+    private final StoreService storeService;
 
     private final ShoppingCartRepository shoppingCartRepository;
     private final ShoppingCartItemRepository shoppingCartItemRepository;
 
 
-    public ShoppingCartService(@Lazy ProductService productService, @Lazy CustomerService customerService, ShoppingCartRepository shoppingCartRepository, ShoppingCartItemRepository shoppingCartItemRepository) {
+    public ShoppingCartService(@Lazy ProductService productService, @Lazy CustomerService customerService, StoreService storeService, ShoppingCartRepository shoppingCartRepository, ShoppingCartItemRepository shoppingCartItemRepository) {
         this.productService = productService;
         this.customerService = customerService;
+        this.storeService = storeService;
         this.shoppingCartRepository = shoppingCartRepository;
         this.shoppingCartItemRepository = shoppingCartItemRepository;
     }
@@ -88,6 +88,18 @@ public class ShoppingCartService {
         shoppingCart.calculateAndSetInitialTotal(productService);
         Customer customer = customerService.retrieveCustomerByCustomerId(customerId);
         return customerService.lazyLoadCustomerFields(customer);
+    }
+
+    public Customer updateQuantityOfProductVariantWithStore(Integer quantity, Long productVariantId, Long customerId, Long storeId) throws CustomerNotFoundException, InvalidCartTypeException, ProductVariantNotFoundException, StoreNotFoundException {
+        ShoppingCart currentCart = retrieveShoppingCart(customerId, IN_STORE_SHOPPING_CART);
+        Store currentCartStore = currentCart.getStore();
+        if (currentCartStore != null && !currentCartStore.getStoreId().equals(storeId)){
+            //shopping at different store, so reset the cart
+            clearShoppingCart(customerId, IN_STORE_SHOPPING_CART);
+            Store newStore = storeService.retrieveStoreById(storeId);
+            currentCart.setStore(newStore);
+        }
+        return updateQuantityOfProductVariant(quantity, productVariantId, customerId, IN_STORE_SHOPPING_CART);
     }
 
     public Customer clearShoppingCart(Long customerId, String cartType) throws CustomerNotFoundException, InvalidCartTypeException {

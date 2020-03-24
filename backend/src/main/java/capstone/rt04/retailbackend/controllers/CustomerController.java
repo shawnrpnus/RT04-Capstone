@@ -14,6 +14,7 @@ import capstone.rt04.retailbackend.util.exceptions.customer.*;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.shoppingcart.InvalidCartTypeException;
 import capstone.rt04.retailbackend.util.exceptions.staff.StaffNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.style.StyleNotFoundException;
 import capstone.rt04.retailbackend.util.routeconstants.CustomerControllerRoutes;
 import capstone.rt04.retailbackend.util.routeconstants.StaffControllerRoutes;
@@ -283,6 +284,18 @@ public class CustomerController {
                 updateShoppingCartRequest.getCustomerId(),
                 updateShoppingCartRequest.getCartType()
         );
+        relationshipService.clearCustomerRelationships(customer);
+        return new ResponseEntity<>(customer, HttpStatus.OK);
+    }
+
+    @PostMapping(CustomerControllerRoutes.UPDATE_IN_STORE_SHOPPING_CART)
+    public ResponseEntity<?> updateInStoreShoppingCart(@RequestBody UpdateInStoreShoppingCartRequest req) throws InputDataValidationException, InvalidCartTypeException, ProductVariantNotFoundException, CustomerNotFoundException, StoreNotFoundException {
+        validationService.throwExceptionIfInvalidBean(req);
+        Customer customer = shoppingCartService.updateQuantityOfProductVariantWithStore(
+                req.getQuantity(),
+                req.getProductVariantId(),
+                req.getCustomerId(),
+                req.getStoreId());
         relationshipService.clearCustomerRelationships(customer);
         return new ResponseEntity<>(customer, HttpStatus.OK);
     }

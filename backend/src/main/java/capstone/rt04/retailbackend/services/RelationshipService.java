@@ -28,6 +28,14 @@ public class RelationshipService {
         for (ShoppingCartItem sci : customer.getInStoreShoppingCart().getShoppingCartItems()) {
             clearShoppingCartItemRelationships(sci);
         }
+        Store s = customer.getInStoreShoppingCart().getStore();
+        if (s != null){
+            s.setProductStocks(null);
+            s.setStaff(null);
+            s.setTransactions(null);
+            s.setInStoreRestockOrders(null);
+            s.setReservations(null);
+        }
         for (ProductVariant pv : customer.getWishlistItems()) {
             clearCustomerReservationOrWishlist(pv);
         }

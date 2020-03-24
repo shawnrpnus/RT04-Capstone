@@ -19,7 +19,6 @@ export default function(state = initialState, action) {
         loggedInStaff: action.staff
       }
     case types.STAFF_LOGOUT:
-      AsyncStorage.removeItem("state");
       return {
         ...state,
         loggedInStaff: null
