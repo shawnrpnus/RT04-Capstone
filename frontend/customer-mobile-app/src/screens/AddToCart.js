@@ -29,6 +29,16 @@ function AddToCart(props) {
     }
   };
 
+  const showSuccessAlert = () =>
+    Alert.alert(
+      "Success",
+      "Item has been added to shopping cart!",
+      [{ text: "Ok", onPress: () => setAlertOpen(false) }],
+      {
+        cancelable: true
+      }
+    );
+
   const handleQRScanned = async ({ type, data }) => {
     console.log(alertOpen);
     if (!alertOpen) {
@@ -51,7 +61,7 @@ function AddToCart(props) {
           const productVariantId = productStock.productVariant.productVariantId;
           const shoppingCartItems =
             customer.inStoreShoppingCart.shoppingCartItems;
-          console.log(shoppingCartItems)
+          console.log(shoppingCartItems);
           const prodVariantIdToCartItem = _.keyBy(
             shoppingCartItems,
             "productVariant.productVariantId"
@@ -66,7 +76,8 @@ function AddToCart(props) {
               productVariantId,
               customer.customerId,
               productStock.store.storeId,
-              setAlertOpen
+              setAlertOpen,
+              showSuccessAlert
             )
           );
         }

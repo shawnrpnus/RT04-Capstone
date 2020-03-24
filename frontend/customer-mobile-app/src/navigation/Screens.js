@@ -17,6 +17,7 @@ import CustomHeader from "src/components/CustomHeader";
 import ProductDetails from "src/screens/ProductDetails/ProductDetails";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import { MaterialCommunityIcons } from "react-native-vector-icons";
+import ShoppingCart from "src/screens/ShoppingCart/ShoppingCart";
 
 const { width } = Dimensions.get("screen");
 
@@ -77,11 +78,11 @@ function AppDrawer(props) {
       }}
       initialRouteName="ShopStack"
     >
-        <Drawer.Screen
-            name="ShopStack"
-            drawerLabel="Shop"
-            component={ShopStack}
-        />
+      <Drawer.Screen
+        name="ShopStack"
+        drawerLabel="Shop"
+        component={ShopStack}
+      />
       <Drawer.Screen
         name="ProfileStack"
         drawerLabel="Profile"
@@ -127,6 +128,15 @@ function ShopStack(props) {
           )
         }}
       />
+      <Stack.Screen
+        name="Shopping Cart"
+        component={ShoppingCart}
+        options={{
+          header: props => (
+            <CustomHeader title="Shopping Cart" back {...props} />
+          )
+        }}
+      />
     </Stack.Navigator>
   );
 }
@@ -134,20 +144,10 @@ function ShopStack(props) {
 function ProductScanTabs(props) {
   return (
     <Tab.Navigator
-      initialRouteName="Add to Cart"
+      initialRouteName="View Details"
       activeColor={theme.COLORS.PRIMARY}
       barStyle={{ backgroundColor: theme.COLORS.CAPTION }}
     >
-      <Tab.Screen
-        name="Add to Cart"
-        component={Product}
-        options={{
-          tabBarLabel: "Add to Cart",
-          tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="cart-plus" color={color} size={26} />
-          )
-        }}
-      />
       <Tab.Screen
         name="View Details"
         component={Product}
@@ -155,6 +155,16 @@ function ProductScanTabs(props) {
           tabBarLabel: "View Details",
           tabBarIcon: ({ color }) => (
             <MaterialCommunityIcons name="magnify" color={color} size={26} />
+          )
+        }}
+      />
+      <Tab.Screen
+        name="Add to Cart"
+        component={Product}
+        options={{
+          tabBarLabel: "Add to Cart",
+          tabBarIcon: ({ color }) => (
+            <MaterialCommunityIcons name="cart-plus" color={color} size={26} />
           )
         }}
       />

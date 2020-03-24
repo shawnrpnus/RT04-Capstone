@@ -41,9 +41,9 @@ const loadLoggedInCustomer = () => {
         SplashScreen.hide();
         return initialState;
       }
-      console.log(result)
+      // console.log(result)
       if (_.get(jsog.parse(result), "customer.loggedInCustomer")){
-        console.log("HERE")
+        // console.log("HERE")
         dispatch({
           type: LOAD_LOGGED_IN_CUSTOMER,
           customer: jsog.parse(result).customer.loggedInCustomer

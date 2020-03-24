@@ -96,10 +96,10 @@ public class ShoppingCartService {
         if (currentCartStore != null && !currentCartStore.getStoreId().equals(storeId)){
             //shopping at different store, so reset the cart
             clearShoppingCart(customerId, IN_STORE_SHOPPING_CART);
-            Store newStore = storeService.retrieveStoreById(storeId);
-            currentCart.setStore(newStore);
         }
-        return updateQuantityOfProductVariant(quantity, productVariantId, customerId, IN_STORE_SHOPPING_CART);
+        Customer updatedCustomer = updateQuantityOfProductVariant(quantity, productVariantId, customerId, IN_STORE_SHOPPING_CART);
+        updatedCustomer.getInStoreShoppingCart().setStore(storeService.retrieveStoreById(storeId));
+        return updatedCustomer;
     }
 
     public Customer clearShoppingCart(Long customerId, String cartType) throws CustomerNotFoundException, InvalidCartTypeException {

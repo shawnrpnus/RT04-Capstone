@@ -101,7 +101,8 @@ export const updateInStoreShoppingCart = (
   productVariantId,
   customerId,
   storeId,
-  setAlertOpen
+  setAlertOpen,
+  successAlertFunction
 ) => {
   const req = { quantity, productVariantId, customerId, storeId };
   return dispatch => {
@@ -109,20 +110,13 @@ export const updateInStoreShoppingCart = (
       .post(CUSTOMER_BASE_URL + "/updateInStoreShoppingCart", req)
       .then(response => {
         dispatchUpdatedCustomer(response.data, dispatch);
-        Alert.alert(
-          "Success",
-          "Item has been added to shopping cart!",
-          [{ text: "Ok", onPress: () => setAlertOpen(false) }],
-          {
-            cancelable: true
-          }
-        );
+        if (successAlertFunction) successAlertFunction();
       })
       .catch(err => {
         Alert.alert(
           "Error",
-          "An error has occurred. Please try again",
-          [{ text: "Ok", onPress: () => setAlertOpen(false) }],
+          "An error has occurred.",
+          [{ text: "Ok", onPress: () => {setAlertOpen ? setAlertOpen(false): {}}}],
           {
             cancelable: true
           }
