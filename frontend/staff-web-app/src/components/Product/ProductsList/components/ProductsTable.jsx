@@ -140,6 +140,7 @@ class ProductsTable extends PureComponent {
               {
                 title: "Image",
                 field: "image",
+                filtering: false,
                 render: rowData => (
                   <Link to={`/product/viewProductDetails/${rowData.productId}`}>
                     <img

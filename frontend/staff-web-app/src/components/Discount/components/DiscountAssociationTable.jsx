@@ -140,13 +140,13 @@ const DiscountAssociationTable = props => {
                         const selectedTo = moment(
                           new Date(discount.toDateTime)
                         );
-                        // return true is clash OR match
+                        // return true is clash OR match or flatDiscount > price
                         return (
                           // (selectedFrom.isSameOrBefore(toDateTime) &&
                           //   selectedTo.isSameOrAfter(fromDateTime))
                           (discount.toDateTime &&
                             !(
-                              // negate of pass
+                              // negate of pass === clash
                               (
                                 selectedFrom.isAfter(toDateTime) ||
                                 selectedTo.isBefore(fromDateTime)
@@ -154,7 +154,9 @@ const DiscountAssociationTable = props => {
                             )) ||
                           discountId === selectedDiscountId
                         );
-                      }).length === 0 // if clash OR match => to make it false (length !== 0) to remove from the list of products
+                      }).length === 0 && // no discount
+                      // if clash OR match => to make it false (length !== 0) to remove from the list of products
+                      p.product.price > discount.flatDiscount // price > flatDiscount
                   )}
                   selectionAction={{
                     tooltip: selectedDiscountId
