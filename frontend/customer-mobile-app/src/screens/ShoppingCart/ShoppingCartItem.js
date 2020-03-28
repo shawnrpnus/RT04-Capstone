@@ -59,7 +59,7 @@ function ShoppingCartItem(props) {
   };
 
   const stock =
-    shoppingCartItemsStock[shoppingCartItem.shoppingCartItemId].quantity;
+      _.get(shoppingCartItemsStock, `${shoppingCartItem.shoppingCartItemId}.quantity`)
   const stockStatus =
     stock === 0
       ? "Out of stock"

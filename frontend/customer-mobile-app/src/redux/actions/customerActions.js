@@ -144,3 +144,19 @@ const updateShoppingCartItemsStock = data => ({
   type: UPDATE_SHOPPING_CART_ITEMS_STOCK,
   data: data
 });
+
+export const clearShoppingCart = (customerId) => {
+  const reqParams = {customerId, cartType: "instore"}
+  return dispatch => {
+    axios
+        .post(CUSTOMER_BASE_URL + "/clearShoppingCart", null,{
+          params: reqParams
+        })
+        .then(response => {
+          dispatchUpdatedCustomer(response.data, dispatch);
+        })
+        .catch(err => {
+          console.log(err);
+        });
+  };
+}

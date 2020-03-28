@@ -133,7 +133,7 @@ function ShopStack(props) {
         component={ShoppingCart}
         options={{
           header: props => (
-            <CustomHeader title="Shopping Cart" back {...props} />
+            <CustomHeader title="Shopping Cart" back atShoppingCartPage {...props}  />
           )
         }}
       />

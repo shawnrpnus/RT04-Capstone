@@ -1,14 +1,17 @@
 import React from "react";
 import { Block, NavBar, theme } from "galio-framework";
-import { StyleSheet, TouchableOpacity } from "react-native";
+import { Alert, StyleSheet, TouchableOpacity } from "react-native";
 import Icon from "./Icon";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import materialTheme from "src/constants/Theme";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { clearShoppingCart } from "src/redux/actions/customerActions";
 
 function CustomHeader(props) {
-  const { back, transparent, navigation, title } = props;
+  const { back, transparent, navigation, title, atShoppingCartPage } = props;
 
   const customer = useSelector(state => state.customer.loggedInCustomer);
+  const dispatch = useDispatch();
 
   const headerStyles = [
     transparent ? { backgroundColor: "rgba(0,0,0,0)" } : null
@@ -19,10 +22,9 @@ function CustomHeader(props) {
       style={[styles.button, style]}
       onPress={() => navigation.navigate("Shopping Cart")}
     >
-      <Icon
-        family="GalioExtra"
-        size={20}
-        name="basket-simple"
+      <MaterialCommunityIcons
+        name="cart-outline"
+        size={22}
         color={theme.COLORS["ICON"]}
       />
       {customer && customer.inStoreShoppingCart.shoppingCartItems.length > 0 ? (
@@ -30,6 +32,32 @@ function CustomHeader(props) {
       ) : null}
     </TouchableOpacity>
   );
+
+  const TrashButton = ({ style }) => (
+    <TouchableOpacity
+      style={[styles.button, style]}
+      onPress={() => confirmClearCart()}
+    >
+      <MaterialCommunityIcons
+        name="trash-can-outline"
+        size={22}
+        color={theme.COLORS["ICON"]}
+      />
+    </TouchableOpacity>
+  );
+
+  const confirmClearCart = () => {
+    Alert.alert("Clear Cart", "Are you sure you want to clear your cart?", [
+      {
+        text: "Cancel",
+        style: "cancel"
+      },
+      {
+        text: "Clear Cart",
+        onPress: () => dispatch(clearShoppingCart(customer.customerId))
+      }
+    ]);
+  };
 
   const handleLeftPress = () => {
     const { back } = props;
@@ -42,7 +70,13 @@ function CustomHeader(props) {
         back={back}
         title={title}
         style={styles.navbar}
-        right={<BasketButton key="basket-product" navigation={navigation} />}
+        right={
+          atShoppingCartPage ? (
+            <TrashButton key="clear-cart" />
+          ) : (
+            <BasketButton key="basket-product" navigation={navigation} />
+          )
+        }
         rightStyle={{ alignItems: "center" }}
         leftStyle={{ paddingTop: 3, flex: 0.3 }}
         leftIconName={back ? null : "navicon"}
@@ -70,7 +104,7 @@ const styles = StyleSheet.create({
   button: {
     padding: 12,
     position: "relative",
-    marginRight: -30
+    marginRight: -40
   },
   notify: {
     backgroundColor: materialTheme.COLORS.LABEL,

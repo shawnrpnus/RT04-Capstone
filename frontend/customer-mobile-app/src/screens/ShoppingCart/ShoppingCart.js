@@ -48,25 +48,25 @@ function ShoppingCart(props) {
     );
   };
 
-  const allInStock = (shoppingCartItemsStock) => {
+  const allInStock = shoppingCartItemsStock => {
     let hasNoStock = false;
     _.forOwn(shoppingCartItemsStock, (value, key) => {
-       if(value.quantity === 0) hasNoStock = true;
-    })
+      if (value.quantity === 0) hasNoStock = true;
+    });
     customer.inStoreShoppingCart.shoppingCartItems.forEach(shoppingCartItem => {
-      const stock =
-          shoppingCartItemsStock[shoppingCartItem.shoppingCartItemId].quantity;
-      if (shoppingCartItem.quantity > stock){
+      const stock = _.get(shoppingCartItemsStock, `${shoppingCartItem.shoppingCartItemId}.quantity`)
+      if (stock && shoppingCartItem.quantity > stock) {
         hasNoStock = true;
       }
-    })
+    });
     return !hasNoStock;
-  }
+  };
 
   const renderEmpty = () => {
     return (
-      <Text h5 style={{ padding: 20 }}>
-        Your shopping cart is empty. Scan a QR code to get started!
+      <Text h5 style={{ padding: 20, textAlign: "center" }}>
+        Your shopping cart is empty.{"\n"}
+        Scan a QR code to get started!
       </Text>
     );
   };
@@ -89,41 +89,57 @@ function ShoppingCart(props) {
               refreshing={refreshing}
             />
           </Block>
-          <Block
-            flex={0.3}
-            center
-            style={{
-              ...styles.footer,
-              paddingHorizontal: theme.SIZES.BASE,
-              width: "100%",
-              padding: 20,
-              paddingTop: 10,
-              paddingBottom: 10,
-              borderTopColor: "lightgrey",
-              borderTopWidth: 1
-            }}
-          >
-            <Text h5 style={{ fontSize: 16, color: "grey" }}>
-              You are shopping at {customer.inStoreShoppingCart.store.storeName}
-            </Text>
-            <Block flex row space="between" style={{ width: "100%", marginBottom: 5, alignItems: "center" }}>
-              <Text h4 style={{ fontWeight: "bold", fontSize: 20 }}>
-                Total
-              </Text>
-              <Text h4 style={{ fontWeight: "bold", fontSize: 20 }}>
-                ${customer.inStoreShoppingCart.finalTotalAmount}
-              </Text>
-            </Block>
-            <Button
-              flex
-              style={styles.checkout}
-              color={allInStock(shoppingCartItemsStock) ? materialTheme.COLORS.BUTTON_COLOR : "lightgrey"}
-              disabled={!allInStock(shoppingCartItemsStock)}
+          {customer.inStoreShoppingCart.shoppingCartItems.length > 0 && (
+            <Block
+              flex={0.3}
+              center
+              style={{
+                ...styles.footer,
+                paddingHorizontal: theme.SIZES.BASE,
+                width: "100%",
+                padding: 20,
+                paddingTop: 10,
+                paddingBottom: 10,
+                borderTopColor: "lightgrey",
+                borderTopWidth: 1
+              }}
             >
-              GO TO CHECKOUT
-            </Button>
-            {!allInStock(shoppingCartItemsStock) && <Text h6 style={{color: "red"}}>Some of your items are out of stock!</Text>}
-          </Block>
+              <Text h5 style={{ fontSize: 16, color: "grey" }}>
+                You are shopping at{" "}
+                {customer.inStoreShoppingCart.store.storeName}
+              </Text>
+              <Block
+                flex
+                row
+                space="between"
+                style={{ width: "100%", marginBottom: 5, alignItems: "center" }}
+              >
+                <Text h4 style={{ fontWeight: "bold", fontSize: 20 }}>
+                  Total
+                </Text>
+                <Text h4 style={{ fontWeight: "bold", fontSize: 20 }}>
+                  ${customer.inStoreShoppingCart.finalTotalAmount}
+                </Text>
+              </Block>
+              <Button
+                flex
+                style={styles.checkout}
+                color={
+                  allInStock(shoppingCartItemsStock)
+                    ? materialTheme.COLORS.BUTTON_COLOR
+                    : "lightgrey"
+                }
+                disabled={!allInStock(shoppingCartItemsStock)}
+              >
+                GO TO CHECKOUT
+              </Button>
+              {!allInStock(shoppingCartItemsStock) && (
+                <Text h6 style={{ color: "red" }}>
+                  Some of your items are out of stock!
+                </Text>
+              )}
+            </Block>
+          )}
         </>
       )}
     </Block>
