@@ -1,7 +1,7 @@
 export default class PromoCodeCreateRequest {
-    promoCode;
+  promoCode;
 
-    constructor(promoCode) {
-        this.promoCode = promoCode;
-    }
+  constructor(promoCode) {
+    this.promoCode = promoCode;
+  }
 }

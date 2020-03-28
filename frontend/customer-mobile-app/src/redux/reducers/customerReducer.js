@@ -3,7 +3,8 @@ import {AsyncStorage} from "react-native";
 import {SplashScreen} from "expo";
 
 const initialState = {
-  loggedInCustomer: null
+  loggedInCustomer: null,
+  shoppingCartItemsStock: null,
 };
 
 export default function(state = initialState, action) {
@@ -23,6 +24,11 @@ export default function(state = initialState, action) {
       return {
         ...state,
         loggedInCustomer: null
+      }
+    case types.UPDATE_SHOPPING_CART_ITEMS_STOCK:
+      return {
+        ...state,
+        shoppingCartItemsStock: action.data
       }
     default:
       return state;

@@ -82,6 +82,7 @@ export default function Autocomplete(props) {
           // onBlur={() => setFocused(false)}
           value={value}
           error={error}
+          // autoFocus
           onChangeText={text => {
             setValue(text);
             if (!_.isEmpty(errors)) dispatch(clearErrors());

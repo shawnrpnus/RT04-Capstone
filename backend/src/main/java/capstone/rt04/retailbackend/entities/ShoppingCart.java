@@ -47,6 +47,9 @@ public class ShoppingCart implements Serializable {
     @OneToMany
     private List<ShoppingCartItem> shoppingCartItems;
 
+    @OneToOne
+    private Store store; //to track which store the in-store shopping cart is for
+
     public ShoppingCart() {
         this.initialTotalAmount = BigDecimal.ZERO;
         this.finalTotalAmount = BigDecimal.ZERO;

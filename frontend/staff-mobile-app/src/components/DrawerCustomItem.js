@@ -1,12 +1,12 @@
 import React from "react";
-import { StyleSheet, TouchableOpacity } from "react-native";
+import { AsyncStorage, StyleSheet, TouchableOpacity } from "react-native";
 import { Block, Text, theme } from "galio-framework";
 
 import Icon from "./Icon";
 import materialTheme from "src/constants/Theme";
-import {useDispatch} from "react-redux";
-import {staffLogout} from "src/redux/actions/staffActions";
-import { StackActions } from '@react-navigation/native';
+import { useDispatch } from "react-redux";
+import { staffLogout } from "src/redux/actions/staffActions";
+import { StackActions } from "@react-navigation/native";
 
 function DrawerCustomItem(props) {
   const { title, focused, navigation } = props;
@@ -57,14 +57,15 @@ function DrawerCustomItem(props) {
   };
 
   const logout = () => {
-    dispatch(staffLogout);
-  }
-
+    AsyncStorage.removeItem("state").then(() => dispatch(staffLogout));
+  };
 
   return (
     <TouchableOpacity
       style={{ height: 55 }}
-      onPress={title === "Log Out" ? () => logout() : () => navigation.navigate(title)}
+      onPress={
+        title === "Log Out" ? () => logout() : () => navigation.navigate(title)
+      }
     >
       <Block
         flex

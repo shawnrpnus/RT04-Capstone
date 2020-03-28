@@ -67,7 +67,7 @@ class PromoCodeTable extends Component {
   };
 
   render() {
-    const { history, renderLoader } = this.props;
+    const { history, renderLoader, allPromoCodes } = this.props;
     const { open } = this.state;
     const data = this.props.allPromoCodes;
     console.log(data);
@@ -82,11 +82,21 @@ class PromoCodeTable extends Component {
             textAlign: "right"
           }}
         >
-          <Button variant="container" onClick={this.toggleOpenEmailForm}>
+          <Button
+            color="primary"
+            variant="contained"
+            onClick={this.toggleOpenEmailForm}
+            style={{ margin: "2% 0" }}
+          >
             Email customer
           </Button>
-          {open && <EmailForm />}
-          {this.props.allPromoCodes ? (
+          {open && (
+            <EmailForm
+              open={open}
+              onClose={() => this.setState({ open: false })}
+            />
+          )}
+          {allPromoCodes ? (
             <MaterialTable
               title="All Promo Codes"
               icons={tableIcons}

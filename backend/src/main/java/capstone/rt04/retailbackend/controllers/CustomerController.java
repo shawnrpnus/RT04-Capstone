@@ -14,6 +14,7 @@ import capstone.rt04.retailbackend.util.exceptions.customer.*;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.shoppingcart.InvalidCartTypeException;
 import capstone.rt04.retailbackend.util.exceptions.staff.StaffNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.style.StyleNotFoundException;
 import capstone.rt04.retailbackend.util.routeconstants.CustomerControllerRoutes;
 import capstone.rt04.retailbackend.util.routeconstants.StaffControllerRoutes;
@@ -287,11 +288,30 @@ public class CustomerController {
         return new ResponseEntity<>(customer, HttpStatus.OK);
     }
 
+    @PostMapping(CustomerControllerRoutes.UPDATE_IN_STORE_SHOPPING_CART)
+    public ResponseEntity<?> updateInStoreShoppingCart(@RequestBody UpdateInStoreShoppingCartRequest req) throws InputDataValidationException, InvalidCartTypeException, ProductVariantNotFoundException, CustomerNotFoundException, StoreNotFoundException {
+        validationService.throwExceptionIfInvalidBean(req);
+        Customer customer = shoppingCartService.updateQuantityOfProductVariantWithStore(
+                req.getQuantity(),
+                req.getProductVariantId(),
+                req.getCustomerId(),
+                req.getStoreId());
+        relationshipService.clearCustomerRelationships(customer);
+        return new ResponseEntity<>(customer, HttpStatus.OK);
+    }
+
     @PostMapping(CustomerControllerRoutes.CLEAR_SHOPPING_CART)
     public ResponseEntity<?> clearShoppingCart(@RequestParam Long customerId, @RequestParam String cartType) throws CustomerNotFoundException, InvalidCartTypeException {
         Customer customer = shoppingCartService.clearShoppingCart(customerId, cartType);
         relationshipService.clearCustomerRelationships(customer);
         return new ResponseEntity<>(customer, HttpStatus.OK);
+    }
+
+    @GetMapping(CustomerControllerRoutes.GET_SHOPPING_CART_ITEMS_STOCK)
+    public ResponseEntity<?> getShoppingCartItemsStock(@RequestParam Long customerId, @RequestParam String cartType,
+                                                       @RequestParam(required = false) Boolean inStoreDeliverHome) throws CustomerNotFoundException, InvalidCartTypeException {
+        Map<Long, Map<String, Object>>  result = shoppingCartService.getShoppingCartItemsStock(customerId, cartType, inStoreDeliverHome);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PostMapping(CustomerControllerRoutes.ADD_WISHLIST_TO_SHOPPING_CART)

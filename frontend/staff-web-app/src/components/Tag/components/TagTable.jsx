@@ -92,11 +92,11 @@ class TagTable extends Component {
         {/*  <h5 className="bold-text">All Tags</h5>*/}
         {/*</div>*/}
         <div
-            className="table"
-            style={{
-              width: "auto",
-              verticalAlign: "middle"
-            }}
+          className="table"
+          style={{
+            width: "auto",
+            verticalAlign: "middle"
+          }}
         >
           {this.props.allTags ? (
             <MaterialTable

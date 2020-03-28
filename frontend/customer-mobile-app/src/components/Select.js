@@ -11,9 +11,8 @@ export default function DropDown(props) {
   });
 
   const { onSelect, style, ...rest } = props;
+
   const handleOnSelect = (index, value) => {
-
-
     setState(prevState => ({ ...prevState, value: value }));
     onSelect && onSelect(index, value);
   };
