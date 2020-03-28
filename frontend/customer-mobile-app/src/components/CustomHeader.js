@@ -25,7 +25,7 @@ function CustomHeader(props) {
         name="basket-simple"
         color={theme.COLORS["ICON"]}
       />
-      {customer.inStoreShoppingCart.shoppingCartItems.length > 0 ? (
+      {customer && customer.inStoreShoppingCart.shoppingCartItems.length > 0 ? (
         <Block middle style={styles.notify} />
       ) : null}
     </TouchableOpacity>

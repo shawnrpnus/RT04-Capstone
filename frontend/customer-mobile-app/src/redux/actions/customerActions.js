@@ -33,6 +33,20 @@ export const customerLogin = req => {
   };
 };
 
+export const refreshCustomer = (customerId, setRefreshing) => {
+  return dispatch => {
+    axios
+        .get(CUSTOMER_BASE_URL + "/retrieveCustomerById", {params: {customerId}})
+        .then(response => {
+          dispatchUpdatedCustomer(response.data, dispatch);
+          setRefreshing(false);
+        })
+        .catch(err => {
+          dispatchErrorMapError(err, dispatch);
+        })
+  }
+}
+
 export const customerLogout = {
   type: CUSTOMER_LOGOUT
 };
@@ -102,7 +116,8 @@ export const updateInStoreShoppingCart = (
   customerId,
   storeId,
   setAlertOpen,
-  successAlertFunction
+  successAlertFunction,
+  setQtyMenuOpen
 ) => {
   const req = { quantity, productVariantId, customerId, storeId };
   return dispatch => {
@@ -111,8 +126,10 @@ export const updateInStoreShoppingCart = (
       .then(response => {
         dispatchUpdatedCustomer(response.data, dispatch);
         if (successAlertFunction) successAlertFunction();
+        if (setQtyMenuOpen) setQtyMenuOpen(false);
       })
       .catch(err => {
+        console.log(err)
         Alert.alert(
           "Error",
           "An error has occurred.",

@@ -1,14 +1,24 @@
-import React from "react";
-import { useSelector } from "react-redux";
+import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Block, Text, Button, theme } from "galio-framework";
 import { Dimensions, FlatList, StyleSheet } from "react-native";
 import ShoppingCartItem from "src/screens/ShoppingCart/ShoppingCartItem";
 import materialTheme from "src/constants/Theme";
+import {refreshCustomer} from "src/redux/actions/customerActions";
 
 const { width, height } = Dimensions.get("window");
 
 function ShoppingCart(props) {
   const customer = useSelector(state => state.customer.loggedInCustomer);
+  const [refreshing, setRefreshing] = useState(false);
+  const dispatch = useDispatch();
+
+  const refresh = () => {
+    if (customer) {
+      setRefreshing(true);
+      dispatch(refreshCustomer(customer.customerId, setRefreshing));
+    }
+  };
 
   const renderHeader = () => {
     // return <Text h4>Shopping Cart</Text>;
@@ -19,46 +29,61 @@ function ShoppingCart(props) {
     return <ShoppingCartItem shoppingCartItem={item} customer={customer} />;
   };
 
-  const renderFooter = () => {
-    return (
-      <Block flex style={styles.footer}>
-        <Block style={{ marginHorizontal: theme.SIZES.BASE }}>
-          <Block style={styles.divider} />
-        </Block>
-        <Block center style={{ paddingHorizontal: theme.SIZES.BASE }}>
-          <Button
-            flex
-            center
-            style={styles.checkout}
-            color={materialTheme.COLORS.BUTTON_COLOR}
-          >
-            PROCEED TO CHECKOUT
-          </Button>
-        </Block>
-      </Block>
-    );
-  };
-
   const renderEmpty = () => {
     return (
-      <Text h5>
+      <Text h5 style={{ padding: 20 }}>
         Your shopping cart is empty. Scan a QR code to get started!
       </Text>
     );
   };
 
   return (
-    <Block flex center style={styles.cart}>
+    <Block flex={1} center style={styles.cart}>
       {customer && (
-        <FlatList
-          data={customer.inStoreShoppingCart.shoppingCartItems}
-          renderItem={renderItem}
-          showsVerticalScrollIndicator={false}
-          keyExtractor={(item, index) => `${index}-${item.shoppingCartItemId}`}
-          ListEmptyComponent={renderEmpty()}
-          ListHeaderComponent={renderHeader()}
-          ListFooterComponent={renderFooter()}
-        />
+        <>
+          <Block flex>
+            <FlatList
+              data={customer.inStoreShoppingCart.shoppingCartItems}
+              renderItem={renderItem}
+              showsVerticalScrollIndicator={false}
+              keyExtractor={(item, index) =>
+                `${index}-${item.shoppingCartItemId}`
+              }
+              ListEmptyComponent={renderEmpty()}
+              ListHeaderComponent={renderHeader()}
+              onRefresh={refresh}
+              refreshing={refreshing}
+            />
+          </Block>
+          <Block
+            flex={0.2}
+            center
+            style={{
+              ...styles.footer,
+              paddingHorizontal: theme.SIZES.BASE,
+              width: "100%",
+              padding: 20,
+              borderTopColor: "lightgrey",
+              borderTopWidth: 1
+            }}
+          >
+            <Block flex row space="between" style={{ width: "100%" }}>
+              <Text h4 style={{ fontWeight: "bold", fontSize: 20 }}>
+                Total
+              </Text>
+              <Text h4 style={{ fontWeight: "bold", fontSize: 20 }}>
+                ${customer.inStoreShoppingCart.finalTotalAmount}
+              </Text>
+            </Block>
+            <Button
+              flex
+              style={styles.checkout}
+              color={materialTheme.COLORS.BUTTON_COLOR}
+            >
+              GO TO CHECKOUT
+            </Button>
+          </Block>
+        </>
       )}
     </Block>
   );
@@ -78,10 +103,11 @@ const styles = StyleSheet.create({
     shadowColor: "black",
     shadowOffset: { width: 0, height: 4 },
     shadowRadius: 8,
-    shadowOpacity: 0.2
+    shadowOpacity: 0.2,
+    marginBottom: 8
   },
   footer: {
-    marginBottom: theme.SIZES.BASE * 2
+    backgroundColor: "white"
   }
 });
 

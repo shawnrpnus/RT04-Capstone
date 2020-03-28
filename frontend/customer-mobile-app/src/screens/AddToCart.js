@@ -61,7 +61,6 @@ function AddToCart(props) {
           const productVariantId = productStock.productVariant.productVariantId;
           const shoppingCartItems =
             customer.inStoreShoppingCart.shoppingCartItems;
-          console.log(shoppingCartItems);
           const prodVariantIdToCartItem = _.keyBy(
             shoppingCartItems,
             "productVariant.productVariantId"
