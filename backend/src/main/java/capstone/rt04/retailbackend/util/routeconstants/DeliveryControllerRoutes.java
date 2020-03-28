@@ -10,6 +10,7 @@ public class DeliveryControllerRoutes {
     public static final String RECEIVE_RESTOCK_ORDER_ITEM_THROUGH_DELIVERY = "/receiveRestockOrderItemThroughDelivery";
     public static final String RETRIEVE_DELIVERY_BY_ID = "/retrieveDeliveryById/{deliveryId}";
     public static final String DELETE_DELIVERY = "/deleteDelivery/{deliveryId}";
+    public static final String AUTOMATE_DELIVERY_ALLOCATION = "/automateDeliveryAllocation/{staffId}";
 
     // Restock Order Item
     public static final String RETRIEVE_ALL_RESTOCK_ORDER_ITEM_TO_DELIVER = "/retrieveAllRestockOrderItemToDeliver";

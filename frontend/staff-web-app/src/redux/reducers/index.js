@@ -16,6 +16,7 @@ import deliveryReducer from "./deliveryReducer";
 import advertisementReducer from "./advertisementReducer";
 import instagramReducer from "./instagramReducer";
 import discountReducer from "./discountReducer";
+import transactionReducer from "./transactionReducer";
 
 const rootReducer = combineReducers({
   errors: errorReducer,
@@ -34,6 +35,7 @@ const rootReducer = combineReducers({
   advertisement: advertisementReducer,
   instagram: instagramReducer,
   discount: discountReducer,
+  transaction: transactionReducer,
   util: utilReducer
 });
 

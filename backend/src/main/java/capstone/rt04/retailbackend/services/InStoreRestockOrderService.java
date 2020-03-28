@@ -4,12 +4,13 @@ import capstone.rt04.retailbackend.entities.*;
 import capstone.rt04.retailbackend.repositories.InStoreRestockOrderItemRepository;
 import capstone.rt04.retailbackend.repositories.InStoreRestockOrderRepository;
 import capstone.rt04.retailbackend.request.inStoreRestockOrder.StockIdQuantityMap;
-import capstone.rt04.retailbackend.response.InStoreRestockOrderForWarehouse;
-import capstone.rt04.retailbackend.response.InStoreRestockOrderItemsForWarehouse;
 import capstone.rt04.retailbackend.util.enums.DeliveryStatusEnum;
 import capstone.rt04.retailbackend.util.enums.ItemDeliveryStatusEnum;
 import capstone.rt04.retailbackend.util.exceptions.delivery.DeliveryHasAlreadyBeenConfirmedException;
-import capstone.rt04.retailbackend.util.exceptions.inStoreRestockOrder.*;
+import capstone.rt04.retailbackend.util.exceptions.inStoreRestockOrder.InStoreRestockOrderItemNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.inStoreRestockOrder.InStoreRestockOrderNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.inStoreRestockOrder.InStoreRestockOrderUpdateException;
+import capstone.rt04.retailbackend.util.exceptions.inStoreRestockOrder.InsufficientStockException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductStockNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
@@ -52,17 +53,18 @@ public class InStoreRestockOrderService {
         ProductStock productStock;
         List<InStoreRestockOrderItem> inStoreRestockOrderItems = new ArrayList<>();
 
+        Timestamp createdDateTime = new Timestamp(System.currentTimeMillis());
         // Creating restock order item
         for (StockIdQuantityMap stockIdQuantityMap : stockIdQuantityMaps) {
             productStock = productService.retrieveProductStockById(stockIdQuantityMap.getProductStockId());
-            InStoreRestockOrderItem inStoreRestockOrderItem = new InStoreRestockOrderItem(stockIdQuantityMap.getOrderQuantity(), productStock);
+            InStoreRestockOrderItem inStoreRestockOrderItem = new InStoreRestockOrderItem(stockIdQuantityMap.getOrderQuantity(), productStock, createdDateTime);
             inStoreRestockOrderItemRepository.save(inStoreRestockOrderItem);
             inStoreRestockOrderItems.add(inStoreRestockOrderItem);
         }
 
         Store store = storeService.retrieveStoreById(storeId);
         Warehouse warehouse = warehouseService.retrieveAllWarehouses().get(0);
-        InStoreRestockOrder inStoreRestockOrder = new InStoreRestockOrder(inStoreRestockOrderItems, store, warehouse);
+        InStoreRestockOrder inStoreRestockOrder = new InStoreRestockOrder(inStoreRestockOrderItems, store, warehouse, createdDateTime);
         // Bi-directional relationship
         for (InStoreRestockOrderItem inStoreRestockOrderItem : inStoreRestockOrderItems) {
             inStoreRestockOrderItem.setInStoreRestockOrder(inStoreRestockOrder);
@@ -73,33 +75,20 @@ public class InStoreRestockOrderService {
     }
 
     @Transactional(readOnly = true)
-    public List<InStoreRestockOrderForWarehouse> retrieveAllInStoreRestockOrderForWarehouse() {
+    public List<InStoreRestockOrder> retrieveAllInStoreRestockOrderForWarehouse() {
         List<InStoreRestockOrder> inStoreRestockOrders = inStoreRestockOrderRepository.findAll();
-        List<InStoreRestockOrderForWarehouse> inStoreRestockOrdersForWarehouse = new ArrayList<>();
-        InStoreRestockOrder order;
-        InStoreRestockOrderItem item;
-        InStoreRestockOrderForWarehouse inStoreRestockOrderForWarehouse;
-        InStoreRestockOrderItemsForWarehouse inStoreRestockOrderItemsForWarehouse = new InStoreRestockOrderItemsForWarehouse();
 
         // TODO: Find the stock in warehouse and return a custom object
         for (InStoreRestockOrder inStoreRestockOrder : inStoreRestockOrders) {
-            order = inStoreRestockOrder;
-            inStoreRestockOrderForWarehouse = new InStoreRestockOrderForWarehouse(order.getInStoreRestockOrderId(), order.getOrderDateTime(), order.getDeliveryDateTime(),
-                    order.getDeliveryStatus(), new ArrayList<>(), order.getStore(), order.getWarehouse());
             for (InStoreRestockOrderItem inStoreRestockOrderItem : inStoreRestockOrder.getInStoreRestockOrderItems()) {
-                item = inStoreRestockOrderItem;
                 for (ProductStock productStock : inStoreRestockOrderItem.getProductStock().getProductVariant().getProductStocks()) {
                     if (productStock.getWarehouse() != null) {
-                        inStoreRestockOrderItemsForWarehouse = new InStoreRestockOrderItemsForWarehouse(item.getInStoreRestockOrderItemId(),
-                                item.getQuantity(), item.getProductStock(), productStock.getQuantity(), item.getDeliveryDateTime(),
-                                item.getItemDeliveryStatus(), item.getDelivery(), inStoreRestockOrderForWarehouse);
+                        inStoreRestockOrderItem.setWarehouseStockQuantity(productStock.getQuantity());
                     }
                 }
-                inStoreRestockOrderForWarehouse.getInStoreRestockOrderItemsForWarehouse().add(inStoreRestockOrderItemsForWarehouse);
             }
-            inStoreRestockOrdersForWarehouse.add(inStoreRestockOrderForWarehouse);
         }
-        return inStoreRestockOrdersForWarehouse;
+        return inStoreRestockOrders;
     }
 
 
@@ -164,7 +153,7 @@ public class InStoreRestockOrderService {
         // Remaining in skuQuantityMaps are the new items in the list, loop through, create new restock order item and add to the existing list
         for (StockIdQuantityMap stockIdQuantityMap : loopStockIdQuantityMaps) {
             productStock = productService.retrieveProductStockById(stockIdQuantityMap.getProductStockId());
-            InStoreRestockOrderItem inStoreRestockOrderItem = new InStoreRestockOrderItem(stockIdQuantityMap.getOrderQuantity(), productStock);
+            InStoreRestockOrderItem inStoreRestockOrderItem = new InStoreRestockOrderItem(stockIdQuantityMap.getOrderQuantity(), productStock, new Timestamp(System.currentTimeMillis()));
             inStoreRestockOrderItemRepository.save(inStoreRestockOrderItem);
             inStoreRestockOrderItem.setInStoreRestockOrder(inStoreRestockOrder);
             inStoreRestockOrder.getInStoreRestockOrderItems().add(inStoreRestockOrderItem);
@@ -199,7 +188,8 @@ public class InStoreRestockOrderService {
             inStoreRestockOrderItem.setItemDeliveryStatus(ItemDeliveryStatusEnum.TO_BE_DELIVERED);
             updated = Boolean.TRUE;
         }
-        if (!updated) throw new InsufficientStockException("Insufficient stock to fulfill at least 1 restock order item!");
+        if (!updated)
+            throw new InsufficientStockException("Insufficient stock to fulfill at least 1 restock order item!");
 
         // in restock order has been partially fulfilled, don't update the delivery status anymore
         DeliveryStatusEnum deliveryStatus = inStoreRestockOrder.getDeliveryStatus();

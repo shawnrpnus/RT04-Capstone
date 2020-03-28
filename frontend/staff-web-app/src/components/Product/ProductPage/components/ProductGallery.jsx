@@ -1,7 +1,6 @@
 /* eslint-disable react/no-array-index-key */
 import React, { PureComponent } from "react";
 import PropTypes from "prop-types";
-import Lightbox from "react-images";
 const _ = require("lodash");
 
 export default class ProductGallery extends PureComponent {

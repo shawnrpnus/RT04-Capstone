@@ -76,6 +76,9 @@ public class Transaction implements Serializable {
     @ManyToOne
     private Store store;
 
+    @ManyToOne
+    private Store storeToCollect;
+
     public Transaction() {
         this.createdDateTime = new Timestamp(System.currentTimeMillis());
         this.transactionLineItems = new ArrayList<>();

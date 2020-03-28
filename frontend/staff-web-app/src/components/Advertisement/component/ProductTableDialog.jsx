@@ -52,7 +52,7 @@ const ProductTableDialog = ({
           products={products}
           selectable={true}
           selectionAction={{
-            tooltip: "Associate product to Instagram post",
+            tooltip: "Associate product(s) to Instagram post",
             icon: Add,
             onClick: (evt, data) => handleAssociateProductToInstagramPost(data)
           }}

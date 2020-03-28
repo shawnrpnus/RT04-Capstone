@@ -206,4 +206,4 @@ const DiscountAssociationTable = props => {
   );
 };
 
-export default withPage(DiscountAssociationTable, "Discount Management");
+export default withPage(DiscountAssociationTable, "Discount Association");

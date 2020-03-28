@@ -45,6 +45,7 @@ import CheckoutProdVariantCard from "components/Checkout/CheckoutProdVariantCard
 import AddNewAddressForCheckOut from "./AddNewAddressForCheckout";
 import { refreshCustomerId } from "../../redux/actions/customerActions";
 import { updateShoppingCart } from "redux/actions/shoppingCartActions";
+import { retrieveAllStore } from "redux/actions/storeActions";
 import UpdateShoppingCartRequest from "../../models/shoppingCart/UpdateShoppingCartRequest.js";
 
 const useStyles = makeStyles(checkoutStyle);
@@ -54,16 +55,18 @@ export default function CheckOutPage() {
   // Redux dispatch to call actions
   const dispatch = useDispatch();
   // Redux mapping state to props
-  const errors = useSelector(state => state.errors);
-  const customer = useSelector(state => state.customer.loggedInCustomer);
-  const currAddress = useSelector(state => state.transaction.currAddress);
-  const [billingAsShipping, setBillingAsShipping] = useState(
-    customer.shippingAddresses.length === 0
-  );
   const stripe = useStripe();
   const elements = useElements();
   const history = useHistory();
 
+  const errors = useSelector(state => state.errors);
+  const customer = useSelector(state => state.customer.loggedInCustomer);
+  const currAddress = useSelector(state => state.transaction.currAddress);
+  const stores = useSelector(state => state.store.stores);
+
+  const [billingAsShipping, setBillingAsShipping] = useState(
+    customer.shippingAddresses.length === 0
+  );
   const { onlineShoppingCart, creditCards, shippingAddresses } = customer;
   const [clientSecret, setClientSecret] = useState(null);
   const [creditCardIndex, setCreditCardIndex] = useState(
@@ -74,6 +77,8 @@ export default function CheckOutPage() {
   const [currBillingAddress, setCurrBillingAddress] = useState(null);
   const [addCard, setAddCard] = useState(false);
   const [editCurrAddress, setEditCurrAddress] = useState("");
+  const [isDelivery, setIsDelivery] = useState(true);
+  const [storeToCollectId, setStoreToCollectId] = useState(null);
 
   // Ensure the price of the products is correct
   useEffect(() => {
@@ -88,7 +93,10 @@ export default function CheckOutPage() {
       );
       dispatch(updateShoppingCart(request));
     });
+    dispatch(retrieveAllStore());
   }, []);
+
+  console.log(stores);
 
   useEffect(() => {
     dispatch(refreshCustomerId(customer.customerId));
@@ -114,6 +122,8 @@ export default function CheckOutPage() {
     getClientSecret(initialTotalAmount, setClientSecret);
   };
 
+  console.log(storeToCollectId);
+
   const handleConfirmPayment = async event => {
     event.preventDefault();
 
@@ -129,14 +139,28 @@ export default function CheckOutPage() {
     // TODO: Process the amount to include finalTotalAmount
     // Stripe take in cents
     totalAmount = totalAmount * 100;
-    const paymentRequest = new PaymentRequest(
-      customerId,
-      paymentMethodId,
-      totalAmount,
-      null,
-      currShippingAddress,
-      currBillingAddress
-    );
+
+    const paymentRequest = storeToCollectId
+      ? new PaymentRequest(
+          customerId,
+          paymentMethodId,
+          totalAmount,
+          null,
+          null,
+          null,
+          storeToCollectId
+        )
+      : new PaymentRequest(
+          customerId,
+          paymentMethodId,
+          totalAmount,
+          null,
+          currShippingAddress,
+          currBillingAddress,
+          null
+        );
+
+    console.log(paymentRequest);
 
     if (clientSecret !== null) {
       if (!stripe || !elements) {
@@ -188,6 +212,10 @@ export default function CheckOutPage() {
     setClientSecret(null);
   };
 
+  const onSelectStore = e => {
+    setStoreToCollectId(e.target.value);
+  };
+
   const toggleAddNewCard = e => {
     const addCardBoolean = addCard;
     setAddCard(!addCard);
@@ -199,6 +227,11 @@ export default function CheckOutPage() {
     }
   };
 
+  const toggleDeliveryMode = () => {
+    setIsDelivery(!isDelivery);
+    setStoreToCollectId(null);
+  };
+
   /*
     Disable the complete payment button if
     1. clientSecret === null && creditCardIndex === null\
@@ -207,8 +240,9 @@ export default function CheckOutPage() {
   */
   const disabled =
     (clientSecret === null && creditCardIndex === null) ||
-    !currBillingAddress ||
-    !currShippingAddress;
+    (!currBillingAddress && isDelivery) ||
+    (!currShippingAddress && isDelivery) ||
+    (!isDelivery && !storeToCollectId);
 
   return (
     <div>
@@ -282,61 +316,104 @@ export default function CheckOutPage() {
                           <TextField fullWidth style={{ margin: "5% 0" }} />
                         </Grid>
                         <Grid item container xs={12}>
-                          {addNewAddress ? (
-                            <Grid item container xs={12}>
-                              <Grid item xs={false} md={2} />
-                              <Grid item xs={12} md={8}>
-                                <AddNewAddressForCheckOut
-                                  addNewAddress={[
-                                    addNewAddress,
-                                    setAddNewAddress
-                                  ]}
-                                  currShippingAddress={[
-                                    currShippingAddress,
-                                    setCurrShippingAddress
-                                  ]}
-                                  currBillingAddress={[
-                                    currBillingAddress,
-                                    setCurrBillingAddress
-                                  ]}
-                                  currAddress={currAddress}
-                                  billingAsShipping={[
-                                    billingAsShipping,
-                                    setBillingAsShipping
-                                  ]}
-                                  editCurrAddress={[
-                                    editCurrAddress,
-                                    setEditCurrAddress
-                                  ]}
-                                />
+                          <Grid
+                            item
+                            xs={12}
+                            style={{ textAlign: "right", width: "100%" }}
+                          >
+                            <Button
+                              onClick={toggleDeliveryMode}
+                              className={classes.checkoutButton}
+                            >
+                              {isDelivery ? "Collect in store" : "Delivery"}
+                            </Button>
+                          </Grid>
+                          {isDelivery ? (
+                            addNewAddress ? (
+                              <Grid item container xs={12}>
+                                <Grid item xs={false} md={2} />
+                                <Grid item xs={12} md={8}>
+                                  <AddNewAddressForCheckOut
+                                    addNewAddress={[
+                                      addNewAddress,
+                                      setAddNewAddress
+                                    ]}
+                                    currShippingAddress={[
+                                      currShippingAddress,
+                                      setCurrShippingAddress
+                                    ]}
+                                    currBillingAddress={[
+                                      currBillingAddress,
+                                      setCurrBillingAddress
+                                    ]}
+                                    currAddress={currAddress}
+                                    billingAsShipping={[
+                                      billingAsShipping,
+                                      setBillingAsShipping
+                                    ]}
+                                    editCurrAddress={[
+                                      editCurrAddress,
+                                      setEditCurrAddress
+                                    ]}
+                                  />
+                                </Grid>
+                                <Grid item xs={false} md={2} />
                               </Grid>
-                              <Grid item xs={false} md={2} />
-                            </Grid>
+                            ) : (
+                              <Grid item xs={12} container>
+                                <Grid item xs={12}>
+                                  <h5>Shipping & Billing</h5>
+                                  <AddressCardForCheckOut
+                                    addNewAddress={[
+                                      addNewAddress,
+                                      setAddNewAddress
+                                    ]}
+                                    setCurrShippingAddress={
+                                      setCurrShippingAddress
+                                    }
+                                    setCurrBillingAddress={
+                                      setCurrBillingAddress
+                                    }
+                                    currAddress={currAddress}
+                                    billingAsShipping={[
+                                      billingAsShipping,
+                                      setBillingAsShipping
+                                    ]}
+                                    editCurrAddress={[
+                                      editCurrAddress,
+                                      setEditCurrAddress
+                                    ]}
+                                  />
+                                </Grid>
+                              </Grid>
+                            )
                           ) : (
-                            <Grid item xs={12} container>
-                              <Grid item xs={12}>
-                                <h5>Shipping & Billing</h5>
-                                <AddressCardForCheckOut
-                                  addNewAddress={[
-                                    addNewAddress,
-                                    setAddNewAddress
-                                  ]}
-                                  setCurrShippingAddress={
-                                    setCurrShippingAddress
-                                  }
-                                  setCurrBillingAddress={setCurrBillingAddress}
-                                  currAddress={currAddress}
-                                  billingAsShipping={[
-                                    billingAsShipping,
-                                    setBillingAsShipping
-                                  ]}
-                                  editCurrAddress={[
-                                    editCurrAddress,
-                                    setEditCurrAddress
-                                  ]}
-                                />
-                              </Grid>
-                            </Grid>
+                            <Select
+                              style={{
+                                margin: "5% 0",
+                                textAlign: "center",
+                                fontSize: "24px"
+                              }}
+                              fullWidth
+                              defaultValue={""}
+                              onChange={onSelectStore}
+                              name="credit-card"
+                            >
+                              {stores.map(({ storeId, storeName }, index) => {
+                                return (
+                                  <MenuItem
+                                    key={index}
+                                    classes={{
+                                      root: classes.selectMenuItem,
+                                      selected: classes.selectMenuItemSelected
+                                    }}
+                                    value={storeId}
+                                  >
+                                    {storeName}
+                                  </MenuItem>
+                                );
+                              })}
+                            </Select>
                           )}
                         </Grid>
 
@@ -367,7 +444,6 @@ export default function CheckOutPage() {
                                   fontSize: "24px"
                                 }}
                                 fullWidth
-                                // style={{ width: 200 }}
                                 defaultValue={creditCardIndex}
                                 onChange={onSelectCreditCard}
                                 name="credit-card"

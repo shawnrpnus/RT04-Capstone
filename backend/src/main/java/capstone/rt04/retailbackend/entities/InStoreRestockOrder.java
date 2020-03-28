@@ -11,7 +11,6 @@ import com.voodoodyne.jackson.jsog.JSOGGenerator;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -60,15 +59,15 @@ public class InStoreRestockOrder implements Serializable {
 
     public InStoreRestockOrder() {
         this.inStoreRestockOrderItems =  new ArrayList<>();
-        this.orderDateTime = new Timestamp(System.currentTimeMillis());
         this.deliveryStatus = DeliveryStatusEnum.PROCESSING;
     }
 
-    public InStoreRestockOrder(List<InStoreRestockOrderItem> inStoreRestockOrderItems, Store store, Warehouse warehouse) {
+    public InStoreRestockOrder(List<InStoreRestockOrderItem> inStoreRestockOrderItems, Store store, Warehouse warehouse, Timestamp orderDateTime) {
         this();
         this.inStoreRestockOrderItems = inStoreRestockOrderItems;
         this.store = store;
         this.warehouse = warehouse;
+        this.orderDateTime = orderDateTime;
     }
 
 

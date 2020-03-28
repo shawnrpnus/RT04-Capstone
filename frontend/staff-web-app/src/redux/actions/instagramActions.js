@@ -43,13 +43,14 @@ export const createInstagramPost = request => {
         dispatch(closeCircularProgress());
       })
       .catch(err => {
+        console.log(err.response);
         try {
           // Input data validation
-          toast.error(err.response.data.errorMap, {
+          toast.error("Instagram post already exist in database", {
             position: toast.POSITION.TOP_CENTER
           });
-        } catch (err) {
-          console.log(err);
+        } catch (error) {
+          console.log(error);
         }
         dispatch(closeCircularProgress());
       });

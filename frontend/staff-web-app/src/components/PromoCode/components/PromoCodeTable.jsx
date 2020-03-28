@@ -1,144 +1,153 @@
-import React, { Component, PureComponent } from "react";
+import React, { Component } from "react";
 import MaterialTable from "material-table";
 import {
-    AddBox,
-    ArrowUpward,
-    Check,
-    ChevronLeft,
-    ChevronRight,
-    Clear,
-    Delete,
-    DeleteOutline,
-    Edit,
-    FirstPage,
-    LastPage,
-    Remove,
-    SaveAlt,
-    Search,
-    SearchOutlined,
-    ViewColumn,
-    Visibility
+  AddBox,
+  Check,
+  ChevronLeft,
+  ChevronRight,
+  Clear,
+  Delete,
+  DeleteOutline,
+  Edit,
+  FirstPage,
+  LastPage,
+  Remove,
+  SaveAlt,
+  Search,
+  SearchOutlined,
+  ViewColumn
 } from "@material-ui/icons";
 import connect from "react-redux/es/connect/connect";
 import withMaterialConfirmDialog from "../../Layout/page/withMaterialConfirmDialog";
-import { css } from "@emotion/core";
-import {deletePromoCode, retrieveAllPromoCodes} from "../../../redux/actions/promoCodeActions";
+import {
+  deletePromoCode,
+  retrieveAllPromoCodes
+} from "../../../redux/actions/promoCodeActions";
 import withPage from "../../Layout/page/withPage";
+import Button from "@material-ui/core/Button";
+import EmailForm from "./../../Email/EmailForm";
 
 const tableIcons = {
-    Add: AddBox,
-    Check: Check,
-    Clear: Clear,
-    Delete: DeleteOutline,
-    DetailPanel: ChevronRight,
-    Edit: Edit,
-    Export: SaveAlt,
-    Filter: SearchOutlined,
-    FirstPage: FirstPage,
-    LastPage: LastPage,
-    NextPage: ChevronRight,
-    PreviousPage: ChevronLeft,
-    ResetSearch: Clear,
-    Search: Search,
-    SortArrow: () => <div />,
-    ThirdStateCheck: Remove,
-    ViewColumn: ViewColumn
+  Add: AddBox,
+  Check: Check,
+  Clear: Clear,
+  Delete: DeleteOutline,
+  DetailPanel: ChevronRight,
+  Edit: Edit,
+  Export: SaveAlt,
+  Filter: SearchOutlined,
+  FirstPage: FirstPage,
+  LastPage: LastPage,
+  NextPage: ChevronRight,
+  PreviousPage: ChevronLeft,
+  ResetSearch: Clear,
+  Search: Search,
+  SortArrow: () => <div />,
+  ThirdStateCheck: Remove,
+  ViewColumn: ViewColumn
 };
 
-const override = css`
-  display: block;
-  margin: 0 auto;
-`;
-
 class PromoCodeTable extends Component {
-    componentDidMount() {
-        this.props.retrieveAllPromoCodes();
-    }
+  state = {
+    open: false
+  };
 
-    handleDelete = promoCodeId => {
-        this.props
-            .confirmDialog({ description: "Promo Code will be deleted permanently" })
-            .then(() => this.props.deletePromoCode(promoCodeId, this.props.history));
-    };
+  componentDidMount() {
+    this.props.retrieveAllPromoCodes();
+  }
 
-    render() {
-        const {history, renderLoader} = this.props;
-        const data = this.props.allPromoCodes;
-        console.log(data);
+  handleDelete = promoCodeId => {
+    this.props
+      .confirmDialog({ description: "Promo Code will be deleted permanently" })
+      .then(() => this.props.deletePromoCode(promoCodeId, this.props.history));
+  };
 
-        return (
-            <React.Fragment>
-                <div
-                    className="table"
-                    style={{
-                        width: "auto",
-                        verticalAlign: "middle"
-                    }}
-                >
+  toggleOpenEmailForm = () => {
+    this.setState({ open: !this.state.open });
+  };
 
-                    {this.props.allPromoCodes ? (
-                        <MaterialTable
-                            title="All Promo Codes"
-                            icons={tableIcons}
-                            columns={[
-                                { title: "Promo Code Name", field: "promoCodeName" },
-                                { title: "Number Remaining", field: "numRemaining" },
-                                { title: "Minimum Purchase", field: "minimumPurchase" },
-                                { title: "Flat Discount", field: "flatDiscount" },
-                                { title: "Percentage Discount", field: "percentageDiscount" }
-                            ]}
-                            actions={[
-                                {
-                                    icon: Edit,
-                                    tooltip: "Update Promo Code",
-                                    onClick: (event, rowData) =>
-                                        history.push(`/promoCode/update/${rowData.promoCodeId}`)
-                                },
+  render() {
+    const { history, renderLoader } = this.props;
+    const { open } = this.state;
+    const data = this.props.allPromoCodes;
+    console.log(data);
 
-                                {
-                                    icon: Delete,
-                                    tooltip: "Delete Promo Code",
-                                    onClick: (event, rowData) => this.handleDelete(rowData.promoCodeId)
-                                }
-                            ]}
-                            data={data}
-                            options={{
-                                filtering: true,
-                                sorting: true,
-                                pageSize: 10,
-                                search: true,
-                                padding: "dense",
-                                pageSizeOptions: [10, 20, 40],
-                                actionsColumnIndex: -1,
-                                headerStyle: { textAlign: "center" },
-                                cellStyle: { textAlign: "center" },
-                                searchFieldStyle: {textAlign: "center", width: "100%"},
-                                rowStyle: { textAlign: "center" }
-                            }}
-                        />
-                    ) : (
-                        renderLoader()
-                    )}
+    return (
+      <React.Fragment>
+        <div
+          className="table"
+          style={{
+            width: "auto",
+            verticalAlign: "middle",
+            textAlign: "right"
+          }}
+        >
+          <Button variant="container" onClick={this.toggleOpenEmailForm}>
+            Email customer
+          </Button>
+          {open && <EmailForm />}
+          {this.props.allPromoCodes ? (
+            <MaterialTable
+              title="All Promo Codes"
+              icons={tableIcons}
+              columns={[
+                { title: "Promo Code Name", field: "promoCodeName" },
+                { title: "Number Remaining", field: "numRemaining" },
+                { title: "Minimum Purchase", field: "minimumPurchase" },
+                { title: "Flat Discount", field: "flatDiscount" },
+                { title: "Percentage Discount", field: "percentageDiscount" }
+              ]}
+              actions={[
+                {
+                  icon: Edit,
+                  tooltip: "Update Promo Code",
+                  onClick: (event, rowData) =>
+                    history.push(`/promoCode/update/${rowData.promoCodeId}`)
+                },
 
-                </div>
-            </React.Fragment>
-                )
-
-    }
+                {
+                  icon: Delete,
+                  tooltip: "Delete Promo Code",
+                  onClick: (event, rowData) =>
+                    this.handleDelete(rowData.promoCodeId)
+                }
+              ]}
+              data={data}
+              options={{
+                filtering: true,
+                sorting: true,
+                pageSize: 10,
+                search: true,
+                padding: "dense",
+                pageSizeOptions: [10, 20, 40],
+                actionsColumnIndex: -1,
+                headerStyle: { textAlign: "center" },
+                cellStyle: { textAlign: "center" },
+                searchFieldStyle: { textAlign: "center", width: "100%" },
+                rowStyle: { textAlign: "center" }
+              }}
+            />
+          ) : (
+            renderLoader()
+          )}
+        </div>
+      </React.Fragment>
+    );
+  }
 }
 
 const mapStateToProps = state => ({
-    allPromoCodes: state.promoCode.allPromoCodes,
-    errors: state.errors
+  allPromoCodes: state.promoCode.allPromoCodes,
+  errors: state.errors
 });
 
 const mapDispatchToProps = {
-    retrieveAllPromoCodes,
-    deletePromoCode
+  retrieveAllPromoCodes,
+  deletePromoCode
 };
 
 // eslint-disable-next-line no-undef
 export default connect(
-    mapStateToProps,
-    mapDispatchToProps
+  mapStateToProps,
+  mapDispatchToProps
 )(withMaterialConfirmDialog(withPage(PromoCodeTable, "View All Promo Codes")));

@@ -1,4 +1,4 @@
-import React, { Component, PureComponent } from "react";
+import React, { Component } from "react";
 import withPage from "../../Layout/page/withPage";
 import { connect } from "react-redux";
 import { clearErrors, updateErrors } from "../../../redux/actions";
@@ -7,27 +7,7 @@ import {
   retrieveStaffWithNoAccount
 } from "../../../redux/actions/staffActions";
 import StaffAccountCreateRequest from "../../../models/staff/StaffAccountCreateRequest";
-import { Button, ButtonToolbar } from "reactstrap";
 import * as PropTypes from "prop-types";
-import { Link } from "react-router-dom";
-import InputAdornment from "@material-ui/core/InputAdornment";
-import axios from "axios";
-import {
-  KeyboardTimePicker,
-  MuiPickersUtilsProvider
-} from "@material-ui/pickers";
-import MomentUtils from "@date-io/moment";
-import { Grid } from "@material-ui/core";
-import MaterialTextField from "../../../shared/components/Form/MaterialTextField";
-import MaterialNumberSelect from "../../../shared/components/Form/MaterialNumberSelect";
-import PencilIcon from "mdi-react/PencilIcon";
-import ContentSaveIcon from "mdi-react/ContentSaveIcon";
-import CloseCircleIcon from "mdi-react/CloseCircleIcon";
-import DeleteIcon from "mdi-react/DeleteIcon";
-import TableEyeIcon from "mdi-react/TableEyeIcon";
-import InputLabel from "@material-ui/core/InputLabel";
-import Select from "@material-ui/core/Select";
-import MenuItem from "@material-ui/core/MenuItem";
 import MaterialTable from "material-table";
 import Checkbox from "@material-ui/core/Checkbox";
 import {

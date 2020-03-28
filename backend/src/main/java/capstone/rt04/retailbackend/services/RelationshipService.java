@@ -59,7 +59,7 @@ public class RelationshipService {
             for (Discount discount : discounts) {
                 BigDecimal discountPrice = productService.applyDiscount(discount, productVariant.getProduct(), null);
                 productVariant.getProduct().setDiscountedPrice(discountPrice);
-                if (discount != null) return;
+                if (discountPrice != null) return;
             }
         } else {
             productVariant.getProduct().setDiscountedPrice(null);
@@ -151,6 +151,8 @@ public class RelationshipService {
             product.setDiscounts(null);
         }
         transaction.setCustomer(null);
+        if (transaction.getStoreToCollect() != null)
+            clearStoreRelationships(transaction.getStoreToCollect());
     }
 
     public void clearStaffRelationships(Staff staff) {

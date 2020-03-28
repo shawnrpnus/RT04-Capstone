@@ -113,7 +113,7 @@ const InstagramManagementTable = props => {
       style={{ verticalAlign: "middle", textAlign: "right" }}
     >
       <MaterialTable
-        title="Instagram post"
+        title="Instagram Post Management"
         style={{ boxShadow: "none" }}
         icons={tableIcons}
         onChangePage={() => {
