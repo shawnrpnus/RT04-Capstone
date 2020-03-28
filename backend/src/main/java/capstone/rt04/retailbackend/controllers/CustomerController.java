@@ -308,8 +308,9 @@ public class CustomerController {
     }
 
     @GetMapping(CustomerControllerRoutes.GET_SHOPPING_CART_ITEMS_STOCK)
-    public ResponseEntity<?> getShoppingCartItemsStock(@RequestParam Long customerId, @RequestParam String cartType) throws CustomerNotFoundException, InvalidCartTypeException {
-        Map<Long, Map<String, Object>>  result = shoppingCartService.getShoppingCartItemsStock(customerId, cartType);
+    public ResponseEntity<?> getShoppingCartItemsStock(@RequestParam Long customerId, @RequestParam String cartType,
+                                                       @RequestParam(required = false) Boolean inStoreDeliverHome) throws CustomerNotFoundException, InvalidCartTypeException {
+        Map<Long, Map<String, Object>>  result = shoppingCartService.getShoppingCartItemsStock(customerId, cartType, inStoreDeliverHome);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

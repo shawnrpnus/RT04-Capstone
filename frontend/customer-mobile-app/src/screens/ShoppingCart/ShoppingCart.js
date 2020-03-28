@@ -56,17 +56,19 @@ function ShoppingCart(props) {
             />
           </Block>
           <Block
-            flex={0.2}
+            flex={0.25}
             center
             style={{
               ...styles.footer,
               paddingHorizontal: theme.SIZES.BASE,
               width: "100%",
               padding: 20,
+              paddingTop: 10,
               borderTopColor: "lightgrey",
               borderTopWidth: 1
             }}
           >
+            <Text h5 style={{marginBottom: 10, fontSize: 16, color: "grey"}}>You are shopping at {customer.inStoreShoppingCart.store.storeName}</Text>
             <Block flex row space="between" style={{ width: "100%" }}>
               <Text h4 style={{ fontWeight: "bold", fontSize: 20 }}>
                 Total
@@ -104,7 +106,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     shadowRadius: 8,
     shadowOpacity: 0.2,
-    marginBottom: 8
+    marginBottom: 5
   },
   footer: {
     backgroundColor: "white"

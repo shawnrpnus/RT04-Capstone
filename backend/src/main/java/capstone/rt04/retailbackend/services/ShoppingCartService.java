@@ -133,7 +133,7 @@ public class ShoppingCartService {
         }
     }
 
-    public Map<Long, Map<String, Object>> getShoppingCartItemsStock(Long customerId, String cartType) throws CustomerNotFoundException, InvalidCartTypeException {
+    public Map<Long, Map<String, Object>> getShoppingCartItemsStock(Long customerId, String cartType, Boolean inStoreDeliverHome) throws CustomerNotFoundException, InvalidCartTypeException {
         ShoppingCart shoppingCart = retrieveShoppingCart(customerId, cartType);
         Map<Long, Map<String, Object>> result = new HashMap<>();
         Warehouse warehouse = warehouseRepository.findAll().get(0);
@@ -141,7 +141,7 @@ public class ShoppingCartService {
             ProductVariant pv = shoppingCartItem.getProductVariant();
             Map<String, Object> stockAndName = new HashMap<>();
             ProductStock productStock;
-            if (cartType.equals(ONLINE_SHOPPING_CART)) {
+            if (cartType.equals(ONLINE_SHOPPING_CART) || (inStoreDeliverHome !=null && inStoreDeliverHome)) {
                 productStock = productService.
                         retrieveProductStockByWarehouseAndProductVariantId(warehouse.getWarehouseId(), pv.getProductVariantId());
                 stockAndName.put("quantity", productStock.getQuantity());

@@ -168,7 +168,7 @@ function ShoppingCartItem(props) {
           <Menu
             visible={qtyMenuOpen}
             onDismiss={() => setQtyMenuOpen(false)}
-            style={{ width: 110 }}
+            style={{ width: 90 }}
             anchor={
               <TouchableOpacity
                 onPress={() => setQtyMenuOpen(true)}
@@ -181,7 +181,7 @@ function ShoppingCartItem(props) {
                     editable={false}
                     value={shoppingCartItem.quantity.toString()}
                     style={{
-                      width: 110,
+                      width: 90,
                       height: 45,
                       backgroundColor: "white",
                       color: "white"
@@ -192,7 +192,7 @@ function ShoppingCartItem(props) {
                     size={15}
                     style={{
                       position: "absolute",
-                      left: 82,
+                      left: 62,
                       top: 20,
                       color: "grey"
                     }}
