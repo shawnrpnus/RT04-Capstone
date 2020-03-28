@@ -25,6 +25,11 @@ export default function(state = initialState, action) {
         ...state,
         loggedInCustomer: null
       }
+    case types.UPDATE_SHOPPING_CART_ITEMS_STOCK:
+      return {
+        ...state,
+        shoppingCartItemsStock: action.data
+      }
     default:
       return state;
   }

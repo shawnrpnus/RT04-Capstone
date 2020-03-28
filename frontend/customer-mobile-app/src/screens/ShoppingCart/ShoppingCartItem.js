@@ -18,14 +18,14 @@ import { useDispatch } from "react-redux";
 import { Feather } from "@expo/vector-icons";
 import { Divider, Menu, TextInput } from "react-native-paper";
 import { AntDesign } from "@expo/vector-icons";
-import { render } from "react-native-web";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 const _ = require("lodash");
 const colours = _.keyBy(colourList, "hex");
 const { width, height } = Dimensions.get("window");
 
 function ShoppingCartItem(props) {
-  const { shoppingCartItem, customer } = props;
+  const { shoppingCartItem, customer, shoppingCartItemsStock } = props;
   const { productVariant } = shoppingCartItem;
   const [qtyMenuOpen, setQtyMenuOpen] = useState(false);
 
@@ -58,7 +58,57 @@ function ShoppingCartItem(props) {
     ]);
   };
 
-  const qtyOptions = Array.from({ length: 21 - 1 }, (v, k) => ({
+  const stock =
+    shoppingCartItemsStock[shoppingCartItem.shoppingCartItemId].quantity;
+  const stockStatus =
+    stock === 0
+      ? "Out of stock"
+      : stock === 0 || shoppingCartItem.quantity > stock
+      ? "Insufficient Stock"
+      : stock < 10
+      ? "Low in stock"
+      : "In stock";
+  const stockIcon = (
+    <MaterialCommunityIcons
+      name={
+        stock > 0 && shoppingCartItem.quantity <= stock
+          ? "check-circle-outline"
+          : "close-circle-outline"
+      }
+      style={{
+        color:
+          stock === 0 || shoppingCartItem.quantity > stock
+            ? "red"
+            : stock < 10
+            ? "orange"
+            : "green"
+      }}
+      size={20}
+    />
+  );
+  const stockElement = (
+    <Block flex row style={{ marginLeft: 10, alignItems: "center" }}>
+      {stockIcon}
+      <Text
+        h6
+        style={{
+          marginLeft: 2,
+          color:
+            stock === 0 || shoppingCartItem.quantity > stock
+              ? "red"
+              : stock < 10
+              ? "orange"
+              : "green"
+        }}
+      >
+        {stockStatus}
+      </Text>
+    </Block>
+  );
+
+  const upperBoundQty = Math.min(stock, 20);
+
+  const qtyOptions = Array.from({ length: upperBoundQty }, (v, k) => ({
     value: k + 1
   }));
 
@@ -90,7 +140,7 @@ function ShoppingCartItem(props) {
           <Text h6 style={{ fontSize: 16 }}>
             ${price}
           </Text>
-          <Text h6 style={{ fontSize: 16,  fontWeight: "bold" }}>
+          <Text h6 style={{ fontSize: 16, fontWeight: "bold" }}>
             ${(price * shoppingCartItem.quantity).toFixed(2)}
           </Text>
         </>
@@ -136,9 +186,6 @@ function ShoppingCartItem(props) {
               <Feather name="x" size={28} />
             </TouchableOpacity>
           </Block>
-          {/*<Text h6 style={{ marginBottom: 10 }}>*/}
-          {/*  {productVariant.sku}*/}
-          {/*</Text>*/}
           <Block flex row style={{ alignItems: "center", marginBottom: 0 }}>
             <Text h6 bold>
               Colour:{" "}
@@ -165,52 +212,55 @@ function ShoppingCartItem(props) {
             {productVariant.sizeDetails.productSize}
           </Text>
 
-          <Menu
-            visible={qtyMenuOpen}
-            onDismiss={() => setQtyMenuOpen(false)}
-            style={{ width: 90 }}
-            anchor={
-              <TouchableOpacity
-                onPress={() => setQtyMenuOpen(true)}
-                activeOpacity={0.5}
-              >
-                <Block flex row>
-                  <TextInput
-                    mode="outlined"
-                    label="Quantity"
-                    editable={false}
-                    value={shoppingCartItem.quantity.toString()}
-                    style={{
-                      width: 90,
-                      height: 45,
-                      backgroundColor: "white",
-                      color: "white"
-                    }}
+          <Block flex row style={{ alignItems: "center" }}>
+            <Menu
+              visible={qtyMenuOpen}
+              onDismiss={() => setQtyMenuOpen(false)}
+              style={{ width: 90 }}
+              anchor={
+                <TouchableOpacity
+                  onPress={() => setQtyMenuOpen(true)}
+                  activeOpacity={0.5}
+                >
+                  <Block flex row>
+                    <TextInput
+                      mode="outlined"
+                      label="Quantity"
+                      editable={false}
+                      value={shoppingCartItem.quantity.toString()}
+                      style={{
+                        width: 90,
+                        height: 45,
+                        backgroundColor: "white",
+                        color: "white"
+                      }}
+                    />
+                    <AntDesign
+                      name="caretdown"
+                      size={15}
+                      style={{
+                        position: "absolute",
+                        left: 62,
+                        top: 20,
+                        color: "grey"
+                      }}
+                    />
+                  </Block>
+                </TouchableOpacity>
+              }
+            >
+              <ScrollView height={200}>
+                {qtyOptions.map(option => (
+                  <Menu.Item
+                    onPress={() => handleQuantityChange(option.value)}
+                    title={option.value.toString()}
+                    key={`${shoppingCartItem.shoppingCartItemId}- ${option.value}`}
                   />
-                  <AntDesign
-                    name="caretdown"
-                    size={15}
-                    style={{
-                      position: "absolute",
-                      left: 62,
-                      top: 20,
-                      color: "grey"
-                    }}
-                  />
-                </Block>
-              </TouchableOpacity>
-            }
-          >
-            <ScrollView height={200}>
-              {qtyOptions.map(option => (
-                <Menu.Item
-                  onPress={() => handleQuantityChange(option.value)}
-                  title={option.value.toString()}
-                  key={`${shoppingCartItem.shoppingCartItemId}- ${option.value}`}
-                />
-              ))}
-            </ScrollView>
-          </Menu>
+                ))}
+              </ScrollView>
+            </Menu>
+            {stockElement}
+          </Block>
         </Block>
       </Block>
       <Block
@@ -222,7 +272,12 @@ function ShoppingCartItem(props) {
           paddingTop: 10
         }}
       >
-        <Block flex row space="between" style={{ width: "100%", marginBottom: 5}}>
+        <Block
+          flex
+          row
+          space="between"
+          style={{ width: "100%", marginBottom: 5 }}
+        >
           <Text h6 style={{ color: "grey" }}>
             Per Piece
           </Text>
@@ -230,7 +285,7 @@ function ShoppingCartItem(props) {
             Total
           </Text>
         </Block>
-        <Divider style={{height: 1}}/>
+        <Divider style={{ height: 1 }} />
         <Block
           flex
           row

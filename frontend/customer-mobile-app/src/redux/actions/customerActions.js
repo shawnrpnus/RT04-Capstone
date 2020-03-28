@@ -1,4 +1,8 @@
-import { CUSTOMER_LOGIN, CUSTOMER_LOGOUT } from "src/redux/actions/types";
+import {
+  CUSTOMER_LOGIN,
+  CUSTOMER_LOGOUT,
+  UPDATE_SHOPPING_CART_ITEMS_STOCK
+} from "src/redux/actions/types";
 import { SPRING_BACKEND_URL } from "src/constants/routes";
 import axios from "axios";
 import { dispatchErrorMapError } from "src/redux/actions/index";
@@ -36,16 +40,18 @@ export const customerLogin = req => {
 export const refreshCustomer = (customerId, setRefreshing) => {
   return dispatch => {
     axios
-        .get(CUSTOMER_BASE_URL + "/retrieveCustomerById", {params: {customerId}})
-        .then(response => {
-          dispatchUpdatedCustomer(response.data, dispatch);
-          setRefreshing(false);
-        })
-        .catch(err => {
-          dispatchErrorMapError(err, dispatch);
-        })
-  }
-}
+      .get(CUSTOMER_BASE_URL + "/retrieveCustomerById", {
+        params: { customerId }
+      })
+      .then(response => {
+        dispatchUpdatedCustomer(response.data, dispatch);
+        setRefreshing(false);
+      })
+      .catch(err => {
+        dispatchErrorMapError(err, dispatch);
+      });
+  };
+};
 
 export const customerLogout = {
   type: CUSTOMER_LOGOUT
@@ -76,40 +82,6 @@ export const registerForPushNotifications = async customerId => {
   }
 };
 
-export const updateShoppingCart = (quantity, productVariantId, customerId) => {
-  const req = { quantity, productVariantId, customerId, cartType: "instore" };
-  return dispatch => {
-    axios
-      .post(CUSTOMER_BASE_URL + "/updateShoppingCart", req)
-      .then(response => {
-        dispatchUpdatedCustomer(response.data, dispatch);
-        Alert.alert("Success", "Item has been added to shopping cart!", null, {
-          cancelable: true
-        });
-      })
-      .catch(err => {
-        dispatchErrorMapError(err, dispatch);
-      });
-  };
-};
-
-export const updateShoppingCartWithSku = (quantity, SKU, customerId) => {
-  const req = { quantity, SKU, customerId, cartType: "instore" };
-  return dispatch => {
-    axios
-      .post(CUSTOMER_BASE_URL + "/updateShoppingCartWithSku", req)
-      .then(response => {
-        dispatchUpdatedCustomer(response.data, dispatch);
-        Alert.alert("Success", "Item has been added to shopping cart!", null, {
-          cancelable: true
-        });
-      })
-      .catch(err => {
-        dispatchErrorMapError(err, dispatch);
-      });
-  };
-};
-
 export const updateInStoreShoppingCart = (
   quantity,
   productVariantId,
@@ -129,11 +101,18 @@ export const updateInStoreShoppingCart = (
         if (setQtyMenuOpen) setQtyMenuOpen(false);
       })
       .catch(err => {
-        console.log(err)
+        console.log(err);
         Alert.alert(
           "Error",
           "An error has occurred.",
-          [{ text: "Ok", onPress: () => {setAlertOpen ? setAlertOpen(false): {}}}],
+          [
+            {
+              text: "Ok",
+              onPress: () => {
+                setAlertOpen ? setAlertOpen(false) : {};
+              }
+            }
+          ],
           {
             cancelable: true
           }
@@ -142,3 +121,26 @@ export const updateInStoreShoppingCart = (
       });
   };
 };
+
+export const getShoppingCartItemsStock = (customerId, inStoreDeliverHome) => {
+  const reqParams = inStoreDeliverHome
+    ? { customerId, cartType: "instore", inStoreDeliverHome }
+    : { customerId, cartType: "instore" };
+  return dispatch => {
+    axios
+      .get(CUSTOMER_BASE_URL + "/getShoppingCartItemsStock", {
+        params: reqParams
+      })
+      .then(response => {
+        dispatch(updateShoppingCartItemsStock(response.data));
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+};
+
+const updateShoppingCartItemsStock = data => ({
+  type: UPDATE_SHOPPING_CART_ITEMS_STOCK,
+  data: data
+});
