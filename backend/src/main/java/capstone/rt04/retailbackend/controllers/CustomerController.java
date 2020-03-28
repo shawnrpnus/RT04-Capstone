@@ -307,6 +307,12 @@ public class CustomerController {
         return new ResponseEntity<>(customer, HttpStatus.OK);
     }
 
+    @GetMapping(CustomerControllerRoutes.GET_SHOPPING_CART_ITEMS_STOCK)
+    public ResponseEntity<?> getShoppingCartItemsStock(@RequestParam Long customerId, @RequestParam String cartType) throws CustomerNotFoundException, InvalidCartTypeException {
+        Map<Long, Map<String, Object>>  result = shoppingCartService.getShoppingCartItemsStock(customerId, cartType);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
     @PostMapping(CustomerControllerRoutes.ADD_WISHLIST_TO_SHOPPING_CART)
     public ResponseEntity<?> addWishlistToShoppingCart(@RequestParam Long customerId) throws InvalidCartTypeException, ProductVariantNotFoundException, CustomerNotFoundException {
         Customer customer = customerService.addWishlistToShoppingCart(customerId);

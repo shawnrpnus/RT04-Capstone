@@ -34,6 +34,7 @@ public class CustomerControllerRoutes {
     public static final String UPDATE_IN_STORE_SHOPPING_CART = "/updateInStoreShoppingCart";
     public static final String CLEAR_SHOPPING_CART = "/clearShoppingCart";
     public static final String ADD_WISHLIST_TO_SHOPPING_CART = "/addWishlistToShoppingCart";
+    public static final String GET_SHOPPING_CART_ITEMS_STOCK = "/getShoppingCartItemsStock";
     public static final String ADD_TO_RESERVATION_CART = "/addToReservationCart";
     public static final String REMOVE_FROM_RESERVATION_CART = "/removeFromReservationCart";
     public static final String CLEAR_RESERVATION_CART = "/clearReservationCart";

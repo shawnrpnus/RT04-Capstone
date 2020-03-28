@@ -3,6 +3,7 @@ package capstone.rt04.retailbackend.services;
 import capstone.rt04.retailbackend.entities.*;
 import capstone.rt04.retailbackend.repositories.ShoppingCartItemRepository;
 import capstone.rt04.retailbackend.repositories.ShoppingCartRepository;
+import capstone.rt04.retailbackend.repositories.WarehouseRepository;
 import capstone.rt04.retailbackend.util.exceptions.customer.CustomerNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.shoppingcart.InvalidCartTypeException;
@@ -13,7 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static capstone.rt04.retailbackend.util.Constants.IN_STORE_SHOPPING_CART;
 import static capstone.rt04.retailbackend.util.Constants.ONLINE_SHOPPING_CART;
@@ -28,14 +31,16 @@ public class ShoppingCartService {
 
     private final ShoppingCartRepository shoppingCartRepository;
     private final ShoppingCartItemRepository shoppingCartItemRepository;
+    private final WarehouseRepository warehouseRepository;
 
 
-    public ShoppingCartService(@Lazy ProductService productService, @Lazy CustomerService customerService, StoreService storeService, ShoppingCartRepository shoppingCartRepository, ShoppingCartItemRepository shoppingCartItemRepository) {
+    public ShoppingCartService(@Lazy ProductService productService, @Lazy CustomerService customerService, StoreService storeService, ShoppingCartRepository shoppingCartRepository, ShoppingCartItemRepository shoppingCartItemRepository, WarehouseRepository warehouseRepository) {
         this.productService = productService;
         this.customerService = customerService;
         this.storeService = storeService;
         this.shoppingCartRepository = shoppingCartRepository;
         this.shoppingCartItemRepository = shoppingCartItemRepository;
+        this.warehouseRepository = warehouseRepository;
     }
 
 
@@ -126,6 +131,30 @@ public class ShoppingCartService {
         } else {
             throw new InvalidCartTypeException("Cart type is invalid! Must be either instore or online");
         }
+    }
+
+    public Map<Long, Map<String, Object>> getShoppingCartItemsStock(Long customerId, String cartType) throws CustomerNotFoundException, InvalidCartTypeException {
+        ShoppingCart shoppingCart = retrieveShoppingCart(customerId, cartType);
+        Map<Long, Map<String, Object>> result = new HashMap<>();
+        Warehouse warehouse = warehouseRepository.findAll().get(0);
+        for (ShoppingCartItem shoppingCartItem : shoppingCart.getShoppingCartItems()) {
+            ProductVariant pv = shoppingCartItem.getProductVariant();
+            Map<String, Object> stockAndName = new HashMap<>();
+            ProductStock productStock;
+            if (cartType.equals(ONLINE_SHOPPING_CART)) {
+                productStock = productService.
+                        retrieveProductStockByWarehouseAndProductVariantId(warehouse.getWarehouseId(), pv.getProductVariantId());
+                stockAndName.put("quantity", productStock.getQuantity());
+                stockAndName.put("location", "warehouse");
+            } else if (cartType.equals(IN_STORE_SHOPPING_CART)){
+                productStock = productService
+                        .retrieveProductStockByStoreIdAndProductVariantId(shoppingCart.getStore().getStoreId(), pv.getProductVariantId());
+                stockAndName.put("quantity", productStock.getQuantity());
+                stockAndName.put("location", shoppingCart.getStore().getStoreName());
+            }
+            result.put(shoppingCartItem.getShoppingCartItemId(), stockAndName);
+        }
+        return result;
     }
 
     // For init checking
