@@ -49,14 +49,14 @@ function ProductVariantCard(props) {
                   {finalSubTotal && (
                     <span>
                       {detail
-                        ? `${finalSubTotal / quantity}`
-                        : `${finalSubTotal}`}
+                        ? `$${finalSubTotal / quantity}`
+                        : `$${finalSubTotal}`}
                     </span>
                   )}
                   <span className={finalSubTotal && classes.discountedPrice}>
                     {detail
-                      ? `${initialSubTotal / quantity}`
-                      : `${initialSubTotal}`}
+                      ? `$${initialSubTotal / quantity}`
+                      : `$${initialSubTotal}`}
                   </span>
                 </h5>
               ) : (

@@ -117,6 +117,9 @@ function ShoppingCartItemCard(props) {
   const size = productVariant.sizeDetails.productSize;
   const price = productVariant.product.price;
   const discountedPrice = productVariant.product.discountedPrice;
+
+  console.log(productVariant.product);
+
   return (
     <Card plain style={{ margin: "10px 0" }}>
       <GridContainer style={{ margin: 0 }}>

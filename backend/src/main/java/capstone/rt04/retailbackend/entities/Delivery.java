@@ -10,7 +10,6 @@ import com.voodoodyne.jackson.jsog.JSOGGenerator;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -34,9 +33,11 @@ public class Delivery implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long deliveryId;
-    
+
     private Timestamp deliveryDateTime;
-    
+
+    private Integer maxCapacity;
+
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
     private Staff deliveryStaff;
@@ -48,6 +49,7 @@ public class Delivery implements Serializable {
     private List<InStoreRestockOrderItem> inStoreRestockOrderItems;
 
     public Delivery() {
+        this.maxCapacity = 100;
         this.customerOrdersToDeliver = new ArrayList<>();
         this.inStoreRestockOrderItems = new ArrayList<>();
     }

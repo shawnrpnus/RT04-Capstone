@@ -10,6 +10,7 @@ import capstone.rt04.retailbackend.util.exceptions.customer.AddressNotFoundExcep
 import capstone.rt04.retailbackend.util.exceptions.customer.CreditCardNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.customer.CustomerNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.shoppingcart.InvalidCartTypeException;
+import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Customer;
 import com.stripe.model.PaymentIntent;
@@ -48,9 +49,11 @@ public class StripeController {
     }
 
     @PostMapping("/completeDirectPayment")
-    public ResponseEntity<?> completeDirectPayment(@RequestBody PaymentWithSavedCardRequest paymentWithSavedCardRequest) throws CustomerNotFoundException, InvalidCartTypeException, AddressNotFoundException {
+    public ResponseEntity<?> completeDirectPayment(@RequestBody PaymentWithSavedCardRequest paymentWithSavedCardRequest)
+            throws CustomerNotFoundException, InvalidCartTypeException, AddressNotFoundException, StoreNotFoundException {
         capstone.rt04.retailbackend.entities.Customer customer = transactionService.createNewTransaction(paymentWithSavedCardRequest.getCustomerId(),
-                paymentWithSavedCardRequest.getStoreId(), ONLINE_SHOPPING_CART, paymentWithSavedCardRequest.getDeliveryAddress(), paymentWithSavedCardRequest.getBillingAddress() );
+                paymentWithSavedCardRequest.getStoreId(), ONLINE_SHOPPING_CART, paymentWithSavedCardRequest.getDeliveryAddress(),
+                paymentWithSavedCardRequest.getBillingAddress(), paymentWithSavedCardRequest.getStoreToCollectId());
         return new ResponseEntity<>(customer, HttpStatus.OK);
     }
 
@@ -95,11 +98,12 @@ public class StripeController {
     }
 
     @PostMapping("/makePaymentWithSavedCard")
-    public ResponseEntity<?> makePaymentWithSavedCard(@RequestBody PaymentWithSavedCardRequest paymentWithSavedCardRequest) throws CustomerNotFoundException, InvalidCartTypeException, AddressNotFoundException {
+    public ResponseEntity<?> makePaymentWithSavedCard(@RequestBody PaymentWithSavedCardRequest paymentWithSavedCardRequest)
+            throws CustomerNotFoundException, InvalidCartTypeException, AddressNotFoundException, StoreNotFoundException {
         try {
             capstone.rt04.retailbackend.entities.Customer customer = stripeService.makePaymentWithSavedCard(paymentWithSavedCardRequest.getCustomerId(),
                     paymentWithSavedCardRequest.getPaymentMethodId(), paymentWithSavedCardRequest.getTotalAmount(), paymentWithSavedCardRequest.getStoreId(),
-                    paymentWithSavedCardRequest.getDeliveryAddress(), paymentWithSavedCardRequest.getBillingAddress());
+                    paymentWithSavedCardRequest.getDeliveryAddress(), paymentWithSavedCardRequest.getBillingAddress(),paymentWithSavedCardRequest.getStoreToCollectId());
             relationshipService.clearCustomerRelationships(customer);
             return new ResponseEntity<>(customer, HttpStatus.OK);
         } catch (StripeException e) {

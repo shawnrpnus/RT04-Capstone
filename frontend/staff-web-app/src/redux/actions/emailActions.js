@@ -1,5 +1,6 @@
 import axios from "axios";
 import { openCircularProgress, closeCircularProgress } from "./utilActions";
+import { toast } from "react-toastify";
 axios.defaults.baseURL = process.env.REACT_APP_SPRING_API_URL;
 
 const EMAIL_BASE_URL = "/api/email";
@@ -10,7 +11,7 @@ export const massSendEmail = (request, onClose) => {
     axios
       .post(EMAIL_BASE_URL + "/massSendEmail", request)
       .then(({ data }) => {
-        toast.success(data.successMessage, {
+        toast.success(data.message, {
           position: toast.POSITION.TOP_CENTER
         });
         onClose && onClose();

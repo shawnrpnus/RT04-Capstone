@@ -8,6 +8,8 @@ import capstone.rt04.retailbackend.services.InStoreRestockOrderService;
 import capstone.rt04.retailbackend.services.RelationshipService;
 import capstone.rt04.retailbackend.services.ValidationService;
 import capstone.rt04.retailbackend.util.exceptions.delivery.DeliveryHasAlreadyBeenConfirmedException;
+import capstone.rt04.retailbackend.util.exceptions.delivery.DeliveryNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.delivery.NoItemForDeliveryException;
 import capstone.rt04.retailbackend.util.exceptions.inStoreRestockOrder.InStoreRestockOrderItemNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.staff.StaffNotFoundException;
 import org.springframework.context.annotation.Lazy;
@@ -63,6 +65,12 @@ public class DeliveryController {
         return new ResponseEntity<>(ResponseEntity.ok("Stock received!"), HttpStatus.OK);
     }
 
+    @GetMapping(AUTOMATE_DELIVERY_ALLOCATION)
+    public ResponseEntity<?> automateDeliveryAllocation(@PathVariable Long staffId) throws StaffNotFoundException, DeliveryNotFoundException, NoItemForDeliveryException {
+        deliveryService.automateDeliveryAllocation(staffId);
+        return new ResponseEntity<>(ResponseEntity.ok("Delivery generated for staff " + staffId), HttpStatus.OK);
+    }
+
     /*
     ----------- Restock Order Item -----------
     */
@@ -77,7 +85,7 @@ public class DeliveryController {
         ProductStock productStock;
         ProductVariant productVariant;
         InStoreRestockOrder inStoreRestockOrder;
-        for(InStoreRestockOrderItem item : items) {
+        for (InStoreRestockOrderItem item : items) {
             // Delivery
             item.setDelivery(null);
             // Restock order
@@ -95,18 +103,18 @@ public class DeliveryController {
             productVariant = productStock.getProductVariant();
             relationshipService.clearProductVariantRelationships(productVariant);
         }
-
     }
 
     private void clearDeliveriesRelationships(List<Delivery> deliveries) {
-        for(Delivery delivery : deliveries) {
+        for (Delivery delivery : deliveries) {
             relationshipService.clearStaffRelationships(delivery.getDeliveryStaff());
-            for(InStoreRestockOrderItem item : delivery.getInStoreRestockOrderItems()) {
+            for (InStoreRestockOrderItem item : delivery.getInStoreRestockOrderItems()) {
                 item.setDelivery(null);
                 item.setInStoreRestockOrder(null);
                 relationshipService.clearProductVariantRelationships(item.getProductStock().getProductVariant());
                 relationshipService.clearStoreRelationships(item.getProductStock().getStore());
-            };
+            }
+            ;
         }
     }
 }

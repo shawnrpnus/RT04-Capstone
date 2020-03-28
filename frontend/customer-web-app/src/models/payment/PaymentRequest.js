@@ -1,18 +1,12 @@
 export default class PaymentRequest {
-  customerId;
-  paymentMethodId;
-  totalAmount;
-  storeId;
-  deliveryAddress;
-  billingAddress;
-
   constructor(
     customerId,
     paymentMethodId,
     totalAmount,
     storeId,
     deliveryAddress,
-    billingAddress
+    billingAddress,
+    storeToCollectId
   ) {
     this.customerId = customerId;
     this.paymentMethodId = paymentMethodId;
@@ -20,5 +14,6 @@ export default class PaymentRequest {
     this.storeId = storeId;
     this.deliveryAddress = deliveryAddress;
     this.billingAddress = billingAddress;
+    this.storeToCollectId = storeToCollectId;
   }
 }

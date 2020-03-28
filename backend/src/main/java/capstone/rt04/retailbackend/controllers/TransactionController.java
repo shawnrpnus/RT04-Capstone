@@ -6,7 +6,6 @@ import capstone.rt04.retailbackend.response.GenericErrorResponse;
 import capstone.rt04.retailbackend.services.RelationshipService;
 import capstone.rt04.retailbackend.services.TransactionService;
 import capstone.rt04.retailbackend.util.exceptions.transaction.TransactionNotFoundException;
-import capstone.rt04.retailbackend.util.routeconstants.TransactionControllerRoutes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,9 +14,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import static capstone.rt04.retailbackend.util.routeconstants.TransactionControllerRoutes.*;
+
 
 @RestController
-@RequestMapping(TransactionControllerRoutes.TRANSACTION_BASE_ROUTE)
+@RequestMapping(TRANSACTION_BASE_ROUTE)
 //@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"})
 public class TransactionController {
 
@@ -29,7 +30,7 @@ public class TransactionController {
         this.relationshipService = relationshipService;
     }
 
-//    @PostMapping(TransactionControllerRoutes.CREATE_TRANSACTION)
+//    @PostMapping(CREATE_TRANSACTION)
 //    public ResponseEntity<?> createNewTransaction(@RequestBody TransactionCreateRequest transactionCreateRequest) throws CustomerNotFoundException, InvalidCartTypeException {
 //        Customer customer = transactionService.createNewTransaction(transactionCreateRequest.getCustomerId(),
 //                transactionCreateRequest.getShoppingCartId(), transactionCreateRequest.getCartType());
@@ -37,7 +38,7 @@ public class TransactionController {
 //        return new ResponseEntity<>(customer, HttpStatus.CREATED);
 //    }
 
-    @GetMapping(TransactionControllerRoutes.RETRIEVE_TRANSACTION_BY_ID)
+    @GetMapping(RETRIEVE_TRANSACTION_BY_ID)
     public ResponseEntity<?> retrieveTransactionById(@PathVariable Long transactionId) {
         try {
             Transaction transaction = transactionService.retrieveTransactionById(transactionId);
@@ -48,7 +49,16 @@ public class TransactionController {
         }
     }
 
-    @GetMapping(TransactionControllerRoutes.RETRIEVE_ALL_TRANSACTIONS)
+    @GetMapping(RETRIEVE_INSTORE_COLLECTION_TRANSACTION)
+    public ResponseEntity<?> retrieveInstoreCollectionTransaction() {
+        List<Transaction> transactions = transactionService.retrieveInstoreCollectionTransaction();
+        for (Transaction txn : transactions) {
+            relationshipService.clearTransactionRelationships(txn);
+        }
+        return new ResponseEntity<>(transactions, HttpStatus.OK);
+    }
+
+    @GetMapping(RETRIEVE_ALL_TRANSACTIONS)
     public ResponseEntity<?> retrievePastOrders() {
         List<Transaction> txns = transactionService.retrievePastOrders();
         for (Transaction txn : txns) {
@@ -57,7 +67,7 @@ public class TransactionController {
         return new ResponseEntity<>(txns, HttpStatus.OK);
     }
 
-    @GetMapping(TransactionControllerRoutes.RETRIEVE_CUSTOMER_TRANSACTIONS)
+    @GetMapping(RETRIEVE_CUSTOMER_TRANSACTIONS)
     public ResponseEntity<?> retrieveCustomerTransactions(@RequestParam Long customerId) {
         List<Transaction> txns = transactionService.retrieveCustomerTransactions(customerId);
         for (Transaction txn : txns) {
@@ -67,7 +77,7 @@ public class TransactionController {
         return new ResponseEntity<>(txns, HttpStatus.OK);
     }
 
-    @PostMapping(TransactionControllerRoutes.RETRIEVE_MATCHED_TRANSACTIONS)
+    @PostMapping(RETRIEVE_MATCHED_TRANSACTIONS)
     public ResponseEntity<?> retrieveMatchedOrders(@RequestBody TransactionRetrieveRequest transactionRetrieveRequest) {
         try {
             List<Transaction> transactions = transactionService.filterSortOrderHistory(transactionRetrieveRequest.getCustomerId(), transactionRetrieveRequest.getCollectionMode(), transactionRetrieveRequest.getDeliveryStatus(),

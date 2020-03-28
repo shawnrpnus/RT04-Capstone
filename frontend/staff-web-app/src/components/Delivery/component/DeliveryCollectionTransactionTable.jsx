@@ -22,10 +22,7 @@ import MaterialTable from "material-table";
 import Chip from "@material-ui/core/Chip";
 // Redux
 import { getDeliveryStatusColour } from "../../../redux/actions/restockOrderAction";
-import {
-  retrieveAllRestockOrderItemToDeliver,
-  createDeliveryForRestockOrderItem
-} from "../../../redux/actions/deliveryActions";
+import { retrieveInstoreCollectionTransaction } from "../../../redux/actions/transactionActions";
 import withPage from "../../Layout/page/withPage";
 import { useConfirm } from "material-ui-confirm";
 
@@ -50,33 +47,32 @@ const tableIcons = {
   ViewColumn: ViewColumn
 };
 
-const DeliveryRestockOrderItemTable = props => {
+const DeliveryCollectionTransactionTable = props => {
   const dispatch = useDispatch();
   const confirmDialog = useConfirm();
-  const restockOrderItems = useSelector(
-    state => state.delivery.restockOrderItems
-  );
+  const transactions = useSelector(state => state.transaction.transactions);
   const history = useHistory();
   const { renderLoader, staff } = props;
 
   useEffect(() => {
-    dispatch(retrieveAllRestockOrderItemToDeliver());
-  }, [_.isEqual(restockOrderItems)]);
+    dispatch(retrieveInstoreCollectionTransaction());
+  }, [_.isEqual(transactions)]);
 
   const handleCreateDelivery = (evt, data) => {
-    evt.preventDefault();
-    const ids = data.map(e => e.inStoreRestockOrderItemId);
-    const request = {
-      inStoreRestockOrderItemIds: ids,
-      staffId: _.get(staff, "staffId")
-    };
-    confirmDialog({
-      description: "A new delivery will be created with the selected products"
-    })
-      .then(() => {
-        dispatch(createDeliveryForRestockOrderItem(request, history));
-      })
-      .catch(() => null);
+    // evt.preventDefault();
+    // const ids = data.map(e => e.inStoreRestockOrderItemId);
+    // const request = {
+    //   inStoreRestockOrderItemIds: ids,
+    //   staffId: _.get(staff, "staffId")
+    // };
+    // confirmDialog({
+    //   description: "A new delivery will be created with the selected products"
+    // })
+    //   .then(() => {
+    //     dispatch(createDeliveryForRestockOrderItem(request, history));
+    //   })
+    //   .catch(() => null);
+    console.log(data);
   };
 
   let data = [];
@@ -117,7 +113,7 @@ const DeliveryRestockOrderItemTable = props => {
     <div className="table" style={{ verticalAlign: "middle" }}>
       {restockOrderItems ? (
         <MaterialTable
-          title="Restock Order Items"
+          title="In-store Collection Transactions"
           style={{ boxShadow: "none" }}
           icons={tableIcons}
           columns={[
@@ -185,4 +181,4 @@ const DeliveryRestockOrderItemTable = props => {
   );
 };
 
-export default withPage(DeliveryRestockOrderItemTable);
+export default withPage(DeliveryCollectionTransactionTable);

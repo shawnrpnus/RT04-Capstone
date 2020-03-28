@@ -21,4 +21,7 @@ public enum DeliveryStatusEnum {
     PARTIALLY_FULFILLED, // when some item in the order is fulfilled
 
     FAILED,
+
+    READY_FOR_COLLECTION,
+    COLLECTED
 }

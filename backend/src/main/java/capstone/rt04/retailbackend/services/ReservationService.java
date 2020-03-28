@@ -299,7 +299,7 @@ public class ReservationService {
         return checkAllStoreStocksForGivenProductVariants(reservationCartItems);
     }
 
-    public List<ReservationStockCheckResponse> getAllStoresStockStatusForReservation(Long reservationId) throws CustomerNotFoundException, ProductVariantNotFoundException, StoreNotFoundException, ReservationNotFoundException {
+    public List<ReservationStockCheckResponse> getAllStoresStockStatusForReservation(Long reservationId) throws ProductVariantNotFoundException, StoreNotFoundException, ReservationNotFoundException {
 
         List<ProductVariant> reservationItems = retrieveReservationByReservationId(reservationId).getProductVariants();
         return checkAllStoreStocksForGivenProductVariants(reservationItems);

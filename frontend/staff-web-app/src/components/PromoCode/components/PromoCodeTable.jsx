@@ -1,8 +1,7 @@
-import React, { Component, PureComponent } from "react";
+import React, { Component } from "react";
 import MaterialTable from "material-table";
 import {
   AddBox,
-  ArrowUpward,
   Check,
   ChevronLeft,
   ChevronRight,
@@ -16,17 +15,17 @@ import {
   SaveAlt,
   Search,
   SearchOutlined,
-  ViewColumn,
-  Visibility
+  ViewColumn
 } from "@material-ui/icons";
 import connect from "react-redux/es/connect/connect";
 import withMaterialConfirmDialog from "../../Layout/page/withMaterialConfirmDialog";
-import { css } from "@emotion/core";
 import {
   deletePromoCode,
   retrieveAllPromoCodes
 } from "../../../redux/actions/promoCodeActions";
 import withPage from "../../Layout/page/withPage";
+import Button from "@material-ui/core/Button";
+import EmailForm from "./../../Email/EmailForm";
 
 const tableIcons = {
   Add: AddBox,
@@ -48,12 +47,11 @@ const tableIcons = {
   ViewColumn: ViewColumn
 };
 
-const override = css`
-  display: block;
-  margin: 0 auto;
-`;
-
 class PromoCodeTable extends Component {
+  state = {
+    open: false
+  };
+
   componentDidMount() {
     this.props.retrieveAllPromoCodes();
   }
@@ -64,8 +62,13 @@ class PromoCodeTable extends Component {
       .then(() => this.props.deletePromoCode(promoCodeId, this.props.history));
   };
 
+  toggleOpenEmailForm = () => {
+    this.setState({ open: !this.state.open });
+  };
+
   render() {
-    const { history, renderLoader } = this.props;
+    const { history, renderLoader, allPromoCodes } = this.props;
+    const { open } = this.state;
     const data = this.props.allPromoCodes;
     console.log(data);
 
@@ -75,10 +78,25 @@ class PromoCodeTable extends Component {
           className="table"
           style={{
             width: "auto",
-            verticalAlign: "middle"
+            verticalAlign: "middle",
+            textAlign: "right"
           }}
         >
-          {this.props.allPromoCodes ? (
+          <Button
+            color="primary"
+            variant="contained"
+            onClick={this.toggleOpenEmailForm}
+            style={{ margin: "2% 0" }}
+          >
+            Email customer
+          </Button>
+          {open && (
+            <EmailForm
+              open={open}
+              onClose={() => this.setState({ open: false })}
+            />
+          )}
+          {allPromoCodes ? (
             <MaterialTable
               title="All Promo Codes"
               icons={tableIcons}

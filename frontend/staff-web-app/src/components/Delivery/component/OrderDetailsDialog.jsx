@@ -77,12 +77,12 @@ const OrderDetailsDialog = ({ elements, open, onClose }) => {
       quantity,
       productStock
     } = item;
-    let date = { ...deliveryDateTime };
+    let date = deliveryDateTime;
     if (deliveryDateTime)
       date = dateformat(new Date(deliveryDateTime), "dd'-'mmm'-'yyyy");
     return {
       inStoreRestockOrderItemId: inStoreRestockOrderItemId,
-      deliveryDateTime: deliveryDateTime,
+      deliveryDateTime: date,
       itemDeliveryStatus: itemDeliveryStatus.split("_").join(" "),
       quantity: quantity,
       productName: _.get(productStock, "productVariant.product.productName"),

@@ -117,12 +117,9 @@ export const fulFillRestockOrder = (
       )
       .then(({ data }) => {
         dispatch(retrieveAllRestockOrder());
-        toast.success(
-          `Product has been dispatched from warehouse to ${buildingName}!`,
-          {
-            position: toast.POSITION.TOP_CENTER
-          }
-        );
+        toast.success(`Product is ready to be delivered to ${buildingName}!`, {
+          position: toast.POSITION.TOP_CENTER
+        });
         dispatch(closeCircularProgress());
         onClose();
       })

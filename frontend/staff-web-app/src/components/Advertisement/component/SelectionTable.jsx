@@ -31,6 +31,7 @@ import {
   closeCircularProgress
 } from "./../../../redux/actions/utilActions";
 import withPage from "../../Layout/page/withPage";
+import { toast } from "react-toastify";
 
 const _ = require("lodash");
 const tableIcons = {
@@ -92,12 +93,22 @@ const SelectionTable = props => {
 
   const handleSearchTag = async () => {
     dispatch(openCircularProgress());
-    setEdges(await getInstagramInfo(searchTerm));
-    dispatch(closeCircularProgress());
+    await getInstagramInfo(searchTerm)
+      .then(response => {
+        setEdges(response);
+        dispatch(closeCircularProgress());
+      })
+      .catch(err => {
+        console.log(err.response);
+        toast.error("Hashtag not found!", {
+          position: toast.POSITION.TOP_CENTER
+        });
+        dispatch(closeCircularProgress());
+      });
   };
 
   const onChange = e => {
-    setSearchTerm(e.target.value);
+    setSearchTerm(e.target.value.trim());
   };
 
   let data = [];

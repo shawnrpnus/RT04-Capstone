@@ -5,6 +5,10 @@ import Button from "@material-ui/core/Button";
 import { Grid } from "@material-ui/core";
 import { massSendEmail } from "./../../redux/actions/emailActions";
 import { useConfirm } from "material-ui-confirm";
+import Dialog from "@material-ui/core/Dialog";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
 
 const _ = require("lodash");
 
@@ -39,83 +43,88 @@ const EmailForm = ({ open, onClose }) => {
   const combo = array.every(e => e !== "") || array.every(e => e === "");
 
   return (
-    <>
-      <Grid container>
-        <Grid item md={12}>
-          <TextField
-            label="Subject"
-            name="subject"
-            value={subject}
-            fullWidth
-            margin="normal"
-            InputLabelProps={{
-              shrink: true
-            }}
-            onChange={onChange}
-            autoFocus={true}
-            required
-          />
+    <Dialog onClose={onClose} open={open} fullWidth maxWidth={"sm"}>
+      <DialogTitle style={{ textAlign: "center" }}>Mass Email</DialogTitle>
+      <DialogContent>
+        <Grid container>
+          <Grid item md={12}>
+            <TextField
+              label="Subject"
+              name="subject"
+              value={subject}
+              fullWidth
+              margin="normal"
+              InputLabelProps={{
+                shrink: true
+              }}
+              onChange={onChange}
+              autoFocus={true}
+              required
+            />
+          </Grid>
+          <Grid item md={12}>
+            <TextField
+              label="Content"
+              name="content"
+              value={content}
+              fullWidth
+              margin="normal"
+              InputLabelProps={{
+                shrink: true
+              }}
+              onChange={onChange}
+              required
+              multiline
+              rows={3}
+              rowsMax={6}
+            />
+          </Grid>
+          <Grid item md={12}>
+            <TextField
+              label="Instruction"
+              name="instruction"
+              value={instruction}
+              fullWidth
+              margin="normal"
+              InputLabelProps={{
+                shrink: true
+              }}
+              onChange={onChange}
+            />
+          </Grid>
+          <Grid item md={12}>
+            <TextField
+              label="Button Text"
+              name="buttonText"
+              value={buttonText}
+              fullWidth
+              margin="normal"
+              InputLabelProps={{
+                shrink: true
+              }}
+              onChange={onChange}
+            />
+          </Grid>
+          <Grid item md={12}>
+            <TextField
+              label="Action Link"
+              name="link"
+              value={link}
+              fullWidth
+              margin="normal"
+              InputLabelProps={{
+                shrink: true
+              }}
+              onChange={onChange}
+            />
+          </Grid>
+          <small style={{ color: "red", visibility: combo && "hidden" }}>
+            Instructions, button text and action link must all be filled
+            together or left blank together
+          </small>
         </Grid>
-        <Grid item md={12}>
-          <TextField
-            label="Content"
-            name="content"
-            value={content}
-            fullWidth
-            margin="normal"
-            InputLabelProps={{
-              shrink: true
-            }}
-            onChange={onChange}
-            required
-            multiline
-            rows={3}
-            rowsMax={6}
-          />
-        </Grid>
-        <Grid item md={12}>
-          <TextField
-            label="Instruction"
-            name="instruction"
-            value={instruction}
-            fullWidth
-            margin="normal"
-            InputLabelProps={{
-              shrink: true
-            }}
-            onChange={onChange}
-          />
-        </Grid>
-        <Grid item md={12}>
-          <TextField
-            label="Button Text"
-            name="buttonText"
-            value={buttonText}
-            fullWidth
-            margin="normal"
-            InputLabelProps={{
-              shrink: true
-            }}
-            onChange={onChange}
-          />
-        </Grid>
-        <Grid item md={12}>
-          <TextField
-            label="Action Link"
-            name="link"
-            value={link}
-            fullWidth
-            margin="normal"
-            InputLabelProps={{
-              shrink: true
-            }}
-            onChange={onChange}
-          />
-        </Grid>
-        <small style={{ color: "red", visibility: combo && "hidden" }}>
-          Instructions, button text and action link must all be filled together
-          or left blank together
-        </small>
+      </DialogContent>
+      <DialogActions>
         <Grid item md={12} style={{ textAlign: "right" }}>
           <Button autoFocus onClick={onClose} color="primary">
             Cancel
@@ -128,8 +137,8 @@ const EmailForm = ({ open, onClose }) => {
             Send
           </Button>
         </Grid>
-      </Grid>
-    </>
+      </DialogActions>
+    </Dialog>
   );
 };
 
