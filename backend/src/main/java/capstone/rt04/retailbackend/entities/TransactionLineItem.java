@@ -14,8 +14,10 @@ import lombok.ToString;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  *
@@ -48,12 +50,16 @@ public class TransactionLineItem implements Serializable {
     @JoinColumn
     private Transaction transaction;
     
-    @OneToOne(mappedBy = "transactionLineItem")
-    private Refund refund;
+//    @OneToOne(mappedBy = "transactionLineItem")
+//    private Refund refund;
     
     @ManyToOne(optional = false) // persistent constraint
     @JoinColumn(nullable = false) // db constraint
     private ProductVariant productVariant;
+
+    @OneToMany(mappedBy = "transactionLineItem")
+    @Size(min = 1)
+    private List<RefundLineItem> refundLineItems;
             
     public TransactionLineItem() {
     }

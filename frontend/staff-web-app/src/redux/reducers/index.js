@@ -13,6 +13,8 @@ import reviewReducer from "./reviewReducer";
 import restockOrderReducer from "./restockOrderReducer";
 import deliveryReducer from "./deliveryReducer";
 import advertisementReducer from "./advertisementReducer";
+import refundReducer from "./refundReducer";
+import transactionReducer from "./transactionReducer";
 
 const rootReducer = combineReducers({
   errors: errorReducer,
@@ -24,8 +26,10 @@ const rootReducer = combineReducers({
   staffEntity: staffReducer,
   productStock: productStockReducer,
   feedback: feedbackReducer,
+  refund: refundReducer,
   reviewEntity: reviewReducer,
   restockOrder: restockOrderReducer,
+  transaction: transactionReducer,
   delivery: deliveryReducer,
   advertisement: advertisementReducer,
   util: utilReducer

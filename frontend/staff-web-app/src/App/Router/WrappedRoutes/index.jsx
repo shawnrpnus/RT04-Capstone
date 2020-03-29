@@ -13,6 +13,7 @@ import Review from "./Review";
 import RestockOrder from "./RestockOrder";
 import Delivery from "./Delivery";
 import Advertisement from "./Advertisement";
+import Refund from "./Refund"
 
 export default () => (
   <div>
@@ -30,6 +31,7 @@ export default () => (
       <Route path="/restockOrder" component={RestockOrder} />
       <Route path="/delivery" component={Delivery} />
       <Route path="/advertisement" component={Advertisement} />
+      <Route path="/refund" component={Refund} />
     </div>
   </div>
 );

@@ -75,6 +75,38 @@ public class TransactionService {
         return transaction;
     }
 
+    public TransactionLineItem retrieveTransactionLineItemById(Long transactionLineItemId) throws TransactionNotFoundException {
+        if(transactionLineItemId == null) {
+            throw new TransactionNotFoundException("Transaction Line Item ID not provided");
+        }
+
+        TransactionLineItem transactionLineItem = transactionLineItemRepository.findById(transactionLineItemId)
+                .orElseThrow(() -> new TransactionNotFoundException("Transaction Line Item ID " + transactionLineItemId + " does not exist"));
+
+
+        return transactionLineItem;
+    }
+
+    /*retrieve transaction by the order number*/
+    public Transaction retrieveTransactionByOrderNumber(String orderNumber) throws TransactionNotFoundException {
+        if(orderNumber.isEmpty()) {
+            throw new TransactionNotFoundException("Transaction Order Number is not provided");
+        }
+
+        Transaction transaction = transactionRepository.findByOrderNumber(orderNumber);
+
+        if(transaction == null) {
+            throw new TransactionNotFoundException("Transaction with Order Number " + orderNumber + " does not exist!");
+        }
+//        List<Transaction> transactions = new ArrayList<>();
+//        transactions.add(transaction);
+//        lazyLoadTransaction(transactions);
+
+        transaction.getCustomer().getCustomerId();
+
+        return transaction;
+    }
+
     /*Lazy Load Transaction*/
     private void lazyLoadTransaction(List<Transaction> transactions) {
         for (Transaction transaction : transactions) {

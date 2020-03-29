@@ -29,7 +29,7 @@ import java.util.List;
 @Getter
 @Setter
 @EqualsAndHashCode
-@ToString(exclude = "productStocks")
+@ToString(exclude = {"productStocks", "staff"})
 @JsonIdentityInfo(generator = JSOGGenerator.class)
 public class Store implements Serializable {
 
