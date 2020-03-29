@@ -3,15 +3,14 @@ package capstone.rt04.retailbackend.controllers;
 import capstone.rt04.retailbackend.entities.*;
 import capstone.rt04.retailbackend.request.delivery.DeliveryForRestockOrderCreateRequest;
 import capstone.rt04.retailbackend.request.delivery.ReceiveRestockOrderRequest;
-import capstone.rt04.retailbackend.services.DeliveryService;
-import capstone.rt04.retailbackend.services.InStoreRestockOrderService;
-import capstone.rt04.retailbackend.services.RelationshipService;
-import capstone.rt04.retailbackend.services.ValidationService;
+import capstone.rt04.retailbackend.request.transaction.TransactionReceiveDeliveryRequest;
+import capstone.rt04.retailbackend.services.*;
 import capstone.rt04.retailbackend.util.exceptions.delivery.DeliveryHasAlreadyBeenConfirmedException;
 import capstone.rt04.retailbackend.util.exceptions.delivery.DeliveryNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.delivery.NoItemForDeliveryException;
 import capstone.rt04.retailbackend.util.exceptions.inStoreRestockOrder.InStoreRestockOrderItemNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.staff.StaffNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.transaction.TransactionNotFoundException;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,16 +27,19 @@ public class DeliveryController {
 
     private final DeliveryService deliveryService;
     private final InStoreRestockOrderService inStoreRestockOrderService;
+    private final TransactionService transactionService;
     private final ValidationService validationService;
     private final RelationshipService relationshipService;
 
 
-    public DeliveryController(DeliveryService deliveryService, @Lazy InStoreRestockOrderService inStoreRestockOrderService, ValidationService validationService,
-                              RelationshipService relationshipService, RelationshipService relationshipService1) {
+    public DeliveryController(DeliveryService deliveryService, @Lazy InStoreRestockOrderService inStoreRestockOrderService,
+                              @Lazy TransactionService transactionService, ValidationService validationService,
+                              RelationshipService relationshipService) {
         this.deliveryService = deliveryService;
         this.inStoreRestockOrderService = inStoreRestockOrderService;
+        this.transactionService = transactionService;
         this.validationService = validationService;
-        this.relationshipService = relationshipService1;
+        this.relationshipService = relationshipService;
     }
 
     /*
@@ -63,6 +65,15 @@ public class DeliveryController {
             throws InStoreRestockOrderItemNotFoundException, DeliveryHasAlreadyBeenConfirmedException {
         inStoreRestockOrderService.receiveRestockOrderItemThroughDelivery(request.getInStoreRestockOrderItemIds());
         return new ResponseEntity<>(ResponseEntity.ok("Stock received!"), HttpStatus.OK);
+    }
+
+    @PostMapping(RECEIVE_TRANSACTION_THROUGH_DELIVERY)
+    public ResponseEntity<?> receiveTransactionThroughDelivery(@RequestBody TransactionReceiveDeliveryRequest request) throws TransactionNotFoundException {
+        List<Transaction> transactions = transactionService.receiveTransactionThroughDelivery(request.getTransactionIds());
+        for (Transaction transaction : transactions) {
+            relationshipService.clearTransactionRelationships(transaction);
+        }
+        return new ResponseEntity<>(transactions, HttpStatus.OK);
     }
 
     @GetMapping(AUTOMATE_DELIVERY_ALLOCATION)
@@ -114,7 +125,9 @@ public class DeliveryController {
                 relationshipService.clearProductVariantRelationships(item.getProductStock().getProductVariant());
                 relationshipService.clearStoreRelationships(item.getProductStock().getStore());
             }
-            ;
+            for(Transaction transaction : delivery.getCustomerOrdersToDeliver()) {
+                relationshipService.clearTransactionRelationships(transaction);
+            }
         }
     }
 }

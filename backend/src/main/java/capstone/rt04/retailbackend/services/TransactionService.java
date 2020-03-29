@@ -294,4 +294,12 @@ public class TransactionService {
         return customer;
     }
 
+    public List<Transaction> receiveTransactionThroughDelivery(List<Long> transactionIds) throws TransactionNotFoundException {
+        Transaction transaction;
+        for (Long transactionId : transactionIds) {
+            transaction = retrieveTransactionById(transactionId);
+            transaction.setDeliveryStatus(DeliveryStatusEnum.DELIVERED);
+        }
+        return retrieveTransactionsToBeDelivered();
+    }
 }

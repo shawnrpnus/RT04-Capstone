@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  DeliveryRestockOrderItemTable,
+  RestockOrderItemTable,
   DeliveryTable
 } from "../../../components/Delivery";
 import { Route, Switch } from "react-router-dom";
@@ -16,7 +16,7 @@ export default () => (
     <RetailRoute
       exact
       path="/delivery/viewAllRestockOrderItem"
-      component={DeliveryRestockOrderItemTable}
+      component={RestockOrderItemTable}
     />
   </Switch>
 );

@@ -15,7 +15,7 @@ import com.stripe.exception.StripeException;
 import com.stripe.model.Customer;
 import com.stripe.model.PaymentIntent;
 import com.stripe.model.PaymentMethodCollection;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -28,12 +28,15 @@ import static capstone.rt04.retailbackend.util.Constants.ONLINE_SHOPPING_CART;
 //@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"})
 public class StripeController {
 
-    @Autowired
     private StripeService stripeService;
-    @Autowired
     private TransactionService transactionService;
-    @Autowired
     private RelationshipService relationshipService;
+
+    public StripeController(StripeService stripeService, @Lazy TransactionService transactionService, RelationshipService relationshipService) {
+        this.stripeService = stripeService;
+        this.transactionService = transactionService;
+        this.relationshipService = relationshipService;
+    }
 
     // Not using saved card
     @PostMapping("/directPayment")

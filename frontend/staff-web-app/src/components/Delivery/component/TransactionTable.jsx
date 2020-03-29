@@ -47,7 +47,7 @@ const tableIcons = {
   ViewColumn: ViewColumn
 };
 
-const DeliveryCollectionTransactionTable = props => {
+const TransactionTable = props => {
   const dispatch = useDispatch();
   const confirmDialog = useConfirm();
   const transactions = useSelector(state => state.transaction.transactions);
@@ -181,4 +181,4 @@ const DeliveryCollectionTransactionTable = props => {
   );
 };
 
-export default withPage(DeliveryCollectionTransactionTable);
+export default withPage(TransactionTable);

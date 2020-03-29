@@ -106,6 +106,7 @@ public class RelationshipService {
             } else {
                 for (ProductVariant pv : pdr.getProduct().getProductVariants()) {
                     pv.setProductStocks(null);
+                    applyDiscount(pv);
                 }
             }
             for (Tag tag : pdr.getProduct().getTags()) {
@@ -146,6 +147,9 @@ public class RelationshipService {
     }
 
     public void clearTransactionRelationships(Transaction transaction) {
+        transaction.setCustomer(null);
+        transaction.setDeliveries(null);
+
         for (TransactionLineItem transactionLineItem : transaction.getTransactionLineItems()) {
             ProductVariant productVariant = transactionLineItem.getProductVariant();
             productVariant.setProductStocks(null);
@@ -154,11 +158,11 @@ public class RelationshipService {
             transactionLineItem.getProductVariant().getProduct().setCategory(null);
             transactionLineItem.getProductVariant().getProduct().setProductVariants(null);
             transactionLineItem.getProductVariant().getProduct().setStyles(null);
+            transactionLineItem.setTransaction(null);
             product.setTags(null);
             product.setReviews(null);
             product.setDiscounts(null);
         }
-        transaction.setCustomer(null);
         if (transaction.getStoreToCollect() != null)
             clearStoreRelationships(transaction.getStoreToCollect());
     }

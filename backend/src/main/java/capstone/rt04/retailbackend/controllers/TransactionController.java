@@ -91,6 +91,4 @@ public class TransactionController {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-
 }

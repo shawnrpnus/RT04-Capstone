@@ -83,7 +83,6 @@
 }
 
 .product-card__price {
-  margin-bottom: 25px;
   @include directify($directions) {
     text-align: directed("left");
   }
@@ -93,7 +92,14 @@
   font-size: 15px;
   color: $color-additional;
   font-style: italic;
-  // text-decoration: line-through;
+  text-decoration: line-through;
+}
+
+.product-card__cost {
+  margin-bottom: 5px;
+  font-size: 16px;
+  color: $color-additional;
+  font-style: italic;
 }
 
 .product-card__category {

@@ -122,4 +122,7 @@ public class PromoCodeService {
         }
         return promoCodes;
     }
+
+//    private PromoCode applyPromoCode(Long customerId, String promoCode) {
+//    }
 }

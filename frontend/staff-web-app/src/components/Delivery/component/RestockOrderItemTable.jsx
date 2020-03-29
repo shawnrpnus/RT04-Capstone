@@ -50,7 +50,7 @@ const tableIcons = {
   ViewColumn: ViewColumn
 };
 
-const DeliveryRestockOrderItemTable = props => {
+const RestockOrderItemTable = props => {
   const dispatch = useDispatch();
   const confirmDialog = useConfirm();
   const restockOrderItems = useSelector(
@@ -185,4 +185,4 @@ const DeliveryRestockOrderItemTable = props => {
   );
 };
 
-export default withPage(DeliveryRestockOrderItemTable);
+export default withPage(RestockOrderItemTable);

@@ -31,7 +31,7 @@ export const retrieveAllDelivery = () => {
   };
 };
 
-export const confirmDelivery = request => {
+export const confirmRestockOrderDelivery = request => {
   return dispatch => {
     dispatch(openCircularProgress());
     axios
@@ -41,7 +41,29 @@ export const confirmDelivery = request => {
       )
       .then(response => {
         dispatch(retrieveAllDelivery());
-        toast.success("Delivery confirmed!", {
+        toast.success("Delivery for restock order confirmed!", {
+          position: toast.POSITION.TOP_CENTER
+        });
+        dispatch(closeCircularProgress());
+      })
+      .catch(err => {
+        toast.error(err.response.data.errorMessage, {
+          position: toast.POSITION.TOP_CENTER
+        });
+        // dispatchErrorMapError(err, dispatch);
+        dispatch(closeCircularProgress());
+      });
+  };
+};
+
+export const confirmTransactionDelivery = request => {
+  return dispatch => {
+    dispatch(openCircularProgress());
+    axios
+      .post(DELIVERY_BASE_URL + `/receiveTransactionThroughDelivery`, request)
+      .then(response => {
+        dispatch(retrieveAllDelivery());
+        toast.success("Delivery for customer transaction confirmed!", {
           position: toast.POSITION.TOP_CENTER
         });
         dispatch(closeCircularProgress());

@@ -25,7 +25,8 @@ public class DeliveryService {
     private final TransactionService transactionService;
     private final InStoreRestockOrderService inStoreRestockOrderService;
 
-    public DeliveryService(DeliveryRepository deliveryRepository, StaffService staffService, TransactionService transactionService, @Lazy InStoreRestockOrderService inStoreRestockOrderService) {
+    public DeliveryService(DeliveryRepository deliveryRepository, StaffService staffService,
+                           @Lazy TransactionService transactionService, @Lazy InStoreRestockOrderService inStoreRestockOrderService) {
         this.deliveryRepository = deliveryRepository;
         this.transactionService = transactionService;
         this.inStoreRestockOrderService = inStoreRestockOrderService;
