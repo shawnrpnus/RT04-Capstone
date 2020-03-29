@@ -1,16 +1,18 @@
-import React from "react";
+import React, {useState} from "react";
 import { Block, Text } from "galio-framework";
 import { useSelector } from "react-redux";
 import { Dimensions, FlatList } from "react-native";
 import AddressCard from "src/screens/Profile/Address/AddressCard";
 import { FAB, Portal } from "react-native-paper";
 import Theme from "src/constants/Theme";
+import Spinner from "react-native-loading-spinner-overlay";
 
 const { width, height } = Dimensions.get("window");
 
 function ViewAddresses(props) {
   const { navigation, route } = props;
   const customer = useSelector(state => state.customer.loggedInCustomer);
+  const [loading, setLoading] = useState(false);
 
   const getSortedShippingAddresses = customer => {
     const unsortedShippingAddresses = customer.shippingAddresses;
@@ -27,7 +29,7 @@ function ViewAddresses(props) {
   };
 
   const renderItem = ({ item }) => {
-    return <AddressCard customer={customer} address={item} />;
+    return <AddressCard customer={customer} address={item} setLoading={setLoading}/>;
   };
 
   const renderEmpty = () => {
@@ -65,6 +67,12 @@ function ViewAddresses(props) {
           )}
         </>
       )}
+      <Spinner
+          visible={loading}
+          textContent={"Loading..."}
+          textStyle={{color: "white"}}
+          overlayColor="rgba(0,0,0,0.75)"
+      />
     </Block>
   );
 }

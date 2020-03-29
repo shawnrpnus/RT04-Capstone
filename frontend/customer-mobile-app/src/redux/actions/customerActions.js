@@ -197,3 +197,22 @@ export const createShippingAddress = (
       });
   };
 };
+
+export const removeShippingAddress = (customerId, shippingAddressId, setLoading) => {
+  setLoading(true);
+  return dispatch => {
+    axios
+      .delete(
+        CUSTOMER_BASE_URL +
+          `/removeShippingAddress/${customerId}/${shippingAddressId}`
+      )
+      .then(response => {
+        dispatchUpdatedCustomer(response.data, dispatch);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.log(err);
+        setLoading(false);
+      });
+  };
+};

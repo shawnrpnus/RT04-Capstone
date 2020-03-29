@@ -1,16 +1,17 @@
 import React from "react";
 import { Block, Checkbox, Text } from "galio-framework";
 import { useDispatch } from "react-redux";
-import { updateShippingAddress } from "src/redux/actions/customerActions";
-import { Dimensions } from "react-native";
+import {removeShippingAddress, updateShippingAddress} from "src/redux/actions/customerActions";
+import {Alert, Dimensions, TouchableOpacity} from "react-native";
 import { Switch } from "react-native-paper";
 import Theme from "src/constants/Theme";
+import { Feather } from "@expo/vector-icons";
 
 const _ = require("lodash");
 const { width, height } = Dimensions.get("window");
 
 function AddressCard(props) {
-  const { address, customer } = props;
+  const { address, customer, setLoading } = props;
 
   const dispatch = useDispatch();
 
@@ -38,6 +39,19 @@ function AddressCard(props) {
     dispatch(updateShippingAddress(customer.customerId, updatedAddress));
   };
 
+  const showDeleteConfirmationAlert = () => {
+    Alert.alert("Remove address", "Are you sure you want to remove this address?", [
+      {
+        text: "Cancel",
+        style: "cancel"
+      },
+      {
+        text: "Remove",
+        onPress: () => dispatch(removeShippingAddress(customer.customerId, address.addressId, setLoading))
+      }
+    ]);
+  };
+
   return (
     <Block
       flex
@@ -51,17 +65,27 @@ function AddressCard(props) {
         borderRadius: 0
       }}
     >
-      <Text h5 bold style={{marginBottom: 10}}>
-        {getTitle(address)}
-      </Text>
+      <Block flex row space="between">
+        <Text h5 bold style={{ marginBottom: 10, width: "70%" }}>
+          {getTitle(address)}
+        </Text>
+        <TouchableOpacity onPress={() => {}}>
+          <Feather name="edit" size={25} />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={showDeleteConfirmationAlert}>
+          <Feather name="x" size={28} />
+        </TouchableOpacity>
+      </Block>
       {address.buildingName ? <Text h5>{address.buildingName}</Text> : null}
       <Text h5>{address.line1}</Text>
       {address.line2 ? <Text h5>{address.line2}</Text> : null}
       <Text h5>{address.postalCode}</Text>
       {address.default ? (
-        <Text h6 style={{color: "grey", marginTop: 10}}>This is your default shipping address</Text>
+        <Text h6 style={{ color: "grey", marginTop: 10 }}>
+          This is your default shipping address
+        </Text>
       ) : (
-        <Block flex row style={{alignItems: "center", marginTop: 10}}>
+        <Block flex row style={{ alignItems: "center", marginTop: 10 }}>
           <Switch
             color={Theme.COLORS.PRIMARY}
             value={address.default}
@@ -71,9 +95,11 @@ function AddressCard(props) {
         </Block>
       )}
       {address.billing ? (
-        <Text h6 style={{color: "grey"}}>This is your default billing address</Text>
+        <Text h6 style={{ color: "grey" }}>
+          This is your default billing address
+        </Text>
       ) : (
-        <Block flex row style={{alignItems: "center"}}>
+        <Block flex row style={{ alignItems: "center" }}>
           <Switch
             color={Theme.COLORS.PRIMARY}
             value={address.billing}
