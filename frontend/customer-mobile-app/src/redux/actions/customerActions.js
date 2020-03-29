@@ -161,16 +161,25 @@ export const clearShoppingCart = customerId => {
   };
 };
 
-export const updateShippingAddress = (customerId, shippingAddress) => {
+export const updateShippingAddress = (
+  customerId,
+  shippingAddress,
+  navigation,
+  setLoading
+) => {
+  if (setLoading) setLoading(true);
   const req = { customerId, shippingAddress };
   return dispatch => {
     axios
       .post(CUSTOMER_BASE_URL + "/updateShippingAddress", req)
       .then(response => {
         dispatchUpdatedCustomer(response.data, dispatch);
+        if (setLoading) setLoading(false);
+        if (navigation) navigation.navigate("View Addresses");
       })
       .catch(err => {
         console.log(err);
+        if (setLoading) setLoading(false);
       });
   };
 };
@@ -198,7 +207,11 @@ export const createShippingAddress = (
   };
 };
 
-export const removeShippingAddress = (customerId, shippingAddressId, setLoading) => {
+export const removeShippingAddress = (
+  customerId,
+  shippingAddressId,
+  setLoading
+) => {
   setLoading(true);
   return dispatch => {
     axios

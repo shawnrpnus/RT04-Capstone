@@ -11,7 +11,7 @@ const _ = require("lodash");
 const { width, height } = Dimensions.get("window");
 
 function AddressForm(props) {
-  const { inputState, onChange, handleSubmit, errors } = props;
+  const { inputState, onChange, handleSubmit, errors, mode } = props;
 
   return (
     <Block flex={1} center style={{ backgroundColor: "white", width: width }}>
@@ -108,7 +108,7 @@ function AddressForm(props) {
           style={{ marginTop: 0, height: 50, width: width * 0.9 }}
           onPress={handleSubmit}
         >
-          CREATE
+          {mode}
         </Button>
       </Block>
     </Block>

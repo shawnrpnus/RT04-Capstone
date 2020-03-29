@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import { Block, Text } from "galio-framework";
 import { useSelector } from "react-redux";
 import { Dimensions, FlatList } from "react-native";
@@ -29,7 +29,14 @@ function ViewAddresses(props) {
   };
 
   const renderItem = ({ item }) => {
-    return <AddressCard customer={customer} address={item} setLoading={setLoading}/>;
+    return (
+      <AddressCard
+        customer={customer}
+        address={item}
+        setLoading={setLoading}
+        navigation={navigation}
+      />
+    );
   };
 
   const renderEmpty = () => {
@@ -68,10 +75,10 @@ function ViewAddresses(props) {
         </>
       )}
       <Spinner
-          visible={loading}
-          textContent={"Loading..."}
-          textStyle={{color: "white"}}
-          overlayColor="rgba(0,0,0,0.75)"
+        visible={loading}
+        textContent={"Loading..."}
+        textStyle={{ color: "white" }}
+        overlayColor="rgba(0,0,0,0.75)"
       />
     </Block>
   );

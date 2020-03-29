@@ -22,6 +22,7 @@ import ViewAddresses from "src/screens/Profile/Address/ViewAddresses";
 import ViewCreditCards from "src/screens/Profile/CreditCard/ViewCreditCards";
 import { FontAwesome } from "@expo/vector-icons";
 import CreateAddress from "src/screens/Profile/Address/CreateAddress";
+import UpdateAddress from "src/screens/Profile/Address/UpdateAddress";
 
 const { width } = Dimensions.get("screen");
 
@@ -148,6 +149,16 @@ function AddressStack(props) {
         component={CreateAddress}
         options={{
           header: props => <CustomHeader title="New Address" back {...props} />,
+          headerStyle: { height: 100 }
+        }}
+      />
+      <Stack.Screen
+        name="Update Address"
+        component={UpdateAddress}
+        options={{
+          header: props => (
+            <CustomHeader title="Update Address" back {...props} />
+          ),
           headerStyle: { height: 100 }
         }}
       />
