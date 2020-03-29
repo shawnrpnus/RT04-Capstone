@@ -9,7 +9,7 @@ import theme from "src/constants/Theme";
 // screens
 
 import LogIn from "src/screens/LogIn";
-import Profile from "src/screens/Profile";
+import Profile from "src/screens/Profile/Profile";
 import { useSelector } from "react-redux";
 import CustomDrawerContent from "src/navigation/CustomDrawerContent";
 import Product from "src/screens/Product";
@@ -18,6 +18,10 @@ import ProductDetails from "src/screens/ProductDetails/ProductDetails";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import { MaterialCommunityIcons } from "react-native-vector-icons";
 import ShoppingCart from "src/screens/ShoppingCart/ShoppingCart";
+import ViewAddresses from "src/screens/Profile/Address/ViewAddresses";
+import ViewCreditCards from "src/screens/Profile/CreditCard/ViewCreditCards";
+import { FontAwesome } from "@expo/vector-icons";
+import CreateAddress from "src/screens/Profile/Address/CreateAddress";
 
 const { width } = Dimensions.get("screen");
 
@@ -95,12 +99,74 @@ function AppDrawer(props) {
 
 function ProfileStack(props) {
   return (
-    <Stack.Navigator mode="card" headerMode="screen">
-      <Stack.Screen
-        name="Profile"
-        component={Profile}
+    <Tab.Navigator
+      initialRouteName="Address"
+      activeColor={theme.COLORS.PRIMARY}
+      barStyle={{ backgroundColor: theme.COLORS.CAPTION }}
+    >
+      <Tab.Screen
+        name="Address"
+        component={AddressStack}
         options={{
-          header: props => <CustomHeader title="Profile" {...props} />,
+          tabBarLabel: "Address Book",
+          tabBarIcon: ({ color }) => (
+            <FontAwesome name="address-book" color={color} size={20} />
+          )
+        }}
+      />
+      <Tab.Screen
+        name="CreditCard"
+        component={CreditCardsStack}
+        options={{
+          tabBarLabel: "Credit Cards",
+          tabBarIcon: ({ color }) => (
+            <FontAwesome name="credit-card" color={color} size={20} />
+          )
+        }}
+      />
+    </Tab.Navigator>
+  );
+}
+
+function AddressStack(props) {
+  return (
+    <Stack.Navigator
+      mode="card"
+      headerMode="screen"
+      initialRouteName="View Addresses"
+    >
+      <Stack.Screen
+        name="View Addresses"
+        component={ViewAddresses}
+        options={{
+          header: props => <CustomHeader title="My Address Book" {...props} />,
+          headerStyle: { height: 100 }
+        }}
+      />
+      <Stack.Screen
+        name="New Address"
+        component={CreateAddress}
+        options={{
+          header: props => <CustomHeader title="New Address" back {...props} />,
+          headerStyle: { height: 100 }
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
+
+function CreditCardsStack(props) {
+  return (
+    <Stack.Navigator
+      mode="card"
+      headerMode="screen"
+      initialRouteName="View Credit Cards"
+    >
+      <Stack.Screen
+        name="View Credit Cards"
+        component={ViewCreditCards}
+        options={{
+          header: props => <CustomHeader title="My Credit Cards" {...props} />,
           headerStyle: { height: 100 }
         }}
       />
@@ -133,7 +199,12 @@ function ShopStack(props) {
         component={ShoppingCart}
         options={{
           header: props => (
-            <CustomHeader title="Shopping Cart" back atShoppingCartPage {...props}  />
+            <CustomHeader
+              title="Shopping Cart"
+              back
+              atShoppingCartPage
+              {...props}
+            />
           )
         }}
       />

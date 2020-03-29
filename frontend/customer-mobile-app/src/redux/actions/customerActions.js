@@ -145,18 +145,55 @@ const updateShoppingCartItemsStock = data => ({
   data: data
 });
 
-export const clearShoppingCart = (customerId) => {
-  const reqParams = {customerId, cartType: "instore"}
+export const clearShoppingCart = customerId => {
+  const reqParams = { customerId, cartType: "instore" };
   return dispatch => {
     axios
-        .post(CUSTOMER_BASE_URL + "/clearShoppingCart", null,{
-          params: reqParams
-        })
-        .then(response => {
-          dispatchUpdatedCustomer(response.data, dispatch);
-        })
-        .catch(err => {
-          console.log(err);
-        });
+      .post(CUSTOMER_BASE_URL + "/clearShoppingCart", null, {
+        params: reqParams
+      })
+      .then(response => {
+        dispatchUpdatedCustomer(response.data, dispatch);
+      })
+      .catch(err => {
+        console.log(err);
+      });
   };
-}
+};
+
+export const updateShippingAddress = (customerId, shippingAddress) => {
+  const req = { customerId, shippingAddress };
+  return dispatch => {
+    axios
+      .post(CUSTOMER_BASE_URL + "/updateShippingAddress", req)
+      .then(response => {
+        dispatchUpdatedCustomer(response.data, dispatch);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+};
+
+export const createShippingAddress = (
+  customerId,
+  shippingAddress,
+  navigation,
+  setLoading
+) => {
+  const req = { customerId, shippingAddress };
+  setLoading(true);
+  return dispatch => {
+    axios
+      .post(CUSTOMER_BASE_URL + "/addShippingAddress", req)
+      .then(response => {
+        dispatchUpdatedCustomer(response.data, dispatch);
+        setLoading(false);
+        navigation.navigate("View Addresses");
+      })
+      .catch(err => {
+        setLoading(false);
+        dispatchErrorMapError(err, dispatch);
+      });
+  };
+};

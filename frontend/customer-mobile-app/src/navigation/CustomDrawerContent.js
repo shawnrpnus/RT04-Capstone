@@ -16,9 +16,14 @@ function CustomDrawerContent(props) {
       <Block flex={0.1} style={styles.header}>
         <Block style={styles.profile}>
           {customer && (
-            <Text h4 color={"white"}>
-              {customer.firstName} {customer.lastName}
-            </Text>
+            <>
+              <Text h4 color={"white"}>
+                {customer.firstName} {customer.lastName}
+              </Text>
+              <Text h6 color={"white"}>
+                {customer.email}
+              </Text>
+            </>
           )}
         </Block>
       </Block>
