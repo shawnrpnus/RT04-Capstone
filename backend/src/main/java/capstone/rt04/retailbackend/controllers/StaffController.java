@@ -19,7 +19,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(StaffControllerRoutes.STAFF_BASE_ROUTE)
-@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"})
+//@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"})
 public class StaffController {
 
     private final StaffService staffService;
@@ -34,7 +34,7 @@ public class StaffController {
     //Address will need to save in address repository cause it is new
     //role and department already exist in database from the start so no need to save
     @PostMapping(StaffControllerRoutes.CREATE_NEW_STAFF)
-    public ResponseEntity<?> createNewStaff(@RequestBody StaffCreateRequest staffCreateRequest) throws InputDataValidationException, CreateNewStaffException, CreateNewStaffAccountException {
+    public ResponseEntity<?> createNewStaff(@RequestBody StaffCreateRequest staffCreateRequest) throws InputDataValidationException, CreateNewStaffException, CreateNewStaffAccountException, javax.management.relation.RoleNotFoundException {
 
         System.out.println(staffCreateRequest.getRoleId());
         try {
@@ -44,6 +44,8 @@ public class StaffController {
             return new ResponseEntity<>(newStaff, HttpStatus.CREATED);
         } catch (InputDataValidationException ex) {
             return new ResponseEntity<>(ex.getErrorMap(), HttpStatus.BAD_REQUEST);
+        } catch (DepartmentNotFoundException ex) {
+            return new ResponseEntity<>(ex, HttpStatus.BAD_REQUEST);
         }
 
 
@@ -167,7 +169,8 @@ public class StaffController {
 
             staffService.changeStaffPassword(staffChangePasswordRequest.getStaffId(),
                     staffChangePasswordRequest.getOldPassword(),
-                    staffChangePasswordRequest.getNewPassword());
+                    staffChangePasswordRequest.getNewPassword(),
+                    staffChangePasswordRequest.getConfirmPassword());
             Staff staff = staffService.retrieveStaffByStaffId(staffChangePasswordRequest.getStaffId());
             clearStaffRelationship(staff);
             return new ResponseEntity<>(staff, HttpStatus.OK);
@@ -210,6 +213,13 @@ public class StaffController {
         } catch (Exception ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @PostMapping(StaffControllerRoutes.REGISTER_PUSH_NOTIF_TOKEN)
+    public ResponseEntity<?> registerPushNotifToken(@RequestBody RegisterPushNotifTokenRequest req) throws StaffNotFoundException {
+        Staff staff = staffService.registerPushNotificationToken(req.getStaffId(), req.getToken());
+        clearStaffRelationship(staff);
+        return new ResponseEntity<>(staff, HttpStatus.OK);
     }
 
     private void clearStaffRelationship(Staff staff) {

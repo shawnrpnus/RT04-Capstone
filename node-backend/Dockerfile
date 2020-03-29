@@ -2,7 +2,7 @@ FROM node:current
 
 WORKDIR /apricot/node-backend
 
-COPY package*.json .
+COPY package*.json ./
 
 RUN npm install
 

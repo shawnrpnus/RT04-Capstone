@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 import * as types from "./types";
 axios.defaults.baseURL = process.env.REACT_APP_SPRING_API_URL;
 
+const NODE_API_URL = process.env.REACT_APP_NODE_API_URL;
 const PRODUCT_BASE_URL = "/api/product";
 const CATEGORY_BASE_URL = "/api/category";
 const jsog = require("jsog");
@@ -18,7 +19,7 @@ export const createNewProduct = (
     axios
       .post(
         // "/node" + PRODUCT_BASE_URL + "/createNewProduct",
-        "http://localhost:5000/node" + PRODUCT_BASE_URL + "/createNewProduct",
+        NODE_API_URL + PRODUCT_BASE_URL + "/createNewProduct",
         createProductRequest
       )
       .then(response => {
@@ -70,7 +71,8 @@ export const retrieveProductById = (
         }
       })
       .catch(err => {
-        dispatch(retrieveProductByIdError(err.response.data));
+        // dispatch(retrieveProductByIdError(err.response.data));
+        console.log(err);
       });
   };
 };
@@ -94,7 +96,6 @@ export const retrieveProductsDetails = (storeOrWarehouseId, categoryId) => {
       })
       .then(response => {
         const { data } = jsog.decode(response);
-        console.log(data);
         if (categoryId) {
           dispatch(retrieveProductsDetailsForCategorySuccess(data));
         } else {
@@ -168,9 +169,7 @@ export const updateProductVariantImages = (request, productId) => {
   return dispatch => {
     axios
       .put(
-        "http://localhost:5000/node" +
-          PRODUCT_BASE_URL +
-          "/updateProductVariantImages",
+        NODE_API_URL + PRODUCT_BASE_URL + "/updateProductVariantImages",
         request
       )
       .then(response => {

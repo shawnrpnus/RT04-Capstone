@@ -10,13 +10,18 @@ import capstone.rt04.retailbackend.util.enums.SortEnum;
 import capstone.rt04.retailbackend.util.exceptions.customer.AddressNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.customer.CustomerNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.shoppingcart.InvalidCartTypeException;
+import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.transaction.TransactionNotFoundException;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 @Service
 @Transactional
@@ -26,15 +31,21 @@ public class TransactionService {
     private final TransactionLineItemRepository transactionLineItemRepository;
     private final AddressRepository addressRepository;
 
+    private final StoreService storeService;
+    private final ProductService productService;
     private final CustomerService customerService;
     private final ShoppingCartService shoppingCartService;
 
-    public TransactionService(TransactionRepository transactionRepository, TransactionLineItemRepository transactionLineItemRepository, AddressRepository addressRepository, CustomerService customerService, ShoppingCartService shoppingCartService) {
+    public TransactionService(TransactionRepository transactionRepository, TransactionLineItemRepository transactionLineItemRepository,
+                              AddressRepository addressRepository, StoreService storeService, CustomerService customerService,
+                              ShoppingCartService shoppingCartService, @Lazy ProductService productService) {
         this.transactionRepository = transactionRepository;
         this.transactionLineItemRepository = transactionLineItemRepository;
         this.addressRepository = addressRepository;
+        this.storeService = storeService;
         this.customerService = customerService;
         this.shoppingCartService = shoppingCartService;
+        this.productService = productService;
     }
 
     /*create new transaction - not the actual one; simplified just for testing other use cases*/
@@ -54,6 +65,18 @@ public class TransactionService {
 
     public List<Transaction> retrieveCustomerTransactions(Long customerId) {
         List<Transaction> txns = transactionRepository.findAllByCustomer_CustomerId(customerId);
+        lazyLoadTransaction(txns);
+        return txns;
+    }
+
+    public List<Transaction> retrieveInstoreCollectionTransaction() {
+        List<Transaction> txns = transactionRepository.findAllByStoreToCollectIsNotNullAndDeliveryStatusEquals(DeliveryStatusEnum.PROCESSING);
+        lazyLoadTransaction(txns);
+        return txns;
+    }
+
+    public List<Transaction> retrieveTransactionsToBeDelivered() {
+        List<Transaction> txns = transactionRepository.findAllByDeliveryStatusEquals(DeliveryStatusEnum.TO_BE_DELIVERED);
         lazyLoadTransaction(txns);
         return txns;
     }
@@ -206,7 +229,7 @@ public class TransactionService {
 
     // TODO: Make this method reusable for in-store checkout
     // TODO: Add in address / promo code / discount to calculate final price?
-    public Customer createNewTransaction(Long customerId, Long storeId, String cartType, Address deliveryAddress, Address billingAddress) throws CustomerNotFoundException, InvalidCartTypeException, AddressNotFoundException {
+    public Customer createNewTransaction(Long customerId, Long storeId, String cartType, Address deliveryAddress, Address billingAddress, Long storeToCollectId) throws CustomerNotFoundException, InvalidCartTypeException, AddressNotFoundException, StoreNotFoundException {
         Customer customer = customerService.retrieveCustomerByCustomerId(customerId);
         ShoppingCart shoppingCart = shoppingCartService.retrieveShoppingCart(customerId, cartType);
 
@@ -215,13 +238,26 @@ public class TransactionService {
         List<TransactionLineItem> transactionLineItems = new ArrayList<>();
         List<ShoppingCartItem> shoppingCartItems = new ArrayList<>(shoppingCart.getShoppingCartItems());
         Integer totalQuantity = 0;
+        BigDecimal finalPrice;
+        BigDecimal quantity;
 
         // Transferring to transaction line item
         for (ShoppingCartItem shoppingCartItem : shoppingCartItems) {
-            transactionLineItem = new TransactionLineItem(shoppingCartItem.getProductVariant().getProduct().getPrice().multiply(new BigDecimal(shoppingCartItem.getQuantity())),
+            quantity = new BigDecimal(shoppingCartItem.getQuantity());
+            transactionLineItem = new TransactionLineItem(shoppingCartItem.getProductVariant().getProduct().getPrice().multiply(quantity),
                     shoppingCartItem.getQuantity(), null, shoppingCartItem.getProductVariant());
             //TODO: Update final subtotal based on discount and promo code
-            transactionLineItem.setFinalSubTotal(transactionLineItem.getInitialSubTotal());
+
+            for (Discount discount : shoppingCartItem.getProductVariant().getProduct().getDiscounts()) {
+                finalPrice = productService.applyDiscount(discount, shoppingCartItem.getProductVariant().getProduct(), null);
+                if (finalPrice != null) {
+                    transactionLineItem.setFinalSubTotal(finalPrice.multiply(quantity));
+                    break;
+                } else {
+                    transactionLineItem.setFinalSubTotal(transactionLineItem.getInitialSubTotal());
+                }
+            }
+
             totalQuantity += shoppingCartItem.getQuantity();
             transactionLineItemRepository.save(transactionLineItem);
             transactionLineItems.add(transactionLineItem);
@@ -245,30 +281,38 @@ public class TransactionService {
         }
 
         //Address logic
-        if (deliveryAddress.getAddressId() == null) {
-            addressRepository.save(deliveryAddress);
-            transaction.setDeliveryAddress(deliveryAddress);
-        } else {
-            Address txnDeliveryAddress = addressRepository.findById(deliveryAddress.getAddressId())
-                    .orElseThrow(() -> new AddressNotFoundException("Address not found"));
-            transaction.setDeliveryAddress(txnDeliveryAddress);
+        if (deliveryAddress != null && billingAddress != null) {
+            if (deliveryAddress != null && deliveryAddress.getAddressId() == null) {
+                addressRepository.save(deliveryAddress);
+                transaction.setDeliveryAddress(deliveryAddress);
+            } else {
+                Address txnDeliveryAddress = addressRepository.findById(deliveryAddress.getAddressId())
+                        .orElseThrow(() -> new AddressNotFoundException("Address not found"));
+                transaction.setDeliveryAddress(txnDeliveryAddress);
+            }
+            if (billingAddress.getAddressId() == null) {
+                addressRepository.save(billingAddress);
+                transaction.setBillingAddress(billingAddress);
+            } else {
+                Address txnBillingAddress = addressRepository.findById(billingAddress.getAddressId())
+                        .orElseThrow(() -> new AddressNotFoundException("Address not found"));
+                transaction.setBillingAddress(txnBillingAddress);
+            }
         }
-        if (billingAddress.getAddressId() == null) {
-            addressRepository.save(billingAddress);
-            transaction.setBillingAddress(billingAddress);
+
+        if (storeToCollectId != null) {
+            Store store = storeService.retrieveStoreById(storeToCollectId);
+            transaction.setStoreToCollect(store);
+            transaction.setCollectionMode(CollectionModeEnum.IN_STORE);
         } else {
-            Address txnBillingAddress = addressRepository.findById(billingAddress.getAddressId())
-                    .orElseThrow(() -> new AddressNotFoundException("Address not found"));
-            transaction.setBillingAddress(txnBillingAddress);
+            transaction.setCollectionMode(CollectionModeEnum.DELIVERY);
         }
 
         transaction.getTransactionLineItems().addAll(transactionLineItems);
         transaction.setInitialTotalPrice(shoppingCart.getInitialTotalAmount());
-        // TODO: Add DISCOUNT / PROMOCODE Logic here, for now final = initial
-        transaction.setFinalTotalPrice(shoppingCart.getInitialTotalAmount());
+        transaction.setFinalTotalPrice(shoppingCart.getFinalTotalAmount());
         transaction.setTotalQuantity(totalQuantity);
-        transaction.setCollectionMode(CollectionModeEnum.DELIVERY);
-        transaction.setDeliveryStatus(DeliveryStatusEnum.PROCESSING);
+        transaction.setDeliveryStatus(DeliveryStatusEnum.TO_BE_DELIVERED);
         transactionRepository.save(transaction);
 
         for (TransactionLineItem lineItem : transactionLineItems) {

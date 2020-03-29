@@ -5,7 +5,8 @@ import { dispatchErrorMapError } from "./index";
 import { openCircularProgress, closeCircularProgress } from "./utilActions";
 axios.defaults.baseURL = process.env.REACT_APP_SPRING_API_URL;
 
-const NODE_URL = "http://localhost:5000/node";
+const NODE_URL = process.env.REACT_APP_NODE_API_URL;
+
 const ADVERTISEMENT_BASE_URL = "/api/advertisement";
 const jsog = require("jsog");
 
@@ -23,7 +24,7 @@ export const retrieveAllAdvertisement = () => {
         dispatch(handleRetrieveAllAdvertisement(data));
       })
       .catch(err => {
-        toast.error(err.response.data.errorMessage, {
+        toast.error(err.response, {
           position: toast.POSITION.TOP_CENTER
         });
       });
@@ -34,7 +35,10 @@ export const createAdvertisement = (request, onClose) => {
   return dispatch => {
     dispatch(openCircularProgress());
     axios
-      .post(NODE_URL + ADVERTISEMENT_BASE_URL + "/createAdvertisement", request)
+      .post(
+        NODE_URL + "/node" + ADVERTISEMENT_BASE_URL + "/createAdvertisement",
+        request
+      )
       .then(({ data }) => {
         dispatch(retrieveAllAdvertisement());
         toast.success("Advertisement created!", {
@@ -65,7 +69,7 @@ export const activateAdvertisement = advertisementId => {
         dispatch(closeCircularProgress());
       })
       .catch(err => {
-        toast.error(err.response.data, {
+        toast.error(err.response, {
           position: toast.POSITION.TOP_CENTER
         });
         dispatch(closeCircularProgress());
@@ -86,7 +90,7 @@ export const disableAdvertisement = advertisementId => {
         dispatch(closeCircularProgress());
       })
       .catch(err => {
-        toast.error(err.response.data, {
+        toast.error(err.response, {
           position: toast.POSITION.TOP_CENTER
         });
         dispatch(closeCircularProgress());
@@ -94,20 +98,25 @@ export const disableAdvertisement = advertisementId => {
   };
 };
 
-// export const deleteFeedback = contactUsId => {
-//   return dispatch => {
-//     dispatch(openCircularProgress());
-//     axios
-//       .delete(ADVERTISEMENT_BASE_URL + `/deleteContactUs/${contactUsId}`)
-//       .then(({ data }) => {
-//         dispatch(retrieveAllFeedback());
-//         toast.success("Succesfully deleted feedback!", {
-//           position: toast.POSITION.TOP_CENTER
-//         });
-//       })
-//       .catch(err => {
-//         dispatchErrorMapError(err, dispatch);
-//       });
-//     dispatch(closeCircularProgress());
-//   };
-// };
+export const deleteAdvertisement = advertisementId => {
+  return dispatch => {
+    dispatch(openCircularProgress());
+    axios
+      .delete(
+        ADVERTISEMENT_BASE_URL + `/deleteAdvertisement/${advertisementId}`
+      )
+      .then(({ data }) => {
+        dispatch(retrieveAllAdvertisement());
+        toast.success("Succesfully deleted advertisement!", {
+          position: toast.POSITION.TOP_CENTER
+        });
+        dispatch(closeCircularProgress());
+      })
+      .catch(err => {
+        toast.error(err.response, {
+          position: toast.POSITION.TOP_CENTER
+        });
+        dispatch(closeCircularProgress());
+      });
+  };
+};

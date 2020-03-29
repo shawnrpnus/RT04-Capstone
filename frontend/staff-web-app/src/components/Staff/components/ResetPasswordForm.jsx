@@ -1,19 +1,16 @@
-import React, { Component, PureComponent } from "react";
+import React, { Component } from "react";
 import { connect } from "react-redux";
 import { clearErrors, updateErrors } from "../../../redux/actions";
 import { resetPassword } from "../../../redux/actions/staffActions";
 import ResetStaffPasswordRequest from "../../../models/staff/ResetStaffPasswordRequest";
 import { Button, ButtonToolbar } from "reactstrap";
 import * as PropTypes from "prop-types";
-import { Grid, TextField } from "@material-ui/core";
+import Grid from "@material-ui/core/Grid";
 import MaterialTextField from "../../../shared/components/Form/MaterialTextField";
 import ContentSaveIcon from "mdi-react/ContentSaveIcon";
 import CloseCircleIcon from "mdi-react/CloseCircleIcon";
 import withMaterialConfirmDialog from "../../Layout/page/withMaterialConfirmDialog";
 import withPage from "../../Layout/page/withPage";
-import Autocomplete from "@material-ui/lab/Autocomplete";
-import MaterialNumberSelect from "../../../shared/components/Form/MaterialNumberSelect";
-import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 
 class ResetPasswordForm extends Component {
   static propTypes = {

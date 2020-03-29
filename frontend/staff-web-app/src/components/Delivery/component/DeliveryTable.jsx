@@ -19,9 +19,13 @@ import {
 } from "@material-ui/icons";
 import MaterialTable from "material-table";
 import Chip from "@material-ui/core/Chip";
+import Button from "@material-ui/core/Button";
 // Redux
 import { getDeliveryStatusColour } from "../../../redux/actions/restockOrderAction";
-import { retrieveAllDelivery } from "../../../redux/actions/deliveryActions";
+import {
+  retrieveAllDelivery,
+  automateDeliveryAllocation
+} from "../../../redux/actions/deliveryActions";
 import withPage from "../../Layout/page/withPage";
 import OrderDetailsDialog from "./OrderDetailsDialog";
 
@@ -53,7 +57,7 @@ const DeliveryTable = props => {
   const [openCustomerOrderDialog, setOpenCustomerOrderDialog] = useState(false);
   const [openRestockOrderDialog, setOpenRestockOrderDialog] = useState(false);
   const [orderDetails, setOrderDetails] = useState([]);
-  const { renderLoader } = props;
+  const { renderLoader, staff } = props;
 
   useEffect(() => {
     dispatch(retrieveAllDelivery());
@@ -64,9 +68,11 @@ const DeliveryTable = props => {
     { customerOrdersToDeliver, inStoreRestockOrderItems }
   ) => {
     if (customerOrdersToDeliver.length > 0) {
+      console.log("customer orders");
       setOrderDetails(customerOrdersToDeliver);
       setOpenCustomerOrderDialog(true);
     } else if (inStoreRestockOrderItems.length > 0) {
+      console.log("restock orders");
       setOrderDetails(inStoreRestockOrderItems);
       setOpenRestockOrderDialog(true);
     }
@@ -75,6 +81,10 @@ const DeliveryTable = props => {
   const closeOrderDetailsDialog = () => {
     setOpenCustomerOrderDialog(false);
     setOpenRestockOrderDialog(false);
+  };
+
+  const handleAllocateDelivery = () => {
+    dispatch(automateDeliveryAllocation(staff.staffId));
   };
 
   let data = [];
@@ -87,12 +97,9 @@ const DeliveryTable = props => {
         customerOrdersToDeliver,
         inStoreRestockOrderItems
       } = item;
-
+      let date = deliveryDateTime;
       if (deliveryDateTime)
-        deliveryDateTime = dateformat(
-          new Date(deliveryDateTime),
-          "dd'-'mmm'-'yyyy"
-        );
+        date = dateformat(new Date(deliveryDateTime), "dd'-'mmm'-'yyyy");
       const { firstName, lastName } = deliveryStaff;
       const status = inStoreRestockOrderItems.some(
         e => e.itemDeliveryStatus !== "DELIVERED"
@@ -102,7 +109,7 @@ const DeliveryTable = props => {
       const name = `${firstName} ${lastName}`;
       return {
         deliveryId: deliveryId,
-        deliveryDateTime: deliveryDateTime,
+        deliveryDateTime: date,
         deliveryStaff: deliveryStaff,
         deliveryStaffName: name,
         customerOrdersToDeliver: customerOrdersToDeliver,
@@ -112,8 +119,21 @@ const DeliveryTable = props => {
     });
   }
 
+  console.log(data);
+
   return (
-    <div className="table" style={{ verticalAlign: "middle" }}>
+    <div
+      className="table"
+      style={{ verticalAlign: "middle", textAlign: "right" }}
+    >
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handleAllocateDelivery}
+        style={{ marginRight: "1%" }}
+      >
+        Create and allocate delivery
+      </Button>
       {deliveries ? (
         <MaterialTable
           title="Delivery Management"
@@ -154,7 +174,7 @@ const DeliveryTable = props => {
           actions={[
             {
               icon: Visibility,
-              tooltip: "View order details",
+              tooltip: "View restock order details",
               onClick: (event, rowData) =>
                 openOrderDetailsDialog(event, rowData)
             }

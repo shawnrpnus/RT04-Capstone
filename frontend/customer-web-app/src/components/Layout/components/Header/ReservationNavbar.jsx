@@ -1,6 +1,5 @@
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import headersStyle from "assets/jss/material-kit-pro-react/views/sectionsSections/headersStyle";
-import typographyStyle from "assets/jss/material-kit-pro-react/views/componentsSections/typographyStyle";
 import React, { useState } from "react";
 import Hidden from "@material-ui/core/Hidden";
 import Button from "components/UI/CustomButtons/Button";
@@ -11,18 +10,14 @@ import colours from "assets/colours";
 import Card from "components/UI/Card/Card";
 import GridItem from "components/Layout/components/Grid/GridItem";
 import { useSelector } from "react-redux";
-import ShoppingCart from "@material-ui/icons/ShoppingCart";
-import Divider from "@material-ui/core/Divider";
-import { Event, Favorite } from "@material-ui/icons";
-import ListItem from "@material-ui/core/ListItem";
+import { Event } from "@material-ui/icons";
 
 const _ = require("lodash");
 const useHeaderStyles = makeStyles(headersStyle);
-const useTypoStyles = makeStyles(typographyStyle);
 
 function ReservationNavbar(props) {
   const classes = useHeaderStyles();
-  const { dropdownHoverColor, category } = props;
+  const { category } = props;
   return (
     <React.Fragment>
       <Hidden smDown className={classes.hidden}>
@@ -100,6 +95,7 @@ function ReservationItemCard(props) {
   const color = colorNames[productVariant.colour].name;
   const size = productVariant.sizeDetails.productSize;
   const price = productVariant.product.price;
+  const discountedPrice = productVariant.product.discountedPrice;
   return (
     <Card plain style={{ margin: "10px 0" }}>
       <GridContainer style={{ margin: 0 }}>
@@ -121,7 +117,7 @@ function ReservationItemCard(props) {
               Price
             </GridItem>
             <GridItem xs={7} style={{ fontWeight: "lighter" }}>
-              ${price}
+              ${discountedPrice ? discountedPrice : price}
             </GridItem>
           </GridContainer>
         </GridItem>

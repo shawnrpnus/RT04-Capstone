@@ -27,7 +27,7 @@ import java.util.List;
 @Getter
 @Setter
 @EqualsAndHashCode
-@ToString(exclude = "transaction")
+//@ToString(exclude = "transaction")
 @JsonIdentityInfo(generator = JSOGGenerator.class)
 public class TransactionLineItem implements Serializable {
 

@@ -30,7 +30,7 @@ import java.util.List;
 @Getter
 @Setter
 @EqualsAndHashCode
-@ToString(exclude = {"verificationCode", "inStoreShoppingCart", "onlineShoppingCart", "reviews", "style"})
+//@ToString(exclude = {"verificationCode", "inStoreShoppingCart", "onlineShoppingCart", "reviews", "style"})
 @JsonIdentityInfo(generator = JSOGGenerator.class)
 public class Customer implements Serializable {
 
@@ -80,6 +80,8 @@ public class Customer implements Serializable {
     
     @OneToOne(cascade = CascadeType.REMOVE)
     private VerificationCode verificationCode;
+
+    private String pushNotificationToken;
     
     @OneToMany(cascade = CascadeType.REMOVE)
     private List<CreditCard> creditCards;

@@ -25,7 +25,12 @@ public class ErrorMessages {
     public static final String VERIFICATION_CODE_EXPIRED = "Verification code has expired!";
     public static final String ALREADY_VERIFIED = "Customer has already been verified!";
 
-    public static final String PROMO_CODE_REQUIRED = "Promo code is required!";
+    public static final String PROMO_CODE_NAME_REQUIRED = "Promo code name is required!";
+    public static final String PROMO_CODE_TAKEN = "Promo code is already created!";
+    public static final String NUM_REMAINING_REQUIRED = "Quantity is required!";
+    public static final String ENTER_DISCOUNT= "Enter the promo discount!";
+    public static final String ENTER_MIN= "Minimum amount needed!";
+    public static final String INVALID_PERCENTAGE_DISCOUNT= "Please enter a discount that is less than 100%!";
     public static final String PRODUCTS_REQUIRED = "Products are required!";
     public static final String TAG_REQUIRED = "Tag is required!";
     public static final String SERIAL_NUMBER_UNIQUE ="Serial number must be unique";
@@ -48,6 +53,7 @@ public class ErrorMessages {
     public static final String STAFF_DOES_NOT_EXIST = "Staff does not exist!";
     public static final String INCORRECT_PASSWORD = "Password is wrong!";
     public static final String INCORRECT_USERNAME = "Username is wrong!";
+    public static final String STORE_CANNOT_ASSIGN= "Do not assign a store to HR or IT!";
 
     public static final String SERIAL_NUMBER_REQUIRED = "Serial number is required!";
     public static final String PRODUCT_NAME_REQUIRED = "Product name is required!";

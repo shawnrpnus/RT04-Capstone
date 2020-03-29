@@ -21,7 +21,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping(ProductVariantControllerRoutes.PRODUCT_VARIANT_BASE_ROUTE)
-@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"})
+//@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"})
 public class ProductVariantController {
 
     private final ProductService productService;
@@ -111,7 +111,6 @@ public class ProductVariantController {
         Product p = pv.getProduct();
         p.setCategory(null);
         p.setStyles(null);
-        p.setPromoCodes(null);
         p.setReviews(null);
         p.setTags(null);
         p.setProductVariants(null);

@@ -137,6 +137,12 @@ const styles = {
     ...title,
     marginTop: "0",
     marginBottom: "0"
+  },
+  discountedPrice: {
+    color: "grey",
+    textDecorationLine: "line-through",
+    marginLeft: "5%",
+    fontSize: "15px"
   }
 };
 

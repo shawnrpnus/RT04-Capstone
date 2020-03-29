@@ -1,8 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const fs = require("fs");
 const axios = require("axios");
-const _ = require("lodash");
 const multer = require("multer");
 const cloudinary = require("cloudinary").v2;
 
@@ -35,6 +33,10 @@ const fileFilter = (req, file, cb) => {
 };
 
 const upload = multer({ storage: storage, fileFilter: fileFilter });
+
+router.get("/", (req, res) => {
+  res.send("Node backend working");
+});
 
 router.post(
   "/createAdvertisement",

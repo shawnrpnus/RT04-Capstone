@@ -12,7 +12,6 @@ import com.voodoodyne.jackson.jsog.JSOGGenerator;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 import javax.persistence.*;
 import javax.validation.constraints.DecimalMin;
@@ -31,7 +30,7 @@ import java.util.List;
 @Getter
 @Setter
 @EqualsAndHashCode
-@ToString(exclude = {"category", "reviews", "styles"})
+//@ToString(exclude = {"category", "reviews", "styles"})
 @JsonIdentityInfo(generator = JSOGGenerator.class)
 @JsonDeserialize()
 public class Product implements Serializable {
@@ -73,9 +72,6 @@ public class Product implements Serializable {
     private List<Discount> discounts;
 
     @ManyToMany(mappedBy = "products")
-    private List<PromoCode> promoCodes;
-
-    @ManyToMany(mappedBy = "products")
     private List<Tag> tags;
 
     @ManyToOne(optional = false)
@@ -92,10 +88,11 @@ public class Product implements Serializable {
     @ManyToMany(mappedBy = "products")
     private List<Style> styles;
 
+    @Transient
+    private BigDecimal discountedPrice;
 
     public Product() {
         this.discounts = new ArrayList<>();
-        this.promoCodes = new ArrayList<>();
         this.tags = new ArrayList<>();
         this.reviews = new ArrayList<>();
         this.productVariants = new ArrayList<>();
@@ -138,6 +135,22 @@ public class Product implements Serializable {
                 if(!style.getProducts().contains(this))
                 {
                     style.getProducts().add(this);
+                }
+            }
+        }
+    }
+
+    public void addDiscount(Discount discount)
+    {
+        if(discount != null)
+        {
+            if(!this.discounts.contains(discount))
+            {
+                this.discounts.add(discount);
+
+                if(!discount.getProducts().contains(this))
+                {
+                    discount.getProducts().add(this);
                 }
             }
         }

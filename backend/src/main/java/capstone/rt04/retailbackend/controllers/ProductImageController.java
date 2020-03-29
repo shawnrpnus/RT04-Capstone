@@ -19,7 +19,7 @@ import static capstone.rt04.retailbackend.util.routeconstants.ProductImageContro
 
 @RestController
 @RequestMapping(PRODUCT_IMAGE_BASE_ROUTE)
-@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"})
+//@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"})
 public class ProductImageController {
 
     private final ProductService productService;

@@ -72,7 +72,7 @@ export const createNewStaff = (staffCreateRequest, history) => {
         toast.success("Staff Created!", {
           position: toast.POSITION.TOP_CENTER
         });
-        history.push(`/staff/viewAll`); // TODO: update redirect path
+        history.push(`/staff/viewAll`);
       })
       .catch(err => {
         dispatch(createStaffError(err.response.data));
@@ -92,34 +92,36 @@ const createStaffError = data => ({
 });
 
 export const updateStaff = (staffDetailsUpdateRequest, history) => {
-    return dispatch => {
-        //redux thunk passes dispatch
-        axios
-            .post(STAFF_BASE_URL + "/updateStaffDetails", staffDetailsUpdateRequest)
-            .then(response => {
-                const { data } = jsog.decode(response);
-                const storeId = data.storeId;
-                dispatch(updateStaffSuccess(data));
-                toast.success("Staff Updated!", {
-                    position: toast.POSITION.TOP_CENTER
-                });
-                // history.push(`/staff/view/${staffId}`);
-            })
-            .catch(err => {
-                dispatch(updateStaffError(err.response.data));
-                //console.log(err.response.data);
-            });
-    };
+  return dispatch => {
+    //redux thunk passes dispatch
+    axios
+      .post(STAFF_BASE_URL + "/updateStaffDetails", staffDetailsUpdateRequest)
+      .then(response => {
+        const { data } = jsog.decode(response);
+        const staffId = data.staffId;
+        dispatch(updateStaffSuccess(data));
+        toast.success("Staff Updated!", {
+          position: toast.POSITION.TOP_CENTER
+        });
+
+        history.push(`/staff/view/${staffId}`);
+        window.location.reload(false);
+      })
+      .catch(err => {
+        dispatch(updateStaffError(err.response.data));
+        //console.log(err.response.data);
+      });
+  };
 };
 
 const updateStaffSuccess = data => ({
-    type: types.UPDATE_STAFF,
-    staffEntity: data
+  type: types.UPDATE_STAFF,
+  staffEntity: data
 });
 
 const updateStaffError = data => ({
-    type: types.GET_ERRORS,
-    errorMap: data
+  type: types.GET_ERRORS,
+  errorMap: data
 });
 
 export const createNewStaffAccount = (staffAccountCreateRequest, history) => {
@@ -167,7 +169,7 @@ export const changePassword = (staffChangePasswordRequest, history) => {
         toast.success("Staff password changed!", {
           position: toast.POSITION.TOP_CENTER
         });
-        history.push(`/staff/viewProfile`); // TODO: update redirect path
+        history.push(`/`); // TODO: update redirect path
       })
       .catch(err => {
         dispatch(changeStaffPasswordError(err.response.data));
@@ -361,5 +363,5 @@ const retrieveError = data => ({
 });
 
 export const clearCurrentStaff = () => ({
-    type: types.CLEAR_CURRENT_STAFF
+  type: types.CLEAR_CURRENT_STAFF
 });

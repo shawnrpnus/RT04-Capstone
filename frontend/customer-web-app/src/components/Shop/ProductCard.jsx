@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 import * as PropTypes from "prop-types";
-import Tooltip from "@material-ui/core/Tooltip";
-import { Favorite, FavoriteBorder } from "@material-ui/icons";
 import GridItem from "components/Layout/components/Grid/GridItem";
 import Card from "components/UI/Card/Card";
 import CardHeader from "components/UI/Card/CardHeader";
@@ -13,11 +11,9 @@ import { Link } from "react-router-dom";
 import colourList from "assets/colours.json";
 import Chip from "@material-ui/core/Chip";
 import GridContainer from "components/Layout/components/Grid/GridContainer";
-import IconButton from "@material-ui/core/IconButton";
 
 const _ = require("lodash");
 const useStyles = makeStyles(styles);
-const jsonColorHexList = _.keyBy(colourList, "hex");
 
 function ProductCard(props) {
   const classes = useStyles();
@@ -28,6 +24,8 @@ function ProductCard(props) {
   );
   const [activeColourIndex, setActiveColourIndex] = useState(0);
   const [isHoverFavorite, setIsHoverFavorite] = useState(false);
+  const { discountedPrice } = props;
+
   return (
     <GridItem md={3} sm={6} xs={6}>
       <Card plain product style={{ marginBottom: "50px" }}>
@@ -65,7 +63,12 @@ function ProductCard(props) {
                 <h6 className={classes.cardTitle}>{product.productName}</h6>
               </GridItem>
               <GridItem xs>
-                <h6 className={classes.price}>${product.price}</h6>
+                <h6 className={classes.price}>
+                  {discountedPrice && <span>${props.discountedPrice}</span>}
+                  <span className={discountedPrice && classes.discountedPrice}>
+                    ${product.price}
+                  </span>
+                </h6>
               </GridItem>
             </GridContainer>
           </Link>

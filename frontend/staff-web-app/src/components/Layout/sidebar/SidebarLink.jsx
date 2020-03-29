@@ -1,21 +1,22 @@
-import React from 'react';
-import * as PropTypes from 'prop-types';
-import { Badge } from 'reactstrap';
-import { NavLink } from 'react-router-dom';
+import React from "react";
+import * as PropTypes from "prop-types";
+import { Badge } from "reactstrap";
+import { NavLink } from "react-router-dom";
 
-const SidebarLink = ({
-  title, icon, newLink, route, onClick,
-}) => (
-  <NavLink
-    to={route}
-    onClick={onClick}
-    activeClassName="sidebar__link-active"
-  >
+const SidebarLink = ({ title, icon, newLink, route, onClick, customIcon }) => (
+  <NavLink to={route} onClick={onClick} activeClassName="sidebar__link-active">
     <li className="sidebar__link">
-      {icon ? <span className={`sidebar__link-icon lnr lnr-${icon}`} /> : ''}
+      {icon && <span className={`sidebar__link-icon lnr lnr-${icon}`} />}
+      {customIcon}
       <p className="sidebar__link-title">
         {title}
-        {newLink ? <Badge className="sidebar__link-badge"><span>New</span></Badge> : ''}
+        {newLink ? (
+          <Badge className="sidebar__link-badge">
+            <span>New</span>
+          </Badge>
+        ) : (
+          ""
+        )}
       </p>
     </li>
   </NavLink>
@@ -26,14 +27,14 @@ SidebarLink.propTypes = {
   icon: PropTypes.string,
   newLink: PropTypes.bool,
   route: PropTypes.string,
-  onClick: PropTypes.func,
+  onClick: PropTypes.func
 };
 
 SidebarLink.defaultProps = {
-  icon: '',
+  icon: "",
   newLink: false,
-  route: '/',
-  onClick: () => {},
+  route: "/",
+  onClick: () => {}
 };
 
 export default SidebarLink;

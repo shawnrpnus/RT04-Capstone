@@ -80,9 +80,14 @@ public class StaffService {
     //staff entity: first categoryName, last categoryName, nric, username&password(to be configured by admin),leave remaining
     //for HR to create staff. HR supplies, first categoryName, last categoryName, nric, address, bank details,
     //role, department.
-    public Staff createNewStaff(Staff staff, Address staffAddress, Long roleId, Long departmentId, Long storeId) throws InputDataValidationException, CreateNewStaffException, CreateNewStaffAccountException {
+    public Staff createNewStaff(Staff staff, Address staffAddress, Long roleId, Long departmentId, Long storeId) throws InputDataValidationException, CreateNewStaffException, CreateNewStaffAccountException, RoleNotFoundException, DepartmentNotFoundException {
         validationService.throwExceptionIfInvalidBean(staff);
         validationService.throwExceptionIfInvalidBean(staffAddress);
+
+        Role r = roleRepository.findById(roleId)
+                .orElseThrow(() -> new RoleNotFoundException("Role does not exist"));
+        Department d = departmentRepository.findById(departmentId)
+                .orElseThrow(() -> new DepartmentNotFoundException("Department does not exist"));
 
         if (!Character.isLetter(staff.getNric().charAt(3))) {
             Map<String, String> errorMap = new HashMap<>();
@@ -95,6 +100,13 @@ public class StaffService {
             Map<String, String> errorMap = new HashMap<>();
             errorMap.put("nric", ErrorMessages.NRIC_FIRST_THREE);
             throw new InputDataValidationException(errorMap, ErrorMessages.NRIC_FIRST_THREE);
+        }
+
+        //if department is HR or IT, cannot assign any store
+        if((d.getDepartmentName().equals("HR") || d.getDepartmentName().equals("IT")) && storeId !=null){
+            Map<String, String> errorMap = new HashMap<>();
+            errorMap.put("storeId", ErrorMessages.STORE_CANNOT_ASSIGN);
+            throw new InputDataValidationException(errorMap, ErrorMessages.STORE_CANNOT_ASSIGN);
         }
 
 
@@ -117,10 +129,10 @@ public class StaffService {
             //Set address, role and department before saving because of sql constraint
             //Address ID, role ID and department ID column cannot be empty
             addressRepository.save(staffAddress);
-            Role r = roleRepository.findById(roleId)
-                    .orElseThrow(() -> new RoleNotFoundException("Role does not exist"));
-            Department d = departmentRepository.findById(departmentId)
-                    .orElseThrow(() -> new DepartmentNotFoundException("Department does not exist"));
+
+
+
+
             if (storeId != null) {
                 Store s = storeRepository.findById(storeId).orElseThrow(() -> new StoreNotFoundException("Store does not exist"));
                 staff.setStore(s);
@@ -138,7 +150,7 @@ public class StaffService {
             return lazyLoadStaffFields(configuredStaff);
 
 
-        } catch (PersistenceException | RoleNotFoundException | DepartmentNotFoundException | StoreNotFoundException ex) {
+        } catch (PersistenceException | StoreNotFoundException ex) {
             throw new CreateNewStaffException(ex.getMessage());
         }
     }
@@ -271,9 +283,11 @@ public class StaffService {
     public Staff updateStaffDetails(Staff staff, Long roleId, Long departmentId, Address address, Long storeId) throws UpdateStaffDetailsException, InputDataValidationException {
         validationService.throwExceptionIfInvalidBean(staff);
         validationService.throwExceptionIfInvalidBean(address);
+
         try {
             Staff staffToUpdate = retrieveStaffByStaffId(staff.getStaffId());
             Address oldAddress = staffToUpdate.getAddress();
+            Store oldStore = staffToUpdate.getStore();
             addressRepository.save(address);
 
             staffToUpdate.setFirstName(staff.getFirstName());
@@ -289,14 +303,31 @@ public class StaffService {
             Department d = departmentRepository.findById(departmentId)
                     .orElseThrow(() -> new DepartmentNotFoundException("Department does not exist"));
 
+
             staffToUpdate.setDepartment(d);
             staffToUpdate.setRole(r);
+
+            //In the event that a store staff is changed to HR/IT
+            if(oldStore!=null && (oldStore.getStoreId().equals(storeId)) &&(d.getDepartmentName().equals("HR") || d.getDepartmentName().equals("IT"))){
+                staffToUpdate.setStore(null);
+                storeId=null;
+            }
+
+            //if department is HR or IT, cannot assign any store
+            if((d.getDepartmentName().equals("HR") || d.getDepartmentName().equals("IT")) && storeId !=null){
+                Map<String, String> errorMap = new HashMap<>();
+                errorMap.put("storeName", ErrorMessages.STORE_CANNOT_ASSIGN);
+                throw new InputDataValidationException(errorMap, ErrorMessages.STORE_CANNOT_ASSIGN);
+            }
+
+
 
             if (storeId != null) {
                 Store s = storeRepository.findById(storeId).orElseThrow(() -> new StoreNotFoundException("Store does not exist"));
                 staffToUpdate.setStore(s);
                 s.getStaff().add(staffToUpdate);
             }
+            staffRepository.save(staffToUpdate);
 
             return lazyLoadStaffFields(staffToUpdate);
         } catch (StaffNotFoundException | RoleNotFoundException | DepartmentNotFoundException | StoreNotFoundException ex) {
@@ -348,7 +379,7 @@ public class StaffService {
         }
     }
 
-    public Staff changeStaffPassword(Long staffId, String oldPassword, String newPassword) throws StaffNotFoundException, InvalidStaffCredentialsException {
+    public Staff changeStaffPassword(Long staffId, String oldPassword, String newPassword, String confirmPassword) throws StaffNotFoundException, InvalidStaffCredentialsException {
         try {
             Staff staff = retrieveStaffByStaffId(staffId);
 
@@ -364,6 +395,12 @@ public class StaffService {
                 errorMap.put("newPassword", ErrorMessages.NEW_PASSWORD_REQUIRED);
                 throw new InvalidStaffCredentialsException(errorMap, ErrorMessages.NEW_PASSWORD_REQUIRED);
 
+            }
+
+            if(!newPassword.equals(confirmPassword)){
+                Map<String, String> errorMap = new HashMap<>();
+                errorMap.put("confirmPassword", ErrorMessages.NEW_PASSWORDS_DO_NOT_MATCH);
+                throw new InvalidStaffCredentialsException(errorMap, ErrorMessages.NEW_PASSWORDS_DO_NOT_MATCH);
             }
 
             if (encoder.matches(oldPassword, staff.getPassword()) || oldPassword.equals(staff.getPassword())) {
@@ -451,6 +488,12 @@ public class StaffService {
         }
 
 
+    }
+
+    public Staff registerPushNotificationToken (Long staffId, String token) throws StaffNotFoundException {
+        Staff staff = retrieveStaffByStaffId(staffId);
+        staff.setPushNotificationToken(token);
+        return staff;
     }
 
 

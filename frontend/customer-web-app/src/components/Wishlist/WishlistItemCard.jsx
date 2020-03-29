@@ -103,6 +103,8 @@ function WishlistItemCard(props) {
     setTimeout(() => dispatch(closeReservationTooltip), 1500);
   };
 
+  const { productName, discountedPrice, price } = product;
+
   return (
     <Card plain>
       <GridContainer style={{ textAlign: "left", alignItems: "center" }}>
@@ -120,10 +122,15 @@ function WishlistItemCard(props) {
         <GridItem md={10}>
           <GridContainer>
             <GridItem md={12}>
-              <h3 className={classes.title}>{product.productName}</h3>
+              <h3 className={classes.title}>{productName}</h3>
             </GridItem>
             <GridItem md={12}>
-              <h3 style={{ marginTop: "10px" }}>${product.price}</h3>
+              <h3 style={{ marginTop: "10px" }}>
+                {discountedPrice && <span>${discountedPrice}</span>}
+                <span className={discountedPrice && classes.discountedPrice}>
+                  ${price}
+                </span>
+              </h3>
             </GridItem>
             <GridItem md={12}>
               <h5>

@@ -22,4 +22,7 @@ public class StaffChangePasswordRequest {
 
     @NotNull(message = ErrorMessages.NEW_PASSWORD_REQUIRED)
     private String newPassword;
+
+    @NotNull(message = ErrorMessages.NEW_PASSWORD_REQUIRED)
+    private String confirmPassword;
 }

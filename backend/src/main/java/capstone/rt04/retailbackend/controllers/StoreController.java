@@ -2,6 +2,7 @@ package capstone.rt04.retailbackend.controllers;
 
 import capstone.rt04.retailbackend.entities.Store;
 import capstone.rt04.retailbackend.response.GenericErrorResponse;
+import capstone.rt04.retailbackend.services.RelationshipService;
 import capstone.rt04.retailbackend.services.StoreService;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
@@ -19,20 +20,22 @@ import java.util.List;
 
 @RestController
 @RequestMapping(StoreControllerRoutes.STORE_BASE_ROUTE)
-@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"})
+//@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"})
 @Slf4j
 public class StoreController {
 
     private final StoreService storeService;
+    private final RelationshipService relationshipService;
 
-    public StoreController(StoreService storeService) {
+    public StoreController(StoreService storeService, RelationshipService relationshipService) {
         this.storeService = storeService;
+        this.relationshipService = relationshipService;
     }
 
     @PostMapping(StoreControllerRoutes.CREATE_STORE)
     public ResponseEntity<?> createStore(@RequestBody Store store) throws InputDataValidationException, ProductVariantNotFoundException, WarehouseNotFoundException, StoreNotFoundException {
-            Store newStore = storeService.createNewStore(store);
-            return new ResponseEntity<>(newStore, HttpStatus.CREATED);
+        Store newStore = storeService.createNewStore(store);
+        return new ResponseEntity<>(newStore, HttpStatus.CREATED);
     }
 
     @GetMapping(StoreControllerRoutes.RETRIEVE_STORE_BY_ID)
@@ -49,12 +52,9 @@ public class StoreController {
 
     @GetMapping(StoreControllerRoutes.RETRIEVE_ALL_STORES)
     public ResponseEntity<?> retrieveAllStores() {
-        try {
-            List<Store> stores = storeService.retrieveAllStores();
-            return new ResponseEntity<>(stores, HttpStatus.OK);
-        } catch (Exception ex) {
-            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        List<Store> stores = storeService.retrieveAllStores();
+        stores.forEach(store -> relationshipService.clearStoreRelationships(store));
+        return new ResponseEntity<>(stores, HttpStatus.OK);
     }
 
 

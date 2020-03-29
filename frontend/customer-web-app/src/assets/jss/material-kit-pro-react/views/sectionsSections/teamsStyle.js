@@ -81,6 +81,9 @@ const teamsSection = {
     "& $description": {
       color: whiteColor
     }
+  },
+  divider: {
+    display: "flex"
   }
 };
 

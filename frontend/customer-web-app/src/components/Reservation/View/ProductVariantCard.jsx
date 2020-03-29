@@ -12,10 +12,15 @@ const useStyles = makeStyles(wishtlistStyle);
 function ProductVariantCard(props) {
   const colorNames = _.keyBy(colours, "hex");
   const classes = useStyles();
-  const { productVariant } = props;
+  const {
+    productVariant,
+    initialSubTotal,
+    finalSubTotal,
+    quantity,
+    detail
+  } = props;
   const { product } = productVariant;
-
-  const { quantity } = props;
+  const { productName, discountedPrice, price } = product;
 
   return (
     <Card plain style={{ margin: "5px 0" }}>
@@ -35,11 +40,33 @@ function ProductVariantCard(props) {
           <GridContainer>
             <GridItem md={12}>
               <h5 className={classes.title}>
-                {product.productName} {quantity && `(${quantity})`}
+                {productName} {quantity && `(${quantity})`}
               </h5>
             </GridItem>
             <GridItem md={12}>
-              <h5 style={{ margin: "3px 0" }}>${product.price}</h5>
+              {initialSubTotal ? (
+                <h5 style={{ margin: "3px 0" }}>
+                  {finalSubTotal && (
+                    <span>
+                      {detail
+                        ? `$${finalSubTotal / quantity}`
+                        : `$${finalSubTotal}`}
+                    </span>
+                  )}
+                  <span className={finalSubTotal && classes.discountedPrice}>
+                    {detail
+                      ? `$${initialSubTotal / quantity}`
+                      : `$${initialSubTotal}`}
+                  </span>
+                </h5>
+              ) : (
+                <h5 style={{ margin: "3px 0" }}>
+                  {discountedPrice && <span>${discountedPrice}</span>}
+                  <span className={discountedPrice && classes.discountedPrice}>
+                    ${price}
+                  </span>
+                </h5>
+              )}
             </GridItem>
             <GridItem md={12}>
               <h5 style={{ margin: "3px 0" }}>

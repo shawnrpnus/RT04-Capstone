@@ -180,6 +180,15 @@ const styles = theme => ({
   backdrop: {
     zIndex: theme.zIndex.drawer + 999,
     color: "#fff"
+  },
+  discountedPrice: {
+    color: "grey",
+    textDecorationLine: "line-through",
+    marginLeft: "5%",
+    "@media (max-width: 500px)": {
+      display: "flex",
+      justifyContent: "flex-end"
+    }
   }
 });
 

@@ -13,6 +13,7 @@ import {
 import tooltipsStyle from "assets/jss/material-kit-pro-react/tooltipsStyle.js";
 import imagesStyles from "assets/jss/material-kit-pro-react/imagesStyles.js";
 import customSelectStyle from "assets/jss/material-kit-pro-react/customSelectStyle.js";
+import { grey } from "@material-ui/core/colors";
 
 const productStyle = theme => ({
   mlAuto,
@@ -200,6 +201,12 @@ const productStyle = theme => ({
   backdrop: {
     zIndex: theme.zIndex.drawer + 999,
     color: "#fff"
+  },
+  discountedPrice: {
+    color: "grey",
+    textDecorationLine: "line-through",
+    fontSize: "15px",
+    marginLeft: "2%"
   }
 });
 

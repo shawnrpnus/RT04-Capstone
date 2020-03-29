@@ -10,11 +10,12 @@ import com.voodoodyne.jackson.jsog.JSOGGenerator;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 import javax.persistence.*;
+import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -29,35 +30,36 @@ import java.util.List;
 @Getter
 @Setter
 @EqualsAndHashCode
-@ToString
+// @ToString
 @JsonIdentityInfo(generator = JSOGGenerator.class)
 public class Discount implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long discountId;
     
-    @NotNull
+    @NotNull(message = "Discount name must not be empty")
+    @Size(min = 1, message = "Discount name must not be empty")
     @Column(nullable = false)
     private String discountName;
     
-    @NotNull
+    @NotNull(message = "Start date must not be empty")
     @Column(nullable = false)
     private Timestamp fromDateTime;
-    
-    @NotNull
+
+    @NotNull(message = "End date must not be empty")
     @Column(nullable = false)
     private Timestamp toDateTime;
     
-    @NotNull
-    @Column(nullable = false, precision = 11, scale = 2)
+    @Column(precision = 11, scale = 2)
     @DecimalMin("0.00") //0.00 means not applied, only either flat or percentage can be 0.00
+
     private BigDecimal flatDiscount; //$5 off, save as 5.00
     
-    @NotNull
-    @Column(nullable = false, precision = 11, scale = 2)
+    @Column(precision = 11, scale = 2)
     @DecimalMin("0.00")
+    @DecimalMax("1.00")
     private BigDecimal percentageDiscount; //if 10%, save as 0.10
     
     @ManyToMany

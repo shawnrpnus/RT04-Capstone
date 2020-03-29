@@ -31,8 +31,10 @@ public class CustomerControllerRoutes {
     public static final String ADD_STYLE = "/addStyle";
     public static final String REMOVE_STYLE = "/removeStyle";
     public static final String UPDATE_SHOPPING_CART = "/updateShoppingCart";
+    public static final String UPDATE_IN_STORE_SHOPPING_CART = "/updateInStoreShoppingCart";
     public static final String CLEAR_SHOPPING_CART = "/clearShoppingCart";
     public static final String ADD_WISHLIST_TO_SHOPPING_CART = "/addWishlistToShoppingCart";
+    public static final String GET_SHOPPING_CART_ITEMS_STOCK = "/getShoppingCartItemsStock";
     public static final String ADD_TO_RESERVATION_CART = "/addToReservationCart";
     public static final String REMOVE_FROM_RESERVATION_CART = "/removeFromReservationCart";
     public static final String CLEAR_RESERVATION_CART = "/clearReservationCart";
@@ -50,5 +52,8 @@ public class CustomerControllerRoutes {
     public static final String RETRIEVE_RESERVATION_BY_ID = "/retrieveReservationById";
     public static final String GET_STORES_STOCK_STATUS_FOR_RESERVATION = "/getStoresStockStatusForReservation";
     public static final String GET_RESERVATIONS_FOR_STORE = "/getReservationsForStore";
+    public static final String UPDATE_RESERVATION_STATUS = "/updateReservationStatus";
+
+    public static final String REGISTER_PUSH_NOTIFICATION_TOKEN = "/registerPushNotificationToken";
 
 }

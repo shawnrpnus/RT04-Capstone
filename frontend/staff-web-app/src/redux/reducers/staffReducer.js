@@ -2,7 +2,7 @@ import * as types from "../actions/types";
 
 const initialState = {
   currentStaff: null,
-  retrievedStaff:null,
+  retrievedStaff: null,
   allStaff: null,
   staffWithNoAccount: null,
   allRoles: null,
@@ -80,7 +80,6 @@ export default function(state = initialState, action) {
       };
     case types.STAFF_LOGOUT:
       return initialState;
-
 
     case types.RETRIEVE_STAFF_WITH_NO_ACCOUNT:
       return {

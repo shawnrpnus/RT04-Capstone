@@ -1,7 +1,5 @@
 import React, { Component } from "react";
-import MomentUtils from "@date-io/moment";
-import { Grid } from "@material-ui/core";
-import { MuiPickersUtilsProvider } from "@material-ui/pickers";
+import Grid from "@material-ui/core/Grid";
 import {
   addTagToProducts,
   deleteTagFromProducts,
@@ -121,77 +119,73 @@ class AddTagToProduct extends Component {
             </Grid>
           </Grid>
         </div>
-        <MuiPickersUtilsProvider utils={MomentUtils}>
-          <form className="material-form">
-            <Grid container spacing={3}>
-              <Grid item xs={12} md={2}>
-                {this.props.allTags ? (
-                  <MaterialObjectSelect
-                    fieldName="tagId"
-                    fieldLabel="Select Tag"
-                    onChange={this.onChange}
-                    state={this.state}
-                    objects={this.props.allTags}
-                    objectFieldForValue="tagId"
-                    objectFieldForKey="tagId"
-                    objectFieldToDisplay="name"
-                  />
-                ) : null}
-              </Grid>
-              {this.state.mode && salesmarketing ? (
-                <Grid item xs={12}>
-                  {this.props.allProducts ? (
-                    <ProductsTableRaw
-                      selectable={true}
-                      products={this.props.allProducts.filter(
-                        p =>
-                          p.product.tags.filter(
-                            t => t.tagId === this.state.tagId
-                          ).length === 0
-                      )}
-                      selectionAction={{
-                        tooltip: "Add Tag To Products",
-                        icon: Add,
-                        onClick: (evt, data) =>
-                          this.handleAddTagToProducts(evt, data)
-                      }}
-                      {...this.props}
-                    />
-                  ) : (
-                    renderLoader()
-                  )}
-                </Grid>
-              ) : (
-                <Grid item xs={12}>
-                  {this.props.allProducts ? (
-                    <ProductsTableRaw
-                      selectable={salesmarketing ? true : false}
-                      products={this.props.allProducts.filter(
-                        p =>
-                          p.product.tags.filter(
-                            t => t.tagId === this.state.tagId
-                          ).length !== 0
-                      )}
-                      selectionAction={
-                        salesmarketing
-                          ? {
-                              tooltip: "Delete Tag From Products",
-                              icon: Delete,
-                              onClick: (evt, data) =>
-                                this.handleDeleteTagFromProducts(evt, data)
-                            }
-                          : true
-                      }
-                      {...this.props}
-                    />
-                  ) : (
-                    renderLoader()
-                  )}
-                </Grid>
-              )}
+        <form className="material-form">
+          <Grid container spacing={3}>
+            <Grid item xs={12} md={2}>
+              {this.props.allTags ? (
+                <MaterialObjectSelect
+                  fieldName="tagId"
+                  fieldLabel="Select Tag"
+                  onChange={this.onChange}
+                  state={this.state}
+                  objects={this.props.allTags}
+                  objectFieldForValue="tagId"
+                  objectFieldForKey="tagId"
+                  objectFieldToDisplay="name"
+                />
+              ) : null}
             </Grid>
-          </form>
-        </MuiPickersUtilsProvider>
+            {this.state.mode && salesmarketing ? (
+              <Grid item xs={12}>
+                {this.props.allProducts ? (
+                  <ProductsTableRaw
+                    selectable={true}
+                    products={this.props.allProducts.filter(
+                      p =>
+                        p.product.tags.filter(t => t.tagId === this.state.tagId)
+                          .length === 0
+                    )}
+                    selectionAction={{
+                      tooltip: "Add Tag To Products",
+                      icon: Add,
+                      onClick: (evt, data) =>
+                        this.handleAddTagToProducts(evt, data)
+                    }}
+                    {...this.props}
+                  />
+                ) : (
+                  renderLoader()
+                )}
+              </Grid>
+            ) : (
+              <Grid item xs={12}>
+                {this.props.allProducts ? (
+                  <ProductsTableRaw
+                    selectable={salesmarketing ? true : false}
+                    products={this.props.allProducts.filter(
+                      p =>
+                        p.product.tags.filter(t => t.tagId === this.state.tagId)
+                          .length !== 0
+                    )}
+                    selectionAction={
+                      salesmarketing
+                        ? {
+                            tooltip: "Delete Tag From Products",
+                            icon: Delete,
+                            onClick: (evt, data) =>
+                              this.handleDeleteTagFromProducts(evt, data)
+                          }
+                        : true
+                    }
+                    {...this.props}
+                  />
+                ) : (
+                  renderLoader()
+                )}
+              </Grid>
+            )}
+          </Grid>
+        </form>
       </React.Fragment>
     );
   }

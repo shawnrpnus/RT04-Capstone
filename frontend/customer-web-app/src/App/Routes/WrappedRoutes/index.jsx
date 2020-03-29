@@ -1,11 +1,12 @@
 import React from "react";
 import { Redirect, Route } from "react-router-dom";
 import Layout from "components/Layout";
-import Account from "./Account";
 import Banner from "components/Layout/components/Banner";
 import ErrorPage from "components/Layout/components/Error/ErrorPage";
-import ContactUs from "./ContactUs";
+import Account from "App/Routes/WrappedRoutes/Account";
 import Product from "App/Routes/WrappedRoutes/Product";
+import ContactUs from "App/Routes/WrappedRoutes/ContactUs";
+import Lookbook from "App/Routes/WrappedRoutes/Lookbook";
 
 export default () => (
   <div>
@@ -15,6 +16,7 @@ export default () => (
       <Route path="/account" component={Account} />
       <Route path="/contactUs" component={ContactUs} />
       <Route path="/shop" component={Product} />
+      <Route path="/lookbook" component={Lookbook} />
       {/*<Route path="*">*/}
       {/*  <Redirect to="/" />*/}
       {/*</Route>*/}

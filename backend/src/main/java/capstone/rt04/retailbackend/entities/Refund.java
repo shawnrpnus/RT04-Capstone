@@ -31,7 +31,7 @@ import java.util.List;
 @Getter
 @Setter
 @EqualsAndHashCode
-@ToString
+// @ToString
 @JsonIdentityInfo(generator = JSOGGenerator.class)
 public class Refund implements Serializable {
 

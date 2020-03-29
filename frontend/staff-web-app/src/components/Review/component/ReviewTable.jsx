@@ -1,14 +1,16 @@
-import React, { PureComponent, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   deleteReview,
   retrieveAllReviews,
-  retrieveReviewsByProductId
+  deleteReviewResponse
 } from "../../../redux/actions/reviewActions";
-import { connect } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useConfirm } from "material-ui-confirm";
+import dateformat from "dateformat";
 import MaterialTable from "material-table";
 import {
-  Add,
   AddBox,
+  Backspace,
   Check,
   ChevronLeft,
   ChevronRight,
@@ -22,10 +24,11 @@ import {
   SaveAlt,
   Search,
   ViewColumn,
+  Reply,
   Visibility
 } from "@material-ui/icons";
 import withPage from "../../Layout/page/withPage";
-import { withRouter } from "react-router-dom";
+import ReviewResponseDialog from "./ReviewResponseDialog";
 
 const _ = require("lodash");
 const tableIcons = {
@@ -48,101 +51,152 @@ const tableIcons = {
   ViewColumn: ViewColumn
 };
 
-class ReviewTable extends PureComponent {
-  componentDidMount() {
-    //console.log(this.props.retrieveAllReviews);
-    this.props.retrieveAllReviews();
-  }
+const ReviewTable = props => {
+  const dispatch = useDispatch();
+  const confirmDialog = useConfirm();
+  const allReviews = useSelector(state => state.reviewEntity.allReviews);
 
-  handleDelete = reviewId => {
-    this.props
-      .confirmDialog({ description: "Review will be deleted permanently" })
-      .then(() => this.props.deleteReview(reviewId, this.props.history));
+  const [open, setOpen] = useState(false);
+  const [review, setReview] = useState({});
+  const [view, setView] = useState(false);
+
+  useEffect(() => {
+    dispatch(retrieveAllReviews());
+  }, []);
+
+  const handleDeleteReview = reviewId => {
+    confirmDialog({
+      description: "Review will be deleted permanently"
+    }).then(() => dispatch(deleteReview(reviewId)));
   };
 
-  render() {
-    const { history, allReviews, renderLoader } = this.props;
+  const handleDeleteReviewResponse = reviewId => {
+    confirmDialog({
+      description: "Response to review will be removed"
+    }).then(() => dispatch(deleteReviewResponse(reviewId)));
+  };
 
-    let data = [];
-    if (allReviews) {
-      data = allReviews.map(review => {
+  console.log(allReviews);
+
+  const onClose = () => {
+    setOpen(false);
+  };
+
+  let data = [];
+  if (allReviews) {
+    data = allReviews.map(
+      ({
+        reviewId,
+        product,
+        rating,
+        response,
+        customer,
+        createdDateTime,
+        content
+      }) => {
         return {
-          reviewId: review.reviewId,
-          product: review.product,
-          rating: review.rating,
-          response: review.response,
-          customer: review.customer,
-          date: review.createdDateTime
+          reviewId,
+          productName: product.productName,
+          rating,
+          response,
+          customer,
+          createdDateTime: dateformat(
+            new Date(createdDateTime),
+            "dd'-'mmm'-'yyyy"
+          ),
+          content
         };
-      });
-    }
-
-    return (
-      <React.Fragment>
-        <div
-          className="table"
-          style={{
-            width: "auto",
-            verticalAlign: "middle"
-          }}
-        >
-          {allReviews ? (
-            <MaterialTable
-              title="Reviews"
-              style={{ boxShadow: "none" }}
-              icons={tableIcons}
-              columns={[
-                { title: "Review ID", field: "reviewId" },
-                { title: "Product", field: "product" },
-                { title: "Rating", field: "rating" },
-                { title: "Response", field: "response" },
-                { title: "Customer", field: "customer" },
-                { title: "Date", field: "createdDateTime" }
-              ]}
-              actions={[
-                {
-                  icon: Delete,
-                  tooltip: "Delete Review",
-                  onClick: (event, rowData) =>
-                    this.handleDelete(rowData.reviewId)
-                }
-              ]}
-              data={data}
-              options={{
-                filtering: true,
-                sorting: true,
-                pageSize: 5,
-                search: true,
-                padding: "dense",
-                showTitle: true,
-                pageSizeOptions: [5, 10, 15],
-                actionsColumnIndex: -1,
-                headerStyle: { textAlign: "center" },
-                cellStyle: { textAlign: "center" }
-              }}
-            />
-          ) : (
-            renderLoader()
-          )}
-        </div>
-      </React.Fragment>
+      }
     );
   }
-}
 
-const mapStateToProps = state => ({
-  allReviews: state.reviewEntity.allReviews,
-  errors: state.errors
-});
+  const { renderLoader } = props;
 
-const mapDispatchToProps = {
-  deleteReview,
-  retrieveAllReviews
+  return (
+    <>
+      <div
+        className="table"
+        style={{
+          width: "auto",
+          verticalAlign: "middle"
+        }}
+      >
+        {allReviews ? (
+          <MaterialTable
+            title="Reviews"
+            style={{ boxShadow: "none" }}
+            icons={tableIcons}
+            columns={[
+              { title: "Review ID", field: "reviewId" },
+              { title: "Product", field: "productName" },
+              { title: "Rating", field: "rating" },
+              { title: "Content", field: "content" },
+              { title: "Response", field: "response" },
+              { title: "Created date time", field: "createdDateTime" }
+            ]}
+            actions={[
+              rowData =>
+                rowData.response
+                  ? {
+                      icon: Visibility,
+                      tooltip: "View response",
+                      onClick: (e, rowData) => {
+                        setReview(rowData);
+                        setOpen(true);
+                        setView(true);
+                      }
+                    }
+                  : {
+                      icon: Reply,
+                      tooltip: "Reply",
+                      onClick: (e, rowData) => {
+                        setReview(rowData);
+                        setOpen(true);
+                        setView(false);
+                      }
+                    },
+              rowData => ({
+                icon: Backspace,
+                tooltip: "Remove response",
+                onClick: (event, { reviewId }) =>
+                  handleDeleteReviewResponse(reviewId),
+                disabled: !rowData.response
+              }),
+              {
+                icon: Delete,
+                tooltip: "Delete Review",
+                onClick: (event, { reviewId }) => handleDeleteReview(reviewId)
+              }
+            ]}
+            data={data}
+            options={{
+              filtering: true,
+              sorting: true,
+              pageSize: 10,
+              search: true,
+              padding: "dense",
+              showTitle: true,
+              pageSizeOptions: [5, 10, 15],
+              actionsColumnIndex: -1,
+              headerStyle: { textAlign: "center" },
+              cellStyle: { textAlign: "center" },
+              draggable: false
+            }}
+          />
+        ) : (
+          renderLoader()
+        )}
+      </div>
+      {open && (
+        <ReviewResponseDialog
+          review={review}
+          view={view}
+          open={open}
+          onClose={onClose}
+        />
+      )}
+    </>
+  );
 };
 
-export default withRouter(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )(withPage(ReviewTable, "Reviews Management"))
-);
+export default withPage(ReviewTable, "Reviews Management");

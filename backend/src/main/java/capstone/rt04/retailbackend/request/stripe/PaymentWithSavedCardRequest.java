@@ -24,4 +24,7 @@ public class PaymentWithSavedCardRequest {
 
     private Address billingAddress;
 
+    private Long storeToCollectId;
+
+
 }

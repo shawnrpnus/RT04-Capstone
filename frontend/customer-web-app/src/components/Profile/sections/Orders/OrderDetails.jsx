@@ -41,6 +41,8 @@ function OrderDetails(props) {
         ? "red"
         : "amber";
   }
+
+  console.log(status);
   return (
     <Card
       plain
@@ -74,14 +76,30 @@ function OrderDetails(props) {
             </h4>
           </GridItem>
           <GridItem md={6} xs={12}>
-            <h4>Shipping Address</h4>
-            <Divider />
-            <OrderAddressCard address={transaction.deliveryAddress} />
+            {transaction.storeToCollect ? (
+              <>
+                <h4>Collection address</h4>
+                <Divider />
+                <OrderAddressCard
+                  address={transaction.storeToCollect.address}
+                />
+              </>
+            ) : (
+              <>
+                <h4>Shipping Address</h4>
+                <Divider />
+                <OrderAddressCard address={transaction.deliveryAddress} />
+              </>
+            )}
           </GridItem>
           <GridItem md={6} xs={12}>
-            <h4>Billing Address</h4>
-            <Divider />
-            <OrderAddressCard address={transaction.billingAddress} />
+            {!transaction.storeToCollect && (
+              <>
+                <h4>Billing Address</h4>
+                <Divider />
+                <OrderAddressCard address={transaction.billingAddress} />
+              </>
+            )}
           </GridItem>
           <GridItem
             md={12}
@@ -108,9 +126,9 @@ function OrderDetails(props) {
                 </h5>
               </GridItem>
               <GridItem md={1} />
-              {transaction.transactionLineItems.map(lineItem => {
+              {transaction.transactionLineItems.map((lineItem, index) => {
                 return (
-                  <GridItem md={12}>
+                  <GridItem md={12} key={index}>
                     <Divider light />
                     <GridContainer>
                       <GridItem md={8}>
@@ -118,11 +136,17 @@ function OrderDetails(props) {
                           key={lineItem.productVariant.productVariantId}
                           productVariant={lineItem.productVariant}
                           quantity={lineItem.quantity}
+                          initialSubTotal={lineItem.initialSubTotal}
+                          finalSubTotal={lineItem.finalSubTotal}
+                          detail={true}
                         />
                       </GridItem>
                       <GridItem md={3}>
                         <h5 style={{ float: "right" }}>
-                          SGD$ {lineItem.finalSubTotal}
+                          SGD${" "}
+                          {lineItem.finalSubTotal
+                            ? lineItem.finalSubTotal
+                            : lineItem.initialSubTotal}
                         </h5>
                       </GridItem>
                       <GridItem md={1} />

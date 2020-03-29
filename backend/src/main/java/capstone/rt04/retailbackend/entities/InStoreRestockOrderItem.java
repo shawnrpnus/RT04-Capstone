@@ -11,9 +11,9 @@ import com.voodoodyne.jackson.jsog.JSOGGenerator;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
@@ -24,7 +24,7 @@ import java.sql.Timestamp;
 @Getter
 @Setter
 @EqualsAndHashCode
-@ToString
+// @ToString
 @JsonIdentityInfo(generator = JSOGGenerator.class)
 public class InStoreRestockOrderItem implements Serializable {
 
@@ -32,6 +32,10 @@ public class InStoreRestockOrderItem implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long inStoreRestockOrderItemId;
+
+    @NotNull
+    @Column(nullable = false)
+    private Timestamp orderDateTime;
 
     private Timestamp deliveryDateTime;
 
@@ -50,14 +54,19 @@ public class InStoreRestockOrderItem implements Serializable {
     @JoinColumn
     private InStoreRestockOrder inStoreRestockOrder;
 
+    @Transient
+    private Integer warehouseStockQuantity;
+
     public InStoreRestockOrderItem() {
         this.itemDeliveryStatus = ItemDeliveryStatusEnum.PROCESSING;
+        this.orderDateTime = new Timestamp(System.currentTimeMillis());
     }
 
-    public InStoreRestockOrderItem(Integer quantity, ProductStock productStock) {
+    public InStoreRestockOrderItem(Integer quantity, ProductStock productStock, Timestamp orderDateTime) {
         this();
         this.quantity = quantity;
         this.productStock = productStock;
+        this.orderDateTime = orderDateTime;
     }
 
 }

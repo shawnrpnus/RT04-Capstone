@@ -103,6 +103,8 @@ class ProductsTable extends PureComponent {
       _.get(this.props, "staff.department.departmentName") === "Warehouse";
     const storeId = _.get(store, "storeId", null);
 
+    console.log(products);
+
     let data = [];
     if (products) {
       data = products.map(e => {
@@ -138,6 +140,7 @@ class ProductsTable extends PureComponent {
               {
                 title: "Image",
                 field: "image",
+                filtering: false,
                 render: rowData => (
                   <Link to={`/product/viewProductDetails/${rowData.productId}`}>
                     <img

@@ -1,21 +1,13 @@
-import React, { useState } from "react";
+import React from "react";
 import GridContainer from "components/Layout/components/Grid/GridContainer";
 import GridItem from "components/Layout/components/Grid/GridItem";
 import Card from "components/UI/Card/Card";
 import wishlistStyle from "assets/jss/material-kit-pro-react/views/wishlistStyle.js";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import colours from "assets/colours";
-import { Button } from "components/UI/CustomButtons/Button";
 import CheckCircleOutlineIcon from "@material-ui/icons/CheckCircleOutline";
-import { CancelOutlined, DeleteSharp } from "@material-ui/icons";
-import { useDispatch, useSelector } from "react-redux";
-import { removeFromReservationCartAPI } from "redux/actions/customerActions";
-import Popper from "@material-ui/core/Popper";
-import Paper from "@material-ui/core/Paper";
-import ClickAwayListener from "@material-ui/core/ClickAwayListener";
-import { useSnackbar } from "notistack";
-import store from "App/store";
-import { retrieveStoresWithStockStatusForCart } from "redux/actions/reservationActions";
+import { CancelOutlined } from "@material-ui/icons";
+import { useSelector } from "react-redux";
 
 const _ = require("lodash");
 const useStyles = makeStyles(wishlistStyle);
@@ -30,7 +22,7 @@ function UpdateReservationItem(props) {
   );
   const { productVariant } = props;
   const { product } = productVariant;
-
+  const { productName, discountedPrice, price } = product;
   const storeStockandName =
     prodVariantToStoreStock[productVariant.productVariantId];
   return (
@@ -50,10 +42,15 @@ function UpdateReservationItem(props) {
         <GridItem md={8} xs={8}>
           <GridContainer>
             <GridItem md={12}>
-              <h3 className={classes.title}>{product.productName}</h3>
+              <h3 className={classes.title}>{productName}</h3>
             </GridItem>
             <GridItem md={12}>
-              <h3 style={{ marginTop: "10px" }}>${product.price}</h3>
+              <h3 style={{ marginTop: "10px" }}>
+                {discountedPrice && <span>${discountedPrice}</span>}
+                <span className={discountedPrice && classes.discountedPrice}>
+                  ${price}
+                </span>
+              </h3>
             </GridItem>
             <GridItem md={12}>
               <h5>

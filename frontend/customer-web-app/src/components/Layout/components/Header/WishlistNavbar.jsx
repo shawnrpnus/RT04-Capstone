@@ -98,6 +98,7 @@ function WishlistItemCard(props) {
   const color = colorNames[productVariant.colour].name;
   const size = productVariant.sizeDetails.productSize;
   const price = productVariant.product.price;
+  const discountedPrice = productVariant.product.discountedPrice;
   return (
     <Card plain style={{ margin: "10px 0" }}>
       <GridContainer style={{ margin: 0 }}>
@@ -119,7 +120,7 @@ function WishlistItemCard(props) {
               Price
             </GridItem>
             <GridItem xs={7} style={{ fontWeight: "lighter" }}>
-              ${price}
+              ${discountedPrice ? discountedPrice : price}
             </GridItem>
           </GridContainer>
         </GridItem>

@@ -27,7 +27,6 @@ export const retrieveAllDelivery = () => {
         toast.error(err.response.data.errorMessage, {
           position: toast.POSITION.TOP_CENTER
         });
-        dispatchErrorMapError(err, dispatch);
       });
   };
 };
@@ -51,7 +50,30 @@ export const confirmDelivery = request => {
         toast.error(err.response.data.errorMessage, {
           position: toast.POSITION.TOP_CENTER
         });
-        dispatchErrorMapError(err, dispatch);
+        // dispatchErrorMapError(err, dispatch);
+        dispatch(closeCircularProgress());
+      });
+  };
+};
+
+export const automateDeliveryAllocation = staffId => {
+  return dispatch => {
+    dispatch(openCircularProgress());
+    axios
+      .get(DELIVERY_BASE_URL + `/automateDeliveryAllocation/${staffId}`)
+      .then(response => {
+        console.log(response);
+        dispatch(retrieveAllDelivery());
+        toast.success(response.data.body, {
+          position: toast.POSITION.TOP_CENTER
+        });
+        dispatch(closeCircularProgress());
+      })
+      .catch(err => {
+        toast.error(err.response.data.errorMessage, {
+          position: toast.POSITION.TOP_CENTER
+        });
+        // dispatchErrorMapError(err, dispatch);
         dispatch(closeCircularProgress());
       });
   };
@@ -76,7 +98,6 @@ export const retrieveAllRestockOrderItemToDeliver = () => {
         toast.error(err.response.data.errorMessage, {
           position: toast.POSITION.TOP_CENTER
         });
-        dispatchErrorMapError(err, dispatch);
       });
   };
 };

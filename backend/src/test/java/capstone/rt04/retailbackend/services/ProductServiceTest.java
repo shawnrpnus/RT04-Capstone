@@ -113,27 +113,27 @@ public class ProductServiceTest extends ServiceTestSetup {
 
     // TODO: test assignProductStock - need to create store and warehouse service before
 
-    @Test(expected = PromoCodeNotFoundException.class)
-    public void addAndRemovePromoCode() throws Exception {
-        List<Product> products = productService.retrieveAllProducts();
-
-        PromoCode promoCode = new PromoCode("CNY Promotion", BigDecimal.TEN, BigDecimal.valueOf(5), BigDecimal.valueOf(20), 5, products);
-        promoCodeService.createNewPromoCode(promoCode);
-
-        products = productService.retrieveAllProducts();
-        assertThat(products.get(0).getPromoCodes().get(0).getPromoCodeId()).isEqualTo(promoCode.getPromoCodeId());
-
-        productService.addOrRemovePromoCode(promoCode.getPromoCodeId(), null, null, products, false);
-        products = productService.retrieveAllProducts();
-        assertThat(products.get(0).getPromoCodes().size()).isEqualTo(0);
-
-        productService.addOrRemovePromoCode(promoCode.getPromoCodeId(), null, null, products, true);
-        products = productService.retrieveAllProducts();
-        assertThat(products.get(0).getPromoCodes().get(0).getPromoCodeId()).isEqualTo(promoCode.getPromoCodeId());
-
-        promoCodeService.deletePromoCode(promoCode.getPromoCodeId());
-        promoCodeService.retrievePromoCodeById(promoCode.getPromoCodeId());
-    }
+//    @Test(expected = PromoCodeNotFoundException.class)
+//    public void addAndRemovePromoCode() throws Exception {
+//        List<Product> products = productService.retrieveAllProducts();
+//
+//        PromoCode promoCode = new PromoCode("CNY Promotion", BigDecimal.TEN, BigDecimal.valueOf(5), BigDecimal.valueOf(20), 5, products);
+//        promoCodeService.createNewPromoCode(promoCode);
+//
+//        products = productService.retrieveAllProducts();
+//        assertThat(products.get(0).getPromoCodes().get(0).getPromoCodeId()).isEqualTo(promoCode.getPromoCodeId());
+//
+//        productService.addOrRemovePromoCode(promoCode.getPromoCodeId(), null, null, products, false);
+//        products = productService.retrieveAllProducts();
+//        assertThat(products.get(0).getPromoCodes().size()).isEqualTo(0);
+//
+//        productService.addOrRemovePromoCode(promoCode.getPromoCodeId(), null, null, products, true);
+//        products = productService.retrieveAllProducts();
+//        assertThat(products.get(0).getPromoCodes().get(0).getPromoCodeId()).isEqualTo(promoCode.getPromoCodeId());
+//
+//        promoCodeService.deletePromoCode(promoCode.getPromoCodeId());
+//        promoCodeService.retrievePromoCodeById(promoCode.getPromoCodeId());
+//    }
 
     @Test(expected = StyleNotFoundException.class)
     public void addAndRemoveStyle() throws Exception {

@@ -70,7 +70,7 @@ export default function ProductPage(props) {
     dispatch(retrieveAllTags());
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     window.scrollTo(0, 0);
     document.body.scrollTop = 0;
   }, [rootCategoryName, subCategoryName, leafCategoryName]);
@@ -106,7 +106,11 @@ export default function ProductPage(props) {
   const colours = []; //just used for filterBar
   const productDataList = productDetails
     ? productDetails.map(productDetail => {
-        const { product, colourToSizeImageMaps } = productDetail;
+        const {
+          product,
+          colourToSizeImageMaps,
+          discountedPrice
+        } = productDetail;
         const colourToImageAndSizes = colourToSizeImageMaps.map(csiMap => {
           if (!colours.includes(csiMap.colour)) {
             colours.push(csiMap.colour);
@@ -119,11 +123,12 @@ export default function ProductPage(props) {
         });
         return {
           product,
-          colourToImageAndSizes
+          colourToImageAndSizes,
+          discountedPrice
         };
       })
     : [];
-  console.log(colours);
+
   const secondWord = leafCategoryName ? leafCategoryName : subCategoryName;
   return (
     <div>
@@ -190,6 +195,7 @@ export default function ProductPage(props) {
                     productDataList.map(productDetail => (
                       <ProductCard
                         productDetail={productDetail}
+                        discountedPrice={productDetail.discountedPrice}
                         key={productDetail.product.productId}
                       />
                     ))}

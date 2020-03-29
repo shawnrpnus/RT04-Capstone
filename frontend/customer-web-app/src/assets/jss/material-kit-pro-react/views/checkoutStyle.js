@@ -167,7 +167,21 @@ const styles = {
   checkoutTitle: {
     ...title,
     marginLeft: "5px",
-    marginRight: "5px"
+    marginRight: "5px",
+    "@media (max-width: 500px)": {
+      fontSize: "125%"
+    }
+  },
+  discountedPrice: {
+    color: "grey",
+    textDecorationLine: "line-through",
+    marginLeft: "5%",
+    fontSize: "15px"
+  },
+  checkoutButton: {
+    "@media (max-width: 500px)": {
+      width: "inherit"
+    }
   }
 };
 

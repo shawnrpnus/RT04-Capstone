@@ -3,6 +3,7 @@ import sidebarReducer from "./sidebarReducer";
 import storeReducer from "./storeReducer";
 import errorReducer from "./errorReducer";
 import tagReducer from "./tagReducer";
+import promoCodeReducer from "./promoCodeReducer";
 import productReducer from "./productReducer";
 import productStockReducer from "./productStockReducer";
 import categoryReducer from "./categoryReducer";
@@ -14,6 +15,8 @@ import restockOrderReducer from "./restockOrderReducer";
 import deliveryReducer from "./deliveryReducer";
 import advertisementReducer from "./advertisementReducer";
 import refundReducer from "./refundReducer";
+import instagramReducer from "./instagramReducer";
+import discountReducer from "./discountReducer";
 import transactionReducer from "./transactionReducer";
 
 const rootReducer = combineReducers({
@@ -21,6 +24,7 @@ const rootReducer = combineReducers({
   sidebar: sidebarReducer,
   storeEntity: storeReducer,
   tag: tagReducer,
+  promoCode: promoCodeReducer,
   product: productReducer,
   category: categoryReducer,
   staffEntity: staffReducer,
@@ -32,6 +36,8 @@ const rootReducer = combineReducers({
   transaction: transactionReducer,
   delivery: deliveryReducer,
   advertisement: advertisementReducer,
+  instagram: instagramReducer,
+  discount: discountReducer,
   util: utilReducer
 });
 

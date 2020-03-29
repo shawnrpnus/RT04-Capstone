@@ -2,7 +2,9 @@ package capstone.rt04.retailbackend.controllers;
 
 import capstone.rt04.retailbackend.entities.Address;
 import capstone.rt04.retailbackend.entities.Customer;
+import capstone.rt04.retailbackend.entities.Staff;
 import capstone.rt04.retailbackend.request.customer.*;
+import capstone.rt04.retailbackend.request.customer.RegisterPushNotifTokenRequest;
 import capstone.rt04.retailbackend.services.CustomerService;
 import capstone.rt04.retailbackend.services.RelationshipService;
 import capstone.rt04.retailbackend.services.ShoppingCartService;
@@ -11,8 +13,11 @@ import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.customer.*;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.shoppingcart.InvalidCartTypeException;
+import capstone.rt04.retailbackend.util.exceptions.staff.StaffNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.style.StyleNotFoundException;
 import capstone.rt04.retailbackend.util.routeconstants.CustomerControllerRoutes;
+import capstone.rt04.retailbackend.util.routeconstants.StaffControllerRoutes;
 import com.stripe.exception.StripeException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +29,7 @@ import java.util.Map;
 @SuppressWarnings("Duplicates")
 @RestController
 @RequestMapping(CustomerControllerRoutes.CUSTOMER_BASE_ROUTE)
-@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"})
+//@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"})
 public class CustomerController {
 
     private final CustomerService customerService;
@@ -283,11 +288,30 @@ public class CustomerController {
         return new ResponseEntity<>(customer, HttpStatus.OK);
     }
 
+    @PostMapping(CustomerControllerRoutes.UPDATE_IN_STORE_SHOPPING_CART)
+    public ResponseEntity<?> updateInStoreShoppingCart(@RequestBody UpdateInStoreShoppingCartRequest req) throws InputDataValidationException, InvalidCartTypeException, ProductVariantNotFoundException, CustomerNotFoundException, StoreNotFoundException {
+        validationService.throwExceptionIfInvalidBean(req);
+        Customer customer = shoppingCartService.updateQuantityOfProductVariantWithStore(
+                req.getQuantity(),
+                req.getProductVariantId(),
+                req.getCustomerId(),
+                req.getStoreId());
+        relationshipService.clearCustomerRelationships(customer);
+        return new ResponseEntity<>(customer, HttpStatus.OK);
+    }
+
     @PostMapping(CustomerControllerRoutes.CLEAR_SHOPPING_CART)
     public ResponseEntity<?> clearShoppingCart(@RequestParam Long customerId, @RequestParam String cartType) throws CustomerNotFoundException, InvalidCartTypeException {
         Customer customer = shoppingCartService.clearShoppingCart(customerId, cartType);
         relationshipService.clearCustomerRelationships(customer);
         return new ResponseEntity<>(customer, HttpStatus.OK);
+    }
+
+    @GetMapping(CustomerControllerRoutes.GET_SHOPPING_CART_ITEMS_STOCK)
+    public ResponseEntity<?> getShoppingCartItemsStock(@RequestParam Long customerId, @RequestParam String cartType,
+                                                       @RequestParam(required = false) Boolean inStoreDeliverHome) throws CustomerNotFoundException, InvalidCartTypeException {
+        Map<Long, Map<String, Object>>  result = shoppingCartService.getShoppingCartItemsStock(customerId, cartType, inStoreDeliverHome);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PostMapping(CustomerControllerRoutes.ADD_WISHLIST_TO_SHOPPING_CART)
@@ -317,7 +341,12 @@ public class CustomerController {
         relationshipService.clearCustomerRelationships(customer);
         return new ResponseEntity<>(customer, HttpStatus.OK);
     }
-    
 
+    @PostMapping(CustomerControllerRoutes.REGISTER_PUSH_NOTIFICATION_TOKEN)
+    public ResponseEntity<?> registerPushNotifToken(@RequestBody RegisterPushNotifTokenRequest req) throws CustomerNotFoundException {
+        Customer customer = customerService.registerPushNotificationToken(req.getCustomerId(), req.getToken());
+        relationshipService.clearCustomerRelationships(customer);
+        return new ResponseEntity<>(customer, HttpStatus.OK);
+    }
 
 }

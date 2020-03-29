@@ -4,7 +4,6 @@ import { Dimensions, ScrollView, RefreshControl } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import ReservationCard from "src/screens/Reservation/ReservationCard";
 import { retrieveUpcomingReservations } from "src/redux/actions/reservationActions";
-import {set} from "react-native-reanimated";
 
 const { width, height } = Dimensions.get("window");
 
@@ -45,7 +44,7 @@ function Reservations(props) {
             />
           ))}
         {reservations && reservations.length === 0 && (
-          <Text h4>There are no upcoming reservations</Text>
+          <Text h4 style={{textAlign: "center", marginTop: 40}}>There are no upcoming reservations</Text>
         )}
       </ScrollView>
     </Block>

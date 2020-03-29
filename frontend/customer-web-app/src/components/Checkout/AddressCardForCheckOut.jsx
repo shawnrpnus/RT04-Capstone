@@ -123,7 +123,7 @@ export default function AddressCardForCheckOut({
             index
           ) {
             return item ? (
-              <React.Fragment>
+              <React.Fragment key={index}>
                 <h5>
                   {index === 0
                     ? "Shipping address for this transaction"

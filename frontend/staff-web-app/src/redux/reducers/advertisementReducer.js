@@ -11,6 +11,7 @@ export default function(state = initialState, action) {
         ...state,
         advertisements: action.advertisements
       };
+
     default:
       return state;
   }

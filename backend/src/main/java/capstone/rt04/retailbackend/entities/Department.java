@@ -24,7 +24,7 @@ import java.util.List;
 @Getter
 @Setter
 @EqualsAndHashCode
-@ToString
+//@ToString(exclude = {"staffList"})
 @JsonIdentityInfo(generator = JSOGGenerator.class)
 public class Department implements Serializable {
 

@@ -31,7 +31,7 @@ import java.util.List;
 @Getter
 @Setter
 @EqualsAndHashCode
-@ToString(exclude = {"repliedReviews"})
+//@ToString(exclude = {"repliedReviews", "deliveries"})
 @JsonIdentityInfo(generator = JSOGGenerator.class)
 public class Staff implements Serializable {
 
@@ -75,6 +75,8 @@ public class Staff implements Serializable {
     @NotNull (message =ErrorMessages.SALARY_REQUIRED)
     @Column(nullable = false)
     private BigDecimal salary;
+
+    private String pushNotificationToken;
 
     @OneToMany(mappedBy = "applicant")
     private List<StaffLeave> leaves;

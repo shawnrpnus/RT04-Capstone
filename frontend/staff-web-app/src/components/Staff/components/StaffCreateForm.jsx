@@ -23,12 +23,16 @@ import MaterialNumberSelect from "../../../shared/components/Form/MaterialNumber
 import ContentSaveIcon from "mdi-react/ContentSaveIcon";
 import CloseCircleIcon from "mdi-react/CloseCircleIcon";
 import Autocomplete from "@material-ui/lab/Autocomplete";
+import FormControl from "@material-ui/core/FormControl";
+import InputLabel from "@material-ui/core/InputLabel";
+import Select from "@material-ui/core/Select";
+import MenuItem from "@material-ui/core/MenuItem";
+import makeStyles from "@material-ui/core/styles/makeStyles";
 
 class StaffCreateForm extends Component {
   static propTypes = {
     errors: PropTypes.object,
-    clearErrors: PropTypes.func,
-    disabled: PropTypes.bool
+    clearErrors: PropTypes.func
   };
 
   componentDidMount() {
@@ -47,6 +51,15 @@ class StaffCreateForm extends Component {
     if (selectedDepartment === null) return;
     console.log(selectedDepartment);
     this.setState({ departmentId: selectedDepartment.departmentId });
+    if (
+      selectedDepartment.departmentName === "Warehouse" ||
+      selectedDepartment.departmentName === "Store"
+    ) {
+      this.setState({ displayStore: true });
+    } else {
+      this.setState({ displayStore: false });
+      this.setState({ storeId: null });
+    }
   };
 
   onSelectStore = (event, selectedStore) => {
@@ -263,6 +276,30 @@ class StaffCreateForm extends Component {
             </Grid>
 
             <Grid item xs={12} md={6}>
+              <MaterialTextField
+                fieldLabel="Salary"
+                onChange={this.onChange}
+                fieldName="salary"
+                state={this.state}
+                errors={errors}
+                disabled={disabled}
+                autoFocus={true}
+              />
+            </Grid>
+
+            <Grid item xs={12} md={6}>
+              <MaterialNumberSelect
+                onChange={this.onChange}
+                state={this.state}
+                fieldLabel="Leave Remaining"
+                fieldName="leaveRemaining"
+                optionStart={1}
+                optionEnd={20}
+                disabled={disabled}
+              />
+            </Grid>
+
+            <Grid item xs={12} md={6}>
               <Autocomplete
                 id="tags-standard"
                 options={this.props.allDepartments}
@@ -306,52 +343,28 @@ class StaffCreateForm extends Component {
               />
             </Grid>
 
-            <Grid item xs={12} md={6}>
-              <Autocomplete
-                id="tags-standard"
-                options={this.props.allStores}
-                getOptionLabel={option => option.storeName}
-                onChange={(event, value) => this.onSelectStore(event, value)}
-                getOptionSelected={(option, value) =>
-                  option.storeId === value.storeId
-                }
-                renderInput={params => (
-                  <TextField
-                    {...params}
-                    variant="standard"
-                    label="Store"
-                    fullWidth
-                  />
-                )}
-                errors={errors}
-              />
-            </Grid>
-
-            <Grid item xs={12} md={6}>
-              <MaterialTextField
-                fieldLabel="Salary"
-                onChange={this.onChange}
-                fieldName="salary"
-                state={this.state}
-                errors={errors}
-                disabled={disabled}
-                autoFocus={true}
-              />
-            </Grid>
-
-            <Grid item xs={12} md={6}>
-              <MaterialNumberSelect
-                onChange={this.onChange}
-                state={this.state}
-                fieldLabel="Leave Remaining"
-                fieldName="leaveRemaining"
-                optionStart={1}
-                optionEnd={20}
-                disabled={disabled}
-              />
-            </Grid>
-
-            <Grid item xs={12} md={6}></Grid>
+            {this.state.displayStore && (
+              <Grid item xs={12} md={6}>
+                <Autocomplete
+                  id="tags-standard"
+                  options={this.props.allStores}
+                  getOptionLabel={option => option.storeName}
+                  onChange={(event, value) => this.onSelectStore(event, value)}
+                  getOptionSelected={(option, value) =>
+                    option.storeId === value.storeId
+                  }
+                  renderInput={params => (
+                    <TextField
+                      {...params}
+                      variant="standard"
+                      label="Store"
+                      fullWidth
+                    />
+                  )}
+                  errors={errors}
+                />
+              </Grid>
+            )}
           </Grid>
 
           <ButtonToolbar className="form__button-toolbar">

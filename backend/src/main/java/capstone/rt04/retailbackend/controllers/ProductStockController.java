@@ -18,7 +18,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(ProductStockControllerRoutes.PRODUCT_STOCK_BASE_ROUTE)
-@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"})
+//@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"})
 
 public class ProductStockController {
 
@@ -121,7 +121,6 @@ public class ProductStockController {
         Product product = productStock.getProductVariant().getProduct();
         product.setProductVariants(null);
         product.setDiscounts(null);
-        product.setPromoCodes(null);
         product.setTags(null);
         product.setCategory(null);
         product.setReviews(null);

@@ -93,7 +93,7 @@ function ShoppingCartToolTipContent(props) {
             <h6
               style={{ fontSize: "1rem", margin: "10px 0 0 0", float: "right" }}
             >
-              TOTAL: ${customer.onlineShoppingCart.initialTotalAmount}
+              TOTAL: ${customer.onlineShoppingCart.finalTotalAmount}
             </h6>
           </GridItem>
         </GridContainer>
@@ -116,6 +116,10 @@ function ShoppingCartItemCard(props) {
   const color = colorNames[productVariant.colour].name;
   const size = productVariant.sizeDetails.productSize;
   const price = productVariant.product.price;
+  const discountedPrice = productVariant.product.discountedPrice;
+
+  console.log(productVariant.product);
+
   return (
     <Card plain style={{ margin: "10px 0" }}>
       <GridContainer style={{ margin: 0 }}>
@@ -143,7 +147,7 @@ function ShoppingCartItemCard(props) {
               Price
             </GridItem>
             <GridItem xs={7} style={{ fontWeight: "lighter" }}>
-              ${price}
+              ${discountedPrice ? discountedPrice : price}
             </GridItem>
           </GridContainer>
         </GridItem>

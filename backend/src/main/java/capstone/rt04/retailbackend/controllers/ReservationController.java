@@ -1,9 +1,13 @@
 package capstone.rt04.retailbackend.controllers;
 
-import capstone.rt04.retailbackend.entities.*;
+import capstone.rt04.retailbackend.entities.ProductVariant;
+import capstone.rt04.retailbackend.entities.Reservation;
+import capstone.rt04.retailbackend.entities.Store;
 import capstone.rt04.retailbackend.request.customer.CreateReservationRequest;
 import capstone.rt04.retailbackend.request.customer.UpdateReservationRequest;
+import capstone.rt04.retailbackend.request.customer.UpdateReservationStatusRequest;
 import capstone.rt04.retailbackend.response.ReservationStockCheckResponse;
+import capstone.rt04.retailbackend.services.RelationshipService;
 import capstone.rt04.retailbackend.services.ReservationService;
 import capstone.rt04.retailbackend.services.ValidationService;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
@@ -14,26 +18,26 @@ import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
 import capstone.rt04.retailbackend.util.routeconstants.CustomerControllerRoutes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.ZonedDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequestMapping(CustomerControllerRoutes.RESERVATION_BASE_ROUTE)
-@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"})
+//@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"})
 public class ReservationController {
 
     private final ReservationService reservationService;
     private final ValidationService validationService;
+    private final RelationshipService relationshipService;
 
 
-    public ReservationController(ReservationService contactUsService, ValidationService validationService) {
+    public ReservationController(ReservationService contactUsService, ValidationService validationService, RelationshipService relationshipService) {
         this.reservationService = contactUsService;
         this.validationService = validationService;
+        this.relationshipService = relationshipService;
     }
 
     @PostMapping(CustomerControllerRoutes.CREATE_RESERVATION)
@@ -124,23 +128,27 @@ public class ReservationController {
         return new ResponseEntity<>(reservations, HttpStatus.OK);
     }
 
+    @PostMapping(CustomerControllerRoutes.UPDATE_RESERVATION_STATUS)
+    public ResponseEntity<?> updateReservationStatus(@RequestBody UpdateReservationStatusRequest req) throws ReservationNotFoundException {
+        Reservation reservation = reservationService.updateReservationStatus(req.getReservationId(), req.getIsHandled(), req.getIsAttended());
+        clearReservationRelationships(reservation);
+        return new ResponseEntity<>(reservation, HttpStatus.OK);
+    }
+
 
     private void clearReservationStockCheckResponseRelationships(ReservationStockCheckResponse rscp) {
         Store store = rscp.getStore();
         store.setProductStocks(null);
         store.setInStoreRestockOrders(null);
         store.setReservations(null);
-
+        store.setStaff(null);
     }
 
 
     private void clearReservationRelationships(Reservation reservation) {
         if (reservation.getProductVariants() != null) {
             for (ProductVariant pv : reservation.getProductVariants()) {
-                pv.getProduct().setProductVariants(null);
-                pv.getProduct().setCategory(null);
-                pv.getProduct().setStyles(null);
-                pv.setProductStocks(null);
+                relationshipService.clearCustomerReservationOrWishlist(pv);
             }
         }
         if (reservation.getCustomer() != null) {
@@ -153,13 +161,13 @@ public class ReservationController {
             reservation.getCustomer().setReservations(null);
             reservation.getCustomer().setTransactions(null);
             reservation.getCustomer().setStyle(null);
+            reservation.getCustomer().setReviews(null);
         }
         if (reservation.getStore() != null) {
             reservation.getStore().setReservations(null);
             reservation.getStore().setProductStocks(null);
             reservation.getStore().setStaff(null);
         }
+        relationshipService.clearStoreRelationships(reservation.getStore());
     }
-
-
 }

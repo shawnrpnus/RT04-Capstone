@@ -176,7 +176,7 @@ router.post("/contactUsConfirmation", async (req, res) => {
       name: fullName,
       intro: response,
       outro: [
-        "Need help, or have questions?",
+        "\nNeed help, or have questions?",
         "Just reply to this email, we'd love to help."
       ]
     }
@@ -238,6 +238,69 @@ router.post("/replyToEmail", async (req, res) => {
       }
     }
   );
+});
+
+router.post("/massSendEmail", async (req, res) => {
+  const {
+    subject,
+    emails: list,
+    intro,
+    instructions,
+    buttonText: text,
+    link
+  } = req.body;
+  const enableAction = instructions && text && link;
+  const emails = list.split(",");
+
+  Promise.all(
+    emails.map(email => {
+      const emailContent = {
+        body: {
+          title: subject,
+          intro,
+          action: enableAction
+            ? {
+                instructions,
+                button: {
+                  color: "#22BC66", // Action button color
+                  text,
+                  link
+                }
+              }
+            : null
+        }
+      };
+
+      const emailBody = mailGenerator.generate(emailContent);
+      const emailText = mailGenerator.generatePlaintext(emailContent);
+
+      transporter.sendMail(
+        {
+          from: "rt04capstone@gmail.com",
+          to: email,
+          subject,
+          text: emailText,
+          html: emailBody
+        },
+        (error, info) => {
+          if (error) {
+            console.log(error);
+          } else {
+            console.log(info);
+            return true;
+          }
+        }
+      );
+    })
+  )
+    .then(() => {
+      console.log("Email Sent");
+      res.status(200).send({ message: "Email Sent" });
+    })
+    .catch(err => {
+      console.log(err.response);
+      res.status(500).send(err.response);
+    });
 });
 
 module.exports = router;

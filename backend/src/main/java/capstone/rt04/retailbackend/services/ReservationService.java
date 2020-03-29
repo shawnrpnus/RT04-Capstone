@@ -3,33 +3,33 @@ package capstone.rt04.retailbackend.services;
 
 import capstone.rt04.retailbackend.entities.*;
 import capstone.rt04.retailbackend.repositories.ReservationRepository;
+import capstone.rt04.retailbackend.repositories.StaffRepository;
+import capstone.rt04.retailbackend.request.expo.ExpoPushNotificationRequest;
 import capstone.rt04.retailbackend.response.ReservationStockCheckResponse;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.customer.CustomerNotFoundException;
-import capstone.rt04.retailbackend.util.exceptions.product.ProductStockNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
-import capstone.rt04.retailbackend.util.exceptions.reservation.CreateNewReservationException;
 import capstone.rt04.retailbackend.util.exceptions.reservation.ReservationNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
-import com.fasterxml.jackson.datatype.jsr310.ser.ZonedDateTimeSerializer;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cglib.core.CollectionUtils;
-import org.springframework.cglib.core.Local;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.client.RestTemplate;
 
-import java.sql.Time;
 import java.sql.Timestamp;
-import java.time.Instant;
-import java.time.LocalTime;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @Service
 @Transactional
+@Slf4j
 public class ReservationService {
 
     private final String BEFORE = "before";
@@ -39,20 +39,26 @@ public class ReservationService {
     private final ProductService productService;
     private final StoreService storeService;
     private final ValidationService validationService;
+    private RestTemplate restTemplate;
 
     private final ReservationRepository reservationRepository;
+    private final StaffRepository staffRepository;
 
-    public ReservationService(CustomerService customerService, ProductService productService, StoreService storeService, ValidationService validationService, ReservationRepository reservationRepository) {
+    public ReservationService(CustomerService customerService, ProductService productService, StoreService storeService, ValidationService validationService, ReservationRepository reservationRepository, RestTemplateBuilder restTemplateBuilder, StaffRepository staffRepository) {
         this.customerService = customerService;
         this.productService = productService;
         this.storeService = storeService;
         this.validationService = validationService;
         this.reservationRepository = reservationRepository;
+        this.restTemplate = restTemplateBuilder.build();
+        this.staffRepository = staffRepository;
     }
 
     //dateTime must be in format 'YYYY-MM-DD hh:mm:ss'
     public Reservation createReservationFromReservationCart(Long customerId, Long storeId, String dateTime) throws CustomerNotFoundException, StoreNotFoundException, InputDataValidationException, ProductVariantNotFoundException {
         //check between 1 and 48h in advance
+        //Timestamp always in UTC
+        //String comes in Singapore time +0800
         Timestamp reservationDateTime = checkReservationTiming(dateTime);
 
         Customer customer = customerService.retrieveCustomerByCustomerId(customerId);
@@ -74,7 +80,7 @@ public class ReservationService {
         List<Timestamp> reservedTimeSlots = getReservedTimeslotsForStore(storeId);
         if (reservedTimeSlots.contains(reservationDateTime)) {
             Map<String, String> errorMap = new HashMap<>();
-            errorMap.put("reservationDateTime", reservationDateTime + " is already taken at " + store.getStoreName());
+            errorMap.put("reservationDateTime","This time slot is already taken at " + store.getStoreName());
             throw new InputDataValidationException(errorMap, errorMap.get("reservationDateTime"));
         }
 
@@ -123,11 +129,11 @@ public class ReservationService {
         LocalTime openingTime = store.getOpeningTime().toLocalTime();
         LocalTime closingTime = store.getClosingTime().toLocalTime();
 
-        ZonedDateTime now = ZonedDateTime.now();
+        ZonedDateTime now = ZonedDateTime.now(ZoneId.of("Singapore"));
         ZonedDateTime nowPlus1Hour = now.plusHours(1);
         nowPlus1Hour = nowPlus1Hour.truncatedTo(ChronoUnit.HOURS).plusMinutes((15 * ((nowPlus1Hour.getMinute()) / 15)) + 15);
         ZonedDateTime nowPlus48Hour = now.plusHours(48);
-        nowPlus48Hour = nowPlus48Hour.truncatedTo(ChronoUnit.HOURS).plusMinutes((15 * ((nowPlus1Hour.getMinute()) / 15)) + 15);
+        nowPlus48Hour = nowPlus48Hour.truncatedTo(ChronoUnit.HOURS).plusMinutes((15 * ((nowPlus1Hour.getMinute()) / 15)));
 
         List<ZonedDateTime> reservedZoneDateTimes = new ArrayList<>();
         for (Timestamp reservedTimestamp : reservedSlots) {
@@ -208,7 +214,7 @@ public class ReservationService {
         // Check that timeslot is not taken
         List<Timestamp> reservedTimeSlots = getReservedTimeslotsForStore(newStoreId);
         if (reservedTimeSlots.contains(newDateTime)) {
-            errorMap.put("reservationDateTime", newDateTime + " is already taken at " + newStore.getStoreName());
+            errorMap.put("reservationDateTime", "This time slot is already taken at " + newStore.getStoreName());
             throw new InputDataValidationException(errorMap, errorMap.get("reservationDateTime"));
         }
         reservationToUpdate.setReservationDateTime(newDateTime);
@@ -293,7 +299,7 @@ public class ReservationService {
         return checkAllStoreStocksForGivenProductVariants(reservationCartItems);
     }
 
-    public List<ReservationStockCheckResponse> getAllStoresStockStatusForReservation(Long reservationId) throws CustomerNotFoundException, ProductVariantNotFoundException, StoreNotFoundException, ReservationNotFoundException {
+    public List<ReservationStockCheckResponse> getAllStoresStockStatusForReservation(Long reservationId) throws ProductVariantNotFoundException, StoreNotFoundException, ReservationNotFoundException {
 
         List<ProductVariant> reservationItems = retrieveReservationByReservationId(reservationId).getProductVariants();
         return checkAllStoreStocksForGivenProductVariants(reservationItems);
@@ -323,8 +329,16 @@ public class ReservationService {
         return result;
     }
 
-    private Timestamp checkReservationTiming(String reservationDateTime) throws InputDataValidationException {
-        Timestamp dateTime = Timestamp.valueOf(reservationDateTime);
+    public Timestamp checkReservationTiming(String reservationDateTime) throws InputDataValidationException {
+        //reservationDateTime is in format YYYY-MM-DD HH:mm:ss
+
+        //By default will read as UTC time since no timezone specified
+        String isoString = reservationDateTime.replace(" ", "T");
+        LocalDateTime ldt = LocalDateTime.parse(isoString);
+        //Convert to SG time zone i.e. adding +0800 to the string
+        ZonedDateTime zonedDateTime= ZonedDateTime.of(ldt, ZoneId.of("Singapore"));
+        //Get the UTC time for the zoned date time
+        Timestamp dateTime = Timestamp.from(zonedDateTime.toInstant());
         long now = System.currentTimeMillis();
         long nowPlus1Hour = now + TimeUnit.HOURS.toMillis(1);
         long nowPlus48Hour = now + TimeUnit.HOURS.toMillis(48);
@@ -334,6 +348,7 @@ public class ReservationService {
             errorMap.put("reservationDateTime", "Reservation must be between 1 to 48 hours in advance");
             throw new InputDataValidationException(errorMap, errorMap.toString());
         }
+
         return dateTime;
     }
 
@@ -367,11 +382,68 @@ public class ReservationService {
         long now = System.currentTimeMillis();
         long nowMinus15Minutes = now - + TimeUnit.MINUTES.toMillis(15);
         for (Reservation r : reservations){
-            if (r.getReservationDateTime().after(new Timestamp(nowMinus15Minutes)) && !r.isAttended()){
+            if (r.getReservationDateTime().after(new Timestamp(nowMinus15Minutes))){
                 result.add(r);
             }
         }
         return result;
     }
 
+    public Reservation updateReservationStatus(Long reservationId, Boolean isHandled, Boolean isAttended) throws ReservationNotFoundException {
+        Reservation reservation = retrieveReservationByReservationId(reservationId);
+        if (isHandled != null) reservation.setHandled(isHandled);
+        if (isAttended != null) reservation.setAttended(isAttended);
+        return reservation;
+    }
+
+    public List<Reservation> getCloseReservationsForStore(Long storeId){
+        List<Reservation> allReservations = reservationRepository.findAllByStore_StoreId(storeId);
+        List<Reservation> result = new ArrayList<>();
+        long now = System.currentTimeMillis();
+        Timestamp nowPlus14Minutes = new Timestamp(now + TimeUnit.MINUTES.toMillis(14));
+        Timestamp nowPlus15Minutes = new Timestamp(now + TimeUnit.MINUTES.toMillis(15));
+        for (Reservation r : allReservations){
+            if (r.getReservationDateTime().after(nowPlus14Minutes) && r.getReservationDateTime().before(nowPlus15Minutes)){
+                //reservation is in between 14 and 15 minutes time
+                result.add(r);
+            }
+        }
+        return result;
+    }
+
+    //send to all employees in the store
+    public void sendExpoPushNotif(Long storeId){
+        List<Staff> staffToSendNotif = staffRepository.findAllByStore_StoreId(storeId);
+        List<String> tokens = new ArrayList<>();
+        for (Staff s : staffToSendNotif){
+            if (s.getPushNotificationToken() != null){
+                tokens.add(s.getPushNotificationToken());
+            }
+        }
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("host", "exp.host");
+        headers.set("accept", "application/json");
+        headers.set("accept-encoding", "gzip, deflate");
+        headers.set("content-type", "application/json");
+
+        ExpoPushNotificationRequest req = new ExpoPushNotificationRequest();
+        req.setTo(tokens);
+        req.setTitle("Upcoming Reservations");
+        req.setBody("There are reservation(s) that require your attention!");
+        Map<String, String> data = new HashMap<>();
+        data.put("type", "reservationReminder");
+        req.setData(data);
+        req.setPriority("high");
+        req.setSound("default");
+        req.setChannelId("reservation");
+        HttpEntity<ExpoPushNotificationRequest> httpEntity = new HttpEntity<>(req, headers);
+
+        String url = "https://exp.host/--/api/v2/push/send";
+
+        try {
+            ResponseEntity<?> response = restTemplate.postForEntity(url, httpEntity, Object.class);
+        } catch (Exception ex){
+            log.error(ex.getMessage());
+        }
+    }
 }

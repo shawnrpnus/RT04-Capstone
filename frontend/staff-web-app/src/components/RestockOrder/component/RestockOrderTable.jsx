@@ -16,8 +16,7 @@ import {
   Search,
   ViewColumn,
   Visibility,
-  Delete,
-  CheckSharp
+  Delete
 } from "@material-ui/icons";
 import MaterialTable from "material-table";
 import Chip from "@material-ui/core/Chip";
@@ -85,12 +84,9 @@ const RestockOrderTable = props => {
         deliveryDateTime,
         deliveryStatus,
         store,
-        inStoreRestockOrderItems,
-        inStoreRestockOrderItemsForWarehouse
+        inStoreRestockOrderItems
       } = restockOrder;
-      inStoreRestockOrderItems = inStoreRestockOrderItems
-        ? inStoreRestockOrderItems
-        : inStoreRestockOrderItemsForWarehouse;
+      inStoreRestockOrderItems = [...inStoreRestockOrderItems];
       orderDateTime = dateformat(new Date(orderDateTime), "dd'-'mmm'-'yyyy");
       deliveryDateTime = deliveryDateTime
         ? dateformat(new Date(deliveryDateTime), "dd'-'mmm'-'yyyy")
@@ -192,7 +188,7 @@ const RestockOrderTable = props => {
                         })
                         .catch(() => {});
                     },
-                    disabled: rowData.disableDelete
+                    disabled: rowData.disableDelete || rowData.disableEdit
                   }
           ]}
         />

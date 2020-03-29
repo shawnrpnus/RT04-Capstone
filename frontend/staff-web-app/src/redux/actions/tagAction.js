@@ -1,17 +1,17 @@
 import axios from "axios";
 import * as types from "./types";
 import { toast } from "react-toastify";
-import { retrieveAllProducts, retrieveProductsDetails } from "./productActions";
+import { retrieveProductsDetails } from "./productActions";
 axios.defaults.baseURL = process.env.REACT_APP_SPRING_API_URL;
 
-const TAG_BASE_URL = "/api/tag/";
+const TAG_BASE_URL = "/api/tag";
 const jsog = require("jsog");
 
 export const createNewTag = (createTagRequest, history) => {
   return dispatch => {
     //redux thunk passes dispatch
     axios
-      .post(TAG_BASE_URL + "createNewTag", createTagRequest)
+      .post(TAG_BASE_URL + "/createNewTag", createTagRequest)
       .then(response => {
         const data = jsog.decode(response);
         const tagId = data.tagId;
@@ -133,7 +133,7 @@ export const addTagToProducts = (addTagToProductRequest, history) => {
   return dispatch => {
     //redux thunk passes dispatch
     axios
-      .post(TAG_BASE_URL + "addTagToProducts", addTagToProductRequest)
+      .post(TAG_BASE_URL + "/addTagToProducts", addTagToProductRequest)
       .then(response => {
         const data = jsog.decode(response);
         const tagId = data.tagId;
@@ -170,7 +170,7 @@ export const deleteTagFromProducts = (
     //redux thunk passes dispatch
     axios
       .post(
-        TAG_BASE_URL + "deleteTagFromProducts",
+        TAG_BASE_URL + "/deleteTagFromProducts",
         deleteTagFromProductsRequest
       )
       .then(response => {

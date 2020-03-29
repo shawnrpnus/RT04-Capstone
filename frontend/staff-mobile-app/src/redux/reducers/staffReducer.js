@@ -1,5 +1,6 @@
 import * as types from "../actions/types";
 import {AsyncStorage} from "react-native";
+import {SplashScreen} from "expo";
 
 const initialState = {
   loggedInStaff: null
@@ -18,7 +19,6 @@ export default function(state = initialState, action) {
         loggedInStaff: action.staff
       }
     case types.STAFF_LOGOUT:
-      AsyncStorage.removeItem("state");
       return {
         ...state,
         loggedInStaff: null

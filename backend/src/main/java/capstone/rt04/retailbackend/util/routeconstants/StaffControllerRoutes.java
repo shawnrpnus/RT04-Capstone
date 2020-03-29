@@ -17,5 +17,6 @@ public class StaffControllerRoutes {
     public static final String CHANGE_STAFF_PASSWORD = "/changeStaffPassword";
     public static final String RESET_STAFF_PASSWORD = "/resetStaffPassword";
     public static final String RETRIEVE_STAFF_WITH_NO_ACCOUNT = "/retrieveStaffWithNoAccount";
+    public static final String REGISTER_PUSH_NOTIF_TOKEN = "/registerPushNotificationToken";
 
 }

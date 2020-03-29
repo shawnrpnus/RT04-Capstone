@@ -19,7 +19,7 @@ export const retrieveUpcomingReservations = (storeId, setRefreshing) => {
       })
       .then(response => {
         updateDisplayedReservations(response, dispatch);
-        if (setRefreshing){
+        if (setRefreshing) {
           setRefreshing(false);
         }
       })
@@ -37,7 +37,7 @@ const updateDisplayedReservations = (response, dispatch) => {
   });
 };
 
-export const retrieveReservation = reservationId => {
+export const retrieveReservation = (reservationId, navigation) => {
   return dispatch => {
     axios
       .get(RESERVATION_BASE_URL + "/retrieveReservationById", {
@@ -45,6 +45,9 @@ export const retrieveReservation = reservationId => {
       })
       .then(response => {
         updateDisplayedReservation(response, dispatch);
+        if (navigation) {
+          navigation.navigate("Reservation Details");
+        }
       })
       .catch(err => {
         dispatchErrorMapError(err, dispatch);
@@ -53,9 +56,29 @@ export const retrieveReservation = reservationId => {
 };
 
 const updateDisplayedReservation = (response, dispatch) => {
-  const reservation = jsog.decode(reservation);
+  const reservation = jsog.decode(response.data);
   dispatch({
     type: DISPLAY_RESERVATION,
     reservation: reservation
   });
+};
+
+export const updateReservationStatus = (
+  reservationId,
+  isHandled,
+  isAttended,
+  storeId
+) => {
+  const req = { reservationId, isHandled, isAttended };
+  return dispatch => {
+    axios
+      .post(RESERVATION_BASE_URL + "/updateReservationStatus", req)
+      .then(response => {
+        updateDisplayedReservation(response, dispatch);
+        retrieveUpcomingReservations(storeId, null)(dispatch);
+      })
+      .catch(err => {
+        dispatchErrorMapError(err, dispatch);
+      });
+  };
 };

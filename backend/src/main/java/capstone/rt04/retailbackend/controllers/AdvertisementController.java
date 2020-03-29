@@ -16,7 +16,7 @@ import static capstone.rt04.retailbackend.util.routeconstants.AdvertisementContr
 
 @RestController
 @RequestMapping(ADVERTISEMENT_BASE_ROUTE)
-@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"})
+//@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"})
 public class AdvertisementController {
 
     private final AdvertisementService advertisementService;

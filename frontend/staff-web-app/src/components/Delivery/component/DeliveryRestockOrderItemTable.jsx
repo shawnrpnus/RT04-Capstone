@@ -63,8 +63,6 @@ const DeliveryRestockOrderItemTable = props => {
     dispatch(retrieveAllRestockOrderItemToDeliver());
   }, [_.isEqual(restockOrderItems)]);
 
-  console.log(restockOrderItems);
-
   const handleCreateDelivery = (evt, data) => {
     evt.preventDefault();
     const ids = data.map(e => e.inStoreRestockOrderItemId);

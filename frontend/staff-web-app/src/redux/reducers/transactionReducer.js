@@ -2,7 +2,7 @@ import * as types from "../actions/types";
 
 const initialState = {
   allTransactions: null,
-  transaction: null
+  transactions: []
 };
 
 export default function(state = initialState, action) {
@@ -11,6 +11,11 @@ export default function(state = initialState, action) {
       return {
         ...state,
         transaction: action.transaction
+      };
+    case types.RETRIEVE_TRANSACTIONS:
+      return {
+        ...state,
+        transactions: action.transactions
       };
     default:
       return state;
