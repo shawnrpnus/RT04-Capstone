@@ -157,6 +157,21 @@ class SidebarContent extends Component {
               />
             </SidebarCategory>
           )}
+          {store && (
+            <SidebarCategory title="Refund" icon="list">
+              <SidebarLink
+                title="Create Refund"
+                route="/refund/createRefundRecord"
+                onClick={this.hideSidebar}
+              />
+              <SidebarLink
+                title="View All Refunds"
+                route="/refund/viewAllRefunds"
+                onClick={this.hideSidebar}
+              />
+
+            </SidebarCategory>
+          )}
 
           <SidebarCategory title="Feedback" customIcon={<MdFeedback />}>
             <SidebarLink

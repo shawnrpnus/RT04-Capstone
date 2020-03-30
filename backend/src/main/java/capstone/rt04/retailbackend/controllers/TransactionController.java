@@ -49,6 +49,18 @@ public class TransactionController {
         }
     }
 
+    @GetMapping(RETRIEVE_TRANSACTION_BY_ORDER_NUMBER)
+    public ResponseEntity<?> retrieveTransactionByOrderNumber(@PathVariable String orderNumber) {
+        try {
+            Transaction transaction = transactionService.retrieveTransactionByOrderNumber(orderNumber);
+            relationshipService.clearTransactionRelationshipsForStaffSide(transaction);
+            relationshipService.clearCustomerRelationships(transaction.getCustomer());
+            return new ResponseEntity<>(transaction, HttpStatus.OK);
+        } catch (TransactionNotFoundException ex) {
+            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
+        }
+    }
+
     @GetMapping(RETRIEVE_INSTORE_COLLECTION_TRANSACTION)
     public ResponseEntity<?> retrieveInstoreCollectionTransaction() {
         List<Transaction> transactions = transactionService.retrieveInstoreCollectionTransaction();

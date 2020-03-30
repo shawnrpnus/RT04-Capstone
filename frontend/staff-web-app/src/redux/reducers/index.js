@@ -14,6 +14,7 @@ import reviewReducer from "./reviewReducer";
 import restockOrderReducer from "./restockOrderReducer";
 import deliveryReducer from "./deliveryReducer";
 import advertisementReducer from "./advertisementReducer";
+import refundReducer from "./refundReducer";
 import instagramReducer from "./instagramReducer";
 import discountReducer from "./discountReducer";
 import transactionReducer from "./transactionReducer";
@@ -29,13 +30,14 @@ const rootReducer = combineReducers({
   staffEntity: staffReducer,
   productStock: productStockReducer,
   feedback: feedbackReducer,
+  refund: refundReducer,
   reviewEntity: reviewReducer,
   restockOrder: restockOrderReducer,
+  transaction: transactionReducer,
   delivery: deliveryReducer,
   advertisement: advertisementReducer,
   instagram: instagramReducer,
   discount: discountReducer,
-  transaction: transactionReducer,
   util: utilReducer
 });
 

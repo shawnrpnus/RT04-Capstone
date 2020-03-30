@@ -11,6 +11,9 @@ package capstone.rt04.retailbackend.util.enums;
  */
 public enum RefundStatusEnum {
     PENDING,
-    APPROVED,
+    PROCESSING,
+    PARTIALLY_COMPLETE,
+    COMPLETED,
+    COMPLETED_WITH_REJECTED_PRODUCTS,
     REJECTED
 }

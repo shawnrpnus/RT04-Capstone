@@ -6,6 +6,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface TransactionRepository extends CrudRepository<Transaction, Long>{
@@ -13,8 +14,9 @@ public interface TransactionRepository extends CrudRepository<Transaction, Long>
 
     List<Transaction> findAllByCustomer_CustomerId(Long customerId);
 
+    Transaction findByOrderNumber(String orderNumber);
+
     List<Transaction> findAllByStoreToCollectIsNotNullAndDeliveryStatusEquals(DeliveryStatusEnum deliveryStatusEnum);
 
     List<Transaction> findAllByDeliveryStatusEquals(DeliveryStatusEnum deliveryStatusEnum);
-
 }

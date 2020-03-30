@@ -69,4 +69,11 @@ public class ErrorMessages {
 
     public static final String STATUS_REQUIRED = "Status is required!";
 
+    public static final String REFUND_ID_REQUIRED = "Refund Id is required!";
+    public static final String REFUND_LINE_ITEM_HANDLER_ID_REQUIRED = "Refund Line Item Handler Id is required!";
+    public static final String REFUND_LINE_ITEM_ID_REQUIRED = "Refund Line Item Id is required!";
+    public static final String REFUND_LINE_ITEM_ALREADY_DONE  = "Refund Line Item already past this progress!";
+    public static final String REFUND_NOT_SELECTED = "Refund must be selected!";
+    public static final String REFUND_REASON_EMPTY = "Reason must not be empty";
+    public static final String REFUND_MODE = "Refund Mode must be selected";
 }

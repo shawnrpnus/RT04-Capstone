@@ -167,6 +167,23 @@ public class RelationshipService {
             clearStoreRelationships(transaction.getStoreToCollect());
     }
 
+    public void clearTransactionRelationshipsForStaffSide(Transaction transaction) {
+        for (TransactionLineItem transactionLineItem : transaction.getTransactionLineItems()) {
+            ProductVariant productVariant = transactionLineItem.getProductVariant();
+            productVariant.setProductStocks(null);
+            Product product = transactionLineItem.getProductVariant().getProduct();
+            transactionLineItem.getProductVariant().getProduct().setCategory(null);
+            transactionLineItem.getProductVariant().getProduct().setProductVariants(null);
+            transactionLineItem.getProductVariant().getProduct().setStyles(null);
+            product.setTags(null);
+            product.setReviews(null);
+//            product.setPromoCodes(null);
+            product.setDiscounts(null);
+        }
+//        transaction.setCustomer(null);
+    }
+
+
     public void clearStaffRelationships(Staff staff) {
         staff.setPayrolls(null);
         staff.setDeliveries(null);
