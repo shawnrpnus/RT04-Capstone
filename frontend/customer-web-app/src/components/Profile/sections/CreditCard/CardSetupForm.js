@@ -14,7 +14,6 @@ export default function CardSetupForm({ setIsLoading }) {
   const dispatch = useDispatch();
   const customer = useSelector(state => state.customer.loggedInCustomer);
 
-  console.log(setIsLoading);
   /*  
   Flow of events:
   1. Display card element from stripe

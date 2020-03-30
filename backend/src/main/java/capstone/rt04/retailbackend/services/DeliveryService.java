@@ -126,7 +126,7 @@ public class DeliveryService {
             inStoreRestockOrderIndex += 1;
             transactionIndex += 1;
 
-            if (inStoreRestockOrderIndex >= inStoreRestockOrderItemSize - 1 && transactionIndex >= transactionSize - 1)
+            if (inStoreRestockOrderIndex >= inStoreRestockOrderItemSize  && transactionIndex >= transactionSize )
                 break;
         }
         updateRestockOrderStatus(affectedItems);

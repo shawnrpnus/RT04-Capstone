@@ -47,7 +47,6 @@ function Measurements(props) {
   //check if customer has added measurements
   useEffect(() => {
     if (customer.measurements === null) {
-      console.log(customer);
       setAddedMeasurements(false);
     } else {
       //set input state

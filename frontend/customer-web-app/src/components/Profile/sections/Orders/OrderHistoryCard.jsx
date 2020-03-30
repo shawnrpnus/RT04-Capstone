@@ -7,8 +7,6 @@ import ProductVariantCard from "components/Reservation/View/ProductVariantCard";
 import Divider from "@material-ui/core/Divider";
 import typographyStyle from "assets/jss/material-kit-pro-react/views/componentsSections/typographyStyle";
 import { makeStyles } from "@material-ui/core/styles";
-import FilterBar from "components/Shop/FilterBar";
-import Drawer from "@material-ui/core/Drawer";
 import { useHistory } from "react-router-dom";
 
 const _ = require("lodash");
@@ -21,25 +19,29 @@ function OrderHistoryCard(props) {
   const history = useHistory();
   const typoClasses = useTypoStyles();
   const deliveryStatusEnumMap = {
-    PROCESSING: "Processing",
-    IN_TRANSIT: "In Transit",
-    DELIVERED: "Delivered"
+    PROCESSING: "PROCESSING",
+    TO_BE_DELIVERED: "PROCESSING",
+    IN_TRANSIT: "IN TRANSIT",
+    DELIVERED: "DELIVERED",
+    COLLECTED: "COLLECTED",
+    READY_FOR_COLLECTION: "READY FOR COLLECTION"
   };
-  const status =
-    transaction.collectionMode === "IN_STORE"
-      ? "Collected In Store"
-      : deliveryStatusEnumMap[transaction.deliveryStatus];
 
-  const statusColor =
-    transaction.collectionMode === "IN_STORE" || status === "Delivered"
-      ? "green"
-      : status === "Processing"
-      ? "red"
-      : "amber";
+  const status = deliveryStatusEnumMap[transaction.deliveryStatus];
+
+  let statusColor;
+  switch (status) {
+    case "PROCESSING":
+      statusColor = "red";
+      break;
+    case "DELIVERED":
+      statusColor = "green";
+      break;
+    default:
+      statusColor = "sandybrown";
+  }
 
   const lineItems = transaction.transactionLineItems;
-
-  console.log(transaction);
 
   // const productVariants = transaction.transactionLineItems.map(lineItem => {
   //   return lineItem.productVariant;

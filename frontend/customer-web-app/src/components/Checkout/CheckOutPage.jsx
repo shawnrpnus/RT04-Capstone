@@ -14,6 +14,8 @@ import Grid from "@material-ui/core/Grid";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import InputLabel from "@material-ui/core/InputLabel";
+import IconButton from "@material-ui/core/IconButton";
+import CancelIcon from "@material-ui/icons/Cancel";
 
 // redux
 import { useDispatch, useSelector } from "react-redux";
@@ -35,6 +37,7 @@ import CardBody from "components/UI/Card/CardBody";
 import Cards from "react-credit-cards";
 import "react-credit-cards/es/styles-compiled.css";
 import { useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
+import { useSnackbar } from "notistack";
 
 // local files
 import checkoutStyle from "assets/jss/material-kit-pro-react/views/checkoutStyle.js";
@@ -46,6 +49,7 @@ import AddNewAddressForCheckOut from "./AddNewAddressForCheckout";
 import { refreshCustomerId } from "../../redux/actions/customerActions";
 import { updateShoppingCart } from "redux/actions/shoppingCartActions";
 import { retrieveAllStore } from "redux/actions/storeActions";
+import { applyPromoCode } from "redux/actions/promoCodeActions";
 import UpdateShoppingCartRequest from "../../models/shoppingCart/UpdateShoppingCartRequest.js";
 
 const useStyles = makeStyles(checkoutStyle);
@@ -58,6 +62,7 @@ export default function CheckOutPage() {
   const stripe = useStripe();
   const elements = useElements();
   const history = useHistory();
+  const { enqueueSnackbar } = useSnackbar();
 
   const errors = useSelector(state => state.errors);
   const customer = useSelector(state => state.customer.loggedInCustomer);
@@ -80,6 +85,14 @@ export default function CheckOutPage() {
   const [isDelivery, setIsDelivery] = useState(true);
   const [storeToCollectId, setStoreToCollectId] = useState(null);
 
+  // Promo code
+  const [promoCode, setPromoCode] = useState("");
+  const [inputCode, setInputCode] = useState("");
+  const [totalAmount, setTotalAmount] = useState(
+    onlineShoppingCart.finalTotalAmount
+  );
+  const [disablePromo, setDisablePromo] = useState(false);
+
   // Ensure the price of the products is correct
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -95,8 +108,6 @@ export default function CheckOutPage() {
     });
     dispatch(retrieveAllStore());
   }, []);
-
-  console.log(stores);
 
   useEffect(() => {
     dispatch(refreshCustomerId(customer.customerId));
@@ -117,47 +128,40 @@ export default function CheckOutPage() {
   expiryMonth = expiryMonth > 10 ? expiryMonth : `0${expiryMonth}`;
 
   const handleMakePaymentWithNewCard = () => {
-    const { initialTotalAmount } = onlineShoppingCart;
     // Send back to server to get client_secret to complete payment
-    getClientSecret(initialTotalAmount, setClientSecret);
+    getClientSecret(totalAmount, setClientSecret);
   };
-
-  console.log(storeToCollectId);
 
   const handleConfirmPayment = async event => {
     event.preventDefault();
 
-    let {
-      shoppingCartId,
-      initialTotalAmount: totalAmount
-    } = onlineShoppingCart;
     let paymentMethodId;
     if (creditCards[creditCardIndex]) {
       paymentMethodId = creditCards[creditCardIndex].paymentMethodId;
     }
     const { customerId } = customer;
-    // TODO: Process the amount to include finalTotalAmount
-    // Stripe take in cents
-    totalAmount = totalAmount * 100;
 
+    // Stripe take in cents
     const paymentRequest = storeToCollectId
       ? new PaymentRequest(
           customerId,
           paymentMethodId,
-          totalAmount,
+          totalAmount * 100,
           null,
           null,
           null,
-          storeToCollectId
+          storeToCollectId,
+          _.get(promoCode, "promoCodeId", null)
         )
       : new PaymentRequest(
           customerId,
           paymentMethodId,
-          totalAmount,
+          totalAmount * 100,
           null,
           currShippingAddress,
           currBillingAddress,
-          null
+          null,
+          _.get(promoCode, "promoCodeId", null)
         );
 
     console.log(paymentRequest);
@@ -207,6 +211,48 @@ export default function CheckOutPage() {
     1. On applying / removing of promo code
     2. On changing of card
   */
+  const onChangePromoCode = ({ target: input }) => {
+    setInputCode(input.value);
+    setDisablePromo(false);
+    setPromoCode(null);
+    setTotalAmount(onlineShoppingCart.finalTotalAmount);
+  };
+
+  const onCancelPromoCode = () => {
+    setInputCode("");
+    setDisablePromo(false);
+    setPromoCode(null);
+    setTotalAmount(onlineShoppingCart.finalTotalAmount);
+  };
+
+  const handleApplyPromoCode = async () => {
+    const code = await applyPromoCode(
+      customer.customerId,
+      inputCode,
+      onlineShoppingCart.finalTotalAmount,
+      enqueueSnackbar
+    );
+
+    if (code !== null) {
+      if (
+        _.get(code, "promoCodeId", null) === _.get(promoCode, "promoCodeId", "")
+      )
+        return;
+
+      if (_.get(code, "flatDiscount", null)) {
+        setTotalAmount(totalAmount - code.flatDiscount);
+      } else if (_.get(code, "percentageDiscount", null)) {
+        console.log(code.percentageDiscount);
+        setTotalAmount((totalAmount * (100 - code.percentageDiscount)) / 100);
+      }
+    }
+    setPromoCode(code);
+    setDisablePromo(true);
+    setClientSecret(null);
+  };
+
+  console.log(promoCode);
+
   const onSelectCreditCard = e => {
     setCreditCardIndex(e.target.value);
     setClientSecret(null);
@@ -283,14 +329,48 @@ export default function CheckOutPage() {
                           </Typography>
                         </Grid>
                         <Grid item xs={5} style={{ textAlign: "right" }}>
-                          <Typography
-                            className={classes.checkoutTitle}
-                            variant="h4"
-                            gutterBottom
-                          >
-                            SGD$
-                            {onlineShoppingCart.finalTotalAmount.toFixed(2)}
-                          </Typography>
+                          {promoCode && (
+                            <>
+                              {promoCode.flatDiscount ? (
+                                <Typography
+                                  variant="h4"
+                                  gutterBottom
+                                  className={classes.checkoutTitle}
+                                >
+                                  SGD$
+                                  {totalAmount.toFixed(2)}
+                                </Typography>
+                              ) : (
+                                <Typography
+                                  variant="h4"
+                                  gutterBottom
+                                  className={classes.checkoutTitle}
+                                >
+                                  SGD$
+                                  {totalAmount.toFixed(2)}
+                                </Typography>
+                              )}
+                            </>
+                          )}
+                          {promoCode ? (
+                            <Typography
+                              className={classes.discountedTotal}
+                              variant="h4"
+                              gutterBottom
+                            >
+                              SGD$
+                              {onlineShoppingCart.finalTotalAmount.toFixed(2)}
+                            </Typography>
+                          ) : (
+                            <Typography
+                              className={classes.checkoutTitle}
+                              variant="h4"
+                              gutterBottom
+                            >
+                              SGD$
+                              {totalAmount.toFixed(2)}
+                            </Typography>
+                          )}
                         </Grid>
                       </Grid>
                       <Divider style={{ marginBottom: "5%" }} />
@@ -307,13 +387,32 @@ export default function CheckOutPage() {
                             style={{ textAlign: "right", width: "100%" }}
                           >
                             <Button
-                              onClick={null}
+                              onClick={handleApplyPromoCode}
                               className={classes.checkoutButton}
+                              disabled={disablePromo}
                             >
                               Apply Promo Code
                             </Button>
                           </Grid>
-                          <TextField fullWidth style={{ margin: "5% 0" }} />
+                          <Grid item xs={11}>
+                            <TextField
+                              fullWidth
+                              value={inputCode}
+                              style={{ margin: "5% 0" }}
+                              onChange={onChangePromoCode}
+                            />
+                          </Grid>
+                          <Grid item xs={1}>
+                            <IconButton
+                              className={classes.buttonTopMargin}
+                              onClick={onCancelPromoCode}
+                              disabled={!promoCode}
+                            >
+                              <CancelIcon
+                                style={{ color: promoCode ? "red" : "grey" }}
+                              />
+                            </IconButton>
+                          </Grid>
                         </Grid>
                         <Grid item container xs={12}>
                           <Grid

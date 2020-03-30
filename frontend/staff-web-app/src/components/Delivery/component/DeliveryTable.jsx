@@ -108,7 +108,14 @@ const DeliveryTable = props => {
       const status =
         inStoreRestockOrderItems.some(
           e => e.itemDeliveryStatus !== "DELIVERED"
-        ) || customerOrdersToDeliver.some(e => e.deliveryStatus !== "DELIVERED")
+        ) ||
+        customerOrdersToDeliver.some(
+          ({ deliveryStatus }) =>
+            !(
+              deliveryStatus === "READY_FOR_COLLECTION" ||
+              deliveryStatus === "DELIVERED"
+            )
+        )
           ? "TO DELIVER"
           : "COMPLETED";
       const name = `${firstName} ${lastName}`;

@@ -9,6 +9,7 @@ import capstone.rt04.retailbackend.util.enums.DeliveryStatusEnum;
 import capstone.rt04.retailbackend.util.enums.SortEnum;
 import capstone.rt04.retailbackend.util.exceptions.customer.AddressNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.customer.CustomerNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.promoCode.PromoCodeNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.shoppingcart.InvalidCartTypeException;
 import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.transaction.TransactionNotFoundException;
@@ -34,11 +35,12 @@ public class TransactionService {
     private final StoreService storeService;
     private final ProductService productService;
     private final CustomerService customerService;
+    private final PromoCodeService promoCodeService;
     private final ShoppingCartService shoppingCartService;
 
     public TransactionService(TransactionRepository transactionRepository, TransactionLineItemRepository transactionLineItemRepository,
                               AddressRepository addressRepository, StoreService storeService, CustomerService customerService,
-                              ShoppingCartService shoppingCartService, @Lazy ProductService productService) {
+                              ShoppingCartService shoppingCartService, @Lazy ProductService productService, PromoCodeService promoCodeService) {
         this.transactionRepository = transactionRepository;
         this.transactionLineItemRepository = transactionLineItemRepository;
         this.addressRepository = addressRepository;
@@ -46,6 +48,7 @@ public class TransactionService {
         this.customerService = customerService;
         this.shoppingCartService = shoppingCartService;
         this.productService = productService;
+        this.promoCodeService = promoCodeService;
     }
 
     /*create new transaction - not the actual one; simplified just for testing other use cases*/
@@ -197,7 +200,8 @@ public class TransactionService {
 
     // TODO: Make this method reusable for in-store checkout
     // TODO: Add in address / promo code / discount to calculate final price?
-    public Customer createNewTransaction(Long customerId, Long storeId, String cartType, Address deliveryAddress, Address billingAddress, Long storeToCollectId) throws CustomerNotFoundException, InvalidCartTypeException, AddressNotFoundException, StoreNotFoundException {
+    public Customer createNewTransaction(Long customerId, Long storeId, String cartType, Address deliveryAddress,
+                                         Address billingAddress, Long storeToCollectId, Long promoCodeId) throws CustomerNotFoundException, InvalidCartTypeException, AddressNotFoundException, StoreNotFoundException, PromoCodeNotFoundException {
         Customer customer = customerService.retrieveCustomerByCustomerId(customerId);
         ShoppingCart shoppingCart = shoppingCartService.retrieveShoppingCart(customerId, cartType);
 
@@ -277,8 +281,28 @@ public class TransactionService {
         }
 
         transaction.getTransactionLineItems().addAll(transactionLineItems);
-        transaction.setInitialTotalPrice(shoppingCart.getInitialTotalAmount());
-        transaction.setFinalTotalPrice(shoppingCart.getFinalTotalAmount());
+        transaction.setInitialTotalPrice(shoppingCart.getFinalTotalAmount());
+
+        if (promoCodeId != null) {
+            PromoCode promoCode = promoCodeService.retrievePromoCodeById(promoCodeId);
+            if (!customer.getUsedPromoCodes().contains(promoCode)) {
+                if (promoCode.getFlatDiscount().compareTo(BigDecimal.ZERO) != 0) {
+                    transaction.setFinalTotalPrice(shoppingCart.getFinalTotalAmount().subtract(promoCode.getFlatDiscount()));
+                } else if (promoCode.getPercentageDiscount().compareTo(BigDecimal.ZERO) != 0) {
+                    transaction.setFinalTotalPrice(shoppingCart.getFinalTotalAmount().multiply(BigDecimal.ONE.subtract(
+                            promoCode.getPercentageDiscount().divide(BigDecimal.valueOf(100)))));
+                }
+                customer.getUsedPromoCodes().add(promoCode);
+                promoCode.getTransactions().add(transaction);
+                promoCode.setNumRemaining(promoCode.getNumRemaining() - 1);
+                transaction.setPromoCode(promoCode);
+            } else {
+                transaction.setFinalTotalPrice(shoppingCart.getFinalTotalAmount());
+            }
+        } else {
+            transaction.setFinalTotalPrice(shoppingCart.getFinalTotalAmount());
+        }
+
         transaction.setTotalQuantity(totalQuantity);
         transaction.setDeliveryStatus(DeliveryStatusEnum.TO_BE_DELIVERED);
         transactionRepository.save(transaction);
@@ -298,7 +322,11 @@ public class TransactionService {
         Transaction transaction;
         for (Long transactionId : transactionIds) {
             transaction = retrieveTransactionById(transactionId);
-            transaction.setDeliveryStatus(DeliveryStatusEnum.DELIVERED);
+            if (transaction.getCollectionMode().equals(CollectionModeEnum.IN_STORE)) {
+                transaction.setDeliveryStatus(DeliveryStatusEnum.READY_FOR_COLLECTION);
+            } else {
+                transaction.setDeliveryStatus(DeliveryStatusEnum.DELIVERED);
+            }
         }
         return retrieveTransactionsToBeDelivered();
     }

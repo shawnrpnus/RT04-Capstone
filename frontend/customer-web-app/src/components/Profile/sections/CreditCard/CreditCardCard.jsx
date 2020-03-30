@@ -34,11 +34,8 @@ export default function CreditCardCard({ setIsLoading }) {
   const { creditCards, customerId } = useSelector(
     state => state.customer.loggedInCustomer
   );
-  console.log(creditCards);
 
   const handleDeleteCard = creditCardId => {
-    console.log(customerId);
-    console.log(creditCardId);
     setIsLoading(true);
     dispatch(deleteCard({ customerId, creditCardId }, setIsLoading));
     setPopoverOpen(false);
@@ -56,7 +53,6 @@ export default function CreditCardCard({ setIsLoading }) {
           if (expiryMonth < 10) {
             expiryMonth = `0${expiryMonth}`;
           }
-          console.log(last4);
           return (
             <Grid
               container

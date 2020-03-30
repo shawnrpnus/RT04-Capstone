@@ -10,39 +10,46 @@ import Divider from "@material-ui/core/Divider";
 import OrderAddressCard from "components/Profile/sections/Orders/OrderAddressCard";
 
 const moment = require("moment");
+const _ = require("lodash");
 
 function OrderDetails(props) {
   const { mode, transactionId } = useParams();
   const dispatch = useDispatch();
   const transaction = useSelector(state => state.transaction.viewedTransaction);
+  const promoCode = _.get(transaction, "promoCode", {});
 
   useEffect(() => {
     dispatch(retrieveTransactionById(transactionId));
   }, [transactionId]);
 
   const deliveryStatusEnumMap = {
-    PROCESSING: "Processing",
-    IN_TRANSIT: "In Transit",
-    DELIVERED: "Delivered"
+    PROCESSING: "PROCESSING",
+    TO_BE_DELIVERED: "PROCESSING",
+    IN_TRANSIT: "IN TRANSIT",
+    DELIVERED: "DELIVERED",
+    COLLECTED: "COLLECTED",
+    READY_FOR_COLLECTION: "READY FOR COLLECTION"
   };
 
-  let status = "";
-  let statusColor = "";
-  if (transaction) {
-    status =
-      transaction.collectionMode === "IN_STORE"
-        ? "Collected In Store"
-        : deliveryStatusEnumMap[transaction.deliveryStatus];
+  const status = transaction
+    ? deliveryStatusEnumMap[transaction.deliveryStatus]
+    : "";
 
-    statusColor =
-      transaction.collectionMode === "IN_STORE" || status === "Delivered"
-        ? "green"
-        : status === "Processing"
-        ? "red"
-        : "amber";
+  let statusColor;
+  switch (status) {
+    case "PROCESSING":
+      statusColor = "red";
+      break;
+    case "DELIVERED":
+      statusColor = "green";
+      break;
+    case "COLLECTED":
+      statusColor = "green";
+      break;
+    default:
+      statusColor = "sandybrown";
   }
 
-  console.log(status);
   return (
     <Card
       plain
@@ -71,7 +78,10 @@ function OrderDetails(props) {
                 </b>
               </span>
               <span style={{ float: "right" }}>
-                Status: <span style={{ color: statusColor }}>{status}</span>
+                Status:{" "}
+                <span style={{ color: statusColor, fontWeight: 400 }}>
+                  {status}
+                </span>
               </span>
             </h4>
           </GridItem>
@@ -110,7 +120,17 @@ function OrderDetails(props) {
               marginTop: "15px"
             }}
           >
-            <h4 style={{ margin: "0" }}>Ordered Items</h4>
+            <h4 style={{ margin: "0" }}>
+              Ordered Items
+              {promoCode && (
+                <span style={{ float: "right" }}>
+                  Promo Code:{" "}
+                  <span style={{ fontWeight: 400 }}>
+                    {promoCode.promoCodeName}
+                  </span>
+                </span>
+              )}
+            </h4>
           </GridItem>
           <GridItem md={12} xs={12}>
             <GridContainer>
@@ -145,8 +165,8 @@ function OrderDetails(props) {
                         <h5 style={{ float: "right" }}>
                           SGD${" "}
                           {lineItem.finalSubTotal
-                            ? lineItem.finalSubTotal
-                            : lineItem.initialSubTotal}
+                            ? lineItem.finalSubTotal.toFixed(2)
+                            : lineItem.initialSubTotal.toFixed(2)}
                         </h5>
                       </GridItem>
                       <GridItem md={1} />
@@ -159,8 +179,22 @@ function OrderDetails(props) {
           </GridItem>
           <GridItem md={8} />
           <GridItem md={3}>
-            <h5 style={{ float: "right" }}>
-              <b>Grand Total: </b>SGD$ {transaction.finalTotalPrice}
+            <h5 style={{ textAlign: "right" }}>
+              {promoCode && (
+                <>
+                  <div>SGD$ {transaction.initialTotalPrice.toFixed(2)}</div>
+                  <div>
+                    ({promoCode.promoCodeName}) - SGD${" "}
+                    {(
+                      transaction.finalTotalPrice -
+                      transaction.initialTotalPrice
+                    ).toFixed(2)}
+                    <Divider />
+                  </div>
+                </>
+              )}
+              <b>Grand Total : </b> SGD${" "}
+              {transaction.finalTotalPrice.toFixed(2)}
             </h5>
           </GridItem>
           <GridItem md={1} />

@@ -49,21 +49,23 @@ function ProductVariantCard(props) {
                   {finalSubTotal && (
                     <span>
                       {detail
-                        ? `$${finalSubTotal / quantity}`
-                        : `$${finalSubTotal}`}
+                        ? `$${(finalSubTotal / quantity).toFixed(2)}`
+                        : `$${finalSubTotal.toFixed(2)}`}
                     </span>
                   )}
                   <span className={finalSubTotal && classes.discountedPrice}>
                     {detail
-                      ? `$${initialSubTotal / quantity}`
-                      : `$${initialSubTotal}`}
+                      ? `$${(initialSubTotal / quantity).toFixed(2)}`
+                      : `$${initialSubTotal.toFixed(2)}`}
                   </span>
                 </h5>
               ) : (
                 <h5 style={{ margin: "3px 0" }}>
-                  {discountedPrice && <span>${discountedPrice}</span>}
+                  {discountedPrice && (
+                    <span>${discountedPrice.toFixed(2)}</span>
+                  )}
                   <span className={discountedPrice && classes.discountedPrice}>
-                    ${price}
+                    ${price.toFixed(2)}
                   </span>
                 </h5>
               )}
