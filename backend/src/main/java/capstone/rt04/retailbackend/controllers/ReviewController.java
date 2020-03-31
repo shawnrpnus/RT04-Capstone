@@ -56,8 +56,7 @@ public class ReviewController {
         for (Review r : reviews) {
             Customer c = r.getCustomer();
             relationshipService.clearCustomerRelationships(c);
-//            r.getCustomer().setReviews(null);
-            r.getProduct().setReviews(null);
+            relationshipService.clearProductRelationships(r.getProduct());
             r.setStaff(null);
         }
         return new ResponseEntity<>(reviews, HttpStatus.OK);

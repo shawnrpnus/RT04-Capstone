@@ -61,7 +61,6 @@ export default function ReviewCard(props) {
   useEffect(() => {
     if (currCustomer !== null) {
       // wait for transaction to be made then test
-      console.log("Rannnn");
       dispatch(
         checkIfCanWriteReview(currentProductId, currCustomer.customerId)
       );
@@ -114,9 +113,14 @@ export default function ReviewCard(props) {
                     Reviews
                     <Button
                       onClick={handleAddNewReview}
-                      style={{ position: "absolute", right: "15px" }}
+                      style={{
+                        position: "absolute",
+                        right: "15px",
+                        visibility: reviews.length > 0 ? "hidden" : null
+                      }}
                     >
-                      <Add></Add>Add a review
+                      <Add />
+                      Add a review
                     </Button>
                   </h3>
                 )}
@@ -154,7 +158,7 @@ export default function ReviewCard(props) {
 
             {reviews !== null
               ? reviews.map(function(item, i) {
-                  // console.log(item);
+                  console.log(item);
                   const months = [
                     "January",
                     "February",
@@ -177,98 +181,107 @@ export default function ReviewCard(props) {
                     " " +
                     dateTime.getFullYear();
 
-                  if (item.staff) {
-                    return (
-                      <Media
-                        key={i}
-                        title={
-                          <span>
-                            {item.customer.firstName} {item.customer.lastName}{" "}
-                            <small>· {formatted_date}</small>
-                            {currCustomer !== null &&
-                            item.customer.customerId ===
-                              currCustomer.customerId ? (
-                              <span style={{ float: "right" }}>
-                                <Button>
-                                  <Edit
-                                    onClick={() => handleCurrReview(item)}
-                                  />
-                                </Button>
-                                <Button onClick={() => onDelete(item)}>
-                                  <Delete />
-                                </Button>
-                              </span>
-                            ) : (
-                              ""
-                            )}
-                            <br />
-                            <Rating
-                              name="read-only"
-                              value={item.rating}
-                              readOnly
-                              size="small"
-                            />
-                          </span>
-                        }
-                        body={
-                          <p className={classes.color555}>{item.content}</p>
-                        }
-                        innerMedias={[
+                  // if (item.staff) {
+                  //   return (
+                  //     <Media
+                  //       key={i}
+                  //       title={
+                  //         <span>
+                  //           {item.customer.firstName} {item.customer.lastName}{" "}
+                  //           <small>· {formatted_date}</small>
+                  //           {currCustomer !== null &&
+                  //           item.customer.customerId ===
+                  //             currCustomer.customerId ? (
+                  //             <span style={{ float: "right" }}>
+                  //               <Button>
+                  //                 <Edit
+                  //                   onClick={() => handleCurrReview(item)}
+                  //                 />
+                  //               </Button>
+                  //               <Button onClick={() => onDelete(item)}>
+                  //                 <Delete />
+                  //               </Button>
+                  //             </span>
+                  //           ) : (
+                  //             ""
+                  //           )}
+                  //           <br />
+                  //           <Rating
+                  //             name="read-only"
+                  //             value={item.rating}
+                  //             readOnly
+                  //             size="small"
+                  //           />
+                  //         </span>
+                  //       }
+                  //       body={
+                  //         <p className={classes.color555}>{item.content}</p>
+                  //       }
+                  //       innerMedias={[
+                  //         <Media
+                  //           key={Date.now()}
+                  //           title={
+                  //             <span>
+                  //               {item.staff.firstName} {item.staff.lastName}{" "}
+                  //               <small>· {formatted_date}</small>
+                  //             </span>
+                  //           }
+                  //           body={
+                  //             <span className={classes.color555}>
+                  //               {item.response}
+                  //             </span>
+                  //           }
+                  //         />
+                  //       ]}
+                  //     />
+                  //   );
+                  // } else {
+                  return (
+                    <Media
+                      title={
+                        <span>
+                          {item.customer.firstName} {item.customer.lastName}{" "}
+                          <small>· {formatted_date}</small>
+                          {currCustomer !== null &&
+                          item.customer.customerId ===
+                            currCustomer.customerId ? (
+                            <span style={{ float: "right" }}>
+                              <Button>
+                                <Edit onClick={() => handleEditReview(item)} />
+                              </Button>
+                              <Button onClick={() => onDelete(item)}>
+                                <Delete />
+                              </Button>
+                            </span>
+                          ) : (
+                            ""
+                          )}
+                          <br />
+                          <Rating
+                            name="read-only"
+                            value={item.rating}
+                            readOnly
+                            size="small"
+                          />
+                        </span>
+                      }
+                      body={<p className={classes.color555}>{item.content}</p>}
+                      innerMedias={[
+                        item.response && (
                           <Media
                             key={Date.now()}
-                            title={
-                              <span>
-                                {item.staff.firstName} {item.staff.lastName}{" "}
-                                <small>· {formatted_date}</small>
-                              </span>
-                            }
+                            title={<span>apricot & nut</span>}
+                            style={{ marginLeft: "4%" }}
                             body={
                               <span className={classes.color555}>
                                 {item.response}
                               </span>
                             }
                           />
-                        ]}
-                      />
-                    );
-                  } else {
-                    return (
-                      <Media
-                        title={
-                          <span>
-                            {item.customer.firstName} {item.customer.lastName}{" "}
-                            <small>· {formatted_date}</small>
-                            {currCustomer !== null &&
-                            item.customer.customerId ===
-                              currCustomer.customerId ? (
-                              <span style={{ float: "right" }}>
-                                <Button>
-                                  <Edit
-                                    onClick={() => handleEditReview(item)}
-                                  />
-                                </Button>
-                                <Button onClick={() => onDelete(item)}>
-                                  <Delete />
-                                </Button>
-                              </span>
-                            ) : (
-                              ""
-                            )}
-                            <br />
-                            <Rating
-                              name="read-only"
-                              value={item.rating}
-                              readOnly
-                              size="small"
-                            />
-                          </span>
-                        }
-                        body={
-                          <p className={classes.color555}>{item.content}</p>
-                        }
-                      />
-                    );
-                  }
+                        )
+                      ]}
+                    />
+                  );
                 })
               : ""}
           </div>

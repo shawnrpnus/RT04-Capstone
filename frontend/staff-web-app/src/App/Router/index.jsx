@@ -3,8 +3,6 @@ import { Route, Switch } from "react-router-dom";
 import { useSelector } from "react-redux";
 import WrappedRoutes from "./WrappedRoutes";
 import MainWrapper from "./MainWrapper";
-import LogInForm from "../../shared/components/Login/LogInForm";
-import LoginCard from "../../shared/components/Login/LoginCard";
 import StaffLoginForm from "../../components/Staff/components/StaffLoginForm";
 import SecureRoute from "./SecureRoute";
 import Backdrop from "@material-ui/core/Backdrop";

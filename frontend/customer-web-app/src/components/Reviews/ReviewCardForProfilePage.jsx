@@ -1,15 +1,12 @@
 import { useDispatch, useSelector } from "react-redux";
 import sectionCommentsStyle from "../../assets/jss/material-kit-pro-react/views/blogPostSections/sectionCommentsStyle";
 import makeStyles from "@material-ui/core/styles/makeStyles";
-import { useSnackbar } from "notistack";
 import { retrieveReviewsByCustomerId } from "../../redux/actions/reviewAction";
 import React, { useEffect } from "react";
 import GridContainer from "../Layout/components/Grid/GridContainer";
 import GridItem from "../Layout/components/Grid/GridItem";
 import Button from "@material-ui/core/Button";
-import { Add, Clear, Delete, Edit } from "@material-ui/icons";
-import { Link, useHistory } from "react-router-dom";
-import { getUpcomingReservations } from "../../redux/actions/reservationActions";
+import { Link } from "react-router-dom";
 import Rating from "@material-ui/lab/Rating";
 import Media from "../Layout/components/Media/Media";
 
@@ -28,7 +25,8 @@ export default function ReviewCardForProfilePage(props) {
 
   //Redux
   const dispatch = useDispatch();
-  const history = useHistory();
+
+  console.log(reviews);
 
   return (
     <GridContainer justify="center">
@@ -58,11 +56,7 @@ export default function ReviewCardForProfilePage(props) {
                             "product.productId"
                           )}`}
                         >
-                          <Button
-                            style={{ padding: "0px 2px" }}
-                            color="white"
-                            size="lg"
-                          >
+                          <Button style={{ padding: "0px 2px" }} size="large">
                             {_.get(item, "product.productName")}{" "}
                           </Button>
                         </Link>

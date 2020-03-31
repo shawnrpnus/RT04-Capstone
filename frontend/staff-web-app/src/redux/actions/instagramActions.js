@@ -152,7 +152,7 @@ export const deleteInstagramPost = instagramPostId => {
   };
 };
 
-export const getInstagramInfo = async (hashtag, source) => {
+export const getInstagramPostsByHashtag = async (hashtag, source) => {
   if (!hashtag) return [];
   console.log(hashtag);
   return await axios
@@ -160,8 +160,7 @@ export const getInstagramInfo = async (hashtag, source) => {
       cancelToken: source ? source.token : null
     })
     .then(({ data }) => {
-      const edges = data.graphql.hashtag.edge_hashtag_to_media.edges;
-      return edges;
+      return data.graphql.hashtag.edge_hashtag_to_media.edges;
     })
     .catch(err => {
       // unsubscribing the get request
@@ -169,7 +168,30 @@ export const getInstagramInfo = async (hashtag, source) => {
         console.log("cancelled");
       } else {
         console.log(err);
-        throw err;
+        toast.error("Hashtag not found!", {
+          position: toast.POSITION.TOP_CENTER
+        });
+      }
+    });
+};
+
+export const getInstagramPostByShortcode = async (shortCode, source) => {
+  return await axios
+    .get(`https://www.instagram.com/p/${shortCode}/?__a=1`, {
+      cancelToken: source ? source.token : null
+    })
+    .then(({ data }) => {
+      return data.graphql.shortcode_media;
+    })
+    .catch(err => {
+      // unsubscribing the get request
+      if (axios.isCancel(err)) {
+        console.log("cancelled");
+      } else {
+        toast.error("Post not found!", {
+          position: toast.POSITION.TOP_CENTER
+        });
+        console.log(err);
       }
     });
 };

@@ -115,6 +115,7 @@ function ProductDetailsCard(props) {
       customerId,
       cartType
     );
+    console.log(req);
     dispatch(updateShoppingCart(req, enqueueSnackbar));
     dispatch(openCartTooltip);
     setTimeout(() => dispatch(closeCartTooltip), 1500);

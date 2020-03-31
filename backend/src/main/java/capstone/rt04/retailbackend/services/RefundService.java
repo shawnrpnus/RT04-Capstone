@@ -59,17 +59,22 @@ public class RefundService {
         BigDecimal refundAmount = BigDecimal.ZERO;
         Customer customer = customerService.retrieveCustomerByCustomerId(refundRequest.getCustomerId());
 
-        if(refundRequest.getReason() == null || refundRequest.getReason().isEmpty() ) {
+        if (refundRequest.getReason() == null || refundRequest.getReason().isEmpty()) {
             errorMap.put("reason", ErrorMessages.REFUND_REASON_EMPTY);
             throw new InputDataValidationException(errorMap, ErrorMessages.REFUND_REASON_EMPTY);
         }
-        if(refundRequest.getRefundMode() == null || refundRequest.getRefundMode().isEmpty() ) {
+        if (refundRequest.getRefundMode() == null || refundRequest.getRefundMode().isEmpty()) {
             errorMap.put("reason", ErrorMessages.REFUND_REASON_EMPTY);
             throw new InputDataValidationException(errorMap, ErrorMessages.REFUND_REASON_EMPTY);
         }
         for (RefundLineItemRequest refundLineItemRequest : refundRequest.getRefundLineItemRequests()) {
             TransactionLineItem transactionLineItem = transactionService.retrieveTransactionLineItemById(refundLineItemRequest.getTransactionLineItemId());
-            BigDecimal unitPrice = transactionLineItem.getFinalSubTotal().divide(new BigDecimal(transactionLineItem.getQuantity()));
+            BigDecimal unitPrice;
+            if (transactionLineItem.getFinalSubTotal() != null) {
+                unitPrice = transactionLineItem.getFinalSubTotal().divide(new BigDecimal(transactionLineItem.getQuantity()));
+            } else {
+                unitPrice = transactionLineItem.getInitialSubTotal().divide(new BigDecimal(transactionLineItem.getQuantity()));
+            }
             Integer quantityToRefund = refundLineItemRequest.getQuantityToRefund();
             BigDecimal totalPrice = unitPrice.multiply(new BigDecimal(quantityToRefund));
             totalQuantity += quantityToRefund;
@@ -120,24 +125,24 @@ public class RefundService {
         int totalQuantity = 0;
         boolean hasRejected = false;
         int totalRejectedQuantity = 0;
-        if(updateRefundLineItemHandlerRequests.size() == 0) {
+        if (updateRefundLineItemHandlerRequests.size() == 0) {
             Map<String, String> errorMap = new HashMap<>();
             errorMap.put("refundLineItemHandlerRequests", ErrorMessages.REFUND_NOT_SELECTED);
             throw new RefundNotFoundException(errorMap, "Refund Items must be selected");
         }
 
-        for(UpdateRefundLineItemHandlerRequest updateRefundLineItemHandlerRequest : updateRefundLineItemHandlerRequests) {
+        for (UpdateRefundLineItemHandlerRequest updateRefundLineItemHandlerRequest : updateRefundLineItemHandlerRequests) {
             RefundLineItemHandler refundLineItemHandlerCheck = retrieveRefundLineItemHandlersByRefundLineItemIdAndByTimestamp(updateRefundLineItemHandlerRequest.getRefundLineItemId());
 
             //if refund success, want to change back to refund in progress, cannot do so
-            if(refundLineItemHandlerCheck.getRefundProgressEnum().getValue() > RefundProgressEnum.valueOf(updateRefundLineItemHandlerRequest.getRefundProgressEnum()).getValue() ) {
+            if (refundLineItemHandlerCheck.getRefundProgressEnum().getValue() > RefundProgressEnum.valueOf(updateRefundLineItemHandlerRequest.getRefundProgressEnum()).getValue()) {
                 Map<String, String> errorMap = new HashMap<>();
                 errorMap.put("refundLineItemHandlerId", ErrorMessages.REFUND_LINE_ITEM_HANDLER_ID_REQUIRED);
                 throw new RefundNotFoundException(errorMap, "Cannot Set Refund Status backwards");
             }
-            if(updateRefundLineItemHandlerRequest.getRefundProgressEnum().equals("REFUND_SUCCESS")
-            || updateRefundLineItemHandlerRequest.getRefundProgressEnum().equals("REFUND_REJECTED")) {
-                if(updateRefundLineItemHandlerRequest.getRefundProgressEnum().equals("REFUND_REJECTED")) {
+            if (updateRefundLineItemHandlerRequest.getRefundProgressEnum().equals("REFUND_SUCCESS")
+                    || updateRefundLineItemHandlerRequest.getRefundProgressEnum().equals("REFUND_REJECTED")) {
+                if (updateRefundLineItemHandlerRequest.getRefundProgressEnum().equals("REFUND_REJECTED")) {
                     hasRejected = true;
                     totalRejectedQuantity += updateRefundLineItemHandlerRequest.getQuantityConfirmedRefunded();
                 }
@@ -145,8 +150,8 @@ public class RefundService {
             }
             RefundLineItem refundLineItem = retrieveRefundLineItemById(updateRefundLineItemHandlerRequest.getRefundLineItemId());
             RefundLineItemHandler refundLineItemHandler = new RefundLineItemHandler(updateRefundLineItemHandlerRequest.getStaffId(),
-                                                                                    updateRefundLineItemHandlerRequest.getQuantityConfirmedRefunded(),
-                                                                                    RefundProgressEnum.valueOf(updateRefundLineItemHandlerRequest.getRefundProgressEnum()));
+                    updateRefundLineItemHandlerRequest.getQuantityConfirmedRefunded(),
+                    RefundProgressEnum.valueOf(updateRefundLineItemHandlerRequest.getRefundProgressEnum()));
             refundLineItemHandler.setRefundLineItem(refundLineItem);
             refundLineItemHandlerRepository.save(refundLineItemHandler);
             refundLineItem.getRefundLineItemHandlerList().add(refundLineItemHandler);
@@ -156,15 +161,15 @@ public class RefundService {
 
         Refund refundFinal = retrieveRefundById(refund.getRefundId());
 
-        if(refundFinal.getQuantity() == totalRejectedQuantity) {
+        if (refundFinal.getQuantity() == totalRejectedQuantity) {
             refundFinal.setRefundStatus(RefundStatusEnum.REJECTED);
-        } else if(refundFinal.getQuantity() == totalQuantity) {
-            if(hasRejected) {
+        } else if (refundFinal.getQuantity() == totalQuantity) {
+            if (hasRejected) {
                 refundFinal.setRefundStatus(RefundStatusEnum.COMPLETED_WITH_REJECTED_PRODUCTS);
             } else {
                 refundFinal.setRefundStatus(RefundStatusEnum.COMPLETED);
             }
-        } else if(totalQuantity > 0) {
+        } else if (totalQuantity > 0) {
             refundFinal.setRefundStatus(RefundStatusEnum.PARTIALLY_COMPLETE);
         }
 
@@ -174,7 +179,7 @@ public class RefundService {
 
     public RefundLineItemHandler retrieveRefundLineItemHandlersByRefundLineItemIdAndByTimestamp(Long refundLineItemId) {
         List<RefundLineItemHandler> refundLineItemHandlers = refundLineItemHandlerRepository.findByRefundLineItemIdAndHandledDateTime(refundLineItemId);
-        if(refundLineItemHandlers.size() > 0) {
+        if (refundLineItemHandlers.size() > 0) {
             return refundLineItemHandlers.get(0);
         } else {
             return null;
@@ -183,8 +188,8 @@ public class RefundService {
 
     // Modify multiple Refunds
     public List<Refund> updateRefundsStatus(List<Refund> refunds, Long staffId, Integer quantityConfirmedRefunded, String refundProgressEnum) {
-        for(Refund refund : refunds) {
-            for(RefundLineItem refundLineItem : refund.getRefundLineItems()) {
+        for (Refund refund : refunds) {
+            for (RefundLineItem refundLineItem : refund.getRefundLineItems()) {
                 RefundLineItemHandler refundLineItemHandler = createRefundLineItemHandlerForRefundLineItem(staffId, quantityConfirmedRefunded, refundProgressEnum);
                 refundLineItemHandler.setRefundLineItem(refundLineItem);
                 refundLineItemHandlerRepository.save(refundLineItemHandler);
@@ -200,24 +205,24 @@ public class RefundService {
     }
 
     public RefundLineItem retrieveRefundLineItemById(Long refundLineItemId) throws RefundNotFoundException {
-        if(refundLineItemId == null) {
+        if (refundLineItemId == null) {
             Map<String, String> errorMap = new HashMap<>();
             errorMap.put("refundLineItemId", ErrorMessages.REFUND_LINE_ITEM_ID_REQUIRED);
             throw new RefundNotFoundException(errorMap, "Refund Line Item ID not provided");
         }
-        RefundLineItem  refundLineItem =  refundLineItemRepository.findById(refundLineItemId)
+        RefundLineItem refundLineItem = refundLineItemRepository.findById(refundLineItemId)
                 .orElseThrow(() -> new RefundNotFoundException("Refund Line Item ID " + refundLineItemId + " does not exist!"));
 
         return refundLineItem;
     }
 
     public RefundLineItemHandler retrieveRefundLineItemHandlerById(Long refundLineItemHandlerId) throws RefundNotFoundException {
-        if(refundLineItemHandlerId == null) {
+        if (refundLineItemHandlerId == null) {
             Map<String, String> errorMap = new HashMap<>();
             errorMap.put("refundLineItemHandlerId", ErrorMessages.REFUND_LINE_ITEM_HANDLER_ID_REQUIRED);
             throw new RefundNotFoundException(errorMap, "Refund Line Item Handler ID not provided");
         }
-        RefundLineItemHandler  refundLineItemHandler =  refundLineItemHandlerRepository.findById(refundLineItemHandlerId)
+        RefundLineItemHandler refundLineItemHandler = refundLineItemHandlerRepository.findById(refundLineItemHandlerId)
                 .orElseThrow(() -> new RefundNotFoundException("Refund Line Item ID " + refundLineItemHandlerId + " does not exist!"));
 
         return refundLineItemHandler;
@@ -246,7 +251,7 @@ public class RefundService {
         for (Refund refund : refunds) {
             refund.getCustomer();
             refund.getRefundLineItems().size();
-            for(RefundLineItem refundLineItem : refund.getRefundLineItems()) {
+            for (RefundLineItem refundLineItem : refund.getRefundLineItems()) {
                 refundLineItem.getRefundLineItemHandlerList().size();
             }
         }

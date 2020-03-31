@@ -102,7 +102,7 @@ public class TransactionService {
     }
 
     public TransactionLineItem retrieveTransactionLineItemById(Long transactionLineItemId) throws TransactionNotFoundException {
-        if(transactionLineItemId == null) {
+        if (transactionLineItemId == null) {
             throw new TransactionNotFoundException("Transaction Line Item ID not provided");
         }
 
@@ -115,13 +115,13 @@ public class TransactionService {
 
     /*retrieve transaction by the order number*/
     public Transaction retrieveTransactionByOrderNumber(String orderNumber) throws TransactionNotFoundException {
-        if(orderNumber.isEmpty()) {
+        if (orderNumber.isEmpty()) {
             throw new TransactionNotFoundException("Transaction Order Number is not provided");
         }
 
         Transaction transaction = transactionRepository.findByOrderNumber(orderNumber);
 
-        if(transaction == null) {
+        if (transaction == null) {
             throw new TransactionNotFoundException("Transaction with Order Number " + orderNumber + " does not exist!");
         }
 //        List<Transaction> transactions = new ArrayList<>();
@@ -361,5 +361,11 @@ public class TransactionService {
             }
         }
         return retrieveTransactionsToBeDelivered();
+    }
+
+    public List<Transaction> retrieveAllTransaction() {
+        List<Transaction> transactions = transactionRepository.findAll();
+        lazyLoadTransaction(transactions);
+        return  transactions;
     }
 }

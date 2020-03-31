@@ -143,10 +143,7 @@ class LogInForm extends Component {
               Sign In
             </Button>
           ) : (
-            <Link
-              className="account__btn btn btn-primary"
-              to="/dashboard_default"
-            >
+            <Link className="account__btn btn btn-primary" to="/dashboard">
               Sign In
             </Link>
           )}

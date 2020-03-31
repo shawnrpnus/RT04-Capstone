@@ -98,7 +98,6 @@ public class ReviewService {
             try {
                 Review reviewToUpdate = retrieveReviewById(review.getReviewId());
                 reviewToUpdate.setRating(review.getRating());
-                reviewToUpdate.setResponse(review.getResponse());
                 reviewToUpdate.setContent(review.getContent());
                 return reviewToUpdate;
             } catch (ReviewNotFoundException ex) {

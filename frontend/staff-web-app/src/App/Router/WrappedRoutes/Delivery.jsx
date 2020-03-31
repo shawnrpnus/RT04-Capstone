@@ -4,16 +4,16 @@ import {
   DeliveryTable
 } from "../../../components/Delivery";
 import { Route, Switch } from "react-router-dom";
-import RetailRoute from "../RetailRoute";
+import DeliveryRoute from "../DeliveryRoute";
 
 export default () => (
   <Switch>
-    <RetailRoute
+    <DeliveryRoute
       exact
       path="/delivery/viewAllDelivery"
       component={DeliveryTable}
     />
-    <RetailRoute
+    <DeliveryRoute
       exact
       path="/delivery/viewAllRestockOrderItem"
       component={RestockOrderItemTable}

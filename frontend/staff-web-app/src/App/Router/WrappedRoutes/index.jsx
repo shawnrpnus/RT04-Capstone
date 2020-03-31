@@ -1,5 +1,5 @@
 import React from "react";
-import { Route } from "react-router-dom";
+import { Route, Redirect, Switch } from "react-router-dom";
 import Layout from "../../../components/Layout";
 import Store from "./Store";
 import Tag from "./Tag";
@@ -13,29 +13,36 @@ import Review from "./Review";
 import RestockOrder from "./RestockOrder";
 import Delivery from "./Delivery";
 import Advertisement from "./Advertisement";
+import Instagram from "./Instagram";
 import Refund from "./Refund";
 import PromoCode from "./PromoCode";
 import Discount from "./Discount";
+import Dashboard from "./Dashboard";
 
 export default () => (
   <div>
     <Layout />
     <div className="container__wrap">
-      <Route path="/store" component={Store} />
-      <Route path="/category" component={Category} />
-      <Route path="/tag" component={Tag} />
-      <Route path="/product" component={Product} />
-      <Route path="/staff" component={Staff} />
-      <Route path="/productStock" component={ProductStock} />
-      <Route path="/warehouse" component={InventoryTable} />
-      <Route path="/feedback" component={Feedback} />
-      <Route path="/review" component={Review} />
-      <Route path="/restockOrder" component={RestockOrder} />
-      <Route path="/delivery" component={Delivery} />
-      <Route path="/advertisement" component={Advertisement} />
-      <Route path="/refund" component={Refund} />
-      <Route path="/promoCode" component={PromoCode} />
-      <Route path="/discount" component={Discount} />
+      <Switch>
+        <Route path="/store" component={Store} />
+        <Route path="/category" component={Category} />
+        <Route path="/tag" component={Tag} />
+        <Route path="/product" component={Product} />
+        <Route path="/staff" component={Staff} />
+        <Route path="/productStock" component={ProductStock} />
+        <Route path="/warehouse" component={InventoryTable} />
+        <Route path="/feedback" component={Feedback} />
+        <Route path="/review" component={Review} />
+        <Route path="/restockOrder" component={RestockOrder} />
+        <Route path="/delivery" component={Delivery} />
+        <Route path="/advertisement" component={Advertisement} />
+        <Route path="/instagram" component={Instagram} />
+        <Route path="/refund" component={Refund} />
+        <Route path="/promoCode" component={PromoCode} />
+        <Route path="/discount" component={Discount} />
+        <Route path="/dashboard" component={Dashboard} />
+        <Redirect from="/" exact to="/dashboard" />
+      </Switch>
     </div>
   </div>
 );

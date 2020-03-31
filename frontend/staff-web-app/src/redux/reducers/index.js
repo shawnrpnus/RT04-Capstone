@@ -18,6 +18,7 @@ import refundReducer from "./refundReducer";
 import instagramReducer from "./instagramReducer";
 import discountReducer from "./discountReducer";
 import transactionReducer from "./transactionReducer";
+import dashboardReducer from "./dashboardReducer";
 
 const rootReducer = combineReducers({
   errors: errorReducer,
@@ -38,6 +39,7 @@ const rootReducer = combineReducers({
   advertisement: advertisementReducer,
   instagram: instagramReducer,
   discount: discountReducer,
+  dashboard: dashboardReducer,
   util: utilReducer
 });
 
