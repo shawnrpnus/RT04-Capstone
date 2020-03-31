@@ -1,5 +1,8 @@
-package capstone.rt04.retailbackend.util.apriori;
+package capstone.rt04.retailbackend.services;
 
+import capstone.rt04.retailbackend.util.apriori.AlgoApriori;
+import capstone.rt04.retailbackend.util.apriori.Itemset;
+import capstone.rt04.retailbackend.util.apriori.Itemsets;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -17,7 +20,7 @@ import static capstone.rt04.retailbackend.util.Constants.MARKET_BASKET_ANALYIS_F
  * @author Philippe Fournier-Viger (Copyright 2008)
  */
 @Service
-public class Apriori {
+public class AprioriService {
 
     public List<List<Long>> performBasketAnalysis() throws IOException {
 
@@ -65,7 +68,7 @@ public class Apriori {
 
     public static String fileToPath(String filename) throws UnsupportedEncodingException {
         System.out.println("filename : " + filename);
-        URL url = Apriori.class.getResource(filename);
+        URL url = AprioriService.class.getResource(filename);
         return java.net.URLDecoder.decode(url.getPath(), "UTF-8");
     }
 }

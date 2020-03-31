@@ -4,6 +4,7 @@ import * as types from "./types";
 import { openCircularProgress, closeCircularProgress } from "./utilActions";
 axios.defaults.baseURL = process.env.REACT_APP_SPRING_API_URL;
 
+const DASHBOARD_BASE_URL = "/api/dashboard";
 const jsog = require("jsog");
 
 const handleRetrieveMarketBasketAnalysisResult = data => ({
@@ -15,7 +16,7 @@ export const retrieveMarketBasketAnalysisResult = () => {
   return dispatch => {
     dispatch(openCircularProgress());
     axios
-      .get("/crazy")
+      .get(DASHBOARD_BASE_URL + "/retrieveMarketBasketAnalysis")
       .then(response => {
         const { data } = jsog.decode(response);
         dispatch(handleRetrieveMarketBasketAnalysisResult(data));
