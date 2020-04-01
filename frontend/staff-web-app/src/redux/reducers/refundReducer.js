@@ -1,6 +1,5 @@
 import * as types from "../actions/types";
 
-
 const initialState = {
   allRefundModeEnum: null,
   allRefundStatusEnum: null,
