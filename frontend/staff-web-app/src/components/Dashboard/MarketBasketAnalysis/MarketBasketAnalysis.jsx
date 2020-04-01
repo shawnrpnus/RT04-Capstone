@@ -39,7 +39,7 @@ const MarketBasketAnalysis = props => {
             </React.Fragment>
           );
         })}
-        {basket.length < 1 && `No transaction made yet`}
+        {basket.length < 1 && `No constructive analysis can be made yet`}
       </CardContent>
     </Card>
   );
