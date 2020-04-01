@@ -156,7 +156,8 @@ public class RefundService {
             refundLineItemHandlerRepository.save(refundLineItemHandler);
             refundLineItem.getRefundLineItemHandlerList().add(refundLineItemHandler);
 
-            refund = refundLineItem.getRefund();
+            refund = retrieveRefundById(refundLineItem.getRefund().getRefundId());
+            refund.setRefundStatus(RefundStatusEnum.COMPLETED);
         }
         return refund;
     }
