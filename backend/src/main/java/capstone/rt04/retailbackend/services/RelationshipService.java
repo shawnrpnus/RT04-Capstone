@@ -49,6 +49,10 @@ public class RelationshipService {
         }
         customer.setReservations(null);
         customer.setTransactions(null);
+        
+        for (PromoCode promoCode: customer.getUsedPromoCodes()) {
+            promoCode.setTransactions(null);
+        }
     }
 
     public void clearCustomerReservationOrWishlist(ProductVariant productVariant) {
@@ -147,7 +151,7 @@ public class RelationshipService {
     }
 
     public void clearTransactionRelationships(Transaction transaction) {
-        transaction.setCustomer(null);
+        clearCustomerRelationships(transaction.getCustomer());
         transaction.setDeliveries(null);
 
         for (TransactionLineItem transactionLineItem : transaction.getTransactionLineItems()) {

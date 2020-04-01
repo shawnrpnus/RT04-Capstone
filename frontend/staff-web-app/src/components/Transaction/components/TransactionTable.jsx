@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useConfirm } from "material-ui-confirm";
@@ -17,15 +17,15 @@ import {
   SaveAlt,
   Search,
   ViewColumn,
-  LocalShipping
+  Visibility
 } from "@material-ui/icons";
 import MaterialTable from "material-table";
 import Chip from "@material-ui/core/Chip";
 // Redux
 import { getDeliveryStatusColour } from "../../../redux/actions/restockOrderAction";
-import { retrieveTransactionToSendForDelivery } from "../../../redux/actions/transactionActions";
-import { createDeliveryForTransaction } from "../../../redux/actions/deliveryActions";
+import { retrieveAllTransaction } from "../../../redux/actions/transactionActions";
 import withPage from "../../Layout/page/withPage";
+import TransactionDetailsDialog from "./../../Transaction/components/TransactionDetailsDialog";
 
 const _ = require("lodash");
 const tableIcons = {
@@ -54,29 +54,12 @@ const TransactionTable = props => {
   const transactions = useSelector(state => state.transaction.transactions);
   const history = useHistory();
   const { renderLoader, staff } = props;
+  const [open, setOpen] = useState(false);
+  const [transactionIndex, setTransactionIndex] = useState("");
 
   useEffect(() => {
-    dispatch(retrieveTransactionToSendForDelivery());
+    dispatch(retrieveAllTransaction());
   }, [_.isEqual(transactions)]);
-
-  console.log(transactions);
-
-  const handleCreateDelivery = (evt, data) => {
-    evt.preventDefault();
-    const ids = data.map(e => e.transactionId);
-    const request = {
-      transactionIds: ids,
-      staffId: _.get(staff, "staffId")
-    };
-    confirmDialog({
-      description:
-        "A new delivery will be created with the selected transaction"
-    })
-      .then(() => {
-        dispatch(createDeliveryForTransaction(request, history));
-      })
-      .catch(() => null);
-  };
 
   let data = [];
   if (transactions) {
@@ -154,19 +137,28 @@ const TransactionTable = props => {
             actionsColumnIndex: -1,
             headerStyle: { textAlign: "center" }, //change header padding
             cellStyle: { textAlign: "center" },
-            selection: true,
             draggable: false
           }}
           actions={[
             {
-              icon: LocalShipping,
-              tooltip: "Create new delivery",
-              onClick: (event, rowData) => handleCreateDelivery(event, rowData)
+              icon: Visibility,
+              tooltip: "View transaction details",
+              onClick: (event, rowData) => {
+                setTransactionIndex(rowData.tableData.id);
+                setOpen(true);
+              }
             }
           ]}
         />
       ) : (
         renderLoader()
+      )}
+      {open && (
+        <TransactionDetailsDialog
+          open={open}
+          onClose={() => setOpen(false)}
+          transaction={transactions[transactionIndex]}
+        />
       )}
     </div>
   );

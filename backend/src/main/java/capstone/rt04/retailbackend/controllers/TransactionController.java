@@ -61,9 +61,9 @@ public class TransactionController {
         }
     }
 
-    @GetMapping(RETRIEVE_INSTORE_COLLECTION_TRANSACTION)
+    @GetMapping(RETRIEVE_TRANSACTION_TO_SEND_FOR_DELIVERY)
     public ResponseEntity<?> retrieveInstoreCollectionTransaction() {
-        List<Transaction> transactions = transactionService.retrieveInstoreCollectionTransaction();
+        List<Transaction> transactions = transactionService.retrieveTransactionsToBeDelivered();
         for (Transaction txn : transactions) {
             relationshipService.clearTransactionRelationships(txn);
         }

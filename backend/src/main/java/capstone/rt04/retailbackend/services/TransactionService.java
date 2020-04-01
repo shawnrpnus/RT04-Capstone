@@ -62,18 +62,11 @@ public class TransactionService {
     public List<Transaction> retrievePastOrders() {
         List<Transaction> pastOrders = transactionRepository.findAll();
         lazyLoadTransaction(pastOrders);
-        pastOrders.toString();
         return pastOrders;
     }
 
     public List<Transaction> retrieveCustomerTransactions(Long customerId) {
         List<Transaction> txns = transactionRepository.findAllByCustomer_CustomerId(customerId);
-        lazyLoadTransaction(txns);
-        return txns;
-    }
-
-    public List<Transaction> retrieveInstoreCollectionTransaction() {
-        List<Transaction> txns = transactionRepository.findAllByStoreToCollectIsNotNullAndDeliveryStatusEquals(DeliveryStatusEnum.PROCESSING);
         lazyLoadTransaction(txns);
         return txns;
     }

@@ -33,10 +33,10 @@ const MarketBasketAnalysis = props => {
       <CardContent>
         {basket.map((e, index) => {
           return (
-            <>
-              <BasketCard key={index} products={e} />
+            <React.Fragment key={index}>
+              <BasketCard products={e} />
               <Divider style={{ margin: "2%" }} />
-            </>
+            </React.Fragment>
           );
         })}
         {basket.length < 1 && `No transaction made yet`}

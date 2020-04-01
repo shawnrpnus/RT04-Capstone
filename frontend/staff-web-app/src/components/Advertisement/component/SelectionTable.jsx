@@ -96,14 +96,13 @@ const SelectionTable = props => {
 
   const handleSearchTag = async () => {
     dispatch(openCircularProgress());
-    await getInstagramPostsByHashtag(searchTerm)
+    await getInstagramPostsByHashtag(searchTerm.replace(/[^a-z^A-Z]/g, ""))
       .then(response => {
         setEdges(response);
         dispatch(closeCircularProgress());
       })
       .catch(err => {
         console.log(err.response);
-
         dispatch(closeCircularProgress());
       });
   };
@@ -117,7 +116,6 @@ const SelectionTable = props => {
       })
       .catch(err => {
         console.log(err.response);
-
         dispatch(closeCircularProgress());
       });
   };
@@ -187,7 +185,9 @@ const SelectionTable = props => {
         onChange={onChange}
         autoFocus={true}
         placeholder={
-          byHashtag ? "Enter hashtag without '#'" : "Enter shortcode"
+          byHashtag
+            ? "Enter hashtag without '#'. Any symbols will be ignored"
+            : "Enter shortcode"
         }
       />
       <Button

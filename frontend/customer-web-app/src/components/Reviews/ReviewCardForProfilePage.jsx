@@ -26,8 +26,6 @@ export default function ReviewCardForProfilePage(props) {
   //Redux
   const dispatch = useDispatch();
 
-  console.log(reviews);
-
   return (
     <GridContainer justify="center">
       <GridItem xs={12} sm={10} md={12}>

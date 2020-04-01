@@ -10,7 +10,6 @@ import com.voodoodyne.jackson.jsog.JSOGGenerator;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -24,7 +23,7 @@ import java.sql.Timestamp;
 @Entity
 @Getter
 @Setter
-@EqualsAndHashCode
+@EqualsAndHashCode(exclude = "customer")
 // @ToString
 @JsonIdentityInfo(generator = JSOGGenerator.class)
 public class VerificationCode implements Serializable {

@@ -9,7 +9,8 @@ import {
   FaTags,
   FaBarcode,
   FaList,
-  FaFileInvoice
+  FaFileInvoice,
+  FaMoneyBillAlt
 } from "react-icons/fa";
 import {
   MdFeedback,
@@ -227,8 +228,8 @@ class SidebarContent extends Component {
               />
               <SidebarLink
                 title="View Customer Orders"
-                // route="/delivery/viewAllrestockOrderItem"
-                // onClick={this.hideSidebar}
+                route="/delivery/viewAllTransaction"
+                onClick={this.hideSidebar}
               />
               <SidebarLink
                 title="View Delivery"
@@ -265,6 +266,18 @@ class SidebarContent extends Component {
                 />
               </SidebarCategory>
             </>
+          )}
+          {(salesmarketing || store || warehouse) && (
+            <SidebarCategory
+              title="Transaction"
+              customIcon={<FaMoneyBillAlt />}
+            >
+              <SidebarLink
+                title="View transaction"
+                route="/transaction/viewAll"
+                onClick={this.hideSidebar}
+              />
+            </SidebarCategory>
           )}
         </ul>
       </div>

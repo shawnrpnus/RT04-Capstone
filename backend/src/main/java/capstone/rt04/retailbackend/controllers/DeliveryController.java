@@ -2,6 +2,7 @@ package capstone.rt04.retailbackend.controllers;
 
 import capstone.rt04.retailbackend.entities.*;
 import capstone.rt04.retailbackend.request.delivery.DeliveryForRestockOrderCreateRequest;
+import capstone.rt04.retailbackend.request.delivery.DeliveryForTransactionCreateRequest;
 import capstone.rt04.retailbackend.request.delivery.ReceiveRestockOrderRequest;
 import capstone.rt04.retailbackend.request.transaction.TransactionReceiveDeliveryRequest;
 import capstone.rt04.retailbackend.services.*;
@@ -59,6 +60,12 @@ public class DeliveryController {
         return new ResponseEntity<>(ResponseEntity.ok("Delivery created!"), HttpStatus.OK);
     }
 
+    @PostMapping(CREATE_DELIVERY_FOR_TRANSACTION)
+    public ResponseEntity<?> createDeliveryForTransaction(@RequestBody DeliveryForTransactionCreateRequest request)
+            throws TransactionNotFoundException, StaffNotFoundException {
+        deliveryService.createDeliveryForTransaction(request.getTransactionIds(), request.getStaffId());
+        return new ResponseEntity<>(ResponseEntity.ok("Delivery created!"), HttpStatus.OK);
+    }
 
     @PostMapping(RECEIVE_RESTOCK_ORDER_ITEM_THROUGH_DELIVERY)
     public ResponseEntity<?> receiveRestockOrderItemThroughDelivery(@RequestBody ReceiveRestockOrderRequest request)

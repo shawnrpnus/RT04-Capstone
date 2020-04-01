@@ -316,7 +316,7 @@ export const staffLogin = (staffLoginRequest, history, store) => {
         history.push(`/`); // TODO: update redirect path
       })
       .catch(err => {
-        dispatch(loginStaffError(err.response.data));
+        if (err.response) dispatch(loginStaffError(err.response.data));
         //console.log(err.response.data);
       });
   };

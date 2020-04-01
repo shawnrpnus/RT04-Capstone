@@ -17,6 +17,7 @@ import Instagram from "./Instagram";
 import Refund from "./Refund";
 import PromoCode from "./PromoCode";
 import Discount from "./Discount";
+import Transaction from "./Transaction";
 import Dashboard from "./Dashboard";
 
 export default () => (
@@ -40,6 +41,7 @@ export default () => (
         <Route path="/refund" component={Refund} />
         <Route path="/promoCode" component={PromoCode} />
         <Route path="/discount" component={Discount} />
+        <Route path="/transaction" component={Transaction} />
         <Route path="/dashboard" component={Dashboard} />
         <Redirect from="/" exact to="/dashboard" />
       </Switch>
