@@ -108,15 +108,14 @@ class ProductCard extends PureComponent {
     const {
       productName,
       price,
-      productVariants,
-      category,
       tags,
       styles,
-      serialNumber,
       productId,
       description,
-      cost
+      cost,
+      discountedPrice
     } = this.state.product;
+
     const {
       selectedColour,
       selectedSize,
@@ -126,7 +125,7 @@ class ProductCard extends PureComponent {
       openAddSizeDialog,
       openUpdateImageDialog
     } = this.state;
-    const { errors, location, currentProduct } = this.props;
+    const { errors, currentProduct } = this.props;
     const leafNodeName = _.get(currentProduct, "leafNodeName");
 
     const variants = _.keyBy(
@@ -235,13 +234,20 @@ class ProductCard extends PureComponent {
                 <StarOutlineIcon />
                 <a className="product-card__link"></a> */}
               </div>
+
               <h1 className="product-card__price">
-                ${price.toFixed(2)}{" "}
-                <span className="product-card__old-price">
-                  {" "}
-                  Cost : ${cost.toFixed(2)}
-                </span>
+                {discountedPrice
+                  ? `$${discountedPrice.toFixed(2)}`
+                  : `$${price.toFixed(2)}`}{" "}
+                {discountedPrice && (
+                  <span className="product-card__old-price">
+                    ${price.toFixed(2)}
+                  </span>
+                )}
               </h1>
+              <div className="product-card__cost">
+                Cost : ${cost.toFixed(2)}
+              </div>
               <h4 className="product-card__category">{leafNodeName}</h4>
               <div className="form__form-group">
                 <span className="product-card__form-label">Select Color</span>
@@ -249,7 +255,6 @@ class ProductCard extends PureComponent {
                   {/* Product Variant .map() */}
                   {colourSizeMap &&
                     colourSizeMap.map(({ colour }, index) => {
-                      console.log(colour);
                       return (
                         <FiberManualRecordIcon
                           style={{
@@ -290,8 +295,7 @@ class ProductCard extends PureComponent {
                         ({ size, productVariantId }, index) => {
                           const active =
                             selectedSize !== "" &&
-                            selectedSize.toString() ===
-                              productVariantId.toString();
+                            selectedSize === productVariantId;
                           return (
                             <Button
                               key={productVariantId}

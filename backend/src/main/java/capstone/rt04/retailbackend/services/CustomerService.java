@@ -2,13 +2,11 @@ package capstone.rt04.retailbackend.services;
 
 import capstone.rt04.retailbackend.entities.*;
 import capstone.rt04.retailbackend.repositories.*;
-import capstone.rt04.retailbackend.util.Constants;
 import capstone.rt04.retailbackend.util.ErrorMessages;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.customer.*;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.shoppingcart.InvalidCartTypeException;
-import capstone.rt04.retailbackend.util.exceptions.staff.StaffNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.style.StyleNotFoundException;
 import com.stripe.exception.StripeException;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import javax.persistence.PersistenceException;
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -69,7 +66,12 @@ public class CustomerService {
 
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
-    public CustomerService(JavaMailSender javaMailSender, RestTemplateBuilder builder, ValidationService validationService, ShoppingCartService shoppingCartService, ProductService productService, CustomerRepository customerRepository, ReviewRepository reviewRepository, ShoppingCartItemRepository shoppingCartItemRepository, ShoppingCartRepository shoppingCartRepository, VerificationCodeRepository verificationCodeRepository, MeasurementsRepository measurementsRepository, CreditCardRepository creditCardRepository, AddressRepository addressRepository, Environment environment, StyleService styleService, StripeService stripeService) {
+    public CustomerService(JavaMailSender javaMailSender, RestTemplateBuilder builder, ValidationService validationService,
+                           ShoppingCartService shoppingCartService, ProductService productService, CustomerRepository customerRepository,
+                           ReviewRepository reviewRepository, ShoppingCartItemRepository shoppingCartItemRepository,
+                           ShoppingCartRepository shoppingCartRepository, VerificationCodeRepository verificationCodeRepository,
+                           MeasurementsRepository measurementsRepository, CreditCardRepository creditCardRepository, AddressRepository addressRepository,
+                           Environment environment, StyleService styleService, StripeService stripeService) {
         this.javaMailSender = javaMailSender;
         this.restTemplate = builder.build();
         this.validationService = validationService;

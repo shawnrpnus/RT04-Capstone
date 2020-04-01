@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import GridContainer from "components/Layout/components/Grid/GridContainer";
 import GridItem from "components/Layout/components/Grid/GridItem";
 import Card from "components/UI/Card/Card";
@@ -20,7 +21,7 @@ function ProductVariantCard(props) {
     detail
   } = props;
   const { product } = productVariant;
-  const { productName, discountedPrice, price } = product;
+  const { productName, discountedPrice, price, productId } = product;
 
   return (
     <Card plain style={{ margin: "5px 0" }}>
@@ -29,11 +30,17 @@ function ProductVariantCard(props) {
         <GridItem md={2} xs={6}>
           {/* Modified CSS */}
           <div className={classes.imgContainer} style={{ width: "90%" }}>
-            <img
-              className={classes.img}
-              src={productVariant.productImages[0].productImageUrl}
-              alt="ProdImg"
-            />
+            <Link to={`/shop/product/${productId}`}>
+              <img
+                className={classes.img}
+                src={_.get(
+                  productVariant,
+                  "productImages[0].productImageUrl",
+                  ""
+                )}
+                alt="ProdImg"
+              />
+            </Link>
           </div>
         </GridItem>
         <GridItem md={10} xs={6}>
@@ -49,21 +56,23 @@ function ProductVariantCard(props) {
                   {finalSubTotal && (
                     <span>
                       {detail
-                        ? `$${finalSubTotal / quantity}`
-                        : `$${finalSubTotal}`}
+                        ? `$${(finalSubTotal / quantity).toFixed(2)}`
+                        : `$${finalSubTotal.toFixed(2)}`}
                     </span>
                   )}
                   <span className={finalSubTotal && classes.discountedPrice}>
                     {detail
-                      ? `$${initialSubTotal / quantity}`
-                      : `$${initialSubTotal}`}
+                      ? `$${(initialSubTotal / quantity).toFixed(2)}`
+                      : `$${initialSubTotal.toFixed(2)}`}
                   </span>
                 </h5>
               ) : (
                 <h5 style={{ margin: "3px 0" }}>
-                  {discountedPrice && <span>${discountedPrice}</span>}
+                  {discountedPrice && (
+                    <span>${discountedPrice.toFixed(2)}</span>
+                  )}
                   <span className={discountedPrice && classes.discountedPrice}>
-                    ${price}
+                    ${price.toFixed(2)}
                   </span>
                 </h5>
               )}

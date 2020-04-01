@@ -17,6 +17,7 @@ import {
   ViewColumn,
   Visibility
 } from "@material-ui/icons";
+import { AiOutlineTransaction } from "react-icons/ai";
 import MaterialTable from "material-table";
 import Chip from "@material-ui/core/Chip";
 import Button from "@material-ui/core/Button";
@@ -27,7 +28,8 @@ import {
   automateDeliveryAllocation
 } from "../../../redux/actions/deliveryActions";
 import withPage from "../../Layout/page/withPage";
-import OrderDetailsDialog from "./OrderDetailsDialog";
+import RestockOrderDetailsDialog from "./RestockOrderDetailsDialog";
+import TransactionDetailsDialog from "./TransactionDetailsDialog";
 
 const _ = require("lodash");
 const tableIcons = {
@@ -65,13 +67,15 @@ const DeliveryTable = props => {
 
   const openOrderDetailsDialog = (
     e,
-    { customerOrdersToDeliver, inStoreRestockOrderItems }
+    { customerOrdersToDeliver, inStoreRestockOrderItems },
+    transaction
   ) => {
-    if (customerOrdersToDeliver.length > 0) {
+    if (transaction) {
       console.log("customer orders");
       setOrderDetails(customerOrdersToDeliver);
       setOpenCustomerOrderDialog(true);
-    } else if (inStoreRestockOrderItems.length > 0) {
+    } else {
+      // if (inStoreRestockOrderItems.length > 0)
       console.log("restock orders");
       setOrderDetails(inStoreRestockOrderItems);
       setOpenRestockOrderDialog(true);
@@ -101,11 +105,19 @@ const DeliveryTable = props => {
       if (deliveryDateTime)
         date = dateformat(new Date(deliveryDateTime), "dd'-'mmm'-'yyyy");
       const { firstName, lastName } = deliveryStaff;
-      const status = inStoreRestockOrderItems.some(
-        e => e.itemDeliveryStatus !== "DELIVERED"
-      )
-        ? "TO DELIVER"
-        : "COMPLETED";
+      const status =
+        inStoreRestockOrderItems.some(
+          e => e.itemDeliveryStatus !== "DELIVERED"
+        ) ||
+        customerOrdersToDeliver.some(
+          ({ deliveryStatus }) =>
+            !(
+              deliveryStatus === "READY_FOR_COLLECTION" ||
+              deliveryStatus === "DELIVERED"
+            )
+        )
+          ? "TO DELIVER"
+          : "COMPLETED";
       const name = `${firstName} ${lastName}`;
       return {
         deliveryId: deliveryId,
@@ -118,8 +130,6 @@ const DeliveryTable = props => {
       };
     });
   }
-
-  console.log(data);
 
   return (
     <div
@@ -177,6 +187,12 @@ const DeliveryTable = props => {
               tooltip: "View restock order details",
               onClick: (event, rowData) =>
                 openOrderDetailsDialog(event, rowData)
+            },
+            {
+              icon: AiOutlineTransaction,
+              tooltip: "View transactions",
+              onClick: (event, rowData) =>
+                openOrderDetailsDialog(event, rowData, true)
             }
           ]}
         />
@@ -184,9 +200,17 @@ const DeliveryTable = props => {
         renderLoader()
       )}
       {openRestockOrderDialog && (
-        <OrderDetailsDialog
+        <RestockOrderDetailsDialog
           {...props}
           open={openRestockOrderDialog}
+          onClose={closeOrderDetailsDialog}
+          elements={orderDetails}
+        />
+      )}
+      {openCustomerOrderDialog && (
+        <TransactionDetailsDialog
+          {...props}
+          open={openCustomerOrderDialog}
           onClose={closeOrderDetailsDialog}
           elements={orderDetails}
         />

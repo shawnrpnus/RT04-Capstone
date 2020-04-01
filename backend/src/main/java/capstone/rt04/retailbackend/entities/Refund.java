@@ -13,11 +13,15 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.commons.lang3.RandomStringUtils;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -35,6 +39,8 @@ public class Refund implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long refundId;
+
+    private String refundNumber;
     
     private Integer quantity;
     
@@ -54,23 +60,29 @@ public class Refund implements Serializable {
     @JoinColumn(nullable = false)
     private Customer customer;
     
-    @OneToOne(optional = false)
-    @JoinColumn(nullable = false)
-    private TransactionLineItem transactionLineItem;
+//    @OneToOne(optional = false)
+//    @JoinColumn(nullable = false)
+//    private TransactionLineItem transactionLineItem;
+
+    @OneToMany(mappedBy = "refund")
+    @Size(min = 1)
+    private List<RefundLineItem> refundLineItems;
 
     public Refund() {
-         this.refundDateTime = new Timestamp(System.currentTimeMillis());
+        this.refundDateTime = new Timestamp(System.currentTimeMillis());
+        this.refundNumber = RandomStringUtils.randomAlphanumeric(12);
+        this.refundLineItems = new ArrayList<>();
     }
 
-    public Refund(Integer quantity, BigDecimal refundAmount, RefundModeEnum refundMode, RefundStatusEnum refundStatus, String reason, Customer customer, TransactionLineItem transactionLineItem) {
+    public Refund(Integer quantity, BigDecimal refundAmount, RefundModeEnum refundMode, RefundStatusEnum refundStatus, String reason) {
         this();
         this.quantity = quantity;
         this.refundAmount = refundAmount;
         this.refundMode = refundMode;
         this.refundStatus = refundStatus;
         this.reason = reason;
-        this.customer = customer;
-        this.transactionLineItem = transactionLineItem;
+//        this.customer = customer;
+//        this.transactionLineItem = transactionLineItem;
     }
     
 }

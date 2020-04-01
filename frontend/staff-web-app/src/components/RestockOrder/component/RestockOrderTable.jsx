@@ -90,7 +90,7 @@ const RestockOrderTable = props => {
       orderDateTime = dateformat(new Date(orderDateTime), "dd'-'mmm'-'yyyy");
       deliveryDateTime = deliveryDateTime
         ? dateformat(new Date(deliveryDateTime), "dd'-'mmm'-'yyyy")
-        : "";
+        : null;
       const currentDate = new Date(orderDateTime);
       const disableEdit =
         currentDate.setDate(currentDate.getDate() + 1) < new Date();
@@ -130,8 +130,9 @@ const RestockOrderTable = props => {
               field: "numberOfItems"
             },
             {
-              title: "Completed",
-              field: "deliveryDateTime"
+              title: "Completed date",
+              field: "deliveryDateTime",
+              emptyValue: "-"
             },
             {
               title: "Delivery status",

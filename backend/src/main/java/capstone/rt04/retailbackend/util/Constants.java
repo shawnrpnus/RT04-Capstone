@@ -10,4 +10,6 @@ public class Constants {
             "https://apricot-and-nut-staff.herokuapp.com"};
 
     public static final String SECRET_KEY = "THISISSECRET";
+
+    public static final String MARKET_BASKET_ANALYIS_FILE_PATH = "src/main/java/capstone/rt04/retailbackend/util/apriori/transactionIds.txt";
 }

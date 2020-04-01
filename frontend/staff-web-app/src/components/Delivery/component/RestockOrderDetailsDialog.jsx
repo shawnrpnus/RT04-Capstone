@@ -31,7 +31,7 @@ import {
   Search,
   ViewColumn
 } from "@material-ui/icons";
-import { confirmDelivery } from "../../../redux/actions/deliveryActions";
+import { confirmRestockOrderDelivery } from "../../../redux/actions/deliveryActions";
 import { getDeliveryStatusColour } from "../../../redux/actions/restockOrderAction";
 
 const _ = require("lodash");
@@ -55,7 +55,7 @@ const tableIcons = {
   ViewColumn: ViewColumn
 };
 
-const OrderDetailsDialog = ({ elements, open, onClose }) => {
+const RestockOrderDetailsDialog = ({ elements, open, onClose }) => {
   const dispatch = useDispatch();
   const history = useHistory();
   const confirmDialog = useConfirm();
@@ -118,7 +118,7 @@ const OrderDetailsDialog = ({ elements, open, onClose }) => {
       description: "The selected products will be marked as delivered"
     })
       .then(() => {
-        dispatch(confirmDelivery({ inStoreRestockOrderItemIds }));
+        dispatch(confirmRestockOrderDelivery({ inStoreRestockOrderItemIds }));
         onClose();
       })
       .catch(() => null);
@@ -219,4 +219,4 @@ const OrderDetailsDialog = ({ elements, open, onClose }) => {
   );
 };
 
-export default OrderDetailsDialog;
+export default RestockOrderDetailsDialog;

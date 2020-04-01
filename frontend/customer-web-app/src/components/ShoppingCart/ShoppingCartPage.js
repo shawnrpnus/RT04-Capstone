@@ -63,8 +63,6 @@ export default function ShoppingCartPage() {
         customer.customerId,
         "online"
       );
-      console.log("updating ");
-      console.log(request);
       dispatch(updateShoppingCart(request));
     });
   }, []);
@@ -147,8 +145,6 @@ export default function ShoppingCartPage() {
                         productVariantId
                       } = cartItem.productVariant;
                       const { productName, discountedPrice, price } = product;
-                      console.log(product);
-
                       const { quantity } = cartItem;
                       return (
                         <div key={index}>

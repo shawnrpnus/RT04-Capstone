@@ -54,7 +54,7 @@ export const createRestockOrder = (request, history) => {
   };
 };
 
-export const updateRestockOrder = (request, storeId) => {
+export const updateRestockOrder = (request, onClose, storeId) => {
   return dispatch => {
     dispatch(openCircularProgress());
     axios
@@ -65,10 +65,10 @@ export const updateRestockOrder = (request, storeId) => {
           position: toast.POSITION.TOP_CENTER
         });
         dispatch(closeCircularProgress());
+        onClose();
       })
       .catch(err => {
         console.log(err);
-
         toast.error(err.response.data.errorMessage, {
           position: toast.POSITION.TOP_CENTER
         });

@@ -76,12 +76,11 @@ function ShoppingCartToolTipContent(props) {
       {customer && customer.onlineShoppingCart.shoppingCartItems.length > 0 ? (
         <GridContainer style={{ width: "105%" }}>
           <GridItem xs={12} style={{ maxHeight: "70vh", overflowY: "scroll" }}>
-            {customer.onlineShoppingCart.shoppingCartItems.map(lineItem => (
-              <ShoppingCartItemCard
-                key={lineItem.onlineShoppingCartItemId}
-                lineItem={lineItem}
-              />
-            ))}
+            {customer.onlineShoppingCart.shoppingCartItems.map(
+              (lineItem, index) => (
+                <ShoppingCartItemCard key={index} lineItem={lineItem} />
+              )
+            )}
           </GridItem>
           <GridItem
             xs={12}
@@ -117,8 +116,6 @@ function ShoppingCartItemCard(props) {
   const size = productVariant.sizeDetails.productSize;
   const price = productVariant.product.price;
   const discountedPrice = productVariant.product.discountedPrice;
-
-  console.log(productVariant.product);
 
   return (
     <Card plain style={{ margin: "10px 0" }}>

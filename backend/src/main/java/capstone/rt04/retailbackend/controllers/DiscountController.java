@@ -51,7 +51,7 @@ public class DiscountController {
     }
 
     @PutMapping(UPDATE_DISCOUNT)
-    public ResponseEntity<?> updateDiscount(@RequestBody Discount discount) throws DiscountNotFoundException {
+    public ResponseEntity<?> updateDiscount(@RequestBody Discount discount) throws DiscountNotFoundException, InputDataValidationException {
         List<Discount> discounts = discountService.updateDiscount(discount);
         clearDiscountRelationships(discounts);
         return new ResponseEntity<>(discounts, HttpStatus.OK);

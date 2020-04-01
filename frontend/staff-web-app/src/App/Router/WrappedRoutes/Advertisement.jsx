@@ -16,12 +16,12 @@ export default () => (
     />
     <SalesMarketingRoute
       exact
-      path="/advertisement/viewInstagramByHashtag"
+      path="/instagram/viewInstagramByHashtag"
       component={SelectionTable}
     />
     <SalesMarketingRoute
       exact
-      path="/advertisement/viewAllInstagramPost"
+      path="/instagram/viewAllInstagramPost"
       component={InstagramManagementTable}
     />
   </Switch>

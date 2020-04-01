@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { useConfirm } from "material-ui-confirm";
 import dateformat from "dateformat";
 import {
   AddBox,
@@ -22,9 +23,9 @@ import MaterialTable from "material-table";
 import Chip from "@material-ui/core/Chip";
 // Redux
 import { getDeliveryStatusColour } from "../../../redux/actions/restockOrderAction";
-import { retrieveInstoreCollectionTransaction } from "../../../redux/actions/transactionActions";
+import { retrieveTransactionToSendForDelivery } from "../../../redux/actions/transactionActions";
+import { createDeliveryForTransaction } from "../../../redux/actions/deliveryActions";
 import withPage from "../../Layout/page/withPage";
-import { useConfirm } from "material-ui-confirm";
 
 const _ = require("lodash");
 const tableIcons = {
@@ -47,7 +48,7 @@ const tableIcons = {
   ViewColumn: ViewColumn
 };
 
-const DeliveryCollectionTransactionTable = props => {
+const TransactionTable = props => {
   const dispatch = useDispatch();
   const confirmDialog = useConfirm();
   const transactions = useSelector(state => state.transaction.transactions);
@@ -55,103 +56,93 @@ const DeliveryCollectionTransactionTable = props => {
   const { renderLoader, staff } = props;
 
   useEffect(() => {
-    dispatch(retrieveInstoreCollectionTransaction());
+    dispatch(retrieveTransactionToSendForDelivery());
   }, [_.isEqual(transactions)]);
 
+  console.log(transactions);
+
   const handleCreateDelivery = (evt, data) => {
-    // evt.preventDefault();
-    // const ids = data.map(e => e.inStoreRestockOrderItemId);
-    // const request = {
-    //   inStoreRestockOrderItemIds: ids,
-    //   staffId: _.get(staff, "staffId")
-    // };
-    // confirmDialog({
-    //   description: "A new delivery will be created with the selected products"
-    // })
-    //   .then(() => {
-    //     dispatch(createDeliveryForRestockOrderItem(request, history));
-    //   })
-    //   .catch(() => null);
-    console.log(data);
+    evt.preventDefault();
+    const ids = data.map(e => e.transactionId);
+    const request = {
+      transactionIds: ids,
+      staffId: _.get(staff, "staffId")
+    };
+    confirmDialog({
+      description:
+        "A new delivery will be created with the selected transaction"
+    })
+      .then(() => {
+        dispatch(createDeliveryForTransaction(request, history));
+      })
+      .catch(() => null);
   };
 
   let data = [];
-  if (restockOrderItems) {
-    data = restockOrderItems.map(item => {
+  if (transactions) {
+    data = transactions.map(item => {
       let {
-        inStoreRestockOrderItemId,
-        itemDeliveryStatus,
-        quantity,
-        productStock,
-        inStoreRestockOrder
+        transactionId,
+        orderNumber,
+        createdDateTime,
+        collectionMode,
+        deliveryStatus,
+        deliveryAddress,
+        transactionLineItems,
+        storeToCollect
       } = item;
 
-      const orderDateTime = _.get(inStoreRestockOrder, "orderDateTime", "");
-      const date = dateformat(new Date(orderDateTime), "dd'-'mmm'-'yyyy");
+      let address = deliveryAddress ? deliveryAddress : storeToCollect.address;
+      const { line1, line2, postalCode, buildingName } = address;
+      address = `${line1},${line2 ? ` ${line2},` : ""} ${postalCode}`;
+      const date = dateformat(new Date(createdDateTime), "dd'-'mmm'-'yyyy");
 
       return {
-        inStoreRestockOrderItemId: inStoreRestockOrderItemId,
-        orderDateTime: date,
-        itemDeliveryStatus: itemDeliveryStatus.split("_").join(" "),
-        quantity: quantity,
-        inStoreRestockOrderId: _.get(
-          inStoreRestockOrder,
-          "inStoreRestockOrderId",
-          ""
-        ),
-        image: _.get(
-          productStock,
-          "productVariant.productImages[0].productImageUrl",
-          ""
-        ),
-        storeName: _.get(productStock, "store.storeName", "")
+        transactionId,
+        orderNumber,
+        createdDateTime: date,
+        collectionMode,
+        deliveryStatus: deliveryStatus.split("_").join(" "),
+        deliveryAddress: address,
+        transactionLineItems
       };
     });
   }
 
   return (
     <div className="table" style={{ verticalAlign: "middle" }}>
-      {restockOrderItems ? (
+      {transactions ? (
         <MaterialTable
-          title="In-store Collection Transactions"
+          title="Transactions"
           style={{ boxShadow: "none" }}
           icons={tableIcons}
           columns={[
-            { title: "Item ID", field: "inStoreRestockOrderItemId" },
+            { title: "Transaction ID", field: "transactionId" },
             {
-              title: "Image",
-              field: "image",
-              render: rowData => (
-                <img
-                  style={{
-                    width: "50%",
-                    borderRadius: "10%"
-                  }}
-                  src={rowData.image}
-                />
-              )
+              title: "Order no.",
+              field: "orderNumber"
             },
-            { title: "Order date", field: "orderDateTime" },
+            { title: "Created date", field: "createdDateTime" },
             {
-              title: "Quantity",
-              field: "quantity"
+              title: "Collection mode",
+              field: "collectionMode"
             },
             {
-              title: "Store",
-              field: "storeName"
-            },
-            {
-              title: "Item delivery status",
-              field: "itemDeliveryStatus",
-              render: ({ itemDeliveryStatus }) => {
-                const style = getDeliveryStatusColour(itemDeliveryStatus);
+              title: "Delivery status",
+              field: "deliveryStatus",
+              render: ({ deliveryStatus }) => {
+                const style = getDeliveryStatusColour(deliveryStatus);
                 return (
                   <Chip
                     style={{ ...style, color: "white" }}
-                    label={itemDeliveryStatus}
+                    label={deliveryStatus}
                   />
                 );
               }
+            },
+            {
+              title: "Delivery address",
+              field: "deliveryAddress"
             }
           ]}
           data={data}
@@ -181,4 +172,4 @@ const DeliveryCollectionTransactionTable = props => {
   );
 };
 
-export default withPage(DeliveryCollectionTransactionTable);
+export default withPage(TransactionTable);

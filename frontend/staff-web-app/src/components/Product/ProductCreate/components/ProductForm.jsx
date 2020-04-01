@@ -442,47 +442,46 @@ class ProductForm extends React.Component {
             />
           </Grid>
         </Grid>
-
-        <React.Fragment>
-          <div
-            className="table"
-            style={{
-              width: "auto",
-              verticalAlign: "middle"
-            }}
-          >
-            <MaterialTable
-              title="Upload Images"
-              columns={[
-                { title: "Colours", field: "name" },
-                {
-                  title: "Images",
-                  field: "dropzone",
-                  render: rowData => {
-                    return (
-                      <Field
-                        key={rowData.hex}
-                        name={`${rowData.hex}-images`}
-                        selectedColour={rowData.hex}
-                        handleOnDrop={this.handleOnDrop}
-                        component={renderDropZoneMultipleField}
-                      />
-                    );
-                  }
+        <div
+          className="table"
+          style={{
+            width: "auto",
+            verticalAlign: "middle",
+            marginTop: "1%"
+          }}
+        >
+          <MaterialTable
+            title="Upload Images"
+            columns={[
+              { title: "Colours", field: "name" },
+              {
+                title: "Images",
+                field: "dropzone",
+                render: rowData => {
+                  return (
+                    <Field
+                      key={rowData.hex}
+                      name={`${rowData.hex}-images`}
+                      selectedColour={rowData.hex}
+                      handleOnDrop={this.handleOnDrop}
+                      component={renderDropZoneMultipleField}
+                    />
+                  );
                 }
-              ]}
-              options={{
-                search: false,
-                paging: false,
-                sorting: false,
-                filtering: false,
-                headerStyle: { textAlign: "center" },
-                cellStyle: { textAlign: "center" }
-              }}
-              data={this.state.colours}
-            />
-          </div>
-        </React.Fragment>
+              }
+            ]}
+            options={{
+              search: false,
+              paging: false,
+              sorting: false,
+              filtering: false,
+              headerStyle: { textAlign: "center" },
+              cellStyle: { textAlign: "center" },
+              draggable: false
+            }}
+            data={this.state.colours}
+          />
+        </div>
         <small style={{ color: "red" }}>
           Serial number, price and cost cannot have '-' character
         </small>

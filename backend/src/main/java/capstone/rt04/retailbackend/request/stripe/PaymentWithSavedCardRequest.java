@@ -26,5 +26,7 @@ public class PaymentWithSavedCardRequest {
 
     private Long storeToCollectId;
 
+    private Long promoCodeId;
+
 
 }

@@ -4,6 +4,7 @@ import capstone.rt04.retailbackend.entities.CreditCard;
 import capstone.rt04.retailbackend.util.exceptions.customer.AddressNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.customer.CreditCardNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.customer.CustomerNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.promoCode.PromoCodeNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.shoppingcart.InvalidCartTypeException;
 import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
 import com.stripe.Stripe;
@@ -123,8 +124,9 @@ public class StripeService {
 
     public capstone.rt04.retailbackend.entities.Customer makePaymentWithSavedCard(Long customerId, String paymentMethodId, Long totalAmount,
                                                                                   Long shoppingCartId, capstone.rt04.retailbackend.entities.Address deliveryAddress,
-                                                                                  capstone.rt04.retailbackend.entities.Address billingAddress, Long storeToCollectId)
-            throws CustomerNotFoundException, StripeException, InvalidCartTypeException, AddressNotFoundException, StoreNotFoundException {
+                                                                                  capstone.rt04.retailbackend.entities.Address billingAddress, Long storeToCollectId,
+                                                                                  Long promoCodeId)
+            throws CustomerNotFoundException, StripeException, InvalidCartTypeException, AddressNotFoundException, StoreNotFoundException, PromoCodeNotFoundException {
         Stripe.apiKey = "sk_test_E81pq87cIYZxL2NkXaXKsEEd00MGrcKvYx";
 
         capstone.rt04.retailbackend.entities.Customer customer = customerService.retrieveCustomerByCustomerId(customerId);
@@ -141,7 +143,7 @@ public class StripeService {
         try {
             PaymentIntent intent = PaymentIntent.create(createParams);
             // TODO: Convert shopping cart item to transaction line item and create new transaction
-            transactionService.createNewTransaction(customerId, shoppingCartId, ONLINE_SHOPPING_CART, deliveryAddress, billingAddress, storeToCollectId);
+            transactionService.createNewTransaction(customerId, shoppingCartId, ONLINE_SHOPPING_CART, deliveryAddress, billingAddress, storeToCollectId, promoCodeId);
             System.out.println("Payment success!");
             System.out.print(intent.getClientSecret());
             return customer;

@@ -31,6 +31,7 @@ public class ErrorMessages {
     public static final String ENTER_DISCOUNT= "Enter the promo discount!";
     public static final String ENTER_MIN= "Minimum amount needed!";
     public static final String INVALID_PERCENTAGE_DISCOUNT= "Please enter a discount that is less than 100%!";
+    public static final String FLAT_PERCENTAGE_NOT_NULL = "Percentage discount and flat discount cannot be both empty or 0";
     public static final String PRODUCTS_REQUIRED = "Products are required!";
     public static final String TAG_REQUIRED = "Tag is required!";
     public static final String SERIAL_NUMBER_UNIQUE ="Serial number must be unique";
@@ -68,5 +69,13 @@ public class ErrorMessages {
     public static final String SKU_TAKEN = "The product SKU is already exists!";
 
     public static final String STATUS_REQUIRED = "Status is required!";
+
+    public static final String REFUND_ID_REQUIRED = "Refund Id is required!";
+    public static final String REFUND_LINE_ITEM_HANDLER_ID_REQUIRED = "Refund Line Item Handler Id is required!";
+    public static final String REFUND_LINE_ITEM_ID_REQUIRED = "Refund Line Item Id is required!";
+    public static final String REFUND_LINE_ITEM_ALREADY_DONE  = "Refund Line Item already past this progress!";
+    public static final String REFUND_NOT_SELECTED = "Refund must be selected!";
+    public static final String REFUND_REASON_EMPTY = "Reason must not be empty";
+    public static final String REFUND_MODE = "Refund Mode must be selected";
 
 }

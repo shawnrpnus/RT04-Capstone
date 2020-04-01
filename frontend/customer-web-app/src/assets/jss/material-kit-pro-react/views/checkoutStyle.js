@@ -133,7 +133,10 @@ const styles = {
     textAlign: "right"
   },
   buttonTopMargin: {
-    marginTop: "8px"
+    "@media (max-width: 500px)": {
+      marginTop: "7%"
+    },
+    marginTop: "17px"
   },
   productName: {
     ...title,
@@ -181,6 +184,17 @@ const styles = {
   checkoutButton: {
     "@media (max-width: 500px)": {
       width: "inherit"
+    }
+  },
+  discountedTotal: {
+    ...title,
+    textDecoration: "line-through",
+    fontSize: "125%",
+    marginLeft: "5px",
+    marginRight: "5px",
+    margin: 0,
+    "@media (max-width: 500px)": {
+      fontSize: "80%"
     }
   }
 };

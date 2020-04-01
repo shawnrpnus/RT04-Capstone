@@ -1,4 +1,5 @@
-import DeliveryRestockOrderItemTable from "./component/DeliveryRestockOrderItemTable";
+import RestockOrderItemTable from "./component/RestockOrderItemTable";
 import DeliveryTable from "./component/DeliveryTable";
+import TransactionTable from "./component/TransactionTable";
 
-export { DeliveryRestockOrderItemTable, DeliveryTable };
+export { RestockOrderItemTable, DeliveryTable, TransactionTable };
