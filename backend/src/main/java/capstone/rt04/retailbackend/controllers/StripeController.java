@@ -1,5 +1,6 @@
 package capstone.rt04.retailbackend.controllers;
 
+import capstone.rt04.retailbackend.request.stripe.AddCreditCardMobileRequest;
 import capstone.rt04.retailbackend.request.stripe.DeleteCardRequest;
 import capstone.rt04.retailbackend.request.stripe.PaymentWithSavedCardRequest;
 import capstone.rt04.retailbackend.request.stripe.SaveCardRequest;
@@ -103,7 +104,7 @@ public class StripeController {
         try {
             capstone.rt04.retailbackend.entities.Customer customer = stripeService.makePaymentWithSavedCard(paymentWithSavedCardRequest.getCustomerId(),
                     paymentWithSavedCardRequest.getPaymentMethodId(), paymentWithSavedCardRequest.getTotalAmount(), paymentWithSavedCardRequest.getStoreId(),
-                    paymentWithSavedCardRequest.getDeliveryAddress(), paymentWithSavedCardRequest.getBillingAddress(),paymentWithSavedCardRequest.getStoreToCollectId());
+                    paymentWithSavedCardRequest.getDeliveryAddress(), paymentWithSavedCardRequest.getBillingAddress(), paymentWithSavedCardRequest.getStoreToCollectId());
             relationshipService.clearCustomerRelationships(customer);
             return new ResponseEntity<>(customer, HttpStatus.OK);
         } catch (StripeException e) {
@@ -122,5 +123,19 @@ public class StripeController {
             System.out.println("Error deleting card on stripe");
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @PostMapping("/addCreditCardMobile")
+    public ResponseEntity<?> addCreditCardMobile(@RequestBody AddCreditCardMobileRequest req) throws CustomerNotFoundException {
+
+        try {
+            capstone.rt04.retailbackend.entities.Customer customer = stripeService.addCreditCardMobile(req.getCustomerId(), req.getTokenId());
+            relationshipService.clearCustomerRelationships(customer);
+            return new ResponseEntity<>(customer, HttpStatus.OK);
+        } catch (StripeException e) {
+            System.out.println("Error adding card on customer mobile app");
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+
     }
 }

@@ -5,7 +5,7 @@ import Autocomplete from "src/components/Autocomplete";
 import { HelperText } from "react-native-paper";
 import materialTheme from "src/constants/Theme";
 import { BarCodeScanner } from "expo-barcode-scanner";
-import {useDispatch, useSelector} from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   retrieveAllSKUs,
   retrieveProductStockById,
@@ -68,6 +68,7 @@ function ViewDetails(props) {
     <>
       {allSKUs && (
         <>
+        <Block style={{height: height * 0.85}}>
           <Block
             flex={4}
             card
@@ -118,6 +119,7 @@ function ViewDetails(props) {
               </Button>
             </Block>
           </Block>
+
           <Block flex={2} style={{ zIndex: 0 }} center>
             <Block flex={3} middle style={{ zIndex: 0 }}>
               <Text h4 bold style={{ textAlign: "center" }}>
@@ -134,6 +136,7 @@ function ViewDetails(props) {
               </Button>
             </Block>
           </Block>
+          </Block>
           <Modal
             animationType="slide"
             transparent={false}
@@ -141,35 +144,39 @@ function ViewDetails(props) {
             onRequestClose={() => setModalVisible(false)}
             style={{ height: height * 0.8, width: width * 0.9 }}
           >
-            <Text
-              h3
-              bold
-              style={{ textAlign: "center", marginTop: height * 0.12 }}
-            >
-              Scan QR
-            </Text>
+            <Block flex middle>
+              <Text
+                h3
+                bold
+                style={{ textAlign: "center", marginBottom: 30}}
+              >
+                Scan QR
+              </Text>
 
-            {modalVisible && (
-              <BarCodeScanner
-                onBarCodeScanned={handleQRScanned}
-                style={{ ...StyleSheet.absoluteFillObject, marginLeft: 20, marginRight: 20 }}
-                barCodeTypes={["qr"]}
-              />
-            )}
+              {modalVisible && (
+                <BarCodeScanner
+                  onBarCodeScanned={handleQRScanned}
+                  style={{
+                    width: width * 0.85,
+                    height: width * 0.85
+                  }}
+                  barCodeTypes={["qr"]}
+                />
+              )}
 
-            <Button
-              style={{
-                position: "absolute",
-                width: width * 0.5,
-                marginLeft: width * 0.25,
-                marginRight: width * 0.25,
-                marginTop: height * 0.84
-              }}
-              color={materialTheme.COLORS.BUTTON_COLOR}
-              onPress={() => setModalVisible(false)}
-            >
-              Close
-            </Button>
+              <Button
+                style={{
+                  width: width * 0.5,
+                  marginLeft: width * 0.25,
+                  marginRight: width * 0.25,
+                  marginTop: 35
+                }}
+                color={materialTheme.COLORS.BUTTON_COLOR}
+                onPress={() => setModalVisible(false)}
+              >
+                Close
+              </Button>
+            </Block>
           </Modal>
         </>
       )}

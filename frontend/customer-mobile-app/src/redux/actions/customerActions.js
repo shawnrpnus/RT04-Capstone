@@ -229,3 +229,17 @@ export const removeShippingAddress = (
       });
   };
 };
+
+export const addCreditCard = (customerId, tokenId) => {
+  const req = {customerId,tokenId}
+  return dispatch => {
+    axios
+      .post(SPRING_BACKEND_URL + "/addCreditCardMobile", req)
+      .then(response => {
+        dispatchUpdatedCustomer(response.data, dispatch);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+};
