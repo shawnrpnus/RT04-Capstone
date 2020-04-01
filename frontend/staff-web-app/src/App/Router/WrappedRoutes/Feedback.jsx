@@ -1,9 +1,10 @@
 import React from "react";
 import { Route, Switch } from "react-router-dom";
 import { FeedbackTable } from "../../../components/Feedback";
+import CRMRoute from "../CRMRoute";
 
 export default () => (
   <Switch>
-    <Route exact path="/feedback/viewAll" component={FeedbackTable} />
+    <CRMRoute exact path="/feedback/viewAll" component={FeedbackTable} />
   </Switch>
 );

@@ -16,7 +16,8 @@ const RetailRoute = ({ component: Component, render, ...rest }) => {
         if (
           department === "Store" ||
           department === "Warehouse" ||
-          department.toString() === "Sales and Marketing"
+          department === "Sales and Marketing" ||
+          department === "Delivery"
         ) {
           return Component ? (
             <Component {...props} store={store} staff={staff} />

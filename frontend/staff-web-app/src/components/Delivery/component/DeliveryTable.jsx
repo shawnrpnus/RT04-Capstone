@@ -131,8 +131,6 @@ const DeliveryTable = props => {
     });
   }
 
-  console.log(data);
-
   return (
     <div
       className="table"

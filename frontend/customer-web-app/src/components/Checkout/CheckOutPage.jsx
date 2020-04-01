@@ -251,8 +251,6 @@ export default function CheckOutPage() {
     setClientSecret(null);
   };
 
-  console.log(promoCode);
-
   const onSelectCreditCard = e => {
     setCreditCardIndex(e.target.value);
     setClientSecret(null);

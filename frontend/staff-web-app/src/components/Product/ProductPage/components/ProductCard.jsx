@@ -116,7 +116,6 @@ class ProductCard extends PureComponent {
       discountedPrice
     } = this.state.product;
 
-    console.log(this.state.product);
     const {
       selectedColour,
       selectedSize,
@@ -256,7 +255,6 @@ class ProductCard extends PureComponent {
                   {/* Product Variant .map() */}
                   {colourSizeMap &&
                     colourSizeMap.map(({ colour }, index) => {
-                      console.log(colour);
                       return (
                         <FiberManualRecordIcon
                           style={{
@@ -297,8 +295,7 @@ class ProductCard extends PureComponent {
                         ({ size, productVariantId }, index) => {
                           const active =
                             selectedSize !== "" &&
-                            selectedSize.toString() ===
-                              productVariantId.toString();
+                            selectedSize === productVariantId;
                           return (
                             <Button
                               key={productVariantId}

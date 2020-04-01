@@ -5,7 +5,6 @@ import { dispatchErrorMapError } from "./index";
 import { openCircularProgress, closeCircularProgress } from "./utilActions";
 axios.defaults.baseURL = process.env.REACT_APP_SPRING_API_URL;
 
-const RESTOCK_ORDER_BASE_URL = "/api/inStoreRestockOrder";
 const DELIVERY_BASE_URL = "/api/delivery";
 const jsog = require("jsog");
 
@@ -31,26 +30,23 @@ export const retrieveAllDelivery = () => {
   };
 };
 
-export const confirmRestockOrderDelivery = request => {
+export const createDeliveryForTransaction = (request, history) => {
   return dispatch => {
     dispatch(openCircularProgress());
     axios
-      .post(
-        DELIVERY_BASE_URL + `/receiveRestockOrderItemThroughDelivery`,
-        request
-      )
-      .then(response => {
-        dispatch(retrieveAllDelivery());
-        toast.success("Delivery for restock order confirmed!", {
+      .post(DELIVERY_BASE_URL + "/createDeliveryForTransaction", request)
+      .then(({ data }) => {
+        toast.success("Succesfully created delivery!", {
           position: toast.POSITION.TOP_CENTER
         });
         dispatch(closeCircularProgress());
+        history.push("/delivery/viewAllDelivery");
       })
       .catch(err => {
-        toast.error(err.response.data.errorMessage, {
-          position: toast.POSITION.TOP_CENTER
-        });
-        // dispatchErrorMapError(err, dispatch);
+        if (err.response)
+          toast.error(err.response.data.errorMessage, {
+            position: toast.POSITION.TOP_CENTER
+          });
         dispatch(closeCircularProgress());
       });
   };
@@ -140,6 +136,31 @@ export const createDeliveryForRestockOrderItem = (request, history) => {
         toast.error(err.response.data.errorMessage, {
           position: toast.POSITION.TOP_CENTER
         });
+        dispatch(closeCircularProgress());
+      });
+  };
+};
+
+export const confirmRestockOrderDelivery = request => {
+  return dispatch => {
+    dispatch(openCircularProgress());
+    axios
+      .post(
+        DELIVERY_BASE_URL + `/receiveRestockOrderItemThroughDelivery`,
+        request
+      )
+      .then(response => {
+        dispatch(retrieveAllDelivery());
+        toast.success("Delivery for restock order confirmed!", {
+          position: toast.POSITION.TOP_CENTER
+        });
+        dispatch(closeCircularProgress());
+      })
+      .catch(err => {
+        toast.error(err.response.data.errorMessage, {
+          position: toast.POSITION.TOP_CENTER
+        });
+        // dispatchErrorMapError(err, dispatch);
         dispatch(closeCircularProgress());
       });
   };

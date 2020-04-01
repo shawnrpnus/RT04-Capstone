@@ -8,6 +8,7 @@ import capstone.rt04.retailbackend.util.exceptions.delivery.DeliveryNotFoundExce
 import capstone.rt04.retailbackend.util.exceptions.delivery.NoItemForDeliveryException;
 import capstone.rt04.retailbackend.util.exceptions.inStoreRestockOrder.InStoreRestockOrderItemNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.staff.StaffNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.transaction.TransactionNotFoundException;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,7 +42,7 @@ public class DeliveryService {
 
     public List<Delivery> retrieveAllDelivery() {
         List<Delivery> deliveries = deliveryRepository.findAll();
-        Collections.sort(deliveries, Comparator.comparing(Delivery::getDeliveryId));
+        Collections.sort(deliveries, Comparator.comparing(Delivery::getDeliveryId).reversed());
         return deliveries;
     }
 
@@ -55,14 +56,13 @@ public class DeliveryService {
     // deliverRestockOrderItem
     public void createDeliveryForRestockOrder(List<Long> inStoreRestockOrderItemIds, Long staffId) throws InStoreRestockOrderItemNotFoundException, StaffNotFoundException {
         List<InStoreRestockOrderItem> inStoreRestockOrderItems = new ArrayList<>();
-        InStoreRestockOrderItem inStoreRestockOrderItem = new InStoreRestockOrderItem();
+        InStoreRestockOrderItem inStoreRestockOrderItem;
 
         for (Long id : inStoreRestockOrderItemIds) {
             inStoreRestockOrderItem = inStoreRestockOrderService.retrieveInStoreRestockOrderItemById(id);
             inStoreRestockOrderItem.setItemDeliveryStatus(ItemDeliveryStatusEnum.IN_TRANSIT);
             inStoreRestockOrderItems.add(inStoreRestockOrderItem);
         }
-
         updateRestockOrderStatus(inStoreRestockOrderItems);
 
         Staff staff = staffService.retrieveStaffByStaffId(staffId);
@@ -72,10 +72,22 @@ public class DeliveryService {
         deliveryRepository.save(delivery);
     }
 
-
     // For delivering products from online shopping
-    public void deliverCustomerOrder() {
+    public void createDeliveryForTransaction(List<Long> transactionIds, Long staffId) throws TransactionNotFoundException, StaffNotFoundException {
+        Transaction transaction;
+        List<Transaction> transactions = new ArrayList<>();
 
+        for(Long id : transactionIds) {
+            transaction = transactionService.retrieveTransactionById(id);
+            transaction.setDeliveryStatus(DeliveryStatusEnum.IN_TRANSIT);
+            transactions.add(transaction);
+        }
+
+        Staff staff = staffService.retrieveStaffByStaffId(staffId);
+        Delivery delivery = new Delivery(new Timestamp(System.currentTimeMillis()), staff);
+        delivery.getCustomerOrdersToDeliver().addAll(transactions);
+        transactions.forEach(item -> item.getDeliveries().add(delivery));
+        deliveryRepository.save(delivery);
     }
 
     public void automateDeliveryAllocation(Long staffId) throws StaffNotFoundException, DeliveryNotFoundException, NoItemForDeliveryException {

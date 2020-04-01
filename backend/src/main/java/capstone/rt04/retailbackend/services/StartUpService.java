@@ -34,8 +34,6 @@ import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 
-import static capstone.rt04.retailbackend.util.Constants.ONLINE_SHOPPING_CART;
-
 @Component
 @Profile({"dev", "prod"})
 public class StartUpService {
@@ -116,7 +114,6 @@ public class StartUpService {
         createTagIfNotFound();
         createCustomerIfNotFound();
         createPromoCodesIfNotFound();
-        // initializeShoppingCartIfNotFound();
     }
 
     private void createCategoryIfNotFound() throws CategoryNotFoundException, CreateNewCategoryException, InputDataValidationException {
@@ -213,7 +210,6 @@ public class StartUpService {
             colourToImageUrlsMaps.add(new ColourToImageUrlsMap("#000000", blackProductImageUrls));
             colourToImageUrlsMaps.add(new ColourToImageUrlsMap("#1CD3A2", greenProductImageUrls));
             colourToImageUrlsMaps.add(new ColourToImageUrlsMap("#CB4154", redProductImageUrls));
-
 
 
             List<String> blackProductImageUrls1 = new ArrayList<>();
@@ -601,7 +597,7 @@ public class StartUpService {
             grayImageUrls26.add("https://dynamic.zacdn.com/kG5X4jfzvNO-g26z8Ue63nPCUFo=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/hollister-3391-4495331-4.jpg");
             List<ColourToImageUrlsMap> colourToImageUrlsMaps26 = new ArrayList<>();
             colourToImageUrlsMaps26.add(new ColourToImageUrlsMap("#FDDDE6", pinkProductImageUrls26));
-            colourToImageUrlsMaps26.add(new ColourToImageUrlsMap("#95918C",grayImageUrls26));
+            colourToImageUrlsMaps26.add(new ColourToImageUrlsMap("#95918C", grayImageUrls26));
 
             List<String> khakiProductImageUrls27 = new ArrayList<>();
             khakiProductImageUrls27.add("https://dynamic.zacdn.com/yE30-dhZvB_ZxXOhfbsB47k8GWQ=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/superdry-0717-4370531-1.jpg");
@@ -615,7 +611,7 @@ public class StartUpService {
             blackImageUrls27.add("https://dynamic.zacdn.com/qXqCS5vwjMf_GjTsUVzSLw_qHhM=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/superdry-4716-6470531-4.jpg");
             List<ColourToImageUrlsMap> colourToImageUrlsMaps27 = new ArrayList<>();
             colourToImageUrlsMaps27.add(new ColourToImageUrlsMap("#BDB76B", khakiProductImageUrls27));
-            colourToImageUrlsMaps27.add(new ColourToImageUrlsMap("#000000",blackImageUrls27));
+            colourToImageUrlsMaps27.add(new ColourToImageUrlsMap("#000000", blackImageUrls27));
 
             List<String> blueProductImageUrls28 = new ArrayList<>();
             blueProductImageUrls28.add("https://dynamic.zacdn.com/QLx3RnUh05lfAjiSDIrtW3Bcniw=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/tommy-hilfiger-4335-5107231-1.jpg");
@@ -629,7 +625,7 @@ public class StartUpService {
             lightblueImageUrls28.add("https://dynamic.zacdn.com/9d9z__0BpBplEfzY80pyB73waPk=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/tommy-hilfiger-9829-5596231-4.jpg");
             List<ColourToImageUrlsMap> colourToImageUrlsMaps28 = new ArrayList<>();
             colourToImageUrlsMaps28.add(new ColourToImageUrlsMap("#1F75FE", blueProductImageUrls28));
-            colourToImageUrlsMaps28.add(new ColourToImageUrlsMap("#ACE5EE",lightblueImageUrls28));
+            colourToImageUrlsMaps28.add(new ColourToImageUrlsMap("#ACE5EE", lightblueImageUrls28));
 
             List<String> khakiImageUrls29 = new ArrayList<>();
             khakiImageUrls29.add("https://dynamic.zacdn.com/WacxPLeg6raCmIflMThkhFl6fPU=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/burton-menswear-london-3061-2677631-1.jpg");
@@ -651,7 +647,7 @@ public class StartUpService {
             lightblueImageUrls30.add("https://dynamic.zacdn.com/XMvqpp7vf_z42y8fDMFHQNoAouI=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/threads-by-the-produce-9002-1830431-4.jpg");
             List<ColourToImageUrlsMap> colourToImageUrlsMaps30 = new ArrayList<>();
             colourToImageUrlsMaps30.add(new ColourToImageUrlsMap("#1A4876", midnightblueProductImageUrls30));
-            colourToImageUrlsMaps30.add(new ColourToImageUrlsMap("#78DBE2",lightblueImageUrls30));
+            colourToImageUrlsMaps30.add(new ColourToImageUrlsMap("#78DBE2", lightblueImageUrls30));
 
             List<String> blackImageUrls31 = new ArrayList<>();
             blackImageUrls31.add("https://dynamic.zacdn.com/usOBy89hnEbNeNrsGFCrvjHFPzw=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/puma-0307-747699-1.jpg");
@@ -741,8 +737,8 @@ public class StartUpService {
             productStyles.add(artsy.getStyleId());
             Product newProduct = productService.createNewProduct(product, category2.getCategoryId(), null, productStyles, sizes, colourToImageUrlsMaps1);
 
-            Product product2 = new Product("001100", "Micro Dot Shirt", " All over dot printed shirt\n"  +
-                   "- Collar neckline\\n\" +\n" +
+            Product product2 = new Product("001100", "Micro Dot Shirt", " All over dot printed shirt\n" +
+                    "- Collar neckline\\n\" +\n" +
                     "- Unlined\n" +
                     "- Regular fit\n" +
                     "- Button fastening\n" +
@@ -753,13 +749,13 @@ public class StartUpService {
             product2Styles.add(artsy.getStyleId());
             Product newProduct2 = productService.createNewProduct(product2, category2.getCategoryId(), null, product2Styles, sizes, colourToImageUrlsMaps2);
 
-            Product product3 = new Product("001200", "Abercrombie & Fitch Polo Tee ","- Embroidered logo polo shirt\n" +
+            Product product3 = new Product("001200", "Abercrombie & Fitch Polo Tee ", "- Embroidered logo polo shirt\n" +
                     "- Sizing runs one size larger\n" +
                     "- Standard collared neckline\n" +
                     "- Unlined\n" +
                     "- Regular fit\n" +
                     "- Front button fastening\n" +
-                    "- Cotton blend" , BigDecimal.valueOf(99.00), BigDecimal.valueOf(40.00));
+                    "- Cotton blend", BigDecimal.valueOf(99.00), BigDecimal.valueOf(40.00));
             Category category3 = categoryService.retrieveCategoryByCategoryId(poloTeeCategoryId);
             product3.setCategory(category3);
             product3.getStyles().add(chic);
@@ -956,13 +952,13 @@ public class StartUpService {
             product17.setCategory(category17);
             Product newProduct17 = productService.createNewProduct(product17, category17.getCategoryId(), null, product17Styles, sizes, colourToImageUrlsMaps17);
 
-          Product product18 = new Product("002700", "Distressed Frayed Denim Mini Skirt", "- Frayed hem distressed denim mini skirt\n" +
-                  "- Unlined\n" +
-                  "- Mid rise\n" +
-                  "- Regular fit\n" +
-                  "- Button and zip fastening\n" +
-                  "- Five pocket style\n" +
-                  "- Cotton blend", BigDecimal.valueOf(29.00), BigDecimal.valueOf(4.00));
+            Product product18 = new Product("002700", "Distressed Frayed Denim Mini Skirt", "- Frayed hem distressed denim mini skirt\n" +
+                    "- Unlined\n" +
+                    "- Mid rise\n" +
+                    "- Regular fit\n" +
+                    "- Button and zip fastening\n" +
+                    "- Five pocket style\n" +
+                    "- Cotton blend", BigDecimal.valueOf(29.00), BigDecimal.valueOf(4.00));
             product18.getStyles().add(chic);
             List<Long> product18Styles = new ArrayList<>();
             product18Styles.add(chic.getStyleId());
@@ -1174,8 +1170,6 @@ public class StartUpService {
             Product newProduct35 = productService.createNewProduct(product35, category13.getCategoryId(), null, product35Styles, sizes, colourToImageUrlsMaps35);
 
 
-
-
         }
     }
 
@@ -1218,6 +1212,8 @@ public class StartUpService {
         Department departmentStore = staffService.createNewDepartment("Store");
         Department departmentWarehouse = staffService.createNewDepartment("Warehouse");
         Department departmentSalesMarketing = staffService.createNewDepartment("Sales and Marketing");
+        Department delivery = staffService.createNewDepartment("Delivery");
+        Department customerService = staffService.createNewDepartment("Customer Service");
 
         Role role1 = staffService.createNewRole(RoleNameEnum.ASSISTANT);
         Role role2 = staffService.createNewRole(RoleNameEnum.ASSISTANT_MANAGER);
@@ -1235,24 +1231,32 @@ public class StartUpService {
 
         Staff staff4 = new Staff("Sales", "Marketing", 20, "971C", "rayquaza@gmail.com", BigDecimal.valueOf(10000));
         Address a4 = new Address("Block 130 Taman Jurong", "#15-02", 231334, "-");
-        Staff newStaff4 = staffService.createNewStaff(staff4, a4, role1.getRoleId(), departmentSalesMarketing.getDepartmentId(),null);
+        Staff newStaff4 = staffService.createNewStaff(staff4, a4, role1.getRoleId(), departmentSalesMarketing.getDepartmentId(), null);
 
-        Staff staff5 = new Staff("Store1", "Staff", 14, "187E", "tonychan@hotmail.com" ,BigDecimal.valueOf(10000));
-        staff5.setAddress(new Address ("Block 2 Ang Mo Kio Avenue 5","#11-05",321140,"-"));
+        Staff staff5 = new Staff("Store1", "Staff", 14, "187E", "tonychan@hotmail.com", BigDecimal.valueOf(10000));
+        staff5.setAddress(new Address("Block 2 Ang Mo Kio Avenue 5", "#11-05", 321140, "-"));
         Staff newStaff5 = staffService.createNewStaff(staff5, staff5.getAddress(), role3.getRoleId(), departmentStore.getDepartmentId(), store1Id);
 
-        Staff staff6 = new Staff("Store2", "Staff", 2, "312Z", "SergioEs@gmail.com",BigDecimal.valueOf(10000) );
-        staff6.setAddress(new Address ("Block 567 Bishan South","#20-08",321567,"-"));
+        Staff staff6 = new Staff("Store2", "Staff", 2, "312Z", "SergioEs@gmail.com", BigDecimal.valueOf(10000));
+        staff6.setAddress(new Address("Block 567 Bishan South", "#20-08", 321567, "-"));
         Staff newStaff6 = staffService.createNewStaff(staff6, staff6.getAddress(), role1.getRoleId(), departmentStore.getDepartmentId(), store2Id);
+
+        Staff staff7 = new Staff("Delivery", "guy", 2, "101Z", "deliveryman@gmail.com", BigDecimal.valueOf(10000));
+        staff7.setAddress(new Address("Block 123 Old Town Road", "#05-18", 113255, "-"));
+        Staff newStaff7 = staffService.createNewStaff(staff7, staff7.getAddress(), role1.getRoleId(), delivery.getDepartmentId(), null);
+
+        Staff staff8 = new Staff("Customer", "service", 2, "151A", "customerservice@gmail.com", BigDecimal.valueOf(10000));
+        staff8.setAddress(new Address("Block 552 Clementi Ave West", "#11-06", 113255, "-"));
+        Staff newStaff8 = staffService.createNewStaff(staff8, staff8.getAddress(), role1.getRoleId(), customerService.getDepartmentId(), null);
     }
 
     private void createPromoCodesIfNotFound() throws InputDataValidationException, CreateNewPromoCodeException {
-        if(promoCodeService.retrieveAllPromoCodes().size() == 0){
+        if (promoCodeService.retrieveAllPromoCodes().size() == 0) {
             promoCodeService.createNewPromoCode(new PromoCode("NEWMEMBER", BigDecimal.valueOf(0), BigDecimal.valueOf(5), BigDecimal.valueOf(100.40), 100));
             promoCodeService.createNewPromoCode(new PromoCode("CNY20", BigDecimal.TEN, BigDecimal.valueOf(0), BigDecimal.valueOf(20.20), 50));
-            promoCodeService.createNewPromoCode(new PromoCode("FRIYAY",  BigDecimal.valueOf(0), BigDecimal.valueOf(5), BigDecimal.valueOf(50.44), 50));
-            promoCodeService.createNewPromoCode(new PromoCode("BLACKFRIDAY", BigDecimal.TEN,  BigDecimal.valueOf(0), BigDecimal.valueOf(100.24), 5));
-            promoCodeService.createNewPromoCode(new PromoCode("SUMMERFUN", BigDecimal.valueOf(0),BigDecimal.valueOf(5), BigDecimal.valueOf(60.60), 5));
+            promoCodeService.createNewPromoCode(new PromoCode("FRIYAY", BigDecimal.valueOf(0), BigDecimal.valueOf(5), BigDecimal.valueOf(50.44), 50));
+            promoCodeService.createNewPromoCode(new PromoCode("BLACKFRIDAY", BigDecimal.TEN, BigDecimal.valueOf(0), BigDecimal.valueOf(100.24), 5));
+            promoCodeService.createNewPromoCode(new PromoCode("SUMMERFUN", BigDecimal.valueOf(0), BigDecimal.valueOf(5), BigDecimal.valueOf(60.60), 5));
         }
     }
 
@@ -1276,16 +1280,6 @@ public class StartUpService {
                     "lila@gmail.com", "password"));
             customer.setVerified(true);
             customerId = customer.getCustomerId();
-        }
-    }
-
-    private void initializeShoppingCartIfNotFound() throws ProductVariantNotFoundException, CustomerNotFoundException, InvalidCartTypeException {
-        if (shoppingCartService.initRetrieveAllShoppingCartItem().size() == 0) {
-            shoppingCartService.updateQuantityOfProductVariant(2, productVariantId26, customerId, ONLINE_SHOPPING_CART);
-            shoppingCartService.updateQuantityOfProductVariant(3, productVariantId27, customerId, ONLINE_SHOPPING_CART);
-            shoppingCartService.updateQuantityOfProductVariant(3, productVariantId28, customerId, ONLINE_SHOPPING_CART);
-            shoppingCartService.updateQuantityOfProductVariant(3, productVariantId29, customerId, ONLINE_SHOPPING_CART);
-            shoppingCartService.updateQuantityOfProductVariant(3, productVariantId30, customerId, ONLINE_SHOPPING_CART);
         }
     }
 }

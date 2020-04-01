@@ -62,18 +62,11 @@ public class TransactionService {
     public List<Transaction> retrievePastOrders() {
         List<Transaction> pastOrders = transactionRepository.findAll();
         lazyLoadTransaction(pastOrders);
-        pastOrders.toString();
         return pastOrders;
     }
 
     public List<Transaction> retrieveCustomerTransactions(Long customerId) {
         List<Transaction> txns = transactionRepository.findAllByCustomer_CustomerId(customerId);
-        lazyLoadTransaction(txns);
-        return txns;
-    }
-
-    public List<Transaction> retrieveInstoreCollectionTransaction() {
-        List<Transaction> txns = transactionRepository.findAllByStoreToCollectIsNotNullAndDeliveryStatusEquals(DeliveryStatusEnum.PROCESSING);
         lazyLoadTransaction(txns);
         return txns;
     }
@@ -102,7 +95,7 @@ public class TransactionService {
     }
 
     public TransactionLineItem retrieveTransactionLineItemById(Long transactionLineItemId) throws TransactionNotFoundException {
-        if(transactionLineItemId == null) {
+        if (transactionLineItemId == null) {
             throw new TransactionNotFoundException("Transaction Line Item ID not provided");
         }
 
@@ -115,13 +108,13 @@ public class TransactionService {
 
     /*retrieve transaction by the order number*/
     public Transaction retrieveTransactionByOrderNumber(String orderNumber) throws TransactionNotFoundException {
-        if(orderNumber.isEmpty()) {
+        if (orderNumber.isEmpty()) {
             throw new TransactionNotFoundException("Transaction Order Number is not provided");
         }
 
         Transaction transaction = transactionRepository.findByOrderNumber(orderNumber);
 
-        if(transaction == null) {
+        if (transaction == null) {
             throw new TransactionNotFoundException("Transaction with Order Number " + orderNumber + " does not exist!");
         }
 //        List<Transaction> transactions = new ArrayList<>();
@@ -361,5 +354,11 @@ public class TransactionService {
             }
         }
         return retrieveTransactionsToBeDelivered();
+    }
+
+    public List<Transaction> retrieveAllTransaction() {
+        List<Transaction> transactions = transactionRepository.findAll();
+        lazyLoadTransaction(transactions);
+        return  transactions;
     }
 }

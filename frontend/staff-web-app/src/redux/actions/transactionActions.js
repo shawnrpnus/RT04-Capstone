@@ -16,31 +16,34 @@ const handleRetrieveTransactions = data => ({
 export const retrieveAllTransaction = () => {
   return dispatch => {
     axios
-      .get(TRANSACTION_BASE_URL + `/retrieveAllTransaction`)
+      .get(TRANSACTION_BASE_URL + `/retrieveAllTransactions`)
       .then(response => {
         const { data } = jsog.decode(response);
         dispatch(handleRetrieveTransactions(data));
       })
       .catch(err => {
-        toast.error(err.response.data.errorMessage, {
-          position: toast.POSITION.TOP_CENTER
-        });
+        if (err.response && err.response.data)
+          toast.error(err.response.data.errorMessage, {
+            position: toast.POSITION.TOP_CENTER
+          });
       });
   };
 };
 
-export const retrieveInstoreCollectionTransaction = () => {
+export const retrieveTransactionToSendForDelivery = () => {
   return dispatch => {
     axios
-      .get(TRANSACTION_BASE_URL + `/retrieveInstoreCollectionTransaction`)
+      .get(TRANSACTION_BASE_URL + `/retrieveTransactionToSendForDelivery`)
       .then(response => {
         const { data } = jsog.decode(response);
+        console.log(data);
         dispatch(handleRetrieveTransactions(data));
       })
       .catch(err => {
-        toast.error(err.response.data.errorMessage, {
-          position: toast.POSITION.TOP_CENTER
-        });
+        console.log(err);
+        // toast.error(err.response.data, {
+        //   position: toast.POSITION.TOP_CENTER
+        // });
       });
   };
 };

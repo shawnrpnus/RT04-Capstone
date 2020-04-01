@@ -11,7 +11,8 @@ const SalesMarketingRoute = ({ component: Component, render, ...rest }) => {
     <SecureRoute
       {...rest}
       render={props => {
-        if (staff) {
+        const department = _.get(staff, "department.departmentName");
+        if (department === "Sales and Marketing") {
           return Component ? (
             <Component {...props} staff={staff} />
           ) : (

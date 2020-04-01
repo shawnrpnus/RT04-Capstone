@@ -6,6 +6,7 @@ import {
   DiscountManagementTable
 } from "../../../components/Discount";
 import SalesMarketingRoute from "../SalesMarketingRoute";
+import RetailRoute from "../RetailRoute";
 
 export default () => (
   <Switch>
@@ -19,7 +20,7 @@ export default () => (
       path="/discount/discountForm/:discountId"
       component={DiscountForm}
     />
-    <SalesMarketingRoute
+    <RetailRoute
       exact
       path="/discount/associateProducts"
       component={DiscountAssociationTable}

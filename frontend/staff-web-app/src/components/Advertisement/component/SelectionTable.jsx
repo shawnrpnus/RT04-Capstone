@@ -23,7 +23,8 @@ import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 // Redux
 import {
-  getInstagramInfo,
+  getInstagramPostsByHashtag,
+  getInstagramPostByShortcode,
   createInstagramPost
 } from "../../../redux/actions/instagramActions";
 import {
@@ -32,6 +33,7 @@ import {
 } from "./../../../redux/actions/utilActions";
 import withPage from "../../Layout/page/withPage";
 import { toast } from "react-toastify";
+import { ButtonGroup } from "@material-ui/core";
 
 const _ = require("lodash");
 const tableIcons = {
@@ -58,8 +60,9 @@ const SelectionTable = props => {
   const dispatch = useDispatch();
   const confirmDialog = useConfirm();
 
-  const [edges, setEdges] = useState([]);
+  const [edges, setEdges] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [byHashtag, setByHashtag] = useState(true);
   window.scrollTo(0, 0);
 
   // default search term - apricotandnut
@@ -67,7 +70,7 @@ const SelectionTable = props => {
     const source = axios.CancelToken.source();
     const fetchData = async () => {
       dispatch(openCircularProgress());
-      setEdges(await getInstagramInfo("apricotandnut", source));
+      // setEdges(await getInstagramPostsByHashtag("apricotandnut", source));
       dispatch(closeCircularProgress());
     };
     fetchData();
@@ -93,16 +96,26 @@ const SelectionTable = props => {
 
   const handleSearchTag = async () => {
     dispatch(openCircularProgress());
-    await getInstagramInfo(searchTerm)
+    await getInstagramPostsByHashtag(searchTerm.replace(/[^a-z^A-Z]/g, ""))
       .then(response => {
         setEdges(response);
         dispatch(closeCircularProgress());
       })
       .catch(err => {
         console.log(err.response);
-        toast.error("Hashtag not found!", {
-          position: toast.POSITION.TOP_CENTER
-        });
+        dispatch(closeCircularProgress());
+      });
+  };
+
+  const handleSearchPost = async () => {
+    dispatch(openCircularProgress());
+    await getInstagramPostByShortcode(searchTerm)
+      .then(response => {
+        setEdges(response);
+        dispatch(closeCircularProgress());
+      })
+      .catch(err => {
+        console.log(err.response);
         dispatch(closeCircularProgress());
       });
   };
@@ -112,7 +125,7 @@ const SelectionTable = props => {
   };
 
   let data = [];
-  if (_.get(edges, "length", -1) > 0) {
+  if (_.get(edges, "length", -1) > 0 && byHashtag) {
     data = edges.map(({ node }) => {
       const caption = _.get(
         node,
@@ -127,6 +140,15 @@ const SelectionTable = props => {
         instagramImgUrl
       };
     });
+  } else if (edges && !byHashtag) {
+    const caption = _.get(
+      edges,
+      "edge_media_to_caption.edges[0].node.text",
+      ""
+    );
+    const shortCode = _.get(edges, "shortcode", "");
+    const instagramImgUrl = _.get(edges, "display_resources[0].src", "");
+    data = edges ? [{ caption, shortCode, instagramImgUrl }] : [];
   }
 
   return (
@@ -134,6 +156,22 @@ const SelectionTable = props => {
       className="table"
       style={{ verticalAlign: "middle", textAlign: "right" }}
     >
+      <ButtonGroup>
+        <Button
+          variant={byHashtag ? "contained" : "outlined"}
+          color="primary"
+          onClick={() => setByHashtag(true)}
+        >
+          Search by hashtag
+        </Button>
+        <Button
+          variant={byHashtag ? "outlined" : "contained"}
+          color="primary"
+          onClick={() => setByHashtag(false)}
+        >
+          Search by post
+        </Button>
+      </ButtonGroup>
       <TextField
         label="Search"
         name="searchTerm"
@@ -146,14 +184,19 @@ const SelectionTable = props => {
         variant="outlined"
         onChange={onChange}
         autoFocus={true}
+        placeholder={
+          byHashtag
+            ? "Enter hashtag without '#'. Any symbols will be ignored"
+            : "Enter shortcode"
+        }
       />
       <Button
         variant="contained"
         color="primary"
         fullWidth
-        onClick={handleSearchTag}
+        onClick={byHashtag ? handleSearchTag : handleSearchPost}
       >
-        Search
+        {byHashtag ? "Search by hashtag" : "Search by post"}
       </Button>
       <MaterialTable
         title="Instagram post"

@@ -29,3 +29,5 @@ build/
 
 ### VS Code ###
 .vscode/
+
+src/main/java/capstone/rt04/retailbackend/util/apriori/transactionIds.txt
