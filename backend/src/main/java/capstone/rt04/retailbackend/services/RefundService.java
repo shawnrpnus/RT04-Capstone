@@ -105,7 +105,8 @@ public class RefundService {
         if(promoCodeId != Long.valueOf("0")) {
             promoCode = promoCodeService.retrievePromoCodeById(promoCodeId);
             refundAmount = refundAmount.subtract(promoCode.getFlatDiscount());
-            BigDecimal val = BigDecimal.ONE.subtract(promoCode.getPercentageDiscount());
+            BigDecimal val = promoCode.getPercentageDiscount().multiply(BigDecimal.valueOf(0.01));
+            val = BigDecimal.ONE.subtract(val);
             refundAmount = refundAmount.multiply(val);
         }
 

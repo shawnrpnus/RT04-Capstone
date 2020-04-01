@@ -160,7 +160,8 @@ const ViewRefundRecordDetails = props => {
       }));
     }
   }, [currTransaction]);
-  console.log(currTransaction);
+  // console.log(currTransaction);
+  console.log(currRefund);
   return (
     <div>
       <div>

@@ -178,12 +178,12 @@ const CreateEditRefundRecord = props => {
         amt += (item.finalSubTotal/item.quantity) * arr[index];
         arrayAmt[index] = (item.finalSubTotal/item.quantity);
       } else {
-        amt += (item.initialSubTotal) * arr[index];
-        arrayAmt[index] = item.initialSubTotal;
+        amt += (item.initialSubTotal/item.quantity) * arr[index];
+        arrayAmt[index] = item.initialSubTotal/item.quantity;
       }
       if(inputState.promoCode) {
         amt -= inputState.promoCode.flatDiscount;
-        let val = 1 - inputState.promoCode.percentageDiscount;
+        let val = 1 - inputState.promoCode.percentageDiscount/100.0;
         amt *= val;
       }
 
@@ -326,7 +326,14 @@ const CreateEditRefundRecord = props => {
                   },
                   {
                     title: "Unit Price",
-                    field: "initialSubTotal"
+                    field: "initialSubTotal",
+                    render: (rowData) => {
+                      const rowTotal = rowData.initialSubTotal;
+                      let valToDisplay = rowTotal/rowData.quantity;
+                      return (
+                        valToDisplay
+                      );
+                    }
                   },
                   {
                     title: "Quantity",
@@ -340,9 +347,9 @@ const CreateEditRefundRecord = props => {
                       // console.log(finalSubTotal);
                       let valToDisplay = 0;
                       if(finalSubTotal) {
-                        valToDisplay = finalSubTotal;
+                        valToDisplay = finalSubTotal/rowData.quantity;
                       } else {
-                        valToDisplay = rowData.initialSubTotal* rowData.quantity;
+                        valToDisplay = rowData.initialSubTotal;
                       }
                       return (
                         valToDisplay
