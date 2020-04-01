@@ -47,7 +47,13 @@ const FeedbackReplyDialog = ({ feedback, open, onClose }) => {
 
   return (
     <Dialog onClose={onClose} open={open} fullWidth maxWidth={"sm"}>
-      <DialogTitle>Reply to feedback </DialogTitle>
+      <DialogTitle>
+        Reply to feedback{" "}
+        <Chip
+          style={{ ...style, color: "white", marginLeft: "3%" }}
+          label={status.split("_").join(" ")}
+        />
+      </DialogTitle>
       <DialogContent>
         <Grid container spacing={1}>
           <Grid item md={4}>
@@ -89,16 +95,6 @@ const FeedbackReplyDialog = ({ feedback, open, onClose }) => {
             />
           </Grid>
         </Grid>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            marginTop: "2%"
-          }}
-        >
-          <Chip style={{ ...style, color: "white" }} label={status} />
-        </div>
 
         <TextField
           label="Content"
@@ -128,6 +124,7 @@ const FeedbackReplyDialog = ({ feedback, open, onClose }) => {
           rows={3}
           rowsMax={6}
           autoFocus={true}
+          disabled={status === "RESOLVED"}
         />
       </DialogContent>
       <DialogActions>
@@ -137,7 +134,9 @@ const FeedbackReplyDialog = ({ feedback, open, onClose }) => {
         <Button
           color="primary"
           onClick={handleReplyEmail}
-          disabled={_.get(reply.trim(), "length", 0) <= 0}
+          disabled={
+            _.get(reply.trim(), "length", 0) <= 0 || status === "RESOLVED"
+          }
         >
           Reply
         </Button>

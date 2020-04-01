@@ -58,6 +58,9 @@ const DiscountForm = props => {
     if (discountId) {
       dispatch(retrieveDiscountById(discountId));
     }
+    if (Object.keys(errors).length !== 0) {
+      dispatch(clearErrors());
+    }
   }, []);
 
   useEffect(() => {
@@ -66,6 +69,7 @@ const DiscountForm = props => {
 
       if (!dist.flatDiscount) dist.flatDiscount = "";
       if (!dist.percentageDiscount) dist.percentageDiscount = "";
+      else dist.percentageDiscount = dist.percentageDiscount * 100;
       dist.fromDateTime = moment(dist.fromDateTime);
       dist.toDateTime = moment(dist.toDateTime);
 
@@ -105,6 +109,9 @@ const DiscountForm = props => {
     const newState = { ...state };
     newState[name] = value;
     setState(newState);
+    if (Object.keys(errors).length !== 0) {
+      dispatch(clearErrors());
+    }
   };
 
   const handleDateChange = (input, name) => {
@@ -114,12 +121,10 @@ const DiscountForm = props => {
       if (fromDateTime.isSameOrAfter(input)) {
         setEndError(true);
         return;
-        console.log(new Date());
       }
     } else {
       // fromDateTime
       if (input.isSameOrAfter(toDateTime) || input.isBefore(new Date())) {
-        console.log(new Date());
         setStartError(true);
         return;
       }
@@ -139,15 +144,21 @@ const DiscountForm = props => {
 
   const handleSubmit = e => {
     e.preventDefault();
+
+    const newState = { ...state };
+    newState.percentageDiscount = newState.percentageDiscount / 100;
     if (discountId) {
-      dispatch(updateDiscount(state, props.history));
+      dispatch(updateDiscount(newState, props.history));
     } else {
-      dispatch(createDiscount(state, props.history));
+      dispatch(createDiscount(newState, props.history));
     }
   };
 
   const handleReset = () => {
     setState(startState);
+    if (Object.keys(errors).length !== 0) {
+      dispatch(clearErrors());
+    }
   };
 
   const handleCancel = () => {
@@ -218,7 +229,7 @@ const DiscountForm = props => {
             disabled={percentageDiscount !== ""}
           />
           {!percentageDiscount ? (
-            <small>In dollars: $0.00</small>
+            <small>In dollars</small>
           ) : (
             <small style={{ color: "red" }}>Disabled</small>
           )}
@@ -233,7 +244,7 @@ const DiscountForm = props => {
             disabled={flatDiscount !== ""}
           />
           {!flatDiscount ? (
-            <small>In fraction: 0.00</small>
+            <small>In percentage</small>
           ) : (
             <small style={{ color: "red" }}>Disabled</small>
           )}

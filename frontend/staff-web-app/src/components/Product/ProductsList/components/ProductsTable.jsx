@@ -141,6 +141,7 @@ class ProductsTable extends PureComponent {
                 title: "Image",
                 field: "image",
                 filtering: false,
+                sorting: false,
                 render: rowData => (
                   <Link to={`/product/viewProductDetails/${rowData.productId}`}>
                     <img
@@ -193,7 +194,8 @@ class ProductsTable extends PureComponent {
               actionsColumnIndex: -1,
               headerStyle: { textAlign: "center" }, //change header padding
               cellStyle: { textAlign: "center" },
-              selection: this.props.selectable
+              selection: this.props.selectable,
+              draggable: false
             }}
             actions={
               !this.props.selectionAction

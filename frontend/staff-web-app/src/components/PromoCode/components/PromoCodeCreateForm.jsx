@@ -34,11 +34,44 @@ class PromoCodeCreateForm extends Component {
       numRemaining: ""
     };
   }
+
   onChange = e => {
     const name = e.target.name;
-    console.log(e);
-    console.log(name);
     this.setState({ [name]: e.target.value }); //computed property name syntax
+    if (Object.keys(this.props.errors).length !== 0) {
+      this.props.clearErrors();
+    }
+  };
+
+  onChangeQuantity = e => {
+    const name = e.target.name;
+    this.setState({ [name]: e.target.value.replace(/\D/, "") }); //computed property name syntax
+    if (Object.keys(this.props.errors).length !== 0) {
+      this.props.clearErrors();
+    }
+  };
+
+  onChangeDecimal = e => {
+    const name = e.target.name;
+    const stateValue = this.state[name];
+    let value = e.target.value;
+    const lastChar = e.target.value.substr(value.length - 1, 1);
+    if (lastChar === "." && !stateValue.includes(".")) {
+      // skip the else
+    } else {
+      const x = e.target.value.split(".");
+      if (x[1] && x[1].length >= 2) {
+        value = parseFloat(e.target.value)
+          .toFixed(2)
+          .toString();
+      } else {
+        value = parseFloat(e.target.value).toString();
+      }
+      if (value === "NaN") value = "";
+    }
+    const newState = { ...this.state };
+    newState[name] = value;
+    this.setState(newState); //computed property name syntax
     if (Object.keys(this.props.errors).length !== 0) {
       this.props.clearErrors();
     }
@@ -68,6 +101,7 @@ class PromoCodeCreateForm extends Component {
       this.state.numRemaining
     );
     const req = new PromoCodeCreateRequest(promoCode);
+    console.log(req);
 
     this.props.createPromoCode(req, this.props.history);
   };
@@ -93,7 +127,7 @@ class PromoCodeCreateForm extends Component {
           <Grid item xs={12} md={6}>
             <MaterialTextField
               fieldLabel="Quantity"
-              onChange={this.onChange}
+              onChange={this.onChangeQuantity}
               fieldName="numRemaining"
               state={this.state}
               errors={errors}
@@ -104,7 +138,7 @@ class PromoCodeCreateForm extends Component {
           <Grid item xs={12} md={6}>
             <MaterialTextField
               fieldLabel="Minimum Purchase"
-              onChange={this.onChange}
+              onChange={this.onChangeDecimal}
               fieldName="minimumPurchase"
               state={this.state}
               errors={errors}
@@ -141,7 +175,7 @@ class PromoCodeCreateForm extends Component {
             <Grid item xs={12} md={6}>
               <MaterialTextField
                 fieldLabel="Flat Discount"
-                onChange={this.onChange}
+                onChange={this.onChangeDecimal}
                 fieldName="flatDiscount"
                 state={this.state}
                 errors={errors}
@@ -153,7 +187,7 @@ class PromoCodeCreateForm extends Component {
             <Grid item xs={12} md={6}>
               <MaterialTextField
                 fieldLabel="Percentage Discount"
-                onChange={this.onChange}
+                onChange={this.onChangeDecimal}
                 fieldName="percentageDiscount"
                 state={this.state}
                 errors={errors}

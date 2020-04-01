@@ -49,7 +49,7 @@ public class RelationshipService {
         }
         customer.setReservations(null);
         customer.setTransactions(null);
-        
+
         for (PromoCode promoCode: customer.getUsedPromoCodes()) {
             promoCode.setTransactions(null);
         }

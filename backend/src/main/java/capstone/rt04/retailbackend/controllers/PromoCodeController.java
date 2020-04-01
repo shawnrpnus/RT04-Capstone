@@ -35,16 +35,10 @@ public class PromoCodeController {
     }
 
     @PostMapping(CREATE_NEW_PROMO_CODE)
-    public ResponseEntity<?> createNewPromoCode(@RequestBody PromoCodeCreateRequest promoCodeCreateRequest) throws InputDataValidationException {
-
-        try {
-            PromoCode newPromoCode = promoCodeService.createNewPromoCode(promoCodeCreateRequest.getPromoCode());
-            return new ResponseEntity<>(newPromoCode, HttpStatus.CREATED);
-        } catch (InputDataValidationException ex) {
-            return new ResponseEntity<>(ex.getErrorMap(), HttpStatus.BAD_REQUEST);
-        } catch (CreateNewPromoCodeException ex) {
-            return new ResponseEntity<>(ex, HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<?> createNewPromoCode(@RequestBody PromoCodeCreateRequest promoCodeCreateRequest)
+            throws InputDataValidationException, PromoCodeNotFoundException, CreateNewPromoCodeException {
+        PromoCode newPromoCode = promoCodeService.createNewPromoCode(promoCodeCreateRequest.getPromoCode());
+        return new ResponseEntity<>(newPromoCode, HttpStatus.CREATED);
     }
 
     @GetMapping(RETRIEVE_PROMO_CODE_BY_ID)
@@ -70,21 +64,16 @@ public class PromoCodeController {
     }
 
     @DeleteMapping(REMOVE_PROMO_CODE)
-    public ResponseEntity<?> removePromoCode(@PathVariable Long promoCodeId) throws PromoCodeNotFoundException{
+    public ResponseEntity<?> removePromoCode(@PathVariable Long promoCodeId) throws PromoCodeNotFoundException {
         PromoCode deletedPromoCode = promoCodeService.deletePromoCode(promoCodeId);
         return new ResponseEntity<>(deletedPromoCode, HttpStatus.OK);
     }
 
     @PostMapping(UPDATE_PROMO_CODE)
-    public ResponseEntity<?> updatePromoCode(@RequestBody PromoCodeUpdateRequest promoCodeUpdateRequest) throws PromoCodeNotFoundException, InputDataValidationException {
-        try {
+    public ResponseEntity<?> updatePromoCode(@RequestBody PromoCodeUpdateRequest promoCodeUpdateRequest)
+            throws PromoCodeNotFoundException, InputDataValidationException, CreateNewPromoCodeException {
             PromoCode updatedPromoCode = promoCodeService.updatePromoCode(promoCodeUpdateRequest.getNewPromoCode());
             return new ResponseEntity<>(updatedPromoCode, HttpStatus.OK);
-        } catch (InputDataValidationException ex) {
-            return new ResponseEntity<>(ex.getErrorMap(), HttpStatus.BAD_REQUEST);
-        } catch (PromoCodeNotFoundException ex){
-            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
-        }
     }
 
     @GetMapping(APPLY_PROMO_CODE)

@@ -38,33 +38,27 @@ public class PromoCodeService {
         this.promoCodeRepository = promoCodeRepository;
     }
 
-    public PromoCode createNewPromoCode(PromoCode promoCode) throws InputDataValidationException, CreateNewPromoCodeException {
+    public PromoCode createNewPromoCode(PromoCode promoCode) throws InputDataValidationException, CreateNewPromoCodeException, PromoCodeNotFoundException {
 
         validationService.throwExceptionIfInvalidBean(promoCode);
 
         try {
             PromoCode existingPromoCode = null;
-
             try {
+                // checking for duplicate
                 existingPromoCode = retrievePromoCodeByName(promoCode.getPromoCodeName());
+                if (existingPromoCode != null) {
+                    Map<String, String> errorMap = new HashMap<>();
+                    errorMap.put("promoCodeName", ErrorMessages.PROMO_CODE_TAKEN);
+                    throw new InputDataValidationException(errorMap, ErrorMessages.PROMO_CODE_TAKEN);
+                }
             } catch (PromoCodeNotFoundException ex) {
+                // expected error
             }
 
-            if (existingPromoCode != null) {
-                Map<String, String> errorMap = new HashMap<>();
-                errorMap.put("promoCodeName", ErrorMessages.PROMO_CODE_TAKEN);
-                throw new InputDataValidationException(errorMap, ErrorMessages.PROMO_CODE_TAKEN);
-            }
+            throwInvalidRate(promoCode);
 
-            if (promoCode.getPercentageDiscount() == null) {
-                promoCode.setPercentageDiscount(BigDecimal.valueOf(0));
-            }
-
-            if (promoCode.getFlatDiscount() == null) {
-                promoCode.setFlatDiscount(BigDecimal.valueOf(0));
-            }
-            PromoCode savedPC = promoCodeRepository.save(promoCode);
-            return savedPC;
+            return promoCodeRepository.save(promoCode);
         } catch (PersistenceException ex) {
             throw new CreateNewPromoCodeException(ex.getMessage());
         }
@@ -89,8 +83,7 @@ public class PromoCodeService {
             }
         }
 
-        System.out.println(newPromoCode.getFlatDiscount());
-        System.out.println(newPromoCode.getPercentageDiscount());
+        throwInvalidRate(promoCode);
 
         promoCode.setFlatDiscount(newPromoCode.getFlatDiscount());
         promoCode.setPercentageDiscount(newPromoCode.getPercentageDiscount());
@@ -98,9 +91,18 @@ public class PromoCodeService {
         promoCode.setNumRemaining(newPromoCode.getNumRemaining());
         promoCode.setPromoCodeName(newPromoCode.getPromoCodeName());
 
-        PromoCode saved = promoCodeRepository.save(promoCode);
-        return saved;
+        return promoCode;
     }
+
+    private void throwInvalidRate(PromoCode promoCode) throws InputDataValidationException {
+        if (promoCode.getPercentageDiscount() == null && promoCode.getFlatDiscount() == null) {
+            Map<String, String> errorMap = new HashMap<>();
+            errorMap.put("percentageDiscount", ErrorMessages.FLAT_PERCENTAGE_NOT_NULL);
+            errorMap.put("flatDiscount", ErrorMessages.FLAT_PERCENTAGE_NOT_NULL);
+            throw new InputDataValidationException(errorMap, ErrorMessages.FLAT_PERCENTAGE_NOT_NULL);
+        }
+    }
+
 
     public PromoCode deletePromoCode(Long promoCodeId) throws PromoCodeNotFoundException {
         PromoCode promoCodeToRemove = retrievePromoCodeById(promoCodeId);
@@ -131,7 +133,7 @@ public class PromoCodeService {
         PromoCode promoCode = retrievePromoCodeByName(inputPromoCode);
 
         if (customer.getUsedPromoCodes().contains(promoCode)) {
-           throw new PromoCodeUsedException("Promo code has already been used");
+            throw new PromoCodeUsedException("Promo code has already been used");
         }
         if (promoCode.getNumRemaining().equals(0)) {
             throw new InvalidPromoCodeException("Invalid promo code");

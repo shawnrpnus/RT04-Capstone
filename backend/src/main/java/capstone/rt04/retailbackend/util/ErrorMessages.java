@@ -31,6 +31,7 @@ public class ErrorMessages {
     public static final String ENTER_DISCOUNT= "Enter the promo discount!";
     public static final String ENTER_MIN= "Minimum amount needed!";
     public static final String INVALID_PERCENTAGE_DISCOUNT= "Please enter a discount that is less than 100%!";
+    public static final String FLAT_PERCENTAGE_NOT_NULL = "Percentage discount and flat discount cannot be both empty or 0";
     public static final String PRODUCTS_REQUIRED = "Products are required!";
     public static final String TAG_REQUIRED = "Tag is required!";
     public static final String SERIAL_NUMBER_UNIQUE ="Serial number must be unique";
@@ -76,4 +77,5 @@ public class ErrorMessages {
     public static final String REFUND_NOT_SELECTED = "Refund must be selected!";
     public static final String REFUND_REASON_EMPTY = "Reason must not be empty";
     public static final String REFUND_MODE = "Refund Mode must be selected";
+
 }

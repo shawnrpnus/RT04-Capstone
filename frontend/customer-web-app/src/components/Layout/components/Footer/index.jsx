@@ -140,6 +140,10 @@ export default function FooterSection() {
                       classes.imgRaised,
                       classes.imgRounded
                     )}
+                    style={{
+                      height: "70px",
+                      width: "auto"
+                    }}
                     alt={`https://www.instagram.com/p/${shortCode}`}
                   />
                 </a>

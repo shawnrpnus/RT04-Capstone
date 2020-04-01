@@ -16,7 +16,7 @@ import {
   Search,
   ViewColumn,
   Delete,
-  Reply
+  Visibility
 } from "@material-ui/icons";
 import MaterialTable from "material-table";
 import Chip from "@material-ui/core/Chip";
@@ -57,7 +57,7 @@ const FeedbackTable = () => {
   const feedbacks = useSelector(state => state.feedback.feedbacks);
   const confirmDialog = useConfirm();
 
-  const [feedback, setFeedback] = useState({});
+  const [feedbackIndex, setFeedbackIndex] = useState({});
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -68,6 +68,22 @@ const FeedbackTable = () => {
     setOpen(!open);
   };
 
+  let data = [];
+  if (feedbacks) {
+    data = feedbacks.map(
+      ({ firstName, lastName, contactUsCategory, status, contactUsId }) => {
+        return {
+          contactUsId,
+          firstName,
+          lastName,
+          contactUsCategory,
+          status: status.split("_").join(" ")
+        };
+      }
+    );
+  }
+  console.log(feedbacks);
+
   return (
     <div className="table" style={{ verticalAlign: "middle" }}>
       <MaterialTable
@@ -75,16 +91,12 @@ const FeedbackTable = () => {
         style={{ boxShadow: "none" }}
         icons={tableIcons}
         columns={[
-          { title: "Category", field: "contactUsCategory" },
-          { title: "First name", field: "firstName" },
-          {
-            title: "Last Name",
-            field: "lastName"
-          },
-          { title: "Content", field: "content" },
+          { title: "Category", field: "contactUsCategory", filtering: false },
+          { title: "First name", field: "firstName", filtering: false },
+          { title: "Last Name", field: "lastName", filtering: false },
           {
             title: "Status",
-            field: "acknowledged",
+            field: "status",
             render: rowData => {
               let style;
               const { status, contactUsId } = rowData;
@@ -93,7 +105,7 @@ const FeedbackTable = () => {
                 case "REPLIED":
                   style = { backgroundColor: "#1975d2" };
                   break;
-                case "PENDING_ACTION":
+                case "PENDING ACTION":
                   style = { backgroundColor: "#feaa4b" };
                   break;
                 default:
@@ -110,7 +122,7 @@ const FeedbackTable = () => {
             }
           }
         ]}
-        data={feedbacks}
+        data={data}
         options={{
           filtering: true,
           sorting: true,
@@ -122,13 +134,12 @@ const FeedbackTable = () => {
         }}
         actions={[
           rowData => ({
-            icon: Reply,
-            tooltip: "Reply",
+            icon: Visibility,
+            tooltip: "View and reply",
             onClick: (e, rowData) => {
-              setFeedback(rowData);
+              setFeedbackIndex(rowData.tableData.id);
               toggleOpenDialog();
-            },
-            disabled: rowData.status === "RESOLVED"
+            }
           }),
           rowData => ({
             icon: CheckSharpIcon,
@@ -155,10 +166,10 @@ const FeedbackTable = () => {
       />
       {open && (
         <FeedbackReplyDialog
-          key={feedback.contactUsId}
+          // key={feedback.contactUsId}
           open={open}
           onClose={toggleOpenDialog}
-          feedback={feedback}
+          feedback={feedbacks[feedbackIndex]}
         />
       )}
     </div>

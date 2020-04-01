@@ -3,6 +3,7 @@ package capstone.rt04.retailbackend.services;
 import capstone.rt04.retailbackend.entities.Discount;
 import capstone.rt04.retailbackend.entities.Product;
 import capstone.rt04.retailbackend.repositories.DiscountRepository;
+import capstone.rt04.retailbackend.util.ErrorMessages;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.discount.DiscountNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductNotFoundException;
@@ -10,8 +11,10 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Timestamp;
+import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional
@@ -30,6 +33,7 @@ public class DiscountService {
 
     public List<Discount> createDiscount(Discount discount) throws InputDataValidationException {
         validationService.throwExceptionIfInvalidBean(discount);
+        throwInvalidRate(discount);
         discountRepository.save(discount);
         return retrieveAllDiscount();
     }
@@ -46,7 +50,8 @@ public class DiscountService {
         return discounts;
     }
 
-    public List<Discount> updateDiscount(Discount newDiscount) throws DiscountNotFoundException {
+    public List<Discount> updateDiscount(Discount newDiscount) throws DiscountNotFoundException, InputDataValidationException {
+        throwInvalidRate(newDiscount);
         Discount discount = retrieveDiscountById(newDiscount.getDiscountId());
         discount.setDiscountName(newDiscount.getDiscountName());
         discount.setFlatDiscount(newDiscount.getFlatDiscount());
@@ -54,6 +59,14 @@ public class DiscountService {
         discount.setFromDateTime(newDiscount.getFromDateTime());
         discount.setToDateTime(newDiscount.getToDateTime());
         return retrieveAllDiscount();
+    }
+
+    private void throwInvalidRate(Discount discount) throws InputDataValidationException {
+        if (discount.getPercentageDiscount().compareTo(BigDecimal.ONE) > 0) {
+            Map<String, String> errorMap = new HashMap<>();
+            errorMap.put("percentageDiscount", ErrorMessages.INVALID_PERCENTAGE_DISCOUNT);
+            throw new InputDataValidationException(errorMap, ErrorMessages.INVALID_PERCENTAGE_DISCOUNT);
+        }
     }
 
     public List<Discount> deleteDiscount(Long discountId) throws DiscountNotFoundException {
