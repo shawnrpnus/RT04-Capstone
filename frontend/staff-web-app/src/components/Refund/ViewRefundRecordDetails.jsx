@@ -102,7 +102,9 @@ const ViewRefundRecordDetails = props => {
     refundNumber: "",
     refundProgress: "",
     customerName: "",
-    email: ""
+    email: "",
+    promoCodeName: "",
+    promoCodeDiscount: ""
   });
   const [currTransaction, setCurrTransaction] = useState(null);
 
@@ -129,6 +131,8 @@ const ViewRefundRecordDetails = props => {
 
   useEffect(() => {
     if (currRefund !== null) {
+      setCurrTransaction(_.get(currRefund, "refundLineItems[0].transactionLineItem.transaction"));
+
       setInputState(inputState => ({
         ...inputState,
         reason: currRefund.reason,
@@ -140,10 +144,24 @@ const ViewRefundRecordDetails = props => {
         customerName: currRefund.customer.firstName + " " + currRefund.customer.lastName,
         email: currRefund.customer.email
       }));
-      setCurrTransaction(_.get(currRefund, "refundLineItems[0].transactionLineItem.transaction"));
     }
 
   }, [currRefund]);
+
+  useEffect( () => {
+    if(currTransaction != null) {
+      setInputState(inputState => ({
+        ...inputState,
+        promoCodeName: currTransaction.promoCode ? currTransaction.promoCode.promoCodeName : "-",
+        promoCodeDiscount: _.get(currTransaction, "promoCode.flatDiscount") ?
+          "$"+_.get(currTransaction, "promoCode.flatDiscount"):
+          _.get(currTransaction, "promoCode.percentageDiscount") ?
+          _.get(currTransaction, "promoCode.percentageDiscount")+"%" : "-"
+      }));
+    }
+  }, [currTransaction]);
+  // console.log(currTransaction);
+  console.log(currRefund);
   return (
     <div>
       <div>
@@ -185,29 +203,29 @@ const ViewRefundRecordDetails = props => {
                 errors={errors}
               />
             </Grid>
-            <Grid item xs={12} md={2}>
-              <MaterialTextField
-                fieldLabel="Total Amount"
-                fieldName="refundAmount"
-                state={inputState}
-                autoFocus={true}
-                disabled={disabled}
-                onChange={onChange}
-                errors={errors}
-              />
-            </Grid>
-            <Grid item xs={12} md={2}>
-              <MaterialTextField
-                fieldLabel="Quantity"
-                fieldName="quantity"
-                state={inputState}
-                autoFocus={true}
-                disabled={disabled}
-                onChange={onChange}
-                errors={errors}
-              />
-            </Grid>
-            <Grid item xs={12} md={2}>
+            {/*<Grid item xs={12} md={2}>*/}
+            {/*  <MaterialTextField*/}
+            {/*    fieldLabel="Total Amount"*/}
+            {/*    fieldName="refundAmount"*/}
+            {/*    state={inputState}*/}
+            {/*    autoFocus={true}*/}
+            {/*    disabled={disabled}*/}
+            {/*    onChange={onChange}*/}
+            {/*    errors={errors}*/}
+            {/*  />*/}
+            {/*</Grid>*/}
+            {/*<Grid item xs={12} md={2}>*/}
+            {/*  <MaterialTextField*/}
+            {/*    fieldLabel="Quantity"*/}
+            {/*    fieldName="quantity"*/}
+            {/*    state={inputState}*/}
+            {/*    autoFocus={true}*/}
+            {/*    disabled={disabled}*/}
+            {/*    onChange={onChange}*/}
+            {/*    errors={errors}*/}
+            {/*  />*/}
+            {/*</Grid>*/}
+            <Grid item xs={12} md={4}>
               <MaterialTextField
                 fieldLabel="Customer"
                 fieldName="customerName"
@@ -218,7 +236,7 @@ const ViewRefundRecordDetails = props => {
                 errors={errors}
               />
             </Grid>
-            <Grid item xs={12} md={2}>
+            <Grid item xs={12} md={4}>
               <MaterialTextField
                 fieldLabel="Email"
                 fieldName="email"
@@ -280,10 +298,10 @@ const ViewRefundRecordDetails = props => {
                       title: "Refund Quantity",
                       field: "quantity"
                     },
-                    {
-                      title: "Refund Amount",
-                      field: "totalPrice"
-                    },
+                    // {
+                    //   title: "Refund Amount",
+                    //   field: "totalPrice"
+                    // },
                     {
                       title: "Refund Progress",
                       field: "refundProgress",
@@ -342,6 +360,58 @@ const ViewRefundRecordDetails = props => {
               ) : (
                 ""
               )}
+            </Grid>
+            <Grid item xs={12} md={2}>
+              {currTransaction ?
+                <MaterialTextField
+                  fieldLabel="Promo Code Used"
+                  fieldName="promoCodeName"
+                  state={inputState}
+                  autoFocus={true}
+                  disabled={disabled}
+                  onChange={onChange}
+                  errors={errors}
+                />
+              :
+              ""}
+            </Grid>
+            <Grid item xs={12} md={2}>
+              {currTransaction ?
+                <MaterialTextField
+                  fieldLabel="Discount Amount"
+                  fieldName="promoCodeDiscount"
+                  state={inputState}
+                  autoFocus={true}
+                  disabled={disabled}
+                  onChange={onChange}
+                  errors={errors}
+                />
+                :
+                ""}
+            </Grid>
+            <Grid item xs={12} md={4}>
+            </Grid>
+            <Grid item xs={12} md={2}>
+              <MaterialTextField
+                fieldLabel="Total Quantity"
+                fieldName="quantity"
+                state={inputState}
+                autoFocus={true}
+                disabled={disabled}
+                onChange={onChange}
+                errors={errors}
+              />
+            </Grid>
+            <Grid item xs={12} md={2}>
+              <MaterialTextField
+                fieldLabel="Total Refund Amount"
+                fieldName="refundAmount"
+                state={inputState}
+                autoFocus={true}
+                disabled={disabled}
+                onChange={onChange}
+                errors={errors}
+              />
             </Grid>
           </Grid>
         </form>

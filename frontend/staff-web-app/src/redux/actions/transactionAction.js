@@ -19,7 +19,7 @@ export const retrieveTransactionByOrderNumber = orderNumber => {
       });
 };
 
-const retrieveTransactionByOrderNumberSuccess = data => ({
+export const retrieveTransactionByOrderNumberSuccess = data => ({
   type: RETRIEVE_TRANSACTION_BY_ORDER_NUMBER_SUCCESS,
   transaction: data
 });

@@ -8,7 +8,7 @@ import { clearErrors } from "../../redux/actions";
 import { Grid } from "@material-ui/core";
 import MaterialObjectSelect from "../../shared/components/Form/MaterialObjectSelect";
 import {
-  createInStoreRefundRequest,
+  createInStoreRefundRequest, createInStoreRefundSuccess,
   retrieveAllRefundModeEnum,
   retrieveAllRefundStatusEnum
 } from "../../redux/actions/refundAction";
@@ -17,7 +17,10 @@ import InputLabel from "@material-ui/core/InputLabel";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import { Button } from "reactstrap";
 import axios from "axios";
-import { retrieveTransactionByOrderNumber } from "../../redux/actions/transactionAction";
+import {
+  retrieveTransactionByOrderNumber,
+  retrieveTransactionByOrderNumberSuccess
+} from "../../redux/actions/transactionAction";
 import MaterialTable from "material-table";
 import {
   Add,
@@ -80,14 +83,16 @@ const CreateEditRefundRecord = props => {
     quantity: 0,
     refundAmt: 0,
     totalRefundAmount: 0,
-    refundMode: "",
+    refundMode: "IN_STORE",
     refundStatus: "",
     refundLabelCode: "",
     refundDateTime: "",
     reason: "",
     transactionOrderNumber: "",
     quantityToRefund: new Array(12).fill(0),
-    customerId: ""
+    customerId: "",
+    promoCode: "-",
+    promoCodeName: ""
 
   });
   const allRefundStatusEnums = useSelector(
@@ -101,14 +106,21 @@ const CreateEditRefundRecord = props => {
   // const currLength = useSelector(state => state.transaction.transaction.transactionLineItems.length);
   console.log(currTransaction);
   console.log(inputState);
+  useEffect(()=> {
+    dispatch(retrieveTransactionByOrderNumberSuccess())},
+    []
+  );
   useEffect(
     () =>
       setInputState(inputState => ({
         ...inputState,
         quantityToRefund: new Array(_.get(currTransaction, "transactionLineItems.length")).fill(0),
         refundAmt: new Array(_.get(currTransaction, "transactionLineItems.length")).fill(0),
-        customerId: _.get(currTransaction, "customer.customerId")
-      })),
+        customerId: _.get(currTransaction, "customer.customerId"),
+        promoCode: _.get(currTransaction, "promoCode") ? _.get(currTransaction, "promoCode"): 0,
+        promoCodeName: _.get(currTransaction, "promoCode") ? _.get(currTransaction, "promoCode.promoCodeName"): 0,
+      }))
+    ,
     [currTransaction]
   );
   // console.log(allRefundModeEnums);
@@ -150,6 +162,7 @@ const CreateEditRefundRecord = props => {
       totalRefundAmount: amount
     }));
   };
+  console.log("promoCode",inputState.promoCode);
 
   const calculateTotalRefundAmount= (arr) => {
     console.log(arr);
@@ -161,9 +174,19 @@ const CreateEditRefundRecord = props => {
     lineItems.forEach(myFunction);
     function myFunction(item, index)
     {
-      amt += (item.finalSubTotal/item.quantity) * arr[index];
+      if(item.finalSubTotal) {
+        amt += (item.finalSubTotal/item.quantity) * arr[index];
+        arrayAmt[index] = (item.finalSubTotal/item.quantity);
+      } else {
+        amt += (item.initialSubTotal/item.quantity) * arr[index];
+        arrayAmt[index] = item.initialSubTotal/item.quantity;
+      }
+      if(inputState.promoCode) {
+        amt -= inputState.promoCode.flatDiscount;
+        let val = 1 - inputState.promoCode.percentageDiscount/100.0;
+        amt *= val;
+      }
 
-      arrayAmt[index] = (item.finalSubTotal/item.quantity);
       setInputState(inputState => ({
         ...inputState,
         refundAmt: arrayAmt
@@ -220,58 +243,34 @@ const CreateEditRefundRecord = props => {
       </div>
       <form className="material-form">
         <Grid container spacing={3}>
-          <Grid item xs={12} md={6}>
-            {allRefundModeEnums ? (
-              <div>
-                <FormControl fullWidth={true}>
-                  <InputLabel required={true}>Refund Mode</InputLabel>
-                  <Select
-                    name="refundMode"
-                    value={inputState.refundMode}
-                    onChange={onChange}
-                    fullWidth
-                    label="Refund Mode"
-                  >
-                    {allRefundModeEnums.map(function(item, index) {
-                      return (
-                        <MenuItem value={item} key={index}>
-                          {item}
-                        </MenuItem>
-                      );
-                    })}
-                  </Select>
-                </FormControl>
-              </div>
-            ) : (
-              ""
-            )}
-          </Grid>
           {/*<Grid item xs={12} md={6}>*/}
-            {/*{allRefundStatusEnums ? (*/}
-            {/*  <div>*/}
-            {/*    <InputLabel>Refund Status</InputLabel>*/}
-            {/*    <Select*/}
-            {/*      name="refundStatus"*/}
-            {/*      value={inputState.refundStatus}*/}
-            {/*      onChange={onChange}*/}
-            {/*      fullWidth*/}
-            {/*      label="Refund Status"*/}
-            {/*    >*/}
-            {/*      {allRefundStatusEnums.map(function(item, index) {*/}
-            {/*        return (*/}
-            {/*          <MenuItem value={item} key={index}>*/}
-            {/*            {item}*/}
-            {/*          </MenuItem>*/}
-            {/*        );*/}
-            {/*      })}*/}
-            {/*    </Select>*/}
-            {/*  </div>*/}
-            {/*) : (*/}
-            {/*  ""*/}
-            {/*)}*/}
+          {/*  {allRefundModeEnums ? (*/}
+          {/*    <div>*/}
+          {/*      <FormControl fullWidth={true}>*/}
+          {/*        <InputLabel required={true}>Refund Mode</InputLabel>*/}
+          {/*        <Select*/}
+          {/*          name="refundMode"*/}
+          {/*          value={inputState.refundMode}*/}
+          {/*          onChange={onChange}*/}
+          {/*          fullWidth*/}
+          {/*          label="Refund Mode"*/}
+          {/*        >*/}
+          {/*          {allRefundModeEnums.map(function(item, index) {*/}
+          {/*            return (*/}
+          {/*              <MenuItem value={item} key={index}>*/}
+          {/*                {item}*/}
+          {/*              </MenuItem>*/}
+          {/*            );*/}
+          {/*          })}*/}
+          {/*        </Select>*/}
+          {/*      </FormControl>*/}
+          {/*    </div>*/}
+          {/*  ) : (*/}
+          {/*    ""*/}
+          {/*  )}*/}
           {/*</Grid>*/}
 
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={12}>
             <MaterialTextField
               fieldLabel="Reason"
               fieldName="reason"
@@ -327,7 +326,14 @@ const CreateEditRefundRecord = props => {
                   },
                   {
                     title: "Unit Price",
-                    field: "initialSubTotal"
+                    field: "initialSubTotal",
+                    render: (rowData) => {
+                      const rowTotal = rowData.initialSubTotal;
+                      let valToDisplay = rowTotal/rowData.quantity;
+                      return (
+                        valToDisplay
+                      );
+                    }
                   },
                   {
                     title: "Quantity",
@@ -335,7 +341,20 @@ const CreateEditRefundRecord = props => {
                   },
                   {
                     title: "Price",
-                    field: "finalSubTotal"
+                    field: "finalSubTotal",
+                    render: (rowData) => {
+                      const finalSubTotal = rowData.finalSubTotal;
+                      // console.log(finalSubTotal);
+                      let valToDisplay = 0;
+                      if(finalSubTotal) {
+                        valToDisplay = finalSubTotal/rowData.quantity;
+                      } else {
+                        valToDisplay = rowData.initialSubTotal;
+                      }
+                      return (
+                        valToDisplay
+                      );
+                    }
                   },
                   {
                     title: "Quantity to Refund",
@@ -401,7 +420,18 @@ const CreateEditRefundRecord = props => {
               ""
             )}
           </Grid>
-
+          <Grid item xs={12} md={6}>
+            {currTransaction ? (
+                <MaterialTextField
+                  fieldLabel="Promo Code Used"
+                  fieldName="promoCodeName"
+                  state={inputState}
+                  errors={errors}
+                  onChange={onChange}
+                  disabled={true}
+                />)
+              : ""}
+          </Grid>
           <Grid item xs={12} md={6}>
             {currTransaction ? (
               <MaterialTextField
@@ -427,6 +457,7 @@ const CreateEditRefundRecord = props => {
             />)
               : ""}
           </Grid>
+
           <Grid item xs={12} md={10}>
           </Grid>
           <Grid item xs={12} md={2}>
