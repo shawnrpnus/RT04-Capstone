@@ -73,70 +73,73 @@ function Product(props) {
     <Block flex={1} center>
       {allSKUs && (
         <>
-          <Block
-            flex={3}
-            card
-            style={{
-              backgroundColor: "white",
-              width: width,
-              marginBottom: 20,
-              marginTop: 0,
-              padding: 20,
-              borderRadius: 0,
-              zIndex: 1
-            }}
-          >
-            <Block flex={0.5} middle canter>
-              <Text h4 bold>
-                Enter SKU
-              </Text>
+          <Block style={{ height: height * 0.85 }}>
+            <Block
+              flex={3}
+              card
+              style={{
+                backgroundColor: "white",
+                width: width,
+                marginBottom: 20,
+                marginTop: 0,
+                padding: 20,
+                borderRadius: 0,
+                zIndex: 1
+              }}
+            >
+              <Block flex={0.5} middle canter>
+                <Text h4 bold>
+                  Enter SKU
+                </Text>
+              </Block>
+              <Block flex={2} center style={{ width: width * 0.8, zIndex: 1 }}>
+                <Autocomplete
+                  array={allSKUs}
+                  label="SKU"
+                  value={SKU}
+                  setValue={setSKU}
+                  helperText={
+                    <HelperText
+                      type="error"
+                      visible={
+                        !!_.get(errors, "sku") ||
+                        !!_.get(errors, "errorMessage")
+                      }
+                    >
+                      {errors.sku}
+                      {errors.errorMessage}
+                    </HelperText>
+                  }
+                  error={
+                    !!_.get(errors, "sku") || !!_.get(errors, "errorMessage")
+                  }
+                />
+              </Block>
+              <Block flex={0.4} center style={{ width: "100%", zIndex: 0 }}>
+                <Button
+                  color={materialTheme.COLORS.BUTTON_COLOR}
+                  style={{ width: width * 0.8, height: 50 }}
+                  onPress={handleSkuSearch}
+                >
+                  SEARCH
+                </Button>
+              </Block>
             </Block>
-            <Block flex={2} center style={{ width: width*0.8, zIndex: 1 }}>
-              <Autocomplete
-                array={allSKUs}
-                label="SKU"
-                value={SKU}
-                setValue={setSKU}
-                helperText={
-                  <HelperText
-                    type="error"
-                    visible={
-                      !!_.get(errors, "sku") || !!_.get(errors, "errorMessage")
-                    }
-                  >
-                    {errors.sku}
-                    {errors.errorMessage}
-                  </HelperText>
-                }
-                error={
-                  !!_.get(errors, "sku") || !!_.get(errors, "errorMessage")
-                }
-              />
-            </Block>
-            <Block flex={0.4} center style={{ width: "100%", zIndex: 0 }}>
-              <Button
-                color={materialTheme.COLORS.BUTTON_COLOR}
-                style={{ width: width*0.8, height: 50 }}
-                onPress={handleSkuSearch}
-              >
-                SEARCH
-              </Button>
-            </Block>
-          </Block>
-          <Block flex={2} style={{ zIndex: 0 }} center>
-            <Block flex={2} center style={{ zIndex: 0 }}>
-              <Text h4 bold style={{ textAlign: "center" }}>
-                OR
-              </Text>
-            </Block>
-            <Block flex={6}>
-              <Button
-                color={materialTheme.COLORS.BUTTON_COLOR}
-                style={{ width: width * 0.8, height: 50 }}
-                onPress={requestPermissions}
-              >
-                SCAN QR
-              </Button>
+            <Block flex={2} style={{ zIndex: 0 }} center>
+              <Block flex={2} center style={{ zIndex: 0 }}>
+                <Text h4 bold style={{ textAlign: "center" }}>
+                  OR
+                </Text>
+              </Block>
+              <Block flex={6}>
+                <Button
+                  color={materialTheme.COLORS.BUTTON_COLOR}
+                  style={{ width: width * 0.8, height: 50 }}
+                  onPress={requestPermissions}
+                >
+                  SCAN QR
+                </Button>
+              </Block>
             </Block>
           </Block>
           <Modal
