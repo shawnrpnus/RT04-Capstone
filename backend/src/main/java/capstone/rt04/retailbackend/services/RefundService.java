@@ -13,6 +13,7 @@ import capstone.rt04.retailbackend.util.enums.RefundProgressEnum;
 import capstone.rt04.retailbackend.util.enums.RefundStatusEnum;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.customer.CustomerNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.promoCode.PromoCodeNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.refund.RefundNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.transaction.TransactionNotFoundException;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,7 @@ public class RefundService {
     private final ProductService productService;
     private final TransactionService transactionService;
     private final CustomerService customerService;
+    private final PromoCodeService promoCodeService;
     private final RefundRepository refundRepository;
     private final RefundLineItemRepository refundLineItemRepository;
     private final RefundLineItemHandlerRepository refundLineItemHandlerRepository;
@@ -41,7 +43,8 @@ public class RefundService {
                          RefundLineItemRepository refundLineItemRepository,
                          RefundLineItemHandlerRepository refundLineItemHandlerRepository,
                          TransactionService transactionService,
-                         CustomerService customerService) {
+                         CustomerService customerService,
+                         PromoCodeService promoCodeService) {
         this.validationService = validationService;
         this.productService = productService;
         this.refundRepository = refundRepository;
@@ -49,15 +52,17 @@ public class RefundService {
         this.transactionService = transactionService;
         this.refundLineItemHandlerRepository = refundLineItemHandlerRepository;
         this.customerService = customerService;
+        this.promoCodeService = promoCodeService;
     }
 
-    public Refund createInStoreRefund(RefundRequest refundRequest) throws TransactionNotFoundException, CustomerNotFoundException, InputDataValidationException {
+    public Refund createInStoreRefund(RefundRequest refundRequest) throws TransactionNotFoundException, CustomerNotFoundException, InputDataValidationException, PromoCodeNotFoundException {
         List<RefundLineItem> refundLineItemList = new ArrayList<>();
         List<RefundLineItemHandler> refundLineItemHandlers = new ArrayList<>();
         Map<String, String> errorMap = new HashMap<>();
         Integer totalQuantity = 0;
         BigDecimal refundAmount = BigDecimal.ZERO;
         Customer customer = customerService.retrieveCustomerByCustomerId(refundRequest.getCustomerId());
+        Long promoCodeId = Long.valueOf("0");
 
         if (refundRequest.getReason() == null || refundRequest.getReason().isEmpty()) {
             errorMap.put("reason", ErrorMessages.REFUND_REASON_EMPTY);
@@ -67,6 +72,8 @@ public class RefundService {
             errorMap.put("reason", ErrorMessages.REFUND_REASON_EMPTY);
             throw new InputDataValidationException(errorMap, ErrorMessages.REFUND_REASON_EMPTY);
         }
+
+
         for (RefundLineItemRequest refundLineItemRequest : refundRequest.getRefundLineItemRequests()) {
             TransactionLineItem transactionLineItem = transactionService.retrieveTransactionLineItemById(refundLineItemRequest.getTransactionLineItemId());
             BigDecimal unitPrice;
@@ -74,6 +81,9 @@ public class RefundService {
                 unitPrice = transactionLineItem.getFinalSubTotal().divide(new BigDecimal(transactionLineItem.getQuantity()));
             } else {
                 unitPrice = transactionLineItem.getInitialSubTotal().divide(new BigDecimal(transactionLineItem.getQuantity()));
+            }
+            if(transactionLineItem.getTransaction().getPromoCode() != null) {
+                promoCodeId = transactionLineItem.getTransaction().getPromoCode().getPromoCodeId();
             }
             Integer quantityToRefund = refundLineItemRequest.getQuantityToRefund();
             BigDecimal totalPrice = unitPrice.multiply(new BigDecimal(quantityToRefund));
@@ -90,6 +100,16 @@ public class RefundService {
             refundLineItemList.add(refundLineItem);
             refundLineItemHandler.setRefundLineItem(refundLineItem);
         }
+
+        PromoCode promoCode;
+        if(promoCodeId != Long.valueOf("0")) {
+            promoCode = promoCodeService.retrievePromoCodeById(promoCodeId);
+            refundAmount = refundAmount.subtract(promoCode.getFlatDiscount());
+            BigDecimal val = BigDecimal.ONE.subtract(promoCode.getPercentageDiscount());
+            refundAmount = refundAmount.multiply(val);
+        }
+
+
 
         // Create Refund
         Refund refund = new Refund(totalQuantity, refundAmount, RefundModeEnum.valueOf(refundRequest.getRefundMode()), RefundStatusEnum.PROCESSING, refundRequest.getReason());

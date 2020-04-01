@@ -8,7 +8,7 @@ import { clearErrors } from "../../redux/actions";
 import { Grid } from "@material-ui/core";
 import MaterialObjectSelect from "../../shared/components/Form/MaterialObjectSelect";
 import {
-  createInStoreRefundRequest,
+  createInStoreRefundRequest, createInStoreRefundSuccess,
   retrieveAllRefundModeEnum,
   retrieveAllRefundStatusEnum
 } from "../../redux/actions/refundAction";
@@ -17,7 +17,10 @@ import InputLabel from "@material-ui/core/InputLabel";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import { Button } from "reactstrap";
 import axios from "axios";
-import { retrieveTransactionByOrderNumber } from "../../redux/actions/transactionAction";
+import {
+  retrieveTransactionByOrderNumber,
+  retrieveTransactionByOrderNumberSuccess
+} from "../../redux/actions/transactionAction";
 import MaterialTable from "material-table";
 import {
   Add,
@@ -88,7 +91,8 @@ const CreateEditRefundRecord = props => {
     transactionOrderNumber: "",
     quantityToRefund: new Array(12).fill(0),
     customerId: "",
-    promoCode: 0
+    promoCode: 0,
+    promoCodeName: ""
 
   });
   const allRefundStatusEnums = useSelector(
@@ -102,6 +106,10 @@ const CreateEditRefundRecord = props => {
   // const currLength = useSelector(state => state.transaction.transaction.transactionLineItems.length);
   console.log(currTransaction);
   console.log(inputState);
+  useEffect(()=> {
+    dispatch(retrieveTransactionByOrderNumberSuccess())},
+    []
+  );
   useEffect(
     () =>
       setInputState(inputState => ({
@@ -109,7 +117,8 @@ const CreateEditRefundRecord = props => {
         quantityToRefund: new Array(_.get(currTransaction, "transactionLineItems.length")).fill(0),
         refundAmt: new Array(_.get(currTransaction, "transactionLineItems.length")).fill(0),
         customerId: _.get(currTransaction, "customer.customerId"),
-        promoCode: _.get(currTransaction, "promoCode") ? _.get(currTransaction, "promoCode"): 0
+        promoCode: _.get(currTransaction, "promoCode") ? _.get(currTransaction, "promoCode"): 0,
+        promoCodeName: _.get(currTransaction, "promoCode") ? _.get(currTransaction, "promoCode.promoCodeName"): 0,
       }))
     ,
     [currTransaction]
@@ -153,6 +162,7 @@ const CreateEditRefundRecord = props => {
       totalRefundAmount: amount
     }));
   };
+  console.log("promoCode",inputState.promoCode);
 
   const calculateTotalRefundAmount= (arr) => {
     console.log(arr);
@@ -171,7 +181,11 @@ const CreateEditRefundRecord = props => {
         amt += (item.initialSubTotal) * arr[index];
         arrayAmt[index] = item.initialSubTotal;
       }
-
+      if(inputState.promoCode) {
+        amt -= inputState.promoCode.flatDiscount;
+        let val = 1 - inputState.promoCode.percentageDiscount;
+        amt *= val;
+      }
 
       setInputState(inputState => ({
         ...inputState,
@@ -341,8 +355,8 @@ const CreateEditRefundRecord = props => {
                     render: (rowData) => {
 
                       const tableData = rowData.tableData;
-                      // console.log("tableData",tableData);
-                      // console.log("rowData",rowData);
+                      console.log("tableData",tableData);
+                      console.log("rowData",rowData);
                       return (
 
                         <Select
@@ -399,7 +413,18 @@ const CreateEditRefundRecord = props => {
               ""
             )}
           </Grid>
-
+          <Grid item xs={12} md={6}>
+            {currTransaction ? (
+                <MaterialTextField
+                  fieldLabel="Promo Code Used"
+                  fieldName="promoCodeName"
+                  state={inputState}
+                  errors={errors}
+                  onChange={onChange}
+                  disabled={true}
+                />)
+              : ""}
+          </Grid>
           <Grid item xs={12} md={6}>
             {currTransaction ? (
               <MaterialTextField
@@ -425,18 +450,7 @@ const CreateEditRefundRecord = props => {
             />)
               : ""}
           </Grid>
-          <Grid item xs={12} md={6}>
-            {currTransaction ? (
-                <MaterialTextField
-                  fieldLabel="Promo Code Used"
-                  fieldName="promoCode"
-                  state={inputState}
-                  errors={errors}
-                  onChange={onChange}
-                  disabled={true}
-                />)
-              : ""}
-          </Grid>
+
           <Grid item xs={12} md={10}>
           </Grid>
           <Grid item xs={12} md={2}>

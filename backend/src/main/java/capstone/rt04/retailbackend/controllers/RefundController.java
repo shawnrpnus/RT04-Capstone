@@ -12,6 +12,7 @@ import capstone.rt04.retailbackend.util.enums.RefundProgressEnum;
 import capstone.rt04.retailbackend.util.enums.RefundStatusEnum;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.customer.CustomerNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.promoCode.PromoCodeNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.refund.RefundNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.transaction.TransactionNotFoundException;
 import capstone.rt04.retailbackend.util.routeconstants.RefundControllerRoutes;
@@ -37,7 +38,7 @@ public class RefundController {
     }
 
     @PostMapping(CREATE_IN_STORE_REFUND_RECORD)
-    public ResponseEntity<?> createInStoreRefundRecord(@RequestBody RefundRequest refundRequest) throws CustomerNotFoundException, TransactionNotFoundException, InputDataValidationException {
+    public ResponseEntity<?> createInStoreRefundRecord(@RequestBody RefundRequest refundRequest) throws CustomerNotFoundException, TransactionNotFoundException, InputDataValidationException, PromoCodeNotFoundException {
         Refund refund = refundService.createInStoreRefund(refundRequest);
         //need to clear customer so that the response is faster
         clearRefundRelationships(refund);

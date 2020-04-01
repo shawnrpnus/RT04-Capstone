@@ -2,7 +2,8 @@ import * as types from "../actions/types";
 
 const initialState = {
   allTransactions: null,
-  transactions: []
+  transactions: [],
+  transaction: null
 };
 
 export default function(state = initialState, action) {
