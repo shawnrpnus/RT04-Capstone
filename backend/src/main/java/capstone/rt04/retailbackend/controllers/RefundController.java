@@ -38,7 +38,7 @@ public class RefundController {
     }
 
     @PostMapping(CREATE_IN_STORE_REFUND_RECORD)
-    public ResponseEntity<?> createInStoreRefundRecord(@RequestBody RefundRequest refundRequest) throws CustomerNotFoundException, TransactionNotFoundException, InputDataValidationException, PromoCodeNotFoundException {
+    public ResponseEntity<?> createInStoreRefundRecord(@RequestBody RefundRequest refundRequest) throws CustomerNotFoundException, TransactionNotFoundException, InputDataValidationException, PromoCodeNotFoundException, RefundNotFoundException {
         Refund refund = refundService.createInStoreRefund(refundRequest);
         //need to clear customer so that the response is faster
         clearRefundRelationships(refund);

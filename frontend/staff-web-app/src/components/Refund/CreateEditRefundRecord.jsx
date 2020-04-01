@@ -91,7 +91,7 @@ const CreateEditRefundRecord = props => {
     transactionOrderNumber: "",
     quantityToRefund: new Array(12).fill(0),
     customerId: "",
-    promoCode: 0,
+    promoCode: "-",
     promoCodeName: ""
 
   });

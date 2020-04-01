@@ -152,9 +152,11 @@ const ViewRefundRecordDetails = props => {
     if(currTransaction != null) {
       setInputState(inputState => ({
         ...inputState,
-        promoCodeName: currTransaction.promoCode.promoCodeName,
-        promoCodeDiscount: currTransaction.promoCode.flatDiscount ?
-          "$"+currTransaction.promoCode.flatDiscount: currTransaction.promoCode.percentageDiscount+"%"
+        promoCodeName: currTransaction.promoCode ? currTransaction.promoCode.promoCodeName : "-",
+        promoCodeDiscount: _.get(currTransaction, "promoCode.flatDiscount") ?
+          "$"+_.get(currTransaction, "promoCode.flatDiscount"):
+          _.get(currTransaction, "promoCode.percentageDiscount") ?
+          _.get(currTransaction, "promoCode.percentageDiscount")+"%" : "-"
       }));
     }
   }, [currTransaction]);

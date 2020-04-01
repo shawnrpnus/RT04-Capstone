@@ -55,7 +55,7 @@ public class RefundService {
         this.promoCodeService = promoCodeService;
     }
 
-    public Refund createInStoreRefund(RefundRequest refundRequest) throws TransactionNotFoundException, CustomerNotFoundException, InputDataValidationException, PromoCodeNotFoundException {
+    public Refund createInStoreRefund(RefundRequest refundRequest) throws TransactionNotFoundException, CustomerNotFoundException, InputDataValidationException, PromoCodeNotFoundException, RefundNotFoundException {
         List<RefundLineItem> refundLineItemList = new ArrayList<>();
         List<RefundLineItemHandler> refundLineItemHandlers = new ArrayList<>();
         Map<String, String> errorMap = new HashMap<>();
@@ -136,6 +136,27 @@ public class RefundService {
 
         refundRepository.save(refund);
 
+        refund = updateInStoreRefund(refundRequest.getCustomerId(), refundLineItemList);
+        return refund;
+    }
+
+    public Refund updateInStoreRefund(Long staffId, List<RefundLineItem> refundLineItemList) throws RefundNotFoundException {
+//        private Long refundLineItemId;
+//        private String refundProgressEnum;
+//        private Long staffId;
+//        private Integer quantityConfirmedRefunded;
+        Refund refund = null;
+        for(RefundLineItem rli : refundLineItemList) {
+            RefundLineItem refundLineItem = retrieveRefundLineItemById(rli.getRefundLineItemId());
+            RefundLineItemHandler refundLineItemHandler = new RefundLineItemHandler(staffId,
+                    refundLineItem.getQuantity(),
+                    RefundProgressEnum.REFUND_SUCCESS);
+            refundLineItemHandler.setRefundLineItem(refundLineItem);
+            refundLineItemHandlerRepository.save(refundLineItemHandler);
+            refundLineItem.getRefundLineItemHandlerList().add(refundLineItemHandler);
+
+            refund = refundLineItem.getRefund();
+        }
         return refund;
     }
 
