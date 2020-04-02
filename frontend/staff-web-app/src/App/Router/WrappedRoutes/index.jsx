@@ -3,6 +3,7 @@ import { Route, Redirect, Switch } from "react-router-dom";
 import Layout from "../../../components/Layout";
 import Store from "./Store";
 import Tag from "./Tag";
+import Style from "./Style";
 import Category from "./Category";
 import Product from "./Product";
 import Staff from "./Staff";
@@ -28,6 +29,7 @@ export default () => (
         <Route path="/store" component={Store} />
         <Route path="/category" component={Category} />
         <Route path="/tag" component={Tag} />
+        <Route path="/style" component={Style} />
         <Route path="/product" component={Product} />
         <Route path="/staff" component={Staff} />
         <Route path="/productStock" component={ProductStock} />
