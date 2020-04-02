@@ -230,13 +230,31 @@ export const removeShippingAddress = (
   };
 };
 
-export const addCreditCard = (customerId, tokenId) => {
-  const req = {customerId,tokenId}
+export const addCreditCard = (customerId, tokenId, setLoading) => {
+  const req = { customerId, tokenId };
+  setLoading(true);
   return dispatch => {
     axios
       .post(SPRING_BACKEND_URL + "/addCreditCardMobile", req)
       .then(response => {
         dispatchUpdatedCustomer(response.data, dispatch);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+};
+
+export const removeCreditCard = (customerId, creditCardId, setLoading) => {
+  const req = { customerId, creditCardId };
+  setLoading(true);
+  return dispatch => {
+    axios
+      .post(SPRING_BACKEND_URL + "/deleteCardOnStripeAndSql", req)
+      .then(response => {
+        dispatchUpdatedCustomer(response.data, dispatch);
+        setLoading(false);
       })
       .catch(err => {
         console.log(err);
