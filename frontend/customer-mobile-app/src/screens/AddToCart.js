@@ -101,7 +101,7 @@ function AddToCart(props) {
       <Block
         flex={1}
         card
-        top
+        center
         style={{
           backgroundColor: "white",
           width: width,
@@ -117,7 +117,7 @@ function AddToCart(props) {
             Scan QR
           </Text>
         </Block>
-        <Block flex={0.75} style={{ width: "100%" }}>
+        <Block flex={0.75} style={{ width: width * 0.85, height: width * 0.85 }}>
           <BarCodeScanner
             onBarCodeScanned={handleQRScanned}
             style={{ ...StyleSheet.absoluteFillObject }}

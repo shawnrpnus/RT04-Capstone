@@ -1,9 +1,9 @@
 import withPage from "../Layout/page/withPage";
-import React, {useEffect, useState} from "react";
-import {useParams} from "react-router-dom";
-import {useDispatch, useSelector} from "react-redux";
-import {retrieveRefundById} from "../../redux/actions/refundAction";
-import {Grid, lighten} from "@material-ui/core";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { retrieveRefundById } from "../../redux/actions/refundAction";
+import { Grid, lighten } from "@material-ui/core";
 import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -12,24 +12,26 @@ import TextField from "@material-ui/core/TextField";
 
 import {
   AddBox,
-  Check, ChevronLeft,
+  Check,
+  ChevronLeft,
   ChevronRight,
   Clear,
   DeleteOutline,
   Edit,
   FirstPage,
-  LastPage, Remove,
+  LastPage,
+  Remove,
   SaveAlt,
-  Search, ViewColumn
+  Search,
+  ViewColumn
 } from "@material-ui/icons";
-import {clearErrors} from "../../redux/actions";
+import { clearErrors } from "../../redux/actions";
 import MaterialTable from "material-table";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import withStyles from "@material-ui/core/styles/withStyles";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import Chip from "@material-ui/core/Chip";
-
 
 const tableIcons = {
   Add: AddBox,
@@ -46,44 +48,42 @@ const tableIcons = {
   PreviousPage: ChevronLeft,
   ResetSearch: Clear,
   Search: Search,
-  SortArrow: () => <div/>,
+  SortArrow: () => <div />,
   ThirdStateCheck: Remove,
   ViewColumn: ViewColumn
 };
 const BorderLinearProgress = withStyles({
   root: {
     height: 10,
-    backgroundColor: lighten('#00e600', 0.5),
+    backgroundColor: lighten("#00e600", 0.5)
   },
   bar: {
     borderRadius: 20,
-    backgroundColor: '#00e600',
-  },
+    backgroundColor: "#00e600"
+  }
 })(LinearProgress);
 
 const useStyles = makeStyles(theme => ({
   root: {
-    flexGrow: 1,
+    flexGrow: 1
   },
   margin: {
-    margin: theme.spacing(1),
-  },
+    margin: theme.spacing(1)
+  }
 }));
 const _ = require("lodash");
 
 const ViewRefundRecordDetails = props => {
   const classes = useStyles();
-  const {refundId} = useParams();
-  const {renderLoader} = props;
+  const { refundId } = useParams();
+  const { renderLoader } = props;
   const dispatch = useDispatch();
 
   const errors = useSelector(state => state.errors);
 
   const [isLoading, setIsLoading] = useState(true);
   const [disabled, setDisabled] = useState(false);
-  const currRefund = useSelector(
-    state => state.refund.currRefund
-  );
+  const currRefund = useSelector(state => state.refund.currRefund);
   console.log(currRefund);
 
   //State
@@ -131,7 +131,9 @@ const ViewRefundRecordDetails = props => {
 
   useEffect(() => {
     if (currRefund !== null) {
-      setCurrTransaction(_.get(currRefund, "refundLineItems[0].transactionLineItem.transaction"));
+      setCurrTransaction(
+        _.get(currRefund, "refundLineItems[0].transactionLineItem.transaction")
+      );
 
       setInputState(inputState => ({
         ...inputState,
@@ -141,22 +143,25 @@ const ViewRefundRecordDetails = props => {
         refundMode: currRefund.refundMode,
         refundAmount: currRefund.refundAmount,
         quantity: currRefund.quantity,
-        customerName: currRefund.customer.firstName + " " + currRefund.customer.lastName,
+        customerName:
+          currRefund.customer.firstName + " " + currRefund.customer.lastName,
         email: currRefund.customer.email
       }));
     }
-
   }, [currRefund]);
 
-  useEffect( () => {
-    if(currTransaction != null) {
+  useEffect(() => {
+    if (currTransaction != null) {
       setInputState(inputState => ({
         ...inputState,
-        promoCodeName: currTransaction.promoCode ? currTransaction.promoCode.promoCodeName : "-",
-        promoCodeDiscount: _.get(currTransaction, "promoCode.flatDiscount") ?
-          "$"+_.get(currTransaction, "promoCode.flatDiscount"):
-          _.get(currTransaction, "promoCode.percentageDiscount") ?
-          _.get(currTransaction, "promoCode.percentageDiscount")+"%" : "-"
+        promoCodeName: currTransaction.promoCode
+          ? currTransaction.promoCode.promoCodeName
+          : "-",
+        promoCodeDiscount: _.get(currTransaction, "promoCode.flatDiscount")
+          ? "$" + _.get(currTransaction, "promoCode.flatDiscount")
+          : _.get(currTransaction, "promoCode.percentageDiscount")
+          ? _.get(currTransaction, "promoCode.percentageDiscount") + "%"
+          : "-"
       }));
     }
   }, [currTransaction]);
@@ -167,7 +172,7 @@ const ViewRefundRecordDetails = props => {
       <div>
         <h4>View Refund Record</h4>
       </div>
-      {currRefund ?
+      {currRefund ? (
         <form className="material-form">
           <Grid container spacing={3}>
             <Grid item xs={12} md={4}>
@@ -276,19 +281,21 @@ const ViewRefundRecordDetails = props => {
                             borderRadius: "10%"
                           }}
                           src={
-                            rowData.transactionLineItem.productVariant.productImages[0]
-                              .productImageUrl
+                            rowData.transactionLineItem.productVariant
+                              .productImages[0].productImageUrl
                           }
                         />
                       )
                     },
                     {
                       title: "Product Name",
-                      field: "transactionLineItem.productVariant.product.productName"
+                      field:
+                        "transactionLineItem.productVariant.product.productName"
                     },
                     {
                       title: "Size",
-                      field: "transactionLineItem.productVariant.sizeDetails.productSize"
+                      field:
+                        "transactionLineItem.productVariant.sizeDetails.productSize"
                     },
                     {
                       title: "Unit Price",
@@ -305,14 +312,16 @@ const ViewRefundRecordDetails = props => {
                     {
                       title: "Refund Progress",
                       field: "refundProgress",
-                      render: (rowData) => {
+                      render: rowData => {
                         // console.log(rowData);
                         const length = rowData.refundLineItemHandlerList.length;
-                        const progress = rowData.refundLineItemHandlerList[length-1].refundProgressEnum;
+                        const progress =
+                          rowData.refundLineItemHandlerList[length - 1]
+                            .refundProgressEnum;
                         let valWords = "";
                         let style = { backgroundColor: "#f65a5a" };
                         // console.log("progress",progress);
-                        switch(progress) {
+                        switch (progress) {
                           case "PENDING_DELIVERY":
                             style = { backgroundColor: "#19d2d2" };
                             valWords = "Pending Delivery";
@@ -341,7 +350,6 @@ const ViewRefundRecordDetails = props => {
                             style={{ ...style, color: "white" }}
                             label={valWords}
                           />
-
                         );
                       }
                     }
@@ -362,7 +370,7 @@ const ViewRefundRecordDetails = props => {
               )}
             </Grid>
             <Grid item xs={12} md={2}>
-              {currTransaction ?
+              {currTransaction ? (
                 <MaterialTextField
                   fieldLabel="Promo Code Used"
                   fieldName="promoCodeName"
@@ -372,11 +380,12 @@ const ViewRefundRecordDetails = props => {
                   onChange={onChange}
                   errors={errors}
                 />
-              :
-              ""}
+              ) : (
+                ""
+              )}
             </Grid>
             <Grid item xs={12} md={2}>
-              {currTransaction ?
+              {currTransaction ? (
                 <MaterialTextField
                   fieldLabel="Discount Amount"
                   fieldName="promoCodeDiscount"
@@ -386,11 +395,11 @@ const ViewRefundRecordDetails = props => {
                   onChange={onChange}
                   errors={errors}
                 />
-                :
-                ""}
+              ) : (
+                ""
+              )}
             </Grid>
-            <Grid item xs={12} md={4}>
-            </Grid>
+            <Grid item xs={12} md={4}></Grid>
             <Grid item xs={12} md={2}>
               <MaterialTextField
                 fieldLabel="Total Quantity"
@@ -415,13 +424,10 @@ const ViewRefundRecordDetails = props => {
             </Grid>
           </Grid>
         </form>
-        :
-        ''
-      }
-
+      ) : (
+        ""
+      )}
     </div>
-
-
   );
 };
 

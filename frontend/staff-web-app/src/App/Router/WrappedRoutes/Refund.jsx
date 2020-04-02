@@ -18,11 +18,11 @@ export default () => (
       path="/refund/viewRefundRecord/:refundId"
       component={ViewRefundRecordDetails}
     />
-      <RetailRoute
-        exact
-        path="/refund/updateRefundRecord/:refundId"
-        component={UpdateRefundRecordDetails}
-      />
+    <RetailRoute
+      exact
+      path="/refund/updateRefundRecord/:refundId"
+      component={UpdateRefundRecordDetails}
+    />
     <RetailRoute
       exact
       path="/refund/viewAllRefunds"

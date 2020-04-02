@@ -20,7 +20,6 @@ export default function(state = initialState, action) {
         loggedInCustomer: action.customer
       }
     case types.CUSTOMER_LOGOUT:
-      AsyncStorage.removeItem("state");
       return {
         ...state,
         loggedInCustomer: null

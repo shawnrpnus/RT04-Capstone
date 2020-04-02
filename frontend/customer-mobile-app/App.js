@@ -8,8 +8,17 @@ import { NavigationContainer } from "@react-navigation/native";
 import Screens from "src/navigation/Screens";
 import store from "src/redux/store";
 import theme from "src/constants/Theme";
+import {PaymentsStripe as stripe} from "expo-payments-stripe";
+
+const STRIPE_PUBLISHABLE_KEY = "pk_test_ZmdBnDvGqXb5mo5QFHaP0NI000bsSGDp5k";
 
 export default function App() {
+  useEffect(() => {
+    stripe.setOptionsAsync({
+      publishableKey: STRIPE_PUBLISHABLE_KEY
+    });
+  }, []);
+
   useEffect(() => {
     SplashScreen.preventAutoHide();
     if (Platform.OS === "android") {

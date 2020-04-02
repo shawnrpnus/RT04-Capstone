@@ -124,6 +124,8 @@ const SelectionTable = props => {
     setSearchTerm(e.target.value.trim());
   };
 
+  console.log(edges);
+
   let data = [];
   if (_.get(edges, "length", -1) > 0 && byHashtag) {
     data = edges.map(({ node }) => {
@@ -210,7 +212,7 @@ const SelectionTable = props => {
           {
             title: "Image",
             field: "instagramImgUrl",
-            filtering: false,
+            sorting: false,
             render: ({ instagramImgUrl, shortCode }) => (
               <a href={`http://instagram.com/p/${shortCode}`} target="_blank">
                 <img src={instagramImgUrl} />
@@ -244,7 +246,7 @@ const SelectionTable = props => {
         ]}
         data={data}
         options={{
-          filtering: true,
+          filtering: false,
           sorting: true,
           pageSize: 10,
           pageSizeOptions: [10, 20, 40],

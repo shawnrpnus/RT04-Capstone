@@ -59,7 +59,7 @@ public class Discount implements Serializable {
     
     @Column(precision = 11, scale = 2)
     @DecimalMin("0.00")
-    @DecimalMax("1.00")
+    @DecimalMax(value = "1.00", message = "Percentage discount must not be more than 100%")
     private BigDecimal percentageDiscount; //if 10%, save as 0.10
     
     @ManyToMany

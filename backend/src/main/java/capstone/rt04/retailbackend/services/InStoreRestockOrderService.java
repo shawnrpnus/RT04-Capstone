@@ -238,7 +238,7 @@ public class InStoreRestockOrderService {
             throw new InStoreRestockOrderUpdateException("Unable to delete restock order that has been processed");
         }
         Long storeId = inStoreRestockOrder.getStore().getStoreId();
-        Timestamp timestamp = new Timestamp(inStoreRestockOrder.getOrderDateTime().getTime() + TimeUnit.HOURS.toMillis(1));
+        Timestamp timestamp = new Timestamp(inStoreRestockOrder.getOrderDateTime().getTime() + TimeUnit.DAYS.toMillis(1));
         Timestamp current = new Timestamp(System.currentTimeMillis());
         // If order date + 1 > current date, cannot delete
         if (timestamp.compareTo(current) > 0) {

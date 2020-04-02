@@ -11,8 +11,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import static capstone.rt04.retailbackend.util.Constants.MARKET_BASKET_ANALYIS_FILE_PATH;
-
 /**
  * Example of how to use APRIORI
  * algorithm from the source code.
@@ -22,9 +20,9 @@ import static capstone.rt04.retailbackend.util.Constants.MARKET_BASKET_ANALYIS_F
 @Service
 public class AprioriService {
 
-    public List<List<Long>> performBasketAnalysis() throws IOException {
+    public List<List<Long>> performBasketAnalysis(String path) throws IOException {
 
-        String input = MARKET_BASKET_ANALYIS_FILE_PATH;
+        String input = path;
         String output = null;
         // Note : we here set the output file path to null
         // because we want that the algorithm save the

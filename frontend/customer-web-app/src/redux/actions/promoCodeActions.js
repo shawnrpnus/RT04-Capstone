@@ -17,6 +17,10 @@ export const applyPromoCode = (
     })
     .then(response => {
       const { data } = jsog.decode(response);
+      enqueueSnackbar(`${data.promoCodeName} applied`, {
+        variant: "success",
+        autoHideDuration: 1200
+      });
       return data;
     })
     .catch(err => {

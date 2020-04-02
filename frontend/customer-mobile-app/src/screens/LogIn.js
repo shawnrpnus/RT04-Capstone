@@ -4,7 +4,8 @@ import {
   Dimensions,
   KeyboardAvoidingView,
   Alert,
-  Platform
+  Platform,
+  ScrollView
 } from "react-native";
 import { Block, Button, Input, Text, theme } from "galio-framework";
 
@@ -15,6 +16,7 @@ import { View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { customerLogin } from "src/redux/actions/customerActions";
 import { clearErrors } from "src/redux/actions";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 const { width, height } = Dimensions.get("window");
 const _ = require("lodash");
@@ -38,11 +40,11 @@ export default function LogIn(props) {
       end={{ x: 0.25, y: 1.1 }}
       locations={[0.2, 1]}
       colors={[materialTheme.COLORS.PRIMARY, materialTheme.COLORS.SECONDARY]}
-      style={[styles.signin, { flex: 1, paddingTop: theme.SIZES.BASE * 4 }]}
+      style={[styles.signin, { flex: 1}]}
     >
-      <Block middle>
-        <KeyboardAvoidingView behaviour="padding" enabled>
-          <Block flex={2} middle style={{ justifyContent: "flex-end" }}>
+      <KeyboardAwareScrollView enableOnAndroid={true}>
+        <Block center style={{height: height*0.75}}>
+          <Block flex={1} style={{justifyContent: "flex-end"}}>
             <Text
               h1
               color="white"
@@ -62,6 +64,7 @@ export default function LogIn(props) {
             style={{
               backgroundColor: "rgba(255,255,255,0.90)",
               width: width * 0.9,
+              maxHeight: height * 0.4,
               paddingTop: 20
             }}
           >
@@ -113,9 +116,8 @@ export default function LogIn(props) {
               </Button>
             </Block>
           </Block>
-          <Block flex={2} />
-        </KeyboardAvoidingView>
-      </Block>
+        </Block>
+      </KeyboardAwareScrollView>
     </LinearGradient>
   );
 }

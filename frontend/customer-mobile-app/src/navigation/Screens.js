@@ -16,11 +16,10 @@ import Product from "src/screens/Product";
 import CustomHeader from "src/components/CustomHeader";
 import ProductDetails from "src/screens/ProductDetails/ProductDetails";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
-import { MaterialCommunityIcons } from "react-native-vector-icons";
 import ShoppingCart from "src/screens/ShoppingCart/ShoppingCart";
 import ViewAddresses from "src/screens/Profile/Address/ViewAddresses";
 import ViewCreditCards from "src/screens/Profile/CreditCard/ViewCreditCards";
-import { FontAwesome } from "@expo/vector-icons";
+import { FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
 import CreateAddress from "src/screens/Profile/Address/CreateAddress";
 import UpdateAddress from "src/screens/Profile/Address/UpdateAddress";
 

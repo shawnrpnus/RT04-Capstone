@@ -1,13 +1,14 @@
 import withPage from "../Layout/page/withPage";
-import React, {useEffect, useState} from "react";
-import {useHistory, useParams} from "react-router-dom";
-import {useDispatch, useSelector} from "react-redux";
+import React, { useEffect, useState } from "react";
+import { useHistory, useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import {
   retrieveAllRefundProgressEnum,
   retrieveAllRefundStatusEnum,
-  retrieveRefundById, updateInStoreRefundRequest
+  retrieveRefundById,
+  updateInStoreRefundRequest
 } from "../../redux/actions/refundAction";
-import {Grid, lighten} from "@material-ui/core";
+import { Grid, lighten } from "@material-ui/core";
 import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -16,26 +17,28 @@ import TextField from "@material-ui/core/TextField";
 
 import {
   AddBox,
-  Check, ChevronLeft,
+  Check,
+  ChevronLeft,
   ChevronRight,
   Clear,
   DeleteOutline,
   Edit,
   FirstPage,
-  LastPage, Remove,
+  LastPage,
+  Remove,
   SaveAlt,
-  Search, ViewColumn
+  Search,
+  ViewColumn
 } from "@material-ui/icons";
-import {clearErrors} from "../../redux/actions";
+import { clearErrors } from "../../redux/actions";
 import MaterialTable from "material-table";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import withStyles from "@material-ui/core/styles/withStyles";
 import LinearProgress from "@material-ui/core/LinearProgress";
-import {Button} from "reactstrap";
+import { Button } from "reactstrap";
 import UpdateRefundLineItemHandlerRequest from "../../models/refund/UpdateRefundLineItemHandlerRequest";
 import Chip from "@material-ui/core/Chip";
-
 
 const tableIcons = {
   Add: AddBox,
@@ -52,47 +55,44 @@ const tableIcons = {
   PreviousPage: ChevronLeft,
   ResetSearch: Clear,
   Search: Search,
-  SortArrow: () => <div/>,
+  SortArrow: () => <div />,
   ThirdStateCheck: Remove,
   ViewColumn: ViewColumn
 };
 const BorderLinearProgress = withStyles({
   root: {
     height: 10,
-    backgroundColor: lighten('#00e600', 0.5),
+    backgroundColor: lighten("#00e600", 0.5)
   },
   bar: {
     borderRadius: 20,
-    backgroundColor: '#00e600',
-  },
+    backgroundColor: "#00e600"
+  }
 })(LinearProgress);
 
 const useStyles = makeStyles(theme => ({
   root: {
-    flexGrow: 1,
+    flexGrow: 1
   },
   margin: {
-    margin: theme.spacing(1),
-  },
+    margin: theme.spacing(1)
+  }
 }));
 const _ = require("lodash");
 
 const UpdateRefundRecordDetails = props => {
   const classes = useStyles();
-  const {refundId} = useParams();
-  const {renderLoader} = props;
+  const { refundId } = useParams();
+  const { renderLoader } = props;
   const dispatch = useDispatch();
   const history = useHistory();
   const errors = useSelector(state => state.errors);
 
   useEffect(() => dispatch(retrieveAllRefundProgressEnum()), []);
 
-
   const [isLoading, setIsLoading] = useState(true);
   const [disabled, setDisabled] = useState(false);
-  const currRefund = useSelector(
-    state => state.refund.currRefund
-  );
+  const currRefund = useSelector(state => state.refund.currRefund);
   const allRefundProgressEnums = useSelector(
     state => state.refund.allRefundProgressEnum
   );
@@ -163,14 +163,18 @@ const UpdateRefundRecordDetails = props => {
         refundMode: currRefund.refundMode,
         refundAmount: currRefund.refundAmount,
         quantity: currRefund.quantity,
-        customerName: currRefund.customer.firstName + " " + currRefund.customer.lastName,
+        customerName:
+          currRefund.customer.firstName + " " + currRefund.customer.lastName,
         email: currRefund.customer.email,
-        refundLineItemStatus: new Array(_.get(currRefund, "transactionLineItems.length")).fill(0),
+        refundLineItemStatus: new Array(
+          _.get(currRefund, "transactionLineItems.length")
+        ).fill(0)
       }));
-      setCurrTransaction(_.get(currRefund, "refundLineItems[0].transactionLineItem.transaction"));
+      setCurrTransaction(
+        _.get(currRefund, "refundLineItems[0].transactionLineItem.transaction")
+      );
       setCurrRefundLineItem(_.get(currRefund, "refundLineItems"));
     }
-
   }, [currRefund]);
 
   const onSubmit = () => {
@@ -180,38 +184,44 @@ const UpdateRefundRecordDetails = props => {
     const staffId = currStaff.staffId;
 
     let allToUpdate = [];
-    if(currRefundLineItem != null) {
-      for(let i = 0; i < currRefundLineItem.length; i++) {
-        const newItem = new UpdateRefundLineItemHandlerRequest(currRefundLineItem[i].refundLineItemId, inputState.refundLineItemStatus[i], staffId, currRefundLineItem[i].quantity);
+    if (currRefundLineItem != null) {
+      for (let i = 0; i < currRefundLineItem.length; i++) {
+        const newItem = new UpdateRefundLineItemHandlerRequest(
+          currRefundLineItem[i].refundLineItemId,
+          inputState.refundLineItemStatus[i],
+          staffId,
+          currRefundLineItem[i].quantity
+        );
         allToUpdate.push(newItem);
       }
     }
 
     dispatch(updateInStoreRefundRequest(allToUpdate, history));
-
-
   };
 
   useEffect(() => {
-    if(currRefundLineItem != null) {
+    if (currRefundLineItem != null) {
       let lineItems = new Array();
-      for(let i = 0; i < currRefundLineItem.length; i++) {
+      for (let i = 0; i < currRefundLineItem.length; i++) {
         const length = currRefundLineItem[i].refundLineItemHandlerList.length;
-        lineItems.push(currRefundLineItem[i].refundLineItemHandlerList[length-1].refundProgressEnum);
+        lineItems.push(
+          currRefundLineItem[i].refundLineItemHandlerList[length - 1]
+            .refundProgressEnum
+        );
       }
-      setInputState( inputState => ({
+      setInputState(inputState => ({
         ...inputState,
         refundLineItemStatus: lineItems
-    }));
+      }));
     }
   }, [currRefundLineItem]);
 
-    return (
+  return (
     <div>
       <div>
         <h4>Update Refund Record</h4>
       </div>
-      {currRefund ?
+      {currRefund ? (
         <form className="material-form">
           <Grid container spacing={3}>
             <Grid item xs={12} md={4}>
@@ -312,7 +322,8 @@ const UpdateRefundRecordDetails = props => {
                   columns={[
                     {
                       title: "Product Name",
-                      field: "transactionLineItem.productVariant.product.productName"
+                      field:
+                        "transactionLineItem.productVariant.product.productName"
                     },
                     {
                       title: "Image",
@@ -324,8 +335,8 @@ const UpdateRefundRecordDetails = props => {
                             borderRadius: "10%"
                           }}
                           src={
-                            rowData.transactionLineItem.productVariant.productImages[0]
-                              .productImageUrl
+                            rowData.transactionLineItem.productVariant
+                              .productImages[0].productImageUrl
                           }
                         />
                       )
@@ -345,16 +356,18 @@ const UpdateRefundRecordDetails = props => {
                     {
                       title: "Refund Progress",
                       field: "refundProgress",
-                      render: (rowData) => {
+                      render: rowData => {
                         console.log("RowData", rowData);
                         const tableData = rowData.tableData;
                         const length = rowData.refundLineItemHandlerList.length;
-                        const progress = rowData.refundLineItemHandlerList[length-1].refundProgressEnum;
+                        const progress =
+                          rowData.refundLineItemHandlerList[length - 1]
+                            .refundProgressEnum;
                         let valWords = "";
                         let notEditable = false;
                         let style = { backgroundColor: "#f65a5a" };
                         // console.log("progress",progress);
-                        switch(progress) {
+                        switch (progress) {
                           case "PENDING_DELIVERY":
                             style = { backgroundColor: "#19d2d2" };
                             valWords = "Pending Delivery";
@@ -381,34 +394,37 @@ const UpdateRefundRecordDetails = props => {
                             style = { backgroundColor: "#33ba0a" };
                         }
                         return (
-
                           <div className={classes.root}>
                             {allRefundProgressEnums && !notEditable ? (
-                            <Select
-                              name="refundStatus"
-                              value={inputState.refundLineItemStatus[tableData.id]}
-                              onChange={e => {
-                                onChangeRefundProgress(e, tableData.id);
-                              }}
-                              fullWidth
-                              label="Refund Status"
-                            >
-                              {allRefundProgressEnums.map(function(item, index) {
-                                return (
-                                  <MenuItem value={item} key={index}>
-                                    {item}
-                                  </MenuItem>
-                                );
-                              })}
-                            </Select>
-                              ):
+                              <Select
+                                name="refundStatus"
+                                value={
+                                  inputState.refundLineItemStatus[tableData.id]
+                                }
+                                onChange={e => {
+                                  onChangeRefundProgress(e, tableData.id);
+                                }}
+                                fullWidth
+                                label="Refund Status"
+                              >
+                                {allRefundProgressEnums.map(function(
+                                  item,
+                                  index
+                                ) {
+                                  return (
+                                    <MenuItem value={item} key={index}>
+                                      {item}
+                                    </MenuItem>
+                                  );
+                                })}
+                              </Select>
+                            ) : (
                               <Chip
                                 style={{ ...style, color: "white" }}
                                 label={valWords}
                               />
-                            }
+                            )}
                           </div>
-
                         );
                       }
                     }
@@ -428,26 +444,18 @@ const UpdateRefundRecordDetails = props => {
                 ""
               )}
             </Grid>
-            <Grid item xs={12} md={10}>
-            </Grid>
+            <Grid item xs={12} md={10}></Grid>
             <Grid item xs={12} md={2}>
-
-              <Button size="sm"
-                      outline
-                      onClick={onSubmit} color="primary">
+              <Button size="sm" outline onClick={onSubmit} color="primary">
                 Submit
               </Button>
             </Grid>
-
           </Grid>
         </form>
-        :
-        ''
-      }
-
+      ) : (
+        ""
+      )}
     </div>
-
-
   );
 };
 

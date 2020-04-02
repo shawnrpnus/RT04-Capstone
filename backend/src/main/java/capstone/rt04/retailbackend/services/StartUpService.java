@@ -15,6 +15,7 @@ import capstone.rt04.retailbackend.util.exceptions.product.CreateNewProductExcep
 import capstone.rt04.retailbackend.util.exceptions.product.CreateNewProductStockException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.promoCode.CreateNewPromoCodeException;
+import capstone.rt04.retailbackend.util.exceptions.promoCode.PromoCodeNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.shoppingcart.InvalidCartTypeException;
 import capstone.rt04.retailbackend.util.exceptions.staff.*;
 import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
@@ -104,7 +105,7 @@ public class StartUpService {
     }
 
     @PostConstruct
-    public void init() throws InputDataValidationException, CreateNewCategoryException, CategoryNotFoundException, CreateNewProductException, ProductVariantNotFoundException, CreateNewProductStockException, WarehouseNotFoundException, StoreNotFoundException, CreateNewTagException, CreateNewStyleException, CreateNewStaffException, CreateRoleException, CreateDepartmentException, CreateNewCustomerException, CustomerNotFoundException, InvalidCartTypeException, StripeException, CreateNewStaffAccountException, StyleNotFoundException, RoleNotFoundException, DepartmentNotFoundException, CreateNewPromoCodeException {
+    public void init() throws InputDataValidationException, CreateNewCategoryException, CategoryNotFoundException, CreateNewProductException, ProductVariantNotFoundException, CreateNewProductStockException, WarehouseNotFoundException, StoreNotFoundException, CreateNewTagException, CreateNewStyleException, CreateNewStaffException, CreateRoleException, CreateDepartmentException, CreateNewCustomerException, CustomerNotFoundException, InvalidCartTypeException, StripeException, CreateNewStaffAccountException, StyleNotFoundException, RoleNotFoundException, DepartmentNotFoundException, CreateNewPromoCodeException, PromoCodeNotFoundException {
         createWarehouseAndStoreIfNotFound();
         createCategoryIfNotFound();
         createStaffIfNotFound();
@@ -697,13 +698,22 @@ public class StartUpService {
             colourToImageUrlsMaps33.add(new ColourToImageUrlsMap("#C8385A", maroonProductImageUrls33));
             colourToImageUrlsMaps33.add(new ColourToImageUrlsMap("#000000", blackImageUrls33));
 
+//            List<String> brownImageUrls34 = new ArrayList<>();
+//            brownImageUrls34.add("https://dynamic.zacdn.com/jiQIgCpBgqOAuhQ7Zc79AOOadPU=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/topman-4501-6914821-1.jpg");
+//            brownImageUrls34.add("https://dynamic.zacdn.com/7XJOs0kl0RCMFbpH7N-2FPF9m5w=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/topman-4502-6914821-4.jpg");
+//            brownImageUrls34.add("https://dynamic.zacdn.com/Zqaq6fbZY2c6P7Fb9Y6o9WtgVQ4=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/topman-4502-6914821-2.jpg");
+//            brownImageUrls34.add("https://dynamic.zacdn.com/rShlIuWpwSzwU7k7f0k2uiOrSjY=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/topman-4502-6914821-3.jpg");
+//            List<ColourToImageUrlsMap> colourToImageUrlsMaps34 = new ArrayList<>();
+//            colourToImageUrlsMaps34.add(new ColourToImageUrlsMap("#D2B48C", brownImageUrls34));
+
             List<String> brownImageUrls34 = new ArrayList<>();
-            brownImageUrls34.add("https://dynamic.zacdn.com/jiQIgCpBgqOAuhQ7Zc79AOOadPU=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/topman-4501-6914821-1.jpg");
-            brownImageUrls34.add("https://dynamic.zacdn.com/7XJOs0kl0RCMFbpH7N-2FPF9m5w=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/topman-4502-6914821-4.jpg");
-            brownImageUrls34.add("https://dynamic.zacdn.com/Zqaq6fbZY2c6P7Fb9Y6o9WtgVQ4=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/topman-4502-6914821-2.jpg");
-            brownImageUrls34.add("https://dynamic.zacdn.com/rShlIuWpwSzwU7k7f0k2uiOrSjY=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/topman-4502-6914821-3.jpg");
+            brownImageUrls34.add("https://dynamic.zacdn.com/BoblMhtanPFokP1hzBIorZc3B9U=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/tula-cruz-0786-9044921-1.jpg");
+            brownImageUrls34.add("https://dynamic.zacdn.com/2YOmyV7IvooFy5FMXNTZXu26Awg=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/tula-cruz-0787-9044921-2.jpg");
+            brownImageUrls34.add("https://dynamic.zacdn.com/7_uoES1dbiON_RYFg-L2Pk79gr8=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/tula-cruz-0787-9044921-3.jpg");
+            brownImageUrls34.add("https://dynamic.zacdn.com/dkH00tOqq7_DOq7eybm7E2ssAFs=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/tula-cruz-0788-9044921-4.jpg");
             List<ColourToImageUrlsMap> colourToImageUrlsMaps34 = new ArrayList<>();
-            colourToImageUrlsMaps34.add(new ColourToImageUrlsMap("#D2B48C", brownImageUrls34));
+            colourToImageUrlsMaps34.add(new ColourToImageUrlsMap("#2C293C", brownImageUrls34));
+
 
             List<String> blueProductImageUrls35 = new ArrayList<>();
             blueProductImageUrls35.add("https://dynamic.zacdn.com/KdZoiYO3I8-LB10QAT_ax_kk9XU=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-basics-5776-1617321-1.jpg");
@@ -718,6 +728,7 @@ public class StartUpService {
             List<ColourToImageUrlsMap> colourToImageUrlsMaps35 = new ArrayList<>();
             colourToImageUrlsMaps35.add(new ColourToImageUrlsMap("#F5F5DC", blueProductImageUrls35));
             colourToImageUrlsMaps35.add(new ColourToImageUrlsMap("#ACE5EE", lightblueImageUrls35));
+
 
             Style vintage = styleService.retrieveStyleByStyleName("Vintage");
             Style bohemian = styleService.retrieveStyleByStyleName("Bohemian");
@@ -1143,14 +1154,29 @@ public class StartUpService {
             product33Styles.add(sophisticated.getStyleId());
             Product newProduct33 = productService.createNewProduct(product33, category3.getCategoryId(), null, product33Styles, sizes, colourToImageUrlsMaps33);
 
-            Product product34 = new Product("004300", "Topman Stone Stretch Skinny Chino Shorts", "- Skinny fit chino shorts\n" +
-                    "- Mid waist\n" +
-                    "- Skinny fit\n" +
-                    "- Waist button fastening\n" +
-                    "- Fly zipper fastening\n" +
-                    "- 2 side pockets\n" +
-                    "- 2 back welt pockets\n" +
-                    "- Cotton blend", BigDecimal.valueOf(50.90), BigDecimal.valueOf(18.00));
+//            Product product34 = new Product("004300", "Topman Stone Stretch Skinny Chino Shorts", "- Skinny fit chino shorts\n" +
+//                    "- Mid waist\n" +
+//                    "- Skinny fit\n" +
+//                    "- Waist button fastening\n" +
+//                    "- Fly zipper fastening\n" +
+//                    "- 2 side pockets\n" +
+//                    "- 2 back welt pockets\n" +
+//                    "- Cotton blend", BigDecimal.valueOf(50.90), BigDecimal.valueOf(18.00));
+//            product34.getStyles().add(artsy);
+//            List<Long> product34Styles = new ArrayList<>();
+//            product34Styles.add(artsy.getStyleId());
+//            Product newProduct34 = productService.createNewProduct(product34, category13.getCategoryId(), null, product34Styles, sizes, colourToImageUrlsMaps34);
+
+            Product product34 = new Product("004300", "Tula Cruz Eyelet Back Tie Maxi Dress", "- Buttoned openwork dress\n" +
+                    "- Lined\n" +
+                    "- Scoop neckline\n" +
+                    "- Regular fit\n" +
+                    "- Front button fastening\n" +
+                    "- Self-tie back closure" +
+                    "- Sleeveless\n" +
+                    "- Flared hem\n" +
+                    "- Rayon\n" +
+                    "- Model wears an S and is 175cm tall\n", BigDecimal.valueOf(50.90), BigDecimal.valueOf(18.00));
             product34.getStyles().add(artsy);
             List<Long> product34Styles = new ArrayList<>();
             product34Styles.add(artsy.getStyleId());
@@ -1250,13 +1276,13 @@ public class StartUpService {
         Staff newStaff8 = staffService.createNewStaff(staff8, staff8.getAddress(), role1.getRoleId(), customerService.getDepartmentId(), null);
     }
 
-    private void createPromoCodesIfNotFound() throws InputDataValidationException, CreateNewPromoCodeException {
+    private void createPromoCodesIfNotFound() throws InputDataValidationException, CreateNewPromoCodeException, PromoCodeNotFoundException {
         if (promoCodeService.retrieveAllPromoCodes().size() == 0) {
-            promoCodeService.createNewPromoCode(new PromoCode("NEWMEMBER", BigDecimal.valueOf(0), BigDecimal.valueOf(5), BigDecimal.valueOf(100.40), 100));
-            promoCodeService.createNewPromoCode(new PromoCode("CNY20", BigDecimal.TEN, BigDecimal.valueOf(0), BigDecimal.valueOf(20.20), 50));
-            promoCodeService.createNewPromoCode(new PromoCode("FRIYAY", BigDecimal.valueOf(0), BigDecimal.valueOf(5), BigDecimal.valueOf(50.44), 50));
-            promoCodeService.createNewPromoCode(new PromoCode("BLACKFRIDAY", BigDecimal.TEN, BigDecimal.valueOf(0), BigDecimal.valueOf(100.24), 5));
-            promoCodeService.createNewPromoCode(new PromoCode("SUMMERFUN", BigDecimal.valueOf(0), BigDecimal.valueOf(5), BigDecimal.valueOf(60.60), 5));
+            promoCodeService.createNewPromoCode(new PromoCode("NEWMEMBER", null, BigDecimal.valueOf(5), BigDecimal.valueOf(100.40), 100));
+            promoCodeService.createNewPromoCode(new PromoCode("CNY20", BigDecimal.TEN, null, BigDecimal.valueOf(20.20), 50));
+            promoCodeService.createNewPromoCode(new PromoCode("FRIYAY", null, BigDecimal.valueOf(5), BigDecimal.valueOf(50.44), 50));
+            promoCodeService.createNewPromoCode(new PromoCode("BLACKFRIDAY", BigDecimal.TEN, null, BigDecimal.valueOf(100.24), 5));
+            promoCodeService.createNewPromoCode(new PromoCode("SUMMERFUN", null, BigDecimal.valueOf(5), BigDecimal.valueOf(60.60), 5));
         }
     }
 

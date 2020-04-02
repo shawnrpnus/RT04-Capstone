@@ -1,16 +1,15 @@
 import axios from "axios";
-import {toast} from "react-toastify";
+import { toast } from "react-toastify";
 import * as types from "./types";
-import {retrieveAllTags} from "./tagAction";
-import {dispatchErrorMapError} from "./index";
-import {CREATE_IN_STORE_REFUND_RECORD} from "./types";
+import { retrieveAllTags } from "./tagAction";
+import { dispatchErrorMapError } from "./index";
+import { CREATE_IN_STORE_REFUND_RECORD } from "./types";
 import UpdateRefundLineItemHandlerRequest from "../../models/refund/UpdateRefundLineItemHandlerRequest";
-import {UPDATE_REFUND_RECORD} from "./types";
+import { UPDATE_REFUND_RECORD } from "./types";
 
 axios.defaults.baseURL = process.env.REACT_APP_SPRING_API_URL;
 const REFUND_BASE_URL = "/api/refund/";
 const jsog = require("jsog");
-
 
 export const createInStoreRefundRequest = (
   refundRequest,
@@ -56,7 +55,10 @@ export const updateInStoreRefundRequest = (
   return dispatch => {
     //redux thunk passes dispatch
     axios
-      .post(REFUND_BASE_URL + "updateRefundRecord", updateRefundLineItemHandlerRequest)
+      .post(
+        REFUND_BASE_URL + "updateRefundRecord",
+        updateRefundLineItemHandlerRequest
+      )
       .then(response => {
         const { data } = jsog.decode(response);
         console.log(data);
@@ -77,7 +79,6 @@ export const updateRefundRecordSuccess = data => ({
   type: UPDATE_REFUND_RECORD,
   currRefund: data
 });
-
 
 export const retrieveAllRefundModeEnum = () => {
   return dispatch => {
@@ -150,7 +151,6 @@ const retrieveAllRefundProgressEnumSuccess = data => ({
   type: types.RETRIEVE_ALL_REFUND_PROGRESS_ENUM_SUCCESS,
   allRefundProgressEnum: data
 });
-
 
 export const retrieveRefundById = (refundId, setIsLoading) => {
   return dispatch => {

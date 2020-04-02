@@ -103,7 +103,7 @@ const UpdateRestockOrderDialog = ({ element, open, onClose, isWarehouse }) => {
       } = e;
       deliveryDateTime = deliveryDateTime
         ? dateformat(new Date(deliveryDateTime), "dd'-'mmm'-'yyyy")
-        : "";
+        : null;
       const { productStockId, productVariant } = productStock;
       const insufficient = warehouseStockQuantity - quantity < 0;
       return {
@@ -168,7 +168,11 @@ const UpdateRestockOrderDialog = ({ element, open, onClose, isWarehouse }) => {
           .catch(err => {});
       } else {
         dispatch(
-          updateRestockOrder({ restockOrderId, stockIdQuantityMaps }, storeId)
+          updateRestockOrder(
+            { restockOrderId, stockIdQuantityMaps },
+            onClose,
+            storeId
+          )
         );
       }
     }
@@ -228,7 +232,8 @@ const UpdateRestockOrderDialog = ({ element, open, onClose, isWarehouse }) => {
     },
     {
       title: "Delivery date",
-      field: "deliveryDateTime"
+      field: "deliveryDateTime",
+      emptyValue: "-"
     },
     {
       title: "Warehouse stock status",

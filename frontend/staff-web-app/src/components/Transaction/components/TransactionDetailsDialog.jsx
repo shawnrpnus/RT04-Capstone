@@ -226,8 +226,8 @@ const TransactionDetailsDialog = ({ transaction, open, onClose }) => {
                 <Typography style={{ fontWeight: "bold" }}>
                   - ${(initialTotalPrice - finalTotalPrice).toFixed(2)}
                 </Typography>
+                <Divider />
               </Grid>
-              <Divider />
             </>
           )}
           <Grid item xs={11}>
