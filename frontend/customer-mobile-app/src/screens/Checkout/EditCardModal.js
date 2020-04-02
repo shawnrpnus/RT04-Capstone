@@ -24,6 +24,9 @@ function EditCardModal(props) {
   const renderItem = ({ item }) => {
     let month = item.expiryMonth;
     month = ("0" + month).slice(-2);
+    let issuer = item.issuer.toLowerCase();
+    issuer =
+      issuer === "visa" ? "visa" : issuer === "mastercard" ? "master-card" : "";
     return (
       <TouchableOpacity
         style={{ marginTop: 10 }}
@@ -33,7 +36,7 @@ function EditCardModal(props) {
         }}
       >
         <CardView
-          brand={item.issuer.toLowerCase()}
+          brand={issuer}
           name={customer.firstName + " " + customer.lastName}
           number={"•••• •••• •••• " + item.last4}
           expiry={`${month}/${item.expiryYear.toString().slice(-2)}`}

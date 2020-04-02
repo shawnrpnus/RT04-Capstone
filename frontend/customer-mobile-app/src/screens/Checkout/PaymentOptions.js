@@ -33,9 +33,12 @@ function PaymentOptions(props) {
   const renderCreditCard = item => {
     let month = item.expiryMonth;
     month = ("0" + month).slice(-2);
+    let issuer = item.issuer.toLowerCase();
+    issuer =
+        issuer === "visa" ? "visa" : issuer === "mastercard" ? "master-card" : "";
     return (
       <CardView
-        brand={item.issuer.toLowerCase()}
+        brand={issuer}
         name={customer.firstName + " " + customer.lastName}
         number={"•••• •••• •••• " + item.last4}
         expiry={`${month}/${item.expiryYear.toString().slice(-2)}`}
