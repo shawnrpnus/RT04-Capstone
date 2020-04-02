@@ -50,7 +50,7 @@ function AddressCardCheckout(props) {
           )}
         </>
       ) : (
-        <Text h5>Please add a delivery address</Text>
+        <Text h5>Please add an address</Text>
       )}
     </Block>
   );

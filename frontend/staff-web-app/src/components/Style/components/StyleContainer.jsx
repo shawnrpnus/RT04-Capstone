@@ -54,7 +54,13 @@ class StyleContainer extends Component {
   };
 
   render() {
-    const { errors, clearErrors, mode, currentStyle, renderLoader } = this.props;
+    const {
+      errors,
+      clearErrors,
+      mode,
+      currentStyle,
+      renderLoader
+    } = this.props;
     const header =
       mode === "viewAll"
         ? "Style Information"
@@ -102,7 +108,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = {
-  createNewStyle, 
+  createNewStyle,
   updateStyle,
   clearErrors,
   retrieveAllStyles

@@ -29,7 +29,7 @@ class StyleForm extends React.Component {
   }
 
   onChange = e => {
-    this.setState({ styleName: e.target.value }); 
+    this.setState({ styleName: e.target.value });
     if (Object.keys(this.props.errors).length !== 0) this.props.clearErrors();
   };
 

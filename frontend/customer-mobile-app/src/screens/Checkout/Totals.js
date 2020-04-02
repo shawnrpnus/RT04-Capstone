@@ -1,9 +1,9 @@
 import React from "react";
 import { Block, Text } from "galio-framework";
 import { Dimensions } from "react-native";
-import {Button, Divider} from "react-native-paper";
+import { Button, Divider } from "react-native-paper";
 import Theme from "src/constants/Theme";
-import {set} from "react-native-reanimated";
+import { set } from "react-native-reanimated";
 
 const { width, height } = Dimensions.get("window");
 
@@ -25,7 +25,8 @@ function Totals(props) {
     let discount;
     if (promoCode.percentageDiscount) {
       discount = (
-        promoCode.percentageDiscount/100 * shoppingCartFinalTotal
+        (promoCode.percentageDiscount / 100) *
+        shoppingCartFinalTotal
       ).toFixed(2);
     } else if (promoCode.flatDiscount) {
       discount = promoCode.flatDiscount.toFixed(2);
@@ -38,7 +39,7 @@ function Totals(props) {
     if (promoCode.percentageDiscount) {
       finalTotal = (
         shoppingCartFinalTotal -
-        promoCode.percentageDiscount/100 * shoppingCartFinalTotal
+        (promoCode.percentageDiscount / 100) * shoppingCartFinalTotal
       ).toFixed(2);
     } else if (promoCode.flatDicount) {
       finalTotal = (shoppingCartFinalTotal - promoCode.flatDicount).toFixed(2);
@@ -63,22 +64,40 @@ function Totals(props) {
         <Text h5 bold>
           {promoCode ? "Initial Total" : "Final Total"}
         </Text>
-        <Text h5>${shoppingCartFinalTotal.toFixed(2)}</Text>
+        <Text
+          h5
+          bold={!promoCode}
+          style={{ textDecorationLine: !promoCode ? "underline" : "none" }}
+        >
+          ${shoppingCartFinalTotal.toFixed(2)}
+        </Text>
       </Block>
       {promoCode && (
         <>
-          <Block flex row space="between" style={{ width: "100%", marginTop: 5 }}>
+          <Block
+            flex
+            row
+            space="between"
+            style={{ width: "100%", marginTop: 5 }}
+          >
             <Text h5 bold>
               {renderPromoCodeName()}
             </Text>
             <Text h5>{renderDiscountAmount()}</Text>
           </Block>
-          <Divider style={{height: 2, marginTop: 15}}/>
-          <Block flex row space="between" style={{ width: "100%", marginTop: 3 }}>
+          <Divider style={{ height: 2, marginTop: 15 }} />
+          <Block
+            flex
+            row
+            space="between"
+            style={{ width: "100%", marginTop: 3 }}
+          >
             <Text h5 bold>
               Final Total
             </Text>
-            <Text h5 bold style={{textDecorationLine:"underline"}}>{renderFinalTotalAmount()}</Text>
+            <Text h5 bold style={{ textDecorationLine: "underline" }}>
+              {renderFinalTotalAmount()}
+            </Text>
           </Block>
         </>
       )}

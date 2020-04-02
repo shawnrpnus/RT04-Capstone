@@ -10,6 +10,7 @@ import PromoCode from "src/screens/Checkout/PromoCode";
 import Totals from "src/screens/Checkout/Totals";
 import { Button } from "react-native-paper";
 import Theme from "src/constants/Theme";
+import {set} from "react-native-reanimated";
 
 const { width, height } = Dimensions.get("window");
 
@@ -28,10 +29,24 @@ function Checkout(props) {
   const customer = useSelector(state => state.customer.loggedInCustomer);
   const [collectionOption, setCollectionOption] = useState("in-store");
   const [deliveryAddress, setDeliveryAddress] = useState(null);
+  const [billingAddress, setBillingAddress] = useState(null);
   const [creditCard, setCreditCard] = useState(null);
   const [promoCode, setPromoCode] = useState(null);
   const [checkoutFinalTotal, setCheckoutFinalTotal] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  const confirmCheckout = () => {
+    const req = {
+      customerId: customer.customerId,
+      paymentMethodId: creditCard.paymentMethodId,
+      totalAmount: checkoutFinalTotal,
+      storeId: collectionOption==="in-store" ? customer.inStoreShoppingCart.store.storeId : null,
+      deliveryAddress,
+      billingAddress,
+      storeToCollectId: collectionOption==="in-store" ? customer.inStoreShoppingCart.store.storeId : null,
+      promoCodeId: promoCode.promoCodeId
+    }
+  }
 
   return (
     <Block flex={1} center style={{ width: width, paddingTop: 5 }}>
@@ -48,6 +63,8 @@ function Checkout(props) {
             customer={customer}
             creditCard={creditCard}
             setCreditCard={setCreditCard}
+            billingAddress={billingAddress}
+            setBillingAddress={setBillingAddress}
           />
           <CheckoutItemList
             customer={customer}
