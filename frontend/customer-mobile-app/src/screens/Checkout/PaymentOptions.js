@@ -12,7 +12,8 @@ function PaymentOptions(props) {
     creditCard,
     setCreditCard,
     billingAddress,
-    setBillingAddress
+    setBillingAddress,
+    setCreditCardModalVisible
   } = props;
 
   const renderDefaultCreditCard = () => {
@@ -76,7 +77,7 @@ function PaymentOptions(props) {
             <Text h5 bold>
               Payment
             </Text>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => setCreditCardModalVisible(true)}>
               <Text
                 h5
                 bold

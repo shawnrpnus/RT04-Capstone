@@ -10,7 +10,8 @@ import PromoCode from "src/screens/Checkout/PromoCode";
 import Totals from "src/screens/Checkout/Totals";
 import { Button } from "react-native-paper";
 import Theme from "src/constants/Theme";
-import {set} from "react-native-reanimated";
+import { set } from "react-native-reanimated";
+import EditCardModal from "src/screens/Checkout/EditCardModal";
 
 const { width, height } = Dimensions.get("window");
 
@@ -34,19 +35,24 @@ function Checkout(props) {
   const [promoCode, setPromoCode] = useState(null);
   const [checkoutFinalTotal, setCheckoutFinalTotal] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [creditCardModalVisible, setCreditCardModalVisible] = useState(false);
 
   const confirmCheckout = () => {
     const req = {
       customerId: customer.customerId,
       paymentMethodId: creditCard.paymentMethodId,
       totalAmount: checkoutFinalTotal,
-      storeId: collectionOption==="in-store" ? customer.inStoreShoppingCart.store.storeId : null,
+      storeId: customer.inStoreShoppingCart.store.storeId,
       deliveryAddress,
       billingAddress,
-      storeToCollectId: collectionOption==="in-store" ? customer.inStoreShoppingCart.store.storeId : null,
-      promoCodeId: promoCode.promoCodeId
-    }
-  }
+      storeToCollectId:
+        collectionOption === "in-store"
+          ? customer.inStoreShoppingCart.store.storeId
+          : null,
+      promoCodeId: promoCode ? promoCode.promoCodeId : null
+    };
+    console.log(req);
+  };
 
   return (
     <Block flex={1} center style={{ width: width, paddingTop: 5 }}>
@@ -65,6 +71,7 @@ function Checkout(props) {
             setCreditCard={setCreditCard}
             billingAddress={billingAddress}
             setBillingAddress={setBillingAddress}
+            setCreditCardModalVisible={setCreditCardModalVisible}
           />
           <CheckoutItemList
             customer={customer}
@@ -83,6 +90,7 @@ function Checkout(props) {
             }
             promoCode={promoCode}
             setCheckoutFinalTotal={setCheckoutFinalTotal}
+            confirmCheckout={confirmCheckout}
           />
         </ScrollView>
       )}
@@ -91,6 +99,12 @@ function Checkout(props) {
         textContent={"Loading..."}
         textStyle={{ color: "white" }}
         overlayColor="rgba(0,0,0,0.75)"
+      />
+      <EditCardModal
+        creditCardModalVisible={creditCardModalVisible}
+        setCreditCardModalVisible={setCreditCardModalVisible}
+        customer={customer}
+        setCreditCard={setCreditCard}
       />
     </Block>
   );

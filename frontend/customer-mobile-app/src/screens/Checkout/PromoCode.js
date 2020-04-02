@@ -74,13 +74,15 @@ function PromoCode(props) {
           {!promoCode ? "Apply" : "Remove"}
         </Button>
       </Block>
-      <HelperText
-        type="error"
-        visible={!!errorMessage}
-        style={{ marginLeft: -10 }}
-      >
-        {errorMessage}
-      </HelperText>
+      {!!errorMessage && (
+        <HelperText
+          type="error"
+          visible={!!errorMessage}
+          style={{ marginLeft: -10 }}
+        >
+          {errorMessage}
+        </HelperText>
+      )}
     </Block>
   );
 }

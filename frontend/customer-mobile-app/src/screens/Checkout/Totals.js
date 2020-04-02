@@ -4,11 +4,17 @@ import { Dimensions } from "react-native";
 import { Button, Divider } from "react-native-paper";
 import Theme from "src/constants/Theme";
 import { set } from "react-native-reanimated";
+import {render} from "react-native-web";
 
 const { width, height } = Dimensions.get("window");
 
 function Totals(props) {
-  const { shoppingCartFinalTotal, promoCode, setCheckoutFinalTotal } = props;
+  const {
+    shoppingCartFinalTotal,
+    promoCode,
+    setCheckoutFinalTotal,
+    confirmCheckout
+  } = props;
 
   const renderPromoCodeName = () => {
     const baseName = promoCode.promoCodeName;
@@ -36,6 +42,11 @@ function Totals(props) {
 
   const renderFinalTotalAmount = () => {
     let finalTotal;
+    if (!promoCode){
+      finalTotal = shoppingCartFinalTotal.toFixed(2);
+      setCheckoutFinalTotal(finalTotal);
+      return `$${finalTotal}`;
+    }
     if (promoCode.percentageDiscount) {
       finalTotal = (
         shoppingCartFinalTotal -
@@ -69,7 +80,7 @@ function Totals(props) {
           bold={!promoCode}
           style={{ textDecorationLine: !promoCode ? "underline" : "none" }}
         >
-          ${shoppingCartFinalTotal.toFixed(2)}
+          {renderFinalTotalAmount()}
         </Text>
       </Block>
       {promoCode && (
@@ -104,7 +115,7 @@ function Totals(props) {
       <Block flex center style={{ width: "100%" }}>
         <Button
           mode="contained"
-          onPress={() => {}}
+          onPress={confirmCheckout}
           style={{
             backgroundColor: Theme.COLORS.BUTTON_COLOR,
             width: "100%",
