@@ -122,10 +122,15 @@ export const updateInStoreShoppingCart = (
   };
 };
 
-export const getShoppingCartItemsStock = (customerId, inStoreDeliverHome) => {
+export const getShoppingCartItemsStock = (
+  customerId,
+  inStoreDeliverHome,
+  setLoading
+) => {
   const reqParams = inStoreDeliverHome
     ? { customerId, cartType: "instore", inStoreDeliverHome }
     : { customerId, cartType: "instore" };
+  if (setLoading) setLoading(true);
   return dispatch => {
     axios
       .get(CUSTOMER_BASE_URL + "/getShoppingCartItemsStock", {
@@ -133,9 +138,11 @@ export const getShoppingCartItemsStock = (customerId, inStoreDeliverHome) => {
       })
       .then(response => {
         dispatch(updateShoppingCartItemsStock(response.data));
+        if (setLoading) setLoading(false);
       })
       .catch(err => {
         console.log(err);
+        if (setLoading) setLoading(false);
       });
   };
 };

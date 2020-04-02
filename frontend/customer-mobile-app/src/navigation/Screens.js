@@ -22,6 +22,7 @@ import ViewCreditCards from "src/screens/Profile/CreditCard/ViewCreditCards";
 import { FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
 import CreateAddress from "src/screens/Profile/Address/CreateAddress";
 import UpdateAddress from "src/screens/Profile/Address/UpdateAddress";
+import Checkout from "src/screens/Checkout/Checkout";
 
 const { width } = Dimensions.get("screen");
 
@@ -216,6 +217,13 @@ function ShopStack(props) {
               {...props}
             />
           )
+        }}
+      />
+      <Stack.Screen
+        name="Checkout"
+        component={Checkout}
+        options={{
+          header: props => <CustomHeader title="Checkout" back {...props} />
         }}
       />
     </Stack.Navigator>

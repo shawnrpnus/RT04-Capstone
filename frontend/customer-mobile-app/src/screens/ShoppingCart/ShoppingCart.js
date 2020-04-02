@@ -13,6 +13,7 @@ const _ = require("lodash");
 const { width, height } = Dimensions.get("window");
 
 function ShoppingCart(props) {
+  const { navigation } = props;
   const customer = useSelector(state => state.customer.loggedInCustomer);
   const shoppingCartItemsStock = useSelector(
     state => state.customer.shoppingCartItemsStock
@@ -54,7 +55,10 @@ function ShoppingCart(props) {
       if (value.quantity === 0) hasNoStock = true;
     });
     customer.inStoreShoppingCart.shoppingCartItems.forEach(shoppingCartItem => {
-      const stock = _.get(shoppingCartItemsStock, `${shoppingCartItem.shoppingCartItemId}.quantity`)
+      const stock = _.get(
+        shoppingCartItemsStock,
+        `${shoppingCartItem.shoppingCartItemId}.quantity`
+      );
       if (stock && shoppingCartItem.quantity > stock) {
         hasNoStock = true;
       }
@@ -130,6 +134,7 @@ function ShoppingCart(props) {
                     : "lightgrey"
                 }
                 disabled={!allInStock(shoppingCartItemsStock)}
+                onPress={() => navigation.navigate("Checkout")}
               >
                 GO TO CHECKOUT
               </Button>
