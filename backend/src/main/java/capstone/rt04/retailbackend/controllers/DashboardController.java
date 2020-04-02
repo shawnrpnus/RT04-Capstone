@@ -37,7 +37,7 @@ public class DashboardController {
     private final ProductService productService;
     private final RelationshipService relationshipService;
 
-    @Value("src/main/java/capstone/rt04/retailbackend/util/apriori/transactionIds.txt")
+    @Value("transactionIds.txt")
     private ClassPathResource resource;
 
     public DashboardController(AprioriService aprioriService, TransactionService transactionService, ProductService productService, RelationshipService relationshipService) {
@@ -99,31 +99,23 @@ public class DashboardController {
         System.out.println("F name - " + f.getName());
 
         try {
-            if (!f.exists() && !f.createNewFile()) {
-                System.out.println("File doesn't exist, and creating file with path: " + MARKET_BASKET_ANALYSIS_FILE_PATH + " failed. ");
-            } else {
-                out = new FileOutputStream(f);
-                out.write(data.getBytes(), 0, data.length());
-            }
+            out = new FileOutputStream(f);
+            System.out.println(out);
+            out.write(data.getBytes(), 0, data.length());
         } catch (Exception e) {
             System.err.println(e.getMessage());
 
-            MARKET_BASKET_ANALYSIS_FILE_PATH = (jarPath.substring(0, jarPath.lastIndexOf("/"))
-                    + "transactionIds.txt").substring(6);
+            MARKET_BASKET_ANALYSIS_FILE_PATH = (jarPath + "transactionIds.txt").substring(6);
 
             System.out.println("MBA - " + MARKET_BASKET_ANALYSIS_FILE_PATH);
-            if (!f.exists() && !f.createNewFile()) {
-                System.out.println("File doesn't exist, and creating file with path: " + MARKET_BASKET_ANALYSIS_FILE_PATH + " failed. ");
-            } else {
-                out = new FileOutputStream(f);
-                out.write(data.getBytes(), 0, data.length());
-                try {
-                    out.close();
-                } catch (Exception ex) {
-                    System.out.println(ex.getMessage());
-                }
+
+            out = new FileOutputStream(f);
+            out.write(data.getBytes(), 0, data.length());
+            try {
+                out.close();
+            } catch (Exception ex) {
+                System.out.println(ex.getMessage());
             }
-            e.printStackTrace();
         }
 
         System.out.println("\n\n\n***************************************************");
