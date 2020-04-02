@@ -3,13 +3,17 @@ package capstone.rt04.retailbackend.services;
 import capstone.rt04.retailbackend.entities.Customer;
 import capstone.rt04.retailbackend.entities.Product;
 import capstone.rt04.retailbackend.entities.Style;
+import capstone.rt04.retailbackend.entities.Tag;
+import capstone.rt04.retailbackend.repositories.ProductRepository;
 import capstone.rt04.retailbackend.repositories.StyleRepository;
 import capstone.rt04.retailbackend.util.ErrorMessages;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
+import capstone.rt04.retailbackend.util.exceptions.product.ProductNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.style.CreateNewStyleException;
 import capstone.rt04.retailbackend.util.exceptions.style.DeleteStyleException;
 import capstone.rt04.retailbackend.util.exceptions.style.StyleNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.style.UpdateStyleException;
+import capstone.rt04.retailbackend.util.exceptions.tag.TagNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,10 +28,12 @@ public class StyleService {
 
     private final ValidationService validationService;
     private final StyleRepository styleRepository;
+    private final ProductRepository productRepository;
 
-    public StyleService(ValidationService validationService, StyleRepository styleRepository) {
+    public StyleService(ValidationService validationService, StyleRepository styleRepository, ProductRepository productRepository) {
         this.validationService = validationService;
         this.styleRepository = styleRepository;
+        this.productRepository = productRepository;
     }
 
     public Style createNewStyle(Style style) throws CreateNewStyleException, InputDataValidationException {
@@ -43,6 +49,36 @@ public class StyleService {
         } catch (PersistenceException ex){
             throw new CreateNewStyleException("Error creating new style");
         }
+    }
+
+    public Style addStyleToProduct(Long styleId, List<Long> productIds) throws StyleNotFoundException, ProductNotFoundException {
+        Style style = retrieveStyleByStyleId(styleId);
+        for(Long p : productIds) {
+            System.out.println("LONG: " + p);
+            Product retrieveProduct = productRepository.findByProductId(p);
+            //add tag both ways is implemented in the entity
+            try{
+                retrieveProduct.addStyle(style);
+            } catch(NullPointerException ex) {
+                throw new ProductNotFoundException("Product with Product ID: " + p + " not found!");
+            }
+        }
+
+        return style;
+    }
+
+    public Style deleteStyleFromProduct(Long styleId, List<Long> productIds) throws StyleNotFoundException, ProductNotFoundException {
+        Style style = retrieveStyleByStyleId(styleId);
+        for(Long p : productIds) {
+            Product retrieveProduct = productRepository.findByProductId(p);
+            try{
+                retrieveProduct.getStyles().remove(style);
+                style.getProducts().remove(retrieveProduct);
+            } catch(NullPointerException ex) {
+                throw new ProductNotFoundException("Product with Product ID: " + p + " not found!");
+            }
+        }
+        return style;
     }
 
     public Style retrieveStyleByStyleId(Long styleId) throws StyleNotFoundException {
