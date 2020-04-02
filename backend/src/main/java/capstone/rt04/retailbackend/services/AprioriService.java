@@ -20,13 +20,14 @@ import java.util.List;
 @Service
 public class AprioriService {
 
-    public List<List<Long>> performBasketAnalysis(String path) throws IOException {
+    public List<List<Long>> performBasketAnalysis(String path, String data) throws IOException {
 
-        String input = path;
-        String output = null;
-        // Note : we here set the output file path to null
-        // because we want that the algorithm save the
-        // result in memory for this example.
+        // String input = path;
+        // String output = null;
+        /** Note : we here set the output file path to null
+            because we want that the algorithm save the
+            result in memory for this example.
+         */
 
         double minsup = 0.2; // means a minsup of (n) matching transactions (we used a relative support)
 
@@ -36,7 +37,12 @@ public class AprioriService {
         // Uncomment the following line to set the maximum pattern length (number of items per itemset, e.g. 3 )
         // apriori.setMaximumPatternLength(3);
 
-        Itemsets result = algorithm.runAlgorithm(minsup, input, output);
+        Itemsets result;
+        if (path != null) {
+            result =algorithm.runAlgorithm(minsup, path, null, null);
+        } else {
+            result =algorithm.runAlgorithm(minsup, null, null, data);
+        }
 //        algorithm.printStats();
 //        result.printItemsets(algorithm.getDatabaseSize());
 
