@@ -149,8 +149,6 @@ router.post("/sendUnattendedCartEmail", async (req, res) => {
 router.post("/contactUsConfirmation", async (req, res) => {
   const { email, fullName, contactUsCategory } = req.body;
 
-  console.log(req.body);
-
   let response;
 
   switch (contactUsCategory.toUpperCase()) {

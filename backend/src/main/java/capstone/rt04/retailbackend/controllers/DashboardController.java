@@ -8,6 +8,8 @@ import capstone.rt04.retailbackend.services.ProductService;
 import capstone.rt04.retailbackend.services.RelationshipService;
 import capstone.rt04.retailbackend.services.TransactionService;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductNotFoundException;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +36,9 @@ public class DashboardController {
     private final TransactionService transactionService;
     private final ProductService productService;
     private final RelationshipService relationshipService;
+
+    @Value("src/main/java/capstone/rt04/retailbackend/util/apriori/transactionIds.txt")
+    private ClassPathResource resource;
 
     public DashboardController(AprioriService aprioriService, TransactionService transactionService, ProductService productService, RelationshipService relationshipService) {
         this.aprioriService = aprioriService;
@@ -68,6 +73,7 @@ public class DashboardController {
         String MARKET_BASKET_ANALYSIS_FILE_PATH = "";
         OutputStream out = null;
         try {
+            System.out.println(getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
             jarPath = URLDecoder.decode(getClass().getProtectionDomain().getCodeSource().getLocation().getPath(), "UTF-8");
             System.out.println(jarPath);
         } catch (UnsupportedEncodingException e1) {
@@ -87,6 +93,11 @@ public class DashboardController {
         System.out.println(MARKET_BASKET_ANALYSIS_FILE_PATH);
 
         File f = new File(MARKET_BASKET_ANALYSIS_FILE_PATH);
+
+        System.out.println("F - " + f.getPath());
+        System.out.println("F abs - " + f.getAbsolutePath());
+        System.out.println("F name - " + f.getName());
+
         try {
             if (!f.exists() && !f.createNewFile()) {
                 System.out.println("File doesn't exist, and creating file with path: " + MARKET_BASKET_ANALYSIS_FILE_PATH + " failed. ");
@@ -95,21 +106,24 @@ public class DashboardController {
                 out.write(data.getBytes(), 0, data.length());
             }
         } catch (Exception e) {
+            System.err.println(e.getMessage());
+
             MARKET_BASKET_ANALYSIS_FILE_PATH = (jarPath.substring(0, jarPath.lastIndexOf("/"))
                     + "transactionIds.txt").substring(6);
+
+            System.out.println("MBA - " + MARKET_BASKET_ANALYSIS_FILE_PATH);
             if (!f.exists() && !f.createNewFile()) {
                 System.out.println("File doesn't exist, and creating file with path: " + MARKET_BASKET_ANALYSIS_FILE_PATH + " failed. ");
             } else {
                 out = new FileOutputStream(f);
                 out.write(data.getBytes(), 0, data.length());
+                try {
+                    out.close();
+                } catch (Exception ex) {
+                    System.out.println(ex.getMessage());
+                }
             }
             e.printStackTrace();
-        } finally {
-            try {
-                out.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
 
         System.out.println("\n\n\n***************************************************");
