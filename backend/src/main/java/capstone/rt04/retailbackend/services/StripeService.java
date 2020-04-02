@@ -13,6 +13,7 @@ import com.stripe.exception.StripeException;
 import com.stripe.model.*;
 import com.stripe.param.PaymentIntentCreateParams;
 import com.stripe.param.PaymentMethodListParams;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +27,7 @@ import static capstone.rt04.retailbackend.util.Constants.ONLINE_SHOPPING_CART;
 
 @Service
 @Transactional
+@Slf4j
 public class StripeService {
 
     // Set your secret key. Remember to switch to your live secret key in production!
@@ -172,5 +174,22 @@ public class StripeService {
             }
         }
         return dbCustomer;
+    }
+
+    public capstone.rt04.retailbackend.entities.Customer addCreditCardMobile(Long customerId, String tokenId) throws CustomerNotFoundException, StripeException {
+        Stripe.apiKey = "sk_test_E81pq87cIYZxL2NkXaXKsEEd00MGrcKvYx";
+
+        capstone.rt04.retailbackend.entities.Customer dbCustomer = customerService.retrieveCustomerByCustomerId(customerId);
+        log.info("Retrieved dbCustomer");
+        Customer customer = Customer.retrieve(dbCustomer.getCreditCardCustomerId());
+        log.info("Retrieved stripe customer");
+        Map<String, Object> params = new HashMap<>();
+        params.put("source", tokenId);
+        Card card = (Card) customer.getSources().create(params);
+        log.info("Created card");
+        CreditCard creditCard = new CreditCard(card.getLast4(), card.getId(), Math.toIntExact(card.getExpMonth()), Math.toIntExact(card.getExpYear()),
+                card.getBrand(), true);
+        return customerService.addCreditCard(customerId, creditCard);
+
     }
 }

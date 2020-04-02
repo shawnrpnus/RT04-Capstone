@@ -1,24 +1,28 @@
-import {useDispatch, useSelector} from "react-redux";
-import React, {useEffect, useState} from "react";
-import {retrieveAllRefunds} from "../../redux/actions/refundAction";
+import { useDispatch, useSelector } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { retrieveAllRefunds } from "../../redux/actions/refundAction";
 import withPage from "../Layout/page/withPage";
 import MaterialTable from "material-table";
 import {
   Add,
   AddBox,
-  Check, ChevronLeft,
+  Check,
+  ChevronLeft,
   ChevronRight,
   Clear,
   DeleteOutline,
   Edit,
   FirstPage,
-  LastPage, Remove,
+  LastPage,
+  Remove,
   SaveAlt,
-  Search, ShoppingCart, ViewColumn, Visibility
+  Search,
+  ShoppingCart,
+  ViewColumn,
+  Visibility
 } from "@material-ui/icons";
-import {useHistory} from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import Chip from "@material-ui/core/Chip";
-
 
 const tableIcons = {
   Add: AddBox,
@@ -35,7 +39,7 @@ const tableIcons = {
   PreviousPage: ChevronLeft,
   ResetSearch: Clear,
   Search: Search,
-  SortArrow: () => <div/>,
+  SortArrow: () => <div />,
   ThirdStateCheck: Remove,
   ViewColumn: ViewColumn
 };
@@ -45,9 +49,7 @@ const ViewAllRefundRecords = props => {
   const errors = useSelector(state => state.errors);
   const history = useHistory();
 
-  useEffect(() =>
-    (dispatch(retrieveAllRefunds())), []);
-
+  useEffect(() => dispatch(retrieveAllRefunds()), []);
 
   const allRefunds = useSelector(state => state.refund.allRefunds);
   console.log(allRefunds);
@@ -62,11 +64,16 @@ const ViewAllRefundRecords = props => {
 
   const checkDisabled = rowData => {
     let lineItems = rowData.refundLineItems;
-    for(let i = 0; i < lineItems.length; i++) {
-      let length = lineItems[i].refundLineItemHandlerList.length-1;
-      if(lineItems[i].refundLineItemHandlerList[length].refundProgressEnum === "PENDING_DELIVERY"
-      || lineItems[i].refundLineItemHandlerList[length].refundProgressEnum === "RECEIVED_BY_STORE"
-      || lineItems[i].refundLineItemHandlerList[length].refundProgressEnum === "HANDLED_BY_STAFF") {
+    for (let i = 0; i < lineItems.length; i++) {
+      let length = lineItems[i].refundLineItemHandlerList.length - 1;
+      if (
+        lineItems[i].refundLineItemHandlerList[length].refundProgressEnum ===
+          "PENDING_DELIVERY" ||
+        lineItems[i].refundLineItemHandlerList[length].refundProgressEnum ===
+          "RECEIVED_BY_STORE" ||
+        lineItems[i].refundLineItemHandlerList[length].refundProgressEnum ===
+          "HANDLED_BY_STAFF"
+      ) {
         return false;
       }
     }
@@ -83,10 +90,10 @@ const ViewAllRefundRecords = props => {
 
   return (
     <div>
-      {allRefunds ?
+      {allRefunds ? (
         <MaterialTable
           title="All Refunds"
-          style={{boxShadow: "none"}}
+          style={{ boxShadow: "none" }}
           icons={tableIcons}
           columns={[
             {
@@ -112,13 +119,13 @@ const ViewAllRefundRecords = props => {
             {
               title: "Refund Progress",
               field: "refundProgress",
-              render: (rowData) => {
+              render: rowData => {
                 // console.log(rowData);
                 const progress = rowData.refundStatus;
                 let valWords = "";
                 let style = { backgroundColor: "#f65a5a" };
                 // console.log("progress",progress);
-                switch(progress) {
+                switch (progress) {
                   case "PENDING":
                     style = { backgroundColor: "#19d2d2" };
                     valWords = "Pending";
@@ -147,16 +154,11 @@ const ViewAllRefundRecords = props => {
                     style = { backgroundColor: "#33ba0a" };
                 }
                 return (
-                  <Chip
-                    style={{ ...style, color: "white" }}
-                    label={valWords}
-                  />
-
+                  <Chip style={{ ...style, color: "white" }} label={valWords} />
                 );
               }
             }
-          ]
-          }
+          ]}
           data={allRefunds}
           options={{
             filtering: true,
@@ -164,8 +166,8 @@ const ViewAllRefundRecords = props => {
             pageSize: 5,
             pageSizeOptions: [5, 10, 20],
             actionsColumnIndex: -1,
-            headerStyle: {textAlign: "center"}, //change header padding
-            cellStyle: {textAlign: "center"}
+            headerStyle: { textAlign: "center" }, //change header padding
+            cellStyle: { textAlign: "center" }
           }}
           actions={[
             {
@@ -179,12 +181,11 @@ const ViewAllRefundRecords = props => {
               onClick: (event, rowData) => updateDetails(event, rowData),
               disabled: checkDisabled(rowData)
             })
-
           ]}
         />
-        :
+      ) : (
         ""
-      }
+      )}
     </div>
   );
 };

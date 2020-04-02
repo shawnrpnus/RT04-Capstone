@@ -8,7 +8,8 @@ import { clearErrors } from "../../redux/actions";
 import { Grid } from "@material-ui/core";
 import MaterialObjectSelect from "../../shared/components/Form/MaterialObjectSelect";
 import {
-  createInStoreRefundRequest, createInStoreRefundSuccess,
+  createInStoreRefundRequest,
+  createInStoreRefundSuccess,
   retrieveAllRefundModeEnum,
   retrieveAllRefundStatusEnum
 } from "../../redux/actions/refundAction";
@@ -45,7 +46,7 @@ import MaterialNumberSelect from "../../shared/components/Form/MaterialNumberSel
 import RefundLineItemRequest from "../../models/refund/RefundLineItemRequest";
 import Refund from "../../App/Router/WrappedRoutes/Refund";
 import RefundRequest from "../../models/refund/RefundRequest";
-import {useHistory} from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import FormControl from "@material-ui/core/FormControl";
 
 const tableIcons = {
@@ -93,7 +94,6 @@ const CreateEditRefundRecord = props => {
     customerId: "",
     promoCode: "-",
     promoCodeName: ""
-
   });
   const allRefundStatusEnums = useSelector(
     state => state.refund.allRefundStatusEnum
@@ -106,21 +106,27 @@ const CreateEditRefundRecord = props => {
   // const currLength = useSelector(state => state.transaction.transaction.transactionLineItems.length);
   console.log(currTransaction);
   console.log(inputState);
-  useEffect(()=> {
-    dispatch(retrieveTransactionByOrderNumberSuccess())},
-    []
-  );
+  useEffect(() => {
+    dispatch(retrieveTransactionByOrderNumberSuccess());
+  }, []);
   useEffect(
     () =>
       setInputState(inputState => ({
         ...inputState,
-        quantityToRefund: new Array(_.get(currTransaction, "transactionLineItems.length")).fill(0),
-        refundAmt: new Array(_.get(currTransaction, "transactionLineItems.length")).fill(0),
+        quantityToRefund: new Array(
+          _.get(currTransaction, "transactionLineItems.length")
+        ).fill(0),
+        refundAmt: new Array(
+          _.get(currTransaction, "transactionLineItems.length")
+        ).fill(0),
         customerId: _.get(currTransaction, "customer.customerId"),
-        promoCode: _.get(currTransaction, "promoCode") ? _.get(currTransaction, "promoCode"): 0,
-        promoCodeName: _.get(currTransaction, "promoCode") ? _.get(currTransaction, "promoCode.promoCodeName"): 0,
-      }))
-    ,
+        promoCode: _.get(currTransaction, "promoCode")
+          ? _.get(currTransaction, "promoCode")
+          : 0,
+        promoCodeName: _.get(currTransaction, "promoCode")
+          ? _.get(currTransaction, "promoCode.promoCodeName")
+          : 0
+      })),
     [currTransaction]
   );
   // console.log(allRefundModeEnums);
@@ -162,9 +168,9 @@ const CreateEditRefundRecord = props => {
       totalRefundAmount: amount
     }));
   };
-  console.log("promoCode",inputState.promoCode);
+  console.log("promoCode", inputState.promoCode);
 
-  const calculateTotalRefundAmount= (arr) => {
+  const calculateTotalRefundAmount = arr => {
     console.log(arr);
     const lineItems = currTransaction.transactionLineItems;
     console.log(lineItems);
@@ -172,18 +178,17 @@ const CreateEditRefundRecord = props => {
     let temp = { ...inputState };
     let arrayAmt = [...inputState.refundAmt];
     lineItems.forEach(myFunction);
-    function myFunction(item, index)
-    {
-      if(item.finalSubTotal) {
-        amt += (item.finalSubTotal/item.quantity) * arr[index];
-        arrayAmt[index] = (item.finalSubTotal/item.quantity);
+    function myFunction(item, index) {
+      if (item.finalSubTotal) {
+        amt += (item.finalSubTotal / item.quantity) * arr[index];
+        arrayAmt[index] = item.finalSubTotal / item.quantity;
       } else {
-        amt += (item.initialSubTotal/item.quantity) * arr[index];
-        arrayAmt[index] = item.initialSubTotal/item.quantity;
+        amt += (item.initialSubTotal / item.quantity) * arr[index];
+        arrayAmt[index] = item.initialSubTotal / item.quantity;
       }
-      if(inputState.promoCode) {
+      if (inputState.promoCode) {
         amt -= inputState.promoCode.flatDiscount;
-        let val = 1 - inputState.promoCode.percentageDiscount/100.0;
+        let val = 1 - inputState.promoCode.percentageDiscount / 100.0;
         amt *= val;
       }
 
@@ -224,14 +229,24 @@ const CreateEditRefundRecord = props => {
     const staffId = currStaff.staffId;
     const refundLineItems = [];
     lineItems.forEach(myFunction);
-    function myFunction(item, index)
-    {
-      refundLineItems.push(new RefundLineItemRequest(item.transactionLineItemId, inputState.quantityToRefund[index], staffId));
+    function myFunction(item, index) {
+      refundLineItems.push(
+        new RefundLineItemRequest(
+          item.transactionLineItemId,
+          inputState.quantityToRefund[index],
+          staffId
+        )
+      );
 
       // console.log(item);
       // console.log(index);
     }
-    const refundRequest = new RefundRequest(inputState.refundMode, inputState.reason, refundLineItems, inputState.customerId);
+    const refundRequest = new RefundRequest(
+      inputState.refundMode,
+      inputState.reason,
+      refundLineItems,
+      inputState.customerId
+    );
     console.log(refundRequest);
     dispatch(createInStoreRefundRequest(refundRequest, history, setInputState));
   };
@@ -327,12 +342,10 @@ const CreateEditRefundRecord = props => {
                   {
                     title: "Unit Price",
                     field: "initialSubTotal",
-                    render: (rowData) => {
+                    render: rowData => {
                       const rowTotal = rowData.initialSubTotal;
-                      let valToDisplay = rowTotal/rowData.quantity;
-                      return (
-                        valToDisplay
-                      );
+                      let valToDisplay = rowTotal / rowData.quantity;
+                      return valToDisplay;
                     }
                   },
                   {
@@ -342,39 +355,39 @@ const CreateEditRefundRecord = props => {
                   {
                     title: "Price",
                     field: "finalSubTotal",
-                    render: (rowData) => {
+                    render: rowData => {
                       const finalSubTotal = rowData.finalSubTotal;
                       // console.log(finalSubTotal);
                       let valToDisplay = 0;
-                      if(finalSubTotal) {
-                        valToDisplay = finalSubTotal/rowData.quantity;
+                      if (finalSubTotal) {
+                        valToDisplay = finalSubTotal / rowData.quantity;
                       } else {
                         valToDisplay = rowData.initialSubTotal;
                       }
-                      return (
-                        valToDisplay
-                      );
+                      return valToDisplay;
                     }
                   },
                   {
                     title: "Quantity to Refund",
                     field: "quantityToRefund[tableData.id]",
-                    render: (rowData) => {
-
+                    render: rowData => {
                       const tableData = rowData.tableData;
-                      console.log("tableData",tableData);
-                      console.log("rowData",rowData);
+                      console.log("tableData", tableData);
+                      console.log("rowData", rowData);
                       return (
-
                         <Select
                           name="quantityToRefund[tableData.id]"
                           value={inputState.quantityToRefund[tableData.id] || 0}
-                            onChange={e => {
-                              onChangeTable(e, tableData.id, rowData);}}
+                          onChange={e => {
+                            onChangeTable(e, tableData.id, rowData);
+                          }}
                           fullWidth
                           label="Refund Status"
                         >
-                          {_.range(0, rowData.quantity + 1).map(function(item, index) {
+                          {_.range(0, rowData.quantity + 1).map(function(
+                            item,
+                            index
+                          ) {
                             return (
                               <MenuItem value={item} key={index}>
                                 {item}
@@ -422,15 +435,17 @@ const CreateEditRefundRecord = props => {
           </Grid>
           <Grid item xs={12} md={6}>
             {currTransaction ? (
-                <MaterialTextField
-                  fieldLabel="Promo Code Used"
-                  fieldName="promoCodeName"
-                  state={inputState}
-                  errors={errors}
-                  onChange={onChange}
-                  disabled={true}
-                />)
-              : ""}
+              <MaterialTextField
+                fieldLabel="Promo Code Used"
+                fieldName="promoCodeName"
+                state={inputState}
+                errors={errors}
+                onChange={onChange}
+                disabled={true}
+              />
+            ) : (
+              ""
+            )}
           </Grid>
           <Grid item xs={12} md={6}>
             {currTransaction ? (
@@ -442,30 +457,36 @@ const CreateEditRefundRecord = props => {
                 errors={errors}
                 onChange={onChange}
                 disabled={true}
-              />)
-              : "" }
+              />
+            ) : (
+              ""
+            )}
           </Grid>
           <Grid item xs={12} md={6}>
             {currTransaction ? (
-            <MaterialTextField
-              fieldLabel="Total Refund Amount"
-              fieldName="totalRefundAmount"
-              state={inputState}
-              errors={errors}
-              onChange={onChange}
-              disabled={true}
-            />)
-              : ""}
+              <MaterialTextField
+                fieldLabel="Total Refund Amount"
+                fieldName="totalRefundAmount"
+                state={inputState}
+                errors={errors}
+                onChange={onChange}
+                disabled={true}
+              />
+            ) : (
+              ""
+            )}
           </Grid>
 
-          <Grid item xs={12} md={10}>
-          </Grid>
+          <Grid item xs={12} md={10}></Grid>
           <Grid item xs={12} md={2}>
-
-            <Button size="sm"
-                    outline
-                    onClick={onSubmit} round color="primary"
-                    disabled={!currTransaction}>
+            <Button
+              size="sm"
+              outline
+              onClick={onSubmit}
+              round
+              color="primary"
+              disabled={!currTransaction}
+            >
               Submit
             </Button>
           </Grid>

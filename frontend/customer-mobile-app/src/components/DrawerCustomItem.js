@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, TouchableOpacity } from "react-native";
+import {AsyncStorage, StyleSheet, TouchableOpacity} from "react-native";
 import { Block, Text, theme } from "galio-framework";
 
 import Icon from "./Icon";
@@ -48,7 +48,7 @@ function DrawerCustomItem(props) {
   };
 
   const logout = () => {
-    dispatch(customerLogout);
+    AsyncStorage.removeItem("state").then(() => dispatch(customerLogout));
   }
 
 
