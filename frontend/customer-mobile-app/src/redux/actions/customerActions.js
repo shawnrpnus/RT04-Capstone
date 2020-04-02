@@ -239,16 +239,17 @@ export const removeShippingAddress = (
 
 export const addCreditCard = (customerId, tokenId, setLoading) => {
   const req = { customerId, tokenId };
-  setLoading(true);
+  if (setLoading) setLoading(true);
   return dispatch => {
     axios
       .post(SPRING_BACKEND_URL + "/addCreditCardMobile", req)
       .then(response => {
         dispatchUpdatedCustomer(response.data, dispatch);
-        setLoading(false);
+        if (setLoading) setLoading(false);
       })
       .catch(err => {
         console.log(err);
+        if (setLoading) setLoading(false);
       });
   };
 };

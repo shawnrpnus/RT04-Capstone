@@ -1,10 +1,13 @@
 import React from "react";
-import { Portal } from "react-native-paper";
+import { Button, Portal } from "react-native-paper";
 import { Block, Text } from "galio-framework";
 import { Feather } from "@expo/vector-icons";
-import { Dimensions, FlatList, TouchableOpacity } from "react-native";
+import { Alert, Dimensions, FlatList, TouchableOpacity } from "react-native";
 import Modal from "react-native-modal";
 import { CardView } from "react-native-credit-card-input";
+import { PaymentsStripe as stripe } from "expo-payments-stripe";
+import { addCreditCard } from "src/redux/actions/customerActions";
+import { useDispatch } from "react-redux";
 
 const { width, height } = Dimensions.get("window");
 
@@ -15,6 +18,8 @@ function EditCardModal(props) {
     customer,
     setCreditCard
   } = props;
+
+  const dispatch = useDispatch();
 
   const renderItem = ({ item }) => {
     let month = item.expiryMonth;
@@ -47,16 +52,56 @@ function EditCardModal(props) {
     );
   };
 
+  const getNewCard = async () => {
+    try {
+      const token = await stripe.paymentRequestWithCardFormAsync();
+      console.log(token);
+      setCreditCardModalVisible(false);
+      const newCreditCard = {
+        paymentMethodId: token.card.cardId,
+        last4: token.card.last4,
+        expiryMonth: token.card.expMonth,
+        expiryYear: token.card.expYear,
+        issuer: token.card.brand
+      };
+      setCreditCard(newCreditCard);
+      Alert.alert(
+        "Save Credit Card",
+        "Do you want to save this credit card to your account?",
+        [
+          {
+            text: "No",
+            style: "cancel"
+          },
+          {
+            text: "Yes",
+            onPress: () =>
+              dispatch(addCreditCard(customer.customerId, token.tokenId))
+          }
+        ]
+      );
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <Modal
       isVisible={creditCardModalVisible}
-      onModalHide={() => setCreditCardModalVisible(false)}
+      onModalWillHide={() => setCreditCardModalVisible(false)}
+      onBackdropPress={() => setCreditCardModalVisible(false)}
+      animationIn="fadeInUpBig"
+      animationInTiming={300}
+      animationOut="fadeOutDownBig"
+      animationOutTiming={300}
+      useNativeDriver={true}
+      hideModalContentWhileAnimating
     >
       <Block
         flex={0}
         center
         style={{
-          width: width * 0.85,
+          width: width * 0.9,
           height: height * 0.8,
           backgroundColor: "white",
           borderRadius: 10
@@ -92,6 +137,15 @@ function EditCardModal(props) {
               width: width * 0.8
             }}
           />
+        </Block>
+        <Block left style={{ marginBottom: 5 }}>
+          <Button
+            style={{ height: 50 }}
+            contentStyle={{ height: 50 }}
+            onPress={getNewCard}
+          >
+            Add New Card
+          </Button>
         </Block>
       </Block>
     </Modal>

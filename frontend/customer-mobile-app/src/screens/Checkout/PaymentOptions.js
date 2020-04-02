@@ -98,7 +98,7 @@ function PaymentOptions(props) {
               <Text h5>Please add a credit card for payment.</Text>
             )}
           </Block>
-          <Block flex row space="between" style={{marginTop: 10}}>
+          <Block flex row space="between" style={{marginTop: 20}}>
             <Text h6 bold style={{ fontSize: 16, color: "dimgray" }}>
               Billing Address
             </Text>
