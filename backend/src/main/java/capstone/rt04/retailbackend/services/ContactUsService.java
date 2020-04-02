@@ -30,6 +30,9 @@ public class ContactUsService {
     @Value("${node.backend.url}")
     private String NODE_API_URL;
 
+    private final String contactUsPath = "contactUsConfirmation";
+    private final String replyToEmailPath = "replyToEmail";
+
     private final ValidationService validationService;
     private final ContactUsRepository contactUsRepository;
 
@@ -60,7 +63,7 @@ public class ContactUsService {
     }
 
     private void sendContactUsNotification(ContactUs contactUs) {
-        sendNodeEmail(contactUs, null);
+        sendNodeEmail(contactUs, null, contactUsPath);
     }
 
     public List<ContactUs> retrieveAllContactUs() {
@@ -70,7 +73,7 @@ public class ContactUsService {
     public List<ContactUs> replyToEmail(Long contactUsId, String reply) throws ContactUsNotFoundException {
         ContactUs contactUs = retrieveContactUsByContactUsId(contactUsId);
         if (reply != null && reply.length() > 0) {
-            sendNodeEmail(contactUs, reply);
+            sendNodeEmail(contactUs, reply, replyToEmailPath);
             contactUs.setStatus(ContactUsStatusEnum.REPLIED);
         } else {
             // Mark resolved
@@ -79,7 +82,7 @@ public class ContactUsService {
         return retrieveAllContactUs();
     }
 
-    private void sendNodeEmail(ContactUs contactUs, String reply) {
+    private void sendNodeEmail(ContactUs contactUs, String reply, String path) {
         restTemplate = new RestTemplate();
         Map<String, String> request = new HashMap<>();
         String fullName = contactUs.getFirstName() + " " + contactUs.getLastName();
@@ -89,7 +92,7 @@ public class ContactUsService {
         request.put("contactUsCategory", contactUs.getContactUsCategory().toString());
         request.put("reply", reply);
 
-        String endpoint = NODE_API_URL + "/email/replyToEmail";
+        String endpoint = NODE_API_URL + "/email/" + path;
         ResponseEntity<?> response = restTemplate.postForEntity(endpoint, request, Object.class);
         if (response.getStatusCode().equals(HttpStatus.OK)) {
             log.info("Email sent successfully to " + email);

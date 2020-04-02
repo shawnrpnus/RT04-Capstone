@@ -5,7 +5,7 @@ import { dispatchErrorMapError } from "./index";
 import { openCircularProgress, closeCircularProgress } from "./utilActions";
 axios.defaults.baseURL = process.env.REACT_APP_SPRING_API_URL;
 
-const NODE_URL = process.env.REACT_APP_NODE_API_URL;
+const NODE_API_URL = process.env.REACT_APP_NODE_API_URL;
 
 const ADVERTISEMENT_BASE_URL = "/api/advertisement";
 const jsog = require("jsog");
@@ -35,7 +35,10 @@ export const createAdvertisement = (request, onClose) => {
   return dispatch => {
     dispatch(openCircularProgress());
     axios
-      .post(NODE_URL + ADVERTISEMENT_BASE_URL + "/createAdvertisement", request)
+      .post(
+        NODE_API_URL + ADVERTISEMENT_BASE_URL + "/createAdvertisement",
+        request
+      )
       .then(({ data }) => {
         dispatch(retrieveAllAdvertisement());
         toast.success("Advertisement created!", {

@@ -62,14 +62,14 @@ public class DashboardController {
             data += "\n";
         }
 
+        System.out.println("***************************************************\n\n\n");
+
         String jarPath = "";
         String MARKET_BASKET_ANALYSIS_FILE_PATH = "";
         OutputStream out = null;
-
         try {
             jarPath = URLDecoder.decode(getClass().getProtectionDomain().getCodeSource().getLocation().getPath(), "UTF-8");
             System.out.println(jarPath);
-
         } catch (UnsupportedEncodingException e1) {
             // TODO Auto-generated catch block
             e1.printStackTrace();
@@ -78,9 +78,13 @@ public class DashboardController {
         try {
             MARKET_BASKET_ANALYSIS_FILE_PATH = (jarPath.substring(0, jarPath.lastIndexOf("retail"))
                     + "transactionIds.txt").substring(6);
+            System.out.println("***** jar try");
         } catch (NullPointerException | StringIndexOutOfBoundsException ex) {
             MARKET_BASKET_ANALYSIS_FILE_PATH = DEV_MARKET_BASKET_ANALYIS_FILE_PATH;
+            System.out.println("***** jar catch");
         }
+
+        System.out.println(MARKET_BASKET_ANALYSIS_FILE_PATH);
 
         File f = new File(MARKET_BASKET_ANALYSIS_FILE_PATH);
         try {
@@ -89,10 +93,16 @@ public class DashboardController {
             } else {
                 out = new FileOutputStream(f);
                 out.write(data.getBytes(), 0, data.length());
-                out.close();
             }
-
         } catch (Exception e) {
+            MARKET_BASKET_ANALYSIS_FILE_PATH = (jarPath.substring(0, jarPath.lastIndexOf("/"))
+                    + "transactionIds.txt").substring(6);
+            if (!f.exists() && !f.createNewFile()) {
+                System.out.println("File doesn't exist, and creating file with path: " + MARKET_BASKET_ANALYSIS_FILE_PATH + " failed. ");
+            } else {
+                out = new FileOutputStream(f);
+                out.write(data.getBytes(), 0, data.length());
+            }
             e.printStackTrace();
         } finally {
             try {
@@ -101,6 +111,8 @@ public class DashboardController {
                 e.printStackTrace();
             }
         }
+
+        System.out.println("\n\n\n***************************************************");
 
         List<List<ProductDetailsResponse>> productDetailsResponses = new ArrayList<>();
         List<List<Long>> transactionIdsList = aprioriService.performBasketAnalysis(MARKET_BASKET_ANALYSIS_FILE_PATH);
@@ -116,5 +128,4 @@ public class DashboardController {
 
         return new ResponseEntity<>(productDetailsResponses, HttpStatus.OK);
     }
-
 }
