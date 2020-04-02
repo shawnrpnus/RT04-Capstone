@@ -3,10 +3,10 @@ package capstone.rt04.retailbackend.controllers;
 import capstone.rt04.retailbackend.entities.Transaction;
 import capstone.rt04.retailbackend.entities.TransactionLineItem;
 import capstone.rt04.retailbackend.response.ProductDetailsResponse;
+import capstone.rt04.retailbackend.services.AprioriService;
 import capstone.rt04.retailbackend.services.ProductService;
 import capstone.rt04.retailbackend.services.RelationshipService;
 import capstone.rt04.retailbackend.services.TransactionService;
-import capstone.rt04.retailbackend.services.AprioriService;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,16 +15,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static capstone.rt04.retailbackend.util.Constants.MARKET_BASKET_ANALYIS_FILE_PATH;
-import static capstone.rt04.retailbackend.util.routeconstants.DashboardControllerRoutes.*;
+import static capstone.rt04.retailbackend.util.Constants.DEV_MARKET_BASKET_ANALYIS_FILE_PATH;
+import static capstone.rt04.retailbackend.util.routeconstants.DashboardControllerRoutes.DASHBOAR_BASE_ROUTE;
+import static capstone.rt04.retailbackend.util.routeconstants.DashboardControllerRoutes.RETRIEVE_MARKET_BASKET_ANALYSIS;
 
 @RestController
 @RequestMapping(DASHBOAR_BASE_ROUTE)
@@ -63,22 +62,48 @@ public class DashboardController {
             data += "\n";
         }
 
-        OutputStream os = null;
+        String jarPath = "";
+        String MARKET_BASKET_ANALYSIS_FILE_PATH = "";
+        OutputStream out = null;
+
         try {
-            os = new FileOutputStream(new File(MARKET_BASKET_ANALYIS_FILE_PATH));
-            os.write(data.getBytes(), 0, data.length());
-        } catch (IOException e) {
+            jarPath = URLDecoder.decode(getClass().getProtectionDomain().getCodeSource().getLocation().getPath(), "UTF-8");
+            System.out.println(jarPath);
+
+        } catch (UnsupportedEncodingException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
+
+        try {
+            MARKET_BASKET_ANALYSIS_FILE_PATH = (jarPath.substring(0, jarPath.lastIndexOf("retail"))
+                    + "transactionIds.txt").substring(6);
+        } catch (NullPointerException | StringIndexOutOfBoundsException ex) {
+            MARKET_BASKET_ANALYSIS_FILE_PATH = DEV_MARKET_BASKET_ANALYIS_FILE_PATH;
+        }
+
+        File f = new File(MARKET_BASKET_ANALYSIS_FILE_PATH);
+        try {
+            if (!f.exists() && !f.createNewFile()) {
+                System.out.println("File doesn't exist, and creating file with path: " + MARKET_BASKET_ANALYSIS_FILE_PATH + " failed. ");
+            } else {
+                out = new FileOutputStream(f);
+                out.write(data.getBytes(), 0, data.length());
+                out.close();
+            }
+
+        } catch (Exception e) {
             e.printStackTrace();
         } finally {
             try {
-                os.close();
+                out.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
 
         List<List<ProductDetailsResponse>> productDetailsResponses = new ArrayList<>();
-        List<List<Long>> transactionIdsList = aprioriService.performBasketAnalysis();
+        List<List<Long>> transactionIdsList = aprioriService.performBasketAnalysis(MARKET_BASKET_ANALYSIS_FILE_PATH);
         for (List<Long> list : transactionIdsList) {
             List<ProductDetailsResponse> products = productService.retrieveProductsDetails(null,
                     null, productService.retrieveListOfProductsById(list));

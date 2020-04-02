@@ -128,7 +128,6 @@ const InstagramManagementTable = props => {
           {
             title: "Image",
             field: "instagramImgUrl",
-            filtering: false,
             sorting: false,
             render: ({ instagramImgUrl, shortCode }) => (
               <a href={`http://instagram.com/p/${shortCode}`} target="_blank">
@@ -168,7 +167,7 @@ const InstagramManagementTable = props => {
         ]}
         data={data}
         options={{
-          filtering: true,
+          filtering: false,
           sorting: true,
           pageSize: 10,
           pageSizeOptions: [10, 20, 40],

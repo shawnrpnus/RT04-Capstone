@@ -11,5 +11,5 @@ public class Constants {
 
     public static final String SECRET_KEY = "THISISSECRET";
 
-    public static final String MARKET_BASKET_ANALYIS_FILE_PATH = "src/main/java/capstone/rt04/retailbackend/util/apriori/transactionIds.txt";
+    public static final String DEV_MARKET_BASKET_ANALYIS_FILE_PATH = "src/main/java/capstone/rt04/retailbackend/util/apriori/transactionIds.txt";
 }

@@ -35,10 +35,7 @@ export const createAdvertisement = (request, onClose) => {
   return dispatch => {
     dispatch(openCircularProgress());
     axios
-      .post(
-        NODE_URL + "/node" + ADVERTISEMENT_BASE_URL + "/createAdvertisement",
-        request
-      )
+      .post(NODE_URL + ADVERTISEMENT_BASE_URL + "/createAdvertisement", request)
       .then(({ data }) => {
         dispatch(retrieveAllAdvertisement());
         toast.success("Advertisement created!", {
