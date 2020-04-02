@@ -180,16 +180,14 @@ public class StripeService {
         Stripe.apiKey = "sk_test_E81pq87cIYZxL2NkXaXKsEEd00MGrcKvYx";
 
         capstone.rt04.retailbackend.entities.Customer dbCustomer = customerService.retrieveCustomerByCustomerId(customerId);
-        log.info("Retrieved dbCustomer");
         Customer customer = Customer.retrieve(dbCustomer.getCreditCardCustomerId());
-        log.info("Retrieved stripe customer");
         Map<String, Object> params = new HashMap<>();
         params.put("source", tokenId);
         Card card = (Card) customer.getSources().create(params);
-        log.info("Created card");
         CreditCard creditCard = new CreditCard(card.getLast4(), card.getId(), Math.toIntExact(card.getExpMonth()), Math.toIntExact(card.getExpYear()),
                 card.getBrand(), true);
         return customerService.addCreditCard(customerId, creditCard);
 
     }
+
 }
