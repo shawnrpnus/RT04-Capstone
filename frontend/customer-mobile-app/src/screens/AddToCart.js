@@ -1,21 +1,43 @@
 import React, { useEffect, useState } from "react";
 import { Block, Text } from "galio-framework";
 import { BarCodeScanner } from "expo-barcode-scanner";
-import { Alert, Dimensions, Modal, StyleSheet } from "react-native";
+import {
+  Alert,
+  Dimensions,
+  Modal,
+  StyleSheet,
+  InteractionManager
+} from "react-native";
 import { retrieveProductStockById } from "src/redux/actions/productVariantActions";
 import { updateInStoreShoppingCart } from "src/redux/actions/customerActions";
 import { useDispatch, useSelector } from "react-redux";
 import { useIsFocused } from "@react-navigation/native";
+import { useFocusEffect } from "@react-navigation/native";
+import Spinner from "react-native-loading-spinner-overlay";
+import { ActivityIndicator } from "react-native-paper";
 
 const _ = require("lodash");
 const { width, height } = Dimensions.get("window");
 
 function AddToCart(props) {
   const [alertOpen, setAlertOpen] = useState(null);
-  const isFocused = useIsFocused();
+  const [displayCamera, setDisplayCamera] = useState(false);
 
   const dispatch = useDispatch();
   const customer = useSelector(state => state.customer.loggedInCustomer);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const task = InteractionManager.runAfterInteractions(() => {
+          setTimeout(() => setDisplayCamera(true), 250);
+      });
+
+      return () => {
+        task.cancel();
+        setTimeout(() => setDisplayCamera(false), 250);
+      };
+    }, [])
+  );
 
   useEffect(() => {
     requestPermissions();
@@ -43,7 +65,7 @@ function AddToCart(props) {
 
   const handleQRScanned = async ({ type, data }) => {
     //console.log(alertOpen);
-    if (!alertOpen && isFocused) {
+    if (!alertOpen) {
       setAlertOpen(true);
       const productStock = await retrieveProductStockById(data);
       if (productStock) {
@@ -97,7 +119,6 @@ function AddToCart(props) {
       }
     }
   };
-  console.log(isFocused);
 
   return (
     <Block flex={1} center>
@@ -124,11 +145,14 @@ function AddToCart(props) {
           flex={0.75}
           style={{ width: width * 0.85, height: width * 0.85 }}
         >
-          <BarCodeScanner
-            onBarCodeScanned={handleQRScanned}
-            style={{ ...StyleSheet.absoluteFillObject }}
-            barCodeTypes={["qr"]}
-          />
+          {displayCamera && (
+            <BarCodeScanner
+              onBarCodeScanned={handleQRScanned}
+              style={{ ...StyleSheet.absoluteFillObject }}
+              barCodeTypes={["qr"]}
+            />
+          )}
+            <ActivityIndicator animating={!displayCamera} style={{height: "100%"}} size={200}/>
         </Block>
       </Block>
     </Block>

@@ -6,7 +6,6 @@ import theme from "src/constants/Theme";
 import LogIn from "src/screens/LogIn";
 import {useSelector} from "react-redux";
 import CustomDrawerContent from "src/navigation/CustomDrawerContent";
-import Product from "src/screens/Product";
 import CustomHeader from "src/components/CustomHeader";
 import ProductDetails from "src/screens/ProductDetails/ProductDetails";
 import ShoppingCart from "src/screens/ShoppingCart/ShoppingCart";
@@ -17,6 +16,8 @@ import CreateAddress from "src/screens/Profile/Address/CreateAddress";
 import UpdateAddress from "src/screens/Profile/Address/UpdateAddress";
 import Checkout from "src/screens/Checkout/Checkout";
 import {createMaterialTopTabNavigator} from "@react-navigation/material-top-tabs";
+import ViewDetails from "src/screens/ViewDetails";
+import AddToCart from "src/screens/AddToCart";
 
 // screens
 
@@ -238,7 +239,6 @@ function ProductScanTabs(props) {
     <Tab.Navigator
       initialRouteName="View Details"
       tabBarPosition="bottom"
-      lazy
       tabBarOptions={{
         activeTintColor: theme.COLORS.PRIMARY,
         inactiveTintColor: "lightgrey",
@@ -249,7 +249,7 @@ function ProductScanTabs(props) {
     >
       <Tab.Screen
         name="View Details"
-        component={Product}
+        component={ViewDetails}
         options={{
           tabBarLabel: "View Details",
           tabBarIcon: ({ focused, color }) => (
@@ -259,7 +259,7 @@ function ProductScanTabs(props) {
       />
       <Tab.Screen
         name="Add to Cart"
-        component={Product}
+        component={AddToCart}
         options={{
           tabBarLabel: "Add to Cart",
           tabBarIcon: ({ focused, color }) => (
