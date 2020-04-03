@@ -5,10 +5,11 @@ import { useDispatch, useSelector } from "react-redux";
 import LineItem from "src/screens/Checkout/LineItem";
 import { Dimensions } from "react-native";
 
+const _ = require("lodash");
 const { width, height } = Dimensions.get("window");
 
 function CheckoutItemList(props) {
-  const { useWarehouseStock, customer, setLoading } = props;
+  const { useWarehouseStock, customer, setLoading,setCheckoutDisabled } = props;
   const dispatch = useDispatch();
   const shoppingCartItemsStock = useSelector(
     state => state.customer.shoppingCartItemsStock
@@ -17,12 +18,40 @@ function CheckoutItemList(props) {
   useEffect(() => {
     if (customer) {
       if (useWarehouseStock) {
-        dispatch(getShoppingCartItemsStock(customer.customerId, true, setLoading));
+        dispatch(
+          getShoppingCartItemsStock(customer.customerId, true, setLoading)
+        );
       } else {
-        dispatch(getShoppingCartItemsStock(customer.customerId, null, setLoading));
+        dispatch(
+          getShoppingCartItemsStock(customer.customerId, null, setLoading)
+        );
       }
     }
   }, [customer, useWarehouseStock]);
+
+  useEffect(() => {
+    if (shoppingCartItemsStock){
+      setCheckoutDisabled(!allInStock());
+    }
+  }, [shoppingCartItemsStock]);
+
+  const allInStock = () => {
+    let hasNoStock = false;
+    _.forOwn(shoppingCartItemsStock, (value, key) => {
+      if (value.quantity === 0) hasNoStock = true;
+    });
+    customer.inStoreShoppingCart.shoppingCartItems.forEach(shoppingCartItem => {
+      const stock = _.get(
+          shoppingCartItemsStock,
+          `${shoppingCartItem.shoppingCartItemId}.quantity`
+      );
+      if (stock && shoppingCartItem.quantity > stock) {
+        hasNoStock = true;
+      }
+    });
+    return !hasNoStock;
+  };
+
   return (
     <Block
       flex
@@ -35,7 +64,7 @@ function CheckoutItemList(props) {
         borderRadius: 0
       }}
     >
-      <Text h5 bold style={{marginBottom: 5}}>
+      <Text h5 bold style={{ marginBottom: 5 }}>
         Items
       </Text>
       {customer &&

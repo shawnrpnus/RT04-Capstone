@@ -38,6 +38,7 @@ function Checkout(props) {
   const [loading, setLoading] = useState(false);
   const [creditCardModalVisible, setCreditCardModalVisible] = useState(false);
   const [addressModalMode, setAddressModalMode] = useState(null);
+  const [checkoutDisabled, setCheckoutDisabled] = useState(false);
 
   const confirmCheckout = () => {
     const req = {
@@ -81,6 +82,7 @@ function Checkout(props) {
             customer={customer}
             useWarehouseStock={collectionOption === "delivery"}
             setLoading={setLoading}
+            setCheckoutDisabled={setCheckoutDisabled}
           />
           <PromoCode
             customer={customer}
@@ -95,6 +97,7 @@ function Checkout(props) {
             promoCode={promoCode}
             setCheckoutFinalTotal={setCheckoutFinalTotal}
             confirmCheckout={confirmCheckout}
+            checkoutDisabled={checkoutDisabled}
           />
         </ScrollView>
       )}
