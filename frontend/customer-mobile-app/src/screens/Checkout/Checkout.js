@@ -63,7 +63,7 @@ function Checkout(props) {
       collectionModeEnum:
         collectionOption === "in-store" ? "IN_STORE" : "DELIVERY"
     };
-    dispatch(makePaymentMobile(req, setLoading));
+    dispatch(makePaymentMobile(req, customer.customerId, setLoading));
   };
 
   const requiredAddressesPresent =
@@ -76,7 +76,7 @@ function Checkout(props) {
   return (
     <Block flex={1} center style={{ width: width, paddingTop: 5 }}>
       {customer && (
-        <ScrollView style={{ width: width, height: height }}>
+        <ScrollView style={{ width: width, height: height }} keyboardShouldPersistTaps="handled">
           <CollectionOptions
             collectionOption={collectionOption}
             setCollectionOption={setCollectionOption}

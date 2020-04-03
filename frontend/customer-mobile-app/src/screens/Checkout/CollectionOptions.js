@@ -68,7 +68,10 @@ function CollectionOptions(props) {
                 <Text h6 bold style={{ fontSize: 16, color: "dimgray" }}>
                   Delivery Address
                 </Text>
-                <TouchableOpacity onPress={() => setAddressModalMode("Delivery")}>
+                <TouchableOpacity
+                  onPress={() => setAddressModalMode("Delivery")}
+                  hitSlop={{ top: 50, bottom: 50, left: 50, right: 50 }}
+                >
                   <Text
                     h6
                     bold

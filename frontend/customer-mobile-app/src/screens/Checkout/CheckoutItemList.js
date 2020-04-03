@@ -72,6 +72,7 @@ function CheckoutItemList(props) {
           <LineItem
             shoppingCartItem={shoppingCartItem}
             shoppingCartItemsStock={shoppingCartItemsStock}
+            key={shoppingCartItem.shoppingCartItemId}
           />
         ))}
     </Block>
