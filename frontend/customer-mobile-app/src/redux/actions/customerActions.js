@@ -294,15 +294,16 @@ export const addAddressAtCheckout = (
     });
 };
 
-export const makePaymentMobile = (req, setLoading) => {
+export const makePaymentMobile = (req, customerId, setLoading) => {
   setLoading(true);
   return dispatch => {
     axios
       .post(SPRING_BACKEND_URL + "/makePaymentWithSavedCard", req)
       .then(response => {
-        dispatchUpdatedCustomer(response.data, dispatch);
+        const { data } = jsog.decode(response);
+        dispatch(refreshCustomer(customerId));
         setLoading(false);
-        alert("Checkout Success");
+        alert("Checkout Success\nTransaction ID: " + data.transactionId);
       })
       .catch(err => {
         console.log(err);
