@@ -274,7 +274,8 @@ export const addAddressAtCheckout = (
   customerId,
   shippingAddress,
   dispatch,
-  setAddressModalMode
+  setAddressModalMode,
+  setCheckoutAddress
 ) => {
   return axios
     .post(
@@ -284,6 +285,7 @@ export const addAddressAtCheckout = (
     .then(response => {
       const { data } = jsog.decode(response);
       setAddressModalMode(null);
+      setCheckoutAddress(data)
       dispatch(refreshCustomer(customerId));
       return data;
     })

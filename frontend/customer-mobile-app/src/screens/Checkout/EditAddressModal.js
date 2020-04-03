@@ -50,18 +50,14 @@ function EditAddressModal(props) {
     }
   };
 
-  const handleCreateAddress = async () => {
-    const newAddress = await addAddressAtCheckout(
+  const handleCreateAddress = () => {
+    addAddressAtCheckout(
       customer.customerId,
       inputState,
       dispatch,
-      setAddressModalMode
+      setAddressModalMode,
+      addressModalMode === "Billing" ? setBillingAddress : setDeliveryAddress
     );
-    if (addressModalMode === "Billing") {
-      setBillingAddress(newAddress);
-    } else if (addressModalMode === "Delivery") {
-      setDeliveryAddress(newAddress);
-    }
   };
 
   const getSortedShippingAddresses = customer => {
@@ -108,6 +104,7 @@ function EditAddressModal(props) {
     setIsAdding(false);
     setAddressModalMode(null);
     setInputState(initialState);
+    dispatch(clearErrors());
   };
 
   return (
