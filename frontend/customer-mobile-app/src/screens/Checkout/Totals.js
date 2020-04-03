@@ -4,7 +4,7 @@ import { Dimensions } from "react-native";
 import { Button, Divider } from "react-native-paper";
 import Theme from "src/constants/Theme";
 import { set } from "react-native-reanimated";
-import {render} from "react-native-web";
+import { render } from "react-native-web";
 
 const { width, height } = Dimensions.get("window");
 
@@ -42,20 +42,23 @@ function Totals(props) {
 
   const renderFinalTotalAmount = () => {
     let finalTotal;
-    if (!promoCode){
-      finalTotal = shoppingCartFinalTotal.toFixed(2);
-      setCheckoutFinalTotal(finalTotal);
-      return `$${finalTotal}`;
-    }
     if (promoCode.percentageDiscount) {
       finalTotal = (
         shoppingCartFinalTotal -
         (promoCode.percentageDiscount / 100) * shoppingCartFinalTotal
       ).toFixed(2);
-    } else if (promoCode.flatDicount) {
-      finalTotal = (shoppingCartFinalTotal - promoCode.flatDicount).toFixed(2);
+    } else if (promoCode.flatDiscount) {
+      finalTotal = (shoppingCartFinalTotal - promoCode.flatDiscount).toFixed(2);
     }
     setCheckoutFinalTotal(finalTotal);
+    return `$${finalTotal}`;
+  };
+
+  const renderInitialTotalAmount = () => {
+    let finalTotal = shoppingCartFinalTotal.toFixed(2);
+    if (!promoCode) {
+      setCheckoutFinalTotal(finalTotal);
+    }
     return `$${finalTotal}`;
   };
 
@@ -80,7 +83,7 @@ function Totals(props) {
           bold={!promoCode}
           style={{ textDecorationLine: !promoCode ? "underline" : "none" }}
         >
-          {renderFinalTotalAmount()}
+          {renderInitialTotalAmount()}
         </Text>
       </Block>
       {promoCode && (
