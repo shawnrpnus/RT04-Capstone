@@ -230,7 +230,7 @@ public class TransactionService {
     (3) Buy online, collect in store: storeId == null, storeToCollectId != null, collectionModeEnum == IN_STORE
     (4) Buy online, deliver home: storeId == null, storeToCollectId == null, collectionModeEnum == DELIVERY
     */
-    public Customer createNewTransaction(Long customerId, Long storeId, String cartType, Address deliveryAddress,
+    public Transaction createNewTransaction(Long customerId, Long storeId, String cartType, Address deliveryAddress,
                                          Address billingAddress, Long storeToCollectId, Long promoCodeId,
                                          CollectionModeEnum collectionModeEnum, String cardIssuer, String cardLast4,
                                          String paymentMethodId) throws CustomerNotFoundException, InvalidCartTypeException, AddressNotFoundException, StoreNotFoundException, PromoCodeNotFoundException {
@@ -351,17 +351,15 @@ public class TransactionService {
         //Collection mode - IN_STORE or DELIVERY
         transaction.setCollectionMode(collectionModeEnum);
         transaction.setDeliveryStatus(DeliveryStatusEnum.TO_BE_DELIVERED);
-        transactionRepository.save(transaction);
+        Transaction savedTransaction = transactionRepository.save(transaction);
 
         for (TransactionLineItem lineItem : transactionLineItems) {
-            lineItem.setTransaction(transaction);
+            lineItem.setTransaction(savedTransaction);
         }
-
         // Clear cart only when transaction is created successfully
         shoppingCartService.clearShoppingCart(customerId, cartType);
 
-
-        return customer;
+        return savedTransaction;
     }
 
     public List<Transaction> receiveTransactionThroughDelivery(List<Long> transactionIds) throws TransactionNotFoundException {

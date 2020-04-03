@@ -29,8 +29,7 @@ const { width, height } = Dimensions.get("window");
 
 function Product(props) {
   const [pushNotifGenerated, setPushNotifGenerated] = useState(false);
-  const route = useRoute();
-  const { navigation } = props;
+  const { navigation, route } = props;
   const dispatch = useDispatch();
 
   const customer = useSelector(state => state.customer.loggedInCustomer);
@@ -58,7 +57,7 @@ function Product(props) {
       {route.name === "View Details" ? (
         <ViewDetails navigation={navigation} />
       ) : route.name === "Add to Cart" ? (
-        <AddToCart navigation={navigation} />
+        <AddToCart navigation={navigation}/>
       ) : null}
     </Block>
   );

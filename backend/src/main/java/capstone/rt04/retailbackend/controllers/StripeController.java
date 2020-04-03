@@ -1,5 +1,6 @@
 package capstone.rt04.retailbackend.controllers;
 
+import capstone.rt04.retailbackend.entities.Transaction;
 import capstone.rt04.retailbackend.request.stripe.AddCreditCardMobileRequest;
 import capstone.rt04.retailbackend.request.stripe.DeleteCardRequest;
 import capstone.rt04.retailbackend.request.stripe.PaymentWithSavedCardRequest;
@@ -60,12 +61,12 @@ public class StripeController {
     @PostMapping("/completeDirectPayment")
     public ResponseEntity<?> completeDirectPayment(@RequestBody PaymentWithSavedCardRequest request)
             throws CustomerNotFoundException, InvalidCartTypeException, AddressNotFoundException, StoreNotFoundException, PromoCodeNotFoundException {
-        capstone.rt04.retailbackend.entities.Customer customer = transactionService.createNewTransaction(request.getCustomerId(),
+        Transaction transaction = transactionService.createNewTransaction(request.getCustomerId(),
                 request.getStoreId(), ONLINE_SHOPPING_CART, request.getDeliveryAddress(),
                 request.getBillingAddress(), request.getStoreToCollectId(),
                 request.getPromoCodeId(), request.getCollectionModeEnum(),
                 request.getCardIssuer(), request.getCardLast4(), request.getPaymentMethodId());
-        return new ResponseEntity<>(customer, HttpStatus.OK);
+        return new ResponseEntity<>(transaction, HttpStatus.OK);
     }
 
     @GetMapping("/initiateSaveCardRequest/{customerId}")
@@ -113,14 +114,14 @@ public class StripeController {
             throws CustomerNotFoundException, InvalidCartTypeException, AddressNotFoundException, StoreNotFoundException, PromoCodeNotFoundException, InputDataValidationException {
         validationService.throwExceptionIfInvalidBean(request);
         try {
-            capstone.rt04.retailbackend.entities.Customer customer = stripeService.makePaymentWithSavedCard(request.getCustomerId(),
+            Transaction transaction = stripeService.makePaymentWithSavedCard(request.getCustomerId(),
                     request.getPaymentMethodId(), request.getTotalAmount(), request.getStoreId(),
                     request.getDeliveryAddress(), request.getBillingAddress(), request.getStoreToCollectId(),
                     request.getPromoCodeId(), request.getCollectionModeEnum(), request.getCardIssuer(), request.getCardLast4());
-            relationshipService.clearCustomerRelationships(customer);
-            return new ResponseEntity<>(customer, HttpStatus.OK);
+            relationshipService.clearTransactionRelationships(transaction);
+            return new ResponseEntity<>(transaction, HttpStatus.OK);
         } catch (StripeException e) {
-            System.out.println("Error creating customer");
+            System.out.println("Error with payment");
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }

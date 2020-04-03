@@ -5,12 +5,14 @@ import { Alert, Dimensions, Modal, StyleSheet } from "react-native";
 import { retrieveProductStockById } from "src/redux/actions/productVariantActions";
 import { updateInStoreShoppingCart } from "src/redux/actions/customerActions";
 import { useDispatch, useSelector } from "react-redux";
+import { useIsFocused } from "@react-navigation/native";
 
 const _ = require("lodash");
 const { width, height } = Dimensions.get("window");
 
 function AddToCart(props) {
   const [alertOpen, setAlertOpen] = useState(null);
+  const isFocused = useIsFocused();
 
   const dispatch = useDispatch();
   const customer = useSelector(state => state.customer.loggedInCustomer);
@@ -40,8 +42,8 @@ function AddToCart(props) {
     );
 
   const handleQRScanned = async ({ type, data }) => {
-    console.log(alertOpen);
-    if (!alertOpen) {
+    //console.log(alertOpen);
+    if (!alertOpen && isFocused) {
       setAlertOpen(true);
       const productStock = await retrieveProductStockById(data);
       if (productStock) {
@@ -95,6 +97,7 @@ function AddToCart(props) {
       }
     }
   };
+  console.log(isFocused);
 
   return (
     <Block flex={1} center>
@@ -117,7 +120,10 @@ function AddToCart(props) {
             Scan QR
           </Text>
         </Block>
-        <Block flex={0.75} style={{ width: width * 0.85, height: width * 0.85 }}>
+        <Block
+          flex={0.75}
+          style={{ width: width * 0.85, height: width * 0.85 }}
+        >
           <BarCodeScanner
             onBarCodeScanned={handleQRScanned}
             style={{ ...StyleSheet.absoluteFillObject }}

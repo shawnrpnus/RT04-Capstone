@@ -19,7 +19,10 @@ function PaymentOptions(props) {
 
   const renderDefaultCreditCard = () => {
     if (creditCard) return renderCreditCard(creditCard);
-    if (customer.creditCards.length === 0) return null;
+    if (customer.creditCards.length === 0) {
+
+      return null;
+    }
 
     const defaultCreditCard = customer.creditCards.find(
       item => item.defaultCard
@@ -99,7 +102,7 @@ function PaymentOptions(props) {
             {renderDefaultCreditCard() != null ? (
               renderDefaultCreditCard()
             ) : (
-              <Text h5>Please add a credit card for payment.</Text>
+              <Text h6 bold style={{color: "darkred"}}>Please add a credit card for payment.</Text>
             )}
           </Block>
           <Block flex row space="between" style={{ marginTop: 20 }}>

@@ -14,7 +14,8 @@ function Totals(props) {
     promoCode,
     setCheckoutFinalTotal,
     confirmCheckout,
-    checkoutDisabled
+    outOfStock,
+    requiredDetailsPresent
   } = props;
 
   const renderPromoCodeName = () => {
@@ -121,19 +122,33 @@ function Totals(props) {
           mode="contained"
           onPress={confirmCheckout}
           style={{
-            backgroundColor: checkoutDisabled ? "grey" : Theme.COLORS.BUTTON_COLOR,
+            backgroundColor:
+              outOfStock || !requiredDetailsPresent
+                ? "grey"
+                : Theme.COLORS.BUTTON_COLOR,
             width: "100%",
             height: 50,
             marginTop: 15,
             marginBottom: 10
           }}
           contentStyle={{ height: 50 }}
-          disabled={checkoutDisabled}
-          labelStyle={{color: checkoutDisabled ? "black" : "white"}}
+          disabled={outOfStock || !requiredDetailsPresent}
+          labelStyle={{
+            color: outOfStock || !requiredDetailsPresent ? "black" : "white"
+          }}
         >
           Confirm Payment
         </Button>
-        {checkoutDisabled && <Text h6 style={{color: "red"}}>Some of your items are out of stock</Text>}
+        {outOfStock && (
+          <Text h6 style={{ color: "red" }}>
+            Some of your items are out of stock
+          </Text>
+        )}
+        {!requiredDetailsPresent && (
+          <Text h6 style={{ color: "red" }}>
+            Some of the above fields are incomplete
+          </Text>
+        )}
       </Block>
     </Block>
   );
