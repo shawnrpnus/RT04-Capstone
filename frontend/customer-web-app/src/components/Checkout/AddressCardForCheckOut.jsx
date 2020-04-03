@@ -1,7 +1,7 @@
 import {
   cardLink,
   cardSubtitle,
-  cardTitle
+  cardTitle,
 } from "../../assets/jss/material-kit-pro-react";
 import { useDispatch, useSelector } from "react-redux";
 import { useSnackbar } from "notistack";
@@ -9,7 +9,7 @@ import AddUpdateAddressRequest from "../../models/customer/AddUpdateAddressReque
 import {
   refreshCustomerId,
   removeShippingAddressDetails,
-  updateShippingAddress
+  updateShippingAddress,
 } from "../../redux/actions/customerActions";
 import { clearErrors } from "../../redux/actions";
 import Card from "../UI/Card/Card";
@@ -29,7 +29,7 @@ import { Button } from "components/UI/CustomButtons/Button";
 const style = {
   cardTitle,
   cardLink,
-  cardSubtitle
+  cardSubtitle,
 };
 
 const useStyles = makeStyles(style);
@@ -40,7 +40,8 @@ export default function AddressCardForCheckOut({
   setCurrBillingAddress,
   currAddress: currAddress,
   billingAsShipping: [billingAsShipping, setBillingAsShipping],
-  editCurrAddress: [editCurrAddress, setEditCurrAddress]
+  editCurrAddress: [editCurrAddress, setEditCurrAddress],
+  isDelivery,
 }) {
   const classes = useStyles();
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
@@ -48,11 +49,11 @@ export default function AddressCardForCheckOut({
   //Redux
   const dispatch = useDispatch();
   const history = useHistory();
-  const currCustomer = useSelector(state => state.customer.loggedInCustomer);
-  const errors = useSelector(state => state.errors);
+  const currCustomer = useSelector((state) => state.customer.loggedInCustomer);
+  const errors = useSelector((state) => state.errors);
   // useEffect(() => dispatch(retrieveAllContactUsCategoryEnum()), []);
   const unsortedShippingAddresses = useSelector(
-    state => state.customer.loggedInCustomer.shippingAddresses
+    (state) => state.customer.loggedInCustomer.shippingAddresses
   );
   const [showOneAddress, setShowOneAddress] = useState(true);
 
@@ -83,10 +84,10 @@ export default function AddressCardForCheckOut({
   });
 
   const [shownShippingAddress, setShownShippingAddress] = useState(
-    shippingAddresses.find(item => item.default)
+    shippingAddresses.find((item) => item.default)
   );
   const [shownBillingAddress, setShownBillingAddress] = useState(
-    shippingAddresses.find(item => item.billing)
+    shippingAddresses.find((item) => item.billing)
   );
   const [mode, setMode] = useState(null);
 
@@ -95,7 +96,7 @@ export default function AddressCardForCheckOut({
     setCurrBillingAddress(shownBillingAddress);
   });
 
-  const changeShippingOrBilling = address => {
+  const changeShippingOrBilling = (address) => {
     if (mode === "changeShipping") {
       setShownShippingAddress(address);
     } else if (mode === "changeBilling") {
@@ -108,7 +109,7 @@ export default function AddressCardForCheckOut({
     setAddNewAddress(!addNewAddress);
   };
 
-  const onEditAddress = item => {
+  const onEditAddress = (item) => {
     setEditCurrAddress(item);
     setAddNewAddress(!addNewAddress);
     // console.log(currAddress);
@@ -118,24 +119,24 @@ export default function AddressCardForCheckOut({
     <Card style={{ marginTop: "0", boxShadow: "none" }}>
       {mode === null ? (
         <React.Fragment>
-          {[shownShippingAddress, shownBillingAddress].map(function(
-            item,
-            index
-          ) {
+          {(isDelivery
+            ? [shownShippingAddress, shownBillingAddress]
+            : [shownBillingAddress]
+          ).map(function(item, index) {
             return item ? (
               <React.Fragment key={index}>
                 <h5>
-                  {index === 0
-                    ? "Shipping address for this transaction"
-                    : index === 1
-                    ? "Billing address for this transaction"
-                    : ""}
+                  {index === 0 &&
+                    isDelivery &&
+                    "Shipping address for this transaction"}
+                  {(index === 1 || !isDelivery) &&
+                    "Billing address for this transaction"}
                 </h5>
                 <CardBody
                   style={{
                     border: ".5px solid #e8e7e7",
                     boxShadow: "0 2px 4px 0 rgba(155,155,155,.2)",
-                    marginBottom: "30px"
+                    marginBottom: "30px",
                   }}
                   key={item.addressId}
                 >
@@ -153,11 +154,11 @@ export default function AddressCardForCheckOut({
                     <GridItem style={{ paddingLeft: "0" }} md={3}>
                       <Button
                         onClick={
-                          index === 0
+                          index === 0 && isDelivery
                             ? () => setMode("changeShipping")
-                            : index === 1
+                            : index === 1 || !isDelivery
                             ? () => setMode("changeBilling")
-                            : () => console.log("shit went wrong")
+                            : () => console.log("something is wrong")
                         }
                         color="primary"
                       >
@@ -166,22 +167,18 @@ export default function AddressCardForCheckOut({
                     </GridItem>
 
                     <GridItem xs={12} sm={12} md={12}>
-                      {index === 0 ? (
+                      {index === 0 && isDelivery && (
                         <div>
                           <small>This is your shipping address</small>
                           <br />
                         </div>
-                      ) : (
-                        ""
                       )}
 
-                      {index === 1 ? (
+                      {(index === 1 || !isDelivery) && (
                         <div>
                           <small>This is your billing address</small>
                           <br />
                         </div>
-                      ) : (
-                        ""
                       )}
                     </GridItem>
                   </GridContainer>
@@ -204,7 +201,7 @@ export default function AddressCardForCheckOut({
               ? "Select your Shipping Address"
               : mode === "changeBilling"
               ? "Select your Billing Address"
-              : ""}{" "}
+              : ""}
           </h5>
           {shippingAddresses.map(function(item, i) {
             return (
@@ -212,7 +209,7 @@ export default function AddressCardForCheckOut({
                 style={{
                   border: ".5px solid #e8e7e7",
                   boxShadow: "0 2px 4px 0 rgba(155,155,155,.2)",
-                  marginBottom: "30px"
+                  marginBottom: "30px",
                 }}
                 key={item.addressId}
               >
@@ -227,7 +224,6 @@ export default function AddressCardForCheckOut({
                     <br />
                   </GridItem>
                   <GridItem style={{ paddingLeft: "0" }} xs={3} sm={3} md={3}>
-                    {" "}
                     <Button onClick={() => changeShippingOrBilling(item)}>
                       Select
                     </Button>

@@ -60,7 +60,7 @@ public class StripeController {
 
     @PostMapping("/completeDirectPayment")
     public ResponseEntity<?> completeDirectPayment(@RequestBody PaymentWithSavedCardRequest request)
-            throws CustomerNotFoundException, InvalidCartTypeException, AddressNotFoundException, StoreNotFoundException, PromoCodeNotFoundException {
+            throws CustomerNotFoundException, InvalidCartTypeException, AddressNotFoundException, StoreNotFoundException, PromoCodeNotFoundException, StripeException {
         Transaction transaction = transactionService.createNewTransaction(request.getCustomerId(),
                 request.getStoreId(), ONLINE_SHOPPING_CART, request.getDeliveryAddress(),
                 request.getBillingAddress(), request.getStoreToCollectId(),
