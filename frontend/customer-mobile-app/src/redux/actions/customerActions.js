@@ -45,7 +45,7 @@ export const refreshCustomer = (customerId, setRefreshing) => {
       })
       .then(response => {
         dispatchUpdatedCustomer(response.data, dispatch);
-        setRefreshing(false);
+        if(setRefreshing) setRefreshing(false);
       })
       .catch(err => {
         dispatchErrorMapError(err, dispatch);
@@ -268,4 +268,26 @@ export const removeCreditCard = (customerId, creditCardId, setLoading) => {
         console.log(err);
       });
   };
+};
+
+export const addAddressAtCheckout = (
+  customerId,
+  shippingAddress,
+  dispatch,
+  setAddressModalMode
+) => {
+  return axios
+    .post(
+      CUSTOMER_BASE_URL + "/addShippingAddressAtCheckout",
+      {customerId, shippingAddress}
+    )
+    .then(response => {
+      const { data } = jsog.decode(response);
+      setAddressModalMode(null);
+      dispatch(refreshCustomer(customerId));
+      return data;
+    })
+    .catch(err => {
+      dispatchErrorMapError(err, dispatch);
+    });
 };

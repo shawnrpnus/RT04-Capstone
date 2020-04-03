@@ -13,7 +13,8 @@ function PaymentOptions(props) {
     setCreditCard,
     billingAddress,
     setBillingAddress,
-    setCreditCardModalVisible
+    setCreditCardModalVisible,
+    setAddressModalMode
   } = props;
 
   const renderDefaultCreditCard = () => {
@@ -35,7 +36,7 @@ function PaymentOptions(props) {
     month = ("0" + month).slice(-2);
     let issuer = item.issuer.toLowerCase();
     issuer =
-        issuer === "visa" ? "visa" : issuer === "mastercard" ? "master-card" : "";
+      issuer === "visa" ? "visa" : issuer === "mastercard" ? "master-card" : "";
     return (
       <CardView
         brand={issuer}
@@ -101,11 +102,11 @@ function PaymentOptions(props) {
               <Text h5>Please add a credit card for payment.</Text>
             )}
           </Block>
-          <Block flex row space="between" style={{marginTop: 20}}>
+          <Block flex row space="between" style={{ marginTop: 20 }}>
             <Text h6 bold style={{ fontSize: 16, color: "dimgray" }}>
               Billing Address
             </Text>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => setAddressModalMode("Billing")}>
               <Text
                 h6
                 bold

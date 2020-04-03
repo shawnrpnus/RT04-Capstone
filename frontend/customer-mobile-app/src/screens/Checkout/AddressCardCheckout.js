@@ -6,7 +6,19 @@ const _ = require("lodash");
 const { width, height } = Dimensions.get("window");
 
 function AddressCardCheckout(props) {
-  const { address, border, padding } = props;
+  const { address, border, padding, showTitle } = props;
+
+  const getTitle = address => {
+    if (address.default && address.billing) {
+      return "Shipping & Billing Address";
+    } else if (address.default && !address.billing) {
+      return "Shipping Address";
+    } else if (!address.default && address.billing) {
+      return "Billing Address";
+    } else {
+      return "Other Address";
+    }
+  };
 
   return (
     <Block
@@ -22,6 +34,11 @@ function AddressCardCheckout(props) {
     >
       {address ? (
         <>
+          {showTitle && (
+            <Text h5 bold style={{ marginBottom: 10, width: "100%" }}>
+              {getTitle(address)}
+            </Text>
+          )}
           {address.buildingName ? (
             <Text h5 style={{ fontSize: 16 }}>
               {address.buildingName}

@@ -49,8 +49,7 @@ function EditCardModal(props) {
   const renderEmpty = () => {
     return (
       <Text h5 style={{ padding: 20, textAlign: "center" }}>
-        You do not have any saved credit cards.{"\n"}
-        Press the + below to get started!
+        You do not have any saved credit cards.
       </Text>
     );
   };
@@ -99,6 +98,7 @@ function EditCardModal(props) {
       animationOutTiming={300}
       useNativeDriver={true}
       hideModalContentWhileAnimating
+      style={{position: "absolute", top: height*0.075}}
     >
       <Block
         flex={0}

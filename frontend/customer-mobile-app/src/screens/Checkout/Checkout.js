@@ -12,6 +12,7 @@ import { Button } from "react-native-paper";
 import Theme from "src/constants/Theme";
 import { set } from "react-native-reanimated";
 import EditCardModal from "src/screens/Checkout/EditCardModal";
+import EditAddressModal from "src/screens/Checkout/EditAddressModal";
 
 const { width, height } = Dimensions.get("window");
 
@@ -36,6 +37,7 @@ function Checkout(props) {
   const [checkoutFinalTotal, setCheckoutFinalTotal] = useState(null);
   const [loading, setLoading] = useState(false);
   const [creditCardModalVisible, setCreditCardModalVisible] = useState(false);
+  const [addressModalMode, setAddressModalMode] = useState(null);
 
   const confirmCheckout = () => {
     const req = {
@@ -64,6 +66,7 @@ function Checkout(props) {
             deliveryAddress={deliveryAddress}
             setDeliveryAddress={setDeliveryAddress}
             customer={customer}
+            setAddressModalMode={setAddressModalMode}
           />
           <PaymentOptions
             customer={customer}
@@ -72,6 +75,7 @@ function Checkout(props) {
             billingAddress={billingAddress}
             setBillingAddress={setBillingAddress}
             setCreditCardModalVisible={setCreditCardModalVisible}
+            setAddressModalMode={setAddressModalMode}
           />
           <CheckoutItemList
             customer={customer}
@@ -105,6 +109,14 @@ function Checkout(props) {
         setCreditCardModalVisible={setCreditCardModalVisible}
         customer={customer}
         setCreditCard={setCreditCard}
+      />
+
+      <EditAddressModal
+        addressModalMode={addressModalMode}
+        setAddressModalMode={setAddressModalMode}
+        customer={customer}
+        setDeliveryAddress={setDeliveryAddress}
+        setBillingAddress={setBillingAddress}
       />
     </Block>
   );

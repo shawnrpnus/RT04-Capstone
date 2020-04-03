@@ -12,12 +12,27 @@ const _ = require("lodash");
 const { width, height } = Dimensions.get("window");
 
 function AddressForm(props) {
-  const { inputState, onChange, handleSubmit, errors, mode } = props;
+  const {
+    inputState,
+    onChange,
+    handleSubmit,
+    errors,
+    mode,
+    hideSubmitButton,
+    overrideWidth
+  } = props;
 
   return (
     <KeyboardAwareScrollView enableOnAndroid={true}>
-      <Block flex={1} center style={{ backgroundColor: "white", width: width}}>
-        <Block flex={1} style={{ width: width * 0.9, marginTop: 20 }}>
+      <Block
+        flex={1}
+        center
+        style={{ backgroundColor: "white", width: overrideWidth || width }}
+      >
+        <Block
+          flex={1}
+          style={{ width: (overrideWidth || width) * 0.9, marginTop: 20 }}
+        >
           <TextInput
             label="Line 1"
             value={inputState.line1}
@@ -34,7 +49,7 @@ function AddressForm(props) {
             {errors.line1}
           </HelperText>
         </Block>
-        <Block flex={1} style={{ width: width * 0.9 }}>
+        <Block flex={1} style={{ width: (overrideWidth || width) * 0.9 }}>
           <TextInput
             label="Line 2"
             value={inputState.line2}
@@ -51,7 +66,7 @@ function AddressForm(props) {
             {errors.line2}
           </HelperText>
         </Block>
-        <Block flex={1} style={{ width: width * 0.9 }}>
+        <Block flex={1} style={{ width: (overrideWidth || width) * 0.9 }}>
           <TextInput
             label="Postal Code"
             value={inputState.postalCode}
@@ -70,7 +85,7 @@ function AddressForm(props) {
             {errors.postalCode}
           </HelperText>
         </Block>
-        <Block flex={1} style={{ width: width * 0.9 }}>
+        <Block flex={1} style={{ width: (overrideWidth || width) * 0.9 }}>
           <TextInput
             label="Building Name"
             value={inputState.buildingName}
@@ -87,7 +102,14 @@ function AddressForm(props) {
             {errors.buildingName}
           </HelperText>
         </Block>
-        <Block flex row style={{ width: width * 0.9, alignItems: "center" }}>
+        <Block
+          flex
+          row
+          style={{
+            width: (overrideWidth || width) * 0.9,
+            alignItems: "center"
+          }}
+        >
           <Switch
             color={materialTheme.COLORS.PRIMARY}
             value={inputState.default}
@@ -95,7 +117,15 @@ function AddressForm(props) {
           />
           <Text h6>Set as default shipping address</Text>
         </Block>
-        <Block flex row style={{ width: width * 0.9, alignItems: "center", marginTop: 10 }}>
+        <Block
+          flex
+          row
+          style={{
+            width: (overrideWidth || width) * 0.9,
+            alignItems: "center",
+            marginTop: 10
+          }}
+        >
           <Switch
             color={materialTheme.COLORS.PRIMARY}
             value={inputState.billing}
@@ -103,16 +133,18 @@ function AddressForm(props) {
           />
           <Text h6>Set as default billing address</Text>
         </Block>
-        <Block flex={1} style={{ width: width * 0.9, marginTop: 30 }}>
-          <Button
-            shadowless
-            color={materialTheme.COLORS.BUTTON_COLOR}
-            style={{ marginTop: 0, height: 50, width: width * 0.9 }}
-            onPress={handleSubmit}
-          >
-            {mode}
-          </Button>
-        </Block>
+        {!hideSubmitButton && (
+          <Block flex={1} style={{ width: width * 0.9, marginTop: 30 }}>
+            <Button
+              shadowless
+              color={materialTheme.COLORS.BUTTON_COLOR}
+              style={{ marginTop: 0, height: 50, width: width * 0.9 }}
+              onPress={handleSubmit}
+            >
+              {mode}
+            </Button>
+          </Block>
+        )}
       </Block>
     </KeyboardAwareScrollView>
   );

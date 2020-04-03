@@ -12,7 +12,8 @@ function CollectionOptions(props) {
     setCollectionOption,
     deliveryAddress,
     setDeliveryAddress,
-    customer
+    customer,
+    setAddressModalMode
   } = props;
 
   const getDefaultShippingAddress = () => {
@@ -67,7 +68,7 @@ function CollectionOptions(props) {
                 <Text h6 bold style={{ fontSize: 16, color: "dimgray" }}>
                   Delivery Address
                 </Text>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => setAddressModalMode("Delivery")}>
                   <Text
                     h6
                     bold
