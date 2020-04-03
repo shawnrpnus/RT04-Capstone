@@ -45,7 +45,7 @@ export const refreshCustomer = (customerId, setRefreshing) => {
       })
       .then(response => {
         dispatchUpdatedCustomer(response.data, dispatch);
-        if(setRefreshing) setRefreshing(false);
+        if (setRefreshing) setRefreshing(false);
       })
       .catch(err => {
         dispatchErrorMapError(err, dispatch);
@@ -278,18 +278,35 @@ export const addAddressAtCheckout = (
   setCheckoutAddress
 ) => {
   return axios
-    .post(
-      CUSTOMER_BASE_URL + "/addShippingAddressAtCheckout",
-      {customerId, shippingAddress}
-    )
+    .post(CUSTOMER_BASE_URL + "/addShippingAddressAtCheckout", {
+      customerId,
+      shippingAddress
+    })
     .then(response => {
       const { data } = jsog.decode(response);
       setAddressModalMode(null);
-      setCheckoutAddress(data)
+      setCheckoutAddress(data);
       dispatch(refreshCustomer(customerId));
       return data;
     })
     .catch(err => {
       dispatchErrorMapError(err, dispatch);
     });
+};
+
+export const makePaymentMobile = (req, setLoading) => {
+  setLoading(true);
+  return dispatch => {
+    axios
+      .post(SPRING_BACKEND_URL + "/makePaymentWithSavedCard", req)
+      .then(response => {
+        dispatchUpdatedCustomer(response.data, dispatch);
+        setLoading(false);
+        alert("Checkout Success");
+      })
+      .catch(err => {
+        console.log(err);
+        setLoading(false);
+      });
+  };
 };

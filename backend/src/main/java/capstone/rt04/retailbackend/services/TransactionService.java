@@ -224,9 +224,16 @@ public class TransactionService {
     }
 
     // TODO: Make this method reusable for in-store checkout
-    // TODO: Add in address / promo code / discount to calculate final price?
+    /*
+    (1) Buy in store, collect in store: storeId == storeToCollectId, collectionModeEnum == IN_STORE
+    (2) Buy in store, deliver home: storeId != null, storeToCollectId == null, collectionModeEnum == DELIVERY
+    (3) Buy online, collect in store: storeId == null, storeToCollectId != null, collectionModeEnum == IN_STORE
+    (4) Buy online, deliver home: storeId == null, storeToCollectId == null, collectionModeEnum == DELIVERY
+    */
     public Customer createNewTransaction(Long customerId, Long storeId, String cartType, Address deliveryAddress,
-                                         Address billingAddress, Long storeToCollectId, Long promoCodeId) throws CustomerNotFoundException, InvalidCartTypeException, AddressNotFoundException, StoreNotFoundException, PromoCodeNotFoundException {
+                                         Address billingAddress, Long storeToCollectId, Long promoCodeId,
+                                         CollectionModeEnum collectionModeEnum, String cardIssuer, String cardLast4,
+                                         String paymentMethodId) throws CustomerNotFoundException, InvalidCartTypeException, AddressNotFoundException, StoreNotFoundException, PromoCodeNotFoundException {
         Customer customer = customerService.retrieveCustomerByCustomerId(customerId);
         ShoppingCart shoppingCart = shoppingCartService.retrieveShoppingCart(customerId, cartType);
 
@@ -260,16 +267,19 @@ public class TransactionService {
             transactionLineItems.add(transactionLineItem);
         }
 
-        // Get from warehouse
+        //Deducting appropriate stock
         for (ShoppingCartItem shoppingCartItem : shoppingCartItems) {
             // Looping through product stock of the selected product variant to find warehouse stock
             for (ProductStock productStock : shoppingCartItem.getProductVariant().getProductStocks()) {
-                if (storeId == null && productStock.getWarehouse() != null) {
+                if ((collectionModeEnum.equals(CollectionModeEnum.DELIVERY) || storeId == null)
+                        && productStock.getWarehouse() != null) {
                     // Deduct from warehouse
                     System.out.println("Deduct from warehouse");
                     productStock.setQuantity(productStock.getQuantity() - 1);
-                } else if (storeId != null && productStock.getStore().getStoreId() != storeId) {
-                    // Deduct from the correct store
+                } else if (collectionModeEnum.equals(CollectionModeEnum.IN_STORE) &&
+                        productStock.getStore() != null &&
+                        productStock.getStore().getStoreId().equals(storeId)) {
+                    // Deduct from the correct store ONLY when buying in store
                     System.out.println("Deduct from db store ID: " + productStock.getStore().getStoreId() + " - pass in store ID "
                             + storeId);
                     productStock.setQuantity(productStock.getQuantity() - 1);
@@ -278,8 +288,8 @@ public class TransactionService {
         }
 
         //Address logic
-        if (deliveryAddress != null && billingAddress != null) {
-            if (deliveryAddress != null && deliveryAddress.getAddressId() == null) {
+        if (deliveryAddress != null) {
+            if (deliveryAddress.getAddressId() == null) {
                 addressRepository.save(deliveryAddress);
                 transaction.setDeliveryAddress(deliveryAddress);
             } else {
@@ -287,6 +297,8 @@ public class TransactionService {
                         .orElseThrow(() -> new AddressNotFoundException("Address not found"));
                 transaction.setDeliveryAddress(txnDeliveryAddress);
             }
+        }
+        if (billingAddress != null) {
             if (billingAddress.getAddressId() == null) {
                 addressRepository.save(billingAddress);
                 transaction.setBillingAddress(billingAddress);
@@ -297,23 +309,28 @@ public class TransactionService {
             }
         }
 
+        // Store to collect for self-pickup after online purchase
         if (storeToCollectId != null) {
             Store store = storeService.retrieveStoreById(storeToCollectId);
             transaction.setStoreToCollect(store);
-            transaction.setCollectionMode(CollectionModeEnum.IN_STORE);
-        } else {
-            transaction.setCollectionMode(CollectionModeEnum.DELIVERY);
+        }
+
+        //the store where the transaction was made (via mobile app)
+        if (storeId != null) {
+            Store storeBoughtAt = storeService.retrieveStoreById(storeId);
+            transaction.setStore(storeBoughtAt);
         }
 
         transaction.getTransactionLineItems().addAll(transactionLineItems);
         transaction.setInitialTotalPrice(shoppingCart.getFinalTotalAmount());
 
+        // Promo Code
         if (promoCodeId != null) {
             PromoCode promoCode = promoCodeService.retrievePromoCodeById(promoCodeId);
             if (!customer.getUsedPromoCodes().contains(promoCode)) {
-                if (promoCode.getFlatDiscount().compareTo(BigDecimal.ZERO) != 0) {
+                if (promoCode.getFlatDiscount() != null && promoCode.getFlatDiscount().compareTo(BigDecimal.ZERO) != 0) {
                     transaction.setFinalTotalPrice(shoppingCart.getFinalTotalAmount().subtract(promoCode.getFlatDiscount()));
-                } else if (promoCode.getPercentageDiscount().compareTo(BigDecimal.ZERO) != 0) {
+                } else if (promoCode.getPercentageDiscount() != null && promoCode.getPercentageDiscount().compareTo(BigDecimal.ZERO) != 0) {
                     transaction.setFinalTotalPrice(shoppingCart.getFinalTotalAmount().multiply(BigDecimal.ONE.subtract(
                             promoCode.getPercentageDiscount().divide(BigDecimal.valueOf(100)))));
                 }
@@ -329,6 +346,10 @@ public class TransactionService {
         }
 
         transaction.setTotalQuantity(totalQuantity);
+        transaction.setCardIssuer(cardIssuer);
+        transaction.setCardLast4(cardLast4);
+        //Collection mode - IN_STORE or DELIVERY
+        transaction.setCollectionMode(collectionModeEnum);
         transaction.setDeliveryStatus(DeliveryStatusEnum.TO_BE_DELIVERED);
         transactionRepository.save(transaction);
 
@@ -359,6 +380,6 @@ public class TransactionService {
     public List<Transaction> retrieveAllTransaction() {
         List<Transaction> transactions = transactionRepository.findAll();
         lazyLoadTransaction(transactions);
-        return  transactions;
+        return transactions;
     }
 }
