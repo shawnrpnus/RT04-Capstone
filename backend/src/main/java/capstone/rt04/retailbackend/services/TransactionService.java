@@ -13,6 +13,8 @@ import capstone.rt04.retailbackend.util.exceptions.promoCode.PromoCodeNotFoundEx
 import capstone.rt04.retailbackend.util.exceptions.shoppingcart.InvalidCartTypeException;
 import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.transaction.TransactionNotFoundException;
+import com.stripe.exception.StripeException;
+import com.stripe.model.PaymentMethod;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -233,7 +235,7 @@ public class TransactionService {
     public Transaction createNewTransaction(Long customerId, Long storeId, String cartType, Address deliveryAddress,
                                          Address billingAddress, Long storeToCollectId, Long promoCodeId,
                                          CollectionModeEnum collectionModeEnum, String cardIssuer, String cardLast4,
-                                         String paymentMethodId) throws CustomerNotFoundException, InvalidCartTypeException, AddressNotFoundException, StoreNotFoundException, PromoCodeNotFoundException {
+                                         String paymentMethodId) throws CustomerNotFoundException, InvalidCartTypeException, AddressNotFoundException, StoreNotFoundException, PromoCodeNotFoundException, StripeException {
         Customer customer = customerService.retrieveCustomerByCustomerId(customerId);
         ShoppingCart shoppingCart = shoppingCartService.retrieveShoppingCart(customerId, cartType);
 
@@ -346,8 +348,15 @@ public class TransactionService {
         }
 
         transaction.setTotalQuantity(totalQuantity);
-        transaction.setCardIssuer(cardIssuer);
-        transaction.setCardLast4(cardLast4);
+        if (cardIssuer == null || cardLast4 == null) {
+            PaymentMethod paymentMethod = PaymentMethod.retrieve(paymentMethodId);
+            PaymentMethod.Card card = paymentMethod.getCard();
+            transaction.setCardIssuer(card.getBrand());
+            transaction.setCardLast4(card.getLast4());
+        } else {
+            transaction.setCardIssuer(cardIssuer);
+            transaction.setCardLast4(cardLast4);
+        }
         //Collection mode - IN_STORE or DELIVERY
         transaction.setCollectionMode(collectionModeEnum);
         transaction.setDeliveryStatus(DeliveryStatusEnum.TO_BE_DELIVERED);
