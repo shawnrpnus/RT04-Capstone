@@ -11,8 +11,11 @@ import {
   retrieveProductStockById,
   retrieveProductVariantBySKU
 } from "src/redux/actions/productVariantActions";
-import {SplashScreen} from "expo";
-import {dispatchUpdatedCustomer, registerForPushNotifications} from "src/redux/actions/customerActions";
+import { SplashScreen } from "expo";
+import {
+  dispatchUpdatedCustomer,
+  registerForPushNotifications
+} from "src/redux/actions/customerActions";
 
 const _ = require("lodash");
 const { width, height } = Dimensions.get("window");
@@ -133,11 +136,18 @@ function ViewDetails(props) {
               </Block>
               <Block flex={0.4} center style={{ width: "100%", zIndex: 0 }}>
                 <Button
-                  color={materialTheme.COLORS.BUTTON_COLOR}
-                  style={{ width: width * 0.8, height: 50 }}
+                  style={{
+                    width: width * 0.8,
+                    height: 50,
+                    backgroundColor:
+                      SKU.length === 0
+                        ? "grey"
+                        : materialTheme.COLORS.BUTTON_COLOR
+                  }}
                   onPress={handleSkuSearch}
+                  disabled={SKU.length === 0}
                 >
-                  View Details
+                  VIEW DETAILS
                 </Button>
               </Block>
             </Block>

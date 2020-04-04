@@ -6,7 +6,8 @@ import {
   Dimensions,
   Modal,
   StyleSheet,
-  InteractionManager
+  InteractionManager,
+  Animated
 } from "react-native";
 import { retrieveProductStockById } from "src/redux/actions/productVariantActions";
 import { updateInStoreShoppingCart } from "src/redux/actions/customerActions";
@@ -15,6 +16,7 @@ import { useIsFocused } from "@react-navigation/native";
 import { useFocusEffect } from "@react-navigation/native";
 import Spinner from "react-native-loading-spinner-overlay";
 import { ActivityIndicator } from "react-native-paper";
+import Theme from "src/constants/Theme";
 
 const _ = require("lodash");
 const { width, height } = Dimensions.get("window");
@@ -29,12 +31,14 @@ function AddToCart(props) {
   useFocusEffect(
     React.useCallback(() => {
       const task = InteractionManager.runAfterInteractions(() => {
-          setTimeout(() => setDisplayCamera(true), 250);
+        setTimeout(() => {
+          setDisplayCamera(true);
+        }, 150);
       });
 
       return () => {
         task.cancel();
-        setTimeout(() => setDisplayCamera(false), 250);
+        setTimeout(() => setDisplayCamera(false), 150);
       };
     }, [])
   );
@@ -148,11 +152,23 @@ function AddToCart(props) {
           {displayCamera && (
             <BarCodeScanner
               onBarCodeScanned={handleQRScanned}
-              style={{ ...StyleSheet.absoluteFillObject }}
+              style={{
+                ...StyleSheet.absoluteFillObject,
+                width: width * 0.85,
+                height: width * 0.85,
+                top: 40
+              }}
               barCodeTypes={["qr"]}
             />
           )}
-            <ActivityIndicator animating={!displayCamera} style={{height: "100%"}} size={200}/>
+
+          <ActivityIndicator
+            animating={!displayCamera}
+            style={{ height: "100%" }}
+            size={200}
+            color={Theme.COLORS.PRIMARY}
+            hidesWhenStopped
+          />
         </Block>
       </Block>
     </Block>

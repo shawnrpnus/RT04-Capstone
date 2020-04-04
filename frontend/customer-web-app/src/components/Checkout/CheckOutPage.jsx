@@ -22,7 +22,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   getClientSecret,
   makePaymentWithSavedCard,
-  completeDirectPayment,
+  completeDirectPayment
 } from "../../redux/actions/shoppingCartActions";
 
 // core components
@@ -64,10 +64,10 @@ export default function CheckOutPage() {
   const history = useHistory();
   const { enqueueSnackbar } = useSnackbar();
 
-  const errors = useSelector((state) => state.errors);
-  const customer = useSelector((state) => state.customer.loggedInCustomer);
-  const currAddress = useSelector((state) => state.transaction.currAddress);
-  const stores = useSelector((state) => state.store.stores);
+  const errors = useSelector(state => state.errors);
+  const customer = useSelector(state => state.customer.loggedInCustomer);
+  const currAddress = useSelector(state => state.transaction.currAddress);
+  const stores = useSelector(state => state.store.stores);
 
   const [billingAsShipping, setBillingAsShipping] = useState(
     customer.shippingAddresses.length === 0
@@ -97,7 +97,7 @@ export default function CheckOutPage() {
   useEffect(() => {
     window.scrollTo(0, 0);
     document.body.scrollTop = 0;
-    _.get(customer, "onlineShoppingCart.shoppingCartItems", []).map((item) => {
+    _.get(customer, "onlineShoppingCart.shoppingCartItems", []).map(item => {
       const request = new UpdateShoppingCartRequest(
         -1,
         item.productVariant.productVariantId,
@@ -132,7 +132,7 @@ export default function CheckOutPage() {
     getClientSecret(totalAmount, setClientSecret);
   };
 
-  const handleConfirmPayment = async (event) => {
+  const handleConfirmPayment = async event => {
     event.preventDefault();
 
     let paymentMethodId;
@@ -183,9 +183,9 @@ export default function CheckOutPage() {
         payment_method: {
           card: elements.getElement(CardElement),
           billing_details: {
-            name: `${customer.firstName} ${customer.lastName}`,
-          },
-        },
+            name: `${customer.firstName} ${customer.lastName}`
+          }
+        }
       });
 
       if (result.error) {
@@ -261,16 +261,16 @@ export default function CheckOutPage() {
     setClientSecret(null);
   };
 
-  const onSelectCreditCard = (e) => {
+  const onSelectCreditCard = e => {
     setCreditCardIndex(e.target.value);
     setClientSecret(null);
   };
 
-  const onSelectStore = (e) => {
+  const onSelectStore = e => {
     setStoreToCollectId(e.target.value);
   };
 
-  const toggleAddNewCard = (e) => {
+  const toggleAddNewCard = e => {
     const addCardBoolean = addCard;
     setAddCard(!addCard);
     setClientSecret(null);
@@ -443,7 +443,7 @@ export default function CheckOutPage() {
                                 style={{
                                   margin: "0 0 5% 0",
                                   textAlign: "center",
-                                  fontSize: "24px",
+                                  fontSize: "24px"
                                 }}
                                 fullWidth
                                 defaultValue={""}
@@ -456,8 +456,7 @@ export default function CheckOutPage() {
                                       key={index}
                                       classes={{
                                         root: classes.selectMenuItem,
-                                        selected:
-                                          classes.selectMenuItemSelected,
+                                        selected: classes.selectMenuItemSelected
                                       }}
                                       value={storeId}
                                     >
@@ -475,24 +474,24 @@ export default function CheckOutPage() {
                                 <AddNewAddressForCheckOut
                                   addNewAddress={[
                                     addNewAddress,
-                                    setAddNewAddress,
+                                    setAddNewAddress
                                   ]}
                                   currShippingAddress={[
                                     currShippingAddress,
-                                    setCurrShippingAddress,
+                                    setCurrShippingAddress
                                   ]}
                                   currBillingAddress={[
                                     currBillingAddress,
-                                    setCurrBillingAddress,
+                                    setCurrBillingAddress
                                   ]}
                                   currAddress={currAddress}
                                   billingAsShipping={[
                                     billingAsShipping,
-                                    setBillingAsShipping,
+                                    setBillingAsShipping
                                   ]}
                                   editCurrAddress={[
                                     editCurrAddress,
-                                    setEditCurrAddress,
+                                    setEditCurrAddress
                                   ]}
                                 />
                               </Grid>
@@ -505,7 +504,7 @@ export default function CheckOutPage() {
                                 <AddressCardForCheckOut
                                   addNewAddress={[
                                     addNewAddress,
-                                    setAddNewAddress,
+                                    setAddNewAddress
                                   ]}
                                   setCurrShippingAddress={
                                     setCurrShippingAddress
@@ -514,11 +513,11 @@ export default function CheckOutPage() {
                                   currAddress={currAddress}
                                   billingAsShipping={[
                                     billingAsShipping,
-                                    setBillingAsShipping,
+                                    setBillingAsShipping
                                   ]}
                                   editCurrAddress={[
                                     editCurrAddress,
-                                    setEditCurrAddress,
+                                    setEditCurrAddress
                                   ]}
                                   isDelivery={isDelivery}
                                 />
@@ -551,7 +550,7 @@ export default function CheckOutPage() {
                                 style={{
                                   margin: "5% 0",
                                   textAlign: "center",
-                                  fontSize: "24px",
+                                  fontSize: "24px"
                                 }}
                                 fullWidth
                                 defaultValue={creditCardIndex}
@@ -566,7 +565,7 @@ export default function CheckOutPage() {
                                         classes={{
                                           root: classes.selectMenuItem,
                                           selected:
-                                            classes.selectMenuItemSelected,
+                                            classes.selectMenuItemSelected
                                         }}
                                         value={index}
                                       >

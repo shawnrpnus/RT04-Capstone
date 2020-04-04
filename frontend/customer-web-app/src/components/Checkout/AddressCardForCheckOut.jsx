@@ -1,7 +1,7 @@
 import {
   cardLink,
   cardSubtitle,
-  cardTitle,
+  cardTitle
 } from "../../assets/jss/material-kit-pro-react";
 import { useDispatch, useSelector } from "react-redux";
 import { useSnackbar } from "notistack";
@@ -9,7 +9,7 @@ import AddUpdateAddressRequest from "../../models/customer/AddUpdateAddressReque
 import {
   refreshCustomerId,
   removeShippingAddressDetails,
-  updateShippingAddress,
+  updateShippingAddress
 } from "../../redux/actions/customerActions";
 import { clearErrors } from "../../redux/actions";
 import Card from "../UI/Card/Card";
@@ -29,7 +29,7 @@ import { Button } from "components/UI/CustomButtons/Button";
 const style = {
   cardTitle,
   cardLink,
-  cardSubtitle,
+  cardSubtitle
 };
 
 const useStyles = makeStyles(style);
@@ -41,7 +41,7 @@ export default function AddressCardForCheckOut({
   currAddress: currAddress,
   billingAsShipping: [billingAsShipping, setBillingAsShipping],
   editCurrAddress: [editCurrAddress, setEditCurrAddress],
-  isDelivery,
+  isDelivery
 }) {
   const classes = useStyles();
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
@@ -49,11 +49,11 @@ export default function AddressCardForCheckOut({
   //Redux
   const dispatch = useDispatch();
   const history = useHistory();
-  const currCustomer = useSelector((state) => state.customer.loggedInCustomer);
-  const errors = useSelector((state) => state.errors);
+  const currCustomer = useSelector(state => state.customer.loggedInCustomer);
+  const errors = useSelector(state => state.errors);
   // useEffect(() => dispatch(retrieveAllContactUsCategoryEnum()), []);
   const unsortedShippingAddresses = useSelector(
-    (state) => state.customer.loggedInCustomer.shippingAddresses
+    state => state.customer.loggedInCustomer.shippingAddresses
   );
   const [showOneAddress, setShowOneAddress] = useState(true);
 
@@ -84,10 +84,10 @@ export default function AddressCardForCheckOut({
   });
 
   const [shownShippingAddress, setShownShippingAddress] = useState(
-    shippingAddresses.find((item) => item.default)
+    shippingAddresses.find(item => item.default)
   );
   const [shownBillingAddress, setShownBillingAddress] = useState(
-    shippingAddresses.find((item) => item.billing)
+    shippingAddresses.find(item => item.billing)
   );
   const [mode, setMode] = useState(null);
 
@@ -96,7 +96,7 @@ export default function AddressCardForCheckOut({
     setCurrBillingAddress(shownBillingAddress);
   });
 
-  const changeShippingOrBilling = (address) => {
+  const changeShippingOrBilling = address => {
     if (mode === "changeShipping") {
       setShownShippingAddress(address);
     } else if (mode === "changeBilling") {
@@ -109,7 +109,7 @@ export default function AddressCardForCheckOut({
     setAddNewAddress(!addNewAddress);
   };
 
-  const onEditAddress = (item) => {
+  const onEditAddress = item => {
     setEditCurrAddress(item);
     setAddNewAddress(!addNewAddress);
     // console.log(currAddress);
@@ -136,7 +136,7 @@ export default function AddressCardForCheckOut({
                   style={{
                     border: ".5px solid #e8e7e7",
                     boxShadow: "0 2px 4px 0 rgba(155,155,155,.2)",
-                    marginBottom: "30px",
+                    marginBottom: "30px"
                   }}
                   key={item.addressId}
                 >
@@ -209,7 +209,7 @@ export default function AddressCardForCheckOut({
                 style={{
                   border: ".5px solid #e8e7e7",
                   boxShadow: "0 2px 4px 0 rgba(155,155,155,.2)",
-                  marginBottom: "30px",
+                  marginBottom: "30px"
                 }}
                 key={item.addressId}
               >
