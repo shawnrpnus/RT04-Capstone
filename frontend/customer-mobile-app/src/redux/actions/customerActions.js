@@ -304,10 +304,13 @@ export const makePaymentMobile = (req, customerId, setLoading, navigation) => {
         const { data } = jsog.decode(response);
         dispatch(refreshCustomer(customerId));
         setLoading(false);
-        alert("Checkout Success\nTransaction ID: " + data.transactionId);
-        const redirectFunction = () => navigation.navigate("PurchasesStack", {
-          screen: "Purchase Details"
-        });
+        //alert("Checkout Success\nTransaction ID: " + data.transactionId);
+        const redirectFunction = () => {
+          navigation.pop();
+          navigation.navigate("PurchasesStack", {
+            screen: "Purchase Details"
+          });
+        };
         dispatch(setViewedTransaction(data.transactionId, redirectFunction));
       })
       .catch(err => {

@@ -58,23 +58,29 @@ function PurchaseDetails(props) {
               Transaction {transaction.orderNumber.toUpperCase()}
             </Text>
           </Block>
-          <Block
-            flex
-            card
-            center
-            style={{
-              backgroundColor: "white",
-              width: width,
-              marginTop: 5,
-              padding: 15,
-              borderRadius: 0
-            }}
-          >
-            <Text h5 bold style={{ marginBottom: 5, textAlign: "center" }}>
-              Proceed to the cashier with this QR code to collect your items
-            </Text>
-            <QRCode content={transaction.transactionId.toString()} size={250} />
-          </Block>
+          {transaction.deliveryStatus !== "DELIVERED" &&
+            transaction.collectionMode === "IN_STORE" && (
+              <Block
+                flex
+                card
+                center
+                style={{
+                  backgroundColor: "white",
+                  width: width,
+                  marginTop: 5,
+                  padding: 15,
+                  borderRadius: 0
+                }}
+              >
+                <Text h5 bold style={{ marginBottom: 5, textAlign: "center" }}>
+                  Proceed to the cashier with this QR code to collect your items
+                </Text>
+                <QRCode
+                  content={transaction.transactionId.toString()}
+                  size={250}
+                />
+              </Block>
+            )}
           <Block
             flex
             card
