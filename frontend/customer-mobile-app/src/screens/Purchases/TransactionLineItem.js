@@ -12,10 +12,47 @@ const _ = require("lodash");
 const colours = _.keyBy(colourList, "hex");
 const { width, height } = Dimensions.get("window");
 
-function LineItem(props) {
-  const { shoppingCartItem, shoppingCartItemsStock } = props;
-  const { productVariant } = shoppingCartItem;
+function TransactionLineItem(props) {
+  const { transactionLineItem } = props;
+  const { productVariant } = transactionLineItem;
 
+  const renderPrices = () => {
+    const hasDiscount = !!transactionLineItem.finalSubTotal;
+
+    const perPieceInitial = transactionLineItem.productVariant.product.price.toFixed(2);
+    if (hasDiscount) {
+      const perPieceDiscounted = (
+        transactionLineItem.finalSubTotal / transactionLineItem.quantity
+      ).toFixed(2);
+      return (
+        <>
+          <Text h6 style={{ fontSize: 16 }}>
+            ${perPieceDiscounted}{" "}
+            <Text
+              h6
+              style={{ textDecorationLine: "line-through", color: "grey" }}
+            >
+              ${perPieceInitial}
+            </Text>
+          </Text>
+          <Text h6 style={{ fontSize: 16, fontWeight: "bold" }}>
+            ${transactionLineItem.finalSubTotal.toFixed(2)}
+          </Text>
+        </>
+      );
+    } else {
+      return (
+        <>
+          <Text h6 style={{ fontSize: 16 }}>
+            ${perPieceInitial}
+          </Text>
+          <Text h6 style={{ fontSize: 16, fontWeight: "bold" }}>
+            ${transactionLineItem.initialSubTotal.toFixed(2)}
+          </Text>
+        </>
+      );
+    }
+  };
   return (
     <Block
       flex
@@ -31,7 +68,7 @@ function LineItem(props) {
         paddingRight: 10,
         elevation: 0,
         borderRadius: 0,
-        borderWidth: 0
+          borderWidth: 0
       }}
     >
       <Block flex row style={{ alignItems: "center" }}>
@@ -81,11 +118,8 @@ function LineItem(props) {
             <Text h6 bold>
               Quantity:
             </Text>{" "}
-            {shoppingCartItem.quantity}
+            {transactionLineItem.quantity}
           </Text>
-          <Block flex style={{ marginLeft: -10 }}>
-            {renderLineItemStock(shoppingCartItemsStock, shoppingCartItem)}
-          </Block>
         </Block>
       </Block>
       <Block
@@ -117,11 +151,11 @@ function LineItem(props) {
           space="between"
           style={{ width: "100%", paddingTop: 5 }}
         >
-          {renderPrices(productVariant, shoppingCartItem)}
+          {renderPrices()}
         </Block>
       </Block>
     </Block>
   );
 }
 
-export default LineItem;
+export default TransactionLineItem;

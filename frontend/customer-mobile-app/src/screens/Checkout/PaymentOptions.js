@@ -19,7 +19,9 @@ function PaymentOptions(props) {
 
   const renderDefaultCreditCard = () => {
     if (creditCard) return renderCreditCard(creditCard);
-    if (customer.creditCards.length === 0) return null;
+    if (customer.creditCards.length === 0) {
+      return null;
+    }
 
     const defaultCreditCard = customer.creditCards.find(
       item => item.defaultCard
@@ -81,7 +83,10 @@ function PaymentOptions(props) {
             <Text h5 bold>
               Payment
             </Text>
-            <TouchableOpacity onPress={() => setCreditCardModalVisible(true)}>
+            <TouchableOpacity
+              onPress={() => setCreditCardModalVisible(true)}
+              hitSlop={{ top: 50, bottom: 50, left: 50, right: 50 }}
+            >
               <Text
                 h5
                 bold
@@ -99,14 +104,19 @@ function PaymentOptions(props) {
             {renderDefaultCreditCard() != null ? (
               renderDefaultCreditCard()
             ) : (
-              <Text h5>Please add a credit card for payment.</Text>
+              <Text h6 bold style={{ color: "darkred" }}>
+                Please add a credit card for payment.
+              </Text>
             )}
           </Block>
           <Block flex row space="between" style={{ marginTop: 20 }}>
             <Text h6 bold style={{ fontSize: 16, color: "dimgray" }}>
               Billing Address
             </Text>
-            <TouchableOpacity onPress={() => setAddressModalMode("Billing")}>
+            <TouchableOpacity
+              onPress={() => setAddressModalMode("Billing")}
+              hitSlop={{ top: 50, bottom: 50, left: 50, right: 50 }}
+            >
               <Text
                 h6
                 bold

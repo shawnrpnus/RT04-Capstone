@@ -122,7 +122,7 @@ function ShoppingCart(props) {
                   Total
                 </Text>
                 <Text h4 style={{ fontWeight: "bold", fontSize: 20 }}>
-                  ${customer.inStoreShoppingCart.finalTotalAmount}
+                  ${customer.inStoreShoppingCart.finalTotalAmount.toFixed(2)}
                 </Text>
               </Block>
               <Button

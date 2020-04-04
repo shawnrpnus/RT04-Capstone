@@ -131,6 +131,7 @@ public class ProductStockController {
         if (productStock.getStore() != null){
             productStock.getStore().setProductStocks(null);
             productStock.getStore().setStaff(null);
+            productStock.getStore().setTransactions(null);
         }
     }
 

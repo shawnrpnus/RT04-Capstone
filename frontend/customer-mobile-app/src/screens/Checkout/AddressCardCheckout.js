@@ -67,7 +67,7 @@ function AddressCardCheckout(props) {
           )}
         </>
       ) : (
-        <Text h5>Please add an address</Text>
+        <Text h6 bold style={{color: "darkred"}}>Please add an address</Text>
       )}
     </Block>
   );

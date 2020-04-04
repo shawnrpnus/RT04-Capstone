@@ -8,14 +8,11 @@ import { render } from "react-native-web";
 
 const { width, height } = Dimensions.get("window");
 
-function Totals(props) {
+function PurchaseDetailsTotals(props) {
   const {
-    shoppingCartFinalTotal,
+    transactionInitialTotal,
+    transactionFinalTotal,
     promoCode,
-    setCheckoutFinalTotal,
-    confirmCheckout,
-    outOfStock,
-    requiredDetailsPresent
   } = props;
 
   const renderPromoCodeName = () => {
@@ -34,7 +31,7 @@ function Totals(props) {
     if (promoCode.percentageDiscount) {
       discount = (
         (promoCode.percentageDiscount / 100) *
-        shoppingCartFinalTotal
+        transactionInitialTotal
       ).toFixed(2);
     } else if (promoCode.flatDiscount) {
       discount = promoCode.flatDiscount.toFixed(2);
@@ -46,21 +43,17 @@ function Totals(props) {
     let finalTotal;
     if (promoCode.percentageDiscount) {
       finalTotal = (
-        shoppingCartFinalTotal -
-        (promoCode.percentageDiscount / 100) * shoppingCartFinalTotal
+        transactionInitialTotal -
+        (promoCode.percentageDiscount / 100) * transactionInitialTotal
       ).toFixed(2);
     } else if (promoCode.flatDiscount) {
-      finalTotal = (shoppingCartFinalTotal - promoCode.flatDiscount).toFixed(2);
+      finalTotal = (transactionFinalTotal - promoCode.flatDiscount).toFixed(2);
     }
-    setCheckoutFinalTotal(finalTotal);
     return `$${finalTotal}`;
   };
 
   const renderInitialTotalAmount = () => {
-    let finalTotal = shoppingCartFinalTotal.toFixed(2);
-    if (!promoCode) {
-      setCheckoutFinalTotal(finalTotal);
-    }
+    let finalTotal = transactionInitialTotal.toFixed(2);
     return `$${finalTotal}`;
   };
 
@@ -71,7 +64,7 @@ function Totals(props) {
       style={{
         backgroundColor: "white",
         width: width,
-        marginTop: 8,
+        marginTop: 5,
         padding: 12,
         borderRadius: 0
       }}
@@ -117,41 +110,8 @@ function Totals(props) {
           </Block>
         </>
       )}
-      <Block flex center style={{ width: "100%" }}>
-        <Button
-          mode="contained"
-          onPress={confirmCheckout}
-          style={{
-            backgroundColor:
-              outOfStock || !requiredDetailsPresent
-                ? "grey"
-                : Theme.COLORS.BUTTON_COLOR,
-            width: "100%",
-            height: 50,
-            marginTop: 15,
-            marginBottom: 10
-          }}
-          contentStyle={{ height: 50 }}
-          disabled={outOfStock || !requiredDetailsPresent}
-          labelStyle={{
-            color: outOfStock || !requiredDetailsPresent ? "black" : "white"
-          }}
-        >
-          Confirm Payment
-        </Button>
-        {outOfStock && (
-          <Text h6 style={{ color: "red" }}>
-            Some of your items are out of stock
-          </Text>
-        )}
-        {!requiredDetailsPresent && (
-          <Text h6 style={{ color: "red" }}>
-            Some of the above fields are incomplete
-          </Text>
-        )}
-      </Block>
     </Block>
   );
 }
 
-export default Totals;
+export default PurchaseDetailsTotals;

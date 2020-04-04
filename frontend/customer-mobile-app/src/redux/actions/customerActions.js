@@ -9,6 +9,8 @@ import { dispatchErrorMapError } from "src/redux/actions/index";
 import { Notifications } from "expo";
 import * as Permissions from "expo-permissions";
 import { Alert } from "react-native";
+import { setViewedTransaction } from "src/redux/actions/transactionActions";
+import { StackActions } from "@react-navigation/native";
 
 const jsog = require("jsog");
 
@@ -45,7 +47,7 @@ export const refreshCustomer = (customerId, setRefreshing) => {
       })
       .then(response => {
         dispatchUpdatedCustomer(response.data, dispatch);
-        if(setRefreshing) setRefreshing(false);
+        if (setRefreshing) setRefreshing(false);
       })
       .catch(err => {
         dispatchErrorMapError(err, dispatch);
@@ -278,18 +280,54 @@ export const addAddressAtCheckout = (
   setCheckoutAddress
 ) => {
   return axios
-    .post(
-      CUSTOMER_BASE_URL + "/addShippingAddressAtCheckout",
-      {customerId, shippingAddress}
-    )
+    .post(CUSTOMER_BASE_URL + "/addShippingAddressAtCheckout", {
+      customerId,
+      shippingAddress
+    })
     .then(response => {
       const { data } = jsog.decode(response);
       setAddressModalMode(null);
-      setCheckoutAddress(data)
+      setCheckoutAddress(data);
       dispatch(refreshCustomer(customerId));
       return data;
     })
     .catch(err => {
       dispatchErrorMapError(err, dispatch);
     });
+};
+
+export const makePaymentMobile = (req, customerId, setLoading, navigation) => {
+  setLoading(true);
+  return dispatch => {
+    axios
+      .post(SPRING_BACKEND_URL + "/makePaymentWithSavedCard", req)
+      .then(response => {
+        const { data } = jsog.decode(response);
+        axios
+          .get(CUSTOMER_BASE_URL + "/retrieveCustomerById", {
+            params: { customerId }
+          })
+          .then(response => {
+            const redirectFunction = () => {
+              navigation.popToTop();
+              navigation.navigate("PurchasesStack", {
+                screen: "Purchase Details"
+              });
+            };
+            dispatch(
+              setViewedTransaction(
+                data.transactionId,
+                redirectFunction,
+                setLoading,
+                () => dispatchUpdatedCustomer(response.data, dispatch)
+              )
+            );
+          })
+          .catch(err => console.log(err));
+      })
+      .catch(err => {
+        console.log(err);
+        setLoading(false);
+      });
+  };
 };

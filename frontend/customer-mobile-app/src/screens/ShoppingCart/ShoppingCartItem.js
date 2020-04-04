@@ -83,7 +83,8 @@ function ShoppingCartItem(props) {
         paddingLeft: 0,
         paddingRight: 10,
         elevation: 0,
-        borderRadius: 0
+        borderRadius: 0,
+        borderWidth: 0
       }}
     >
       <Block flex row style={{ alignItems: "center" }}>

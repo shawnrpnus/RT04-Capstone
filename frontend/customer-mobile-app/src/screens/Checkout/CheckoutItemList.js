@@ -9,7 +9,7 @@ const _ = require("lodash");
 const { width, height } = Dimensions.get("window");
 
 function CheckoutItemList(props) {
-  const { useWarehouseStock, customer, setLoading,setCheckoutDisabled } = props;
+  const { useWarehouseStock, customer, setLoading,setOutOfStock } = props;
   const dispatch = useDispatch();
   const shoppingCartItemsStock = useSelector(
     state => state.customer.shoppingCartItemsStock
@@ -31,7 +31,7 @@ function CheckoutItemList(props) {
 
   useEffect(() => {
     if (shoppingCartItemsStock){
-      setCheckoutDisabled(!allInStock());
+      setOutOfStock(!allInStock());
     }
   }, [shoppingCartItemsStock]);
 
@@ -64,7 +64,7 @@ function CheckoutItemList(props) {
         borderRadius: 0
       }}
     >
-      <Text h5 bold style={{ marginBottom: 5 }}>
+      <Text h5 bold>
         Items
       </Text>
       {customer &&
@@ -72,6 +72,7 @@ function CheckoutItemList(props) {
           <LineItem
             shoppingCartItem={shoppingCartItem}
             shoppingCartItemsStock={shoppingCartItemsStock}
+            key={shoppingCartItem.shoppingCartItemId}
           />
         ))}
     </Block>

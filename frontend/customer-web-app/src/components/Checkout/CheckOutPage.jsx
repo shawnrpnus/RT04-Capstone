@@ -149,9 +149,12 @@ export default function CheckOutPage() {
           totalAmount * 100,
           null,
           null,
-          null,
+          currBillingAddress,
           storeToCollectId,
-          _.get(promoCode, "promoCodeId", null)
+          _.get(promoCode, "promoCodeId", null),
+          issuer,
+          last4,
+          "IN_STORE"
         )
       : new PaymentRequest(
           customerId,
@@ -161,7 +164,10 @@ export default function CheckOutPage() {
           currShippingAddress,
           currBillingAddress,
           null,
-          _.get(promoCode, "promoCodeId", null)
+          _.get(promoCode, "promoCodeId", null),
+          issuer,
+          last4,
+          "DELIVERY"
         );
 
     console.log(paymentRequest);
@@ -194,15 +200,19 @@ export default function CheckOutPage() {
           // execution. Set up a webhook or plugin to listen for the
           // payment_intent.succeeded event that handles any business critical
           // post-payment actions.
-          console.log("YAY succeed!!");
           console.log(result);
-          dispatch(completeDirectPayment(paymentRequest, history));
+          paymentRequest.paymentMethodId = result.paymentIntent.payment_method;
+          dispatch(
+            completeDirectPayment(paymentRequest, history, customer.email)
+          );
         }
       }
     } else {
       console.log("Payment with saved card!");
       console.log(paymentRequest);
-      dispatch(makePaymentWithSavedCard(paymentRequest, history));
+      dispatch(
+        makePaymentWithSavedCard(paymentRequest, history, customer.email)
+      );
     }
   };
 
@@ -286,7 +296,8 @@ export default function CheckOutPage() {
     (clientSecret === null && creditCardIndex === null) ||
     (!currBillingAddress && isDelivery) ||
     (!currShippingAddress && isDelivery) ||
-    (!isDelivery && !storeToCollectId);
+    (!isDelivery && !storeToCollectId) ||
+    (!isDelivery && !currBillingAddress);
 
   return (
     <div>
@@ -425,92 +436,93 @@ export default function CheckOutPage() {
                               {isDelivery ? "Collect in store" : "Delivery"}
                             </Button>
                           </Grid>
-                          {isDelivery ? (
-                            addNewAddress ? (
-                              <Grid item container xs={12}>
-                                <Grid item xs={false} md={2} />
-                                <Grid item xs={12} md={8}>
-                                  <AddNewAddressForCheckOut
-                                    addNewAddress={[
-                                      addNewAddress,
-                                      setAddNewAddress
-                                    ]}
-                                    currShippingAddress={[
-                                      currShippingAddress,
-                                      setCurrShippingAddress
-                                    ]}
-                                    currBillingAddress={[
-                                      currBillingAddress,
-                                      setCurrBillingAddress
-                                    ]}
-                                    currAddress={currAddress}
-                                    billingAsShipping={[
-                                      billingAsShipping,
-                                      setBillingAsShipping
-                                    ]}
-                                    editCurrAddress={[
-                                      editCurrAddress,
-                                      setEditCurrAddress
-                                    ]}
-                                  />
-                                </Grid>
-                                <Grid item xs={false} md={2} />
+                          {!isDelivery && (
+                            <>
+                              <small>Select store to collect </small>
+                              <Select
+                                style={{
+                                  margin: "0 0 5% 0",
+                                  textAlign: "center",
+                                  fontSize: "24px"
+                                }}
+                                fullWidth
+                                defaultValue={""}
+                                onChange={onSelectStore}
+                                name="credit-card"
+                              >
+                                {stores.map(({ storeId, storeName }, index) => {
+                                  return (
+                                    <MenuItem
+                                      key={index}
+                                      classes={{
+                                        root: classes.selectMenuItem,
+                                        selected: classes.selectMenuItemSelected
+                                      }}
+                                      value={storeId}
+                                    >
+                                      {storeName}
+                                    </MenuItem>
+                                  );
+                                })}
+                              </Select>
+                            </>
+                          )}
+                          {addNewAddress ? (
+                            <Grid item container xs={12}>
+                              <Grid item xs={false} md={2} />
+                              <Grid item xs={12} md={8}>
+                                <AddNewAddressForCheckOut
+                                  addNewAddress={[
+                                    addNewAddress,
+                                    setAddNewAddress
+                                  ]}
+                                  currShippingAddress={[
+                                    currShippingAddress,
+                                    setCurrShippingAddress
+                                  ]}
+                                  currBillingAddress={[
+                                    currBillingAddress,
+                                    setCurrBillingAddress
+                                  ]}
+                                  currAddress={currAddress}
+                                  billingAsShipping={[
+                                    billingAsShipping,
+                                    setBillingAsShipping
+                                  ]}
+                                  editCurrAddress={[
+                                    editCurrAddress,
+                                    setEditCurrAddress
+                                  ]}
+                                />
                               </Grid>
-                            ) : (
-                              <Grid item xs={12} container>
-                                <Grid item xs={12}>
-                                  <h5>Shipping & Billing</h5>
-                                  <AddressCardForCheckOut
-                                    addNewAddress={[
-                                      addNewAddress,
-                                      setAddNewAddress
-                                    ]}
-                                    setCurrShippingAddress={
-                                      setCurrShippingAddress
-                                    }
-                                    setCurrBillingAddress={
-                                      setCurrBillingAddress
-                                    }
-                                    currAddress={currAddress}
-                                    billingAsShipping={[
-                                      billingAsShipping,
-                                      setBillingAsShipping
-                                    ]}
-                                    editCurrAddress={[
-                                      editCurrAddress,
-                                      setEditCurrAddress
-                                    ]}
-                                  />
-                                </Grid>
-                              </Grid>
-                            )
+                              <Grid item xs={false} md={2} />
+                            </Grid>
                           ) : (
-                            <Select
-                              style={{
-                                margin: "5% 0",
-                                textAlign: "center",
-                                fontSize: "24px"
-                              }}
-                              fullWidth
-                              defaultValue={""}
-                              onChange={onSelectStore}
-                              name="credit-card"
-                            >
-                              {stores.map(({ storeId, storeName }, index) => {
-                                return (
-                                  <MenuItem
-                                    key={index}
-                                    classes={{
-                                      root: classes.selectMenuItem,
-                                      selected: classes.selectMenuItemSelected
-                                    }}
-                                    value={storeId}
-                                  >
-                                    {storeName}
-                                  </MenuItem>
-                                );
-                              })}
-                            </Select>
+                            <Grid item xs={12} container>
+                              <Grid item xs={12}>
+                                {isDelivery && <h5>Shipping & Billing</h5>}
+                                <AddressCardForCheckOut
+                                  addNewAddress={[
+                                    addNewAddress,
+                                    setAddNewAddress
+                                  ]}
+                                  setCurrShippingAddress={
+                                    setCurrShippingAddress
+                                  }
+                                  setCurrBillingAddress={setCurrBillingAddress}
+                                  currAddress={currAddress}
+                                  billingAsShipping={[
+                                    billingAsShipping,
+                                    setBillingAsShipping
+                                  ]}
+                                  editCurrAddress={[
+                                    editCurrAddress,
+                                    setEditCurrAddress
+                                  ]}
+                                  isDelivery={isDelivery}
+                                />
+                              </Grid>
+                            </Grid>
                           )}
                         </Grid>
 
