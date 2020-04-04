@@ -157,12 +157,11 @@ class LeaveApplicationForm extends React.Component {
                 </Grid>
 
                 <Grid item xs={12} md={9}>
-
+                    <React.Fragment>
                     <div className="table" style={{ verticalAlign: "middle" }}>
                             {this.props.allLeaves ? (
                                 <MaterialTable
                                     title="All applied leaves"
-                                    style={{ boxShadow: "none" }}
                                     icons={tableIcons}
                                     data={data}
                                     columns={[
@@ -219,6 +218,7 @@ class LeaveApplicationForm extends React.Component {
                                 this.props.renderLoader()
                             )}
                         </div>
+                    </React.Fragment>
 
 
                 </Grid>
