@@ -303,16 +303,27 @@ export const makePaymentMobile = (req, customerId, setLoading, navigation) => {
       .post(SPRING_BACKEND_URL + "/makePaymentWithSavedCard", req)
       .then(response => {
         const { data } = jsog.decode(response);
-        dispatch(refreshCustomer(customerId));
-        setLoading(false);
-        //alert("Checkout Success\nTransaction ID: " + data.transactionId);
-        const redirectFunction = () => {
-          navigation.popToTop();
-          navigation.navigate("PurchasesStack", {
-            screen: "Purchase Details"
-          });
-        };
-        dispatch(setViewedTransaction(data.transactionId, redirectFunction));
+        axios
+          .get(CUSTOMER_BASE_URL + "/retrieveCustomerById", {
+            params: { customerId }
+          })
+          .then(response => {
+            const redirectFunction = () => {
+              navigation.popToTop();
+              navigation.navigate("PurchasesStack", {
+                screen: "Purchase Details"
+              });
+            };
+            dispatch(
+              setViewedTransaction(
+                data.transactionId,
+                redirectFunction,
+                setLoading,
+                () => dispatchUpdatedCustomer(response.data, dispatch)
+              )
+            );
+          })
+          .catch(err => console.log(err));
       })
       .catch(err => {
         console.log(err);

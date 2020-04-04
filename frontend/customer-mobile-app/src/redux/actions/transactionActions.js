@@ -9,7 +9,8 @@ const TRANSACTION_BASE_URL = SPRING_BACKEND_URL + "/api/transaction";
 export const setViewedTransaction = (
   transactionId,
   redirectFunction,
-  setLoading
+  setLoading,
+  onFinish
 ) => {
   if (setLoading) setLoading(true);
   return dispatch => {
@@ -19,6 +20,7 @@ export const setViewedTransaction = (
         const { data } = jsog.decode(response);
         dispatch(updateViewedTransaction(data));
         if (redirectFunction) redirectFunction();
+        if (onFinish) onFinish();
         if (setLoading) setLoading(false);
       })
       .catch(err => {

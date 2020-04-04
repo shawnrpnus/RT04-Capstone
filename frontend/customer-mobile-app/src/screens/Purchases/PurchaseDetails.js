@@ -7,28 +7,13 @@ import TransactionLineItem from "src/screens/Purchases/TransactionLineItem";
 import { useSelector } from "react-redux";
 import { Divider } from "react-native-paper";
 import PurchaseDetailsTotals from "src/screens/Purchases/PurchaseDetailsTotals";
+import {renderStatus} from "src/screens/Shared/TransactionFunctions";
 
 const moment = require("moment");
 const { width, height } = Dimensions.get("window");
 
 function PurchaseDetails(props) {
   const transaction = useSelector(state => state.transaction.viewedTransaction);
-
-  const renderStatus = () => {
-    if (transaction.deliveryStatus === "DELIVERED") {
-      if (transaction.collectionMode === "DELIVERY") {
-        return "Delivered";
-      } else if (transaction.collectionMode === "IN_STORE") {
-        return "Collected";
-      }
-    } else {
-      if (transaction.collectionMode === "DELIVERY") {
-        return "Pending delivery";
-      } else if (transaction.collectionMode === "IN_STORE") {
-        return "Pending collection";
-      }
-    }
-  };
 
   return (
     <Block
@@ -174,8 +159,8 @@ function PurchaseDetails(props) {
               <Text h5 bold style={{ width: "30%", fontSize: 16 }}>
                 Status
               </Text>
-              <Text h5 style={{ width: "70%", fontSize: 16 }}>
-                {renderStatus()}
+              <Text h5 style={{ width: "70%", fontSize: 16, color: renderStatus(transaction)[1] }}>
+                {renderStatus(transaction)[0]}
               </Text>
             </Block>
 
@@ -210,7 +195,7 @@ function PurchaseDetails(props) {
               borderRadius: 0
             }}
           >
-            <Text h5 bold style={{ marginBottom: 5 }}>
+            <Text h5 bold>
               Items
             </Text>
             {transaction.transactionLineItems.map(tli => (

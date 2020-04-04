@@ -5,6 +5,7 @@ import { Dimensions, Image, ScrollView, TouchableOpacity } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useDispatch } from "react-redux";
 import { setViewedTransaction } from "src/redux/actions/transactionActions";
+import {renderStatus} from "src/screens/Shared/TransactionFunctions";
 
 const moment = require("moment");
 const { width, height } = Dimensions.get("window");
@@ -21,22 +22,6 @@ function TransactionCard(props) {
         setLoading
       )
     );
-  };
-
-  const renderStatus = () => {
-    if (transaction.deliveryStatus === "DELIVERED") {
-      if (transaction.collectionMode === "DELIVERY") {
-        return ["Delivered", "green"];
-      } else if (transaction.collectionMode === "IN_STORE") {
-        return ["Collected", "green"];
-      }
-    } else {
-      if (transaction.collectionMode === "DELIVERY") {
-        return ["Pending delivery", "darkorange"];
-      } else if (transaction.collectionMode === "IN_STORE") {
-        return ["Pending collection", "darkorange"];
-      }
-    }
   };
 
   return (
@@ -71,9 +56,9 @@ function TransactionCard(props) {
             </Text>
             <Text
               h6
-              style={{ fontSize: 15, color: renderStatus()[1], fontStyle: "italic" }}
+              style={{ fontSize: 15, color: renderStatus(transaction)[1], fontStyle: "italic" }}
             >
-              {renderStatus()[0]}
+              {renderStatus(transaction)[0]}
             </Text>
           </Block>
           <MaterialIcons
