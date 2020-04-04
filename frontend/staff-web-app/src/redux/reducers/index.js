@@ -20,6 +20,7 @@ import instagramReducer from "./instagramReducer";
 import discountReducer from "./discountReducer";
 import transactionReducer from "./transactionReducer";
 import dashboardReducer from "./dashboardReducer";
+import leaveReducer from "./leaveReducer";
 
 const rootReducer = combineReducers({
   errors: errorReducer,
@@ -28,6 +29,7 @@ const rootReducer = combineReducers({
   tag: tagReducer,
   style: styleReducer,
   promoCode: promoCodeReducer,
+  leave: leaveReducer,
   product: productReducer,
   category: categoryReducer,
   staffEntity: staffReducer,

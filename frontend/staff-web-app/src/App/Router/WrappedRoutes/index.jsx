@@ -20,6 +20,7 @@ import PromoCode from "./PromoCode";
 import Discount from "./Discount";
 import Transaction from "./Transaction";
 import Dashboard from "./Dashboard";
+import Leave from "./Leave";
 
 export default () => (
   <div>
@@ -45,6 +46,7 @@ export default () => (
         <Route path="/discount" component={Discount} />
         <Route path="/transaction" component={Transaction} />
         <Route path="/dashboard" component={Dashboard} />
+        <Route path="/leave" component={Leave} />
         <Redirect from="/" exact to="/dashboard" />
       </Switch>
     </div>
