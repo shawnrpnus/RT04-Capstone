@@ -33,12 +33,12 @@ function AddToCart(props) {
       const task = InteractionManager.runAfterInteractions(() => {
         setTimeout(() => {
           setDisplayCamera(true);
-        }, 150);
+        }, 200);
       });
 
       return () => {
         task.cancel();
-        setTimeout(() => setDisplayCamera(false), 150);
+        setTimeout(() => setDisplayCamera(false), 200);
       };
     }, [])
   );

@@ -92,7 +92,7 @@ function ViewDetails(props) {
     <>
       {allSKUs && (
         <>
-          <Block style={{ height: height * 0.85 }}>
+          <Block style={{ height: "100%" }}>
             <Block
               flex={4}
               card

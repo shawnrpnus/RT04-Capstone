@@ -32,6 +32,7 @@ const { width, height } = Dimensions.get("window");
  */
 
 function Checkout(props) {
+  const {navigation} = props;
   const dispatch = useDispatch();
   const customer = useSelector(state => state.customer.loggedInCustomer);
   const [collectionOption, setCollectionOption] = useState("in-store");
@@ -63,7 +64,7 @@ function Checkout(props) {
       collectionModeEnum:
         collectionOption === "in-store" ? "IN_STORE" : "DELIVERY"
     };
-    dispatch(makePaymentMobile(req, customer.customerId, setLoading));
+    dispatch(makePaymentMobile(req, customer.customerId, setLoading, navigation));
   };
 
   const requiredAddressesPresent =

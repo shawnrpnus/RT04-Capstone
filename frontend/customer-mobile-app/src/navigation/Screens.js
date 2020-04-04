@@ -1,23 +1,25 @@
 import React from "react";
-import {Dimensions} from "react-native";
-import {createStackNavigator} from "@react-navigation/stack";
-import {createDrawerNavigator} from "@react-navigation/drawer";
+import { Dimensions } from "react-native";
+import { createStackNavigator } from "@react-navigation/stack";
+import { createDrawerNavigator } from "@react-navigation/drawer";
 import theme from "src/constants/Theme";
 import LogIn from "src/screens/LogIn";
-import {useSelector} from "react-redux";
+import { useSelector } from "react-redux";
 import CustomDrawerContent from "src/navigation/CustomDrawerContent";
 import CustomHeader from "src/components/CustomHeader";
 import ProductDetails from "src/screens/ProductDetails/ProductDetails";
 import ShoppingCart from "src/screens/ShoppingCart/ShoppingCart";
 import ViewAddresses from "src/screens/Profile/Address/ViewAddresses";
 import ViewCreditCards from "src/screens/Profile/CreditCard/ViewCreditCards";
-import {FontAwesome, MaterialCommunityIcons} from "@expo/vector-icons";
+import { FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
 import CreateAddress from "src/screens/Profile/Address/CreateAddress";
 import UpdateAddress from "src/screens/Profile/Address/UpdateAddress";
 import Checkout from "src/screens/Checkout/Checkout";
-import {createMaterialTopTabNavigator} from "@react-navigation/material-top-tabs";
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import ViewDetails from "src/screens/ViewDetails";
 import AddToCart from "src/screens/AddToCart";
+import PurchaseHistory from "src/screens/Purchases/PurchaseHistory";
+import PurchaseDetails from "src/screens/Purchases/PurchaseDetails";
 
 // screens
 
@@ -89,6 +91,11 @@ function AppDrawer(props) {
         name="ProfileStack"
         drawerLabel="Profile"
         component={ProfileStack}
+      />
+      <Drawer.Screen
+        name="PurchasesStack"
+        drawerLabel="Purchases"
+        component={PurchasesStack}
       />
       {/*<Drawer.Screen name="TransactionStack" drawerLabel="Transactions" component={}/>*/}
     </Drawer.Navigator>
@@ -268,5 +275,28 @@ function ProductScanTabs(props) {
         }}
       />
     </Tab.Navigator>
+  );
+}
+
+function PurchasesStack(props) {
+  return (
+    <Stack.Navigator mode="card" headerMode="screen" initialRouteName="Shop">
+      <Stack.Screen
+        name="Purchase History"
+        component={PurchaseHistory}
+        options={{
+          header: props => <CustomHeader title="Purchase History" {...props} />,
+          headerStyle: { height: 100 }
+        }}
+      />
+      <Stack.Screen
+        name="Purchase Details"
+        component={PurchaseDetails}
+        options={{
+          header: props => <CustomHeader title="Purchase Details" {...props} />,
+          headerStyle: { height: 100 }
+        }}
+      />
+    </Stack.Navigator>
   );
 }

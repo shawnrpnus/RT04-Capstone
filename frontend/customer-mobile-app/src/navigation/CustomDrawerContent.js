@@ -5,7 +5,7 @@ import { ScrollView, StyleSheet } from "react-native";
 import DrawerCustomItem from "src/components/DrawerCustomItem";
 import materialTheme from "src/constants/Theme";
 
-const screens = ["ShopStack", "ProfileStack"];
+const screens = ["ShopStack", "ProfileStack", "PurchasesStack"];
 
 function CustomDrawerContent(props) {
   const { navigation, state } = props;

@@ -9,6 +9,7 @@ import { dispatchErrorMapError } from "src/redux/actions/index";
 import { Notifications } from "expo";
 import * as Permissions from "expo-permissions";
 import { Alert } from "react-native";
+import { setViewedTransaction } from "src/redux/actions/transactionActions";
 
 const jsog = require("jsog");
 
@@ -294,7 +295,7 @@ export const addAddressAtCheckout = (
     });
 };
 
-export const makePaymentMobile = (req, customerId, setLoading) => {
+export const makePaymentMobile = (req, customerId, setLoading, navigation) => {
   setLoading(true);
   return dispatch => {
     axios
@@ -304,6 +305,10 @@ export const makePaymentMobile = (req, customerId, setLoading) => {
         dispatch(refreshCustomer(customerId));
         setLoading(false);
         alert("Checkout Success\nTransaction ID: " + data.transactionId);
+        const redirectFunction = () => navigation.navigate("PurchasesStack", {
+          screen: "Purchase Details"
+        });
+        dispatch(setViewedTransaction(data.transactionId, redirectFunction));
       })
       .catch(err => {
         console.log(err);
