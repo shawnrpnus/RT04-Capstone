@@ -10,6 +10,7 @@ import { Notifications } from "expo";
 import * as Permissions from "expo-permissions";
 import { Alert } from "react-native";
 import { setViewedTransaction } from "src/redux/actions/transactionActions";
+import { StackActions } from "@react-navigation/native";
 
 const jsog = require("jsog");
 
@@ -306,7 +307,7 @@ export const makePaymentMobile = (req, customerId, setLoading, navigation) => {
         setLoading(false);
         //alert("Checkout Success\nTransaction ID: " + data.transactionId);
         const redirectFunction = () => {
-          navigation.pop();
+          navigation.popToTop();
           navigation.navigate("PurchasesStack", {
             screen: "Purchase Details"
           });

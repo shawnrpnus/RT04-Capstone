@@ -130,7 +130,7 @@ function PurchaseDetails(props) {
               <Text h5 style={{ width: "70%", fontSize: 16 }}>
                 {transaction.collectionMode === "DELIVERY"
                   ? "Delivery"
-                  : "Collected in Store"}
+                  : "In Store Collection"}
               </Text>
             </Block>
 
@@ -214,7 +214,7 @@ function PurchaseDetails(props) {
               Items
             </Text>
             {transaction.transactionLineItems.map(tli => (
-              <TransactionLineItem transactionLineItem={tli} />
+              <TransactionLineItem transactionLineItem={tli} key={tli.transactionLineItemId} />
             ))}
           </Block>
           <PurchaseDetailsTotals

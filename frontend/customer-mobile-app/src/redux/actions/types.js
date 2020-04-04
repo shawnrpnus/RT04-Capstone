@@ -15,3 +15,4 @@ export const DISPLAY_STOCKS = "DISPLAY_STOCKS";
 
 //Transaction
 export const UPDATE_VIEWED_TXN = "UPDATE_VIEWED_TXN";
+export const RETRIEVE_TXNS = "RETRIEVE_TXNS";
