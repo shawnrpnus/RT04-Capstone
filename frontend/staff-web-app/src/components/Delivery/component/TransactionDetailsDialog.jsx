@@ -213,7 +213,7 @@ const TransactionDetailsDialog = ({ elements, open, onClose }) => {
           actions={[
             selectedStoreId && byList
               ? (rowData) => ({
-                  icon: Add,
+                  icon: Check,
                   tooltip: "Confirm delivery",
                   onClick: (event, rowData) => handleOpenDialog(),
                   // handleConfirmDelivery(itemsByStore),
@@ -222,7 +222,7 @@ const TransactionDetailsDialog = ({ elements, open, onClose }) => {
                   ),
                 })
               : (rowData) => ({
-                  icon: SaveAlt,
+                  icon: Check,
                   tooltip: "Confirm delivery",
                   onClick: (event, rowData) => {
                     if (rowData.storeToCollect)
