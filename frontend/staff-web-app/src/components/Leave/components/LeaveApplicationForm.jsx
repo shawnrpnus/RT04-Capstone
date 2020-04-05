@@ -68,22 +68,31 @@ class LeaveApplicationForm extends React.Component {
 
   constructor(props) {
       super(props);
-      this.state = {
+      this.state = ({
           fromDateTime: "2020-04-05",
           toDateTime: "2020-04-05"
-      };
+      });
   }
 
 
 
-    onCancel = () => {
-        this.props.history.goBack();
+    clear = () => {
+        this.setState({
+            fromDateTime: "2020-04-05",
+            toDateTime: "2020-04-05"
+        });
     };
 
     handleDelete = staffLeaveId => {
         this.props
             .confirmDialog({ description: "Leave will be deleted permanently" })
             .then(() => this.props.deleteLeave(staffLeaveId, this.props.loggedInStaff.staffId, this.props.history));
+    };
+
+    onChange = (date, attr) =>{
+        this.setState({
+            [attr]: date
+        });
     };
 
     handleSubmit = e => {
