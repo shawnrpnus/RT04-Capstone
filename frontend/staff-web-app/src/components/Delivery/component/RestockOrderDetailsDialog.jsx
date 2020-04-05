@@ -29,7 +29,7 @@ import {
   Remove,
   SaveAlt,
   Search,
-  ViewColumn
+  ViewColumn,
 } from "@material-ui/icons";
 import { confirmRestockOrderDelivery } from "../../../redux/actions/deliveryActions";
 import { getDeliveryStatusColour } from "../../../redux/actions/restockOrderAction";
@@ -53,7 +53,7 @@ const tableIcons = {
   Search: Search,
   SortArrow: () => <div />,
   ThirdStateCheck: Remove,
-  ViewColumn: ViewColumn
+  ViewColumn: ViewColumn,
 };
 
 const RestockOrderDetailsDialog = ({ elements, open, onClose }) => {
@@ -61,22 +61,26 @@ const RestockOrderDetailsDialog = ({ elements, open, onClose }) => {
   const confirmDialog = useConfirm();
   const [itemsByStore, setItemsByStore] = useState([]);
   const [stores, setStores] = useState([]);
-  const [selectedStore, setSelectedStore] = useState("all");
+  const [selectedStoreId, setSelectedStoreId] = useState("all");
   const [openQR, setOpenQR] = useState(false);
 
   useEffect(() => {
-    const stores = elements.map(e => _.get(e, "productStock.store.storeName"));
-    setStores(_.uniq(stores));
+    const stores = elements.map((e) => _.get(e, "productStock.store"));
+    setStores(
+      _.uniqBy(stores, function(store) {
+        return store.storeId;
+      })
+    );
     setItemsByStore(elements);
   }, []);
 
-  const data = itemsByStore.map(item => {
+  const data = itemsByStore.map((item) => {
     let {
       inStoreRestockOrderItemId,
       deliveryDateTime,
       itemDeliveryStatus,
       quantity,
-      productStock
+      productStock,
     } = item;
     let date = deliveryDateTime;
     if (deliveryDateTime)
@@ -92,7 +96,7 @@ const RestockOrderDetailsDialog = ({ elements, open, onClose }) => {
         "productVariant.productImages[0].productImageUrl"
       ),
       store: _.get(productStock, "store"),
-      storeName: _.get(productStock, "store.storeName")
+      storeName: _.get(productStock, "store.storeName"),
     };
   });
 
@@ -100,14 +104,14 @@ const RestockOrderDetailsDialog = ({ elements, open, onClose }) => {
     const { value } = input;
     if (value === "all") {
       setItemsByStore(elements);
-      setSelectedStore(value);
+      setSelectedStoreId(value);
     } else {
       setItemsByStore(
         elements.filter(
-          item => _.get(item, "productStock.store.storeName") === input.value
+          (item) => _.get(item, "productStock.store.storeId") === value
         )
       );
-      setSelectedStore(value);
+      setSelectedStoreId(value);
     }
   };
 
@@ -117,17 +121,9 @@ const RestockOrderDetailsDialog = ({ elements, open, onClose }) => {
 
   const handleConfirmDelivery = () => {
     const inStoreRestockOrderItemIds = itemsByStore.map(
-      e => e.inStoreRestockOrderItemId
+      (e) => e.inStoreRestockOrderItemId
     );
     dispatch(confirmRestockOrderDelivery({ inStoreRestockOrderItemIds }));
-
-    // confirmDialog({
-    //   description: "The selected products will be marked as delivered",
-    // })
-    //   .then(() => {
-    //     onClose();
-    //   })
-    //   .catch(() => null);
   };
 
   return (
@@ -142,10 +138,10 @@ const RestockOrderDetailsDialog = ({ elements, open, onClose }) => {
               <MenuItem key={"all"} value={"all"}>
                 All
               </MenuItem>
-              {stores.map(store => {
+              {stores.map((store) => {
                 return (
-                  <MenuItem key={store} value={store}>
-                    {store}
+                  <MenuItem key={store.storeId} value={store.storeId}>
+                    {store.storeName}
                   </MenuItem>
                 );
               })}
@@ -162,15 +158,15 @@ const RestockOrderDetailsDialog = ({ elements, open, onClose }) => {
             {
               title: "Image",
               field: "image",
-              render: rowData => (
+              render: (rowData) => (
                 <img
                   style={{
                     width: "50%",
-                    borderRadius: "10%"
+                    borderRadius: "10%",
                   }}
                   src={rowData.image}
                 />
-              )
+              ),
             },
             { title: "Product name", field: "productName" },
             { title: "Delivery Date", field: "deliveryDateTime" },
@@ -185,23 +181,23 @@ const RestockOrderDetailsDialog = ({ elements, open, onClose }) => {
                     label={itemDeliveryStatus}
                   />
                 );
-              }
+              },
             },
             {
               title: "Quantity",
-              field: "quantity"
+              field: "quantity",
             },
             {
               title: "Store name",
-              field: "storeName"
-            }
+              field: "storeName",
+            },
           ]}
           data={data}
           options={{
             paging: false,
             headerStyle: { textAlign: "center" }, //change header padding
             cellStyle: { textAlign: "center" },
-            draggable: false
+            draggable: false,
           }}
         />
       </DialogContent>
@@ -215,7 +211,7 @@ const RestockOrderDetailsDialog = ({ elements, open, onClose }) => {
           disabled={
             itemsByStore.length === 0 ||
             itemsByStore[0].itemDeliveryStatus === "DELIVERED" ||
-            selectedStore === "all"
+            selectedStoreId === "all"
           }
         >
           Confirm delivery
@@ -227,6 +223,7 @@ const RestockOrderDetailsDialog = ({ elements, open, onClose }) => {
           onClose={() => setOpenQR(false)}
           confirmDelivery={handleConfirmDelivery}
           onCloseOuterDialog={onClose}
+          id={selectedStoreId}
         />
       )}
     </Dialog>

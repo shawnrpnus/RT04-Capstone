@@ -9,6 +9,7 @@ import capstone.rt04.retailbackend.util.ErrorMessages;
 import capstone.rt04.retailbackend.util.enums.LeaveStatusEnum;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.leave.StaffLeaveCannotDeleteException;
+import capstone.rt04.retailbackend.util.exceptions.leave.StaffLeaveCannotUpdateException;
 import capstone.rt04.retailbackend.util.exceptions.leave.StaffLeaveNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.promoCode.CreateNewPromoCodeException;
 import capstone.rt04.retailbackend.util.exceptions.staff.StaffNotFoundException;
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.sql.Date;
 
 @Service
 @Transactional
@@ -44,9 +46,9 @@ public class LeaveService {
                 .orElseThrow(() -> new StaffNotFoundException("Staff with id: " + staffLeave.getApplicant().getStaffId() + " does not exist"));
 
         for(StaffLeave leave : existingStaff.getLeaves()){
-            if(staffLeave.getFromDateTime().equals(leave.getFromDateTime()) ||
+            if(staffLeave.getFromDateTime().equals(leave.getFromDateTime()) || (staffLeave.getFromDateTime().after(staffLeave.getToDateTime())) ||
                     (staffLeave.getFromDateTime().after(leave.getFromDateTime()) && staffLeave.getFromDateTime().before(leave.getToDateTime())) ||
-                staffLeave.getFromDateTime().equals(leave.getToDateTime())){
+                staffLeave.getFromDateTime().equals(leave.getToDateTime()) ){
                 Map<String, String> errorMap = new HashMap<>();
                 errorMap.put("fromDateTime", ErrorMessages.OVERLAP_IN_LEAVE);
                 throw new InputDataValidationException(errorMap, ErrorMessages.OVERLAP_IN_LEAVE);
@@ -60,20 +62,31 @@ public class LeaveService {
 
     }
 
-    public StaffLeave deleteLeave(Long leaveId) throws StaffLeaveNotFoundException, StaffLeaveCannotDeleteException {
-        StaffLeave leaveToRemove = leaveRepository.findById(leaveId)
+    public StaffLeave updateLeave(Long leaveId, Staff applicant, Date fromDate, Date toDate) throws InputDataValidationException, StaffNotFoundException, StaffLeaveCannotUpdateException, StaffLeaveNotFoundException {
+        StaffLeave existingLeave = leaveRepository.findById(leaveId)
                 .orElseThrow(() -> new StaffLeaveNotFoundException("Leave with id: " + leaveId + " does not exist"));
 
-        if(leaveToRemove.getEndorser() !=null){
-            throw new StaffLeaveCannotDeleteException("Leave has already been endorsed");
+        if(existingLeave.getStatus().equals(LeaveStatusEnum.APPROVED) || existingLeave.getStatus().equals(LeaveStatusEnum.ENDORSED)){
+            throw new StaffLeaveCannotUpdateException("Leave has already been endorsed or approved");
         }
 
-        if(leaveToRemove.getApprover() !=null){
-            throw new StaffLeaveCannotDeleteException("Leave has already been endorsed and approved");
+        Staff existingStaff = staffRepository.findById(applicant.getStaffId())
+                .orElseThrow(() -> new StaffNotFoundException("Staff with id: " + applicant.getStaffId() + " does not exist"));
+
+        for(StaffLeave leave : existingStaff.getLeaves()){
+            if(!leave.getStaffLeaveId().equals(leaveId) &&(fromDate.equals(leave.getFromDateTime()) ||
+                    (fromDate.after(toDate)) ||
+                    (fromDate.after(leave.getFromDateTime()) && fromDate.before(leave.getToDateTime())) ||
+                    fromDate.equals(leave.getToDateTime())) ){
+                Map<String, String> errorMap = new HashMap<>();
+                errorMap.put("fromDateTime", ErrorMessages.OVERLAP_IN_LEAVE);
+                throw new InputDataValidationException(errorMap, ErrorMessages.OVERLAP_IN_LEAVE);
+            }
         }
 
-        leaveRepository.delete(leaveToRemove);
-        return leaveToRemove;
+        existingLeave.setToDateTime(toDate);
+        existingLeave.setFromDateTime(fromDate);
+        return  existingLeave;
 
     }
 

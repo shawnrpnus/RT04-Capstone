@@ -7,7 +7,6 @@ import withMaterialConfirmDialog from "../../Layout/page/withMaterialConfirmDial
 import { Grid } from "@material-ui/core";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
 import Button from "@material-ui/core/Button";
-import AllLeavesManagerTable from "./AllLeavesManagerTable";
 import EndorsedLeavesTable from "./EndorsedLeavesTable";
 import AllLeavesHrTable from "./AllLeavesHrTable";
 

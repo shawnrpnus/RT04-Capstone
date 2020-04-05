@@ -1,6 +1,7 @@
 import axios from "axios";
 import * as types from "./types";
 import { toast } from "react-toastify";
+import {retrieveAllPromoCodes} from "./promoCodeActions";
 axios.defaults.baseURL = process.env.REACT_APP_SPRING_API_URL;
 
 const LEAVE_BASE_URL = "/api/leave";
@@ -253,4 +254,38 @@ const approveRejectLeavesSuccess = data => ({
 const approveRejectLeavesError = data => ({
   type: types.GET_ERRORS,
   errorMap: data
+});
+
+export const updateLeave = (updateLeaveRequest, history) => {
+    return dispatch => {
+        //redux thunk passes dispatch
+        axios
+            .post(LEAVE_BASE_URL + "/updateLeave", updateLeaveRequest)
+            .then(response => {
+                const { data } = jsog.decode(response);
+                dispatch(updateLeaveSuccess(data));
+                toast.success("Leave Updated!", {
+                    position: toast.POSITION.TOP_CENTER
+                });
+                retrieveAllLeaves(updateLeaveRequest.applicant.staffId)(dispatch);
+                history.push(`/leave/apply`);
+            })
+            .catch(err => {
+                toast.error("Leave has already been endorsed or approved", {
+                    position: toast.POSITION.TOP_CENTER
+                });
+                dispatch(updateLeavesError(err.response.data));
+                // console.log(err.response.data);
+            });
+    };
+};
+
+const updateLeaveSuccess = data => ({
+    type: types.UPDATE_LEAVE,
+    leave: data
+});
+
+const updateLeavesError = data => ({
+    type: types.GET_ERRORS,
+    errorMap: data
 });
