@@ -1234,7 +1234,6 @@ public class StartUpService {
         if (staffService.retrieveAllStaff().size() != 0) return;
         Product product = new Product("0010", "Stan Smith", "Adidas", BigDecimal.valueOf(109.90), BigDecimal.valueOf(49.90));
         Department departmentHR = staffService.createNewDepartment("HR");
-        Department departmentIT = staffService.createNewDepartment("IT");
         Department departmentStore = staffService.createNewDepartment("Store");
         Department departmentWarehouse = staffService.createNewDepartment("Warehouse");
         Department departmentSalesMarketing = staffService.createNewDepartment("Sales and Marketing");

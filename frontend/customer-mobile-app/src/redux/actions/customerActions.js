@@ -9,6 +9,8 @@ import { dispatchErrorMapError } from "src/redux/actions/index";
 import { Notifications } from "expo";
 import * as Permissions from "expo-permissions";
 import { Alert } from "react-native";
+import { setViewedTransaction } from "src/redux/actions/transactionActions";
+import { StackActions } from "@react-navigation/native";
 
 const jsog = require("jsog");
 
@@ -294,16 +296,34 @@ export const addAddressAtCheckout = (
     });
 };
 
-export const makePaymentMobile = (req, customerId, setLoading) => {
+export const makePaymentMobile = (req, customerId, setLoading, navigation) => {
   setLoading(true);
   return dispatch => {
     axios
       .post(SPRING_BACKEND_URL + "/makePaymentWithSavedCard", req)
       .then(response => {
         const { data } = jsog.decode(response);
-        dispatch(refreshCustomer(customerId));
-        setLoading(false);
-        alert("Checkout Success\nTransaction ID: " + data.transactionId);
+        axios
+          .get(CUSTOMER_BASE_URL + "/retrieveCustomerById", {
+            params: { customerId }
+          })
+          .then(response => {
+            const redirectFunction = () => {
+              navigation.popToTop();
+              navigation.navigate("PurchasesStack", {
+                screen: "Purchase Details"
+              });
+            };
+            dispatch(
+              setViewedTransaction(
+                data.transactionId,
+                redirectFunction,
+                setLoading,
+                () => dispatchUpdatedCustomer(response.data, dispatch)
+              )
+            );
+          })
+          .catch(err => console.log(err));
       })
       .catch(err => {
         console.log(err);

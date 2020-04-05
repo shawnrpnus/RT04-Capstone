@@ -14,6 +14,7 @@ import { set } from "react-native-reanimated";
 import EditCardModal from "src/screens/Checkout/EditCardModal";
 import EditAddressModal from "src/screens/Checkout/EditAddressModal";
 import { makePaymentMobile } from "src/redux/actions/customerActions";
+import {useFocusEffect} from "@react-navigation/native";
 
 const { width, height } = Dimensions.get("window");
 
@@ -32,6 +33,7 @@ const { width, height } = Dimensions.get("window");
  */
 
 function Checkout(props) {
+  const { navigation } = props;
   const dispatch = useDispatch();
   const customer = useSelector(state => state.customer.loggedInCustomer);
   const [collectionOption, setCollectionOption] = useState("in-store");
@@ -63,7 +65,9 @@ function Checkout(props) {
       collectionModeEnum:
         collectionOption === "in-store" ? "IN_STORE" : "DELIVERY"
     };
-    dispatch(makePaymentMobile(req, customer.customerId, setLoading));
+    dispatch(
+      makePaymentMobile(req, customer.customerId, setLoading, navigation)
+    );
   };
 
   const requiredAddressesPresent =
@@ -76,7 +80,10 @@ function Checkout(props) {
   return (
     <Block flex={1} center style={{ width: width, paddingTop: 5 }}>
       {customer && (
-        <ScrollView style={{ width: width, height: height }} keyboardShouldPersistTaps="handled">
+        <ScrollView
+          style={{ width: width, height: height }}
+          keyboardShouldPersistTaps="handled"
+        >
           <CollectionOptions
             collectionOption={collectionOption}
             setCollectionOption={setCollectionOption}

@@ -16,4 +16,5 @@ public class RefundRequest {
     private String reason;
     private Long customerId;
     private List<RefundLineItemRequest> refundLineItemRequests;
+    private Long storeId;
 }

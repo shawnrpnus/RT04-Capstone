@@ -12,4 +12,6 @@ public interface RefundRepository extends CrudRepository<Refund, Long> {
     Optional<Refund> findByRefundId(Long refundId);
 
     List<Refund> findAll();
+
+    List<Refund> findAllByCustomer_CustomerId(Long customerId);
 }

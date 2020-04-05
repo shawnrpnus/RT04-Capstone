@@ -22,7 +22,7 @@ function LineItem(props) {
       card
       center
       style={{
-        backgroundColor: "white",
+        backgroundColor: "#fcfcfc",
         width: width,
         marginTop: 7.5,
         paddingTop: 10,
@@ -31,6 +31,7 @@ function LineItem(props) {
         paddingRight: 10,
         elevation: 0,
         borderRadius: 0,
+        borderWidth: 0
       }}
     >
       <Block flex row style={{ alignItems: "center" }}>

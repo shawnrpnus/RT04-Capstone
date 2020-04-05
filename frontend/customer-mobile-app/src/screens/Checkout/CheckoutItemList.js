@@ -64,7 +64,7 @@ function CheckoutItemList(props) {
         borderRadius: 0
       }}
     >
-      <Text h5 bold style={{ marginBottom: 5 }}>
+      <Text h5 bold>
         Items
       </Text>
       {customer &&

@@ -59,7 +59,7 @@ export const retrieveTransactionById = transactionId => {
       });
 };
 
-const updatedViewedTransaction = data => ({
+export const updatedViewedTransaction = data => ({
   type: UPDATE_VIEWED_TRANSACTION,
   transaction: data
 });

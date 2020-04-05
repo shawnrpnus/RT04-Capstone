@@ -1,7 +1,6 @@
 import axios from "axios";
 import * as types from "./types";
 import { toast } from "react-toastify";
-import { retrieveAllTags } from "./tagAction";
 axios.defaults.baseURL = process.env.REACT_APP_SPRING_API_URL;
 
 const PROMOCODE_BASE_URL = "/api/promoCode";

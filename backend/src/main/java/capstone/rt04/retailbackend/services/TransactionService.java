@@ -389,4 +389,10 @@ public class TransactionService {
         lazyLoadTransaction(transactions);
         return transactions;
     }
+
+    public List<Transaction> getCustomerInStoreTransactions(Long customerId) {
+        List<Transaction> inStoreTxns = transactionRepository.findAllByCustomer_CustomerIdAndStoreIsNotNull(customerId);
+        lazyLoadTransaction(inStoreTxns);
+        return inStoreTxns;
+    }
 }

@@ -68,6 +68,12 @@ public class Refund implements Serializable {
     @Size(min = 1)
     private List<RefundLineItem> refundLineItems;
 
+    @OneToOne
+    private Store store;
+
+    @OneToOne
+    private Warehouse warehouse;
+
     public Refund() {
         this.refundDateTime = new Timestamp(System.currentTimeMillis());
         this.refundNumber = RandomStringUtils.randomAlphanumeric(12);

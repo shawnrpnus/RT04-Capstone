@@ -227,6 +227,7 @@ const CreateEditRefundRecord = props => {
   const onSubmit = () => {
     const lineItems = currTransaction.transactionLineItems;
     const staffId = currStaff.staffId;
+    const storeId = currStaff.store.storeId;
     const refundLineItems = [];
     lineItems.forEach(myFunction);
     function myFunction(item, index) {
@@ -245,7 +246,8 @@ const CreateEditRefundRecord = props => {
       inputState.refundMode,
       inputState.reason,
       refundLineItems,
-      inputState.customerId
+      inputState.customerId,
+      storeId
     );
     console.log(refundRequest);
     dispatch(createInStoreRefundRequest(refundRequest, history, setInputState));

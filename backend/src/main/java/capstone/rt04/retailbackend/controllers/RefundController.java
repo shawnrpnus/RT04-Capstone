@@ -14,7 +14,9 @@ import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.customer.CustomerNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.promoCode.PromoCodeNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.refund.RefundNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.transaction.TransactionNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.warehouse.WarehouseNotFoundException;
 import capstone.rt04.retailbackend.util.routeconstants.RefundControllerRoutes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,8 +40,8 @@ public class RefundController {
     }
 
     @PostMapping(CREATE_IN_STORE_REFUND_RECORD)
-    public ResponseEntity<?> createInStoreRefundRecord(@RequestBody RefundRequest refundRequest) throws CustomerNotFoundException, TransactionNotFoundException, InputDataValidationException, PromoCodeNotFoundException, RefundNotFoundException {
-        Refund refund = refundService.createInStoreRefund(refundRequest);
+    public ResponseEntity<?> createRefundRecord(@RequestBody RefundRequest refundRequest) throws CustomerNotFoundException, TransactionNotFoundException, InputDataValidationException, PromoCodeNotFoundException, RefundNotFoundException, StoreNotFoundException, WarehouseNotFoundException {
+        Refund refund = refundService.createRefund(refundRequest);
         //need to clear customer so that the response is faster
         clearRefundRelationships(refund);
         return new ResponseEntity<>(refund, HttpStatus.CREATED);
@@ -80,6 +82,16 @@ public class RefundController {
         }
         return new ResponseEntity<>(refunds, HttpStatus.OK);
     }
+
+    @GetMapping(RETRIEVE_REFUNDS_BY_CUSTOMER_ID)
+    public ResponseEntity<?> retrieveRefundsByCustomerId(@PathVariable Long customerId) {
+        List<Refund> refunds = refundService.retrieveRefundsByCustomerId(customerId);
+        for(Refund refund : refunds) {
+            clearRefundRelationships(refund);
+        }
+        return new ResponseEntity<>(refunds, HttpStatus.OK);
+    }
+
 
     private void clearRefundRelationships(Refund refund) {
         refund.getCustomer().setRefunds(null);
