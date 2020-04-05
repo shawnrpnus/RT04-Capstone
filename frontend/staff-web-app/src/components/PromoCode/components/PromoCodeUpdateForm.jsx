@@ -111,7 +111,6 @@ class PromoCodeUpdateForm extends Component {
     console.log(this.state.percentageDiscount);
 
     if (this.state.flatDiscount === 0 && this.state.percentageDiscount === 0) {
-      console.log("hi");
       const newPromoCode = new promoCodeToUpdate(
         this.props.currentPromoCode.promoCodeId,
         this.state.promoCodeName,

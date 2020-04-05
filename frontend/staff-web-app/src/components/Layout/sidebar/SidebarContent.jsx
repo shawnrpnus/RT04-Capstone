@@ -39,6 +39,10 @@ class SidebarContent extends Component {
 
   render() {
     const department = _.get(this.props.staff, "department.departmentName");
+    const role = _.get(this.props.staff, "role.roleName");
+    const manager = role === "MANAGER";
+console.log(manager)
+    console.log(role);
     const hr = department === "HR";
     const salesmarketing = department === "Sales and Marketing";
     const store = department === "Store";
@@ -49,7 +53,7 @@ class SidebarContent extends Component {
     return (
       <div className="sidebar__content">
         <ul className="sidebar__block">
-          {hr && (
+          {(hr || manager) && (
             <SidebarCategory title="Staff" customIcon={<MdPeople />}>
               {hr && (
                 <React.Fragment>
@@ -70,7 +74,21 @@ class SidebarContent extends Component {
                     route="/staff/resetPassword"
                     onClick={this.hideSidebar}
                   />
+
+                    < SidebarLink
+                        title="Leave Management"
+                        route="/leave/hr"
+                        onClick={this.hideSidebar}
+                    />
                 </React.Fragment>
+              )}
+
+              {manager &&(
+                  < SidebarLink
+                      title="Leave Management"
+                      route="/leave/manager"
+                      onClick={this.hideSidebar}
+                  />
               )}
             </SidebarCategory>
           )}
