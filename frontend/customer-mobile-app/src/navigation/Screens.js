@@ -11,7 +11,11 @@ import ProductDetails from "src/screens/ProductDetails/ProductDetails";
 import ShoppingCart from "src/screens/ShoppingCart/ShoppingCart";
 import ViewAddresses from "src/screens/Profile/Address/ViewAddresses";
 import ViewCreditCards from "src/screens/Profile/CreditCard/ViewCreditCards";
-import { FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
+import {
+  FontAwesome,
+  MaterialCommunityIcons,
+  Entypo
+} from "@expo/vector-icons";
 import CreateAddress from "src/screens/Profile/Address/CreateAddress";
 import UpdateAddress from "src/screens/Profile/Address/UpdateAddress";
 import Checkout from "src/screens/Checkout/Checkout";
@@ -20,6 +24,9 @@ import ViewDetails from "src/screens/ViewDetails";
 import AddToCart from "src/screens/AddToCart";
 import PurchaseHistory from "src/screens/Purchases/PurchaseHistory";
 import PurchaseDetails from "src/screens/Purchases/PurchaseDetails";
+import UpcomingReservations from "src/screens/Reservation/UpcomingReservations";
+import PastReservations from "src/screens/Reservation/PastReservations";
+import ReservationDetails from "src/screens/Reservation/ReservationDetails";
 
 // screens
 
@@ -96,6 +103,11 @@ function AppDrawer(props) {
         name="PurchasesStack"
         drawerLabel="Purchases"
         component={PurchasesStack}
+      />
+      <Drawer.Screen
+        name="ReservationsStack"
+        drawerLabel="Reservations"
+        component={ReservationsStack}
       />
       {/*<Drawer.Screen name="TransactionStack" drawerLabel="Transactions" component={}/>*/}
     </Drawer.Navigator>
@@ -298,5 +310,67 @@ function PurchasesStack(props) {
         }}
       />
     </Stack.Navigator>
+  );
+}
+
+function ReservationsStack(props) {
+  return (
+    <Stack.Navigator mode="card" headerMode="screen" initialRouteName="Shop">
+      <Stack.Screen
+        name="ReservationTabs"
+        component={ReservationTabs}
+        options={{
+          header: props => <CustomHeader title="Reservations" {...props} />,
+          headerStyle: { height: 100 }
+        }}
+      />
+      <Stack.Screen
+        name="Reservation Details"
+        component={ReservationDetails}
+        options={{
+          header: props => (
+            <CustomHeader title="Reservation Details" {...props} />
+          ),
+          headerStyle: { height: 100 }
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
+
+function ReservationTabs(props) {
+  return (
+    <Tab.Navigator
+      initialRouteName="Upcoming"
+      tabBarPosition="bottom"
+      tabBarOptions={{
+        activeTintColor: theme.COLORS.PRIMARY,
+        inactiveTintColor: "lightgrey",
+        style: { backgroundColor: theme.COLORS.CAPTION },
+        showIcon: true,
+        indicatorStyle: { backgroundColor: theme.COLORS.PRIMARY }
+      }}
+    >
+      <Tab.Screen
+        name="Upcoming Reservations"
+        component={UpcomingReservations}
+        options={{
+          tabBarLabel: "Upcoming",
+          tabBarIcon: ({ focused, color }) => (
+            <Entypo name="time-slot" color={color} size={22} />
+          )
+        }}
+      />
+      <Tab.Screen
+        name="Past Reservations"
+        component={PastReservations}
+        options={{
+          tabBarLabel: "Past",
+          tabBarIcon: ({ focused, color }) => (
+            <Entypo name="back-in-time" color={color} size={25} />
+          )
+        }}
+      />
+    </Tab.Navigator>
   );
 }

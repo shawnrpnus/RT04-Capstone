@@ -223,7 +223,7 @@ public class ReservationService {
 
         // Check that timeslot is not taken
         List<Timestamp> reservedTimeSlots = getReservedTimeslotsForStore(newStoreId);
-        if (reservedTimeSlots.contains(newDateTime)) {
+        if (countNumReservationsForTimeslot(reservedTimeSlots, newDateTime) >= newStore.getNumReservedChangingRooms()) {
             errorMap.put("reservationDateTime", "This time slot is already taken at " + newStore.getStoreName());
             throw new InputDataValidationException(errorMap, errorMap.get("reservationDateTime"));
         }
