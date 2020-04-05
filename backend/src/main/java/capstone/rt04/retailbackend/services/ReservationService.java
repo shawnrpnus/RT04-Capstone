@@ -76,11 +76,11 @@ public class ReservationService {
             checkStoreStockForProductVariant(storeId, pv.getProductVariantId());
         }
 
-        // check reservationDateTime not taken at store
+        // check reservationDateTime not fully taken at store
         List<Timestamp> reservedTimeSlots = getReservedTimeslotsForStore(storeId);
-        if (reservedTimeSlots.contains(reservationDateTime)) {
+        if (countNumReservationsForTimeslot(reservedTimeSlots, reservationDateTime) >= store.getNumReservedChangingRooms()) {
             Map<String, String> errorMap = new HashMap<>();
-            errorMap.put("reservationDateTime","This time slot is already taken at " + store.getStoreName());
+            errorMap.put("reservationDateTime", "This time slot is already taken at " + store.getStoreName());
             throw new InputDataValidationException(errorMap, errorMap.get("reservationDateTime"));
         }
 
@@ -121,8 +121,17 @@ public class ReservationService {
         return result;
     }
 
+    public <T> Integer countNumReservationsForTimeslot(List<T> reservedSlots, T timeslot) {
+        int count = 0;
+        for (T dateTime : reservedSlots) {
+            if (dateTime.equals(timeslot)) count++;
+        }
+        return count;
+    }
+
     public List<ZonedDateTime> getAvailTimelotsForStore(Long storeId) throws StoreNotFoundException {
         Store store = storeService.retrieveStoreById(storeId);
+        Integer reservationPerTimeslotLimit = store.getNumReservedChangingRooms();
         List<ZonedDateTime> result = new ArrayList<>();
         List<Timestamp> reservedSlots = getReservedTimeslotsForStore(storeId);
 
@@ -142,8 +151,9 @@ public class ReservationService {
 
         while (nowPlus1Hour.isBefore(nowPlus48Hour)) {
             LocalTime localTimeToCheck = LocalTime.of(nowPlus1Hour.getHour(), nowPlus1Hour.getMinute());
-            if (localTimeToCheck.isAfter(openingTime) && localTimeToCheck.isBefore(closingTime)
-                    && !reservedZoneDateTimes.contains(nowPlus1Hour)) {
+            if (localTimeToCheck.isAfter(openingTime)
+                    && localTimeToCheck.isBefore(closingTime)
+                    && countNumReservationsForTimeslot(reservedZoneDateTimes, nowPlus1Hour) < reservationPerTimeslotLimit) {
                 result.add(nowPlus1Hour);
             }
             nowPlus1Hour = nowPlus1Hour.plusMinutes(15);
@@ -336,7 +346,7 @@ public class ReservationService {
         String isoString = reservationDateTime.replace(" ", "T");
         LocalDateTime ldt = LocalDateTime.parse(isoString);
         //Convert to SG time zone i.e. adding +0800 to the string
-        ZonedDateTime zonedDateTime= ZonedDateTime.of(ldt, ZoneId.of("Singapore"));
+        ZonedDateTime zonedDateTime = ZonedDateTime.of(ldt, ZoneId.of("Singapore"));
         //Get the UTC time for the zoned date time
         Timestamp dateTime = Timestamp.from(zonedDateTime.toInstant());
         long now = System.currentTimeMillis();
@@ -376,13 +386,13 @@ public class ReservationService {
         }
     }
 
-    public List<Reservation> getUpcomingReservationsForStore(Long storeId){
+    public List<Reservation> getUpcomingReservationsForStore(Long storeId) {
         List<Reservation> reservations = reservationRepository.findAllByStore_StoreId(storeId);
         List<Reservation> result = new LinkedList<>();
         long now = System.currentTimeMillis();
-        long nowMinus15Minutes = now - + TimeUnit.MINUTES.toMillis(15);
-        for (Reservation r : reservations){
-            if (r.getReservationDateTime().after(new Timestamp(nowMinus15Minutes))){
+        long nowMinus15Minutes = now - +TimeUnit.MINUTES.toMillis(15);
+        for (Reservation r : reservations) {
+            if (r.getReservationDateTime().after(new Timestamp(nowMinus15Minutes))) {
                 result.add(r);
             }
         }
@@ -396,14 +406,14 @@ public class ReservationService {
         return reservation;
     }
 
-    public List<Reservation> getCloseReservationsForStore(Long storeId){
+    public List<Reservation> getCloseReservationsForStore(Long storeId) {
         List<Reservation> allReservations = reservationRepository.findAllByStore_StoreId(storeId);
         List<Reservation> result = new ArrayList<>();
         long now = System.currentTimeMillis();
         Timestamp nowPlus14Minutes = new Timestamp(now + TimeUnit.MINUTES.toMillis(14));
         Timestamp nowPlus15Minutes = new Timestamp(now + TimeUnit.MINUTES.toMillis(15));
-        for (Reservation r : allReservations){
-            if (r.getReservationDateTime().after(nowPlus14Minutes) && r.getReservationDateTime().before(nowPlus15Minutes)){
+        for (Reservation r : allReservations) {
+            if (r.getReservationDateTime().after(nowPlus14Minutes) && r.getReservationDateTime().before(nowPlus15Minutes)) {
                 //reservation is in between 14 and 15 minutes time
                 result.add(r);
             }
@@ -412,11 +422,11 @@ public class ReservationService {
     }
 
     //send to all employees in the store
-    public void sendExpoPushNotif(Long storeId){
+    public void sendExpoPushNotif(Long storeId) {
         List<Staff> staffToSendNotif = staffRepository.findAllByStore_StoreId(storeId);
         List<String> tokens = new ArrayList<>();
-        for (Staff s : staffToSendNotif){
-            if (s.getPushNotificationToken() != null){
+        for (Staff s : staffToSendNotif) {
+            if (s.getPushNotificationToken() != null) {
                 tokens.add(s.getPushNotificationToken());
             }
         }
@@ -442,7 +452,7 @@ public class ReservationService {
 
         try {
             ResponseEntity<?> response = restTemplate.postForEntity(url, httpEntity, Object.class);
-        } catch (Exception ex){
+        } catch (Exception ex) {
             log.error(ex.getMessage());
         }
     }
