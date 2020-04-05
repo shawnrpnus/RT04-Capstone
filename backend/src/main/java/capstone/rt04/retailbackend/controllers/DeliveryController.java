@@ -92,13 +92,14 @@ public class DeliveryController {
     @GetMapping(GENERATE_DELIVERY_ROUTE)
     public ResponseEntity<?> generateRouteForDelivery(@PathVariable Long deliveryId) throws DeliveryNotFoundException {
         List deliveryList = deliveryService.generateDeliveryRoute(deliveryId);
-        for (Object item : deliveryList) {
-            if (item.getClass().equals(Transaction.class)) {
-                relationshipService.clearTransactionRelationships((Transaction) item);
-            } else if (item.getClass().equals(InStoreRestockOrderItem.class)) {
-                clearRestockOrderItemRelationships((InStoreRestockOrderItem) item);
-            }
-        }
+        clearDeliveryListRelationships(deliveryList);
+        return new ResponseEntity<>(deliveryList, HttpStatus.OK);
+    }
+
+    @GetMapping(GENERATE_DELIVERY_ROUTE_FOR_TODAY)
+    public ResponseEntity<?> generateDeliveryRouteToday(@RequestParam Long staffId) throws DeliveryNotFoundException {
+        List deliveryList = deliveryService.generateTodaysDeliveryRouteForStaff(staffId);
+        clearDeliveryListRelationships(deliveryList);
         return new ResponseEntity<>(deliveryList, HttpStatus.OK);
     }
 
@@ -145,6 +146,16 @@ public class DeliveryController {
             }
             for (Transaction transaction : delivery.getCustomerOrdersToDeliver()) {
                 relationshipService.clearTransactionRelationships(transaction);
+            }
+        }
+    }
+
+    private void clearDeliveryListRelationships(List deliveryList) {
+        for (Object item : deliveryList) {
+            if (item.getClass().equals(Transaction.class)) {
+                relationshipService.clearTransactionRelationships((Transaction) item);
+            } else if (item.getClass().equals(InStoreRestockOrderItem.class)) {
+                clearRestockOrderItemRelationships((InStoreRestockOrderItem) item);
             }
         }
     }

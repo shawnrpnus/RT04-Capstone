@@ -15,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -141,9 +142,32 @@ public class TimerService {
         for (Store store : stores) {
             List<Reservation> closeReservations = reservationService.getCloseReservationsForStore(store.getStoreId());
             if (closeReservations.size() > 0){
-                reservationService.sendExpoPushNotif(store.getStoreId());
+                reservationService.sendExpoPushNotifToStore(store.getStoreId());
                 log.info("Push notification sent");
             }
+        }
+    }
+
+    @Scheduled(fixedRate = 60 * 1000, initialDelay = 5000)
+    public void checkCloseReservationsForCustomers(){
+        List<Reservation> reservations = reservationService.retrieveAllReservations();
+        long now = System.currentTimeMillis();
+        Timestamp bottomLimit = new Timestamp(now + TimeUnit.MINUTES.toMillis(59));
+        Timestamp  topLimit = new Timestamp(now + TimeUnit.MINUTES.toMillis(60));
+        List<String> tokens = new ArrayList<>();
+        for (Reservation r : reservations){
+            if (r.getReservationDateTime().after(bottomLimit) && r.getReservationDateTime().before(topLimit)) {
+                tokens.add(r.getCustomer().getPushNotificationToken());
+            }
+        }
+        if (tokens.size() > 0) {
+            Map<String, String> data = new HashMap<>();
+            data.put("type", "reservationReminder");
+            reservationService.sendExpoPushNotifWithTokens(tokens,
+                    "Upcoming Reservation",
+                    "You have a reservation in 1 hour!",
+                    data, "reservation");
+            log.info("Push notifications sending triggered for customers");
         }
     }
 

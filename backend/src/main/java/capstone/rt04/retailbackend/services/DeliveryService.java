@@ -2,6 +2,7 @@ package capstone.rt04.retailbackend.services;
 
 import capstone.rt04.retailbackend.entities.*;
 import capstone.rt04.retailbackend.repositories.DeliveryRepository;
+import capstone.rt04.retailbackend.util.enums.CollectionModeEnum;
 import capstone.rt04.retailbackend.util.enums.DeliveryStatusEnum;
 import capstone.rt04.retailbackend.util.enums.ItemDeliveryStatusEnum;
 import capstone.rt04.retailbackend.util.exceptions.delivery.DeliveryNotFoundException;
@@ -11,11 +12,15 @@ import capstone.rt04.retailbackend.util.exceptions.staff.StaffNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.transaction.TransactionNotFoundException;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.cglib.core.Local;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -134,7 +139,8 @@ public class DeliveryService {
             }
 
             if (transactions.size() > 0 && transactionIndex < transactionSize
-                    && transactions.get(transactionIndex).getTotalQuantity() + quantity <= maxCapacity) {
+                    && transactions.get(transactionIndex).getTotalQuantity() + quantity <= maxCapacity
+                    && !(transactions.get(transactionIndex).getStore() != null && transactions.get(transactionIndex).getCollectionMode() == CollectionModeEnum.IN_STORE)) {
                 delivery.getCustomerOrdersToDeliver().add(transactions.get(transactionIndex));
                 transactions.get(transactionIndex).getDeliveries().add(delivery);
 
@@ -221,6 +227,29 @@ public class DeliveryService {
         }
 
         return deliveryList;
+    }
+
+    public Delivery getTodaysDeliveryForStaff(Long staffId) {
+        List<Delivery> staffDeliveries = deliveryRepository.findAllByDeliveryStaff_StaffId(staffId);
+        Timestamp now = new Timestamp(System.currentTimeMillis());
+        LocalDate todayDate = now.toInstant().atZone(ZoneId.of("Singapore")).toLocalDate();
+        for (Delivery delivery : staffDeliveries){
+            Timestamp deliveryTimestamp = delivery.getDeliveryDateTime();
+            LocalDate deliveryDate = deliveryTimestamp.toInstant().atZone(ZoneId.of("Singapore")).toLocalDate();
+            if (todayDate.isEqual(deliveryDate)){
+                return delivery;
+            }
+        }
+        return null;
+    }
+
+    public List generateTodaysDeliveryRouteForStaff(Long staffId) throws DeliveryNotFoundException {
+        Delivery delivery = getTodaysDeliveryForStaff(staffId);
+        if (delivery == null){
+            return new ArrayList();
+        } else {
+            return generateDeliveryRoute(delivery.getDeliveryId());
+        }
     }
 
     private void updateRestockOrderStatus(List<InStoreRestockOrderItem> affectedItems) {
