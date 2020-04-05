@@ -10,8 +10,8 @@ package capstone.rt04.retailbackend.util.enums;
  * @author shawn
  */
 public enum RoleNameEnum {
-    DIRECTOR,
-    MANAGER,
-    ASSISTANT_MANAGER,
-    ASSISTANT
+    DIRECTOR, //0
+    MANAGER,  //1
+    ASSISTANT_MANAGER, //2
+    ASSISTANT //3
 }

@@ -1,13 +1,14 @@
 package capstone.rt04.retailbackend.controllers;
 
-import capstone.rt04.retailbackend.entities.PromoCode;
 import capstone.rt04.retailbackend.entities.StaffLeave;
+import capstone.rt04.retailbackend.request.leave.EndorseRejectLeaveRequest;
 import capstone.rt04.retailbackend.request.leave.LeaveCreateRequest;
-import capstone.rt04.retailbackend.request.promoCode.PromoCodeCreateRequest;
 import capstone.rt04.retailbackend.response.GenericErrorResponse;
 import capstone.rt04.retailbackend.services.LeaveService;
 import capstone.rt04.retailbackend.services.ValidationService;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
+import capstone.rt04.retailbackend.util.exceptions.leave.StaffLeaveCannotDeleteException;
+import capstone.rt04.retailbackend.util.exceptions.leave.StaffLeaveNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.promoCode.CreateNewPromoCodeException;
 import capstone.rt04.retailbackend.util.exceptions.promoCode.PromoCodeNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.staff.StaffNotFoundException;
@@ -18,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 import static capstone.rt04.retailbackend.util.routeconstants.LeaveControllerRoutes.*;
-import static capstone.rt04.retailbackend.util.routeconstants.PromoCodeControllerRoutes.RETRIEVE_ALL_PROMO_CODE;
 
 
 @RestController
@@ -53,5 +53,58 @@ public class LeaveController {
         } catch (Exception ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @DeleteMapping(DELETE_LEAVE)
+    public ResponseEntity<?> removeLeave(@PathVariable Long leaveId) throws StaffLeaveNotFoundException, StaffLeaveCannotDeleteException {
+        try {
+            StaffLeave deletedLeave = leaveService.removeLeave(leaveId);
+            return new ResponseEntity<>(deletedLeave, HttpStatus.OK);
+        }catch(StaffLeaveCannotDeleteException | StaffNotFoundException ex){
+            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping(RETRIEVE_ALL_LEAVES_MANAGER)
+    public ResponseEntity<?> retrieveAllLeavesManager(@PathVariable Long staffId) {
+        try {
+            List<StaffLeave> leaves = leaveService.retrieveAllLeavesManager(staffId);
+            return new ResponseEntity<>(leaves, HttpStatus.OK);
+        } catch (Exception ex) {
+            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping(RETRIEVE_ALL_PENDING_LEAVES)
+    public ResponseEntity<?> retrieveAllPendingLeaves(@PathVariable Long staffId) {
+        try {
+            List<StaffLeave> leaves = leaveService.retrieveAllPendingLeaves(staffId);
+            return new ResponseEntity<>(leaves, HttpStatus.OK);
+        } catch (Exception ex) {
+            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping(RETRIEVE_ALL_LEAVES_HR)
+    public ResponseEntity<?> retrieveAllEndorsedLeaves() {
+        try {
+            List<StaffLeave> leaves = leaveService.retrieveAllLeavesHR();
+            return new ResponseEntity<>(leaves, HttpStatus.OK);
+        } catch (Exception ex) {
+            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping(ENDORSE_REJECT_LEAVE)
+    public ResponseEntity<?> endorseRejectLeave(@RequestBody EndorseRejectLeaveRequest endorseRejectLeaveRequest) throws StaffLeaveNotFoundException, StaffNotFoundException {
+       try {
+           StaffLeave leave = leaveService.endorseRejectLeave(endorseRejectLeaveRequest.getLeaveId(),
+                   endorseRejectLeaveRequest.getManagerId(), endorseRejectLeaveRequest.getAction());
+           return new ResponseEntity<>(leave, HttpStatus.OK);
+       }catch (StaffNotFoundException ex){
+           return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
+       }catch (StaffLeaveNotFoundException ex){
+           return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
+       }
     }
 }

@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.PersistenceException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -80,5 +81,92 @@ public class LeaveService {
         Staff existingStaff = staffRepository.findById(staffId)
                 .orElseThrow(() -> new StaffNotFoundException("Staff with id: " + staffId + " does not exist"));
         return existingStaff.getLeaves();
+    }
+
+    public StaffLeave removeLeave(Long leaveId) throws StaffLeaveCannotDeleteException, StaffLeaveNotFoundException, StaffNotFoundException {
+        StaffLeave existingLeave = leaveRepository.findById(leaveId)
+                .orElseThrow(() -> new StaffLeaveNotFoundException("Leave with id: " + leaveId + " does not exist"));
+
+        if(existingLeave.getStatus().equals(LeaveStatusEnum.APPROVED) || existingLeave.getStatus().equals(LeaveStatusEnum.ENDORSED)){
+            throw new StaffLeaveCannotDeleteException("Leave has already been endorsed or approved");
+        }
+        Staff staff = staffRepository.findById(existingLeave.getApplicant().getStaffId())
+                .orElseThrow(() -> new StaffNotFoundException("Staff with id: " + existingLeave.getApplicant().getStaffId() + " does not exist"));
+        staff.getLeaves().remove(existingLeave);
+        leaveRepository.delete(existingLeave);
+        return existingLeave;
+    }
+
+    public List<StaffLeave> retrieveAllLeavesManager(Long staffId) throws StaffNotFoundException {
+        Staff manager = staffRepository.findById(staffId)
+                .orElseThrow(() -> new StaffNotFoundException("Staff with id: " + staffId + " does not exist"));
+
+        List<Staff> staffList = new ArrayList<Staff>();
+        if(manager.getDepartment().getDepartmentName().equals("Store")){
+            staffList = staffRepository.findAllByStore_StoreId(manager.getStore().getStoreId());
+        } else {
+            staffList = staffRepository.findByDepartment(manager.getDepartment());
+        }
+
+        List<StaffLeave> leaves = new ArrayList<StaffLeave>();
+        for(Staff staff : staffList){
+            for(StaffLeave leave : staff.getLeaves()){
+                leaves.add(leave);
+            }
+        }
+
+        return leaves;
+    }
+
+    public List<StaffLeave> retrieveAllPendingLeaves(Long staffId) throws StaffNotFoundException {
+        Staff manager = staffRepository.findById(staffId)
+                .orElseThrow(() -> new StaffNotFoundException("Staff with id: " + staffId + " does not exist"));
+
+        List<Staff> staffList = new ArrayList<Staff>();
+        if(manager.getDepartment().getDepartmentName().equals("Store")){
+            staffList = staffRepository.findAllByStore_StoreId(manager.getStore().getStoreId());
+        } else {
+            staffList = staffRepository.findByDepartment(manager.getDepartment());
+        }
+
+        List<StaffLeave> leaves = new ArrayList<StaffLeave>();
+        for(Staff staff : staffList){
+            for(StaffLeave leave : staff.getLeaves()){
+                if(leave.getStatus().equals(LeaveStatusEnum.PENDING)) {
+                    leaves.add(leave);
+                }
+            }
+        }
+
+        return leaves;
+    }
+
+    public List<StaffLeave> retrieveAllLeavesHR(){
+        List<StaffLeave> allLeaves = (List<StaffLeave>) leaveRepository.findAll();
+        List<StaffLeave> leaves = null;
+
+        for(StaffLeave leave : allLeaves){
+            if(leave.getStatus().equals(LeaveStatusEnum.ENDORSED)){
+                leaves.add(leave);
+            }
+        }
+        return leaves;
+    }
+
+    public StaffLeave endorseRejectLeave (Long leaveId, Long managerId, Boolean action) throws StaffNotFoundException, StaffLeaveNotFoundException {
+        Staff manager = staffRepository.findById(managerId)
+                .orElseThrow(() -> new StaffNotFoundException("Staff with id: " + managerId + " does not exist"));
+
+        StaffLeave leave = leaveRepository.findById(leaveId)
+                .orElseThrow(() -> new StaffLeaveNotFoundException("Leave with id: " + leaveId + " does not exist"));
+
+        if(action == true){
+            leave.setStatus(LeaveStatusEnum.ENDORSED);
+            leave.setEndorser(manager);
+        } else{
+            leave.setStatus(LeaveStatusEnum.REJECTED);
+        }
+
+        return leave;
     }
 }

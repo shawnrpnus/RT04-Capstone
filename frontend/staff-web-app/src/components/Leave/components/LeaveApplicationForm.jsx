@@ -11,7 +11,7 @@ import * as PropTypes from "prop-types";
 import {clearErrors, updateErrors} from "../../../redux/actions";
 import {connect} from "react-redux";
 import withPage from "../../Layout/page/withPage";
-import {applyForLeave, retrieveAllLeaves} from "../../../redux/actions/leaveActions";
+import {applyForLeave, deleteLeave, retrieveAllLeaves} from "../../../redux/actions/leaveActions";
 import StaffLeave from "../../../models/leave/staffLeave";
 import LeaveCreateRequest from "../../../models/leave/LeaveCreateRequest";
 import MaterialTable from "material-table";
@@ -27,6 +27,7 @@ import {
     SearchOutlined, ViewColumn
 } from "@material-ui/icons";
 import Chip from "@material-ui/core/Chip";
+import withMaterialConfirmDialog from "../../Layout/page/withMaterialConfirmDialog";
 
 const tableIcons = {
     Add: AddBox,
@@ -80,6 +81,12 @@ class LeaveApplicationForm extends React.Component {
 
     onCancel = () => {
         this.props.history.goBack();
+    };
+
+    handleDelete = staffLeaveId => {
+        this.props
+            .confirmDialog({ description: "Leave will be deleted permanently" })
+            .then(() => this.props.deleteLeave(staffLeaveId, this.props.loggedInStaff.staffId, this.props.history));
     };
 
     handleSubmit = e => {
@@ -200,6 +207,14 @@ class LeaveApplicationForm extends React.Component {
                                         }
                                     ]}
 
+                                    actions={[
+                                        {
+                                            icon: Delete,
+                                            tooltip: "Delete Tag",
+                                            onClick: (event, rowData) => this.handleDelete(rowData.staffLeaveId)
+                                        }
+                                    ]}
+
                                     options={{
                                         filtering: true,
                                         sorting: true,
@@ -239,6 +254,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = {
     applyForLeave,
     retrieveAllLeaves,
+    deleteLeave,
     clearErrors,
     updateErrors
 };
@@ -246,4 +262,4 @@ const mapDispatchToProps = {
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(withPage(LeaveApplicationForm, "Leave Management"));
+)(withMaterialConfirmDialog(withPage(LeaveApplicationForm, "Leave Management")));
