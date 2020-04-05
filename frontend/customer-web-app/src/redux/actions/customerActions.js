@@ -11,7 +11,7 @@ import {
   VERIFY_SUCCESS,
   SAVE_CARD_SUCCESS,
   WISHLIST_TOOLTIP_OPEN,
-  WISHLIST_TOOLTIP_CLOSE,
+  WISHLIST_TOOLTIP_CLOSE
 } from "./types";
 import { UPDATE_CUSTOMER } from "redux/actions/types";
 import { dispatchErrorMapError } from "redux/actions/index";
@@ -23,11 +23,11 @@ const _ = require("lodash");
 const jsog = require("jsog");
 
 export const emailSending = () => ({
-  type: EMAIL_SENDING,
+  type: EMAIL_SENDING
 });
 
 export const emailSent = () => ({
-  type: EMAIL_SENT,
+  type: EMAIL_SENT
 });
 
 const dispatchUpdatedCustomer = (customerDataRaw, dispatch) => {
@@ -35,45 +35,45 @@ const dispatchUpdatedCustomer = (customerDataRaw, dispatch) => {
   dispatch(updateCustomer(customer));
 };
 
-export const refreshCustomerEmail = (customerEmail) => {
+export const refreshCustomerEmail = customerEmail => {
   const req = { email: customerEmail };
-  return (dispatch) => {
+  return dispatch => {
     axios
       .post(CUSTOMER_BASE_URL + "/getCustomerByEmail", req)
-      .then((response) => {
+      .then(response => {
         dispatchUpdatedCustomer(response.data, dispatch);
       })
-      .catch((err) => {
+      .catch(err => {
         console.log(err);
       });
   };
 };
 
-export const refreshCustomerId = (customerId) => {
-  return (dispatch) => {
+export const refreshCustomerId = customerId => {
+  return dispatch => {
     axios
       .get(CUSTOMER_BASE_URL + "/retrieveCustomerById", {
-        params: { customerId },
+        params: { customerId }
       })
-      .then((response) => {
+      .then(response => {
         dispatchUpdatedCustomer(response.data, dispatch);
       })
-      .catch((err) => {
+      .catch(err => {
         console.log(err);
       });
   };
 };
 
 export const createNewCustomer = (createCustomerRequest, history) => {
-  return (dispatch) => {
+  return dispatch => {
     //redux thunk passes dispatch
     axios
       .post(CUSTOMER_BASE_URL + "/createNewCustomer", createCustomerRequest)
-      .then((response) => {
+      .then(response => {
         dispatch(emailSent());
         history.push("/account/verifyEmail");
       })
-      .catch((err) => {
+      .catch(err => {
         dispatch(emailSent());
         dispatchErrorMapError(err, dispatch);
         //console.log(err.response.data);
@@ -87,14 +87,14 @@ export const createNewCustomer = (createCustomerRequest, history) => {
 // });
 
 export const customerLogin = (customerLoginRequest, history) => {
-  return (dispatch) => {
+  return dispatch => {
     axios
       .post(CUSTOMER_BASE_URL + "/login", customerLoginRequest)
-      .then((response) => {
+      .then(response => {
         dispatchUpdatedCustomer(response.data, dispatch);
         history.push("/");
       })
-      .catch((err) => {
+      .catch(err => {
         dispatchErrorMapError(err, dispatch);
       });
   };
@@ -106,21 +106,21 @@ export const customerLogin = (customerLoginRequest, history) => {
 // });
 
 export const customerLogout = () => ({
-  type: CUSTOMER_LOGOUT,
+  type: CUSTOMER_LOGOUT
 });
 
 // bad request(400) if expired, not found(404) if invalid, or already verified
 export const verify = (verificationCode, history) => {
-  return (dispatch) => {
+  return dispatch => {
     axios
       .get(CUSTOMER_BASE_URL + `/verify/${verificationCode}`)
-      .then((response) => {
+      .then(response => {
         console.log("VERIFY SUCCESS");
         const { data } = jsog.decode(response);
         dispatch(verificationSuccess());
         dispatchUpdatedCustomer(response.data, dispatch);
       })
-      .catch((err) => {
+      .catch(err => {
         if (err.response.status === 404) {
           console.log(err.response);
           history.push("/404");
@@ -137,26 +137,26 @@ export const verify = (verificationCode, history) => {
 };
 
 const verificationSuccess = () => ({
-  type: VERIFY_SUCCESS,
+  type: VERIFY_SUCCESS
 });
 
 const verificationError = () => ({
-  type: VERIFY_FAILURE,
+  type: VERIFY_FAILURE
 });
 
 export const resetVerificationStatus = () => ({
-  type: RESET_VERIFICATION_STATUS,
+  type: RESET_VERIFICATION_STATUS
 });
 
 export const resendVerifyEmail = (customerEmailReq, history) => {
-  return (dispatch) => {
+  return dispatch => {
     axios
       .post(CUSTOMER_BASE_URL + `/resendVerifyEmail`, customerEmailReq)
-      .then((response) => {
+      .then(response => {
         dispatch(emailSent());
         history.push("/account/verifyEmail");
       })
-      .catch((err) => {
+      .catch(err => {
         dispatch(emailSent());
         dispatchErrorMapError(err, dispatch);
       });
@@ -164,25 +164,25 @@ export const resendVerifyEmail = (customerEmailReq, history) => {
 };
 
 export const updateCustomerName = (updateCustomerReq, enqueueSnackbar) => {
-  return (dispatch) => {
+  return dispatch => {
     axios
       .post(CUSTOMER_BASE_URL + "/updateCustomer", updateCustomerReq)
-      .then((response) => {
+      .then(response => {
         dispatchUpdatedCustomer(response.data, dispatch);
         enqueueSnackbar("Changes saved", {
           variant: "success",
-          autoHideDuration: 1200,
+          autoHideDuration: 1200
         });
       })
-      .catch((err) => {
+      .catch(err => {
         dispatchErrorMapError(err, dispatch);
       });
   };
 };
 
-const updateCustomer = (data) => ({
+const updateCustomer = data => ({
   type: UPDATE_CUSTOMER,
-  customer: data,
+  customer: data
 });
 
 export const sendUpdateEmailLink = (
@@ -192,16 +192,16 @@ export const sendUpdateEmailLink = (
   setChangingEmail,
   enqueueSnackbar
 ) => {
-  return (dispatch) => {
+  return dispatch => {
     axios
       .post(CUSTOMER_BASE_URL + "/sendUpdateEmailLink", req)
-      .then((response) => {
+      .then(response => {
         setTimeout(() => dispatch(emailSent()), 500);
         resetInputState();
         setChangingEmail(false);
         setDialogOpen(true);
       })
-      .catch((err) => {
+      .catch(err => {
         setTimeout(() => dispatch(emailSent()), 500);
         resetInputState();
         setChangingEmail(false);
@@ -210,7 +210,7 @@ export const sendUpdateEmailLink = (
         } else {
           enqueueSnackbar("Error sending email", {
             variant: "error",
-            autoHideDuration: 1200,
+            autoHideDuration: 1200
           });
         }
       });
@@ -219,14 +219,14 @@ export const sendUpdateEmailLink = (
 
 // verify against database
 export const updateEmail = (verificationCode, history) => {
-  return (dispatch) => {
+  return dispatch => {
     axios
       .get(CUSTOMER_BASE_URL + `/updateEmail/${verificationCode}`)
-      .then((response) => {
+      .then(response => {
         dispatch(customerLogout());
         dispatch(verificationSuccess());
       })
-      .catch((err) => {
+      .catch(err => {
         if (err.response.status === 404) {
           history.push("/404");
         } else {
@@ -247,38 +247,38 @@ export const changePassword = (
   setChangingPassword,
   setInputState
 ) => {
-  return (dispatch) => {
+  return dispatch => {
     axios
       .post(CUSTOMER_BASE_URL + `/changePassword`, req)
-      .then((response) => {
+      .then(response => {
         dispatchUpdatedCustomer(response.data, dispatch);
         enqueueSnackbar("Password updated", {
           variant: "success",
-          autoHideDuration: 1200,
+          autoHideDuration: 1200
         });
         setChangingPassword(false);
-        setInputState((inputState) => ({
+        setInputState(inputState => ({
           ...inputState,
           oldPassword: "",
           newPassword: "",
-          confirmNewPassword: "",
+          confirmNewPassword: ""
         }));
       })
-      .catch((err) => {
+      .catch(err => {
         dispatchErrorMapError(err, dispatch);
       });
   };
 };
 
 export const sendResetPasswordLink = (req, setDialogOpen) => {
-  return (dispatch) => {
+  return dispatch => {
     axios
       .post(CUSTOMER_BASE_URL + "/sendResetPasswordLink", req)
-      .then((response) => {
+      .then(response => {
         dispatch(emailSent());
         setDialogOpen(true);
       })
-      .catch((err) => {
+      .catch(err => {
         dispatch(emailSent());
         dispatchErrorMapError(err, dispatch);
       });
@@ -286,19 +286,19 @@ export const sendResetPasswordLink = (req, setDialogOpen) => {
 };
 
 export const resetPassword = (req, setDialogOpen, setDialogText) => {
-  return (dispatch) => {
+  return dispatch => {
     axios
       .post(CUSTOMER_BASE_URL + "/resetPassword", req)
-      .then((response) => {
+      .then(response => {
         setDialogText({
           dialogTitle: "Success",
           dialogContent:
-            "Your password has been updated. Please login with your new password.",
+            "Your password has been updated. Please login with your new password."
         });
         setDialogOpen(true);
         dispatch(verificationSuccess());
       })
-      .catch((err) => {
+      .catch(err => {
         const errorMap = _.get(err, "response.data", null);
         if (
           errorMap.hasOwnProperty("newPassword") ||
@@ -310,7 +310,7 @@ export const resetPassword = (req, setDialogOpen, setDialogText) => {
           //not input field errors
           setDialogText({
             dialogTitle: "Error",
-            dialogContent: "Your link has expired. Please request a new link.",
+            dialogContent: "Your link has expired. Please request a new link."
           });
           setDialogOpen(true);
         }
@@ -323,18 +323,18 @@ export const updateShippingAddress = (
   updateShippingAddressRequest,
   history
 ) => {
-  return (dispatch) => {
+  return dispatch => {
     //redux thunk passes dispatch
     axios
       .post(
         CUSTOMER_BASE_URL + "/updateShippingAddress",
         updateShippingAddressRequest
       )
-      .then((response) => {
+      .then(response => {
         const { data } = jsog.decode(response);
         dispatch(updateShippingAddressSuccess(data));
       })
-      .catch((err) => {
+      .catch(err => {
         dispatchErrorMapError(err, dispatch);
         // console.log(err.response.data);
       });
@@ -342,19 +342,19 @@ export const updateShippingAddress = (
 };
 
 export const addMeasurements = (req, enqueueSnackbar, setAddMeasurements) => {
-  return (dispatch) => {
+  return dispatch => {
     //redux thunk passes dispatch
     axios
       .post(CUSTOMER_BASE_URL + "/updateMeasurements", req)
-      .then((response) => {
+      .then(response => {
         dispatchUpdatedCustomer(response.data, dispatch);
         enqueueSnackbar("Measurements added", {
           variant: "success",
-          autoHideDuration: 1200,
+          autoHideDuration: 1200
         });
         setAddMeasurements(true);
       })
-      .catch((err) => {
+      .catch(err => {
         dispatchErrorMapError(err, dispatch);
         console.log(err.response.data);
       });
@@ -366,31 +366,31 @@ export const updateShippingAddressDetails = (
   enqueueSnackbar,
   history
 ) => {
-  return (dispatch) => {
+  return dispatch => {
     //redux thunk passes dispatch
     axios
       .post(
         CUSTOMER_BASE_URL + "/updateShippingAddress",
         addUpdateAddressRequest
       )
-      .then((response) => {
+      .then(response => {
         const { data } = jsog.decode(response);
         dispatch(updateShippingAddressSuccess(data));
         enqueueSnackbar("Address Updated", {
           variant: "success",
-          autoHideDuration: 1200,
+          autoHideDuration: 1200
         });
       })
-      .catch((err) => {
+      .catch(err => {
         dispatchErrorMapError(err, dispatch);
         // console.log(err.response.data);
       });
   };
 };
 
-export const updateShippingAddressSuccess = (data) => ({
+export const updateShippingAddressSuccess = data => ({
   type: UPDATE_SHIPPING_ADDRESS_SUCCESS,
-  loggedInCustomer: data,
+  loggedInCustomer: data
 });
 
 export const addShippingAddressDetails = (
@@ -398,28 +398,28 @@ export const addShippingAddressDetails = (
   enqueueSnackbar,
   history
 ) => {
-  return (dispatch) => {
+  return dispatch => {
     //redux thunk passes dispatch
     axios
       .post(CUSTOMER_BASE_URL + "/addShippingAddress", addUpdateAddressRequest)
-      .then((response) => {
+      .then(response => {
         const { data } = jsog.decode(response);
         dispatch(addShippingAddressSuccess(data));
         enqueueSnackbar("New Address Added", {
           variant: "success",
-          autoHideDuration: 1200,
+          autoHideDuration: 1200
         });
       })
-      .catch((err) => {
+      .catch(err => {
         dispatchErrorMapError(err, dispatch);
         // console.log(err.response.data);
       });
   };
 };
 
-export const addShippingAddressSuccess = (data) => ({
+export const addShippingAddressSuccess = data => ({
   type: ADD_SHIPPING_ADDRESS_SUCCESS,
-  loggedInCustomer: data,
+  loggedInCustomer: data
 });
 
 export const removeShippingAddressDetails = (
@@ -428,32 +428,32 @@ export const removeShippingAddressDetails = (
   enqueueSnackbar,
   history
 ) => {
-  return (dispatch) => {
+  return dispatch => {
     //redux thunk passes dispatch
     axios
       .delete(
         CUSTOMER_BASE_URL +
           `/removeShippingAddress/${customerId}/${shippingAddressId}`
       )
-      .then((response) => {
+      .then(response => {
         console.log("did run?");
         const { data } = jsog.decode(response);
         dispatch(removeShippingAddressSuccess(data));
         enqueueSnackbar("Address Deleted", {
           variant: "success",
-          autoHideDuration: 1200,
+          autoHideDuration: 1200
         });
       })
-      .catch((err) => {
+      .catch(err => {
         dispatchErrorMapError(err, dispatch);
         // console.log(err.response.data);
       });
   };
 };
 
-export const removeShippingAddressSuccess = (data) => ({
+export const removeShippingAddressSuccess = data => ({
   type: REMOVE_SHIPPING_ADDRESS_SUCCESS,
-  loggedInCustomer: data,
+  loggedInCustomer: data
 });
 
 export const updateMeasurements = (
@@ -461,19 +461,19 @@ export const updateMeasurements = (
   enqueueSnackbar,
   setAddMeasurements
 ) => {
-  return (dispatch) => {
+  return dispatch => {
     //redux thunk passes dispatch
     axios
       .post(CUSTOMER_BASE_URL + "/updateMeasurements", req)
-      .then((response) => {
+      .then(response => {
         dispatchUpdatedCustomer(response.data, dispatch);
         enqueueSnackbar("Measurements updated", {
           variant: "success",
-          autoHideDuration: 1200,
+          autoHideDuration: 1200
         });
         setAddMeasurements(true);
       })
-      .catch((err) => {
+      .catch(err => {
         dispatchErrorMapError(err, dispatch);
         console.log(err.response.data);
       });
@@ -481,19 +481,19 @@ export const updateMeasurements = (
 };
 
 export const deleteMeasurements = (customerId, enqueueSnackbar) => {
-  return (dispatch) => {
+  return dispatch => {
     //redux thunk passes dispatch
     console.log(customerId);
     axios
       .post(CUSTOMER_BASE_URL + `/deleteMeasurements/${customerId}`)
-      .then((response) => {
+      .then(response => {
         dispatchUpdatedCustomer(response.data, dispatch);
         enqueueSnackbar("Measurements deleted", {
           variant: "success",
-          autoHideDuration: 1200,
+          autoHideDuration: 1200
         });
       })
-      .catch((err) => {
+      .catch(err => {
         dispatchErrorMapError(err, dispatch);
         console.log(err);
       });
@@ -505,19 +505,19 @@ export const addToWishlistAPI = (
   productVariantId,
   enqueueSnackbar
 ) => {
-  return (dispatch) => {
+  return dispatch => {
     axios
       .post(CUSTOMER_BASE_URL + "/addToWishlist", null, {
-        params: { customerId, productVariantId },
+        params: { customerId, productVariantId }
       })
-      .then((response) => {
+      .then(response => {
         dispatchUpdatedCustomer(response.data, dispatch);
         enqueueSnackbar("Added to wishlist!", {
           variant: "success",
-          autoHideDuration: 1200,
+          autoHideDuration: 1200
         });
       })
-      .catch((err) => {
+      .catch(err => {
         dispatchErrorMapError(err, dispatch);
         console.log(err);
       });
@@ -529,21 +529,21 @@ export const removeFromWishlistAPI = (
   productVariantId,
   enqueueSnackbar
 ) => {
-  return (dispatch) => {
+  return dispatch => {
     axios
       .post(CUSTOMER_BASE_URL + "/removeFromWishlist", null, {
-        params: { customerId, productVariantId },
+        params: { customerId, productVariantId }
       })
-      .then((response) => {
+      .then(response => {
         dispatchUpdatedCustomer(response.data, dispatch);
         if (enqueueSnackbar) {
           enqueueSnackbar("Removed from wishlist!", {
             variant: "success",
-            autoHideDuration: 1200,
+            autoHideDuration: 1200
           });
         }
       })
-      .catch((err) => {
+      .catch(err => {
         dispatchErrorMapError(err, dispatch);
         console.log(err);
       });
@@ -551,21 +551,21 @@ export const removeFromWishlistAPI = (
 };
 
 export const clearWishlistAPI = (customerId, enqueueSnackbar) => {
-  return (dispatch) => {
+  return dispatch => {
     axios
       .post(CUSTOMER_BASE_URL + "/clearWishlist", null, {
-        params: { customerId },
+        params: { customerId }
       })
-      .then((response) => {
+      .then(response => {
         dispatchUpdatedCustomer(response.data, dispatch);
         if (enqueueSnackbar) {
           enqueueSnackbar("Wishlist cleared!", {
             variant: "success",
-            autoHideDuration: 1200,
+            autoHideDuration: 1200
           });
         }
       })
-      .catch((err) => {
+      .catch(err => {
         dispatchErrorMapError(err, dispatch);
         console.log(err);
       });
@@ -573,22 +573,22 @@ export const clearWishlistAPI = (customerId, enqueueSnackbar) => {
 };
 
 export const moveWishlistToShoppingCartAPI = (customerId, enqueueSnackbar) => {
-  return (dispatch) => {
+  return dispatch => {
     axios
       .post(CUSTOMER_BASE_URL + "/addWishlistToShoppingCart", null, {
-        params: { customerId },
+        params: { customerId }
       })
-      .then((response) => {
+      .then(response => {
         dispatchUpdatedCustomer(response.data, dispatch);
         dispatch(clearWishlistAPI(customerId));
         if (enqueueSnackbar) {
           enqueueSnackbar("Wishlist moved to shopping cart!", {
             variant: "success",
-            autoHideDuration: 1200,
+            autoHideDuration: 1200
           });
         }
       })
-      .catch((err) => {
+      .catch(err => {
         dispatchErrorMapError(err, dispatch);
         console.log(err);
       });
@@ -596,11 +596,11 @@ export const moveWishlistToShoppingCartAPI = (customerId, enqueueSnackbar) => {
 };
 
 export const openWishlistTooltip = {
-  type: WISHLIST_TOOLTIP_OPEN,
+  type: WISHLIST_TOOLTIP_OPEN
 };
 
 export const closeWishlistTooltip = {
-  type: WISHLIST_TOOLTIP_CLOSE,
+  type: WISHLIST_TOOLTIP_CLOSE
 };
 
 export const addToReservationCartAPI = (
@@ -608,19 +608,19 @@ export const addToReservationCartAPI = (
   productVariantId,
   enqueueSnackbar
 ) => {
-  return (dispatch) => {
+  return dispatch => {
     axios
       .post(CUSTOMER_BASE_URL + "/addToReservationCart", null, {
-        params: { customerId, productVariantId },
+        params: { customerId, productVariantId }
       })
-      .then((response) => {
+      .then(response => {
         dispatchUpdatedCustomer(response.data, dispatch);
         enqueueSnackbar("Added to reservation cart!", {
           variant: "success",
-          autoHideDuration: 1200,
+          autoHideDuration: 1200
         });
       })
-      .catch((err) => {
+      .catch(err => {
         dispatchErrorMapError(err, dispatch);
         console.log(err);
       });
@@ -633,12 +633,12 @@ export const removeFromReservationCartAPI = (
   enqueueSnackbar,
   retrieveStoresWithStockStatus
 ) => {
-  return (dispatch) => {
+  return dispatch => {
     axios
       .post(CUSTOMER_BASE_URL + "/removeFromReservationCart", null, {
-        params: { customerId, productVariantId },
+        params: { customerId, productVariantId }
       })
-      .then((response) => {
+      .then(response => {
         dispatchUpdatedCustomer(response.data, dispatch);
         if (retrieveStoresWithStockStatus) {
           dispatch(retrieveStoresWithStockStatus(customerId));
@@ -646,11 +646,11 @@ export const removeFromReservationCartAPI = (
         if (enqueueSnackbar) {
           enqueueSnackbar("Removed from reservation cart!", {
             variant: "success",
-            autoHideDuration: 1200,
+            autoHideDuration: 1200
           });
         }
       })
-      .catch((err) => {
+      .catch(err => {
         dispatchErrorMapError(err, dispatch);
         console.log(err);
       });
@@ -662,12 +662,12 @@ export const clearReservationCartAPI = (
   enqueueSnackbar,
   retrieveStoresWithStockStatus
 ) => {
-  return (dispatch) => {
+  return dispatch => {
     axios
       .post(CUSTOMER_BASE_URL + "/clearReservationCart", null, {
-        params: { customerId },
+        params: { customerId }
       })
-      .then((response) => {
+      .then(response => {
         dispatchUpdatedCustomer(response.data, dispatch);
         if (retrieveStoresWithStockStatus) {
           dispatch(retrieveStoresWithStockStatus(customerId));
@@ -675,68 +675,68 @@ export const clearReservationCartAPI = (
         if (enqueueSnackbar) {
           enqueueSnackbar("Reservation cart cleared!", {
             variant: "success",
-            autoHideDuration: 1200,
+            autoHideDuration: 1200
           });
         }
       })
-      .catch((err) => {
+      .catch(err => {
         dispatchErrorMapError(err, dispatch);
         console.log(err);
       });
   };
 };
 
-export const saveCard = (saveCardRequest) => {
-  return (dispatch) => {
+export const saveCard = saveCardRequest => {
+  return dispatch => {
     axios
       .post("/saveCard", saveCardRequest)
-      .then((response) => {
+      .then(response => {
         // Return customer
         dispatchUpdatedCustomer(response.data, dispatch);
       })
-      .catch((err) => {
+      .catch(err => {
         console.log(err);
       });
   };
 };
 
 export const deleteCard = (deleteCardRequest, setIsLoading) => {
-  return (dispatch) => {
+  return dispatch => {
     console.log(deleteCardRequest);
     axios
       .post("/deleteCardOnStripeAndSql", deleteCardRequest)
-      .then((response) => {
+      .then(response => {
         // Return customer
         console.log(response);
         dispatchUpdatedCustomer(response.data, dispatch);
         setIsLoading(false);
       })
-      .catch((err) => {
+      .catch(err => {
         console.log(err);
       });
   };
 };
 
 // Customer reducer
-const saveCardSuccess = (data) => ({
+const saveCardSuccess = data => ({
   type: SAVE_CARD_SUCCESS,
-  customer: data,
+  customer: data
 });
 
 export const addStylePreferences = (req, enqueueSnackbar, setAddStyle) => {
-  return (dispatch) => {
+  return dispatch => {
     //redux thunk passes dispatch
     axios
       .post(CUSTOMER_BASE_URL + "/addStyle", req)
-      .then((response) => {
+      .then(response => {
         dispatchUpdatedCustomer(response.data, dispatch);
         enqueueSnackbar("Style preferences recorded", {
           variant: "success",
-          autoHideDuration: 1200,
+          autoHideDuration: 1200
         });
         setAddStyle(true);
       })
-      .catch((err) => {
+      .catch(err => {
         dispatchErrorMapError(err, dispatch);
         console.log(err.response.data);
       });
@@ -744,20 +744,20 @@ export const addStylePreferences = (req, enqueueSnackbar, setAddStyle) => {
 };
 
 export const updateStylePreferences = (req, enqueueSnackbar, setAddStyle) => {
-  return (dispatch) => {
+  return dispatch => {
     //redux thunk passes dispatch
     axios
       .post(CUSTOMER_BASE_URL + "/addStyle", req)
-      .then((response) => {
+      .then(response => {
         console.log(response);
         dispatchUpdatedCustomer(response.data, dispatch);
         enqueueSnackbar("Style preferences updated", {
           variant: "success",
-          autoHideDuration: 1200,
+          autoHideDuration: 1200
         });
         setAddStyle(true);
       })
-      .catch((err) => {
+      .catch(err => {
         dispatchErrorMapError(err, dispatch);
         console.log(err.response.data);
       });
@@ -765,20 +765,20 @@ export const updateStylePreferences = (req, enqueueSnackbar, setAddStyle) => {
 };
 
 export const deleteStylePreferences = (req, enqueueSnackbar, setAddStyle) => {
-  return (dispatch) => {
+  return dispatch => {
     //redux thunk passes dispatch
     axios
       .post(CUSTOMER_BASE_URL + "/removeStyle", req)
-      .then((response) => {
+      .then(response => {
         console.log(response);
         dispatchUpdatedCustomer(response.data, dispatch);
         enqueueSnackbar("Style deleted", {
           variant: "success",
-          autoHideDuration: 1200,
+          autoHideDuration: 1200
         });
         setAddStyle(false);
       })
-      .catch((err) => {
+      .catch(err => {
         dispatchErrorMapError(err, dispatch);
         console.log(err.response.data);
       });

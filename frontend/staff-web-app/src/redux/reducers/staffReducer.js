@@ -11,7 +11,7 @@ const initialState = {
   currentRole: null,
   currentDepartment: null,
   currentAddress: null,
-  selectedStore: null,
+  selectedStore: null
 };
 
 export default function(state = initialState, action) {
@@ -19,64 +19,64 @@ export default function(state = initialState, action) {
     case types.CREATE_STAFF:
       return {
         ...state,
-        currentStaff: action.staffEntity,
+        currentStaff: action.staffEntity
       };
 
     case types.UPDATE_STAFF:
       return {
         ...state,
-        currentStaff: action.staffEntity,
+        currentStaff: action.staffEntity
       };
 
     case types.RETRIEVE_STAFF:
       return {
         ...state,
-        retrievedStaff: action.retrievedStaff,
+        retrievedStaff: action.retrievedStaff
       };
 
     case types.RETRIEVE_ALL_ROLES:
       return {
         ...state,
-        allRoles: action.roleEntity,
+        allRoles: action.roleEntity
       };
 
     case types.RETRIEVE_ALL_DEPARTMENTS:
       return {
         ...state,
-        allDepartments: action.allDepartments,
+        allDepartments: action.allDepartments
       };
 
     case types.CREATE_STAFF_ACCOUNT:
       return {
         ...state,
-        currentStaff: action.staffEntity,
+        currentStaff: action.staffEntity
       };
     case types.RETRIEVE_ALL_STAFF:
       return {
         ...state,
-        allStaff: action.staffEntity,
+        allStaff: action.staffEntity
       };
     case types.CHANGE_STAFF_PASSWORD:
       return {
         ...state,
-        currentStaff: action.staffEntity,
+        currentStaff: action.staffEntity
       };
     case types.RESET_STAFF_PASSWORD:
       return {
         ...state,
-        currentStaff: action.staffEntity,
+        currentStaff: action.staffEntity
       };
 
     case types.DELETE_STAFF:
       return {
         ...state,
-        currentStaff: action.deletedStaff,
+        currentStaff: action.deletedStaff
       };
     case types.STAFF_LOGIN:
       return {
         ...state,
         loggedInStaff: action.staff,
-        selectedStore: action.store,
+        selectedStore: action.store
       };
     case types.STAFF_LOGOUT:
       return initialState;
@@ -84,13 +84,13 @@ export default function(state = initialState, action) {
     case types.RETRIEVE_STAFF_WITH_NO_ACCOUNT:
       return {
         ...state,
-        staffWithNoAccount: action.staffEntity,
+        staffWithNoAccount: action.staffEntity
       };
 
     case types.CLEAR_CURRENT_STAFF:
       return {
         ...state,
-        currentStaff: null,
+        currentStaff: null
       };
 
     default:

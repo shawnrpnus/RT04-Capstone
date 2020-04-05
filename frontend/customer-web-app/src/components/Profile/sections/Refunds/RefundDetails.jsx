@@ -1,7 +1,7 @@
-import {useParams} from "react-router-dom";
-import {useDispatch, useSelector} from "react-redux";
-import React, {useEffect, useRef} from "react";
-import {retrieveRefundById} from "../../../../redux/actions/refundAction";
+import { useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import React, { useEffect, useRef } from "react";
+import { retrieveRefundById } from "../../../../redux/actions/refundAction";
 import Card from "../../../UI/Card/Card";
 import GridContainer from "../../../Layout/components/Grid/GridContainer";
 import GridItem from "../../../Layout/components/Grid/GridItem";
@@ -19,17 +19,19 @@ function RefundDetails(props) {
   const { mode, transactionId } = useParams();
   const dispatch = useDispatch();
 
-  const refund = useSelector(
-    state => state.refund.currRefund
-  );
+  const refund = useSelector(state => state.refund.currRefund);
 
-  const promoCode = _.get(refund, "refundLineItems[0].transactionLineItem.transaction.promoCode", {});
+  const promoCode = _.get(
+    refund,
+    "refundLineItems[0].transactionLineItem.transaction.promoCode",
+    {}
+  );
 
   let amountBeforePromoCode = 0;
   const size = _.get(refund, "refundLineItems.length");
   console.log(size);
-  if(size) {
-    for(let i = 0; i < size; i++) {
+  if (size) {
+    for (let i = 0; i < size; i++) {
       let li = _.get(refund, "refundLineItems");
       amountBeforePromoCode += li[i].totalPrice;
     }
@@ -37,7 +39,7 @@ function RefundDetails(props) {
 
   console.log("AMT", amountBeforePromoCode);
 
-  useEffect( () => {
+  useEffect(() => {
     dispatch(retrieveRefundById(transactionId));
   }, [transactionId]);
 
@@ -49,9 +51,7 @@ function RefundDetails(props) {
     COMPLETED_WITH_REJECTED_PRODUCTS: "COMPLETED WITH REJECTED PRODUCTS",
     REJECTED: "REJECTED"
   };
-  const status = refund
-    ? refundStatusEnumMap[refund.refundStatus]
-    : "";
+  const status = refund ? refundStatusEnumMap[refund.refundStatus] : "";
 
   let statusColor;
   switch (status) {
@@ -74,7 +74,7 @@ function RefundDetails(props) {
   let refundMode = "";
   let refundModeDisplay = "";
   const refundModeEnum = refund ? refund.refundMode : "";
-  switch(refundModeEnum) {
+  switch (refundModeEnum) {
     case "IN_STORE":
       refundMode = "Store";
       refundModeDisplay = "In Store Refund";
@@ -109,12 +109,9 @@ function RefundDetails(props) {
               <span>
                 &nbsp;of{" "}
                 <b>
-                  {moment(refund.refundDateTime).format(
-                    "YYYY-DD-MM HH:mm"
-                  )}
+                  {moment(refund.refundDateTime).format("YYYY-DD-MM HH:mm")}
                 </b>
-                &nbsp;
-                [{refundModeDisplay}]
+                &nbsp; [{refundModeDisplay}]
               </span>
               <span style={{ float: "right" }}>
                 Status:{" "}
@@ -129,23 +126,17 @@ function RefundDetails(props) {
               <>
                 <h4>{refundMode} Address </h4>
                 <Divider />
-                <OrderAddressCard
-                  address={refund.store.address}
-                />
+                <OrderAddressCard address={refund.store.address} />
               </>
             ) : (
               <>
                 <h4>Warehouse Address </h4>
                 <Divider />
-                <OrderAddressCard
-                  address={refund.warehouse.address}
-                />
+                <OrderAddressCard address={refund.warehouse.address} />
               </>
             )}
           </GridItem>
-          <GridItem md={4}>
-
-          </GridItem>
+          <GridItem md={4}></GridItem>
           <GridItem md={2} xs={12}>
             <QRCodeItem currRefund={refund} />
           </GridItem>
@@ -185,25 +176,33 @@ function RefundDetails(props) {
               </GridItem>
               <GridItem md={1} />
               {refund.refundLineItems.map((lineItem, index) => {
-                const val = lineItem.transactionLineItem.initialSubTotal * lineItem.quantity/lineItem.transactionLineItem.quantity;
+                const val =
+                  (lineItem.transactionLineItem.initialSubTotal *
+                    lineItem.quantity) /
+                  lineItem.transactionLineItem.quantity;
                 return (
                   <GridItem md={12} key={index}>
                     <Divider light />
                     <GridContainer>
                       <GridItem md={8}>
                         <ProductVariantCard
-                          key={lineItem.transactionLineItem.productVariant.productVariantId}
-                          productVariant={lineItem.transactionLineItem.productVariant}
+                          key={
+                            lineItem.transactionLineItem.productVariant
+                              .productVariantId
+                          }
+                          productVariant={
+                            lineItem.transactionLineItem.productVariant
+                          }
                           quantity={lineItem.quantity}
                           // initialSubTotal={val}
-                          initialSubTotal={lineItem.transactionLineItem.finalSubTotal}
+                          initialSubTotal={
+                            lineItem.transactionLineItem.finalSubTotal
+                          }
                           finalSubTotal={val}
                         />
                       </GridItem>
                       <GridItem md={3}>
-                        <h5 style={{ float: "right" }}>
-                          SGD${val.toFixed(2)}
-                        </h5>
+                        <h5 style={{ float: "right" }}>SGD${val.toFixed(2)}</h5>
                       </GridItem>
                       <GridItem md={1} />
                     </GridContainer>
@@ -221,23 +220,19 @@ function RefundDetails(props) {
                   <div>SGD$ {amountBeforePromoCode.toFixed(2)}</div>
                   <div>
                     ({promoCode.promoCodeName}) - SGD${" "}
-                    {(
-                      amountBeforePromoCode -
-                      refund.refundAmount
-                    ).toFixed(2)}
+                    {(amountBeforePromoCode - refund.refundAmount).toFixed(2)}
                     <Divider />
                   </div>
                 </>
               )}
-              <b>Refund Amount : </b> SGD${" "}
-              {refund.refundAmount.toFixed(2)}
+              <b>Refund Amount : </b> SGD$ {refund.refundAmount.toFixed(2)}
             </h5>
           </GridItem>
           <GridItem md={1} />
         </GridContainer>
       )}
     </Card>
-  )
+  );
 }
 
 function QRCodeItem(props) {
@@ -264,7 +259,10 @@ function QRCodeItem(props) {
   }, []);
 
   return (
-      <div ref={qrCodeRef} style={{ pageBreakInside: "avoid", paddingTop: "10px", float: "right" }} />
+    <div
+      ref={qrCodeRef}
+      style={{ pageBreakInside: "avoid", paddingTop: "10px", float: "right" }}
+    />
   );
 }
 

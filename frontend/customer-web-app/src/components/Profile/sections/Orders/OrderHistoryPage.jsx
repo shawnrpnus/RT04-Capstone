@@ -3,7 +3,10 @@ import GridContainer from "components/Layout/components/Grid/GridContainer";
 import GridItem from "components/Layout/components/Grid/GridItem";
 import { Button } from "components/UI/CustomButtons/Button";
 import { useDispatch, useSelector } from "react-redux";
-import {retrieveCustomerTransactions, updatedViewedTransaction} from "redux/actions/transactionActions";
+import {
+  retrieveCustomerTransactions,
+  updatedViewedTransaction
+} from "redux/actions/transactionActions";
 import OrderHistoryCard from "components/Profile/sections/Orders/OrderHistoryCard";
 import { makeStyles } from "@material-ui/core/styles";
 import typographyStyle from "assets/jss/material-kit-pro-react/views/componentsSections/typographyStyle";

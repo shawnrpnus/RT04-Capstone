@@ -15,10 +15,10 @@ const _ = require("lodash");
 
 const StaffSelectionDialog = ({ open, onClose }) => {
   const dispatch = useDispatch();
-  const staffList = useSelector((state) => state.staffEntity.allStaff);
+  const staffList = useSelector(state => state.staffEntity.allStaff);
   const [staffId, setStaffId] = useState("");
 
-  const onSelectStaff = (e) => {
+  const onSelectStaff = e => {
     console.log(e.target.value);
     setStaffId(e.target.value);
   };
