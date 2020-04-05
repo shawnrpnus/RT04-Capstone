@@ -8,6 +8,7 @@ public class StaffControllerRoutes {
     public static final String CREATE_NEW_STAFF_ACCOUNT = "/createNewStaffAccount";
     public static final String RETRIEVE_STAFF_BY_ID = "/retrieveStaffById/{staffId}";
     public static final String RETRIEVE_ALL_STAFF = "/retrieveAllStaff";
+    public static final String RETRIEVE_ALL_DELIVERY_STAFF = "/retrieveAllDeliveryStaff";
     public static final String RETRIEVE_ALL_ROLES = "/retrieveAllRoles";
     public static final String RETRIEVE_ALL_DEPARTMENTS = "/retrieveAllDepartments";
     public static final String UPDATE_STAFF = "/updateStaffDetails";

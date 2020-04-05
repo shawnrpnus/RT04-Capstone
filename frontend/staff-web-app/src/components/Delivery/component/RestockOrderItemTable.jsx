@@ -16,7 +16,7 @@ import {
   SaveAlt,
   Search,
   ViewColumn,
-  LocalShipping
+  LocalShipping,
 } from "@material-ui/icons";
 import MaterialTable from "material-table";
 import Chip from "@material-ui/core/Chip";
@@ -24,7 +24,7 @@ import Chip from "@material-ui/core/Chip";
 import { getDeliveryStatusColour } from "../../../redux/actions/restockOrderAction";
 import {
   retrieveAllRestockOrderItemToDeliver,
-  createDeliveryForRestockOrderItem
+  createDeliveryForRestockOrderItem,
 } from "../../../redux/actions/deliveryActions";
 import withPage from "../../Layout/page/withPage";
 import { useConfirm } from "material-ui-confirm";
@@ -47,14 +47,14 @@ const tableIcons = {
   Search: Search,
   SortArrow: () => <div />,
   ThirdStateCheck: Remove,
-  ViewColumn: ViewColumn
+  ViewColumn: ViewColumn,
 };
 
-const RestockOrderItemTable = props => {
+const RestockOrderItemTable = (props) => {
   const dispatch = useDispatch();
   const confirmDialog = useConfirm();
   const restockOrderItems = useSelector(
-    state => state.delivery.restockOrderItems
+    (state) => state.delivery.restockOrderItems
   );
   const history = useHistory();
   const { renderLoader, staff } = props;
@@ -65,13 +65,13 @@ const RestockOrderItemTable = props => {
 
   const handleCreateDelivery = (evt, data) => {
     evt.preventDefault();
-    const ids = data.map(e => e.inStoreRestockOrderItemId);
+    const ids = data.map((e) => e.inStoreRestockOrderItemId);
     const request = {
       inStoreRestockOrderItemIds: ids,
-      staffId: _.get(staff, "staffId")
+      staffId: _.get(staff, "staffId"),
     };
     confirmDialog({
-      description: "A new delivery will be created with the selected products"
+      description: "A new delivery will be created with the selected products",
     })
       .then(() => {
         dispatch(createDeliveryForRestockOrderItem(request, history));
@@ -81,13 +81,13 @@ const RestockOrderItemTable = props => {
 
   let data = [];
   if (restockOrderItems) {
-    data = restockOrderItems.map(item => {
+    data = restockOrderItems.map((item) => {
       let {
         inStoreRestockOrderItemId,
         itemDeliveryStatus,
         quantity,
         productStock,
-        inStoreRestockOrder
+        inStoreRestockOrder,
       } = item;
 
       const orderDateTime = _.get(inStoreRestockOrder, "orderDateTime", "");
@@ -108,7 +108,7 @@ const RestockOrderItemTable = props => {
           "productVariant.productImages[0].productImageUrl",
           ""
         ),
-        storeName: _.get(productStock, "store.storeName", "")
+        storeName: _.get(productStock, "store.storeName", ""),
       };
     });
   }
@@ -125,24 +125,24 @@ const RestockOrderItemTable = props => {
             {
               title: "Image",
               field: "image",
-              render: rowData => (
+              render: (rowData) => (
                 <img
                   style={{
                     width: "50%",
-                    borderRadius: "10%"
+                    borderRadius: "10%",
                   }}
                   src={rowData.image}
                 />
-              )
+              ),
             },
             { title: "Order date", field: "orderDateTime" },
             {
               title: "Quantity",
-              field: "quantity"
+              field: "quantity",
             },
             {
               title: "Store",
-              field: "storeName"
+              field: "storeName",
             },
             {
               title: "Item delivery status",
@@ -155,8 +155,8 @@ const RestockOrderItemTable = props => {
                     label={itemDeliveryStatus}
                   />
                 );
-              }
-            }
+              },
+            },
           ]}
           data={data}
           options={{
@@ -168,14 +168,14 @@ const RestockOrderItemTable = props => {
             headerStyle: { textAlign: "center" }, //change header padding
             cellStyle: { textAlign: "center" },
             selection: true,
-            draggable: false
+            draggable: false,
           }}
           actions={[
             {
               icon: LocalShipping,
               tooltip: "Create new delivery",
-              onClick: (event, rowData) => handleCreateDelivery(event, rowData)
-            }
+              onClick: (event, rowData) => handleCreateDelivery(event, rowData),
+            },
           ]}
         />
       ) : (

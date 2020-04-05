@@ -89,38 +89,49 @@ public class DeliveryController {
         return new ResponseEntity<>(ResponseEntity.ok("Delivery generated for staff " + staffId), HttpStatus.OK);
     }
 
+    @GetMapping(GENERATE_DELIVERY_ROUTE)
+    public ResponseEntity<?> generateRouteForDelivery(@PathVariable Long deliveryId) throws DeliveryNotFoundException {
+        List deliveryList = deliveryService.generateDeliveryRoute(deliveryId);
+        for (Object item : deliveryList) {
+            if (item.getClass().equals(Transaction.class)) {
+                relationshipService.clearTransactionRelationships((Transaction) item);
+            } else if (item.getClass().equals(InStoreRestockOrderItem.class)) {
+                clearRestockOrderItemRelationships((InStoreRestockOrderItem) item);
+            }
+        }
+        return new ResponseEntity<>(deliveryList, HttpStatus.OK);
+    }
+
     /*
     ----------- Restock Order Item -----------
     */
     @GetMapping(RETRIEVE_ALL_RESTOCK_ORDER_ITEM_TO_DELIVER)
     public ResponseEntity<?> retrieveAllRestockOrderItemToDeliver() {
         List<InStoreRestockOrderItem> inStoreRestockOrderItems = inStoreRestockOrderService.retrieveAllRestockOrderItemToDeliver();
-        clearRestockOrderItemRelationships(inStoreRestockOrderItems);
+        inStoreRestockOrderItems.forEach(inStoreRestockOrderItem -> clearRestockOrderItemRelationships(inStoreRestockOrderItem));
         return new ResponseEntity<>(inStoreRestockOrderItems, HttpStatus.OK);
     }
 
-    private void clearRestockOrderItemRelationships(List<InStoreRestockOrderItem> items) {
+    private void clearRestockOrderItemRelationships(InStoreRestockOrderItem item) {
         ProductStock productStock;
         ProductVariant productVariant;
         InStoreRestockOrder inStoreRestockOrder;
-        for (InStoreRestockOrderItem item : items) {
-            // Delivery
-            item.setDelivery(null);
-            // Restock order
-            inStoreRestockOrder = item.getInStoreRestockOrder();
-            inStoreRestockOrder.setWarehouse(null);
-            inStoreRestockOrder.setInStoreRestockOrderItems(null);
-            inStoreRestockOrder.setStore(null);
+        // Delivery
+        item.setDelivery(null);
+        // Restock order
+        inStoreRestockOrder = item.getInStoreRestockOrder();
+        inStoreRestockOrder.setWarehouse(null);
+        inStoreRestockOrder.setInStoreRestockOrderItems(null);
+        inStoreRestockOrder.setStore(null);
 
-            productStock = item.getProductStock();
-            // Store
-            relationshipService.clearStoreRelationships(productStock.getStore());
-            // Warehouse
-            productStock.setWarehouse(null);
-            // Product variant
-            productVariant = productStock.getProductVariant();
-            relationshipService.clearProductVariantRelationships(productVariant);
-        }
+        productStock = item.getProductStock();
+        // Store
+        relationshipService.clearStoreRelationships(productStock.getStore());
+        // Warehouse
+        productStock.setWarehouse(null);
+        // Product variant
+        productVariant = productStock.getProductVariant();
+        relationshipService.clearProductVariantRelationships(productVariant);
     }
 
     private void clearDeliveriesRelationships(List<Delivery> deliveries) {
@@ -132,7 +143,7 @@ public class DeliveryController {
                 relationshipService.clearProductVariantRelationships(item.getProductStock().getProductVariant());
                 relationshipService.clearStoreRelationships(item.getProductStock().getStore());
             }
-            for(Transaction transaction : delivery.getCustomerOrdersToDeliver()) {
+            for (Transaction transaction : delivery.getCustomerOrdersToDeliver()) {
                 relationshipService.clearTransactionRelationships(transaction);
             }
         }

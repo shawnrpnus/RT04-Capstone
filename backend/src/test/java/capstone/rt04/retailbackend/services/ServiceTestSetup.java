@@ -119,7 +119,7 @@ public class ServiceTestSetup {
         Store store2 = storeService.createNewStore(new Store("Store 2", 8, 4, Time.valueOf("10:00:00"), Time.valueOf("21:00:00"), 2, 6, null));
         storeId2 = store2.getStoreId();
 
-        Warehouse warehouse = warehouseService.createWarehouse(new Warehouse(null), new Address("Pasir Ris Drive 1", "#01-01", 510144, "Pasir Ris Building"));
+        Warehouse warehouse = warehouseService.createWarehouse(new Warehouse(null), new Address("Pasir Ris Drive 1", "#01-01", "510144", "Pasir Ris Building"));
 
         assertThat(store1.getStoreId()).isNotNull();
         assertThat(store1).isEqualTo(expectedValidStore);

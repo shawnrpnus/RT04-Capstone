@@ -51,6 +51,8 @@ public class DashboardController {
         List<Transaction> transactions = transactionService.retrieveAllTransaction();
         List<Long> productIds = new ArrayList<>();
         for (Transaction transaction : transactions) {
+            // remove all single purchase for better representation of basket analysis
+            if (transaction.getTransactionLineItems().size() <= 1) continue;
             productIds.clear();
             for (TransactionLineItem item : transaction.getTransactionLineItems()) {
                 if (!productIds.contains(item.getProductVariant().getProduct().getProductId())) {

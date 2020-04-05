@@ -1203,18 +1203,18 @@ public class StartUpService {
         if (warehouseService.retrieveAllWarehouses().size() == 0) {
 
             Warehouse w = warehouseService.createWarehouse(new Warehouse(),
-                    new Address("Pasir Ris Drive 1", "#01-01", 510144, "Pasir Ris Building"));
+                    new Address("Pasir Ris Drive 1", "#01-01", "510144", "Apricot Warehouse", "1.3706", "103.9570"));
             warehouseId = w.getWarehouseId();
             List<Warehouse> warehouses = warehouseService.retrieveAllWarehouses();
 
-            Store s1 = storeService.createNewStore(new Store("Store 1", 8, 4,
+            Store s1 = storeService.createNewStore(new Store("apricot@tang", 8, 4,
                     Time.valueOf("10:00:00"), Time.valueOf("21:00:00"), 2, 6,
-                    new Address("310 Orchard Rd", "", 238864, "Apricot N' Nut - Tang Plaza")));
+                    new Address("310 Orchard Rd", "", "238864", "apricot & nut - Tang Plaza", "1.3049", "103.8327")));
             store1Id = s1.getStoreId();
 
-            Store s2 = storeService.createNewStore(new Store("Store 2", 5, 2,
+            Store s2 = storeService.createNewStore(new Store("apricot@vivo", 5, 2,
                     Time.valueOf("10:00:00"), Time.valueOf("21:00:00"), 1, 3,
-                    new Address("270 Orchard Rd", "", 238857, "Apricot N' Nut - Orchard")));
+                    new Address("1 Harbourfront Walk", "", "198585", "apricot & nut - Vivo", "1.2644", "103.8222")));
             store2Id = s2.getStoreId();
 
             List<Store> stores = storeService.retrieveAllStores();
@@ -1248,31 +1248,31 @@ public class StartUpService {
 
 
         Staff staff = new Staff("Ware", "house", 2, "116C", "geogrelee@gmail.com", BigDecimal.valueOf(10000));
-        Address a1 = new Address("2E Hong San Walk", "#03-08", 612140, "Palm Garden");
+        Address a1 = new Address("2 Jln Mat Jambol", "#03-08", "119554", "Bijou Condo", "1.276914", "103.791464");
         Staff newStaff = staffService.createNewStaff(staff, a1, role1.getRoleId(), departmentWarehouse.getDepartmentId(), null);
 
-        Staff staff3 = new Staff("HR", "STAFF", 1, "131Z", "Caiyl@gmail.com", BigDecimal.valueOf(10000));
-        Address a3 = new Address("Block 234 Bishan South", "#30-08", 321140, "Palm Garden");
+        Staff staff3 = new Staff("HR", "STAFF", 1, "131Z", "Caiyl@gmail.com",  BigDecimal.valueOf(10000));
+        Address a3 = new Address("2E Hong San Walk", "#30-08", "689051", "Palm Garden", "1.378466", "103.746277");
         Staff newStaff3 = staffService.createNewStaff(staff3, a3, role1.getRoleId(), departmentHR.getDepartmentId(), null);
 
-        Staff staff4 = new Staff("Sales", "Marketing", 20, "971C", "rayquaza@gmail.com", BigDecimal.valueOf(10000));
-        Address a4 = new Address("Block 130 Taman Jurong", "#15-02", 231334, "-");
+        Staff staff4 = new Staff("Sales", "Marketing", 20, "971C", "rayquaza@gmail.com",  BigDecimal.valueOf(10000));
+        Address a4 = new Address("129 Bukit Batok West Ave 6", "#15-02", "650129", "-", "1.351358", "103.746107");
         Staff newStaff4 = staffService.createNewStaff(staff4, a4, role1.getRoleId(), departmentSalesMarketing.getDepartmentId(), null);
 
-        Staff staff5 = new Staff("Store1", "Staff", 14, "187E", "tonychan@hotmail.com", BigDecimal.valueOf(10000));
-        staff5.setAddress(new Address("Block 2 Ang Mo Kio Avenue 5", "#11-05", 321140, "-"));
+        Staff staff5 = new Staff("Store1", "Staff", 14, "187E", "tonychan@hotmail.com",  BigDecimal.valueOf(10000));
+        staff5.setAddress(new Address("538 Ang Mo Kio Ave 5", "#11-05", "560538", "-", "1.375941" , "103.853395"));
         Staff newStaff5 = staffService.createNewStaff(staff5, staff5.getAddress(), role3.getRoleId(), departmentStore.getDepartmentId(), store1Id);
 
-        Staff staff6 = new Staff("Store2", "Staff", 2, "312Z", "SergioEs@gmail.com", BigDecimal.valueOf(10000));
-        staff6.setAddress(new Address("Block 567 Bishan South", "#20-08", 321567, "-"));
+        Staff staff6 = new Staff("Store2", "Staff", 2, "312Z", "SergioEs@gmail.com",  BigDecimal.valueOf(10000));
+        staff6.setAddress(new Address("990C Jurong West Street 93", "#20-08", "643990", "-", "1.335761", "103.694866"));
         Staff newStaff6 = staffService.createNewStaff(staff6, staff6.getAddress(), role1.getRoleId(), departmentStore.getDepartmentId(), store2Id);
 
-        Staff staff7 = new Staff("Delivery", "guy", 2, "101Z", "deliveryman@gmail.com", BigDecimal.valueOf(10000));
-        staff7.setAddress(new Address("Block 123 Old Town Road", "#05-18", 113255, "-"));
+        Staff staff7 = new Staff("Delivery", "guy", 2, "101Z", "deliveryman@gmail.com",  BigDecimal.valueOf(10000));
+        staff7.setAddress(new Address("5 Kampong Eunos", "#05-18", "417771", "Eunos Park Condominium", "1.318690", "103.906396"));
         Staff newStaff7 = staffService.createNewStaff(staff7, staff7.getAddress(), role1.getRoleId(), delivery.getDepartmentId(), null);
 
         Staff staff8 = new Staff("Customer", "service", 2, "151A", "customerservice@gmail.com", BigDecimal.valueOf(10000));
-        staff8.setAddress(new Address("Block 552 Clementi Ave West", "#11-06", 113255, "-"));
+        staff8.setAddress(new Address("Block 458 Clementi Ave 3", "#11-06", "120458", "-", "1.311745", "103.766909"));
         Staff newStaff8 = staffService.createNewStaff(staff8, staff8.getAddress(), role1.getRoleId(), customerService.getDepartmentId(), null);
     }
 
