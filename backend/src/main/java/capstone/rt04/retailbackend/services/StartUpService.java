@@ -1179,7 +1179,7 @@ public class StartUpService {
             product35Styles.add(chic.getStyleId());
             Product newProduct35 = productService.createNewProduct(product35, category13.getCategoryId(), null, product35Styles, sizes, colourToImageUrlsMaps35);
 
-            Product product36 = new Product("004300", "Tula Cruz Eyelet Back Tie Maxi Dress", "- Buttoned openwork dress\n" +
+            Product product36 = new Product("004500", "Tula Cruz Eyelet Back Tie Maxi Dress", "- Buttoned openwork dress\n" +
                     "- Lined\n" +
                     "- Scoop neckline\n" +
                     "- Regular fit\n" +
@@ -1281,7 +1281,7 @@ public class StartUpService {
         staff10.setAddress(new Address("Block 552 Clementi Ave West", "#12-06", "321140", "-","1.351358", "103.746107"));
         Staff newStaff10 = staffService.createNewStaff(staff10, staff10.getAddress(), role3.getRoleId(), departmentSalesMarketing.getDepartmentId(), null);
 
-        Staff staff11 = new Staff("Delivery", "Manager", 2, "154A", "deliverymanager@gmail.com", BigDecimal.valueOf(10000));
+        Staff staff11 = new Staff("Delivery", "Manager2", 2, "154A", "deliverymanager2@gmail.com", BigDecimal.valueOf(10000));
         staff11.setAddress(new Address("Block 552 Clementi Ave West", "#10-06", "321140", "-","1.351358", "103.746107"));
         Staff newStaff11 = staffService.createNewStaff(staff11, staff11.getAddress(), role3.getRoleId(), delivery.getDepartmentId(), null);
 
