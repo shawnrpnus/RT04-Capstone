@@ -4,11 +4,13 @@ import capstone.rt04.retailbackend.entities.StaffLeave;
 import capstone.rt04.retailbackend.request.leave.ApproveRejectLeaveRequest;
 import capstone.rt04.retailbackend.request.leave.EndorseRejectLeaveRequest;
 import capstone.rt04.retailbackend.request.leave.LeaveCreateRequest;
+import capstone.rt04.retailbackend.request.leave.UpdateLeaveRequest;
 import capstone.rt04.retailbackend.response.GenericErrorResponse;
 import capstone.rt04.retailbackend.services.LeaveService;
 import capstone.rt04.retailbackend.services.ValidationService;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.leave.StaffLeaveCannotDeleteException;
+import capstone.rt04.retailbackend.util.exceptions.leave.StaffLeaveCannotUpdateException;
 import capstone.rt04.retailbackend.util.exceptions.leave.StaffLeaveNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.promoCode.CreateNewPromoCodeException;
 import capstone.rt04.retailbackend.util.exceptions.promoCode.PromoCodeNotFoundException;
@@ -129,6 +131,19 @@ public class LeaveController {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
         }catch (StaffLeaveNotFoundException ex){
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PostMapping(UPDATE_LEAVE)
+    public ResponseEntity<?> updateLeave(@RequestBody UpdateLeaveRequest updateLeaveRequest) throws StaffLeaveNotFoundException, StaffNotFoundException, StaffLeaveCannotUpdateException {
+        try {
+            StaffLeave leave = leaveService.updateLeave(updateLeaveRequest.getLeaveId(), updateLeaveRequest.getApplicant(),
+                    updateLeaveRequest.getFromDateTime(), updateLeaveRequest.getToDateTime());
+            return new ResponseEntity<>(leave, HttpStatus.OK);
+        } catch (InputDataValidationException ex) {
+            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
+        } catch (StaffLeaveCannotUpdateException ex){
+            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
 }

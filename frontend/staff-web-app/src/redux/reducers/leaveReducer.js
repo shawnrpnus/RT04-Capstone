@@ -56,6 +56,12 @@ export default function(state = initialState, action) {
                 allEndorsed: action.allEndorsed
             };
 
+        case types.UPDATE_LEAVE:
+            return {
+                ...state,
+                currentLeave: action.leave
+            };
+
         default:
             return state;
     }

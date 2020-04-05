@@ -11,7 +11,7 @@ import * as PropTypes from "prop-types";
 import { clearErrors, updateErrors } from "../../../redux/actions";
 import { connect } from "react-redux";
 import withPage from "../../Layout/page/withPage";
-import {applyForLeave, deleteLeave, retrieveAllLeaves} from "../../../redux/actions/leaveActions";
+import {applyForLeave, deleteLeave, retrieveAllLeaves, updateLeave} from "../../../redux/actions/leaveActions";
 import StaffLeave from "../../../models/leave/staffLeave";
 import LeaveCreateRequest from "../../../models/leave/LeaveCreateRequest";
 import MaterialTable from "material-table";
@@ -34,6 +34,8 @@ import {
 } from "@material-ui/icons";
 import Chip from "@material-ui/core/Chip";
 import withMaterialConfirmDialog from "../../Layout/page/withMaterialConfirmDialog";
+import UpdateLeaveRequest from "../../../models/leave/UpdateLeaveRequest";
+import UpdateLeaveDialog from "./UpdateLeaveDialog";
 
 const tableIcons = {
   Add: AddBox,
@@ -69,8 +71,10 @@ class LeaveApplicationForm extends React.Component {
   constructor(props) {
       super(props);
       this.state = ({
-          fromDateTime: "2020-04-05",
-          toDateTime: "2020-04-05"
+          fromDateTime: "2020-04-06",
+          toDateTime: "2020-04-06",
+          open: false,
+          selectedId:""
       });
   }
 
@@ -81,6 +85,11 @@ class LeaveApplicationForm extends React.Component {
             fromDateTime: "2020-04-05",
             toDateTime: "2020-04-05"
         });
+    };
+
+    toggleOpenDialog = () => {
+        this.setState({
+            open: (!this.state.open) });
     };
 
     handleDelete = staffLeaveId => {
@@ -94,6 +103,12 @@ class LeaveApplicationForm extends React.Component {
             [attr]: date
         });
     };
+
+    handleUpdate = (fromDateTime, toDateTime, leaveId) => {
+            const req = new UpdateLeaveRequest(leaveId, this.props.loggedInStaff, fromDateTime, toDateTime);
+            this.props.updateLeave(req, this.props.history);
+        };
+
 
     handleSubmit = e => {
         e.preventDefault();
@@ -172,6 +187,7 @@ class LeaveApplicationForm extends React.Component {
                 <Grid item xs={12} md={9}>
                     <React.Fragment>
                     <div className="table" style={{ verticalAlign: "middle" }}>
+
                             {this.props.allLeaves ? (
                                 <MaterialTable
                                     title="All applied leaves"
@@ -185,6 +201,7 @@ class LeaveApplicationForm extends React.Component {
                                             title: "Status",
                                             field: "status",
                                             filtering: false,
+                                            editable: "never",
                                             render: rowData => {
                                                 let style;
                                                 const { status } = rowData;
@@ -215,8 +232,18 @@ class LeaveApplicationForm extends React.Component {
 
                                     actions={[
                                         {
+                                            icon: Edit,
+                                            tooltip: "Update Staff",
+                                            onClick: (event, rowData) => {
+                                                this.setState({
+                                                    selectedId: rowData.staffLeaveId
+                                                });
+                                                this.toggleOpenDialog();
+                                            }
+                                        },
+                                        {
                                             icon: Delete,
-                                            tooltip: "Delete Tag",
+                                            tooltip: "Delete Leave",
                                             onClick: (event, rowData) => this.handleDelete(rowData.staffLeaveId)
                                         }
                                     ]}
@@ -238,6 +265,18 @@ class LeaveApplicationForm extends React.Component {
                             ) : (
                                 this.props.renderLoader()
                             )}
+
+                        {this.state.open && (
+                            <UpdateLeaveDialog
+                                // key={feedback.contactUsId}
+                                open={this.state.open}
+                                onClose={this.toggleOpenDialog}
+                                leaveId={this.state.selectedId}
+                                loggedInStaff={this.props.loggedInStaff}
+                                history = {this.props.history}
+                            />
+                        )}
+
                         </div>
                     </React.Fragment>
 
@@ -259,6 +298,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = {
     applyForLeave,
     retrieveAllLeaves,
+    updateLeave,
     deleteLeave,
     clearErrors,
     updateErrors
