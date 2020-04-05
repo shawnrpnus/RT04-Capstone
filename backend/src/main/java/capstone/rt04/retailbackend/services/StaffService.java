@@ -224,7 +224,8 @@ public class StaffService {
 
     // For Delivery manager to assign delivery to delivery staff
     public List<Staff> retrieveAllDeliveryStaff() {
-        List<Staff> deliveryStaff = staffRepository.findAllByDepartment_DepartmentNameEquals("Delivery");
+        List<Staff> deliveryStaff = staffRepository.findAllByDepartment_DepartmentNameEqualsAndRole_RoleNameEquals(
+                "Delivery", RoleNameEnum.ASSISTANT);
         for (Staff staff : deliveryStaff) {
             lazyLoadStaffFields(staff);
         }

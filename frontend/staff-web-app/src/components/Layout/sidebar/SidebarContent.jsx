@@ -11,7 +11,7 @@ import {
   FaList,
   FaFileInvoice,
   FaMoneyBillAlt,
-  FaStaylinked
+  FaStaylinked,
 } from "react-icons/fa";
 import {
   MdFeedback,
@@ -19,7 +19,7 @@ import {
   MdLocalShipping,
   MdPayment,
   MdPeople,
-  MdStore
+  MdStore,
 } from "react-icons/md";
 
 import { TiSocialInstagram } from "react-icons/ti";
@@ -29,7 +29,7 @@ const _ = require("lodash");
 
 class SidebarContent extends Component {
   static propTypes = {
-    onClick: PropTypes.func.isRequired
+    onClick: PropTypes.func.isRequired,
   };
 
   hideSidebar = () => {
@@ -39,12 +39,15 @@ class SidebarContent extends Component {
 
   render() {
     const department = _.get(this.props.staff, "department.departmentName");
+    const role = _.get(this.props.staff, "role.roleName");
     const hr = department === "HR";
     const salesmarketing = department === "Sales and Marketing";
     const store = department === "Store";
     const warehouse = department === "Warehouse";
     const delivery = department === "Delivery";
     const customerService = department === "Customer Service";
+    const manager = role === "MANAGER";
+    const assistant = role === "ASSISTANT";
 
     return (
       <div className="sidebar__content">
@@ -238,21 +241,23 @@ class SidebarContent extends Component {
           )}
           {delivery && (
             <SidebarCategory title="Delivery" customIcon={<MdLocalShipping />}>
-              <SidebarLink
-                title="View Store Orders"
-                route="/delivery/viewAllRestockOrderItem"
-                onClick={this.hideSidebar}
-              />
-              <SidebarLink
-                title="View Customer Orders"
-                route="/delivery/viewAllTransaction"
-                onClick={this.hideSidebar}
-              />
-              <SidebarLink
-                title="View Delivery"
-                route="/delivery/viewAllDelivery"
-                onClick={this.hideSidebar}
-              />
+              <>
+                <SidebarLink
+                  title="View Store Orders"
+                  route="/delivery/viewAllRestockOrderItem"
+                  onClick={this.hideSidebar}
+                />
+                <SidebarLink
+                  title="View Customer Orders"
+                  route="/delivery/viewAllTransaction"
+                  onClick={this.hideSidebar}
+                />
+                <SidebarLink
+                  title="View Delivery"
+                  route="/delivery/viewAllDelivery"
+                  onClick={this.hideSidebar}
+                />
+              </>
             </SidebarCategory>
           )}
           {salesmarketing && (
