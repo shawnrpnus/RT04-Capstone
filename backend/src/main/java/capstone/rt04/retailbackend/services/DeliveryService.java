@@ -9,7 +9,8 @@ import capstone.rt04.retailbackend.util.exceptions.delivery.NoItemForDeliveryExc
 import capstone.rt04.retailbackend.util.exceptions.inStoreRestockOrder.InStoreRestockOrderItemNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.staff.StaffNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.transaction.TransactionNotFoundException;
-import javafx.util.Pair;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -186,7 +187,7 @@ public class DeliveryService {
             distances.clear();
 
             for (Address address : addresses) {
-                distances.add(new Pair(address, distance(lat, lng,
+                distances.add(new ImmutablePair(address, distance(lat, lng,
                         Double.valueOf(address.getLat()), Double.valueOf(address.getLng()), 0, 0)));
             }
 
