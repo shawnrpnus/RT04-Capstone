@@ -1,6 +1,7 @@
 package capstone.rt04.retailbackend.controllers;
 
 import capstone.rt04.retailbackend.entities.StaffLeave;
+import capstone.rt04.retailbackend.request.leave.ApproveRejectLeaveRequest;
 import capstone.rt04.retailbackend.request.leave.EndorseRejectLeaveRequest;
 import capstone.rt04.retailbackend.request.leave.LeaveCreateRequest;
 import capstone.rt04.retailbackend.response.GenericErrorResponse;
@@ -86,7 +87,7 @@ public class LeaveController {
     }
 
     @GetMapping(RETRIEVE_ALL_LEAVES_HR)
-    public ResponseEntity<?> retrieveAllEndorsedLeaves() {
+    public ResponseEntity<?> retrieveAllLeavesHR() {
         try {
             List<StaffLeave> leaves = leaveService.retrieveAllLeavesHR();
             return new ResponseEntity<>(leaves, HttpStatus.OK);
@@ -95,16 +96,39 @@ public class LeaveController {
         }
     }
 
+    @GetMapping(RETRIEVE_ALL_ENDORSED_LEAVES)
+    public ResponseEntity<?> retrieveAllEndorsedLeaves() {
+        try {
+            List<StaffLeave> leaves = leaveService.retrieveAllEndorsedLeaves();
+            return new ResponseEntity<>(leaves, HttpStatus.OK);
+        } catch (Exception ex) {
+            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @PostMapping(ENDORSE_REJECT_LEAVE)
     public ResponseEntity<?> endorseRejectLeave(@RequestBody EndorseRejectLeaveRequest endorseRejectLeaveRequest) throws StaffLeaveNotFoundException, StaffNotFoundException {
-       try {
-           StaffLeave leave = leaveService.endorseRejectLeave(endorseRejectLeaveRequest.getLeaveId(),
-                   endorseRejectLeaveRequest.getManagerId(), endorseRejectLeaveRequest.getAction());
-           return new ResponseEntity<>(leave, HttpStatus.OK);
-       }catch (StaffNotFoundException ex){
-           return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
-       }catch (StaffLeaveNotFoundException ex){
-           return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
-       }
+        try {
+            StaffLeave leave = leaveService.endorseRejectLeave(endorseRejectLeaveRequest.getLeaveId(),
+                    endorseRejectLeaveRequest.getManagerId(), endorseRejectLeaveRequest.getAction());
+            return new ResponseEntity<>(leave, HttpStatus.OK);
+        }catch (StaffNotFoundException ex){
+            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
+        }catch (StaffLeaveNotFoundException ex){
+            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PostMapping(APPROVE_REJECT_LEAVE)
+    public ResponseEntity<?> approveRejectLeave(@RequestBody ApproveRejectLeaveRequest approveRejectLeaveRequest) throws StaffLeaveNotFoundException, StaffNotFoundException {
+        try {
+            StaffLeave leave = leaveService.approveRejectLeave(approveRejectLeaveRequest.getLeaveId(),
+                    approveRejectLeaveRequest.getHrId(), approveRejectLeaveRequest.getAction());
+            return new ResponseEntity<>(leave, HttpStatus.OK);
+        }catch (StaffNotFoundException ex){
+            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
+        }catch (StaffLeaveNotFoundException ex){
+            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
+        }
     }
 }

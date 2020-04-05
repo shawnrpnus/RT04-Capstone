@@ -169,6 +169,30 @@ const retrieveAllLeavesHRError = data => ({
     errorMap: data
 });
 
+export const retrieveAllEndorsedLeaves = () => {
+    return dispatch => {
+        axios
+            .get(LEAVE_BASE_URL + "/retrieveAllEndorsedLeaves")
+            .then(response => {
+                const { data } = jsog.decode(response);
+                dispatch(retrieveAllEndorsedSuccess(data));
+            })
+            .catch(err => {
+                dispatch(retrieveAllEndorsedError(err.response.data));
+            });
+    };
+};
+
+const retrieveAllEndorsedSuccess = data => ({
+    type: types.RETRIEVE_ALL_ENDORSED_LEAVES,
+    allEndorsed: data
+});
+
+const retrieveAllEndorsedError = data => ({
+    type: types.GET_ERRORS,
+    errorMap: data
+});
+
 export const endorseRejectLeave = (endorseRejectLeaveRequest, history) => {
     return dispatch => {
         axios
@@ -196,6 +220,37 @@ const endorseRejectLeavesSuccess = data => ({
 });
 
 const endorseRejectLeavesError = data => ({
+    type: types.GET_ERRORS,
+    errorMap: data
+});
+
+export const approveRejectLeave = (approveRejectLeaveRequest, history) => {
+    return dispatch => {
+        axios
+            .post(LEAVE_BASE_URL + "/approveRejectLeave", approveRejectLeaveRequest)
+            .then(response => {
+                const { data } = jsog.decode(response);
+                dispatch(approveRejectLeavesSuccess(data));
+                toast.success("Success!", {
+                    position: toast.POSITION.TOP_CENTER
+                });
+                retrieveAllEndorsedLeaves()(dispatch);
+                retrieveAllLeavesHR()(dispatch);
+                history.push(`/leave/hr`);
+            })
+            .catch(err => {
+                dispatch(approveRejectLeavesError(err.response.data));
+                //console.log(err.response.data);
+            });
+    };
+};
+
+const approveRejectLeavesSuccess = data => ({
+    type: types.APPROVE_REJECT_LEAVE,
+    leave: data
+});
+
+const approveRejectLeavesError = data => ({
     type: types.GET_ERRORS,
     errorMap: data
 });

@@ -75,8 +75,11 @@ console.log(manager)
                     onClick={this.hideSidebar}
                   />
 
-
-
+                    < SidebarLink
+                        title="Leave Management"
+                        route="/leave/hr"
+                        onClick={this.hideSidebar}
+                    />
                 </React.Fragment>
               )}
 

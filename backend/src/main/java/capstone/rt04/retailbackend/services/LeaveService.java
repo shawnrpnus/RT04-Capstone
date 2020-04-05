@@ -143,7 +143,23 @@ public class LeaveService {
 
     public List<StaffLeave> retrieveAllLeavesHR(){
         List<StaffLeave> allLeaves = (List<StaffLeave>) leaveRepository.findAll();
-        List<StaffLeave> leaves = null;
+        List<StaffLeave> leaves = new ArrayList<StaffLeave>();
+
+        for(StaffLeave leave : allLeaves){
+            if(leave.getStatus().equals(LeaveStatusEnum.APPROVED)){
+                leaves.add(leave);
+            } if(leave.getRejectedBy() != null){
+                if(leave.getRejectedBy().getDepartment().getDepartmentName().equals("HR")){
+                    leaves.add(leave);
+                }
+            }
+        }
+        return leaves;
+    }
+
+    public List<StaffLeave> retrieveAllEndorsedLeaves(){
+        List<StaffLeave> allLeaves = (List<StaffLeave>) leaveRepository.findAll();
+        List<StaffLeave> leaves = new ArrayList<StaffLeave>();
 
         for(StaffLeave leave : allLeaves){
             if(leave.getStatus().equals(LeaveStatusEnum.ENDORSED)){
@@ -165,6 +181,25 @@ public class LeaveService {
             leave.setEndorser(manager);
         } else{
             leave.setStatus(LeaveStatusEnum.REJECTED);
+            leave.setRejectedBy(manager);
+        }
+
+        return leave;
+    }
+
+    public StaffLeave approveRejectLeave (Long leaveId, Long hrId, Boolean action) throws StaffNotFoundException, StaffLeaveNotFoundException {
+        Staff hr = staffRepository.findById(hrId)
+                .orElseThrow(() -> new StaffNotFoundException("Staff with id: " + hrId + " does not exist"));
+
+        StaffLeave leave = leaveRepository.findById(leaveId)
+                .orElseThrow(() -> new StaffLeaveNotFoundException("Leave with id: " + leaveId + " does not exist"));
+
+        if(action == true){
+            leave.setStatus(LeaveStatusEnum.APPROVED);
+            leave.setApprover(hr);
+        } else{
+            leave.setStatus(LeaveStatusEnum.REJECTED);
+            leave.setRejectedBy(hr);
         }
 
         return leave;
