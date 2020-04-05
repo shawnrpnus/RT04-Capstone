@@ -12,6 +12,7 @@ import transactionReducer from "redux/reducers/transactionReducer";
 import advertisementReducer from "redux/reducers/advertisementReducer";
 import instagramReducer from "redux/reducers/instagramReducer";
 import storeReducer from "./storeReducer";
+import refundReducer from "./refundReducer";
 
 const rootReducer = combineReducers({
   customer: customerReducer,
@@ -22,6 +23,7 @@ const rootReducer = combineReducers({
   review: reviewReducer,
   tag: tagReducer,
   filterBar: filterBarReducer,
+  refund: refundReducer,
   reservation: reservationReducer,
   advertisement: advertisementReducer,
   transaction: transactionReducer,

@@ -1,7 +1,7 @@
 package capstone.rt04.retailbackend.repositories;
 
-import capstone.rt04.retailbackend.entities.Customer;
 import capstone.rt04.retailbackend.entities.Department;
+
 import capstone.rt04.retailbackend.entities.Staff;
 import org.springframework.data.repository.CrudRepository;
 
@@ -19,4 +19,7 @@ public interface StaffRepository extends CrudRepository<Staff, Long> {
     List<Staff> findByDepartment(Department department);
 
     List<Staff> findAllByStore_StoreId(Long storeId);
+
+    List<Staff> findAllByDepartment_DepartmentNameEquals(String department);
+
 }

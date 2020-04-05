@@ -8,6 +8,9 @@ import Divider from "@material-ui/core/Divider";
 import typographyStyle from "assets/jss/material-kit-pro-react/views/componentsSections/typographyStyle";
 import { makeStyles } from "@material-ui/core/styles";
 import { useHistory } from "react-router-dom";
+import CreateRefund from "../Refunds/CreateRefund";
+import { retrieveTransactionById } from "../../../../redux/actions/transactionActions";
+import { useDispatch } from "react-redux";
 
 const _ = require("lodash");
 const moment = require("moment");
@@ -18,6 +21,7 @@ function OrderHistoryCard(props) {
   const { transaction } = props;
   const history = useHistory();
   const typoClasses = useTypoStyles();
+  const dispatch = useDispatch();
   const deliveryStatusEnumMap = {
     PROCESSING: "PROCESSING",
     TO_BE_DELIVERED: "PROCESSING",
@@ -26,6 +30,8 @@ function OrderHistoryCard(props) {
     COLLECTED: "COLLECTED",
     READY_FOR_COLLECTION: "READY FOR COLLECTION"
   };
+
+  const [largeModal, setLargeModal] = React.useState(false);
 
   const status = deliveryStatusEnumMap[transaction.deliveryStatus];
 
@@ -47,6 +53,11 @@ function OrderHistoryCard(props) {
   //   return lineItem.productVariant;
   // });
 
+  const openModal = transactionId => {
+    setLargeModal(true);
+    dispatch(retrieveTransactionById(transactionId));
+  };
+
   return (
     <Card
       plain
@@ -57,6 +68,10 @@ function OrderHistoryCard(props) {
       }}
     >
       <GridContainer>
+        <CreateRefund
+          largeModal={[largeModal, setLargeModal]}
+          transactionId={transaction.transactionId}
+        />
         <GridItem md={12} xs={12}>
           <h5
             className={typoClasses.title}
@@ -95,6 +110,14 @@ function OrderHistoryCard(props) {
                 }
               >
                 View Order
+              </Button>
+              <Button
+                fullWidth
+                color="primary"
+                style={{ float: "bottom" }}
+                onClick={() => openModal(transaction.transactionId)}
+              >
+                Make a Refund
               </Button>
             </GridItem>
             <GridItem

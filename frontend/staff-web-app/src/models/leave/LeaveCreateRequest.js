@@ -1,7 +1,7 @@
 export default class LeaveCreateRequest {
-    leave;
+  leave;
 
-    constructor(leave) {
-        this.leave = leave;
-    }
+  constructor(leave) {
+    this.leave = leave;
+  }
 }

@@ -14,8 +14,9 @@ import customCheckboxRadioSwitch from "../../assets/jss/material-kit-pro-react/c
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import { useHistory } from "react-router-dom";
 import AddUpdateAddressRequest from "../../models/customer/AddUpdateAddressRequest";
-import { addShippingAddressDetails } from "../../redux/actions/customerActions";
 import { addShippingAddressDetailsAtCheckout } from "../../redux/actions/transactionActions";
+import axios from "axios";
+import { key } from "key.js";
 
 const useStyles = makeStyles(customCheckboxRadioSwitch);
 
@@ -81,26 +82,48 @@ export default function AddNewAddressForCheckOut({
     // console.log("CHANGECURRSHIPORBIL", changeCurrBillingOrShipping);
     //changeCurrBillingOrShipping (true = shipping, false = billing)
 
-    const address = new Address(
-      inputState.addressId,
-      inputState.line1,
-      inputState.line2,
-      inputState.postalCode,
-      inputState.buildingName,
-      inputState.default,
-      inputState.billing
-    );
-    // console.log(address);
-    const req = new AddUpdateAddressRequest(currCustomer.customerId, address);
-    // console.log(req);
-    dispatch(
-      addShippingAddressDetailsAtCheckout(req, enqueueSnackbar, history)
-    );
-    // console.log(currAddress);
-    // setDispatchAddress(currAddress);
-    // console.log(dispatchAddress);
-    setCurrBillingAddress(address);
-    setAddNewAddress(false);
+    axios
+      .get(
+        `https://maps.googleapis.com/maps/api/geocode/json?address=Singapore${inputState.postalCode}&key=${key}`
+      )
+      .then(response => {
+        const location = response.data.results[0].geometry.location;
+        if (response.data.status === "OK") {
+          const address = new Address(
+            inputState.addressId,
+            inputState.line1,
+            inputState.line2,
+            inputState.postalCode,
+            inputState.buildingName,
+            inputState.default,
+            inputState.billing,
+            location.lat,
+            location.lng
+          );
+          // console.log(address);
+          const req = new AddUpdateAddressRequest(
+            currCustomer.customerId,
+            address
+          );
+          // console.log(req);
+          dispatch(
+            addShippingAddressDetailsAtCheckout(req, enqueueSnackbar, history)
+          );
+          // console.log(currAddress);
+          // setDispatchAddress(currAddress);
+          // console.log(dispatchAddress);
+          setCurrBillingAddress(address);
+          setAddNewAddress(false);
+        } else {
+          enqueueSnackbar("Invalid postal code", {
+            variant: "error",
+            autoHideDuration: 1200
+          });
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      });
   };
 
   const onChange = e => {

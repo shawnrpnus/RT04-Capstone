@@ -1,82 +1,79 @@
 import React from "react";
 import { Grid } from "@material-ui/core";
 import {
-    KeyboardDatePicker,
-    MuiPickersUtilsProvider
+  KeyboardDatePicker,
+  MuiPickersUtilsProvider
 } from "@material-ui/pickers";
-import 'date-fns';
-import DateFnsUtils from '@date-io/date-fns';
+import "date-fns";
+import DateFnsUtils from "@date-io/date-fns";
 import { Button, ButtonToolbar } from "reactstrap";
 import * as PropTypes from "prop-types";
-import {clearErrors, updateErrors} from "../../../redux/actions";
-import {connect} from "react-redux";
+import { clearErrors, updateErrors } from "../../../redux/actions";
+import { connect } from "react-redux";
 import withPage from "../../Layout/page/withPage";
 import {applyForLeave, deleteLeave, retrieveAllLeaves} from "../../../redux/actions/leaveActions";
 import StaffLeave from "../../../models/leave/staffLeave";
 import LeaveCreateRequest from "../../../models/leave/LeaveCreateRequest";
 import MaterialTable from "material-table";
 import {
-    AddBox,
-    Check, ChevronLeft,
-    ChevronRight,
-    Clear,
-    Delete,
-    DeleteOutline,
-    Edit, FirstPage, LastPage, Remove,
-    SaveAlt, Search,
-    SearchOutlined, ViewColumn
+  AddBox,
+  Check,
+  ChevronLeft,
+  ChevronRight,
+  Clear,
+  Delete,
+  DeleteOutline,
+  Edit,
+  FirstPage,
+  LastPage,
+  Remove,
+  SaveAlt,
+  Search,
+  SearchOutlined,
+  ViewColumn
 } from "@material-ui/icons";
 import Chip from "@material-ui/core/Chip";
 import withMaterialConfirmDialog from "../../Layout/page/withMaterialConfirmDialog";
 
 const tableIcons = {
-    Add: AddBox,
-    Check: Check,
-    Clear: Clear,
-    Delete: DeleteOutline,
-    DetailPanel: ChevronRight,
-    Edit: Edit,
-    Export: SaveAlt,
-    Filter: SearchOutlined,
-    FirstPage: FirstPage,
-    LastPage: LastPage,
-    NextPage: ChevronRight,
-    PreviousPage: ChevronLeft,
-    ResetSearch: Clear,
-    Search: Search,
-    SortArrow: () => <div />,
-    ThirdStateCheck: Remove,
-    ViewColumn: ViewColumn
+  Add: AddBox,
+  Check: Check,
+  Clear: Clear,
+  Delete: DeleteOutline,
+  DetailPanel: ChevronRight,
+  Edit: Edit,
+  Export: SaveAlt,
+  Filter: SearchOutlined,
+  FirstPage: FirstPage,
+  LastPage: LastPage,
+  NextPage: ChevronRight,
+  PreviousPage: ChevronLeft,
+  ResetSearch: Clear,
+  Search: Search,
+  SortArrow: () => <div />,
+  ThirdStateCheck: Remove,
+  ViewColumn: ViewColumn
 };
 
 class LeaveApplicationForm extends React.Component {
-    static propTypes = {
-        errors: PropTypes.object,
-        clearErrors: PropTypes.func
-    };
+  static propTypes = {
+    errors: PropTypes.object,
+    clearErrors: PropTypes.func
+  };
 
-    componentDidMount() {
-        console.log(this.props.loggedInStaff.staffId);
-        this.props.retrieveAllLeaves(this.props.loggedInStaff.staffId);
-    }
+  componentDidMount() {
+    console.log(this.props.loggedInStaff.staffId);
+    this.props.retrieveAllLeaves(this.props.loggedInStaff.staffId);
+  }
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            fromDateTime: "2020-04-05",
-            toDateTime: "2020-04-05"
-        };
-    }
+  constructor(props) {
+      super(props);
+      this.state = {
+          fromDateTime: "2020-04-05",
+          toDateTime: "2020-04-05"
+      };
+  }
 
-    onChange = (date, attr) => {
-        this.setState({ [attr]: date });
-        console.log(date);
-    };
-
-    clear = () => {
-        this.setState({ fromDateTime: "2020-04-05" });
-        this.setState({ toDateTime: "2020-04-05" });
-    };
 
 
     onCancel = () => {
@@ -241,14 +238,13 @@ class LeaveApplicationForm extends React.Component {
 
         )
     }
-
 }
 
 //mapping global state to this component
 const mapStateToProps = state => ({
-    loggedInStaff: state.staffEntity.loggedInStaff,
-    allLeaves: state.leave.allLeaves,
-    errors: state.errors
+  loggedInStaff: state.staffEntity.loggedInStaff,
+  allLeaves: state.leave.allLeaves,
+  errors: state.errors
 });
 
 const mapDispatchToProps = {

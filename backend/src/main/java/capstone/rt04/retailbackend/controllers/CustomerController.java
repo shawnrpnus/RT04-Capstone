@@ -2,9 +2,7 @@ package capstone.rt04.retailbackend.controllers;
 
 import capstone.rt04.retailbackend.entities.Address;
 import capstone.rt04.retailbackend.entities.Customer;
-import capstone.rt04.retailbackend.entities.Staff;
 import capstone.rt04.retailbackend.request.customer.*;
-import capstone.rt04.retailbackend.request.customer.RegisterPushNotifTokenRequest;
 import capstone.rt04.retailbackend.services.CustomerService;
 import capstone.rt04.retailbackend.services.RelationshipService;
 import capstone.rt04.retailbackend.services.ShoppingCartService;
@@ -13,11 +11,9 @@ import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.customer.*;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.shoppingcart.InvalidCartTypeException;
-import capstone.rt04.retailbackend.util.exceptions.staff.StaffNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.style.StyleNotFoundException;
 import capstone.rt04.retailbackend.util.routeconstants.CustomerControllerRoutes;
-import capstone.rt04.retailbackend.util.routeconstants.StaffControllerRoutes;
 import com.stripe.exception.StripeException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -211,6 +207,8 @@ public class CustomerController {
     @PostMapping(CustomerControllerRoutes.ADD_SHIPPING_ADDRESS)
     public ResponseEntity<?> addShippingAddress(@RequestBody AddUpdateShippingAddressRequest addUpdateShippingAddressRequest) throws CustomerNotFoundException, InputDataValidationException {
         Map<String, String> inputErrMap = validationService.generateErrorMap(addUpdateShippingAddressRequest);
+        System.out.println(addUpdateShippingAddressRequest.getShippingAddress().getLat());
+        System.out.println(addUpdateShippingAddressRequest.getShippingAddress().getLng());
         if (inputErrMap != null) return new ResponseEntity<>(inputErrMap, HttpStatus.BAD_REQUEST);
         Customer customer = customerService.addShippingAddress(addUpdateShippingAddressRequest.getCustomerId(), addUpdateShippingAddressRequest.getShippingAddress());
         return new ResponseEntity<>(customer, HttpStatus.OK);

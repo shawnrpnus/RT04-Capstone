@@ -479,8 +479,8 @@ public class CustomerService {
         addressToUpdate.setLine1(newShippingAddress.getLine1());
         addressToUpdate.setLine2(newShippingAddress.getLine2());
         addressToUpdate.setPostalCode(newShippingAddress.getPostalCode());
-        addressToUpdate.setXCoordinate(newShippingAddress.getXCoordinate());
-        addressToUpdate.setYCoordinate(newShippingAddress.getYCoordinate());
+        addressToUpdate.setLat(newShippingAddress.getLat());
+        addressToUpdate.setLng(newShippingAddress.getLng());
         Customer customer = retrieveCustomerByCustomerId(customerId);
         return customer;
     }

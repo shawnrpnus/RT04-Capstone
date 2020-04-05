@@ -241,7 +241,7 @@ public class CustomerControllerTest extends ApiTestSetup {
 
     @Test
     public void CUDshippingAddress(){
-        Address newShippingAddress = new Address("line1", null, 510149, null, false, null, null);
+        Address newShippingAddress = new Address("line1", null, "510149", null, null, null);
         AddUpdateShippingAddressRequest req = new AddUpdateShippingAddressRequest(createdCustomerId, newShippingAddress);
         Customer customer = given()
                 .contentType("application/json")

@@ -28,6 +28,10 @@ import OrderDetails from "components/Profile/sections/Orders/OrderDetails";
 import ReviewCardForProfilePage from "components/Reviews/ReviewCardForProfilePage";
 import Backdrop from "@material-ui/core/Backdrop";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import { Cached } from "@material-ui/icons";
+import RefundHistoryPage from "./sections/Refunds/RefundHistoryPage";
+import RefundDetails from "./sections/Refunds/RefundDetails";
+import CreateRefund from "./sections/Refunds/CreateRefund";
 
 const useStyles = makeStyles(profilePageStyle);
 
@@ -35,8 +39,11 @@ export default function ProfilePage(props) {
   const dispatch = useDispatch();
   const customer = useSelector(state => state.customer.loggedInCustomer);
   const classes = useStyles();
-  const { mode, transactionId } = useParams();
+  const { mode, transactionId, refundId } = useParams();
+  const [largeModal, setLargeModal] = useState(false);
 
+  console.log(refundId);
+  console.log(transactionId);
   useEffect(() => {
     window.scrollTo(0, 0);
     document.body.scrollTop = 0;
@@ -83,6 +90,12 @@ export default function ProfilePage(props) {
           </GridContainer>
         </div>
       )
+    },
+    {
+      tabButton: "Refunds",
+      tabIcon: Cached,
+      route: "/account/profile/refundHistory",
+      tabContent: <RefundHistoryPage />
     }
   ];
 
@@ -92,6 +105,13 @@ export default function ProfilePage(props) {
       tabIcon: Camera,
       route: `/account/profile/viewOrder/${transactionId}`,
       tabContent: <OrderDetails />
+    });
+  } else if (mode === "viewRefund") {
+    tabs.push({
+      tabButton: "Refund Details",
+      tabIcon: Camera,
+      route: `/account/profile/viewRefund/${refundId}`,
+      tabContent: <RefundDetails />
     });
   }
 
@@ -145,8 +165,12 @@ export default function ProfilePage(props) {
                   ? 1
                   : mode === "personalize"
                   ? 2
-                  : mode === "viewOrder"
+                  : mode === "refundHistory"
                   ? 3
+                  : mode === "viewOrder"
+                  ? 4
+                  : mode === "viewRefund"
+                  ? 4
                   : 0
               }
               tabs={tabs}

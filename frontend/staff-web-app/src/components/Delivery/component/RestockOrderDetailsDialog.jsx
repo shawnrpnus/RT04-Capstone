@@ -33,6 +33,7 @@ import {
 } from "@material-ui/icons";
 import { confirmRestockOrderDelivery } from "../../../redux/actions/deliveryActions";
 import { getDeliveryStatusColour } from "../../../redux/actions/restockOrderAction";
+import QRScanner from "./QRScanner";
 
 const _ = require("lodash");
 const tableIcons = {
@@ -57,11 +58,11 @@ const tableIcons = {
 
 const RestockOrderDetailsDialog = ({ elements, open, onClose }) => {
   const dispatch = useDispatch();
-  const history = useHistory();
   const confirmDialog = useConfirm();
   const [itemsByStore, setItemsByStore] = useState([]);
   const [stores, setStores] = useState([]);
   const [selectedStore, setSelectedStore] = useState("all");
+  const [openQR, setOpenQR] = useState(false);
 
   useEffect(() => {
     const stores = elements.map(e => _.get(e, "productStock.store.storeName"));
@@ -110,18 +111,23 @@ const RestockOrderDetailsDialog = ({ elements, open, onClose }) => {
     }
   };
 
-  const handleConfirmDelivery = data => {
-    const inStoreRestockOrderItemIds = data.map(
+  const handleOpenQR = () => {
+    setOpenQR(true);
+  };
+
+  const handleConfirmDelivery = () => {
+    const inStoreRestockOrderItemIds = itemsByStore.map(
       e => e.inStoreRestockOrderItemId
     );
-    confirmDialog({
-      description: "The selected products will be marked as delivered"
-    })
-      .then(() => {
-        dispatch(confirmRestockOrderDelivery({ inStoreRestockOrderItemIds }));
-        onClose();
-      })
-      .catch(() => null);
+    dispatch(confirmRestockOrderDelivery({ inStoreRestockOrderItemIds }));
+
+    // confirmDialog({
+    //   description: "The selected products will be marked as delivered",
+    // })
+    //   .then(() => {
+    //     onClose();
+    //   })
+    //   .catch(() => null);
   };
 
   return (
@@ -205,7 +211,7 @@ const RestockOrderDetailsDialog = ({ elements, open, onClose }) => {
         </Button>
         <Button
           color="primary"
-          onClick={() => handleConfirmDelivery(itemsByStore)}
+          onClick={handleOpenQR}
           disabled={
             itemsByStore.length === 0 ||
             itemsByStore[0].itemDeliveryStatus === "DELIVERED" ||
@@ -215,6 +221,14 @@ const RestockOrderDetailsDialog = ({ elements, open, onClose }) => {
           Confirm delivery
         </Button>
       </DialogActions>
+      {openQR && (
+        <QRScanner
+          open={openQR}
+          onClose={() => setOpenQR(false)}
+          confirmDelivery={handleConfirmDelivery}
+          onCloseOuterDialog={onClose}
+        />
+      )}
     </Dialog>
   );
 };

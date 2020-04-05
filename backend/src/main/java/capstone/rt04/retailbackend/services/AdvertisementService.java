@@ -41,6 +41,7 @@ public class AdvertisementService {
         if (activate) {
             activateAdvertisement(advertisement.getAdvertisementId());
         }
+
         return retrieveAllAdvertisement();
     }
 

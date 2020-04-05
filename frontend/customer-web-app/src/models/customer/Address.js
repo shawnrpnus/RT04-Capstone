@@ -6,6 +6,8 @@ export default class Address {
   buildingName;
   default;
   billing;
+  lat;
+  lng;
 
   constructor(
     addressId,
@@ -14,7 +16,9 @@ export default class Address {
     postalCode,
     buildingName,
     isDefault,
-    isBilling
+    isBilling,
+    lat,
+    lng
   ) {
     this.addressId = addressId;
     this.line1 = line1;
@@ -23,5 +27,7 @@ export default class Address {
     this.buildingName = buildingName;
     this.default = isDefault;
     this.billing = isBilling;
+    this.lat = lat;
+    this.lng = lng;
   }
 }

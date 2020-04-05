@@ -15,7 +15,8 @@ import {
   SaveAlt,
   Search,
   ViewColumn,
-  Visibility
+  Visibility,
+  Room
 } from "@material-ui/icons";
 import { AiOutlineTransaction } from "react-icons/ai";
 import MaterialTable from "material-table";
@@ -25,11 +26,12 @@ import Button from "@material-ui/core/Button";
 import { getDeliveryStatusColour } from "../../../redux/actions/restockOrderAction";
 import {
   retrieveAllDelivery,
-  automateDeliveryAllocation
+  generateDeliveryRoute
 } from "../../../redux/actions/deliveryActions";
 import withPage from "../../Layout/page/withPage";
 import RestockOrderDetailsDialog from "./RestockOrderDetailsDialog";
 import TransactionDetailsDialog from "./TransactionDetailsDialog";
+import StaffSelectionDialog from "./StaffSelectionDialog";
 
 const _ = require("lodash");
 const tableIcons = {
@@ -58,6 +60,9 @@ const DeliveryTable = props => {
 
   const [openCustomerOrderDialog, setOpenCustomerOrderDialog] = useState(false);
   const [openRestockOrderDialog, setOpenRestockOrderDialog] = useState(false);
+  const [openStaffSelectionDialog, setOpenStaffSelectionDialog] = useState(
+    false
+  );
   const [orderDetails, setOrderDetails] = useState([]);
   const { renderLoader, staff } = props;
 
@@ -87,8 +92,8 @@ const DeliveryTable = props => {
     setOpenRestockOrderDialog(false);
   };
 
-  const handleAllocateDelivery = () => {
-    dispatch(automateDeliveryAllocation(staff.staffId));
+  const handleOpenStaffSelectionDialog = () => {
+    setOpenStaffSelectionDialog(true);
   };
 
   let data = [];
@@ -131,6 +136,8 @@ const DeliveryTable = props => {
     });
   }
 
+  console.log(deliveries);
+
   return (
     <div
       className="table"
@@ -139,7 +146,7 @@ const DeliveryTable = props => {
       <Button
         variant="contained"
         color="primary"
-        onClick={handleAllocateDelivery}
+        onClick={handleOpenStaffSelectionDialog}
         style={{ marginRight: "1%" }}
       >
         Create and allocate delivery
@@ -193,6 +200,12 @@ const DeliveryTable = props => {
               tooltip: "View transactions",
               onClick: (event, rowData) =>
                 openOrderDetailsDialog(event, rowData, true)
+            },
+            {
+              icon: Room,
+              tooltip: "Generate delivery route",
+              onClick: (event, rowData) =>
+                dispatch(generateDeliveryRoute(rowData.deliveryId))
             }
           ]}
         />
@@ -213,6 +226,12 @@ const DeliveryTable = props => {
           open={openCustomerOrderDialog}
           onClose={closeOrderDetailsDialog}
           elements={orderDetails}
+        />
+      )}
+      {openStaffSelectionDialog && (
+        <StaffSelectionDialog
+          open={openStaffSelectionDialog}
+          onClose={() => setOpenStaffSelectionDialog(false)}
         />
       )}
     </div>

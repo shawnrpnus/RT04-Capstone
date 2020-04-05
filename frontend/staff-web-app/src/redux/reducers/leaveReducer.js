@@ -1,5 +1,6 @@
 import * as types from "../actions/types";
 const initialState = {
+
     currentLeave: null,
     allLeaves: null,
     allLeavesManager: null,
@@ -59,3 +60,4 @@ export default function(state = initialState, action) {
             return state;
     }
 }
+

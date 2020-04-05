@@ -102,7 +102,7 @@ export default function CustomDropdown(props) {
               {prop}
             </MenuItem>
           );
-        } else if (prop.type.name === "CustomDropdown") {
+        } else if (prop.type && prop.type.name === "CustomDropdown") {
           return prop;
         }
         return (

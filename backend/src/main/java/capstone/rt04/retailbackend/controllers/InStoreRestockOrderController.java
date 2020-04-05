@@ -1,8 +1,6 @@
 package capstone.rt04.retailbackend.controllers;
 
 import capstone.rt04.retailbackend.entities.InStoreRestockOrder;
-import capstone.rt04.retailbackend.entities.InStoreRestockOrderItem;
-import capstone.rt04.retailbackend.entities.ProductVariant;
 import capstone.rt04.retailbackend.request.inStoreRestockOrder.RestockCreateRequest;
 import capstone.rt04.retailbackend.request.inStoreRestockOrder.RestockUpdateRequest;
 import capstone.rt04.retailbackend.services.InStoreRestockOrderService;
@@ -42,11 +40,11 @@ public class InStoreRestockOrderController {
     public ResponseEntity<?> retrieveAllRestockOrder(@RequestParam(required = false) Long storeId) {
         if (storeId != null) {
             List<InStoreRestockOrder> inStoreRestockOrders = inStoreRestockOrderService.retrieveAllInStoreRestockOrder(storeId);
-            clearRestockOrderRelationship(inStoreRestockOrders);
+            relationshipService.clearRestockOrderRelationship(inStoreRestockOrders);
             return new ResponseEntity<>(inStoreRestockOrders, HttpStatus.OK);
         } else {
             List<InStoreRestockOrder> inStoreRestockOrders = inStoreRestockOrderService.retrieveAllInStoreRestockOrderForWarehouse();
-            clearRestockOrderRelationship(inStoreRestockOrders);
+            relationshipService.clearRestockOrderRelationship(inStoreRestockOrders);
             return new ResponseEntity<>(inStoreRestockOrders, HttpStatus.OK);
         }
     }
@@ -55,7 +53,7 @@ public class InStoreRestockOrderController {
     public ResponseEntity<?> createRestockOrder(@RequestBody RestockCreateRequest restockCreateRequest) throws StoreNotFoundException, ProductStockNotFoundException {
         List<InStoreRestockOrder> inStoreRestockOrders = inStoreRestockOrderService.createInStoreRestockOrder(restockCreateRequest.getStoreId(),
                 restockCreateRequest.getStockIdQuantityMaps());
-        clearRestockOrderRelationship(inStoreRestockOrders);
+        relationshipService.clearRestockOrderRelationship(inStoreRestockOrders);
         return new ResponseEntity<>(inStoreRestockOrders, HttpStatus.CREATED);
     }
 
@@ -63,14 +61,14 @@ public class InStoreRestockOrderController {
     public ResponseEntity<?> updateRestockOrder(@RequestBody RestockUpdateRequest restockUpdateRequest) throws ProductStockNotFoundException, InStoreRestockOrderNotFoundException, ProductVariantNotFoundException, InStoreRestockOrderUpdateException {
         List<InStoreRestockOrder> inStoreRestockOrders = inStoreRestockOrderService.updateRestockOrder(restockUpdateRequest.getRestockOrderId(),
                 restockUpdateRequest.getStockIdQuantityMaps());
-        clearRestockOrderRelationship(inStoreRestockOrders);
+        relationshipService.clearRestockOrderRelationship(inStoreRestockOrders);
         return new ResponseEntity<>(inStoreRestockOrders, HttpStatus.OK);
     }
 
     @GetMapping(FULFILL_IN_STORE_RESTOCK_ORDER)
     public ResponseEntity<?> fulfillRestockOrder(@PathVariable Long inStoreRestockOrderId) throws InStoreRestockOrderNotFoundException, InsufficientStockException {
         List<InStoreRestockOrder> inStoreRestockOrders = inStoreRestockOrderService.fulfillRestockOrder(inStoreRestockOrderId);
-        clearRestockOrderRelationship(inStoreRestockOrders);
+        relationshipService.clearRestockOrderRelationship(inStoreRestockOrders);
         return new ResponseEntity<>(inStoreRestockOrders, HttpStatus.OK);
     }
 
@@ -84,29 +82,7 @@ public class InStoreRestockOrderController {
     @DeleteMapping(DELETE_IN_STORE_RESTOCK_ORDER)
     public ResponseEntity<?> deleteRestockOrder(@PathVariable Long inStoreRestockOrderId) throws InStoreRestockOrderNotFoundException, InStoreRestockOrderUpdateException {
         List<InStoreRestockOrder> inStoreRestockOrders = inStoreRestockOrderService.deleteInStoreRestockOrder(inStoreRestockOrderId);
-        clearRestockOrderRelationship(inStoreRestockOrders);
+        relationshipService.clearRestockOrderRelationship(inStoreRestockOrders);
         return new ResponseEntity<>(inStoreRestockOrders, HttpStatus.OK);
-    }
-
-    private void clearRestockOrderRelationship(List<InStoreRestockOrder> inStoreRestockOrders) {
-        for (InStoreRestockOrder inStoreRestockOrder : inStoreRestockOrders) {
-            // Warehouse
-            inStoreRestockOrder.getWarehouse().setProductStocks(null);
-            inStoreRestockOrder.getWarehouse().setInStoreRestockOrders(null);
-
-            // Store
-            relationshipService.clearStoreRelationships(inStoreRestockOrder.getStore());
-
-            // Product stock
-            for (InStoreRestockOrderItem inStoreRestockOrderItem : inStoreRestockOrder.getInStoreRestockOrderItems()) {
-                inStoreRestockOrderItem.getProductStock().setStore(null);
-                inStoreRestockOrderItem.getProductStock().setWarehouse(null);
-                // Product variant
-                ProductVariant productVariant = inStoreRestockOrderItem.getProductStock().getProductVariant();
-                relationshipService.clearProductVariantRelationships(productVariant);
-                inStoreRestockOrderItem.setInStoreRestockOrder(null);
-                inStoreRestockOrderItem.setDelivery(null);
-            }
-        }
     }
 }

@@ -33,6 +33,7 @@ import {
 } from "@material-ui/icons";
 import { confirmTransactionDelivery } from "../../../redux/actions/deliveryActions";
 import { getDeliveryStatusColour } from "../../../redux/actions/restockOrderAction";
+import QRScanner from "./QRScanner";
 
 const _ = require("lodash");
 const tableIcons = {
@@ -62,6 +63,8 @@ const TransactionDetailsDialog = ({ elements, open, onClose }) => {
   const [itemsByStore, setItemsByStore] = useState([]);
   const [stores, setStores] = useState([]);
   const [selectedStore, setSelectedStore] = useState("");
+  const [openQR, setOpenQR] = useState(false);
+  const [selectedTransaction, setSelectedTransaction] = useState([]);
 
   useEffect(() => {
     const stores = elements.map(e => _.get(e, "storeToCollect.storeName", ""));
@@ -112,18 +115,26 @@ const TransactionDetailsDialog = ({ elements, open, onClose }) => {
       );
       setSelectedStore(value);
     }
+    setSelectedTransaction([]);
   };
 
-  const handleConfirmDelivery = data => {
+  const handleOpenQR = data => {
+    setOpenQR(true);
+  };
+
+  const handleConfirmDelivery = () => {
+    const data =
+      selectedTransaction.length > 0 ? selectedTransaction : itemsByStore;
     const transactionIds = data.map(e => e.transactionId);
-    confirmDialog({
-      description: "The selected transaction(s) will be marked as delivered"
-    })
-      .then(() => {
-        dispatch(confirmTransactionDelivery({ transactionIds }));
-        onClose();
-      })
-      .catch(() => null);
+    dispatch(confirmTransactionDelivery({ transactionIds }));
+    // confirmDialog({
+    //   description: "The selected transaction(s) will be marked as delivered",
+    // })
+    //   .then(() => {
+
+    //     onClose();
+    //   })
+    //   .catch(() => null);
   };
 
   return (
@@ -193,8 +204,8 @@ const TransactionDetailsDialog = ({ elements, open, onClose }) => {
               ? rowData => ({
                   icon: Add,
                   tooltip: "Confirm delivery",
-                  onClick: (event, rowData) =>
-                    handleConfirmDelivery(itemsByStore),
+                  onClick: (event, rowData) => handleOpenQR(),
+                  // handleConfirmDelivery(itemsByStore),
                   disabled: itemsByStore.every(
                     item => item.deliveryStatus === "DELIVERED"
                   )
@@ -202,8 +213,13 @@ const TransactionDetailsDialog = ({ elements, open, onClose }) => {
               : rowData => ({
                   icon: SaveAlt,
                   tooltip: "Confirm delivery",
-                  onClick: (event, rowData) => handleConfirmDelivery([rowData]),
-                  disabled: rowData.deliveryStatus === "DELIVERED"
+                  onClick: (event, rowData) => {
+                    setSelectedTransaction([rowData]);
+                    handleOpenQR([rowData]);
+                  },
+                  disabled:
+                    rowData.deliveryStatus === "DELIVERED" ||
+                    rowData.deliveryStatus === "READY FOR COLLECTION"
                 })
           ]}
         />
@@ -224,6 +240,14 @@ const TransactionDetailsDialog = ({ elements, open, onClose }) => {
           Confirm delivery
         </Button> */}
       </DialogActions>
+      {openQR && (
+        <QRScanner
+          open={openQR}
+          onClose={() => setOpenQR(false)}
+          confirmDelivery={handleConfirmDelivery}
+          onCloseOuterDialog={onClose}
+        />
+      )}
     </Dialog>
   );
 };
