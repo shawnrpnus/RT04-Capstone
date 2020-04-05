@@ -7,5 +7,7 @@ public class StyleControllerRoutes {
     public static final String RETRIEVE_STYLE_BY_ID = "/retrieveStyleById/{styleId}";
     public static final String UPDATE_STYLE = "/updateStyle";
     public static final String DELETE_STYLE = "/deleteStyle/{styleId}";
+    public static final String ADD_STYLE_TO_PRODUCTS = "/addStyleToProducts";
+    public static final String DELETE_STYLE_FROM_PRODUCTS = "/deleteStyleFromProducts";
 
 }

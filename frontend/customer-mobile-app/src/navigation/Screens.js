@@ -1,33 +1,33 @@
 import React from "react";
-import { Easing, Dimensions } from "react-native";
+import { Dimensions } from "react-native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createDrawerNavigator } from "@react-navigation/drawer";
-
-import { Icon, Header } from "../components/";
 import theme from "src/constants/Theme";
-
-// screens
-
 import LogIn from "src/screens/LogIn";
-import Profile from "src/screens/Profile/Profile";
 import { useSelector } from "react-redux";
 import CustomDrawerContent from "src/navigation/CustomDrawerContent";
-import Product from "src/screens/Product";
 import CustomHeader from "src/components/CustomHeader";
 import ProductDetails from "src/screens/ProductDetails/ProductDetails";
-import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import ShoppingCart from "src/screens/ShoppingCart/ShoppingCart";
 import ViewAddresses from "src/screens/Profile/Address/ViewAddresses";
 import ViewCreditCards from "src/screens/Profile/CreditCard/ViewCreditCards";
 import { FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
 import CreateAddress from "src/screens/Profile/Address/CreateAddress";
 import UpdateAddress from "src/screens/Profile/Address/UpdateAddress";
+import Checkout from "src/screens/Checkout/Checkout";
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+import ViewDetails from "src/screens/ViewDetails";
+import AddToCart from "src/screens/AddToCart";
+import PurchaseHistory from "src/screens/Purchases/PurchaseHistory";
+import PurchaseDetails from "src/screens/Purchases/PurchaseDetails";
 
-const { width } = Dimensions.get("screen");
+// screens
+
+const { width, height } = Dimensions.get("screen");
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
-const Tab = createMaterialBottomTabNavigator();
+const Tab = createMaterialTopTabNavigator();
 
 export default function AppStack(props) {
   const customer = useSelector(state => state.customer.loggedInCustomer);
@@ -92,6 +92,11 @@ function AppDrawer(props) {
         drawerLabel="Profile"
         component={ProfileStack}
       />
+      <Drawer.Screen
+        name="PurchasesStack"
+        drawerLabel="Purchases"
+        component={PurchasesStack}
+      />
       {/*<Drawer.Screen name="TransactionStack" drawerLabel="Transactions" component={}/>*/}
     </Drawer.Navigator>
   );
@@ -100,16 +105,23 @@ function AppDrawer(props) {
 function ProfileStack(props) {
   return (
     <Tab.Navigator
-      initialRouteName="Address"
-      activeColor={theme.COLORS.PRIMARY}
-      barStyle={{ backgroundColor: theme.COLORS.CAPTION }}
+      initialRouteName="View Details"
+      tabBarPosition="bottom"
+      lazy
+      tabBarOptions={{
+        activeTintColor: theme.COLORS.PRIMARY,
+        inactiveTintColor: "lightgrey",
+        style: { backgroundColor: theme.COLORS.CAPTION },
+        showIcon: true,
+        indicatorStyle: { backgroundColor: theme.COLORS.PRIMARY }
+      }}
     >
       <Tab.Screen
         name="Address"
         component={AddressStack}
         options={{
           tabBarLabel: "Address Book",
-          tabBarIcon: ({ color }) => (
+          tabBarIcon: ({ focused, color }) => (
             <FontAwesome name="address-book" color={color} size={20} />
           )
         }}
@@ -119,7 +131,7 @@ function ProfileStack(props) {
         component={CreditCardsStack}
         options={{
           tabBarLabel: "Credit Cards",
-          tabBarIcon: ({ color }) => (
+          tabBarIcon: ({ focused, color }) => (
             <FontAwesome name="credit-card" color={color} size={20} />
           )
         }}
@@ -218,6 +230,13 @@ function ShopStack(props) {
           )
         }}
       />
+      <Stack.Screen
+        name="Checkout"
+        component={Checkout}
+        options={{
+          header: props => <CustomHeader title="Checkout" back {...props} />
+        }}
+      />
     </Stack.Navigator>
   );
 }
@@ -226,29 +245,58 @@ function ProductScanTabs(props) {
   return (
     <Tab.Navigator
       initialRouteName="View Details"
-      activeColor={theme.COLORS.PRIMARY}
-      barStyle={{ backgroundColor: theme.COLORS.CAPTION }}
+      tabBarPosition="bottom"
+      tabBarOptions={{
+        activeTintColor: theme.COLORS.PRIMARY,
+        inactiveTintColor: "lightgrey",
+        style: { backgroundColor: theme.COLORS.CAPTION },
+        showIcon: true,
+        indicatorStyle: { backgroundColor: theme.COLORS.PRIMARY }
+      }}
     >
       <Tab.Screen
         name="View Details"
-        component={Product}
+        component={ViewDetails}
         options={{
           tabBarLabel: "View Details",
-          tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="magnify" color={color} size={26} />
+          tabBarIcon: ({ focused, color }) => (
+            <MaterialCommunityIcons name="magnify" color={color} size={23} />
           )
         }}
       />
       <Tab.Screen
         name="Add to Cart"
-        component={Product}
+        component={AddToCart}
         options={{
           tabBarLabel: "Add to Cart",
-          tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="cart-plus" color={color} size={26} />
+          tabBarIcon: ({ focused, color }) => (
+            <MaterialCommunityIcons name="cart-plus" color={color} size={23} />
           )
         }}
       />
     </Tab.Navigator>
+  );
+}
+
+function PurchasesStack(props) {
+  return (
+    <Stack.Navigator mode="card" headerMode="screen" initialRouteName="Shop">
+      <Stack.Screen
+        name="Purchase History"
+        component={PurchaseHistory}
+        options={{
+          header: props => <CustomHeader title="Purchase History" {...props} />,
+          headerStyle: { height: 100 }
+        }}
+      />
+      <Stack.Screen
+        name="Purchase Details"
+        component={PurchaseDetails}
+        options={{
+          header: props => <CustomHeader title="Purchase Details" {...props} />,
+          headerStyle: { height: 100 }
+        }}
+      />
+    </Stack.Navigator>
   );
 }

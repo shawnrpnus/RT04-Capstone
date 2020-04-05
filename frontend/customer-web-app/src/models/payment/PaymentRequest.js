@@ -7,7 +7,10 @@ export default class PaymentRequest {
     deliveryAddress,
     billingAddress,
     storeToCollectId,
-    promoCodeId
+    promoCodeId,
+    cardIssuer,
+    cardLast4,
+    collectionModeEnum
   ) {
     this.customerId = customerId;
     this.paymentMethodId = paymentMethodId;
@@ -17,5 +20,8 @@ export default class PaymentRequest {
     this.billingAddress = billingAddress;
     this.storeToCollectId = storeToCollectId;
     this.promoCodeId = promoCodeId;
+    this.cardIssuer = cardIssuer;
+    this.cardLast4 = cardLast4;
+    this.collectionModeEnum = collectionModeEnum;
   }
 }

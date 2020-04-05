@@ -54,6 +54,10 @@ public class Transaction implements Serializable {
 
     private Timestamp deliveredDateTime;
 
+    private String cardIssuer;
+
+    private String cardLast4;
+
     @ManyToOne
     private PromoCode promoCode;
 

@@ -1,13 +1,17 @@
 import React, { useState } from "react";
 import { Block, Text } from "galio-framework";
-import { Dimensions, FlatList } from "react-native";
+import { Alert, Dimensions, FlatList, TouchableOpacity } from "react-native";
 import { FAB } from "react-native-paper";
 import Theme from "src/constants/Theme";
 import Spinner from "react-native-loading-spinner-overlay";
 import { useDispatch, useSelector } from "react-redux";
 import { CardView } from "react-native-credit-card-input";
 import { PaymentsStripe as stripe } from "expo-payments-stripe";
-import { addCreditCard } from "src/redux/actions/customerActions";
+import {
+  addCreditCard,
+  removeCreditCard
+} from "src/redux/actions/customerActions";
+import { Feather } from "@expo/vector-icons";
 
 const { width, height } = Dimensions.get("window");
 
@@ -29,15 +33,32 @@ function ViewCreditCards(props) {
   const renderItem = ({ item }) => {
     let month = item.expiryMonth;
     month = ("0" + month).slice(-2);
+    let issuer = item.issuer.toLowerCase();
+    issuer =
+      issuer === "visa" ? "visa" : issuer === "mastercard" ? "master-card" : "";
     return (
-      <Block style={{ marginTop: 3 }}>
+      <Block style={{ marginTop: 10 }}>
         <CardView
-          brand={item.issuer.toLowerCase()}
+          brand={issuer}
           name={customer.firstName + " " + customer.lastName}
           number={"•••• •••• •••• " + item.last4}
           expiry={`${month}/${item.expiryYear.toString().slice(-2)}`}
-          scale={1.15}
+          scale={1.05}
         />
+        <TouchableOpacity
+          style={{
+            position: "absolute",
+            top: 7,
+            left: 0,
+            backgroundColor: "rgba(255,255,255,0.6)",
+            borderWidth: 1,
+            borderRadius: 50,
+            borderColor: "transparent"
+          }}
+          onPress={() => showDeleteConfirmationAlert(item.creditCardId)}
+        >
+          <Feather name="x" size={30} style={{ color: "rgb(96,96,96)" }} />
+        </TouchableOpacity>
       </Block>
     );
   };
@@ -45,14 +66,30 @@ function ViewCreditCards(props) {
   const getNewCard = async () => {
     try {
       const token = await stripe.paymentRequestWithCardFormAsync();
-      dispatch(addCreditCard(customer.customerId, token.tokenId));
+      dispatch(addCreditCard(customer.customerId, token.tokenId, setLoading));
     } catch (err) {
       console.log(err);
     }
   };
 
+  const showDeleteConfirmationAlert = creditCardId => {
+    Alert.alert("Remove card", "Are you sure you want to remove this card?", [
+      {
+        text: "Cancel",
+        style: "cancel"
+      },
+      {
+        text: "Remove",
+        onPress: () =>
+          dispatch(
+            removeCreditCard(customer.customerId, creditCardId, setLoading)
+          )
+      }
+    ]);
+  };
+
   return (
-    <Block flex={1} center style={{ width: width, paddingTop: 3 }}>
+    <Block flex={1} center style={{ width: width, paddingTop: 5 }}>
       {customer && (
         <>
           <FlatList

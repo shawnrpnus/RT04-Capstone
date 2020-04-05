@@ -5,6 +5,7 @@ import {
   UPDATE_SHOPPING_CART_SUCCESS
 } from "redux/actions/types";
 import { dispatchErrorMapError } from "redux/actions/index";
+import { refreshCustomerEmail } from "./customerActions";
 axios.defaults.baseURL = process.env.REACT_APP_SPRING_API_URL;
 
 const CUSTOMER_BASE_URL = "/api/customer";
@@ -78,15 +79,14 @@ export const getClientSecret = (totalAmount, setClientSecret) => {
     });
 };
 
-export const completeDirectPayment = (paymentRequest, history) => {
+export const completeDirectPayment = (paymentRequest, history, email) => {
   return dispatch => {
     axios
       .post(`/completeDirectPayment`, paymentRequest)
       .then(resp => {
         // Return a customer object
         // Update customer
-        console.log(resp);
-        handleUpdateShoppingCart(resp.data, dispatch);
+        dispatch(refreshCustomerEmail(email));
         history.push("/account/profile/orderHistory");
       })
       .catch(err => {
@@ -95,15 +95,14 @@ export const completeDirectPayment = (paymentRequest, history) => {
   };
 };
 
-export const makePaymentWithSavedCard = (paymentRequest, history) => {
+export const makePaymentWithSavedCard = (paymentRequest, history, email) => {
   return dispatch => {
     axios
       .post(`/makePaymentWithSavedCard`, paymentRequest)
       .then(resp => {
         // Return a customer object
         // Update customer
-        console.log(resp);
-        handleUpdateShoppingCart(resp.data, dispatch);
+        dispatch(refreshCustomerEmail(email));
         history.push("/account/profile/orderHistory");
       })
       .catch(err => {

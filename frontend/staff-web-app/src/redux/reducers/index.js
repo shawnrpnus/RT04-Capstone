@@ -3,6 +3,7 @@ import sidebarReducer from "./sidebarReducer";
 import storeReducer from "./storeReducer";
 import errorReducer from "./errorReducer";
 import tagReducer from "./tagReducer";
+import styleReducer from "./styleReducer";
 import promoCodeReducer from "./promoCodeReducer";
 import productReducer from "./productReducer";
 import productStockReducer from "./productStockReducer";
@@ -19,13 +20,16 @@ import instagramReducer from "./instagramReducer";
 import discountReducer from "./discountReducer";
 import transactionReducer from "./transactionReducer";
 import dashboardReducer from "./dashboardReducer";
+import leaveReducer from "./leaveReducer";
 
 const rootReducer = combineReducers({
   errors: errorReducer,
   sidebar: sidebarReducer,
   storeEntity: storeReducer,
   tag: tagReducer,
+  style: styleReducer,
   promoCode: promoCodeReducer,
+  leave: leaveReducer,
   product: productReducer,
   category: categoryReducer,
   staffEntity: staffReducer,

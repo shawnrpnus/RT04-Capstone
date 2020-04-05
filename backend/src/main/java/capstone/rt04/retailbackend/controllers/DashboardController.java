@@ -3,10 +3,10 @@ package capstone.rt04.retailbackend.controllers;
 import capstone.rt04.retailbackend.entities.Transaction;
 import capstone.rt04.retailbackend.entities.TransactionLineItem;
 import capstone.rt04.retailbackend.response.ProductDetailsResponse;
+import capstone.rt04.retailbackend.services.AprioriService;
 import capstone.rt04.retailbackend.services.ProductService;
 import capstone.rt04.retailbackend.services.RelationshipService;
 import capstone.rt04.retailbackend.services.TransactionService;
-import capstone.rt04.retailbackend.services.AprioriService;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,8 +23,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static capstone.rt04.retailbackend.util.Constants.MARKET_BASKET_ANALYIS_FILE_PATH;
-import static capstone.rt04.retailbackend.util.routeconstants.DashboardControllerRoutes.*;
+import static capstone.rt04.retailbackend.util.Constants.DEV_MARKET_BASKET_ANALYIS_FILE_PATH;
+import static capstone.rt04.retailbackend.util.routeconstants.DashboardControllerRoutes.DASHBOAR_BASE_ROUTE;
+import static capstone.rt04.retailbackend.util.routeconstants.DashboardControllerRoutes.RETRIEVE_MARKET_BASKET_ANALYSIS;
 
 @RestController
 @RequestMapping(DASHBOAR_BASE_ROUTE)
@@ -64,21 +65,32 @@ public class DashboardController {
         }
 
         OutputStream os = null;
+        File file = new File(DEV_MARKET_BASKET_ANALYIS_FILE_PATH);
+        Boolean dev = Boolean.TRUE;
+
         try {
-            os = new FileOutputStream(new File(MARKET_BASKET_ANALYIS_FILE_PATH));
+            // try to write to file (development)
+            os = new FileOutputStream(file);
             os.write(data.getBytes(), 0, data.length());
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception ex) {
+            dev = Boolean.FALSE;
+//            ex.printStackTrace();
         } finally {
             try {
                 os.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
         }
 
         List<List<ProductDetailsResponse>> productDetailsResponses = new ArrayList<>();
-        List<List<Long>> transactionIdsList = aprioriService.performBasketAnalysis();
+        List<List<Long>> transactionIdsList;
+        if (dev) {
+            transactionIdsList = aprioriService.performBasketAnalysis(DEV_MARKET_BASKET_ANALYIS_FILE_PATH, null);
+        } else {
+            transactionIdsList = aprioriService.performBasketAnalysis(null, data);
+        }
+
         for (List<Long> list : transactionIdsList) {
             List<ProductDetailsResponse> products = productService.retrieveProductsDetails(null,
                     null, productService.retrieveListOfProductsById(list));
@@ -91,5 +103,4 @@ public class DashboardController {
 
         return new ResponseEntity<>(productDetailsResponses, HttpStatus.OK);
     }
-
 }

@@ -10,7 +10,8 @@ import {
   FaBarcode,
   FaList,
   FaFileInvoice,
-  FaMoneyBillAlt
+  FaMoneyBillAlt,
+  FaStaylinked
 } from "react-icons/fa";
 import {
   MdFeedback,
@@ -115,6 +116,22 @@ class SidebarContent extends Component {
               <SidebarLink
                 title={salesmarketing ? "Manage" : "View"}
                 route="/tag/addTagToProducts"
+                onClick={this.hideSidebar}
+              />
+            </SidebarCategory>
+          )}
+          {(salesmarketing || store || warehouse) && (
+            <SidebarCategory title="Style" customIcon={<FaStaylinked />}>
+              {salesmarketing && (
+                <SidebarLink
+                  title="Create"
+                  route="/style/manage"
+                  onClick={this.hideSidebar}
+                />
+              )}
+              <SidebarLink
+                title={salesmarketing ? "Manage" : "View"}
+                route="/style/addStyleToProducts"
                 onClick={this.hideSidebar}
               />
             </SidebarCategory>

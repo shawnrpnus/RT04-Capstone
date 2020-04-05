@@ -2,12 +2,16 @@ package capstone.rt04.retailbackend.controllers;
 
 
 import capstone.rt04.retailbackend.entities.Style;
+import capstone.rt04.retailbackend.request.style.AddStyleToProductRequest;
+import capstone.rt04.retailbackend.request.style.DeleteStyleFromProductsRequest;
 import capstone.rt04.retailbackend.services.StyleService;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
+import capstone.rt04.retailbackend.util.exceptions.product.ProductNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.style.CreateNewStyleException;
 import capstone.rt04.retailbackend.util.exceptions.style.DeleteStyleException;
 import capstone.rt04.retailbackend.util.exceptions.style.StyleNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.style.UpdateStyleException;
+import capstone.rt04.retailbackend.util.exceptions.tag.TagNotFoundException;
 import capstone.rt04.retailbackend.util.routeconstants.StyleControllerRoutes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,6 +54,18 @@ public class StyleController {
     @DeleteMapping(StyleControllerRoutes.DELETE_STYLE)
     public ResponseEntity<?> deleteStyle(@PathVariable Long styleId) throws StyleNotFoundException, DeleteStyleException {
         Style style = styleService.deleteStyle(styleId);
+        return new ResponseEntity<>(style, HttpStatus.OK);
+    }
+
+    @PostMapping(StyleControllerRoutes.ADD_STYLE_TO_PRODUCTS)
+    public ResponseEntity<?> addStyleToProducts(@RequestBody AddStyleToProductRequest addStyleToProductRequest) throws StyleNotFoundException, ProductNotFoundException {
+        Style style = styleService.addStyleToProduct(addStyleToProductRequest.getStyleId(), addStyleToProductRequest.getProductIds());
+        return new ResponseEntity<>(style, HttpStatus.OK);
+    }
+
+    @PostMapping(StyleControllerRoutes.DELETE_STYLE_FROM_PRODUCTS)
+    public ResponseEntity<?> addStyleToProducts(@RequestBody DeleteStyleFromProductsRequest deleteStyleFromProductsRequest) throws StyleNotFoundException, ProductNotFoundException {
+        Style style = styleService.deleteStyleFromProduct(deleteStyleFromProductsRequest.getStyleId(), deleteStyleFromProductsRequest.getProductIds());
         return new ResponseEntity<>(style, HttpStatus.OK);
     }
 }
