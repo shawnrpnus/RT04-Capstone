@@ -91,7 +91,7 @@ function CreateRefundTable({
       }));
       return amt;
     }
-    if(amt < 0) {
+    if (amt < 0) {
       amt = 0;
     }
     return amt;
@@ -117,9 +117,13 @@ function CreateRefundTable({
                         productVariantId
                       } = lineItem.productVariant;
                       const { productName, discountedPrice, price } = product;
-                      const { quantity, initialSubTotal, finalSubTotal } = lineItem;
-                      const afterDiscount = finalSubTotal/quantity;
-                      const beforeDiscount = initialSubTotal/quantity;
+                      const {
+                        quantity,
+                        initialSubTotal,
+                        finalSubTotal
+                      } = lineItem;
+                      const afterDiscount = finalSubTotal / quantity;
+                      const beforeDiscount = initialSubTotal / quantity;
                       const quantityToRefund = quantity + 1;
                       console.log("lineItem", lineItem);
                       console.log(index);
@@ -158,8 +162,7 @@ function CreateRefundTable({
                                     )}
                                     <span
                                       className={
-                                        finalSubTotal &&
-                                        classes.discountedPrice
+                                        finalSubTotal && classes.discountedPrice
                                       }
                                     >
                                       ${beforeDiscount.toFixed(2)}
@@ -203,7 +206,9 @@ function CreateRefundTable({
                               {/*Amount*/}
                               <GridItem md={2}>
                                 <h3>
-                                  ${inputState.refundAmt[index].toFixed(2)* inputState.quantityToRefund[index]}
+                                  $
+                                  {inputState.refundAmt[index].toFixed(2) *
+                                    inputState.quantityToRefund[index]}
                                 </h3>
                               </GridItem>
                               {/* Action */}

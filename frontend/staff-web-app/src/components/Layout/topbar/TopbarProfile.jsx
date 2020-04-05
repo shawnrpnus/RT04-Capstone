@@ -2,9 +2,7 @@ import React, { PureComponent } from "react";
 import DownIcon from "mdi-react/ChevronDownIcon";
 import { Collapse } from "reactstrap";
 import TopbarMenuLink from "./TopbarMenuLink";
-import {
-  staffLogout
-} from "../../../redux/actions/staffActions";
+import { staffLogout } from "../../../redux/actions/staffActions";
 import * as PropTypes from "prop-types";
 import { connect } from "react-redux";
 
@@ -58,10 +56,10 @@ class TopbarProfile extends PureComponent {
               onClick={this.toggle}
             />
             <TopbarMenuLink
-                title="My Leaves"
-                icon="leaf"
-                path="/leave/apply"
-                onClick={this.toggle}
+              title="My Leaves"
+              icon="leaf"
+              path="/leave/apply"
+              onClick={this.toggle}
             />
             <TopbarMenuLink
               title="Logout"

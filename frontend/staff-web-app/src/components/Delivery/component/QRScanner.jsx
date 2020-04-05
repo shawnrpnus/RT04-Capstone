@@ -10,14 +10,14 @@ const QRScanner = ({ onClose, open, confirmDelivery, onCloseOuterDialog }) => {
   const [pause, setPause] = useState(false);
   const confirmDialog = useConfirm();
 
-  const handleScan = (data) => {
+  const handleScan = data => {
     if (data) {
       if (!pause) {
         console.log(data);
         setPause(true);
         setResult(data);
         confirmDialog({
-          description: "Delivery will be confirmed",
+          description: "Delivery will be confirmed"
         })
           .then(() => {
             confirmDelivery();
@@ -29,7 +29,7 @@ const QRScanner = ({ onClose, open, confirmDelivery, onCloseOuterDialog }) => {
     }
   };
 
-  const handleError = (err) => {
+  const handleError = err => {
     if (!pause) console.error(err);
   };
 

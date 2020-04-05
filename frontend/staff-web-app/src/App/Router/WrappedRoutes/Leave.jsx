@@ -4,11 +4,7 @@ import LeaveApplicationForm from "../../../components/Leave/components/LeaveAppl
 import SecureRoute from "../SecureRoute";
 
 export default () => (
-    <Switch>
-        <SecureRoute
-            exact
-            path="/leave/apply"
-            component={LeaveApplicationForm}
-        />
-    </Switch>
+  <Switch>
+    <SecureRoute exact path="/leave/apply" component={LeaveApplicationForm} />
+  </Switch>
 );

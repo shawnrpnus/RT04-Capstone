@@ -29,7 +29,7 @@ import {
   Remove,
   SaveAlt,
   Search,
-  ViewColumn,
+  ViewColumn
 } from "@material-ui/icons";
 import { confirmRestockOrderDelivery } from "../../../redux/actions/deliveryActions";
 import { getDeliveryStatusColour } from "../../../redux/actions/restockOrderAction";
@@ -53,7 +53,7 @@ const tableIcons = {
   Search: Search,
   SortArrow: () => <div />,
   ThirdStateCheck: Remove,
-  ViewColumn: ViewColumn,
+  ViewColumn: ViewColumn
 };
 
 const RestockOrderDetailsDialog = ({ elements, open, onClose }) => {
@@ -65,20 +65,18 @@ const RestockOrderDetailsDialog = ({ elements, open, onClose }) => {
   const [openQR, setOpenQR] = useState(false);
 
   useEffect(() => {
-    const stores = elements.map((e) =>
-      _.get(e, "productStock.store.storeName")
-    );
+    const stores = elements.map(e => _.get(e, "productStock.store.storeName"));
     setStores(_.uniq(stores));
     setItemsByStore(elements);
   }, []);
 
-  const data = itemsByStore.map((item) => {
+  const data = itemsByStore.map(item => {
     let {
       inStoreRestockOrderItemId,
       deliveryDateTime,
       itemDeliveryStatus,
       quantity,
-      productStock,
+      productStock
     } = item;
     let date = deliveryDateTime;
     if (deliveryDateTime)
@@ -94,7 +92,7 @@ const RestockOrderDetailsDialog = ({ elements, open, onClose }) => {
         "productVariant.productImages[0].productImageUrl"
       ),
       store: _.get(productStock, "store"),
-      storeName: _.get(productStock, "store.storeName"),
+      storeName: _.get(productStock, "store.storeName")
     };
   });
 
@@ -106,7 +104,7 @@ const RestockOrderDetailsDialog = ({ elements, open, onClose }) => {
     } else {
       setItemsByStore(
         elements.filter(
-          (item) => _.get(item, "productStock.store.storeName") === input.value
+          item => _.get(item, "productStock.store.storeName") === input.value
         )
       );
       setSelectedStore(value);
@@ -119,7 +117,7 @@ const RestockOrderDetailsDialog = ({ elements, open, onClose }) => {
 
   const handleConfirmDelivery = () => {
     const inStoreRestockOrderItemIds = itemsByStore.map(
-      (e) => e.inStoreRestockOrderItemId
+      e => e.inStoreRestockOrderItemId
     );
     dispatch(confirmRestockOrderDelivery({ inStoreRestockOrderItemIds }));
 
@@ -144,7 +142,7 @@ const RestockOrderDetailsDialog = ({ elements, open, onClose }) => {
               <MenuItem key={"all"} value={"all"}>
                 All
               </MenuItem>
-              {stores.map((store) => {
+              {stores.map(store => {
                 return (
                   <MenuItem key={store} value={store}>
                     {store}
@@ -164,15 +162,15 @@ const RestockOrderDetailsDialog = ({ elements, open, onClose }) => {
             {
               title: "Image",
               field: "image",
-              render: (rowData) => (
+              render: rowData => (
                 <img
                   style={{
                     width: "50%",
-                    borderRadius: "10%",
+                    borderRadius: "10%"
                   }}
                   src={rowData.image}
                 />
-              ),
+              )
             },
             { title: "Product name", field: "productName" },
             { title: "Delivery Date", field: "deliveryDateTime" },
@@ -187,23 +185,23 @@ const RestockOrderDetailsDialog = ({ elements, open, onClose }) => {
                     label={itemDeliveryStatus}
                   />
                 );
-              },
+              }
             },
             {
               title: "Quantity",
-              field: "quantity",
+              field: "quantity"
             },
             {
               title: "Store name",
-              field: "storeName",
-            },
+              field: "storeName"
+            }
           ]}
           data={data}
           options={{
             paging: false,
             headerStyle: { textAlign: "center" }, //change header padding
             cellStyle: { textAlign: "center" },
-            draggable: false,
+            draggable: false
           }}
         />
       </DialogContent>

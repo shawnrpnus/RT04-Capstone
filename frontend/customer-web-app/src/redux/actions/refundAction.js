@@ -1,8 +1,7 @@
 import axios from "axios";
-import {dispatchErrorMapError} from "./index";
+import { dispatchErrorMapError } from "./index";
 import * as types from "./types";
-import {CREATE_ONLINE_REFUND_RECORD} from "./types";
-
+import { CREATE_ONLINE_REFUND_RECORD } from "./types";
 
 axios.defaults.baseURL = process.env.REACT_APP_SPRING_API_URL;
 
@@ -10,7 +9,6 @@ const REFUND_BASE_URL = "/api/refund";
 
 const _ = require("lodash");
 const jsog = require("jsog");
-
 
 export const createOnlineRefundRequest = (
   refundRequest,
@@ -62,8 +60,7 @@ const retrieveRefundsByCustomerIdSuccess = data => ({
   refunds: data
 });
 
-
-export const retrieveRefundById = (refundId) => {
+export const retrieveRefundById = refundId => {
   return dispatch => {
     //redux thunk passes dispatch
     axios
