@@ -19,7 +19,7 @@ export const createInStoreRefundRequest = (
   return dispatch => {
     //redux thunk passes dispatch
     axios
-      .post(REFUND_BASE_URL + "createInStoreRefundRecord", refundRequest)
+      .post(REFUND_BASE_URL + "createRefundRecord", refundRequest)
       .then(response => {
         const { data } = jsog.decode(response);
         console.log(data);

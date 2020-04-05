@@ -10,6 +10,6 @@ import java.util.List;
 public interface WarehouseRepository extends CrudRepository<Warehouse, Long> {
     List<Warehouse> findAll();
 
-
+    Warehouse findByWarehouseId(Long warehouseId);
 
 }

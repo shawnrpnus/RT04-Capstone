@@ -14,6 +14,7 @@ import ShoppingCart from "components/ShoppingCart/ShoppingCartPage";
 import CheckOutPage from "components/Checkout/CheckOutPage";
 import ReservationCartPage from "components/Reservation/ReservationCart/ReservationCartPage";
 import ReservationHomePage from "components/Reservation/ReservationHomePage";
+import CreateRefund from "../../../components/Profile/sections/Refunds/CreateRefund";
 
 export default () => (
   <Switch>
@@ -23,6 +24,11 @@ export default () => (
       exact
       path="/account/profile/:mode/:transactionId?"
       component={ProfilePage}
+    />
+    <Route
+      exact
+      path="/account/refund/:transactionId?"
+      component={CreateRefund}
     />
     <Route exact path="/account/verifyEmail" component={VerifyEmailPrompt} />
     <Route
