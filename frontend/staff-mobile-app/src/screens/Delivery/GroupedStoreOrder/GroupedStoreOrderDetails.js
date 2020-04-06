@@ -180,22 +180,11 @@ function GroupedStoreOrderDetails(props) {
               <Text h5 bold style={{ fontSize: 18 }}>
                 Address
               </Text>
-              <Block
-                flex
-                card
-                style={{
-                  backgroundColor: "white",
-                  marginTop: 4,
-                  padding: 12,
-                  borderRadius: 0
-                }}
-              >
-                <AddressCard
-                  address={groupedStoreOrder.store.address}
-                  border={0}
-                  padding={0}
-                />
-              </Block>
+              <AddressCard
+                address={groupedStoreOrder.store.address}
+                border={1}
+                padding={12}
+              />
             </Block>
           </Block>
 
@@ -265,7 +254,10 @@ function GroupedStoreOrderDetails(props) {
             </Block>
             {showCustomerOrders &&
               groupedStoreOrder.transactions.map(item => (
-                <ExpandableTransactionItem transaction={item} key={item.transactionId} />
+                <ExpandableTransactionItem
+                  transaction={item}
+                  key={item.transactionId}
+                />
               ))}
           </Block>
         </ScrollView>

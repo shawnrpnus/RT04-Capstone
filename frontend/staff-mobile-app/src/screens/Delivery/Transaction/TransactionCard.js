@@ -22,7 +22,7 @@ function TransactionCard(props) {
     dispatch(
       setViewedTransaction(
         transaction.transactionId,
-        () => navigation.navigate("Purchase Details"),
+        () => navigation.navigate("Customer Order Details"),
         setLoading
       )
     );

@@ -21,6 +21,7 @@ import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 import DrawerCustomItem from "src/components/DrawerCustomItem";
 import DeliveryList from "src/screens/Delivery/DeliveryList";
 import GroupedStoreOrderDetails from "src/screens/Delivery/GroupedStoreOrder/GroupedStoreOrderDetails";
+import TransactionDetails from "src/screens/Delivery/Transaction/TransactionDetails";
 
 const { width } = Dimensions.get("screen");
 
@@ -201,10 +202,18 @@ function DeliveryStack(props) {
       <Stack.Screen
         name="Grouped Store Order Details"
         component={GroupedStoreOrderDetails}
+        back
         options={{
-          header: props => (
-            <CustomHeader title="Store Order(s)" {...props} />
-          ),
+          header: props => <CustomHeader title="Store Order(s)" {...props} />,
+          headerStyle: { height: 100 }
+        }}
+      />
+      <Stack.Screen
+        name="Customer Order Details"
+        component={TransactionDetails}
+        back
+        options={{
+          header: props => <CustomHeader title="Customer Order" {...props} />,
           headerStyle: { height: 100 }
         }}
       />

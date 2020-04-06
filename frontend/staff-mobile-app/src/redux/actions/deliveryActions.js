@@ -17,7 +17,11 @@ const DELIVERY_BASE_URL = SPRING_BACKEND_URL + "/api/delivery";
 
 const TRANSACTION_BASE_URL = SPRING_BACKEND_URL + "/api/transaction";
 
-export const retrieveDeliveryRoute = (staffId, setRefreshing, setViewed) => {
+export const retrieveDeliveryRoute = (
+  staffId,
+  setRefreshing,
+  setViewedItem
+) => {
   if (setRefreshing) setRefreshing(true);
   return dispatch => {
     axios
@@ -27,8 +31,8 @@ export const retrieveDeliveryRoute = (staffId, setRefreshing, setViewed) => {
       .then(response => {
         const deliveryItems = jsog.decode(response.data);
         dispatch(setDeliveryRoute(deliveryItems));
-        if (setViewed) {
-          setViewed(deliveryItems);
+        if (setViewedItem) {
+          setViewedItem(deliveryItems);
         }
         if (setRefreshing) {
           setRefreshing(false);
@@ -99,18 +103,50 @@ export const confirmGroupedStoreOrderDelivery = (
     );
     Promise.all([restockPromise, transactionPromise])
       .then(_ => {
-        const setViewed = deliveryItems => {
+        const setViewedGroupStoreOrder = deliveryItems => {
           const groupedStoreOrder = deliveryItems.find(
             item => item.store && item.store.storeId === storeId
           );
           dispatch(updateViewedGroupStoreOrder(groupedStoreOrder));
           alert("Delivery confirmed");
         };
-        dispatch(retrieveDeliveryRoute(staffId, setLoading, setViewed));
+        dispatch(
+          retrieveDeliveryRoute(staffId, setLoading, setViewedGroupStoreOrder)
+        );
       })
       .catch(err => {
         setLoading(false);
         console.log(err);
+      });
+  };
+};
+
+export const confirmCustomerDirectDelivery = (
+  transactionIds,
+  staffId,
+  setLoading
+) => {
+  return dispatch => {
+    axios
+      .post(DELIVERY_BASE_URL + "/receiveTransactionThroughDelivery", {
+        transactionIds
+      })
+      .then(_ => {
+        const setViewedTransaction = deliveryItems => {
+          const transaction = deliveryItems.find(
+            item =>
+              item.transactionId && item.transactionId === transactionIds[0]
+          );
+          dispatch(updateViewedTransaction(transaction));
+          alert("Delivery confirmed");
+        };
+        dispatch(
+          retrieveDeliveryRoute(staffId, setLoading, setViewedTransaction)
+        );
+      })
+      .catch(err => {
+        console.log(err);
+        setLoading(false);
       });
   };
 };
