@@ -12,7 +12,6 @@ import com.voodoodyne.jackson.jsog.JSOGGenerator;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.commons.lang3.RandomStringUtils;
 
 import javax.persistence.*;
@@ -59,6 +58,9 @@ public class Refund implements Serializable {
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
     private Customer customer;
+
+    @Transient
+    private PromoCode promoCode;
     
 //    @OneToOne(optional = false)
 //    @JoinColumn(nullable = false)
