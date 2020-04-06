@@ -103,14 +103,14 @@ class PromoCodeTable extends Component {
               columns={[
                 { title: "Promo Code Name", field: "promoCodeName" },
                 { title: "Number Remaining", field: "numRemaining" },
-                { title: "Minimum Purchase", field: "minimumPurchase" },
+                { title: "Minimum Purchase($)", field: "minimumPurchase" },
                 {
-                  title: "Flat Discount",
+                  title: "Flat Discount($)",
                   field: "flatDiscount",
                   emptyValue: "NA"
                 },
                 {
-                  title: "Percentage Discount",
+                  title: "Percentage Discount(%)",
                   field: "percentageDiscount",
                   emptyValue: "NA"
                 }
