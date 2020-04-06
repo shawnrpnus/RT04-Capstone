@@ -97,6 +97,17 @@ public class RefundController {
         refund.getCustomer().setRefunds(null);
         for(RefundLineItem refundLineItem : refund.getRefundLineItems()) {
             refundLineItem.setRefund(null);
+            refundLineItem.getTransactionLineItem().getTransaction().setTransactionLineItems(null);
+            refundLineItem.getTransactionLineItem().getTransaction().getCustomer().setRefunds(null);
+            refundLineItem.getTransactionLineItem().getTransaction().getCustomer().setReviews(null);
+            refundLineItem.getTransactionLineItem().getTransaction().getCustomer().setReservationCartItems(null);
+            refundLineItem.getTransactionLineItem().getTransaction().getCustomer().setReservations(null);
+            refundLineItem.getTransactionLineItem().getTransaction().getCustomer().setMeasurements(null);
+            refundLineItem.getTransactionLineItem().getTransaction().getCustomer().setOnlineShoppingCart(null);
+            refundLineItem.getTransactionLineItem().getTransaction().getCustomer().setTransactions(null);
+//            refundLineItem.getTransactionLineItem().getProductVariant().setProductStocks(null);
+//            refundLineItem.getTransactionLineItem().getProductVariant().setSizeDetails(null);
+
             for(RefundLineItemHandler refundLineItemHandler : refundLineItem.getRefundLineItemHandlerList()) {
                 refundLineItemHandler.setRefundLineItem(null);
             }

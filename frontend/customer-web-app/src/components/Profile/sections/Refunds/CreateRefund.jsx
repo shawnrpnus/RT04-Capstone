@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import React, { useEffect, useState } from "react";
 import {retrieveTransactionById, updatedViewedTransaction} from "../../../../redux/actions/transactionActions";
 import { clearErrors } from "../../../../redux/actions";
-import { createOnlineRefundRequest } from "../../../../redux/actions/refundAction";
+import {createOnlineRefundRequest, createRefundLabel} from "../../../../redux/actions/refundAction";
 import RefundLineItemRequest from "../../../../models/refund/RefundLineItemRequest";
 import RefundRequest from "../../../../models/refund/RefundRequest";
 import Button from "@material-ui/core/Button";
@@ -23,6 +23,10 @@ import CardActions from "@material-ui/core/CardActions";
 import {useSnackbar} from "notistack";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import CustomTextField from "../../../UI/CustomInput/CustomTextField";
+import RefundLabel from "assets/img/refundPDF/RefundLabel.jpg";
+import GenerateRefundLabel from "../../../../models/refund/GenerateRefundLabel";
+
+
 
 const _ = require("lodash");
 const useStyles = makeStyles(style);
@@ -32,7 +36,6 @@ const CreateRefund = ({ largeModal: [largeModal, setLargeModal], transactionId: 
   const dispatch = useDispatch();
   const history = useHistory();
 
-  console.log(transactionId);
   const classes = useStyles();
   // const [largeModal, setLargeModal] = React.useState(false);
 
@@ -57,8 +60,8 @@ const CreateRefund = ({ largeModal: [largeModal, setLargeModal], transactionId: 
   }, []);
   const currTransaction = useSelector(state => state.transaction.viewedTransaction);
   const currCustomer = useSelector(state => state.customer.loggedInCustomer);
-  console.log(currTransaction);
-  console.log(inputState);
+  // console.log(currTransaction);
+  // console.log(inputState);
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   useEffect(
@@ -87,11 +90,8 @@ const CreateRefund = ({ largeModal: [largeModal, setLargeModal], transactionId: 
       })),
     [currTransaction]
   );
-  // console.log(allRefundModeEnums);
-  console.log(inputState);
   const onChange = e => {
     e.persist();
-    console.log(e);
     setInputState(inputState => ({
       ...inputState,
       [e.target.name]: e.target.value
@@ -103,7 +103,6 @@ const CreateRefund = ({ largeModal: [largeModal, setLargeModal], transactionId: 
   };
 
 
-  console.log("promoCode", inputState.promoCode);
 
   const closeModal = () => {
     setInputState(() => ({
@@ -148,9 +147,27 @@ const CreateRefund = ({ largeModal: [largeModal, setLargeModal], transactionId: 
       inputState.customerId,
       storeId
     );
-    console.log(refundRequest);
-    dispatch(createOnlineRefundRequest(refundRequest, history, enqueueSnackbar));
+    // console.log(refundRequest);
+    const name = currCustomer.firstName + " " + currCustomer.lastName;
+    const orderNumber = currTransaction.orderNumber;
+    // console.log("NAMEEEEE",name);
+    const deliveryAddress = JSON.stringify(currTransaction.deliveryAddress);
+
+
+    console.log(name);
+    console.log(orderNumber);
+    console.log(deliveryAddress);
+    // const generateRefundLabel = new GenerateRefundLabel(deliveryAddress, name, orderNumber);
+    // dispatch(createRefundLabel(generateRefundLabel));
+    dispatch(createOnlineRefundRequest(refundRequest, history, enqueueSnackbar, deliveryAddress, name, orderNumber));
   };
+  // const handleCreateAdvertisement = () => {
+  //   const request = { staffId, activate };
+  //   const form = new FormData();
+  //   form.append("advertisement", file[0]);
+  //   form.append("request", JSON.stringify(request));
+  //   dispatch(createAdvertisement(form, onClose));
+  // };
 
   return (
     <React.Fragment>
