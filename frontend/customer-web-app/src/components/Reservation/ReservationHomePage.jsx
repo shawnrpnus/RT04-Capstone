@@ -27,27 +27,26 @@ export default function ReservationHomePage(props) {
   const classes = useStyles();
   const tabClasses = useTabStyles();
   const { mode, reservationId } = useParams();
-  console.log(mode);
 
   const tabs = [
     {
       tabName: "Reservation Cart",
       tabIcon: ShoppingCart,
       route: "/account/reservation/cart",
-      tabContent: <ReservationCartPage />
+      tabContent: <ReservationCartPage />,
     },
     {
       tabName: "Upcoming Reservations",
       tabIcon: ShoppingCart,
       route: "/account/reservation/upcoming",
-      tabContent: <UpcomingReservations />
+      tabContent: <UpcomingReservations />,
     },
     {
       tabName: "Past Reservations",
       tabIcon: ShoppingCart,
       route: "/account/reservation/history",
-      tabContent: <PastReservations />
-    }
+      tabContent: <PastReservations />,
+    },
   ];
 
   if (mode === "update") {
@@ -55,7 +54,7 @@ export default function ReservationHomePage(props) {
       tabName: "Update Reservation",
       tabIcon: ShoppingCart,
       route: `/account/reservation/update/${reservationId}`,
-      tabContent: <UpdateReservationPage />
+      tabContent: <UpdateReservationPage />,
     });
   }
 

@@ -170,7 +170,7 @@ export default function CheckOutPage() {
           "DELIVERY"
         );
 
-    console.log(paymentRequest);
+    // console.log(paymentRequest);
 
     if (clientSecret !== null) {
       if (!stripe || !elements) {
@@ -190,10 +190,10 @@ export default function CheckOutPage() {
 
       if (result.error) {
         // Show error to your customer (e.g., insufficient funds)
-        console.log(result.error.message);
+        // console.log(result.error.message);
       } else {
         // The payment has been processed!
-        console.log("Payment succeed!!");
+        // console.log("Payment succeed!!");
         if (result.paymentIntent.status === "succeeded") {
           // Show a success message to your customer
           // There's a risk of the customer closing the window before callback
@@ -208,8 +208,8 @@ export default function CheckOutPage() {
         }
       }
     } else {
-      console.log("Payment with saved card!");
-      console.log(paymentRequest);
+      // console.log("Payment with saved card!");
+      // console.log(paymentRequest);
       dispatch(
         makePaymentWithSavedCard(paymentRequest, history, customer.email)
       );
@@ -462,7 +462,6 @@ export default function CheckOutPage() {
                                     },
                                     index
                                   ) => {
-                                    console.log(address);
                                     return (
                                       <MenuItem
                                         key={index}

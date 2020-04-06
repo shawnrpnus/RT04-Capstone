@@ -1,12 +1,10 @@
 package capstone.rt04.retailbackend.controllers;
 
 import capstone.rt04.retailbackend.entities.Refund;
-import capstone.rt04.retailbackend.entities.RefundLineItem;
-import capstone.rt04.retailbackend.entities.RefundLineItemHandler;
 import capstone.rt04.retailbackend.request.refund.RefundRequest;
 import capstone.rt04.retailbackend.request.refund.UpdateRefundLineItemHandlerRequest;
 import capstone.rt04.retailbackend.services.RefundService;
-import capstone.rt04.retailbackend.services.ValidationService;
+import capstone.rt04.retailbackend.services.RelationshipService;
 import capstone.rt04.retailbackend.util.enums.RefundModeEnum;
 import capstone.rt04.retailbackend.util.enums.RefundProgressEnum;
 import capstone.rt04.retailbackend.util.enums.RefundStatusEnum;
@@ -29,21 +27,21 @@ import static capstone.rt04.retailbackend.util.routeconstants.RefundControllerRo
 
 @RestController
 @RequestMapping(RefundControllerRoutes.REFUND_BASE_ROUTE)
-@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"})
+//@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"})
 public class RefundController {
     private final RefundService refundService;
-    private final ValidationService validationService;
+    private final RelationshipService relationshipService;
 
-    public RefundController(RefundService refundService, ValidationService validationService) {
+    public RefundController(RefundService refundService, RelationshipService relationshipService) {
         this.refundService = refundService;
-        this.validationService = validationService;
+        this.relationshipService = relationshipService;
     }
 
     @PostMapping(CREATE_IN_STORE_REFUND_RECORD)
     public ResponseEntity<?> createRefundRecord(@RequestBody RefundRequest refundRequest) throws CustomerNotFoundException, TransactionNotFoundException, InputDataValidationException, PromoCodeNotFoundException, RefundNotFoundException, StoreNotFoundException, WarehouseNotFoundException {
         Refund refund = refundService.createRefund(refundRequest);
         //need to clear customer so that the response is faster
-        clearRefundRelationships(refund);
+        relationshipService.clearRefundRelationships(refund);
         return new ResponseEntity<>(refund, HttpStatus.CREATED);
     }
 
@@ -71,14 +69,15 @@ public class RefundController {
     @GetMapping(RETRIEVE_REFUND_BY_ID)
     public ResponseEntity<?> retrieveRefundById(@PathVariable Long refundId) throws RefundNotFoundException {
         Refund refund = refundService.retrieveRefundById(refundId);
-        clearRefundRelationships(refund);
+        relationshipService.clearRefundRelationships(refund);
         return new ResponseEntity<>(refund, HttpStatus.OK);
     }
+
     @GetMapping(RETRIEVE_ALL_REFUNDS)
     public ResponseEntity<?> retrieveRefundById() throws RefundNotFoundException {
         List<Refund> refunds = refundService.retrieveAllRefunds();
-        for(Refund refund : refunds) {
-            clearRefundRelationships(refund);
+        for (Refund refund : refunds) {
+            relationshipService.clearRefundRelationships(refund);
         }
         return new ResponseEntity<>(refunds, HttpStatus.OK);
     }
@@ -86,21 +85,31 @@ public class RefundController {
     @GetMapping(RETRIEVE_REFUNDS_BY_CUSTOMER_ID)
     public ResponseEntity<?> retrieveRefundsByCustomerId(@PathVariable Long customerId) {
         List<Refund> refunds = refundService.retrieveRefundsByCustomerId(customerId);
-        for(Refund refund : refunds) {
-            clearRefundRelationships(refund);
+        for (Refund refund : refunds) {
+            relationshipService.clearRefundRelationships(refund);
         }
         return new ResponseEntity<>(refunds, HttpStatus.OK);
     }
 
-
-    private void clearRefundRelationships(Refund refund) {
-        refund.getCustomer().setRefunds(null);
-        for(RefundLineItem refundLineItem : refund.getRefundLineItems()) {
-            refundLineItem.setRefund(null);
-            for(RefundLineItemHandler refundLineItemHandler : refundLineItem.getRefundLineItemHandlerList()) {
-                refundLineItemHandler.setRefundLineItem(null);
-            }
-            refundLineItem.getTransactionLineItem().setRefundLineItems(null);
-        }
-    }
+//    private void clearRefundRelationships(Refund refund) {
+//        refund.getCustomer().setRefunds(null);
+//        for(RefundLineItem refundLineItem : refund.getRefundLineItems()) {
+//            refundLineItem.setRefund(null);
+//            refundLineItem.getTransactionLineItem().getTransaction().setTransactionLineItems(null);
+//            refundLineItem.getTransactionLineItem().getTransaction().getCustomer().setRefunds(null);
+//            refundLineItem.getTransactionLineItem().getTransaction().getCustomer().setReviews(null);
+//            refundLineItem.getTransactionLineItem().getTransaction().getCustomer().setReservationCartItems(null);
+//            refundLineItem.getTransactionLineItem().getTransaction().getCustomer().setReservations(null);
+//            refundLineItem.getTransactionLineItem().getTransaction().getCustomer().setMeasurements(null);
+//            refundLineItem.getTransactionLineItem().getTransaction().getCustomer().setOnlineShoppingCart(null);
+//            refundLineItem.getTransactionLineItem().getTransaction().getCustomer().setTransactions(null);
+////            refundLineItem.getTransactionLineItem().getProductVariant().setProductStocks(null);
+////            refundLineItem.getTransactionLineItem().getProductVariant().setSizeDetails(null);
+//
+//            for(RefundLineItemHandler refundLineItemHandler : refundLineItem.getRefundLineItemHandlerList()) {
+//                refundLineItemHandler.setRefundLineItem(null);
+//            }
+//            refundLineItem.getTransactionLineItem().setRefundLineItems(null);
+//        }
+//    }
 }

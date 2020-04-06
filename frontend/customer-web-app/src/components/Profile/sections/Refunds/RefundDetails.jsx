@@ -19,25 +19,23 @@ function RefundDetails(props) {
   const { mode, transactionId } = useParams();
   const dispatch = useDispatch();
 
-  const refund = useSelector(state => state.refund.currRefund);
+  const refund = useSelector((state) => state.refund.currRefund);
 
   const promoCode = _.get(
     refund,
     "refundLineItems[0].transactionLineItem.transaction.promoCode",
-    {}
+    ""
   );
 
   let amountBeforePromoCode = 0;
   const size = _.get(refund, "refundLineItems.length");
-  console.log(size);
+  // console.log(size);
   if (size) {
     for (let i = 0; i < size; i++) {
       let li = _.get(refund, "refundLineItems");
       amountBeforePromoCode += li[i].totalPrice;
     }
   }
-
-  console.log("AMT", amountBeforePromoCode);
 
   useEffect(() => {
     dispatch(retrieveRefundById(transactionId));
@@ -49,7 +47,7 @@ function RefundDetails(props) {
     PARTIALLY_COMPLETE: "PARTIALLY COMPLETE",
     COMPLETED: "COMPLETED",
     COMPLETED_WITH_REJECTED_PRODUCTS: "COMPLETED WITH REJECTED PRODUCTS",
-    REJECTED: "REJECTED"
+    REJECTED: "REJECTED",
   };
   const status = refund ? refundStatusEnumMap[refund.refundStatus] : "";
 
@@ -93,7 +91,7 @@ function RefundDetails(props) {
       style={{
         padding: "20px",
         margin: "10px 0",
-        borderRadius: "0px"
+        borderRadius: "0px",
       }}
     >
       {refund && (
@@ -146,7 +144,7 @@ function RefundDetails(props) {
             style={{
               backgroundColor: "lightgray",
               padding: "10px 15px",
-              marginTop: "15px"
+              marginTop: "15px",
             }}
           >
             <h4 style={{ margin: "0" }}>
@@ -249,7 +247,7 @@ function QRCodeItem(props) {
     titleBackgroundColor: "#FBCEB1",
     subTitleColor: "black",
     width: 130,
-    height: 130
+    height: 130,
   };
 
   const qrCodeRef = useRef(null);

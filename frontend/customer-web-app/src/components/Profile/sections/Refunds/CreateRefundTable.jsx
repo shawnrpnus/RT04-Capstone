@@ -1,15 +1,6 @@
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
 import React from "react";
-import Button from "@material-ui/core/Button";
-import {
-  AccountCircle,
-  Add,
-  Close,
-  KeyboardArrowRight,
-  Remove
-} from "@material-ui/icons";
-import Tooltip from "@material-ui/core/Tooltip";
 import shoppingCartStyle from "../../../../assets/jss/material-kit-pro-react/views/shoppingCartStyle";
 import classNames from "classnames";
 import Card from "../../../UI/Card/Card";
@@ -18,12 +9,9 @@ import Grid from "@material-ui/core/Grid";
 import GridContainer from "../../../Layout/components/Grid/GridContainer";
 import GridItem from "../../../Layout/components/Grid/GridItem";
 import IconButton from "@material-ui/core/IconButton";
-import MinusBoxIcon from "@material-ui/core/SvgIcon/SvgIcon";
 import Divider from "@material-ui/core/Divider";
-import AddBoxIcon from "@material-ui/icons/AddBox";
 import CancelIcon from "@material-ui/icons/Cancel";
 import colourList from "../../../../assets/colours";
-import CustomDropdown from "../../../UI/CustomDropdown/CustomDropdown";
 import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
 
@@ -35,13 +23,11 @@ const useStyles = makeStyles(shoppingCartStyle);
 function CreateRefundTable({
   largeModal: [largeModal, setLargeModal],
   currTransaction: currTransaction,
-  inputState: [inputState, setInputState]
+  inputState: [inputState, setInputState],
 }) {
   const classes = useStyles();
-  console.log(currTransaction);
 
   const onChangeTable = (e, index, rowData) => {
-    console.log(e);
     // const temp = { ...inputState };
     // temp.quantityToRefund[index] = e.target.value;
     // setInputState(temp);
@@ -49,7 +35,6 @@ function CreateRefundTable({
     let temp = { ...inputState };
     let arr = [...inputState.quantityToRefund];
     arr[index] = e.target.value;
-    console.log(arr);
     let totalQuantity = arr.reduce((a, b) => a + b, 0);
     // let amount = inputState.refundAmt;
     // amount += (e.target.value * rowData.initialSubTotal);
@@ -57,15 +42,15 @@ function CreateRefundTable({
     let amount = 0;
     amount = calculateTotalRefundAmount(arr);
 
-    setInputState(inputState => ({
+    setInputState((inputState) => ({
       ...inputState,
       quantityToRefund: arr,
       quantity: totalQuantity,
-      totalRefundAmount: amount
+      totalRefundAmount: amount,
     }));
   };
 
-  const calculateTotalRefundAmount = arr => {
+  const calculateTotalRefundAmount = (arr) => {
     const lineItems = currTransaction.transactionLineItems;
     let amt = 0;
     let temp = { ...inputState };
@@ -85,9 +70,9 @@ function CreateRefundTable({
         amt *= val;
       }
 
-      setInputState(inputState => ({
+      setInputState((inputState) => ({
         ...inputState,
-        refundAmt: arrayAmt
+        refundAmt: arrayAmt,
       }));
       return amt;
     }
@@ -97,7 +82,6 @@ function CreateRefundTable({
     return amt;
   };
 
-  console.log(inputState);
   return (
     <div className={classNames(classes.main)}>
       <div className={classes.container}>
@@ -114,19 +98,17 @@ function CreateRefundTable({
                         product,
                         sizeDetails,
                         colour,
-                        productVariantId
+                        productVariantId,
                       } = lineItem.productVariant;
                       const { productName, discountedPrice, price } = product;
                       const {
                         quantity,
                         initialSubTotal,
-                        finalSubTotal
+                        finalSubTotal,
                       } = lineItem;
                       const afterDiscount = finalSubTotal / quantity;
                       const beforeDiscount = initialSubTotal / quantity;
                       const quantityToRefund = quantity + 1;
-                      console.log("lineItem", lineItem);
-                      console.log(index);
                       return (
                         <div key={index}>
                           <Card plain>
@@ -185,7 +167,7 @@ function CreateRefundTable({
                                   value={
                                     inputState.quantityToRefund[index] || 0
                                   }
-                                  onChange={e => {
+                                  onChange={(e) => {
                                     onChangeTable(e, index, lineItem);
                                   }}
                                   fullWidth

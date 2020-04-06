@@ -5,6 +5,7 @@ import capstone.rt04.retailbackend.repositories.ShoppingCartItemRepository;
 import capstone.rt04.retailbackend.repositories.ShoppingCartRepository;
 import capstone.rt04.retailbackend.repositories.WarehouseRepository;
 import capstone.rt04.retailbackend.util.exceptions.customer.CustomerNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.inStoreRestockOrder.InsufficientStockException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.shoppingcart.InvalidCartTypeException;
 import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
@@ -59,7 +60,6 @@ public class ShoppingCartService {
     }
 
     private ShoppingCartItem createShoppingCartItem(Integer quantity, Long productVariantId) throws ProductVariantNotFoundException {
-        System.out.println("Creating cart item");
         ProductVariant productVariant = productService.retrieveProductVariantById(productVariantId);
         ShoppingCartItem shoppingCartItem = new ShoppingCartItem(quantity, productVariant);
         System.out.println(shoppingCartItem);
@@ -67,12 +67,17 @@ public class ShoppingCartService {
     }
 
     // use for adding, editing, deleting item from shopping cart
-    public Customer updateQuantityOfProductVariant(Integer quantity, Long productVariantId, Long customerId, String cartType) throws CustomerNotFoundException, ProductVariantNotFoundException, InvalidCartTypeException {
+    public Customer updateQuantityOfProductVariant(Integer quantity, Long productVariantId, Long customerId, String cartType) throws CustomerNotFoundException, ProductVariantNotFoundException, InvalidCartTypeException, InsufficientStockException {
         ShoppingCart shoppingCart = retrieveShoppingCart(customerId, cartType);
+        Warehouse warehouse = warehouseRepository.findAll().get(0);
 
         for (ShoppingCartItem shoppingCartItem : shoppingCart.getShoppingCartItems()) {
             Customer customer = customerService.retrieveCustomerByCustomerId(customerId);
             if (shoppingCartItem.getProductVariant().getProductVariantId().equals(productVariantId)) {
+                ProductStock productStock = productService.retrieveProductStockByWarehouseIdAndProductVariantId(
+                        warehouse.getWarehouseId(), productVariantId);
+                if (productStock.getQuantity() < quantity && cartType.equals(ONLINE_SHOPPING_CART)) throw new InsufficientStockException("Insufficient stock");
+
                 if (quantity > 0) { //set to whatever input quantity
                     shoppingCartItem.setQuantity(quantity);
                     shoppingCart.setLastUpdated(new Timestamp(System.currentTimeMillis()));
@@ -95,10 +100,10 @@ public class ShoppingCartService {
         return customerService.lazyLoadCustomerFields(customer);
     }
 
-    public Customer updateQuantityOfProductVariantWithStore(Integer quantity, Long productVariantId, Long customerId, Long storeId) throws CustomerNotFoundException, InvalidCartTypeException, ProductVariantNotFoundException, StoreNotFoundException {
+    public Customer updateQuantityOfProductVariantWithStore(Integer quantity, Long productVariantId, Long customerId, Long storeId) throws CustomerNotFoundException, InvalidCartTypeException, ProductVariantNotFoundException, StoreNotFoundException, InsufficientStockException {
         ShoppingCart currentCart = retrieveShoppingCart(customerId, IN_STORE_SHOPPING_CART);
         Store currentCartStore = currentCart.getStore();
-        if (currentCartStore != null && !currentCartStore.getStoreId().equals(storeId)){
+        if (currentCartStore != null && !currentCartStore.getStoreId().equals(storeId)) {
             //shopping at different store, so reset the cart
             clearShoppingCart(customerId, IN_STORE_SHOPPING_CART);
         }
@@ -141,12 +146,12 @@ public class ShoppingCartService {
             ProductVariant pv = shoppingCartItem.getProductVariant();
             Map<String, Object> stockAndName = new HashMap<>();
             ProductStock productStock;
-            if (cartType.equals(ONLINE_SHOPPING_CART) || (inStoreDeliverHome !=null && inStoreDeliverHome)) {
+            if (cartType.equals(ONLINE_SHOPPING_CART) || (inStoreDeliverHome != null && inStoreDeliverHome)) {
                 productStock = productService.
                         retrieveProductStockByWarehouseAndProductVariantId(warehouse.getWarehouseId(), pv.getProductVariantId());
                 stockAndName.put("quantity", productStock.getQuantity());
                 stockAndName.put("location", "warehouse");
-            } else if (cartType.equals(IN_STORE_SHOPPING_CART)){
+            } else if (cartType.equals(IN_STORE_SHOPPING_CART)) {
                 productStock = productService
                         .retrieveProductStockByStoreIdAndProductVariantId(shoppingCart.getStore().getStoreId(), pv.getProductVariantId());
                 stockAndName.put("quantity", productStock.getQuantity());

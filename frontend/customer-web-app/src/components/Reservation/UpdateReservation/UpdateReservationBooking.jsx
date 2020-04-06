@@ -12,7 +12,7 @@ import {
   retrieveReservationById,
   retrieveStoresWithStockStatusForCart,
   retrieveStoresWithStockStatusForReservation,
-  updateReservation
+  updateReservation,
 } from "redux/actions/reservationActions";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -39,19 +39,19 @@ function UpdateReservationBooking(props) {
 
   //Redux
   const dispatch = useDispatch();
-  const customer = useSelector(state => state.customer.loggedInCustomer);
+  const customer = useSelector((state) => state.customer.loggedInCustomer);
 
   //to show avail timeslots in timeslot dropdown
   const availSlotsForStore = useSelector(
-    state => state.reservation.availSlotsForStore
+    (state) => state.reservation.availSlotsForStore
   );
   //to show stock status in the store dropdown
   const storesWithStockStatus = useSelector(
-    state => state.reservation.storesWithStockStatus,
+    (state) => state.reservation.storesWithStockStatus,
     _.isEqual
   );
   const reservationToUpdate = useSelector(
-    state => state.reservation.reservationToUpdate,
+    (state) => state.reservation.reservationToUpdate,
     _.isEqual
   );
 
@@ -75,7 +75,6 @@ function UpdateReservationBooking(props) {
 
   useEffect(() => {
     if (reservationToUpdate) {
-      console.log("RESERVATION TO UPDATE");
       setSelectedStoreId(reservationToUpdate.store.storeId);
       setSelectedTimeslot(reservationToUpdate.reservationDateTime);
       dispatch(
@@ -89,7 +88,7 @@ function UpdateReservationBooking(props) {
   }, [reservationToUpdate]);
   //*****
 
-  const onSelectStore = e => {
+  const onSelectStore = (e) => {
     setSelectedStoreId(e.target.value);
     dispatch(
       getProductVariantStoreStockStatusForReservation(
@@ -156,7 +155,7 @@ function UpdateReservationBooking(props) {
                 <InputLabel>Select a store</InputLabel>
                 <Select onChange={onSelectStore} value={selectedStoreId}>
                   {storesWithStockStatus &&
-                    storesWithStockStatus.map(storeWithStock => (
+                    storesWithStockStatus.map((storeWithStock) => (
                       <MenuItem
                         key={storeWithStock.store.storeId}
                         value={storeWithStock.store.storeId}
@@ -178,10 +177,10 @@ function UpdateReservationBooking(props) {
                   <React.Fragment>
                     <InputLabel>Select an available time slot</InputLabel>
                     <Select
-                      onChange={e => setSelectedTimeslot(e.target.value)}
+                      onChange={(e) => setSelectedTimeslot(e.target.value)}
                       value={selectedTimeslot}
                       displayEmpty={true}
-                      renderValue={value => {
+                      renderValue={(value) => {
                         if (availSlotsForStore.length === 0) {
                           return "No time slots available";
                         } else if (value === "") {
@@ -191,7 +190,7 @@ function UpdateReservationBooking(props) {
                         }
                       }}
                     >
-                      {availSlotsForStore.map(slot => (
+                      {availSlotsForStore.map((slot) => (
                         <MenuItem key={slot} value={slot}>
                           {moment(slot).format("D MMM h:mm A")}
                         </MenuItem>

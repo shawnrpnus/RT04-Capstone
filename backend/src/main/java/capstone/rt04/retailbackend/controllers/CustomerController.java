@@ -9,6 +9,7 @@ import capstone.rt04.retailbackend.services.ShoppingCartService;
 import capstone.rt04.retailbackend.services.ValidationService;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.customer.*;
+import capstone.rt04.retailbackend.util.exceptions.inStoreRestockOrder.InsufficientStockException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.shoppingcart.InvalidCartTypeException;
 import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
@@ -171,8 +172,6 @@ public class CustomerController {
 
     @PostMapping(CustomerControllerRoutes.DELETE_MEASUREMENTS)
     public ResponseEntity<?> deleteMeasurements(@PathVariable Long customerId) throws CustomerNotFoundException {
-        System.out.println("Deleting");
-        System.out.println(customerId);
         Customer customer = customerService.deleteMeasurements(customerId);
         relationshipService.clearCustomerRelationships(customer);
         return new ResponseEntity<>(customer, HttpStatus.OK);
@@ -274,7 +273,7 @@ public class CustomerController {
     }
 
     @PostMapping(CustomerControllerRoutes.UPDATE_SHOPPING_CART)
-    public ResponseEntity<?> updateShoppingCart(@RequestBody UpdateShoppingCartRequest updateShoppingCartRequest) throws InputDataValidationException, ProductVariantNotFoundException, InvalidCartTypeException, CustomerNotFoundException {
+    public ResponseEntity<?> updateShoppingCart(@RequestBody UpdateShoppingCartRequest updateShoppingCartRequest) throws InputDataValidationException, ProductVariantNotFoundException, InvalidCartTypeException, CustomerNotFoundException, InsufficientStockException {
         validationService.throwExceptionIfInvalidBean(updateShoppingCartRequest);
         Customer customer = shoppingCartService.updateQuantityOfProductVariant(
                 updateShoppingCartRequest.getQuantity(),
@@ -287,7 +286,7 @@ public class CustomerController {
     }
 
     @PostMapping(CustomerControllerRoutes.UPDATE_IN_STORE_SHOPPING_CART)
-    public ResponseEntity<?> updateInStoreShoppingCart(@RequestBody UpdateInStoreShoppingCartRequest req) throws InputDataValidationException, InvalidCartTypeException, ProductVariantNotFoundException, CustomerNotFoundException, StoreNotFoundException {
+    public ResponseEntity<?> updateInStoreShoppingCart(@RequestBody UpdateInStoreShoppingCartRequest req) throws InputDataValidationException, InvalidCartTypeException, ProductVariantNotFoundException, CustomerNotFoundException, StoreNotFoundException, InsufficientStockException {
         validationService.throwExceptionIfInvalidBean(req);
         Customer customer = shoppingCartService.updateQuantityOfProductVariantWithStore(
                 req.getQuantity(),
@@ -313,7 +312,7 @@ public class CustomerController {
     }
 
     @PostMapping(CustomerControllerRoutes.ADD_WISHLIST_TO_SHOPPING_CART)
-    public ResponseEntity<?> addWishlistToShoppingCart(@RequestParam Long customerId) throws InvalidCartTypeException, ProductVariantNotFoundException, CustomerNotFoundException {
+    public ResponseEntity<?> addWishlistToShoppingCart(@RequestParam Long customerId) throws InvalidCartTypeException, ProductVariantNotFoundException, CustomerNotFoundException, InsufficientStockException {
         Customer customer = customerService.addWishlistToShoppingCart(customerId);
         relationshipService.clearCustomerRelationships(customer);
         return new ResponseEntity<>(customer, HttpStatus.OK);

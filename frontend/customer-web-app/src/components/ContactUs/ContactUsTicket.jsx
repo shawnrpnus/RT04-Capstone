@@ -12,7 +12,7 @@ import {
   Phone,
   PinDrop,
   Email,
-  Message
+  Message,
 } from "@material-ui/icons";
 import Button from "@material-ui/core/Button";
 import classNames from "classnames";
@@ -24,7 +24,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { clearErrors } from "../../redux/actions";
 import {
   createNewContactUs,
-  retrieveAllContactUsCategoryEnum
+  retrieveAllContactUsCategoryEnum,
 } from "../../redux/actions/contactUsAction";
 import CreateContactUsRequest from "../../models/contactus/CreateContactUsRequest";
 import InputLabel from "@material-ui/core/InputLabel";
@@ -46,8 +46,10 @@ function ContactUsTicket(props) {
   //Redux
   const dispatch = useDispatch();
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
-  const errors = useSelector(state => state.errors);
-  const enums = useSelector(state => state.contactUs.allContactUsCategoryEnum);
+  const errors = useSelector((state) => state.errors);
+  const enums = useSelector(
+    (state) => state.contactUs.allContactUsCategoryEnum
+  );
 
   //State
   const [inputState, setInputState] = useState({
@@ -56,7 +58,7 @@ function ContactUsTicket(props) {
     customerEmail: "",
     content: "",
     firstName: "",
-    lastName: ""
+    lastName: "",
   });
 
   useEffect(() => {
@@ -70,14 +72,14 @@ function ContactUsTicket(props) {
     customerEmail,
     content,
     firstName,
-    lastName
+    lastName,
   } = inputState;
 
-  const onChange = e => {
+  const onChange = (e) => {
     e.persist();
-    setInputState(inputState => ({
+    setInputState((inputState) => ({
       ...inputState,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     }));
     if (Object.keys(errors).length !== 0) {
       dispatch(clearErrors());
@@ -85,10 +87,6 @@ function ContactUsTicket(props) {
   };
 
   const handleSubmit = () => {
-    console.log(inputState);
-    if (contactUsCategory === "Enquiry Type") {
-      console.log("insideEnquiry");
-    }
     const req = new CreateContactUsRequest(
       customerEmail,
       content,
@@ -145,7 +143,7 @@ function ContactUsTicket(props) {
                           >
                             <Email className={classes.inputIconsColor} />
                           </InputAdornment>
-                        )
+                        ),
                       }}
                     />
                     <CustomTextField
@@ -164,7 +162,7 @@ function ContactUsTicket(props) {
                           >
                             <Face className={classes.inputIconsColor} />
                           </InputAdornment>
-                        )
+                        ),
                       }}
                     />
                     <CustomTextField
@@ -183,7 +181,7 @@ function ContactUsTicket(props) {
                           >
                             <Face className={classes.inputIconsColor} />
                           </InputAdornment>
-                        )
+                        ),
                       }}
                     />
                     <InputLabel
@@ -195,10 +193,10 @@ function ContactUsTicket(props) {
                     <Select
                       value={contactUsCategory}
                       MenuProps={{
-                        className: classes.selectMenu
+                        className: classes.selectMenu,
                       }}
                       classes={{
-                        select: classes.select
+                        select: classes.select,
                       }}
                       onChange={onChange}
                       name="contactUsCategory"
@@ -210,7 +208,7 @@ function ContactUsTicket(props) {
                           <MenuItem
                             classes={{
                               root: classy.selectMenuItem,
-                              selected: classy.selectMenuItemSelected
+                              selected: classy.selectMenuItemSelected,
                             }}
                             value={item}
                             key={index}
@@ -237,7 +235,7 @@ function ContactUsTicket(props) {
                           />
                         ),
                         multiline: true,
-                        rows: 6
+                        rows: 6,
                       }}
                     />
                     <div className={classes.textCenter}>

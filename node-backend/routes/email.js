@@ -301,4 +301,51 @@ router.post("/massSendEmail", async (req, res) => {
     });
 });
 
+
+// send refund label
+router.post("/sendRefundLabel", async (req, res) => {
+  const deliveryAddress = JSON.parse(req.body.deliveryAddress);
+  const name = req.body.name;
+  const refundNumber = req.body.refundNumber;
+  const orderNumber = req.body.orderNumber;
+  const refundId = req.body.refundId;
+  const email = req.body.email;
+  console.log(email);
+  console.log(name);
+  const emailContent = {
+    body: {
+      name: `${name}`,
+      intro: "We've submitted a refund for your returned merchandise. You can find the Refund Label attached.",
+      outro: "We hope you'll shop with us again. " +
+        "Feel free to contact us @ 6512 5534 with any questions. "
+    }
+  };
+
+  const emailBody = mailGenerator.generate(emailContent);
+  const emailText = mailGenerator.generatePlaintext(emailContent);
+
+  transporter.sendMail(
+    {
+      from: "rt04capstone@gmail.com",
+      to: email,
+      subject: `We’ve Submitted a Refund for Order ${orderNumber}`,
+      text: emailText,
+      html: emailBody,
+      attachments: [{
+        filename: `RefundLabel_${refundId}.pdf`,
+        path: `C:/Users/Alastair/Desktop/RT04-Capstone/node-backend/refundLabelPDF/RefundLabel_${refundId}.pdf`,
+        contentType: 'application/pdf'
+      }],
+    },
+    (error, info) => {
+      if (error) {
+        console.log(error);
+        res.status(500).send({ message: "Email failed to send" });
+      } else {
+        res.status(200).send({ message: "Email Sent" });
+      }
+    }
+  );
+});
+
 module.exports = router;
