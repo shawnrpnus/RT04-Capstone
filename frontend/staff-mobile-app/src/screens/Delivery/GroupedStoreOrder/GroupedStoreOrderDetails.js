@@ -11,6 +11,7 @@ import Spinner from "react-native-loading-spinner-overlay";
 import AddressCard from "src/screens/Delivery/AddressCard";
 import LineItem from "src/screens/Delivery/LineItem";
 import ExpandableTransactionItem from "src/screens/Delivery/GroupedStoreOrder/ExpandableTransactionItem";
+import { confirmGroupedStoreOrderDelivery } from "src/redux/actions/deliveryActions";
 
 const moment = require("moment");
 const { width, height } = Dimensions.get("window");
@@ -34,7 +35,27 @@ function GroupedStoreOrderDetails(props) {
   const [showCustomerOrders, setShowCustomerOrders] = useState(false);
 
   const handleQRScanned = ({ type, data }) => {
-    //check qr storeid
+    if (Number(data) === groupedStoreOrder.store.storeId) {
+      setDisplayCamera(false);
+      const transactionIds = groupedStoreOrder.transactions.map(
+        t => t.transactionId
+      );
+      const inStoreRestockOrderIds = groupedStoreOrder.inStoreRestockOrderItems.map(
+        i => i.inStoreRestockOrderItemId
+      );
+      dispatch(
+        confirmGroupedStoreOrderDelivery(
+          transactionIds,
+          inStoreRestockOrderIds,
+          staff.staffId,
+          groupedStoreOrder.store.storeId,
+          setLoading
+        )
+      );
+    } else {
+      setDisplayCamera(false);
+      alert("Invalid QR Code Scanned!");
+    }
   };
 
   useFocusEffect(
@@ -244,7 +265,7 @@ function GroupedStoreOrderDetails(props) {
             </Block>
             {showCustomerOrders &&
               groupedStoreOrder.transactions.map(item => (
-                <ExpandableTransactionItem transaction={item} />
+                <ExpandableTransactionItem transaction={item} key={item.transactionId} />
               ))}
           </Block>
         </ScrollView>

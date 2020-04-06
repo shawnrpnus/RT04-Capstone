@@ -2,7 +2,10 @@ import React from "react";
 import { Dimensions, Image, ScrollView, TouchableOpacity } from "react-native";
 import { useDispatch } from "react-redux";
 import { Block, Text } from "galio-framework";
-import {setViewedTransaction, updateViewedGroupStoreOrder} from "src/redux/actions/deliveryActions";
+import {
+  setViewedTransaction,
+  updateViewedGroupStoreOrder
+} from "src/redux/actions/deliveryActions";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Divider } from "react-native-paper";
 import AddressCard from "src/screens/Delivery/AddressCard";
@@ -14,7 +17,8 @@ const deliveryStatusMap = {
   IN_TRANSIT: ["In Transit", "darkorange"],
   DELIVERED: ["Delivered", "green"],
   PARTIALLY_IN_TRANSIT: ["In Transit (Partial)", "darkorange"],
-  PARTIALLY_FULFILLED: ["Delivered (Partial)", "green"]
+  PARTIALLY_FULFILLED: ["Delivered (Partial)", "green"],
+  READY_FOR_COLLECTION: ["Delivered", "green"]
 };
 
 function GroupedStoreOrderCard(props) {

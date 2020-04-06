@@ -5,8 +5,11 @@ import { SPRING_BACKEND_URL } from "src/constants/routes";
 import {
   DISPLAY_RESERVATION,
   DISPLAY_UPCOMING_RESERVATIONS,
-  SET_DELIVERY_ROUTE, UPDATE_VIEWED_GROUPED_STORE_ORDER, UPDATE_VIEWED_TXN
+  SET_DELIVERY_ROUTE,
+  UPDATE_VIEWED_GROUPED_STORE_ORDER,
+  UPDATE_VIEWED_TXN
 } from "src/redux/actions/types";
+import { set } from "react-native-reanimated";
 
 const jsog = require("jsog");
 
@@ -14,7 +17,7 @@ const DELIVERY_BASE_URL = SPRING_BACKEND_URL + "/api/delivery";
 
 const TRANSACTION_BASE_URL = SPRING_BACKEND_URL + "/api/transaction";
 
-export const retrieveDeliveryRoute = (staffId, setRefreshing) => {
+export const retrieveDeliveryRoute = (staffId, setRefreshing, setViewed) => {
   if (setRefreshing) setRefreshing(true);
   return dispatch => {
     axios
@@ -22,7 +25,11 @@ export const retrieveDeliveryRoute = (staffId, setRefreshing) => {
         params: { staffId }
       })
       .then(response => {
-        setDeliveryRoute(response, dispatch);
+        const deliveryItems = jsog.decode(response.data);
+        dispatch(setDeliveryRoute(deliveryItems));
+        if (setViewed) {
+          setViewed(deliveryItems);
+        }
         if (setRefreshing) {
           setRefreshing(false);
         }
@@ -33,13 +40,10 @@ export const retrieveDeliveryRoute = (staffId, setRefreshing) => {
   };
 };
 
-const setDeliveryRoute = (response, dispatch) => {
-  const deliveryItems = jsog.decode(response.data);
-  dispatch({
-    type: SET_DELIVERY_ROUTE,
-    deliveryItems: deliveryItems
-  });
-};
+const setDeliveryRoute = deliveryItems => ({
+  type: SET_DELIVERY_ROUTE,
+  deliveryItems: deliveryItems
+});
 
 export const setViewedTransaction = (
   transactionId,
@@ -70,4 +74,43 @@ const updateViewedTransaction = data => ({
 export const updateViewedGroupStoreOrder = data => ({
   type: UPDATE_VIEWED_GROUPED_STORE_ORDER,
   groupedStoreOrder: data
-})
+});
+
+export const confirmGroupedStoreOrderDelivery = (
+  transactionIds,
+  inStoreRestockOrderItemIds,
+  staffId,
+  storeId,
+  setLoading
+) => {
+  setLoading(true);
+  return dispatch => {
+    const restockPromise = axios.post(
+      DELIVERY_BASE_URL + "/receiveRestockOrderItemThroughDelivery",
+      {
+        inStoreRestockOrderItemIds
+      }
+    );
+    const transactionPromise = axios.post(
+      DELIVERY_BASE_URL + "/receiveTransactionThroughDelivery",
+      {
+        transactionIds
+      }
+    );
+    Promise.all([restockPromise, transactionPromise])
+      .then(_ => {
+        const setViewed = deliveryItems => {
+          const groupedStoreOrder = deliveryItems.find(
+            item => item.store && item.store.storeId === storeId
+          );
+          dispatch(updateViewedGroupStoreOrder(groupedStoreOrder));
+          alert("Delivery confirmed");
+        };
+        dispatch(retrieveDeliveryRoute(staffId, setLoading, setViewed));
+      })
+      .catch(err => {
+        setLoading(false);
+        console.log(err);
+      });
+  };
+};
