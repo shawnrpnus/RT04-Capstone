@@ -1,18 +1,11 @@
-import { useHistory, useParams } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import React, { useEffect, useState } from "react";
-import {
-  retrieveTransactionById,
-  updatedViewedTransaction,
-} from "../../../../redux/actions/transactionActions";
+import { updatedViewedTransaction } from "../../../../redux/actions/transactionActions";
 import { clearErrors } from "../../../../redux/actions";
-import {
-  createOnlineRefundRequest,
-  createRefundLabel,
-} from "../../../../redux/actions/refundAction";
+import { createOnlineRefundRequest } from "../../../../redux/actions/refundAction";
 import RefundLineItemRequest from "../../../../models/refund/RefundLineItemRequest";
 import RefundRequest from "../../../../models/refund/RefundRequest";
-import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import { Close, Face, ShortText } from "@material-ui/icons";
@@ -21,16 +14,13 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import style from "assets/jss/material-kit-pro-react/views/componentsSections/javascriptStyles.js";
 import Transition from "react-transition-group/Transition";
 import GridContainer from "../../../Layout/components/Grid/GridContainer";
-import GridItem from "../../../Layout/components/Grid/GridItem";
-import Parallax from "../../../UI/Parallax/Parallax";
+import { Button } from "components/UI/CustomButtons/Button";
 import CreateRefundTable from "./CreateRefundTable";
 import Grid from "@material-ui/core/Grid";
 import CardActions from "@material-ui/core/CardActions";
 import { useSnackbar } from "notistack";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import CustomTextField from "../../../UI/CustomInput/CustomTextField";
-import RefundLabel from "assets/img/refundPDF/RefundLabel.jpg";
-import GenerateRefundLabel from "../../../../models/refund/GenerateRefundLabel";
 
 const _ = require("lodash");
 const useStyles = makeStyles(style);
@@ -234,7 +224,7 @@ const CreateRefund = ({
                     )}
                   </h5>
                 </Grid>
-                <Grid item md={8} style={{ paddingLeft: "40px" }}>
+                <Grid item md={11} style={{ paddingLeft: "40px" }}>
                   <CustomTextField
                     fieldLabel="Reason"
                     fieldName="reason"
@@ -257,8 +247,8 @@ const CreateRefund = ({
                 <Grid item md={4}>
                   <CardActions>
                     <Button
-                      color="green"
                       fullWidth
+                      color="success"
                       onClick={onSubmit}
                       style={{
                         margin: "5% 2%",

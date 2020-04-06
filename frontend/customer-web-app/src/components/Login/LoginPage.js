@@ -230,7 +230,7 @@ export default function LoginPage(props) {
                 <div className={classes.textCenter}>
                   <Button
                     onClick={handleSubmit}
-                    simple
+                    simple="true"
                     color="primary"
                     size="lg"
                   >

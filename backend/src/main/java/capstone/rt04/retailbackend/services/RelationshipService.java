@@ -263,7 +263,13 @@ public class RelationshipService {
     }
 
     public void clearRefundRelationships(Refund refund) {
-        refund.setCustomer(null);
+        Transaction transaction = refund.getRefundLineItems().get(0).getTransactionLineItem().getTransaction();
+        if (transaction != null) {
+            PromoCode promoCode = transaction.getPromoCode();
+            if (promoCode != null) refund.setPromoCode(promoCode);
+        }
+
+        clearCustomerRelationships(refund.getCustomer());
         for (RefundLineItem refundLineItem : refund.getRefundLineItems()) {
             refundLineItem.setRefund(null);
             for (RefundLineItemHandler refundLineItemHandler : refundLineItem.getRefundLineItemHandlerList()) {

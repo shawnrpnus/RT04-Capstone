@@ -21,11 +21,7 @@ function RefundDetails(props) {
 
   const refund = useSelector((state) => state.refund.currRefund);
 
-  const promoCode = _.get(
-    refund,
-    "refundLineItems[0].transactionLineItem.transaction.promoCode",
-    ""
-  );
+  const promoCode = _.get(refund, "promoCode", "");
 
   let amountBeforePromoCode = 0;
   const size = _.get(refund, "refundLineItems.length");
@@ -210,8 +206,8 @@ function RefundDetails(props) {
             </GridContainer>
             <Divider />
           </GridItem>
-          <GridItem md={8} />
-          <GridItem md={3}>
+          <GridItem md={7} />
+          <GridItem md={4}>
             <h5 style={{ textAlign: "right" }}>
               {promoCode && (
                 <>
@@ -219,7 +215,7 @@ function RefundDetails(props) {
                   <div>
                     ({promoCode.promoCodeName}) - SGD${" "}
                     {(amountBeforePromoCode - refund.refundAmount).toFixed(2)}
-                    <Divider />
+                    <Divider style={{ marginLeft: "20%" }} />
                   </div>
                 </>
               )}
