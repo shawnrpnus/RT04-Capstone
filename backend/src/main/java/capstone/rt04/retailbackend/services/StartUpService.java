@@ -698,22 +698,13 @@ public class StartUpService {
             colourToImageUrlsMaps33.add(new ColourToImageUrlsMap("#C8385A", maroonProductImageUrls33));
             colourToImageUrlsMaps33.add(new ColourToImageUrlsMap("#000000", blackImageUrls33));
 
-//            List<String> brownImageUrls34 = new ArrayList<>();
-//            brownImageUrls34.add("https://dynamic.zacdn.com/jiQIgCpBgqOAuhQ7Zc79AOOadPU=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/topman-4501-6914821-1.jpg");
-//            brownImageUrls34.add("https://dynamic.zacdn.com/7XJOs0kl0RCMFbpH7N-2FPF9m5w=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/topman-4502-6914821-4.jpg");
-//            brownImageUrls34.add("https://dynamic.zacdn.com/Zqaq6fbZY2c6P7Fb9Y6o9WtgVQ4=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/topman-4502-6914821-2.jpg");
-//            brownImageUrls34.add("https://dynamic.zacdn.com/rShlIuWpwSzwU7k7f0k2uiOrSjY=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/topman-4502-6914821-3.jpg");
-//            List<ColourToImageUrlsMap> colourToImageUrlsMaps34 = new ArrayList<>();
-//            colourToImageUrlsMaps34.add(new ColourToImageUrlsMap("#D2B48C", brownImageUrls34));
-
             List<String> brownImageUrls34 = new ArrayList<>();
-            brownImageUrls34.add("https://dynamic.zacdn.com/BoblMhtanPFokP1hzBIorZc3B9U=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/tula-cruz-0786-9044921-1.jpg");
-            brownImageUrls34.add("https://dynamic.zacdn.com/2YOmyV7IvooFy5FMXNTZXu26Awg=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/tula-cruz-0787-9044921-2.jpg");
-            brownImageUrls34.add("https://dynamic.zacdn.com/7_uoES1dbiON_RYFg-L2Pk79gr8=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/tula-cruz-0787-9044921-3.jpg");
-            brownImageUrls34.add("https://dynamic.zacdn.com/dkH00tOqq7_DOq7eybm7E2ssAFs=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/tula-cruz-0788-9044921-4.jpg");
+            brownImageUrls34.add("https://dynamic.zacdn.com/jiQIgCpBgqOAuhQ7Zc79AOOadPU=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/topman-4501-6914821-1.jpg");
+            brownImageUrls34.add("https://dynamic.zacdn.com/7XJOs0kl0RCMFbpH7N-2FPF9m5w=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/topman-4502-6914821-4.jpg");
+            brownImageUrls34.add("https://dynamic.zacdn.com/Zqaq6fbZY2c6P7Fb9Y6o9WtgVQ4=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/topman-4502-6914821-2.jpg");
+            brownImageUrls34.add("https://dynamic.zacdn.com/rShlIuWpwSzwU7k7f0k2uiOrSjY=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/topman-4502-6914821-3.jpg");
             List<ColourToImageUrlsMap> colourToImageUrlsMaps34 = new ArrayList<>();
-            colourToImageUrlsMaps34.add(new ColourToImageUrlsMap("#2C293C", brownImageUrls34));
-
+            colourToImageUrlsMaps34.add(new ColourToImageUrlsMap("#D2B48C", brownImageUrls34));
 
             List<String> blueProductImageUrls35 = new ArrayList<>();
             blueProductImageUrls35.add("https://dynamic.zacdn.com/KdZoiYO3I8-LB10QAT_ax_kk9XU=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-basics-5776-1617321-1.jpg");
@@ -728,6 +719,14 @@ public class StartUpService {
             List<ColourToImageUrlsMap> colourToImageUrlsMaps35 = new ArrayList<>();
             colourToImageUrlsMaps35.add(new ColourToImageUrlsMap("#F5F5DC", blueProductImageUrls35));
             colourToImageUrlsMaps35.add(new ColourToImageUrlsMap("#ACE5EE", lightblueImageUrls35));
+
+            List<String> darkSlateGrayProductImageUrls36 = new ArrayList<>();
+            darkSlateGrayProductImageUrls36.add("https://dynamic.zacdn.com/BoblMhtanPFokP1hzBIorZc3B9U=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/tula-cruz-0786-9044921-1.jpg");
+            darkSlateGrayProductImageUrls36.add("https://dynamic.zacdn.com/2YOmyV7IvooFy5FMXNTZXu26Awg=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/tula-cruz-0787-9044921-2.jpg");
+            darkSlateGrayProductImageUrls36.add("https://dynamic.zacdn.com/7_uoES1dbiON_RYFg-L2Pk79gr8=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/tula-cruz-0787-9044921-3.jpg");
+            darkSlateGrayProductImageUrls36.add("https://dynamic.zacdn.com/dkH00tOqq7_DOq7eybm7E2ssAFs=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/tula-cruz-0788-9044921-4.jpg");
+            List<ColourToImageUrlsMap> colourToImageUrlsMaps36 = new ArrayList<>();
+            colourToImageUrlsMaps36.add(new ColourToImageUrlsMap("#2C293C", darkSlateGrayProductImageUrls36));
 
 
             Style vintage = styleService.retrieveStyleByStyleName("Vintage");
@@ -1154,29 +1153,14 @@ public class StartUpService {
             product33Styles.add(sophisticated.getStyleId());
             Product newProduct33 = productService.createNewProduct(product33, category3.getCategoryId(), null, product33Styles, sizes, colourToImageUrlsMaps33);
 
-//            Product product34 = new Product("004300", "Topman Stone Stretch Skinny Chino Shorts", "- Skinny fit chino shorts\n" +
-//                    "- Mid waist\n" +
-//                    "- Skinny fit\n" +
-//                    "- Waist button fastening\n" +
-//                    "- Fly zipper fastening\n" +
-//                    "- 2 side pockets\n" +
-//                    "- 2 back welt pockets\n" +
-//                    "- Cotton blend", BigDecimal.valueOf(50.90), BigDecimal.valueOf(18.00));
-//            product34.getStyles().add(artsy);
-//            List<Long> product34Styles = new ArrayList<>();
-//            product34Styles.add(artsy.getStyleId());
-//            Product newProduct34 = productService.createNewProduct(product34, category13.getCategoryId(), null, product34Styles, sizes, colourToImageUrlsMaps34);
-
-            Product product34 = new Product("004300", "Tula Cruz Eyelet Back Tie Maxi Dress", "- Buttoned openwork dress\n" +
-                    "- Lined\n" +
-                    "- Scoop neckline\n" +
-                    "- Regular fit\n" +
-                    "- Front button fastening\n" +
-                    "- Self-tie back closure" +
-                    "- Sleeveless\n" +
-                    "- Flared hem\n" +
-                    "- Rayon\n" +
-                    "- Model wears an S and is 175cm tall\n", BigDecimal.valueOf(50.90), BigDecimal.valueOf(18.00));
+            Product product34 = new Product("004300", "Topman Stone Stretch Skinny Chino Shorts", "- Skinny fit chino shorts\n" +
+                    "- Mid waist\n" +
+                    "- Skinny fit\n" +
+                    "- Waist button fastening\n" +
+                    "- Fly zipper fastening\n" +
+                    "- 2 side pockets\n" +
+                    "- 2 back welt pockets\n" +
+                    "- Cotton blend", BigDecimal.valueOf(50.90), BigDecimal.valueOf(18.00));
             product34.getStyles().add(artsy);
             List<Long> product34Styles = new ArrayList<>();
             product34Styles.add(artsy.getStyleId());
@@ -1195,7 +1179,20 @@ public class StartUpService {
             product35Styles.add(chic.getStyleId());
             Product newProduct35 = productService.createNewProduct(product35, category13.getCategoryId(), null, product35Styles, sizes, colourToImageUrlsMaps35);
 
-
+            Product product36 = new Product("004500", "Tula Cruz Eyelet Back Tie Maxi Dress", "- Buttoned openwork dress\n" +
+                    "- Lined\n" +
+                    "- Scoop neckline\n" +
+                    "- Regular fit\n" +
+                    "- Front button fastening\n" +
+                    "- Self-tie back closure" +
+                    "- Sleeveless\n" +
+                    "- Flared hem\n" +
+                    "- Rayon\n" +
+                    "- Model wears an S and is 175cm tall\n", BigDecimal.valueOf(50.90), BigDecimal.valueOf(18.00));
+            product36.getStyles().add(sophisticated);
+            List<Long> product36Styles = new ArrayList<>();
+            product36Styles.add(artsy.getStyleId());
+            productService.createNewProduct(product36, category4.getCategoryId(), null, product36Styles, sizes, colourToImageUrlsMaps36);
         }
     }
 
@@ -1268,23 +1265,23 @@ public class StartUpService {
 
         Staff newStaff6 = staffService.createNewStaff(staff6, staff6.getAddress(), role1.getRoleId(), departmentStore.getDepartmentId(), store2Id);
 
-        Staff staff7 = new Staff("Delivery", "guy", 2, "101Z", "deliveryman@gmail.com",  BigDecimal.valueOf(10000));
+        Staff staff7 = new Staff("Delivery", "manager", 2, "101Z", "deliverymanager@gmail.com",  BigDecimal.valueOf(10000));
         staff7.setAddress(new Address("5 Kampong Eunos", "#05-18", "417771", "Eunos Park Condominium", "1.318690", "103.906396"));
-        Staff newStaff7 = staffService.createNewStaff(staff7, staff7.getAddress(), role1.getRoleId(), delivery.getDepartmentId(), null);
+        Staff newStaff7 = staffService.createNewStaff(staff7, staff7.getAddress(), role3.getRoleId(), delivery.getDepartmentId(), null);
 
         Staff staff8 = new Staff("Customer", "service", 2, "151A", "customerservice@gmail.com", BigDecimal.valueOf(10000));
         staff8.setAddress(new Address("Block 458 Clementi Ave 3", "#11-06", "120458", "-", "1.311745", "103.766909"));
         Staff newStaff8 = staffService.createNewStaff(staff8, staff8.getAddress(), role1.getRoleId(), customerService.getDepartmentId(), null);
 
-        Staff staff9 = new Staff("Warehouse", "Manager", 2, "152A", "warehousemanager@gmail.com", BigDecimal.valueOf(10000));
-        staff9.setAddress(new Address("Block 552 Clementi Ave West", "#11-07", "321140", "-","1.351358", "103.746107"));
-        Staff newStaff9 = staffService.createNewStaff(staff9, staff9.getAddress(), role3.getRoleId(), departmentWarehouse.getDepartmentId(), null);
+        Staff staff9 = new Staff("Delivery", "guy", 2, "111A", "deliveryguy@gmail.com",  BigDecimal.valueOf(5000));
+        staff9.setAddress(new Address("747 Woodlands Cir", "#10-01", "730747", "-", "1.443310", "103.795210"));
+        staffService.createNewStaff(staff9, staff9.getAddress(), role1.getRoleId(), delivery.getDepartmentId(), null);
 
         Staff staff10 = new Staff("SalesMarketing", "Manager", 2, "153A", "salesmanager@gmail.com", BigDecimal.valueOf(10000));
         staff10.setAddress(new Address("Block 552 Clementi Ave West", "#12-06", "321140", "-","1.351358", "103.746107"));
         Staff newStaff10 = staffService.createNewStaff(staff10, staff10.getAddress(), role3.getRoleId(), departmentSalesMarketing.getDepartmentId(), null);
 
-        Staff staff11 = new Staff("Delivery", "Manager", 2, "154A", "deliverymanager@gmail.com", BigDecimal.valueOf(10000));
+        Staff staff11 = new Staff("Delivery", "Manager2", 2, "154A", "deliverymanager2@gmail.com", BigDecimal.valueOf(10000));
         staff11.setAddress(new Address("Block 552 Clementi Ave West", "#10-06", "321140", "-","1.351358", "103.746107"));
         Staff newStaff11 = staffService.createNewStaff(staff11, staff11.getAddress(), role3.getRoleId(), delivery.getDepartmentId(), null);
 
@@ -1299,6 +1296,10 @@ public class StartUpService {
         Staff staff14 = new Staff("Store1Assistant", "Assistant", 2, "989Z", "Seddsdss@gmail.com", BigDecimal.valueOf(10000));
         staff14.setAddress(new Address("Block 567 Bishan South", "#03-08", "321140", "-","1.351358", "103.746107"));
         Staff newStaff14 = staffService.createNewStaff(staff14, staff14.getAddress(), role1.getRoleId(), departmentStore.getDepartmentId(), store1Id);
+
+        Staff staff15 = new Staff("Warehouse", "Manager", 2, "152A", "warehousemanager@gmail.com", BigDecimal.valueOf(10000));
+        staff15.setAddress(new Address("Block 552 Clementi Ave West", "#11-07", "321140", "-","1.351358", "103.746107"));
+        Staff newStaff9 = staffService.createNewStaff(staff15, staff15.getAddress(), role3.getRoleId(), departmentWarehouse.getDepartmentId(), null);
     }
 
     private void createPromoCodesIfNotFound() throws InputDataValidationException, CreateNewPromoCodeException, PromoCodeNotFoundException {

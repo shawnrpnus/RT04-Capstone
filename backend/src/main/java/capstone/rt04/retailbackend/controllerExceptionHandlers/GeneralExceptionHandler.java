@@ -52,6 +52,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -76,7 +77,8 @@ public class GeneralExceptionHandler extends ResponseEntityExceptionHandler {
             CreateNewCustomerException.class, CustomerCannotDeleteException.class,
             CreateNewStyleException.class, UpdateStyleException.class, DeleteStyleException.class,
             CreateNewTagException.class, DeleteTagException.class, UpdateTagException.class,
-            CreateNewCategoryException.class, UpdateCategoryException.class, DeleteCategoryException.class
+            CreateNewCategoryException.class, UpdateCategoryException.class, DeleteCategoryException.class,
+            IOException.class
     })
     public final ResponseEntity<Object> handlePersistenceExceptions(Exception ex, WebRequest req) {
         return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);

@@ -3,6 +3,7 @@ package capstone.rt04.retailbackend.repositories;
 import capstone.rt04.retailbackend.entities.Department;
 
 import capstone.rt04.retailbackend.entities.Staff;
+import capstone.rt04.retailbackend.util.enums.RoleNameEnum;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
@@ -20,6 +21,6 @@ public interface StaffRepository extends CrudRepository<Staff, Long> {
 
     List<Staff> findAllByStore_StoreId(Long storeId);
 
-    List<Staff> findAllByDepartment_DepartmentNameEquals(String department);
+    List<Staff> findAllByDepartment_DepartmentNameEqualsAndRole_RoleNameEquals(String department, RoleNameEnum roleNameEnum);
 
 }

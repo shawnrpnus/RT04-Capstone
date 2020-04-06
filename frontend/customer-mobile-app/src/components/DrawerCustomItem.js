@@ -7,6 +7,7 @@ import materialTheme from "src/constants/Theme";
 import { useDispatch } from "react-redux";
 import { customerLogout } from "src/redux/actions/customerActions";
 import { StackActions } from "@react-navigation/native";
+import {MaterialCommunityIcons} from "@expo/vector-icons";
 
 function DrawerCustomItem(props) {
   const { title, focused, navigation } = props;
@@ -42,6 +43,20 @@ function DrawerCustomItem(props) {
             color={focused ? "white" : materialTheme.COLORS.MUTED}
           />
         );
+      case "ReservationsStack":
+        return (
+          // <Icon
+          //   size={20}
+          //   name="calendar-multiselect"
+          //   family="MaterialCommunityIcons"
+          //   color={focused ? "white" : materialTheme.COLORS.MUTED}
+          // />
+          <MaterialCommunityIcons
+            name="calendar-multiselect"
+            size={20}
+            style={{ color: focused ? "white" : materialTheme.COLORS.MUTED }}
+          />
+        );
       case "Log Out":
         return (
           <Icon
@@ -72,7 +87,7 @@ function DrawerCustomItem(props) {
         row
         style={[
           styles.defaultStyle,
-          focused ? [styles.activeStyle, styles.shadow] : null,
+          focused ? [styles.activeStyle, styles.shadow] : null
         ]}
       >
         <Block middle flex={0.15} style={{ marginRight: 10 }}>
@@ -86,6 +101,8 @@ function DrawerCustomItem(props) {
               ? "Shop"
               : title === "PurchasesStack"
               ? "Purchases"
+              : title === "ReservationsStack"
+              ? "Reservations"
               : title}
           </Text>
         </Block>
@@ -101,7 +118,7 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     paddingHorizontal: 16,
     marginBottom: 6,
-    alignItems:"center"
+    alignItems: "center"
   },
   activeStyle: {
     backgroundColor: materialTheme.COLORS.ACCENT_LIGHTER,

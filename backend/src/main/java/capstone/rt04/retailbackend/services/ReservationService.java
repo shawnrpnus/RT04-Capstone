@@ -107,6 +107,10 @@ public class ReservationService {
         );
     }
 
+    public List<Reservation> retrieveAllReservations(){
+        return reservationRepository.findAll();
+    }
+
     public List<Timestamp> getReservedTimeslotsForStore(Long storeId) throws StoreNotFoundException {
         Store store = storeService.retrieveStoreById(storeId);
         List<Reservation> reservations = store.getReservations();
@@ -223,7 +227,7 @@ public class ReservationService {
 
         // Check that timeslot is not taken
         List<Timestamp> reservedTimeSlots = getReservedTimeslotsForStore(newStoreId);
-        if (reservedTimeSlots.contains(newDateTime)) {
+        if (countNumReservationsForTimeslot(reservedTimeSlots, newDateTime) >= newStore.getNumReservedChangingRooms()) {
             errorMap.put("reservationDateTime", "This time slot is already taken at " + newStore.getStoreName());
             throw new InputDataValidationException(errorMap, errorMap.get("reservationDateTime"));
         }
@@ -422,7 +426,7 @@ public class ReservationService {
     }
 
     //send to all employees in the store
-    public void sendExpoPushNotif(Long storeId) {
+    public void sendExpoPushNotifToStore(Long storeId) {
         List<Staff> staffToSendNotif = staffRepository.findAllByStore_StoreId(storeId);
         List<String> tokens = new ArrayList<>();
         for (Staff s : staffToSendNotif) {
@@ -430,6 +434,19 @@ public class ReservationService {
                 tokens.add(s.getPushNotificationToken());
             }
         }
+        if (tokens.size() > 0) {
+            Map<String, String> data = new HashMap<>();
+            data.put("type", "reservationReminder");
+            sendExpoPushNotifWithTokens(tokens,
+                    "Upcoming Reservations",
+                    "There are reservation(s) that require your attention!",
+                    data, "reservation");
+        }
+
+    }
+
+    public void sendExpoPushNotifWithTokens(List<String> tokens, String title,
+                                             String body, Object data, String channelId){
         HttpHeaders headers = new HttpHeaders();
         headers.set("host", "exp.host");
         headers.set("accept", "application/json");
@@ -438,14 +455,12 @@ public class ReservationService {
 
         ExpoPushNotificationRequest req = new ExpoPushNotificationRequest();
         req.setTo(tokens);
-        req.setTitle("Upcoming Reservations");
-        req.setBody("There are reservation(s) that require your attention!");
-        Map<String, String> data = new HashMap<>();
-        data.put("type", "reservationReminder");
+        req.setTitle(title);
+        req.setBody(body);
         req.setData(data);
         req.setPriority("high");
         req.setSound("default");
-        req.setChannelId("reservation");
+        req.setChannelId(channelId);
         HttpEntity<ExpoPushNotificationRequest> httpEntity = new HttpEntity<>(req, headers);
 
         String url = "https://exp.host/--/api/v2/push/send";

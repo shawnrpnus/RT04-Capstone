@@ -142,6 +142,8 @@ public class ReservationController {
         store.setInStoreRestockOrders(null);
         store.setReservations(null);
         store.setStaff(null);
+        store.setTransactions(null);
+
     }
 
 
@@ -162,12 +164,12 @@ public class ReservationController {
             reservation.getCustomer().setTransactions(null);
             reservation.getCustomer().setStyle(null);
             reservation.getCustomer().setReviews(null);
+            reservation.getCustomer().setCreditCards(null);
+            reservation.getCustomer().setShippingAddresses(null);
+            reservation.getCustomer().setUsedPromoCodes(null);
         }
         if (reservation.getStore() != null) {
-            reservation.getStore().setReservations(null);
-            reservation.getStore().setProductStocks(null);
-            reservation.getStore().setStaff(null);
+            relationshipService.clearStoreRelationships(reservation.getStore());
         }
-        relationshipService.clearStoreRelationships(reservation.getStore());
     }
 }
