@@ -32,10 +32,11 @@ function Totals(props) {
   const renderDiscountAmount = () => {
     let discount;
     if (promoCode.percentageDiscount) {
-      discount = (
-        (promoCode.percentageDiscount / 100) *
-        shoppingCartFinalTotal
-      ).toFixed(2);
+      const finalTotal = (
+          shoppingCartFinalTotal *
+          (1 - promoCode.percentageDiscount / 100)
+      ).toFixed(2)
+      discount = (shoppingCartFinalTotal - finalTotal).toFixed(2);
     } else if (promoCode.flatDiscount) {
       discount = promoCode.flatDiscount.toFixed(2);
     }
@@ -46,8 +47,8 @@ function Totals(props) {
     let finalTotal;
     if (promoCode.percentageDiscount) {
       finalTotal = (
-        shoppingCartFinalTotal -
-        (promoCode.percentageDiscount / 100) * shoppingCartFinalTotal
+        shoppingCartFinalTotal *
+        (1 - promoCode.percentageDiscount / 100)
       ).toFixed(2);
     } else if (promoCode.flatDiscount) {
       finalTotal = (shoppingCartFinalTotal - promoCode.flatDiscount).toFixed(2);

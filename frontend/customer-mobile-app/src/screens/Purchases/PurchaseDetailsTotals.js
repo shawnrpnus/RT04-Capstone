@@ -22,39 +22,41 @@ function PurchaseDetailsTotals(props) {
     }
   };
 
-  const renderDiscountAmount = () => {
-    let discount;
-    if (promoCode.percentageDiscount) {
-      discount = (
-        (promoCode.percentageDiscount / 100) *
-        transactionInitialTotal
-      ).toFixed(2);
-    } else if (promoCode.flatDiscount) {
-      discount = promoCode.flatDiscount.toFixed(2);
-    }
-    return `-$${discount}`;
-  };
-
-  const renderFinalTotalAmount = () => {
-    let finalTotal;
-    if (promoCode.percentageDiscount) {
-      finalTotal = (
-        transactionInitialTotal -
-        (
-          (promoCode.percentageDiscount / 100) *
-          transactionInitialTotal
-        ).toFixed(2)
-      ).toFixed(2);
-    } else if (promoCode.flatDiscount) {
-      finalTotal = (transactionFinalTotal - promoCode.flatDiscount).toFixed(2);
-    }
-    return `$${finalTotal}`;
-  };
-
-  const renderInitialTotalAmount = () => {
-    let finalTotal = transactionInitialTotal.toFixed(2);
-    return `$${finalTotal}`;
-  };
+  // const renderDiscountAmount = () => {
+  //   let discount;
+  //   if (promoCode.percentageDiscount) {
+  //     discount = (
+  //       (promoCode.percentageDiscount / 100) *
+  //       transactionInitialTotal
+  //     ).toFixed(2);
+  //   } else if (promoCode.flatDiscount) {
+  //     discount = promoCode.flatDiscount.toFixed(2);
+  //   }
+  //   return `-$${discount}`;
+  // };
+  //
+  // const renderFinalTotalAmount = () => {
+  //   let finalTotal;
+  //   if (promoCode.percentageDiscount) {
+  //     finalTotal = (
+  //       transactionInitialTotal -
+  //       (
+  //         (promoCode.percentageDiscount / 100) *
+  //         transactionInitialTotal
+  //       ).toFixed(2)
+  //     ).toFixed(2);
+  //   } else if (promoCode.flatDiscount) {
+  //     finalTotal = (transactionInitialTotal - promoCode.flatDiscount).toFixed(
+  //       2
+  //     );
+  //   }
+  //   return `$${finalTotal}`;
+  // };
+  //
+  // const renderInitialTotalAmount = () => {
+  //   let finalTotal = transactionInitialTotal.toFixed(2);
+  //   return `$${finalTotal}`;
+  // };
 
   return (
     <Block
@@ -77,7 +79,7 @@ function PurchaseDetailsTotals(props) {
           bold={!promoCode}
           style={{ textDecorationLine: !promoCode ? "underline" : "none" }}
         >
-          {renderInitialTotalAmount()}
+          ${transactionInitialTotal.toFixed(2)}
         </Text>
       </Block>
       {promoCode && (
@@ -91,7 +93,13 @@ function PurchaseDetailsTotals(props) {
             <Text h5 bold>
               {renderPromoCodeName()}
             </Text>
-            <Text h5>{renderDiscountAmount()}</Text>
+            <Text h5>
+              $
+              {(
+                transactionInitialTotal.toFixed(2) -
+                transactionFinalTotal.toFixed(2)
+              ).toFixed(2)}
+            </Text>
           </Block>
           <Divider style={{ height: 2, marginTop: 15 }} />
           <Block
@@ -104,7 +112,7 @@ function PurchaseDetailsTotals(props) {
               Final Total
             </Text>
             <Text h5 bold style={{ textDecorationLine: "underline" }}>
-              {renderFinalTotalAmount()}
+              ${transactionFinalTotal.toFixed(2)}
             </Text>
           </Block>
         </>

@@ -15,7 +15,6 @@ const { width, height } = Dimensions.get("window");
 
 function PurchaseDetails(props) {
   const transaction = useSelector(state => state.transaction.viewedTransaction);
-  const route = useRoute();
 
   return (
     <Block
@@ -112,7 +111,24 @@ function PurchaseDetails(props) {
                   : transaction.storeToCollect.address
               }
             />
-            <Divider style={{ height: 1.5, marginTop : 5 }} />
+            <Divider style={{ height: 1.5, marginTop: 5 }} />
+
+            <Block
+              flex
+              row
+              style={{ alignItems: "center", marginTop: 4, marginBottom: 4 }}
+            >
+              <Text h5 bold style={{ width: "30%", fontSize: 16 }}>
+                Purchased
+              </Text>
+              <Text h5 style={{ width: "70%", fontSize: 16 }}>
+                {transaction.store
+                  ? "In Store"
+                  : "Online"}
+              </Text>
+            </Block>
+
+            <Divider style={{ height: 1.5 }} />
 
             <Block
               flex

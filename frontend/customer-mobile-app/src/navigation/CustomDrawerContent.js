@@ -58,7 +58,7 @@ function CustomDrawerContent(props) {
         <DrawerCustomItem
           title="Log Out"
           navigation={navigation}
-          focused={state.index === 4}
+          focused={state.index === 5}
         />
       </Block>
     </Block>

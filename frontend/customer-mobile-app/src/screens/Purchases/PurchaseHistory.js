@@ -82,7 +82,7 @@ function PurchaseHistory(props) {
       ? "Purchase Details"
       : route.name === "Pending Collections"
       ? "Order Details"
-      : "Purchase History";
+      : "";
 
   const transactions =
     route.name === "Purchase History"

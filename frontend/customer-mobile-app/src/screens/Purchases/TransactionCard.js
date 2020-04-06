@@ -24,7 +24,7 @@ function TransactionCard(props) {
     );
   };
 
-  const name = routeToNavigate === "Purchase History" ? "Purchase" : "Order"
+  const name = routeToNavigate === "Purchase Details" ? "Purchase" : "Order"
 
   return (
     <Block
