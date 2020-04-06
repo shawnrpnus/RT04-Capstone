@@ -47,8 +47,8 @@ class PromoCodeUpdateForm extends Component {
     ) {
       this.setState({
         promoCodeName: currentPromoCode.promoCodeName,
-        flatDiscount: currentPromoCode.flatDiscount,
-        percentageDiscount: currentPromoCode.percentageDiscount,
+        flatDiscount:"",
+        percentageDiscount: "",
         minimumPurchase: currentPromoCode.minimumPurchase,
         numRemaining: currentPromoCode.numRemaining,
         originalFlatDiscount: currentPromoCode.flatDiscount,

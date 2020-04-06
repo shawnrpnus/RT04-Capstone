@@ -1302,7 +1302,7 @@ public class StartUpService {
         Staff newStaff9 = staffService.createNewStaff(staff15, staff15.getAddress(), role3.getRoleId(), departmentWarehouse.getDepartmentId(), null);
     }
 
-    private void createPromoCodesIfNotFound() throws InputDataValidationException, CreateNewPromoCodeException, PromoCodeNotFoundException {
+    private void createPromoCodesIfNotFound() throws InputDataValidationException, CreateNewPromoCodeException, PromoCodeNotFoundException, CustomerNotFoundException {
         if (promoCodeService.retrieveAllPromoCodes().size() == 0) {
             promoCodeService.createNewPromoCode(new PromoCode("NEWMEMBER", null, BigDecimal.valueOf(5), BigDecimal.valueOf(100.40), 100));
             promoCodeService.createNewPromoCode(new PromoCode("CNY20", BigDecimal.TEN, null, BigDecimal.valueOf(20.20), 50));

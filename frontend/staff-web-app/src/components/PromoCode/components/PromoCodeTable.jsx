@@ -56,10 +56,18 @@ class PromoCodeTable extends Component {
     this.props.retrieveAllPromoCodes();
   }
 
-  handleDelete = promoCodeId => {
+  handleDelete = promoCode => {
+    console.log(promoCode);
+    console.log(promoCode.transactions.length);
+    if(promoCode.transactions.length === 0){
     this.props
       .confirmDialog({ description: "Promo Code will be deleted permanently" })
-      .then(() => this.props.deletePromoCode(promoCodeId, this.props.history));
+      .then(() => this.props.deletePromoCode(promoCode.promoCodeId, this.props.history));}
+    else{
+      this.props
+          .confirmDialog({ description: "Promo Code quantity will be set to 0 because there are still transactions linked to this promo code" })
+          .then(() => this.props.deletePromoCode(promoCode.promoCodeId, this.props.history));
+    }
   };
 
   toggleOpenEmailForm = () => {
@@ -127,7 +135,7 @@ class PromoCodeTable extends Component {
                   icon: Delete,
                   tooltip: "Delete Promo Code",
                   onClick: (event, rowData) =>
-                    this.handleDelete(rowData.promoCodeId)
+                    this.handleDelete(rowData)
                 }
               ]}
               data={data}
