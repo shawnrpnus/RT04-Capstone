@@ -80,7 +80,7 @@ function ReservationDetail(props) {
 
   let FABactions = [];
 
-  if (reservation && !reservation.attended) {
+  if (reservation && !reservation.attended && reservation.handled) {
     FABactions.push({
       icon: "account-check",
       label: "Mark as attended",
