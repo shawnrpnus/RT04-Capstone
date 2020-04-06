@@ -104,12 +104,6 @@ class LeaveApplicationForm extends React.Component {
         });
     };
 
-    handleUpdate = (fromDateTime, toDateTime, leaveId) => {
-            const req = new UpdateLeaveRequest(leaveId, this.props.loggedInStaff, fromDateTime, toDateTime);
-            this.props.updateLeave(req, this.props.history);
-        };
-
-
     handleSubmit = e => {
         e.preventDefault();
 
@@ -229,11 +223,13 @@ class LeaveApplicationForm extends React.Component {
                                             }
                                         }
                                     ]}
+                                    
 
                                     actions={[
                                         {
                                             icon: Edit,
                                             tooltip: "Update Staff",
+                                            disabled: false,
                                             onClick: (event, rowData) => {
                                                 this.setState({
                                                     selectedId: rowData.staffLeaveId

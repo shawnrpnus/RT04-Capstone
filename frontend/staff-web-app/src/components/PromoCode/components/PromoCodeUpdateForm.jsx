@@ -20,6 +20,7 @@ import { Link } from "react-router-dom";
 import TableEyeIcon from "mdi-react/TableEyeIcon";
 import withMaterialConfirmDialog from "../../Layout/page/withMaterialConfirmDialog";
 import promoCodeToUpdate from "../../../models/promoCode/promoCodeToUpdate";
+import InputAdornment from "@material-ui/core/InputAdornment";
 
 const _ = require("lodash");
 
@@ -69,8 +70,8 @@ class PromoCodeUpdateForm extends Component {
     this.handlePercentageDiscount = this.handlePercentageDiscount.bind(this);
     this.state = {
       promoCodeName: currentPromoCode ? currentPromoCode.promoCodeName : "",
-      flatDiscount: 0,
-      percentageDiscount: 0,
+      flatDiscount: "",
+      percentageDiscount: "",
       minimumPurchase: currentPromoCode ? currentPromoCode.minimumPurchase : "",
       numRemaining: currentPromoCode ? currentPromoCode.numRemaining : "",
       originalFlatDiscount: currentPromoCode
@@ -91,13 +92,39 @@ class PromoCodeUpdateForm extends Component {
     }
   };
 
+  onChangeDecimal = e => {
+    const name = e.target.name;
+    const stateValue = this.state[name];
+    let value = e.target.value;
+    const lastChar = e.target.value.substr(value.length - 1, 1);
+    if (lastChar === "." && !stateValue.includes(".")) {
+      // skip the else
+    } else {
+      const x = e.target.value.split(".");
+      if (x[1] && x[1].length >= 2) {
+        value = parseFloat(e.target.value)
+            .toFixed(2)
+            .toString();
+      } else {
+        value = parseFloat(e.target.value).toString();
+      }
+      if (value === "NaN") value = "";
+    }
+    const newState = { ...this.state };
+    newState[name] = value;
+    this.setState(newState); //computed property name syntax
+    if (Object.keys(this.props.errors).length !== 0) {
+      this.props.clearErrors();
+    }
+  };
+
   handleFlatDiscount() {
     this.setState({ mode: true });
-    this.setState({ percentageDiscount: 0 });
+    this.setState({ percentageDiscount: "" });
   }
   handlePercentageDiscount() {
     this.setState({ mode: false });
-    this.setState({ flatDiscount: 0 });
+    this.setState({ flatDiscount: "" });
   }
 
   onCancel = () => {
@@ -110,7 +137,7 @@ class PromoCodeUpdateForm extends Component {
     console.log(this.state.flatDiscount);
     console.log(this.state.percentageDiscount);
 
-    if (this.state.flatDiscount === 0 && this.state.percentageDiscount === 0) {
+    if (this.state.flatDiscount === null && this.state.percentageDiscount === null) {
       const newPromoCode = new promoCodeToUpdate(
         this.props.currentPromoCode.promoCodeId,
         this.state.promoCodeName,
@@ -146,7 +173,7 @@ class PromoCodeUpdateForm extends Component {
       "percentageDiscount",
       ""
     );
-    const originalDiscountType = discountFlat !== 0 && discountPercentage === 0;
+    const originalDiscountType = discountFlat !== null && discountPercentage === null;
 
     return (
       <React.Fragment>
@@ -166,7 +193,7 @@ class PromoCodeUpdateForm extends Component {
             <Grid item xs={12} md={6}>
               <MaterialTextField
                 fieldLabel="Quantity"
-                onChange={this.onChange}
+                onChange={this.onChangeQuantity}
                 fieldName="numRemaining"
                 state={this.state}
                 errors={errors}
@@ -177,11 +204,15 @@ class PromoCodeUpdateForm extends Component {
             <Grid item xs={12} md={6}>
               <MaterialTextField
                 fieldLabel="Minimum Purchase"
-                onChange={this.onChange}
+                onChange={this.onChangeDecimal}
                 fieldName="minimumPurchase"
                 state={this.state}
                 errors={errors}
                 autoFocus={true}
+                InputProps={{
+                  startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                }}
+
               />
             </Grid>
 
@@ -193,6 +224,9 @@ class PromoCodeUpdateForm extends Component {
                   fieldName="originalFlatDiscount"
                   state={this.state}
                   errors={errors}
+                  InputProps={{
+                    startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                  }}
                   autoFocus={true}
                   disabled={true}
                 />
@@ -205,6 +239,9 @@ class PromoCodeUpdateForm extends Component {
                   errors={errors}
                   autoFocus={true}
                   disabled={true}
+                  InputProps={{
+                    endAdornment: <InputAdornment position="end">%</InputAdornment>,
+                  }}
                 />
               )}
             </Grid>
@@ -236,9 +273,12 @@ class PromoCodeUpdateForm extends Component {
               <Grid item xs={12} md={6}>
                 <MaterialTextField
                   fieldLabel="Flat Discount"
-                  onChange={this.onChange}
+                  onChange={this.onChangeDecimal}
                   fieldName="flatDiscount"
                   state={this.state}
+                  InputProps={{
+                    startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                  }}
                   errors={errors}
                   autoFocus={true}
                 />
@@ -248,9 +288,12 @@ class PromoCodeUpdateForm extends Component {
               <Grid item xs={12} md={6}>
                 <MaterialTextField
                   fieldLabel="Percentage Discount"
-                  onChange={this.onChange}
+                  onChange={this.onChangeDecimal}
                   fieldName="percentageDiscount"
                   state={this.state}
+                  InputProps={{
+                    endAdornment: <InputAdornment position="end">%</InputAdornment>,
+                  }}
                   errors={errors}
                   autoFocus={true}
                 />
