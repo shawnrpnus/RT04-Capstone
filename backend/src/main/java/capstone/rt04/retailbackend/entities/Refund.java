@@ -32,7 +32,7 @@ import java.util.List;
 @EqualsAndHashCode
 // @ToString
 @JsonIdentityInfo(generator = JSOGGenerator.class)
-public class Refund implements Serializable {
+public class    Refund implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id

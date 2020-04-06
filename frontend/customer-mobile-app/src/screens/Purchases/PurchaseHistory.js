@@ -17,7 +17,12 @@ function PurchaseHistory(props) {
   const dispatch = useDispatch();
   const route = useRoute();
   const customer = useSelector(state => state.customer.loggedInCustomer);
-  const transactions = useSelector(state => state.transaction.transactions);
+  const inStoreTransactions = useSelector(
+    state => state.transaction.transactions
+  );
+  const inStoreCollections = useSelector(
+    state => state.transaction.collections
+  );
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -59,9 +64,15 @@ function PurchaseHistory(props) {
   };
 
   const renderEmpty = () => {
-    return (
+    return route.name === "Purchase History" ? (
       <Text h5 style={{ padding: 20, textAlign: "center" }}>
-        You do not have any past store transactions.
+        {customer && customer.inStoreShoppingCart.shoppingCartItems.length > 0
+          ? `You do not have any past store transactions at ${customer.inStoreShoppingCart.store.storeName.toUpperCase()}.`
+          : "Scan a QR code to get your store purchase history"}
+      </Text>
+    ) : (
+      <Text h5 style={{ padding: 20, textAlign: "center" }}>
+        You do not have any pending in-store collections
       </Text>
     );
   };
@@ -72,6 +83,11 @@ function PurchaseHistory(props) {
       : route.name === "Pending Collections"
       ? "Order Details"
       : "Purchase History";
+
+  const transactions =
+    route.name === "Purchase History"
+      ? inStoreTransactions
+      : inStoreCollections;
 
   return (
     <>

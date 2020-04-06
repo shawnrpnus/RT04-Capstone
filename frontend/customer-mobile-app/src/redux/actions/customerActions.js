@@ -9,7 +9,10 @@ import { dispatchErrorMapError } from "src/redux/actions/index";
 import { Notifications } from "expo";
 import * as Permissions from "expo-permissions";
 import { Alert } from "react-native";
-import { setViewedTransaction } from "src/redux/actions/transactionActions";
+import {
+  retrieveCustomerInStoreTransactions,
+  setViewedTransaction
+} from "src/redux/actions/transactionActions";
 import { StackActions } from "@react-navigation/native";
 
 const jsog = require("jsog");
@@ -308,6 +311,7 @@ export const makePaymentMobile = (req, customerId, setLoading, navigation) => {
             params: { customerId }
           })
           .then(response => {
+            dispatch(retrieveCustomerInStoreTransactions(customerId));
             const redirectFunction = () => {
               navigation.popToTop();
               navigation.navigate("PurchasesStack", {

@@ -9,11 +9,7 @@ import { render } from "react-native-web";
 const { width, height } = Dimensions.get("window");
 
 function PurchaseDetailsTotals(props) {
-  const {
-    transactionInitialTotal,
-    transactionFinalTotal,
-    promoCode,
-  } = props;
+  const { transactionInitialTotal, transactionFinalTotal, promoCode } = props;
 
   const renderPromoCodeName = () => {
     const baseName = promoCode.promoCodeName;
@@ -44,7 +40,10 @@ function PurchaseDetailsTotals(props) {
     if (promoCode.percentageDiscount) {
       finalTotal = (
         transactionInitialTotal -
-        (promoCode.percentageDiscount / 100) * transactionInitialTotal
+        (
+          (promoCode.percentageDiscount / 100) *
+          transactionInitialTotal
+        ).toFixed(2)
       ).toFixed(2);
     } else if (promoCode.flatDiscount) {
       finalTotal = (transactionFinalTotal - promoCode.flatDiscount).toFixed(2);

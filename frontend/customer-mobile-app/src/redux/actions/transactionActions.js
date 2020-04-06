@@ -1,5 +1,5 @@
 import { SPRING_BACKEND_URL } from "src/constants/routes";
-import { RETRIEVE_TXNS, UPDATE_VIEWED_TXN } from "src/redux/actions/types";
+import {RETRIEVE_COLLECTIONS, RETRIEVE_TXNS, UPDATE_VIEWED_TXN} from "src/redux/actions/types";
 import axios from "axios";
 
 const jsog = require("jsog");
@@ -53,6 +53,11 @@ export const retrieveCustomerInStoreTransactions = (customerId, setLoading) => {
   };
 };
 
+const updateTransactions = data => ({
+  type: RETRIEVE_TXNS,
+  transactions: data
+});
+
 export const retrieveCustomerInStoreCollectionTransactions = (
   customerId,
   setLoading
@@ -69,7 +74,7 @@ export const retrieveCustomerInStoreCollectionTransactions = (
       )
       .then(response => {
         const { data } = jsog.decode(response);
-        dispatch(updateTransactions(data));
+        dispatch(updateCollections(data));
         if (setLoading) setLoading(false);
       })
       .catch(err => {
@@ -78,7 +83,7 @@ export const retrieveCustomerInStoreCollectionTransactions = (
   };
 };
 
-const updateTransactions = data => ({
-  type: RETRIEVE_TXNS,
-  transactions: data
+const updateCollections = data => ({
+  type: RETRIEVE_COLLECTIONS,
+  collections: data
 });
