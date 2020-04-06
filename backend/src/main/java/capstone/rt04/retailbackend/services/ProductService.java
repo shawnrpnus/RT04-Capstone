@@ -724,6 +724,14 @@ public class ProductService {
         return productStock;
     }
 
+    public ProductStock retrieveProductStockByWarehouseIdAndProductVariantId(Long warehouseId, Long productVariantId) {
+        ProductStock productStock = null;
+        if (warehouseId != null && productVariantId != null) {
+            productStock = productStockRepository.findWarehouseProductStockByVariant(warehouseId, productVariantId);
+        }
+        return productStock;
+    }
+
     // Substituted by retrieveProductsDetails
     @Transactional(readOnly = true)
     public List<Product> retrieveProductStocksThroughProductByParameter(Long storeId, Long warehouseId, Long

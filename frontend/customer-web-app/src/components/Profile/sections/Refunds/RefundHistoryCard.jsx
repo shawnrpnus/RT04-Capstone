@@ -24,7 +24,7 @@ function RefundHistoryCard(props) {
     PARTIALLY_COMPLETE: "PARTIALLY COMPLETE",
     COMPLETED: "COMPLETED",
     COMPLETED_WITH_REJECTED_PRODUCTS: "COMPLETED WITH REJECTED PRODUCTS",
-    REJECTED: "REJECTED"
+    REJECTED: "REJECTED",
   };
   const status = refundStatusEnumMap[currRefund.refundStatus];
 
@@ -71,7 +71,7 @@ function RefundHistoryCard(props) {
       style={{
         padding: "20px",
         margin: "10px 0",
-        borderRadius: "0px"
+        borderRadius: "0px",
       }}
     >
       <GridContainer>
@@ -100,7 +100,7 @@ function RefundHistoryCard(props) {
               </h5>
               <h5>
                 <b>Amount:</b>
-                <br />${currRefund.refundAmount}
+                <br />${currRefund.refundAmount.toFixed(2)}
               </h5>
               <Button
                 fullWidth
@@ -116,7 +116,7 @@ function RefundHistoryCard(props) {
               xs={12}
               style={{ height: "200px", overflowY: "scroll" }}
             >
-              {lineItems.map(lineItem => {
+              {lineItems.map((lineItem) => {
                 const val =
                   (lineItem.transactionLineItem.initialSubTotal *
                     lineItem.quantity) /

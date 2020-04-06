@@ -5,7 +5,7 @@ import {
   CardElement,
   CardNumberElement,
   CardCvcElement,
-  CardExpiryElement
+  CardExpiryElement,
 } from "@stripe/react-stripe-js";
 import Button from "components/UI/CustomButtons/Button.js";
 import { useDispatch, useSelector } from "react-redux";
@@ -15,9 +15,9 @@ import axios from "axios";
 export default function CheckoutForm() {
   const stripe = useStripe();
   const elements = useElements();
-  const clientSecret = useSelector(state => state.customer.clientSecret);
+  const clientSecret = useSelector((state) => state.customer.clientSecret);
 
-  const handleSubmit = async event => {
+  const handleSubmit = async (event) => {
     // We don't want to let default form submission happen here,
     // which would refresh the page.
     event.preventDefault();
@@ -32,9 +32,9 @@ export default function CheckoutForm() {
       payment_method: {
         card: elements.getElement(CardNumberElement),
         billing_details: {
-          name: "Jenny Roger"
-        }
-      }
+          name: "Jenny Roger",
+        },
+      },
     });
 
     if (result.error) {
@@ -48,8 +48,7 @@ export default function CheckoutForm() {
         // execution. Set up a webhook or plugin to listen for the
         // payment_intent.succeeded event that handles any business critical
         // post-payment actions.
-
-        console.log(result);
+        // console.log(result);
       }
     }
   };

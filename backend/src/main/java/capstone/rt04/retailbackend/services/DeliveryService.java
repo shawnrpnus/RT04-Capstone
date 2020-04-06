@@ -2,6 +2,7 @@ package capstone.rt04.retailbackend.services;
 
 import capstone.rt04.retailbackend.entities.*;
 import capstone.rt04.retailbackend.repositories.DeliveryRepository;
+import capstone.rt04.retailbackend.response.GroupedStoreOrderItems;
 import capstone.rt04.retailbackend.util.enums.CollectionModeEnum;
 import capstone.rt04.retailbackend.util.enums.DeliveryStatusEnum;
 import capstone.rt04.retailbackend.util.enums.ItemDeliveryStatusEnum;
@@ -12,19 +13,14 @@ import capstone.rt04.retailbackend.util.exceptions.staff.StaffNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.transaction.TransactionNotFoundException;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.springframework.cglib.core.Local;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 @Service
 @Transactional
@@ -170,7 +166,9 @@ public class DeliveryService {
             if (transaction.getDeliveryAddress() != null) {
                 addresses.add(transaction.getDeliveryAddress());
             } else if (transaction.getStoreToCollect() != null) {
-                addresses.add(transaction.getStoreToCollect().getAddress());
+                if (!addresses.contains(transaction.getStoreToCollect().getAddress())){
+                    addresses.add(transaction.getStoreToCollect().getAddress());
+                }
             }
         });
 
@@ -205,24 +203,49 @@ public class DeliveryService {
             addresses.remove(distances.get(0).getKey());
         }
 
-        List<Transaction> transactions = new ArrayList<>(delivery.getCustomerOrdersToDeliver());
-        List<InStoreRestockOrderItem> inStoreRestockOrderItems = new ArrayList<>(delivery.getInStoreRestockOrderItems());
 
         for (Long id : route) {
+            GroupedStoreOrderItems groupedStoreOrderItems = new GroupedStoreOrderItems();
+            groupedStoreOrderItems.setDeliveryStatus(DeliveryStatusEnum.DELIVERED);
+
             for (Transaction transaction : delivery.getCustomerOrdersToDeliver()) {
                 if (transaction.getStoreToCollect() != null &&
-                        id.equals(transaction.getStoreToCollect().getAddress().getAddressId())
-                        ||
-                        transaction.getDeliveryAddress() != null &&
-                                id.equals(transaction.getDeliveryAddress().getAddressId())) {
-                    deliveryList.add(transactions.remove(transactions.indexOf(transaction)));
+                        id.equals(transaction.getStoreToCollect().getAddress().getAddressId())) {
+                    if (groupedStoreOrderItems.getStore() == null) {
+                        groupedStoreOrderItems.setStore(transaction.getStoreToCollect());
+                    }
+                    groupedStoreOrderItems.getTransactions().add(transaction);
+                    if(!(transaction.getDeliveryStatus().equals(DeliveryStatusEnum.DELIVERED)
+                            || transaction.getDeliveryStatus().equals(DeliveryStatusEnum.READY_FOR_COLLECTION)
+                            || transaction.getDeliveryStatus().equals(DeliveryStatusEnum.COLLECTED))){
+                        groupedStoreOrderItems.setDeliveryStatus(DeliveryStatusEnum.IN_TRANSIT);
+                    }
+                } else if (transaction.getDeliveryAddress() != null &&
+                        id.equals(transaction.getDeliveryAddress().getAddressId())) {
+                    deliveryList.add(transaction);
                 }
             }
 
+            /*
+            for each restock order item, check if store address is same as current one in the route, and group
+            together by store
+             */
             for (InStoreRestockOrderItem inStoreRestockOrderItem : delivery.getInStoreRestockOrderItems()) {
                 if (id.equals(inStoreRestockOrderItem.getInStoreRestockOrder().getStore().getAddress().getAddressId())) {
-                    deliveryList.add(inStoreRestockOrderItems.remove(inStoreRestockOrderItems.indexOf(inStoreRestockOrderItem)));
+                    if (groupedStoreOrderItems.getStore() == null) {
+                        groupedStoreOrderItems.setStore(inStoreRestockOrderItem.getInStoreRestockOrder().getStore());
+                    }
+                    groupedStoreOrderItems.getInStoreRestockOrderItems().add(inStoreRestockOrderItem);
+                    if(!inStoreRestockOrderItem.getItemDeliveryStatus().equals(ItemDeliveryStatusEnum.DELIVERED)){
+                        groupedStoreOrderItems.setDeliveryStatus(DeliveryStatusEnum.IN_TRANSIT);
+                    }
                 }
+            }
+
+            if (groupedStoreOrderItems.getStore() != null
+                    && (groupedStoreOrderItems.getInStoreRestockOrderItems().size() > 0
+                    || groupedStoreOrderItems.getTransactions().size() > 0)) {
+                deliveryList.add(groupedStoreOrderItems);
             }
         }
 
@@ -233,10 +256,10 @@ public class DeliveryService {
         List<Delivery> staffDeliveries = deliveryRepository.findAllByDeliveryStaff_StaffId(staffId);
         Timestamp now = new Timestamp(System.currentTimeMillis());
         LocalDate todayDate = now.toInstant().atZone(ZoneId.of("Singapore")).toLocalDate();
-        for (Delivery delivery : staffDeliveries){
+        for (Delivery delivery : staffDeliveries) {
             Timestamp deliveryTimestamp = delivery.getDeliveryDateTime();
             LocalDate deliveryDate = deliveryTimestamp.toInstant().atZone(ZoneId.of("Singapore")).toLocalDate();
-            if (todayDate.isEqual(deliveryDate)){
+            if (todayDate.isEqual(deliveryDate)) {
                 return delivery;
             }
         }
@@ -245,7 +268,7 @@ public class DeliveryService {
 
     public List generateTodaysDeliveryRouteForStaff(Long staffId) throws DeliveryNotFoundException {
         Delivery delivery = getTodaysDeliveryForStaff(staffId);
-        if (delivery == null){
+        if (delivery == null) {
             return new ArrayList();
         } else {
             return generateDeliveryRoute(delivery.getDeliveryId());

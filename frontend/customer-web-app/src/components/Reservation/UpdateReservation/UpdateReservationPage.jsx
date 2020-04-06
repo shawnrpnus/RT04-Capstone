@@ -28,7 +28,7 @@ import ReservationBooking from "components/Reservation/ReservationBooking/Reserv
 import {
   clearProductVariantStoreStockStatus,
   clearUpdatingReservation,
-  retrieveReservationById
+  retrieveReservationById,
 } from "redux/actions/reservationActions";
 import { useParams } from "react-router-dom";
 import UpdateReservationBooking from "components/Reservation/UpdateReservation/UpdateReservationBooking";
@@ -43,10 +43,10 @@ export default function UpdateReservationPage(props) {
 
   //Redux
   const dispatch = useDispatch();
-  const customer = useSelector(state => state.customer.loggedInCustomer);
+  const customer = useSelector((state) => state.customer.loggedInCustomer);
   const { reservationCartItems } = customer;
   const reservationToUpdate = useSelector(
-    state => state.reservation.reservationToUpdate,
+    (state) => state.reservation.reservationToUpdate,
     _.isEqual
   );
   const productVariants = _.get(reservationToUpdate, "productVariants");
@@ -63,8 +63,6 @@ export default function UpdateReservationPage(props) {
     };
   }, []);
 
-  console.log(customer);
-
   return (
     <div>
       {/*<div className={classNames(classes.main, classes.mainRaised)}>*/}
@@ -75,7 +73,7 @@ export default function UpdateReservationPage(props) {
             <GridItem md>
               {productVariants &&
                 productVariants.length > 0 &&
-                productVariants.map(productVariant => (
+                productVariants.map((productVariant) => (
                   <React.Fragment key={productVariant.productVariantId}>
                     <UpdateReservationItem productVariant={productVariant} />
                     {productVariants.length > 1 && <Divider />}

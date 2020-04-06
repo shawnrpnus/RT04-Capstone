@@ -11,7 +11,7 @@ import Popper from "@material-ui/core/Popper";
 import {
   addStylePreferences,
   deleteStylePreferences,
-  updateStylePreferences
+  updateStylePreferences,
 } from "redux/actions/customerActions";
 const useStyles = makeStyles(signupPageStyle);
 const _ = require("lodash");
@@ -21,7 +21,7 @@ const questionBank = [
   {
     id: 0,
     question: "What is your gender",
-    answers: ["Male", "Female"]
+    answers: ["Male", "Female"],
   },
   {
     id: 1,
@@ -31,8 +31,8 @@ const questionBank = [
       "Earth tone",
       "Basics",
       "Bright & bold",
-      "Black & neutral"
-    ]
+      "Black & neutral",
+    ],
   },
   {
     id: 2,
@@ -42,14 +42,14 @@ const questionBank = [
       "Loose-flowing clothes",
       "Modern & sleek",
       "Exaggerated prints",
-      "Elegant & smart"
-    ]
+      "Elegant & smart",
+    ],
   },
   {
     id: 3,
     question: "Describe your personality",
-    answers: ["Nostalgic", "Liberal", "Direct", "Creative", "Confident"]
-  }
+    answers: ["Nostalgic", "Liberal", "Direct", "Creative", "Confident"],
+  },
 ];
 
 function Style(props) {
@@ -59,8 +59,8 @@ function Style(props) {
 
   //Redux
   const dispatch = useDispatch();
-  const errors = useSelector(state => state.errors);
-  const customer = useSelector(state => state.customer.loggedInCustomer);
+  const errors = useSelector((state) => state.errors);
+  const customer = useSelector((state) => state.customer.loggedInCustomer);
 
   //State
   const [inputState, setInputState] = useState({
@@ -75,7 +75,7 @@ function Style(props) {
     answers: [],
     error: "",
     test: [],
-    style: ""
+    style: "",
   });
 
   const [popoverOpen, setPopoverOpen] = useState(false);
@@ -91,7 +91,7 @@ function Style(props) {
     if (customer.style !== null) {
       if (hasAddStyle === false) {
         //when customer logged in
-        setInputState(inputState => ({
+        setInputState((inputState) => ({
           ...inputState,
           style: customer.style.styleName,
           answer0: customer.style.gender,
@@ -106,13 +106,12 @@ function Style(props) {
           answer3:
             questionBank[3].answers[
               customer.style.stylePreference.split(",")[2]
-            ]
+            ],
         }));
       }
-      console.log(customer);
-      setInputState(inputState => ({
+      setInputState((inputState) => ({
         ...inputState,
-        style: customer.style.styleName
+        style: customer.style.styleName,
       }));
       setAddedStyle(true);
     }
@@ -120,35 +119,35 @@ function Style(props) {
 
   const handleSelectAnswer0 = (text, index) => {
     setButton0NotClicked(false);
-    setInputState(inputState => ({
+    setInputState((inputState) => ({
       ...inputState,
-      answer0: [text]
+      answer0: [text],
     }));
   };
 
   const handleSelectAnswer1 = (text, index) => {
     setButton1NotClicked(false);
-    setInputState(inputState => ({
+    setInputState((inputState) => ({
       ...inputState,
-      answer1: [text]
+      answer1: [text],
     }));
     inputState.answers.push(index);
   };
 
   const handleSelectAnswer2 = (text, index) => {
     setButton2NotClicked(false);
-    setInputState(inputState => ({
+    setInputState((inputState) => ({
       ...inputState,
-      answer2: [text]
+      answer2: [text],
     }));
     inputState.answers.push(index);
   };
 
   const handleSelectAnswer3 = (text, index) => {
     setButton3NotClicked(false);
-    setInputState(inputState => ({
+    setInputState((inputState) => ({
       ...inputState,
-      answer3: [text]
+      answer3: [text],
     }));
     inputState.answers.push(index);
   };
@@ -157,13 +156,12 @@ function Style(props) {
     if (button3NotClicked) {
       enqueueSnackbar("Answer all questions", {
         variant: "error",
-        autoHideDuration: 1200
+        autoHideDuration: 1200,
       });
     } else {
       const customerId = customer.customerId;
       const stylePreference = inputState.answers.toString();
       const gender = inputState.answer0.toString();
-      console.log(gender);
       const req = { customerId, stylePreference, gender };
       dispatch(addStylePreferences(req, enqueueSnackbar, setAddedStyle));
       setAddedStyle(true);
@@ -175,13 +173,13 @@ function Style(props) {
   };
 
   const updateStyle = () => {
-    setInputState(inputState => ({
+    setInputState((inputState) => ({
       ...inputState,
       answers: [],
       answer0: questionBank[0].answers,
       answer1: questionBank[1].answers,
       answer2: questionBank[2].answers,
-      answer3: questionBank[3].answers
+      answer3: questionBank[3].answers,
     }));
     setAddedStyle(false);
     setUpdateMode(true);
@@ -190,7 +188,6 @@ function Style(props) {
   const cancelUpdateStylePreferences = () => {
     setAddedStyle(true);
     setUpdateMode(false);
-    console.log(customer);
     const chosenAns0 = customer.style.gender;
     const chosenAns1 =
       questionBank[1].answers[customer.style.stylePreference.split(",")[0]];
@@ -198,24 +195,23 @@ function Style(props) {
       questionBank[2].answers[customer.style.stylePreference.split(",")[1]];
     const chosenAns3 =
       questionBank[3].answers[customer.style.stylePreference.split(",")[2]];
-    setInputState(inputState => ({
+    setInputState((inputState) => ({
       ...inputState,
       answer0: [chosenAns0],
       answer1: [chosenAns1],
       answer2: [chosenAns2],
-      answer3: [chosenAns3]
+      answer3: [chosenAns3],
     }));
-    console.log(inputState);
   };
 
   const cancelSubmitStylePreferences = () => {
-    setInputState(inputState => ({
+    setInputState((inputState) => ({
       ...inputState,
       answers: [],
       answer0: questionBank[0].answers,
       answer1: questionBank[1].answers,
       answer2: questionBank[2].answers,
-      answer3: questionBank[3].answers
+      answer3: questionBank[3].answers,
     }));
     setButton0NotClicked(true);
     setButton1NotClicked(true);
@@ -235,12 +231,12 @@ function Style(props) {
     ) {
       enqueueSnackbar("No changes in style preferences", {
         variant: "error",
-        autoHideDuration: 1200
+        autoHideDuration: 1200,
       });
     } else if (button3NotClicked) {
       enqueueSnackbar("Answer all questions", {
         variant: "error",
-        autoHideDuration: 1200
+        autoHideDuration: 1200,
       });
     } else {
       const customerId = customer.customerId;
@@ -256,7 +252,7 @@ function Style(props) {
     }
   };
 
-  const clearConfirmation = e => {
+  const clearConfirmation = (e) => {
     setAnchorEl(e.currentTarget);
     setPopoverOpen(true);
   };
@@ -267,14 +263,14 @@ function Style(props) {
     const styleChosen = customer.style.styleName;
     const req = { customerId, styleChosen };
     dispatch(deleteStylePreferences(req, enqueueSnackbar, setAddedStyle));
-    setInputState(inputState => ({
+    setInputState((inputState) => ({
       ...inputState,
       answers: [],
       style: "",
       answer0: questionBank[0].answers,
       answer1: questionBank[1].answers,
       answer2: questionBank[2].answers,
-      answer3: questionBank[3].answers
+      answer3: questionBank[3].answers,
     }));
     setPopoverOpen(false);
   };

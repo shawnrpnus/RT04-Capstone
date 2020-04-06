@@ -39,18 +39,18 @@ export default function LoginPage(props) {
 
   //Redux
   const dispatch = useDispatch();
-  const errors = useSelector(state => state.errors);
+  const errors = useSelector((state) => state.errors);
 
   //State
   const [inputState, setInputState] = useState({
     email: "",
-    password: ""
+    password: "",
   });
   const [showPassword, setShowPassword] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogText, setDialogText] = useState({
     dialogTitle: "",
-    dialogContent: ""
+    dialogContent: "",
   });
 
   //Effects
@@ -67,13 +67,13 @@ export default function LoginPage(props) {
         setDialogText({
           dialogTitle: "Error",
           dialogContent:
-            "Your link has expired. Please login with your old email and request a new one."
+            "Your link has expired. Please login with your old email and request a new one.",
         });
       } else {
         setDialogText({
           dialogTitle: "Success",
           dialogContent:
-            "Your email has been updated. Please login with your new email."
+            "Your email has been updated. Please login with your new email.",
         });
       }
       setDialogOpen(true);
@@ -81,7 +81,7 @@ export default function LoginPage(props) {
     // so dialog doesnt show again on refresh
     history.replace({
       pathname: "/account/login",
-      state: {}
+      state: {},
     });
   }, []);
 
@@ -90,16 +90,16 @@ export default function LoginPage(props) {
     const { email, password } = inputState;
     const req = {
       email: email,
-      password: password
+      password: password,
     };
     dispatch(customerLogin(req, props.history));
   };
 
-  const onChange = e => {
+  const onChange = (e) => {
     e.persist();
-    setInputState(inputState => ({
+    setInputState((inputState) => ({
       ...inputState,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     }));
     if (Object.keys(errors).length !== 0) {
       dispatch(clearErrors());
@@ -110,7 +110,7 @@ export default function LoginPage(props) {
     setShowPassword(!showPassword);
   };
 
-  const handleKeyDown = event => {
+  const handleKeyDown = (event) => {
     if (event.keyCode === 13) {
       handleSubmit();
     }
@@ -122,7 +122,7 @@ export default function LoginPage(props) {
       style={{
         backgroundImage: "url(" + image + ")",
         backgroundSize: "cover",
-        backgroundPosition: "top center"
+        backgroundPosition: "top center",
       }}
     >
       <div className={classes.container}>
@@ -141,7 +141,7 @@ export default function LoginPage(props) {
                       justIcon
                       color="transparent"
                       className={classes.iconButtons}
-                      onClick={e => e.preventDefault()}
+                      onClick={(e) => e.preventDefault()}
                     >
                       <i className="fab fa-twitter" />
                     </Button>
@@ -149,7 +149,7 @@ export default function LoginPage(props) {
                       justIcon
                       color="transparent"
                       className={classes.iconButtons}
-                      onClick={e => e.preventDefault()}
+                      onClick={(e) => e.preventDefault()}
                     >
                       <i className="fab fa-facebook" />
                     </Button>
@@ -157,7 +157,7 @@ export default function LoginPage(props) {
                       justIcon
                       color="transparent"
                       className={classes.iconButtons}
-                      onClick={e => e.preventDefault()}
+                      onClick={(e) => e.preventDefault()}
                     >
                       <i className="fab fa-google-plus-g" />
                     </Button>
@@ -183,7 +183,7 @@ export default function LoginPage(props) {
                         >
                           <Email className={classes.inputIconsColor} />
                         </InputAdornment>
-                      )
+                      ),
                     }}
                   />
                   <CustomTextField
@@ -214,9 +214,9 @@ export default function LoginPage(props) {
                             {showPassword ? <Visibility /> : <VisibilityOff />}
                           </IconButton>
                         </InputAdornment>
-                      )
+                      ),
                     }}
-                    onKeyDown={e => handleKeyDown(e)}
+                    onKeyDown={(e) => handleKeyDown(e)}
                   />
 
                   <LinkM

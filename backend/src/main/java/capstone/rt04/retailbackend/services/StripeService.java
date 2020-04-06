@@ -145,13 +145,11 @@ public class StripeService {
             // TODO: Convert shopping cart item to transaction line item and create new transaction
             if (storeId == null) {
                 System.out.println("Online Payment success!");
-                System.out.print(intent.getClientSecret());
                 return transactionService.createNewTransaction(customerId, storeId, ONLINE_SHOPPING_CART, deliveryAddress, billingAddress, storeToCollectId, promoCodeId, collectionModeEnum, cardIssuer, cardLast4, paymentMethodId);
             } else {
                 System.out.println("In Store Payment success!");
                 System.out.print(intent.getClientSecret());
                 return transactionService.createNewTransaction(customerId, storeId, IN_STORE_SHOPPING_CART, deliveryAddress, billingAddress, storeToCollectId, promoCodeId, collectionModeEnum, cardIssuer, cardLast4, paymentMethodId);
-
             }
 
         } catch (CardException err) {
@@ -173,7 +171,6 @@ public class StripeService {
 
         for (CreditCard creditCard : creditCards) {
             if (creditCard.getCreditCardId().equals(creditCardId)) {
-                System.out.println("Deleting card");
                 PaymentMethod paymentMethod = PaymentMethod.retrieve(creditCard.getPaymentMethodId());
                 paymentMethod.detach();
                 customerService.deleteCreditCard(customerId, creditCard.getCreditCardId());

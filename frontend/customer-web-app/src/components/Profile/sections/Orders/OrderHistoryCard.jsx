@@ -28,7 +28,7 @@ function OrderHistoryCard(props) {
     IN_TRANSIT: "IN TRANSIT",
     DELIVERED: "DELIVERED",
     COLLECTED: "COLLECTED",
-    READY_FOR_COLLECTION: "READY FOR COLLECTION"
+    READY_FOR_COLLECTION: "READY FOR COLLECTION",
   };
 
   const [largeModal, setLargeModal] = React.useState(false);
@@ -53,7 +53,7 @@ function OrderHistoryCard(props) {
   //   return lineItem.productVariant;
   // });
 
-  const openModal = transactionId => {
+  const openModal = (transactionId) => {
     setLargeModal(true);
     dispatch(retrieveTransactionById(transactionId));
   };
@@ -64,7 +64,7 @@ function OrderHistoryCard(props) {
       style={{
         padding: "20px",
         margin: "10px 0",
-        borderRadius: "0px"
+        borderRadius: "0px",
       }}
     >
       <GridContainer>
@@ -97,7 +97,7 @@ function OrderHistoryCard(props) {
               </h5>
               <h5>
                 <b>Amount:</b>
-                <br />${transaction.finalTotalPrice}
+                <br />${transaction.finalTotalPrice.toFixed(2)}
               </h5>
               <Button
                 fullWidth
@@ -125,7 +125,7 @@ function OrderHistoryCard(props) {
               xs={12}
               style={{ height: "200px", overflowY: "scroll" }}
             >
-              {lineItems.map(lineItem => {
+              {lineItems.map((lineItem) => {
                 return (
                   <ProductVariantCard
                     key={lineItem.productVariant.productVariantId}

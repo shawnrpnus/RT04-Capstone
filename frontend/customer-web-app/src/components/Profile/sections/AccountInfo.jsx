@@ -7,7 +7,7 @@ import {
   Face,
   Lock,
   Visibility,
-  VisibilityOff
+  VisibilityOff,
 } from "@material-ui/icons";
 import { clearErrors } from "redux/actions";
 import { useDispatch, useSelector } from "react-redux";
@@ -22,7 +22,7 @@ import {
   refreshCustomerEmail,
   refreshCustomerId,
   sendUpdateEmailLink,
-  updateCustomerName
+  updateCustomerName,
 } from "redux/actions/customerActions";
 import { useSnackbar } from "notistack";
 import GridItem from "components/Layout/components/Grid/GridItem";
@@ -52,9 +52,9 @@ function AccountInfo(props) {
 
   //Redux
   const dispatch = useDispatch();
-  const isSendingEmail = useSelector(state => state.customer.isSendingEmail);
-  const errors = useSelector(state => state.errors);
-  const customer = useSelector(state => state.customer.loggedInCustomer);
+  const isSendingEmail = useSelector((state) => state.customer.isSendingEmail);
+  const errors = useSelector((state) => state.errors);
+  const customer = useSelector((state) => state.customer.loggedInCustomer);
 
   //State
   const [inputState, setInputState] = useState({
@@ -64,7 +64,7 @@ function AccountInfo(props) {
     oldPassword: "",
     newPassword: "",
     confirmNewPassword: "",
-    newEmail: "" //to keep for temporary use for showing in dialog,
+    newEmail: "", //to keep for temporary use for showing in dialog,
   });
   const [changingEmail, setChangingEmail] = useState(false);
   const [changingPassword, setChangingPassword] = useState(false);
@@ -85,11 +85,11 @@ function AccountInfo(props) {
   }, []);
 
   //Misc
-  const onChange = e => {
+  const onChange = (e) => {
     e.persist();
-    setInputState(inputState => ({
+    setInputState((inputState) => ({
       ...inputState,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     }));
     if (Object.keys(errors).length !== 0) {
       dispatch(clearErrors());
@@ -106,10 +106,10 @@ function AccountInfo(props) {
   };
 
   const resetInputState = () => {
-    setInputState(prevInputState => ({
+    setInputState((prevInputState) => ({
       ...prevInputState,
       email: customer.email,
-      newEmail: prevInputState.email
+      newEmail: prevInputState.email,
     }));
   };
 
@@ -132,14 +132,14 @@ function AccountInfo(props) {
     } else {
       enqueueSnackbar("Email is the same", {
         variant: "error",
-        autoHideDuration: 1200
+        autoHideDuration: 1200,
       });
     }
   };
 
   const handleCloseDialog = () => {
     setDialogOpen(false);
-    setInputState(inputState => ({ ...inputState, email: customer.email }));
+    setInputState((inputState) => ({ ...inputState, email: customer.email }));
   };
 
   const handleChangePassword = () => {
@@ -164,7 +164,6 @@ function AccountInfo(props) {
 
   const handleAddNewAddress = () => {
     setAddNewAddress(!addNewAddress);
-    console.log(addNewAddress);
   };
 
   return (
@@ -196,7 +195,7 @@ function AccountInfo(props) {
                         >
                           <Face className={classes.inputAdornmentIcon} />
                         </InputAdornment>
-                      )
+                      ),
                     }}
                   />
                 </GridItem>
@@ -215,7 +214,7 @@ function AccountInfo(props) {
                         >
                           <Face className={classes.inputAdornmentIcon} />
                         </InputAdornment>
-                      )
+                      ),
                     }}
                   />
                 </GridItem>
@@ -249,7 +248,7 @@ function AccountInfo(props) {
                         >
                           <Email className={classes.inputAdornmentIcon} />
                         </InputAdornment>
-                      )
+                      ),
                     }}
                   />
                 </GridItem>
@@ -330,7 +329,7 @@ function AccountInfo(props) {
                                 )}
                               </IconButton>
                             </InputAdornment>
-                          )
+                          ),
                         }}
                       />
                       <CustomTextField
@@ -363,7 +362,7 @@ function AccountInfo(props) {
                                 )}
                               </IconButton>
                             </InputAdornment>
-                          )
+                          ),
                         }}
                       />
                       <CustomTextField
@@ -396,7 +395,7 @@ function AccountInfo(props) {
                                 )}
                               </IconButton>
                             </InputAdornment>
-                          )
+                          ),
                         }}
                       />
                     </React.Fragment>
@@ -460,7 +459,7 @@ function AccountInfo(props) {
                 <div
                   style={{
                     display: "flex",
-                    justifyContent: "space-between"
+                    justifyContent: "space-between",
                   }}
                 >
                   <h4>

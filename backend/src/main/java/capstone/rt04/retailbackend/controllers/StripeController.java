@@ -49,7 +49,6 @@ public class StripeController {
     @PostMapping("/directPayment")
     public ResponseEntity<?> directPayment(@RequestParam Long totalAmount) {
         try {
-            System.out.println(totalAmount);
             PaymentIntent paymentIntent = stripeService.makeDirectPayment(totalAmount);
             return new ResponseEntity<>(paymentIntent.getClientSecret(), HttpStatus.OK);
         } catch (StripeException e) {

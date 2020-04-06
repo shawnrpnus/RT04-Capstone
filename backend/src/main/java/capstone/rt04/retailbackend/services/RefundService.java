@@ -161,7 +161,6 @@ public class RefundService {
                 refundLineItemRepository.save(refundLineItem);
             }
         }
-        System.out.println("DID THIS RUN 2");
 
 
 
@@ -239,7 +238,12 @@ public class RefundService {
             refundLineItemHandlerRepository.save(refundLineItemHandler);
             refundLineItem.getRefundLineItemHandlerList().add(refundLineItemHandler);
 
-            refund = refundLineItem.getRefund();
+            refund = retrieveRefundById(refundLineItem.getRefund().getRefundId());
+            if(updateRefundLineItemHandlerRequest.getRefundProgressEnum().equals(RefundProgressEnum.RECEIVED_BY_STORE.toString())) {
+                refund.setRefundStatus(RefundStatusEnum.PROCESSING);
+            } else if(updateRefundLineItemHandlerRequest.getRefundProgressEnum().equals(RefundProgressEnum.HANDLED_BY_STAFF.toString())) {
+                refund.setRefundStatus(RefundStatusEnum.PROCESSING);
+            }
         }
 
         Refund refundFinal = retrieveRefundById(refund.getRefundId());
