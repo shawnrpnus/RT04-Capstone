@@ -76,7 +76,10 @@ export const deletePromoCode = (promoCodeId, history) => {
         history.push(`/promoCode/viewAll`);
       })
       .catch(err => {
-        console.log(err);
+          //will catch PromoCodeLinkedToTransactionsException from backend but quantity will still be set to 0
+          toast.success("Promo Code quantity set to 0!", {
+              position: toast.POSITION.TOP_CENTER
+          });
         dispatch(deletePromoCodeError(err.response.data));
       });
   };

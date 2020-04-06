@@ -46,9 +46,9 @@ public class LeaveService {
                 .orElseThrow(() -> new StaffNotFoundException("Staff with id: " + staffLeave.getApplicant().getStaffId() + " does not exist"));
 
         for(StaffLeave leave : existingStaff.getLeaves()){
-            if(staffLeave.getFromDateTime().equals(leave.getFromDateTime()) || (staffLeave.getFromDateTime().after(staffLeave.getToDateTime())) ||
+            if((!leave.getStatus().equals(LeaveStatusEnum.REJECTED))&& (staffLeave.getFromDateTime().equals(leave.getFromDateTime()) || (staffLeave.getFromDateTime().after(staffLeave.getToDateTime())) ||
                     (staffLeave.getFromDateTime().after(leave.getFromDateTime()) && staffLeave.getFromDateTime().before(leave.getToDateTime())) ||
-                staffLeave.getFromDateTime().equals(leave.getToDateTime()) ){
+                staffLeave.getFromDateTime().equals(leave.getToDateTime())) ){
                 Map<String, String> errorMap = new HashMap<>();
                 errorMap.put("fromDateTime", ErrorMessages.OVERLAP_IN_LEAVE);
                 throw new InputDataValidationException(errorMap, ErrorMessages.OVERLAP_IN_LEAVE);
@@ -74,10 +74,12 @@ public class LeaveService {
                 .orElseThrow(() -> new StaffNotFoundException("Staff with id: " + applicant.getStaffId() + " does not exist"));
 
         for(StaffLeave leave : existingStaff.getLeaves()){
-            if(!leave.getStaffLeaveId().equals(leaveId) &&(fromDate.equals(leave.getFromDateTime()) ||
+            if(!leave.getStaffLeaveId().equals(leaveId) &&
+                    ((!leave.getStatus().equals(LeaveStatusEnum.REJECTED))&&
+                            ((fromDate.equals(leave.getFromDateTime()) ||
                     (fromDate.after(toDate)) ||
                     (fromDate.after(leave.getFromDateTime()) && fromDate.before(leave.getToDateTime())) ||
-                    fromDate.equals(leave.getToDateTime())) ){
+                    fromDate.equals(leave.getToDateTime())))) ){
                 Map<String, String> errorMap = new HashMap<>();
                 errorMap.put("fromDateTime", ErrorMessages.OVERLAP_IN_LEAVE);
                 throw new InputDataValidationException(errorMap, ErrorMessages.OVERLAP_IN_LEAVE);

@@ -7,10 +7,7 @@ import capstone.rt04.retailbackend.repositories.PromoCodeRepository;
 import capstone.rt04.retailbackend.util.ErrorMessages;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.customer.CustomerNotFoundException;
-import capstone.rt04.retailbackend.util.exceptions.promoCode.CreateNewPromoCodeException;
-import capstone.rt04.retailbackend.util.exceptions.promoCode.InvalidPromoCodeException;
-import capstone.rt04.retailbackend.util.exceptions.promoCode.PromoCodeNotFoundException;
-import capstone.rt04.retailbackend.util.exceptions.promoCode.PromoCodeUsedException;
+import capstone.rt04.retailbackend.util.exceptions.promoCode.*;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -104,14 +101,16 @@ public class PromoCodeService {
     }
 
 
-    public PromoCode deletePromoCode(Long promoCodeId) throws PromoCodeNotFoundException {
+    public PromoCode deletePromoCode(Long promoCodeId) throws PromoCodeNotFoundException, PromoCodeLinkedToTransactionsException {
         PromoCode promoCodeToRemove = retrievePromoCodeById(promoCodeId);
-        for (Transaction transaction : promoCodeToRemove.getTransactions()) {
-            transaction.setPromoCode(null);
-        }
-        promoCodeToRemove.setTransactions(null);
-        promoCodeRepository.delete(promoCodeToRemove);
 
+        //checking for existing transactions linked with promo code
+        if(promoCodeToRemove.getTransactions().isEmpty()){
+            promoCodeRepository.delete(promoCodeToRemove);
+        }else{
+            promoCodeToRemove.setNumRemaining(0);
+            throw new PromoCodeLinkedToTransactionsException("Promo code quantity set to 0");
+        }
         return promoCodeToRemove;
     }
 
