@@ -38,6 +38,7 @@ function AddToCart(props) {
 
       return () => {
         task.cancel();
+        setAlertOpen(false);
         setTimeout(() => setDisplayCamera(false), 200);
       };
     }, [])

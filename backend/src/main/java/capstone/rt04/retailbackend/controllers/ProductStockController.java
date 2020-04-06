@@ -127,11 +127,14 @@ public class ProductStockController {
         product.setStyles(null);
         if (productStock.getWarehouse() != null) {
             productStock.getWarehouse().setProductStocks(null);
+            productStock.getWarehouse().setInStoreRestockOrders(null);
         }
         if (productStock.getStore() != null){
             productStock.getStore().setProductStocks(null);
             productStock.getStore().setStaff(null);
             productStock.getStore().setTransactions(null);
+            productStock.getStore().setReservations(null);
+            productStock.getStore().setInStoreRestockOrders(null);
         }
     }
 
