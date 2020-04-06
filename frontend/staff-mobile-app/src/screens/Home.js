@@ -53,7 +53,7 @@ function Home(props) {
 
   return (
     <Block flex>
-      {staff && (
+      {staff && store && (
         <>
           <Block
             flex={0.4}
