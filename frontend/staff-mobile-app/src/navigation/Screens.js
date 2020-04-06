@@ -1,5 +1,5 @@
 import React from "react";
-import { Easing, Dimensions } from "react-native";
+import { Easing, Dimensions, AsyncStorage } from "react-native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 
@@ -17,6 +17,10 @@ import ReservationDetail from "src/screens/Reservation/ReservationDetail";
 import CustomHeader from "src/components/CustomHeader";
 import ProductDetails from "src/screens/ProductDetails/ProductDetails";
 import Reservations from "src/screens/Reservation/Reservations";
+import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
+import DrawerCustomItem from "src/components/DrawerCustomItem";
+import DeliveryList from "src/screens/Delivery/DeliveryList";
+import GroupedStoreOrderDetails from "src/screens/Delivery/GroupedStoreOrder/GroupedStoreOrderDetails";
 
 const { width } = Dimensions.get("screen");
 
@@ -50,48 +54,71 @@ export default function AppStack(props) {
 
 function AppDrawer(props) {
   const { navigation: baseNavigation } = props;
+  const staff = useSelector(state => state.staff.loggedInStaff);
+  const getDepartmentName = () => {
+    return staff.department.departmentName;
+  };
   return (
-    <Drawer.Navigator
-      drawerContent={props => (
-        <CustomDrawerContent {...props} baseNavigation={baseNavigation} />
-      )}
-      drawerContentOptions={{
-        activeTintColor: "white",
-        inactiveTintColor: "#000",
-        activeBackgroundColor: theme.COLORS.ACTIVE,
-        inactiveBackgroundColor: "transparent",
-        itemStyle: {
-          width: width * 0.74,
-          paddingHorizontal: 12,
-          // paddingVertical: 4,
-          justifyContent: "center",
-          alignContent: "center",
-          // alignItems: 'center',
-          overflow: "hidden"
-        },
-        labelStyle: {
-          fontSize: 18,
-          fontWeight: "normal"
+    staff && (
+      <Drawer.Navigator
+        drawerContent={props => (
+          <CustomDrawerContent
+            {...props}
+            baseNavigation={baseNavigation}
+            department={getDepartmentName()}
+          />
+        )}
+        drawerContentOptions={{
+          activeTintColor: "white",
+          inactiveTintColor: "#000",
+          activeBackgroundColor: theme.COLORS.ACTIVE,
+          inactiveBackgroundColor: "transparent",
+          itemStyle: {
+            width: width * 0.74,
+            paddingHorizontal: 12,
+            // paddingVertical: 4,
+            justifyContent: "center",
+            alignContent: "center",
+            // alignItems: 'center',
+            overflow: "hidden"
+          },
+          labelStyle: {
+            fontSize: 18,
+            fontWeight: "normal"
+          }
+        }}
+        initialRouteName={
+          getDepartmentName().toLowerCase() === "delivery"
+            ? "DeliveryStack"
+            : "HomeStack"
         }
-      }}
-      initialRouteName="HomeStack"
-    >
-      <Drawer.Screen
-        name="HomeStack"
-        drawerLabel="Home"
-        component={HomeStack}
-      />
-      <Drawer.Screen
-        name="ProductStack"
-        drawerLabel="Product"
-        component={ProductStack}
-      />
-      <Drawer.Screen
-        name="ReservationStack"
-        drawerLabel="ReservationDetail"
-        component={ReservationStack}
-      />
-    </Drawer.Navigator>
+      >
+        {getDepartmentName().toLowerCase() !== "delivery" && (
+          <>
+            <Drawer.Screen
+              name="HomeStack"
+              drawerLabel="Home"
+              component={HomeStack}
+            />
+            <Drawer.Screen
+              name="ProductStack"
+              drawerLabel="Product"
+              component={ProductStack}
+            />
+            <Drawer.Screen
+              name="ReservationStack"
+              drawerLabel="ReservationDetail"
+              component={ReservationStack}
+            />
+          </>
+        )}
+        <Drawer.Screen
+          name="DeliveryStack"
+          drawerLabel={"Delivery"}
+          component={DeliveryStack}
+        />
+      </Drawer.Navigator>
+    )
   );
 }
 
@@ -152,6 +179,33 @@ function ReservationStack(props) {
           header: props => (
             <CustomHeader title="Reservation Details" back {...props} />
           )
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
+
+function DeliveryStack(props) {
+  return (
+    <Stack.Navigator mode="card" headerMode="screen">
+      <Stack.Screen
+        name="Deliveries"
+        component={DeliveryList}
+        options={{
+          header: props => (
+            <CustomHeader title="Today's Deliveries" {...props} />
+          ),
+          headerStyle: { height: 100 }
+        }}
+      />
+      <Stack.Screen
+        name="Grouped Store Order Details"
+        component={GroupedStoreOrderDetails}
+        options={{
+          header: props => (
+            <CustomHeader title="Store Order(s)" {...props} />
+          ),
+          headerStyle: { height: 100 }
         }}
       />
     </Stack.Navigator>

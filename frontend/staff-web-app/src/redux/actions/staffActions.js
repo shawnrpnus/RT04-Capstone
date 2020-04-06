@@ -50,6 +50,21 @@ export const retrieveAllStaff = () => {
   };
 };
 
+export const retrieveAllDeliveryStaff = () => {
+  return dispatch => {
+    //redux thunk passes dispatch
+    axios
+      .get(STAFF_BASE_URL + `/retrieveAllDeliveryStaff`)
+      .then(response => {
+        const { data } = jsog.decode(response);
+        dispatch(retrieveAllStaffSuccess(data));
+      })
+      .catch(err => {
+        dispatch(retrieveAllStaffError(err.response.data));
+      });
+  };
+};
+
 const retrieveAllStaffSuccess = data => ({
   type: types.RETRIEVE_ALL_STAFF,
   staffEntity: data

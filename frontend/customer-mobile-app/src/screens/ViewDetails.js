@@ -11,11 +11,12 @@ import {
   retrieveProductStockById,
   retrieveProductVariantBySKU
 } from "src/redux/actions/productVariantActions";
-import { SplashScreen } from "expo";
+import { Notifications, SplashScreen } from "expo";
 import {
   dispatchUpdatedCustomer,
   registerForPushNotifications
 } from "src/redux/actions/customerActions";
+import { retrieveUpcomingReservations } from "src/redux/actions/reservationActions";
 
 const _ = require("lodash");
 const { width, height } = Dimensions.get("window");
@@ -42,10 +43,19 @@ function ViewDetails(props) {
       }
     };
     registerPushNotificationToken();
-    // const notificationSubscription = Notifications.addListener(
-    //   handleNotification
-    // );
+    const notificationSubscription = Notifications.addListener(
+      handleNotification
+    );
   }, [customer]);
+
+  const handleNotification = notification => {
+    if (customer && notification.data.type === "reservationReminder") {
+      dispatch(retrieveUpcomingReservations(customer.customerId));
+    }
+    if (notification.origin === "selected") {
+      navigation.navigate("ReservationsStack");
+    }
+  };
 
   useEffect(() => {
     dispatch(retrieveAllSKUs());

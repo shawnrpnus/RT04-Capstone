@@ -5,12 +5,17 @@ import { ScrollView, StyleSheet } from "react-native";
 import DrawerCustomItem from "src/components/DrawerCustomItem";
 import materialTheme from "src/constants/Theme";
 
-const screens = ["HomeStack", "ProductStack", "ReservationStack"];
+const storeScreens = ["HomeStack", "ProductStack", "ReservationStack"];
+
+const deliveryScreens = ["DeliveryStack"];
 
 function CustomDrawerContent(props) {
-  const { navigation, state } = props;
+  const { navigation, state, department } = props;
 
   const staff = useSelector(state => state.staff.loggedInStaff);
+
+  const screens = department.toLowerCase() === "delivery" ? deliveryScreens : storeScreens;
+
   return (
     <Block style={styles.container}>
       <Block flex={0.1} style={styles.header}>

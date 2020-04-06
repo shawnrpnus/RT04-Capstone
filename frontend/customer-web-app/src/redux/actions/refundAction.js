@@ -1,5 +1,5 @@
 import axios from "axios";
-import {dispatchErrorMapError} from "./index";
+import { dispatchErrorMapError } from "./index";
 import * as types from "./types";
 import {CREATE_ONLINE_REFUND_RECORD} from "./types";
 import GenerateRefundLabel from "../../models/refund/GenerateRefundLabel";
@@ -12,7 +12,6 @@ const REFUND_BASE_URL = "/api/refund";
 const EMAIL_BASE_URL = "/api/email";
 const _ = require("lodash");
 const jsog = require("jsog");
-
 
 export const createOnlineRefundRequest = (
   refundRequest,
@@ -69,8 +68,7 @@ const retrieveRefundsByCustomerIdSuccess = data => ({
   refunds: data
 });
 
-
-export const retrieveRefundById = (refundId) => {
+export const retrieveRefundById = refundId => {
   return dispatch => {
     //redux thunk passes dispatch
     axios

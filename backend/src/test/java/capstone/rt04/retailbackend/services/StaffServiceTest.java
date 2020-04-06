@@ -1,16 +1,11 @@
 package capstone.rt04.retailbackend.services;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import capstone.rt04.retailbackend.entities.*;
 import capstone.rt04.retailbackend.repositories.DepartmentRepository;
 import capstone.rt04.retailbackend.repositories.RoleRepository;
-import capstone.rt04.retailbackend.repositories.StoreRepository;
 import capstone.rt04.retailbackend.util.ErrorMessages;
 import capstone.rt04.retailbackend.util.enums.RoleNameEnum;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
-import capstone.rt04.retailbackend.util.exceptions.customer.InvalidLoginCredentialsException;
-import capstone.rt04.retailbackend.util.exceptions.staff.CreateNewStaffAccountException;
 import capstone.rt04.retailbackend.util.exceptions.staff.InvalidStaffCredentialsException;
 import capstone.rt04.retailbackend.util.exceptions.staff.StaffNotFoundException;
 import org.junit.After;
@@ -29,6 +24,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 
 @RunWith(SpringRunner.class)
@@ -73,7 +70,7 @@ public class StaffServiceTest {
         Store expectedValidStore = new Store("Store 1", 8, 4, Time.valueOf("10:00:00"), Time.valueOf("21:00:00"), 2, 6, null);
         testStore = storeService.createNewStore(expectedValidStore);
 
-        Address testAddress = new Address("aba", "aaa", 123456, "blah");
+        Address testAddress = new Address("aba", "aaa", "123456", "blah");
 
         Staff testValidStaff = staffService.createNewStaff(expectedValidStaff,testAddress,testRole.getRoleId(),testDepartment.getDepartmentId(), testStore.getStoreId());
         assertThat(testValidStaff.getStaffId()).isNotNull();
@@ -96,7 +93,7 @@ public class StaffServiceTest {
     public void createNewStaff() throws Exception {
 
         //Valid address
-        Address a = new Address("aba", "aaa", 123456, "blah");
+        Address a = new Address("aba", "aaa", "123456", "blah");
         BigDecimal salary = new BigDecimal(1000);
         Staff invalidStaff = new Staff("bob", "vance", 10, "S111111D",  "bob@Bob@com", salary);
 

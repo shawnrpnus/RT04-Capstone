@@ -1,14 +1,13 @@
 import { makeStyles } from "@material-ui/core/styles";
 import typographyStyle from "../../../../assets/jss/material-kit-pro-react/views/componentsSections/typographyStyle";
-import {useHistory} from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import Card from "../../../UI/Card/Card";
 import React from "react";
 import GridItem from "../../../Layout/components/Grid/GridItem";
 import Divider from "@material-ui/core/Divider";
 import GridContainer from "../../../Layout/components/Grid/GridContainer";
-import {Button} from "../../../UI/CustomButtons/Button";
+import { Button } from "../../../UI/CustomButtons/Button";
 import ProductVariantCard from "../../../Reservation/View/ProductVariantCard";
-
 
 const _ = require("lodash");
 const moment = require("moment");
@@ -56,14 +55,14 @@ function RefundHistoryCard(props) {
       "productStocks",
       jsog.stringify(productStocksToGenerateQR)
     );
-    window.open(`${process.env.PUBLIC_URL}/account/profile/viewRefund/${currRefund.refundId}`);
+    window.open(
+      `${process.env.PUBLIC_URL}/account/profile/viewRefund/${currRefund.refundId}`
+    );
   };
 
   const handleViewDetails = () => {
     // generateQR();
-    history.push(
-      `/account/profile/viewRefund/${currRefund.refundId}`
-    )
+    history.push(`/account/profile/viewRefund/${currRefund.refundId}`);
   };
 
   return (
@@ -107,9 +106,7 @@ function RefundHistoryCard(props) {
                 fullWidth
                 color="success"
                 style={{ float: "bottom" }}
-                onClick={() =>
-                  handleViewDetails()
-                }
+                onClick={() => handleViewDetails()}
               >
                 View Refund
               </Button>
@@ -120,10 +117,16 @@ function RefundHistoryCard(props) {
               style={{ height: "200px", overflowY: "scroll" }}
             >
               {lineItems.map(lineItem => {
-                const val = lineItem.transactionLineItem.initialSubTotal * lineItem.quantity/lineItem.transactionLineItem.quantity;
+                const val =
+                  (lineItem.transactionLineItem.initialSubTotal *
+                    lineItem.quantity) /
+                  lineItem.transactionLineItem.quantity;
                 return (
                   <ProductVariantCard
-                    key={lineItem.transactionLineItem.productVariant.productVariantId}
+                    key={
+                      lineItem.transactionLineItem.productVariant
+                        .productVariantId
+                    }
                     productVariant={lineItem.transactionLineItem.productVariant}
                     quantity={lineItem.quantity}
                     initialSubTotal={val}
@@ -136,7 +139,7 @@ function RefundHistoryCard(props) {
         </GridItem>
       </GridContainer>
     </Card>
-  )
+  );
 }
 
 export default RefundHistoryCard;

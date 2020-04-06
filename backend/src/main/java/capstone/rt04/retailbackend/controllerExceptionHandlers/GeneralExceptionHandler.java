@@ -10,6 +10,7 @@ import capstone.rt04.retailbackend.util.exceptions.category.UpdateCategoryExcept
 import capstone.rt04.retailbackend.util.exceptions.contactUs.ContactUsNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.customer.*;
 import capstone.rt04.retailbackend.util.exceptions.delivery.DeliveryHasAlreadyBeenConfirmedException;
+import capstone.rt04.retailbackend.util.exceptions.delivery.DeliveryNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.delivery.NoItemForDeliveryException;
 import capstone.rt04.retailbackend.util.exceptions.discount.DiscountNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.inStoreRestockOrder.InStoreRestockOrderItemNotFoundException;
@@ -51,6 +52,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -75,7 +77,8 @@ public class GeneralExceptionHandler extends ResponseEntityExceptionHandler {
             CreateNewCustomerException.class, CustomerCannotDeleteException.class,
             CreateNewStyleException.class, UpdateStyleException.class, DeleteStyleException.class,
             CreateNewTagException.class, DeleteTagException.class, UpdateTagException.class,
-            CreateNewCategoryException.class, UpdateCategoryException.class, DeleteCategoryException.class
+            CreateNewCategoryException.class, UpdateCategoryException.class, DeleteCategoryException.class,
+            IOException.class
     })
     public final ResponseEntity<Object> handlePersistenceExceptions(Exception ex, WebRequest req) {
         return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -91,7 +94,8 @@ public class GeneralExceptionHandler extends ResponseEntityExceptionHandler {
             StyleNotFoundException.class, ContactUsNotFoundException.class, InStoreRestockOrderNotFoundException.class,
             AdvertisementNotFoundException.class, InStoreRestockOrderItemNotFoundException.class,
             InstagramPostNotFoundException.class, ReviewNotFoundException.class, DiscountNotFoundException.class,
-            StaffNotFoundException.class, PromoCodeNotFoundException.class, TransactionNotFoundException.class
+            StaffNotFoundException.class, PromoCodeNotFoundException.class, TransactionNotFoundException.class,
+            DeliveryNotFoundException.class
     })
     public final ResponseEntity<Object> handleNotFoundExceptions(Exception ex, WebRequest req) {
         return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);

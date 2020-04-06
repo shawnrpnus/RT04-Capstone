@@ -10,7 +10,6 @@ import com.voodoodyne.jackson.jsog.JSOGGenerator;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 import javax.persistence.*;
 import javax.validation.Valid;
@@ -39,9 +38,9 @@ public class Store implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long storeId;
 
-    @NotNull(message = "Store categoryName is required")
+    @NotNull(message = "Store name is required")
     @Column(nullable = false)
-    @Size(min = 1, message = "Store categoryName is required")
+    @Size(min = 1, message = "Store name is required")
     private String storeName;
     
     @NotNull

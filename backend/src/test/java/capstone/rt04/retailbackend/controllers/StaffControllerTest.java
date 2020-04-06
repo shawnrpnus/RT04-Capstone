@@ -1,18 +1,14 @@
 package capstone.rt04.retailbackend.controllers;
 
-import capstone.rt04.retailbackend.entities.*;
+import capstone.rt04.retailbackend.entities.Address;
+import capstone.rt04.retailbackend.entities.Department;
+import capstone.rt04.retailbackend.entities.Role;
+import capstone.rt04.retailbackend.entities.Staff;
 import capstone.rt04.retailbackend.repositories.DepartmentRepository;
 import capstone.rt04.retailbackend.repositories.RoleRepository;
-import capstone.rt04.retailbackend.request.customer.CustomerLoginRequest;
 import capstone.rt04.retailbackend.request.staff.*;
-import capstone.rt04.retailbackend.util.Constants;
 import capstone.rt04.retailbackend.util.ErrorMessages;
-
-import static capstone.rt04.retailbackend.util.routeconstants.CustomerControllerRoutes.*;
-import static capstone.rt04.retailbackend.util.routeconstants.StaffControllerRoutes.*;
-
 import capstone.rt04.retailbackend.util.enums.RoleNameEnum;
-import capstone.rt04.retailbackend.util.exceptions.staff.CreateNewStaffAccountException;
 import io.restassured.RestAssured;
 import org.junit.After;
 import org.junit.Before;
@@ -26,13 +22,15 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import static io.restassured.RestAssured.*;
-import static org.hamcrest.Matchers.*;
+import static capstone.rt04.retailbackend.util.routeconstants.StaffControllerRoutes.*;
+import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 
 @DirtiesContext
 @RunWith(SpringRunner.class)
@@ -78,7 +76,7 @@ public class StaffControllerTest{
                 then().statusCode(HttpStatus.CREATED.value()).extract().body().as(Department.class);
         assertThat(testDepartment.getDepartmentId()).isNotNull();
 
-        Address testAddress = new Address("aba", "aaa", 123456, "blah");
+        Address testAddress = new Address("aba", "aaa", "123456", "blah");
 
         StaffCreateRequest staffCreateRequest = new StaffCreateRequest(expectedValidStaff, testAddress, testRole.getRoleId(), testDepartment.getDepartmentId(), null);
 
@@ -119,7 +117,7 @@ public class StaffControllerTest{
     @Test
     public void createInvalidStaff() {
         //Valid address
-        Address a = new Address("aba", "aaa", 123456, "blah");
+        Address a = new Address("aba", "aaa", "123456", "blah");
         Staff invalidStaff = new Staff("bob", "vance", 10, "S111111D", "bob@Bob@com",BigDecimal.valueOf(10000));
 
 

@@ -3,7 +3,7 @@ import * as types from "../actions/types";
 const initialState = {
   currentStaff: null,
   retrievedStaff: null,
-  allStaff: null,
+  allStaff: [],
   staffWithNoAccount: null,
   allRoles: null,
   allDepartments: null,

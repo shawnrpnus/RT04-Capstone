@@ -29,7 +29,7 @@ public class RelationshipService {
             clearShoppingCartItemRelationships(sci);
         }
         Store s = customer.getInStoreShoppingCart().getStore();
-        if (s != null){
+        if (s != null) {
             s.setProductStocks(null);
             s.setStaff(null);
             s.setTransactions(null);
@@ -50,7 +50,7 @@ public class RelationshipService {
         customer.setReservations(null);
         customer.setTransactions(null);
 
-        for (PromoCode promoCode: customer.getUsedPromoCodes()) {
+        for (PromoCode promoCode : customer.getUsedPromoCodes()) {
             promoCode.setTransactions(null);
         }
     }
@@ -233,5 +233,31 @@ public class RelationshipService {
 
     public void clearDiscountRelationships(List<Discount> discounts) {
         discounts.forEach(discount -> discount.setProducts(null));
+    }
+
+    public void clearRestockOrderRelationship(List<InStoreRestockOrder> inStoreRestockOrders) {
+        for (InStoreRestockOrder inStoreRestockOrder : inStoreRestockOrders) {
+            // Warehouse
+            inStoreRestockOrder.getWarehouse().setProductStocks(null);
+            inStoreRestockOrder.getWarehouse().setInStoreRestockOrders(null);
+
+            // Store
+            clearStoreRelationships(inStoreRestockOrder.getStore());
+
+            // Product stock
+            for (InStoreRestockOrderItem inStoreRestockOrderItem : inStoreRestockOrder.getInStoreRestockOrderItems()) {
+                clearRestockOrderItemRelationship(inStoreRestockOrderItem);
+            }
+        }
+    }
+
+    public void clearRestockOrderItemRelationship(InStoreRestockOrderItem inStoreRestockOrderItem) {
+        inStoreRestockOrderItem.getProductStock().setStore(null);
+        inStoreRestockOrderItem.getProductStock().setWarehouse(null);
+        // Product variant
+        ProductVariant productVariant = inStoreRestockOrderItem.getProductStock().getProductVariant();
+        clearProductVariantRelationships(productVariant);
+        inStoreRestockOrderItem.setInStoreRestockOrder(null);
+        inStoreRestockOrderItem.setDelivery(null);
     }
 }

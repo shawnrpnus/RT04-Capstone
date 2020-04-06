@@ -96,6 +96,29 @@ export const automateDeliveryAllocation = staffId => {
       });
   };
 };
+
+export const generateDeliveryRoute = deliveryId => {
+  return dispatch => {
+    dispatch(openCircularProgress());
+    axios
+      .get(DELIVERY_BASE_URL + `/generateDeliveryRoute/${deliveryId}`)
+      .then(response => {
+        console.log(jsog.decode(response));
+        // dispatch(retrieveAllDelivery());
+        toast.success("Route generated", {
+          position: toast.POSITION.TOP_CENTER
+        });
+        dispatch(closeCircularProgress());
+      })
+      .catch(err => {
+        toast.error(err.response.data.errorMessage, {
+          position: toast.POSITION.TOP_CENTER
+        });
+        dispatch(closeCircularProgress());
+      });
+  };
+};
+
 // NOTE: End delivery
 
 // NOTE: Start restock order item

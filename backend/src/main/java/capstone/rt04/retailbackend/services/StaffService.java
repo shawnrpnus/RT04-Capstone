@@ -103,12 +103,11 @@ public class StaffService {
         }
 
         //if department is HR or IT, cannot assign any store
-        if((d.getDepartmentName().equals("HR") || d.getDepartmentName().equals("IT")) && storeId !=null){
+        if ((d.getDepartmentName().equals("HR") || d.getDepartmentName().equals("IT")) && storeId != null) {
             Map<String, String> errorMap = new HashMap<>();
             errorMap.put("storeId", ErrorMessages.STORE_CANNOT_ASSIGN);
             throw new InputDataValidationException(errorMap, ErrorMessages.STORE_CANNOT_ASSIGN);
         }
-
 
 
         try {
@@ -129,8 +128,6 @@ public class StaffService {
             //Set address, role and department before saving because of sql constraint
             //Address ID, role ID and department ID column cannot be empty
             addressRepository.save(staffAddress);
-
-
 
 
             if (storeId != null) {
@@ -200,10 +197,7 @@ public class StaffService {
         }
 
         try {
-
-
             Staff staff = retrieveStaffByUsername(username);
-
             String password = "password";
             staff.setPassword(encoder.encode(password));
 
@@ -211,7 +205,6 @@ public class StaffService {
 //                //send an email to staff informing staff new password
 //                sendEmail(staffId.toString(), password, "shawnroshan@gmail.com"); //TODO: to change to actual email
 //            }
-
             return staff;
         } catch (StaffNotFoundException ex) {
             Map<String, String> errorMap = new HashMap<>();
@@ -223,20 +216,20 @@ public class StaffService {
     //for HR to retrieve all staff
     public List<Staff> retrieveAllStaff() {
         List<Staff> allStaff = staffRepository.findAll();
-
         for (Staff staff : allStaff) {
-            staff.getLeaves().size();
-            staff.getRepliedReviews().size();
-            staff.getStore();
-            staff.getRole();
-            staff.getDepartment();
-            staff.getPayrolls().size();
-            staff.getDeliveries().size();
-            staff.getBankDetails();
-            staff.getAddress();
-            staff.getAdvertisements().size();
+            lazyLoadStaffFields(staff);
         }
         return allStaff;
+    }
+
+    // For Delivery manager to assign delivery to delivery staff
+    public List<Staff> retrieveAllDeliveryStaff() {
+        List<Staff> deliveryStaff = staffRepository.findAllByDepartment_DepartmentNameEqualsAndRole_RoleNameEquals(
+                "Delivery", RoleNameEnum.ASSISTANT);
+        for (Staff staff : deliveryStaff) {
+            lazyLoadStaffFields(staff);
+        }
+        return deliveryStaff;
     }
 
     public List<Role> retrieveAllRoles() {
@@ -308,18 +301,17 @@ public class StaffService {
             staffToUpdate.setRole(r);
 
             //In the event that a store staff is changed to HR/IT
-            if(oldStore!=null && (oldStore.getStoreId().equals(storeId)) &&(d.getDepartmentName().equals("HR") || d.getDepartmentName().equals("IT"))){
+            if (oldStore != null && (oldStore.getStoreId().equals(storeId)) && (d.getDepartmentName().equals("HR") || d.getDepartmentName().equals("IT"))) {
                 staffToUpdate.setStore(null);
-                storeId=null;
+                storeId = null;
             }
 
             //if department is HR or IT, cannot assign any store
-            if((d.getDepartmentName().equals("HR") || d.getDepartmentName().equals("IT")) && storeId !=null){
+            if ((d.getDepartmentName().equals("HR") || d.getDepartmentName().equals("IT")) && storeId != null) {
                 Map<String, String> errorMap = new HashMap<>();
                 errorMap.put("storeName", ErrorMessages.STORE_CANNOT_ASSIGN);
                 throw new InputDataValidationException(errorMap, ErrorMessages.STORE_CANNOT_ASSIGN);
             }
-
 
 
             if (storeId != null) {
@@ -397,7 +389,7 @@ public class StaffService {
 
             }
 
-            if(!newPassword.equals(confirmPassword)){
+            if (!newPassword.equals(confirmPassword)) {
                 Map<String, String> errorMap = new HashMap<>();
                 errorMap.put("confirmPassword", ErrorMessages.NEW_PASSWORDS_DO_NOT_MATCH);
                 throw new InvalidStaffCredentialsException(errorMap, ErrorMessages.NEW_PASSWORDS_DO_NOT_MATCH);
@@ -490,7 +482,7 @@ public class StaffService {
 
     }
 
-    public Staff registerPushNotificationToken (Long staffId, String token) throws StaffNotFoundException {
+    public Staff registerPushNotificationToken(Long staffId, String token) throws StaffNotFoundException {
         Staff staff = retrieveStaffByStaffId(staffId);
         staff.setPushNotificationToken(token);
         return staff;

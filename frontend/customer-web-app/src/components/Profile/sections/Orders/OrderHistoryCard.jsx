@@ -9,8 +9,8 @@ import typographyStyle from "assets/jss/material-kit-pro-react/views/componentsS
 import { makeStyles } from "@material-ui/core/styles";
 import { useHistory } from "react-router-dom";
 import CreateRefund from "../Refunds/CreateRefund";
-import {retrieveTransactionById} from "../../../../redux/actions/transactionActions";
-import {useDispatch} from "react-redux";
+import { retrieveTransactionById } from "../../../../redux/actions/transactionActions";
+import { useDispatch } from "react-redux";
 
 const _ = require("lodash");
 const moment = require("moment");
@@ -33,7 +33,6 @@ function OrderHistoryCard(props) {
 
   const [largeModal, setLargeModal] = React.useState(false);
 
-
   const status = deliveryStatusEnumMap[transaction.deliveryStatus];
 
   let statusColor;
@@ -54,7 +53,7 @@ function OrderHistoryCard(props) {
   //   return lineItem.productVariant;
   // });
 
-  const openModal = (transactionId) => {
+  const openModal = transactionId => {
     setLargeModal(true);
     dispatch(retrieveTransactionById(transactionId));
   };
@@ -116,7 +115,8 @@ function OrderHistoryCard(props) {
                 fullWidth
                 color="primary"
                 style={{ float: "bottom" }}
-                onClick={() => openModal(transaction.transactionId)}>
+                onClick={() => openModal(transaction.transactionId)}
+              >
                 Make a Refund
               </Button>
             </GridItem>

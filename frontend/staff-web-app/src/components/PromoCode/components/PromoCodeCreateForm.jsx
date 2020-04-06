@@ -11,6 +11,7 @@ import CloseCircleIcon from "mdi-react/CloseCircleIcon";
 import PromoCode from "../../../models/promoCode/promoCode";
 import PromoCodeCreateRequest from "../../../models/promoCode/PromoCodeCreateRequest";
 import { createPromoCode } from "../../../redux/actions/promoCodeActions";
+import InputAdornment from "@material-ui/core/InputAdornment";
 
 class PromoCodeCreateForm extends Component {
   static propTypes = {
@@ -143,6 +144,9 @@ class PromoCodeCreateForm extends Component {
               state={this.state}
               errors={errors}
               autoFocus={true}
+              InputProps={{
+                startAdornment: <InputAdornment position="start">$</InputAdornment>,
+              }}
             />
           </Grid>
 
@@ -180,6 +184,9 @@ class PromoCodeCreateForm extends Component {
                 state={this.state}
                 errors={errors}
                 autoFocus={true}
+                InputProps={{
+                  startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                }}
               />
               <small>Format: 0.00</small>
             </Grid>
@@ -192,6 +199,9 @@ class PromoCodeCreateForm extends Component {
                 state={this.state}
                 errors={errors}
                 autoFocus={true}
+                InputProps={{
+                  endAdornment: <InputAdornment position="end">%</InputAdornment>,
+                }}
               />
               <small>Format: 0.00</small>
             </Grid>

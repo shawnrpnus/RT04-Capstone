@@ -2,6 +2,8 @@ package capstone.rt04.retailbackend.services;
 
 import capstone.rt04.retailbackend.entities.*;
 import capstone.rt04.retailbackend.repositories.DeliveryRepository;
+import capstone.rt04.retailbackend.response.GroupedStoreOrderItems;
+import capstone.rt04.retailbackend.util.enums.CollectionModeEnum;
 import capstone.rt04.retailbackend.util.enums.DeliveryStatusEnum;
 import capstone.rt04.retailbackend.util.enums.ItemDeliveryStatusEnum;
 import capstone.rt04.retailbackend.util.exceptions.delivery.DeliveryNotFoundException;
@@ -9,11 +11,15 @@ import capstone.rt04.retailbackend.util.exceptions.delivery.NoItemForDeliveryExc
 import capstone.rt04.retailbackend.util.exceptions.inStoreRestockOrder.InStoreRestockOrderItemNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.staff.StaffNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.transaction.TransactionNotFoundException;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
 
 @Service
@@ -23,12 +29,14 @@ public class DeliveryService {
     private final DeliveryRepository deliveryRepository;
 
     private final StaffService staffService;
+    private final WarehouseService warehouseService;
     private final TransactionService transactionService;
     private final InStoreRestockOrderService inStoreRestockOrderService;
 
     public DeliveryService(DeliveryRepository deliveryRepository, StaffService staffService,
-                           @Lazy TransactionService transactionService, @Lazy InStoreRestockOrderService inStoreRestockOrderService) {
+                           WarehouseService warehouseService, @Lazy TransactionService transactionService, @Lazy InStoreRestockOrderService inStoreRestockOrderService) {
         this.deliveryRepository = deliveryRepository;
+        this.warehouseService = warehouseService;
         this.transactionService = transactionService;
         this.inStoreRestockOrderService = inStoreRestockOrderService;
         this.staffService = staffService;
@@ -77,7 +85,7 @@ public class DeliveryService {
         Transaction transaction;
         List<Transaction> transactions = new ArrayList<>();
 
-        for(Long id : transactionIds) {
+        for (Long id : transactionIds) {
             transaction = transactionService.retrieveTransactionById(id);
             transaction.setDeliveryStatus(DeliveryStatusEnum.IN_TRANSIT);
             transactions.add(transaction);
@@ -127,7 +135,8 @@ public class DeliveryService {
             }
 
             if (transactions.size() > 0 && transactionIndex < transactionSize
-                    && transactions.get(transactionIndex).getTotalQuantity() + quantity <= maxCapacity) {
+                    && transactions.get(transactionIndex).getTotalQuantity() + quantity <= maxCapacity
+                    && !(transactions.get(transactionIndex).getStore() != null && transactions.get(transactionIndex).getCollectionMode() == CollectionModeEnum.IN_STORE)) {
                 delivery.getCustomerOrdersToDeliver().add(transactions.get(transactionIndex));
                 transactions.get(transactionIndex).getDeliveries().add(delivery);
 
@@ -138,10 +147,130 @@ public class DeliveryService {
             inStoreRestockOrderIndex += 1;
             transactionIndex += 1;
 
-            if (inStoreRestockOrderIndex >= inStoreRestockOrderItemSize  && transactionIndex >= transactionSize )
+            if (inStoreRestockOrderIndex >= inStoreRestockOrderItemSize && transactionIndex >= transactionSize)
                 break;
         }
         updateRestockOrderStatus(affectedItems);
+    }
+
+    @Transactional(readOnly = true)
+    public List generateDeliveryRoute(Long deliveryId) throws DeliveryNotFoundException {
+
+        Delivery delivery = retrieveDeliveryById(deliveryId);
+        List<Address> addresses = new ArrayList<>();
+        List deliveryList = new ArrayList();
+        Address addr;
+
+        delivery.getCustomerOrdersToDeliver().forEach(transaction -> {
+            System.out.println(transaction.getTransactionId());
+            if (transaction.getDeliveryAddress() != null) {
+                addresses.add(transaction.getDeliveryAddress());
+            } else if (transaction.getStoreToCollect() != null) {
+                if (!addresses.contains(transaction.getStoreToCollect().getAddress())){
+                    addresses.add(transaction.getStoreToCollect().getAddress());
+                }
+            }
+        });
+
+        for (InStoreRestockOrderItem inStoreRestockOrderItem : delivery.getInStoreRestockOrderItems()) {
+            System.out.println(inStoreRestockOrderItem.getInStoreRestockOrderItemId());
+            addr = inStoreRestockOrderItem.getInStoreRestockOrder().getStore().getAddress();
+            if (!addresses.contains(addr)) addresses.add(addr);
+        }
+
+        List<Long> route = new ArrayList<>();
+        List<Pair<Address, Double>> distances = new ArrayList<>();
+        Double lat, lng;
+
+        Warehouse warehouse = warehouseService.retrieveAllWarehouses().get(0);
+
+        lat = Double.valueOf(warehouse.getAddress().getLat());
+        lng = Double.valueOf(warehouse.getAddress().getLng());
+
+        while (addresses.size() > 0) {
+            distances.clear();
+
+            for (Address address : addresses) {
+                distances.add(new ImmutablePair(address, distance(lat, lng,
+                        Double.valueOf(address.getLat()), Double.valueOf(address.getLng()), 0, 0)));
+            }
+
+            Collections.sort(distances, (Comparator.comparing(Pair::getValue)));
+
+            lat = Double.valueOf(distances.get(0).getKey().getLat());
+            lng = Double.valueOf(distances.get(0).getKey().getLng());
+            route.add(distances.get(0).getKey().getAddressId());
+            addresses.remove(distances.get(0).getKey());
+        }
+
+
+        for (Long id : route) {
+            GroupedStoreOrderItems groupedStoreOrderItems = new GroupedStoreOrderItems();
+            groupedStoreOrderItems.setDeliveryStatus(DeliveryStatusEnum.DELIVERED);
+
+            for (Transaction transaction : delivery.getCustomerOrdersToDeliver()) {
+                if (transaction.getStoreToCollect() != null &&
+                        id.equals(transaction.getStoreToCollect().getAddress().getAddressId())) {
+                    if (groupedStoreOrderItems.getStore() == null) {
+                        groupedStoreOrderItems.setStore(transaction.getStoreToCollect());
+                    }
+                    groupedStoreOrderItems.getTransactions().add(transaction);
+                    if(!transaction.getDeliveryStatus().equals(DeliveryStatusEnum.DELIVERED)){
+                        groupedStoreOrderItems.setDeliveryStatus(DeliveryStatusEnum.IN_TRANSIT);
+                    }
+                } else if (transaction.getDeliveryAddress() != null &&
+                        id.equals(transaction.getDeliveryAddress().getAddressId())) {
+                    deliveryList.add(transaction);
+                }
+            }
+
+            /*
+            for each restock order item, check if store address is same as current one in the route, and group
+            together by store
+             */
+            for (InStoreRestockOrderItem inStoreRestockOrderItem : delivery.getInStoreRestockOrderItems()) {
+                if (id.equals(inStoreRestockOrderItem.getInStoreRestockOrder().getStore().getAddress().getAddressId())) {
+                    if (groupedStoreOrderItems.getStore() == null) {
+                        groupedStoreOrderItems.setStore(inStoreRestockOrderItem.getInStoreRestockOrder().getStore());
+                    }
+                    groupedStoreOrderItems.getInStoreRestockOrderItems().add(inStoreRestockOrderItem);
+                    if(!inStoreRestockOrderItem.getItemDeliveryStatus().equals(ItemDeliveryStatusEnum.DELIVERED)){
+                        groupedStoreOrderItems.setDeliveryStatus(DeliveryStatusEnum.IN_TRANSIT);
+                    }
+                }
+            }
+
+            if (groupedStoreOrderItems.getStore() != null
+                    && (groupedStoreOrderItems.getInStoreRestockOrderItems().size() > 0
+                    || groupedStoreOrderItems.getTransactions().size() > 0)) {
+                deliveryList.add(groupedStoreOrderItems);
+            }
+        }
+
+        return deliveryList;
+    }
+
+    public Delivery getTodaysDeliveryForStaff(Long staffId) {
+        List<Delivery> staffDeliveries = deliveryRepository.findAllByDeliveryStaff_StaffId(staffId);
+        Timestamp now = new Timestamp(System.currentTimeMillis());
+        LocalDate todayDate = now.toInstant().atZone(ZoneId.of("Singapore")).toLocalDate();
+        for (Delivery delivery : staffDeliveries) {
+            Timestamp deliveryTimestamp = delivery.getDeliveryDateTime();
+            LocalDate deliveryDate = deliveryTimestamp.toInstant().atZone(ZoneId.of("Singapore")).toLocalDate();
+            if (todayDate.isEqual(deliveryDate)) {
+                return delivery;
+            }
+        }
+        return null;
+    }
+
+    public List generateTodaysDeliveryRouteForStaff(Long staffId) throws DeliveryNotFoundException {
+        Delivery delivery = getTodaysDeliveryForStaff(staffId);
+        if (delivery == null) {
+            return new ArrayList();
+        } else {
+            return generateDeliveryRoute(delivery.getDeliveryId());
+        }
     }
 
     private void updateRestockOrderStatus(List<InStoreRestockOrderItem> affectedItems) {
@@ -160,5 +289,33 @@ public class DeliveryService {
         }
     }
 
+    /**
+     * Calculate distance between two points in latitude and longitude taking
+     * into account height difference. If you are not interested in height
+     * difference pass 0.0. Uses Haversine method as its base.
+     * <p>
+     * lat1, lon1 Start point lat2, lon2 End point el1 Start altitude in meters
+     * el2 End altitude in meters
+     *
+     * @returns Distance in Meters
+     */
+    private double distance(double lat1, double lon1, double lat2,
+                            double lon2, double el1, double el2) {
 
+        final int R = 6371; // Radius of the earth
+
+        double latDistance = Math.toRadians(lat2 - lat1);
+        double lonDistance = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        double distance = R * c * 1000; // convert to meters
+
+        double height = el1 - el2;
+
+        distance = Math.pow(distance, 2) + Math.pow(height, 2);
+
+        return Math.sqrt(distance);
+    }
 }

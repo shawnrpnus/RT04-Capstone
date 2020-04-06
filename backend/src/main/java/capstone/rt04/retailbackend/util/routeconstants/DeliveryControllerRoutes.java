@@ -12,6 +12,8 @@ public class DeliveryControllerRoutes {
     public static final String RETRIEVE_DELIVERY_BY_ID = "/retrieveDeliveryById/{deliveryId}";
     public static final String DELETE_DELIVERY = "/deleteDelivery/{deliveryId}";
     public static final String AUTOMATE_DELIVERY_ALLOCATION = "/automateDeliveryAllocation/{staffId}";
+    public static final String GENERATE_DELIVERY_ROUTE = "/generateDeliveryRoute/{deliveryId}";
+    public static final String GENERATE_DELIVERY_ROUTE_FOR_TODAY = "/generateDeliveryRouteForToday";
 
     // Restock Order Item
     public static final String RETRIEVE_ALL_RESTOCK_ORDER_ITEM_TO_DELIVER = "/retrieveAllRestockOrderItemToDeliver";

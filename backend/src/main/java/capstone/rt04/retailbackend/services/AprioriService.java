@@ -43,8 +43,8 @@ public class AprioriService {
         } else {
             result =algorithm.runAlgorithm(minsup, null, null, data);
         }
-//        algorithm.printStats();
-//        result.printItemsets(algorithm.getDatabaseSize());
+        // algorithm.printStats();
+        // result.printItemsets(algorithm.getDatabaseSize());
 
         List<List<Long>> transactionIdsList = new ArrayList<>();
         List<Long> transactionIds;

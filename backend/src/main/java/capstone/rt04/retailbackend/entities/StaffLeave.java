@@ -49,7 +49,10 @@ public class StaffLeave implements Serializable {
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
     private Staff applicant;
-    
+
+    @ManyToOne
+    private Staff rejectedBy;
+
     @ManyToOne
     private Staff endorser;
     
