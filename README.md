@@ -52,11 +52,13 @@ npm start
 
 | Username         | Password | Department          |
 | ---------------- | -------- | ------------------- |
-| Warehouse42      | password | Warehouse           |
-| ITStaff44        | password | IT                  |
-| HRStaff46        | password | HR                  |
-| SalesMarketing48 | password | Sales and Marketing |
-| Store50          | password | Store               |
+| Warehouse43      | password | Warehouse           | 
+| HRStaff45        | password | HR                  | 
+| SalesMarketing47 | password | Sales and Marketing | 
+| Store1Staff49    | password | Store               | 
+| Store2Staff51    | password | Store               | 
+| Deliveryguy53    | password | Delivery            | 
+| Customerservice55| password | Customer Service    | 
 
 <br/>
 <br/>
@@ -76,4 +78,49 @@ npm start
 ### Using the website
 
 1. Register an account and verify the account using the link sent to the registered email
+2. Start shopping!
+
+<br/>
+<br/>
+
+## Staff Mobile App
+
+### Setup
+
+1. From the root folder of `RT04-Capstone`, navigate to staff-mobile-app folder by `cd frontend/staff-mobile-app`
+2. Run the following command to get started
+
+```
+npm install -g expo-cli
+npm install
+expo start
+```
+
+### Using the mobile app
+
+1. Login with the preconfigured roles with username and password combination specified below
+
+| Username         | Password | Department          |
+| ---------------- | -------- | ------------------- |
+| Store1Staff49    | password | Store               | 
+| Store2Staff51    | password | Store               | 
+
+<br/>
+<br/>
+
+## Customer Mobile App
+
+### Setup
+
+1. From the root folder of `RT04-Capstone`, navigate to customer-mobile-app folder by `cd frontend/customer-mobile-app`
+2. Run the following command to get started
+
+```
+npm install
+expo start
+```
+
+### Using the mobile app
+
+1. Login with your account registered on the customer web app.
 2. Start shopping!

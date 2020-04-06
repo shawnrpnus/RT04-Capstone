@@ -6,7 +6,10 @@ import {
   updatedViewedTransaction,
 } from "../../../../redux/actions/transactionActions";
 import { clearErrors } from "../../../../redux/actions";
-import { createOnlineRefundRequest } from "../../../../redux/actions/refundAction";
+import {
+  createOnlineRefundRequest,
+  createRefundLabel,
+} from "../../../../redux/actions/refundAction";
 import RefundLineItemRequest from "../../../../models/refund/RefundLineItemRequest";
 import RefundRequest from "../../../../models/refund/RefundRequest";
 import Button from "@material-ui/core/Button";
@@ -26,6 +29,8 @@ import CardActions from "@material-ui/core/CardActions";
 import { useSnackbar } from "notistack";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import CustomTextField from "../../../UI/CustomInput/CustomTextField";
+import RefundLabel from "assets/img/refundPDF/RefundLabel.jpg";
+import GenerateRefundLabel from "../../../../models/refund/GenerateRefundLabel";
 
 const _ = require("lodash");
 const useStyles = makeStyles(style);
@@ -144,8 +149,21 @@ const CreateRefund = ({
       inputState.customerId,
       storeId
     );
+    // console.log(refundRequest);
+    const name = currCustomer.firstName + " " + currCustomer.lastName;
+    const orderNumber = currTransaction.orderNumber;
+    // console.log("NAMEEEEE",name);
+    const deliveryAddress = JSON.stringify(currTransaction.deliveryAddress);
+
     dispatch(
-      createOnlineRefundRequest(refundRequest, history, enqueueSnackbar)
+      createOnlineRefundRequest(
+        refundRequest,
+        history,
+        enqueueSnackbar,
+        deliveryAddress,
+        name,
+        orderNumber
+      )
     );
   };
 

@@ -29,6 +29,7 @@ function RefundDetails(props) {
 
   let amountBeforePromoCode = 0;
   const size = _.get(refund, "refundLineItems.length");
+  // console.log(size);
   if (size) {
     for (let i = 0; i < size; i++) {
       let li = _.get(refund, "refundLineItems");

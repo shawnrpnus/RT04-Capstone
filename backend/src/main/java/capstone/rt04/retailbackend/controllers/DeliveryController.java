@@ -5,6 +5,7 @@ import capstone.rt04.retailbackend.request.delivery.DeliveryForRestockOrderCreat
 import capstone.rt04.retailbackend.request.delivery.DeliveryForTransactionCreateRequest;
 import capstone.rt04.retailbackend.request.delivery.ReceiveRestockOrderRequest;
 import capstone.rt04.retailbackend.request.transaction.TransactionReceiveDeliveryRequest;
+import capstone.rt04.retailbackend.response.GroupedStoreOrderItems;
 import capstone.rt04.retailbackend.services.*;
 import capstone.rt04.retailbackend.util.exceptions.delivery.DeliveryHasAlreadyBeenConfirmedException;
 import capstone.rt04.retailbackend.util.exceptions.delivery.DeliveryNotFoundException;
@@ -156,6 +157,14 @@ public class DeliveryController {
                 relationshipService.clearTransactionRelationships((Transaction) item);
             } else if (item.getClass().equals(InStoreRestockOrderItem.class)) {
                 clearRestockOrderItemRelationships((InStoreRestockOrderItem) item);
+            } else if (item.getClass().equals(GroupedStoreOrderItems.class)){
+                for (InStoreRestockOrderItem inStoreRestockOrderItem : ((GroupedStoreOrderItems)item).getInStoreRestockOrderItems()){
+                    clearRestockOrderItemRelationships(inStoreRestockOrderItem);
+                }
+                for (Transaction transaction : ((GroupedStoreOrderItems)item).getTransactions()){
+                    relationshipService.clearTransactionRelationships(transaction);
+                }
+                relationshipService.clearStoreRelationships(((GroupedStoreOrderItems)item).getStore());
             }
         }
     }
