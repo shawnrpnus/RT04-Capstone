@@ -64,7 +64,7 @@ public class Transaction implements Serializable {
     @ManyToOne
     private Address deliveryAddress;
 
-    @ManyToOnecontact_us
+    @ManyToOne
     private Address billingAddress;
 
     @OneToMany(mappedBy = "transaction")
