@@ -11,18 +11,20 @@ const moment = require("moment");
 const { width, height } = Dimensions.get("window");
 
 function TransactionCard(props) {
-  const { transaction, navigation, setLoading } = props;
+  const { transaction, navigation, setLoading, routeToNavigate } = props;
   const dispatch = useDispatch();
 
   const viewPurchaseDetails = () => {
     dispatch(
       setViewedTransaction(
         transaction.transactionId,
-        () => navigation.navigate("Purchase Details"),
+        () => navigation.navigate(routeToNavigate),
         setLoading
       )
     );
   };
+
+  const name = routeToNavigate === "Purchase History" ? "Purchase" : "Order"
 
   return (
     <Block
@@ -49,7 +51,7 @@ function TransactionCard(props) {
         >
           <Block>
             <Text h5 bold>
-              Purchase {transaction.orderNumber.toUpperCase()}
+                {name} {transaction.orderNumber.toUpperCase()}
             </Text>
             <Text h5 style={{ color: "grey" }}>
               {moment(transaction.createdDateTime).format("D MMM YYYY h:mm A")}

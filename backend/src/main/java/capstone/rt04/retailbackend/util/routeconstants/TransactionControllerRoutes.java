@@ -8,6 +8,7 @@ public class TransactionControllerRoutes {
     public static final String RETRIEVE_ALL_TRANSACTIONS = "/retrieveAllTransactions";
     public static final String RETRIEVE_CUSTOMER_TRANSACTIONS = "/retrieveCustomerTransactions";
     public static final String RETRIEVE_CUSTOMER_IN_STORE_TRANSACTIONS = "/retrieveCustomerInStoreTransactions";
+    public static final String RETRIEVE_CUSTOMER_IN_STORE_COLLECION_TRANSACTIONS = "/retrieveCustomerInStoreCollectionTransactions";
     public static final String RETRIEVE_MATCHED_TRANSACTIONS = "/retrieveMatchedTransactions";
     public static final String RETRIEVE_TRANSACTION_BY_ORDER_NUMBER = "/retrieveTransactionByOrderNumber/{orderNumber}";
 }

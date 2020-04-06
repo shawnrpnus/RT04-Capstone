@@ -53,6 +53,31 @@ export const retrieveCustomerInStoreTransactions = (customerId, setLoading) => {
   };
 };
 
+export const retrieveCustomerInStoreCollectionTransactions = (
+  customerId,
+  setLoading
+) => {
+  if (setLoading) setLoading(true);
+
+  return dispatch => {
+    axios
+      .get(
+        TRANSACTION_BASE_URL + `/retrieveCustomerInStoreCollectionTransactions`,
+        {
+          params: { customerId }
+        }
+      )
+      .then(response => {
+        const { data } = jsog.decode(response);
+        dispatch(updateTransactions(data));
+        if (setLoading) setLoading(false);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+};
+
 const updateTransactions = data => ({
   type: RETRIEVE_TXNS,
   transactions: data

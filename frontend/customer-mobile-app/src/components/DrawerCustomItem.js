@@ -7,7 +7,7 @@ import materialTheme from "src/constants/Theme";
 import { useDispatch } from "react-redux";
 import { customerLogout } from "src/redux/actions/customerActions";
 import { StackActions } from "@react-navigation/native";
-import {MaterialCommunityIcons} from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 function DrawerCustomItem(props) {
   const { title, focused, navigation } = props;
@@ -40,6 +40,15 @@ function DrawerCustomItem(props) {
             size={20}
             name="payment"
             family="MaterialIcons"
+            color={focused ? "white" : materialTheme.COLORS.MUTED}
+          />
+        );
+      case "CollectionsStack":
+        return (
+          <Icon
+            size={20}
+            name="shopping-bag"
+            family="entypo"
             color={focused ? "white" : materialTheme.COLORS.MUTED}
           />
         );
@@ -103,6 +112,8 @@ function DrawerCustomItem(props) {
               ? "Purchases"
               : title === "ReservationsStack"
               ? "Reservations"
+              : title === "CollectionsStack"
+              ? "Collections"
               : title}
           </Text>
         </Block>

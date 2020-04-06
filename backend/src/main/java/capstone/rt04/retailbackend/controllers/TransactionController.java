@@ -99,6 +99,16 @@ public class TransactionController {
         return new ResponseEntity<>(txns, HttpStatus.OK);
     }
 
+    @GetMapping(RETRIEVE_CUSTOMER_IN_STORE_COLLECION_TRANSACTIONS)
+    public ResponseEntity<?> retrieveCustomerInStoreCollectionTransactions(@RequestParam Long customerId){
+        List<Transaction> txns = transactionService.getCustomerInStoreCollectionTransactions(customerId);
+        for (Transaction txn : txns) {
+            relationshipService.clearTransactionRelationships(txn);
+        }
+        Collections.sort(txns, Comparator.comparing(Transaction::getTransactionId).reversed());
+        return new ResponseEntity<>(txns, HttpStatus.OK);
+    }
+
     @PostMapping(RETRIEVE_MATCHED_TRANSACTIONS)
     public ResponseEntity<?> retrieveMatchedOrders(@RequestBody TransactionRetrieveRequest transactionRetrieveRequest) {
         try {

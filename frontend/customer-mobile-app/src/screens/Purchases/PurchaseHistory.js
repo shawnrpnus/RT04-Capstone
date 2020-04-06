@@ -2,15 +2,20 @@ import React, { useEffect, useState } from "react";
 import { Block, Text } from "galio-framework";
 import { Dimensions, FlatList, ScrollView } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { retrieveCustomerInStoreTransactions } from "src/redux/actions/transactionActions";
+import {
+  retrieveCustomerInStoreCollectionTransactions,
+  retrieveCustomerInStoreTransactions
+} from "src/redux/actions/transactionActions";
 import TransactionCard from "src/screens/Purchases/TransactionCard";
 import Spinner from "react-native-loading-spinner-overlay";
+import { useRoute } from "@react-navigation/native";
 
 const { width, height } = Dimensions.get("window");
 
 function PurchaseHistory(props) {
   const { navigation } = props;
   const dispatch = useDispatch();
+  const route = useRoute();
   const customer = useSelector(state => state.customer.loggedInCustomer);
   const transactions = useSelector(state => state.transaction.transactions);
   const [loading, setLoading] = useState(false);
@@ -18,19 +23,40 @@ function PurchaseHistory(props) {
 
   useEffect(() => {
     if (customer) {
-      dispatch(
-        retrieveCustomerInStoreTransactions(customer.customerId, setLoading)
-      );
+      if (route.name === "Purchase History") {
+        dispatch(
+          retrieveCustomerInStoreTransactions(customer.customerId, setLoading)
+        );
+      } else if (route.name === "Pending Collections") {
+        dispatch(
+          retrieveCustomerInStoreCollectionTransactions(
+            customer.customerId,
+            setLoading
+          )
+        );
+      }
     }
   }, [customer.customerId]);
 
   const onRefresh = () => {
     if (customer) {
-      dispatch(
-          retrieveCustomerInStoreTransactions(customer.customerId, setRefreshing)
-      );
+      if (route.name === "Purchase History") {
+        dispatch(
+          retrieveCustomerInStoreTransactions(
+            customer.customerId,
+            setRefreshing
+          )
+        );
+      } else if (route.name === "Pending Collections") {
+        dispatch(
+          retrieveCustomerInStoreCollectionTransactions(
+            customer.customerId,
+            setRefreshing
+          )
+        );
+      }
     }
-  }
+  };
 
   const renderEmpty = () => {
     return (
@@ -39,6 +65,13 @@ function PurchaseHistory(props) {
       </Text>
     );
   };
+
+  const routeToNavigate =
+    route.name === "Purchase History"
+      ? "Purchase Details"
+      : route.name === "Pending Collections"
+      ? "Order Details"
+      : "Purchase History";
 
   return (
     <>
@@ -50,6 +83,7 @@ function PurchaseHistory(props) {
             key={item.transactionId}
             navigation={navigation}
             setLoading={setLoading}
+            routeToNavigate={routeToNavigate}
           />
         )}
         showsVerticalScrollIndicator={false}

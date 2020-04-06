@@ -105,11 +105,15 @@ function AppDrawer(props) {
         component={PurchasesStack}
       />
       <Drawer.Screen
+        name="CollectionsStack"
+        drawerLabel="Collections"
+        component={CollectionsStack}
+      />
+      <Drawer.Screen
         name="ReservationsStack"
         drawerLabel="Reservations"
         component={ReservationsStack}
       />
-      {/*<Drawer.Screen name="TransactionStack" drawerLabel="Transactions" component={}/>*/}
     </Drawer.Navigator>
   );
 }
@@ -306,6 +310,29 @@ function PurchasesStack(props) {
         component={PurchaseDetails}
         options={{
           header: props => <CustomHeader title="Purchase Details" {...props} />,
+          headerStyle: { height: 100 }
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
+
+function CollectionsStack(props) {
+  return (
+    <Stack.Navigator mode="card" headerMode="screen" initialRouteName="Shop">
+      <Stack.Screen
+        name="Pending Collections"
+        component={PurchaseHistory}
+        options={{
+          header: props => <CustomHeader title="Pending Collections" {...props} />,
+          headerStyle: { height: 100 }
+        }}
+      />
+      <Stack.Screen
+        name="Order Details"
+        component={PurchaseDetails}
+        options={{
+          header: props => <CustomHeader title="Order Details" {...props} />,
           headerStyle: { height: 100 }
         }}
       />

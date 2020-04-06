@@ -7,13 +7,15 @@ import TransactionLineItem from "src/screens/Purchases/TransactionLineItem";
 import { useSelector } from "react-redux";
 import { Divider } from "react-native-paper";
 import PurchaseDetailsTotals from "src/screens/Purchases/PurchaseDetailsTotals";
-import {renderStatus} from "src/screens/Shared/TransactionFunctions";
+import { renderStatus } from "src/screens/Shared/TransactionFunctions";
+import { useRoute } from "@react-navigation/native";
 
 const moment = require("moment");
 const { width, height } = Dimensions.get("window");
 
 function PurchaseDetails(props) {
   const transaction = useSelector(state => state.transaction.viewedTransaction);
+  const route = useRoute();
 
   return (
     <Block
@@ -98,11 +100,19 @@ function PurchaseDetails(props) {
                 Store
               </Text>
               <Text h5 style={{ width: "70%", fontSize: 16 }}>
-                {transaction.store.storeName}
+                {transaction.store
+                  ? transaction.store.storeName.toUpperCase()
+                  : transaction.storeToCollect.storeName.toUpperCase()}
               </Text>
             </Block>
-
-            <Divider style={{ height: 1.5 }} />
+            <AddressCardCheckout
+              address={
+                transaction.store
+                  ? transaction.store.address
+                  : transaction.storeToCollect.address
+              }
+            />
+            <Divider style={{ height: 1.5, marginTop : 5 }} />
 
             <Block
               flex
@@ -145,7 +155,8 @@ function PurchaseDetails(props) {
                 Payment
               </Text>
               <Text h5 style={{ width: "70%", fontSize: 16 }}>
-                {transaction.cardIssuer} ending with {transaction.cardLast4}
+                {transaction.cardIssuer.toUpperCase()} ending with{" "}
+                {transaction.cardLast4}
               </Text>
             </Block>
 
@@ -159,7 +170,14 @@ function PurchaseDetails(props) {
               <Text h5 bold style={{ width: "30%", fontSize: 16 }}>
                 Status
               </Text>
-              <Text h5 style={{ width: "70%", fontSize: 16, color: renderStatus(transaction)[1] }}>
+              <Text
+                h5
+                style={{
+                  width: "70%",
+                  fontSize: 16,
+                  color: renderStatus(transaction)[1]
+                }}
+              >
                 {renderStatus(transaction)[0]}
               </Text>
             </Block>
@@ -199,7 +217,10 @@ function PurchaseDetails(props) {
               Items
             </Text>
             {transaction.transactionLineItems.map(tli => (
-              <TransactionLineItem transactionLineItem={tli} key={tli.transactionLineItemId} />
+              <TransactionLineItem
+                transactionLineItem={tli}
+                key={tli.transactionLineItemId}
+              />
             ))}
           </Block>
           <PurchaseDetailsTotals
