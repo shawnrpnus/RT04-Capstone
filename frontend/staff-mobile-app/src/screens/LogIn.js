@@ -41,7 +41,7 @@ export default function LogIn(props) {
           colors={[materialTheme.COLORS.PRIMARY, materialTheme.COLORS.SECONDARY]}
           style={[styles.signin, { flex: 1}]}
       >
-        <KeyboardAwareScrollView enableOnAndroid={true}>
+        <KeyboardAwareScrollView enableOnAndroid={true} keyboardShouldPersistTaps="handled">
           <Block center style={{height: height*0.75}}>
             <Block flex={1} style={{justifyContent: "flex-end"}}>
               <Text
