@@ -4,6 +4,7 @@ import { Dimensions, TouchableOpacity } from "react-native";
 import { Button, Divider } from "react-native-paper";
 import { MaterialIcons } from "@expo/vector-icons";
 import LineItem from "src/screens/Delivery/LineItem";
+import { SimpleAnimation } from "react-native-simple-animations";
 
 const { width, height } = Dimensions.get("window");
 
@@ -36,7 +37,7 @@ function ExpandableTransactionItem(props) {
         </Text>
         <Divider style={{ height: 1.2, marginTop: 5, marginBottom: 5 }} />
         <Block flex row space="between" style={{ alignItems: "center" }}>
-          <Text h6 bold style={{ fontSize: 16 }}>
+          <Text h6 bold style={{ fontSize: 16, color: "dimgrey" }}>
             {transaction.transactionLineItems.length} item(s)
           </Text>
           <TouchableOpacity
@@ -46,18 +47,30 @@ function ExpandableTransactionItem(props) {
             <MaterialIcons
               name={showLineItems ? "expand-less" : "expand-more"}
               size={30}
+              style={{ color: "dimgrey" }}
             />
           </TouchableOpacity>
         </Block>
-        {showLineItems &&
-          transaction.transactionLineItems.map(tli => (
-            <LineItem
-              productVariant={tli.productVariant}
-              quantity={tli.quantity}
-              key={tli.transactionLineItemId}
-              customWidth={"100%"}
-            />
-          ))}
+        {showLineItems && (
+          <SimpleAnimation
+            duration={300}
+            direction="down"
+            movementType="slide"
+            // fade
+            // staticType={"zoom"}
+            distance={50}
+            useNativeDriver
+          >
+            {transaction.transactionLineItems.map(tli => (
+              <LineItem
+                productVariant={tli.productVariant}
+                quantity={tli.quantity}
+                key={tli.transactionLineItemId}
+                customWidth={"100%"}
+              />
+            ))}
+          </SimpleAnimation>
+        )}
       </Block>
     </Block>
   );

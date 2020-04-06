@@ -55,12 +55,11 @@ function GroupedStoreOrderCard(props) {
         >
           <Block>
             <Text h5 bold>
-              Store: {groupedStoreOrder.store.storeName}
+              Store: {groupedStoreOrder.store.storeName.toUpperCase()}
             </Text>
             <Text
-              h6
+              h5
               style={{
-                fontSize: 15,
                 color: deliveryStatusMap[groupedStoreOrder.deliveryStatus][1],
                 fontStyle: "italic"
               }}
@@ -78,13 +77,13 @@ function GroupedStoreOrderCard(props) {
       <Block style={{ marginBottom: 5 }}>
         {groupedStoreOrder.transactions &&
           groupedStoreOrder.transactions.length > 0 && (
-            <Text h6>
+            <Text h6 bold>
               {groupedStoreOrder.transactions.length} customer order(s)
             </Text>
           )}
         {groupedStoreOrder.inStoreRestockOrderItems &&
           groupedStoreOrder.inStoreRestockOrderItems.length > 0 && (
-            <Text h6>
+            <Text h6 bold>
               {groupedStoreOrder.inStoreRestockOrderItems.length} restock
               order(s)
             </Text>

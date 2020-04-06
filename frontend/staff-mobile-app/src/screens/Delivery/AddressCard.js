@@ -23,7 +23,7 @@ function AddressCard(props) {
       {address && (
         <>
           {address.buildingName ? (
-            <Text h5 style={{ fontSize: 16 }}>
+            <Text h5 style={{ fontSize: 16, fontStyle: "italic" }}>
               {address.buildingName}
             </Text>
           ) : null}

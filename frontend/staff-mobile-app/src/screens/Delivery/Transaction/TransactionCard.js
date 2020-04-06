@@ -53,12 +53,11 @@ function TransactionCard(props) {
         >
           <Block>
             <Text h5 bold>
-              Customer Order {transaction.orderNumber.toUpperCase()}
+              Customer Order: {transaction.orderNumber.toUpperCase()}
             </Text>
             <Text
-              h6
+              h5
               style={{
-                fontSize: 15,
                 color: deliveryStatusMap[transaction.deliveryStatus][1],
                 fontStyle: "italic"
               }}
@@ -73,7 +72,9 @@ function TransactionCard(props) {
           />
         </Block>
       </TouchableOpacity>
-      <Text h6 style={{marginBottom: 5}}>{transaction.transactionLineItems.length} item(s)</Text>
+      <Text h6 bold style={{ marginBottom: 5 }}>
+        {transaction.transactionLineItems.length} item(s)
+      </Text>
       <AddressCard address={transaction.deliveryAddress} />
     </Block>
   );

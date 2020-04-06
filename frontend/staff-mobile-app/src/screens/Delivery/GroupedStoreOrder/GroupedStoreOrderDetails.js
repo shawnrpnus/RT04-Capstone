@@ -12,6 +12,7 @@ import AddressCard from "src/screens/Delivery/AddressCard";
 import LineItem from "src/screens/Delivery/LineItem";
 import ExpandableTransactionItem from "src/screens/Delivery/GroupedStoreOrder/ExpandableTransactionItem";
 import { confirmGroupedStoreOrderDelivery } from "src/redux/actions/deliveryActions";
+import { SimpleAnimation } from "react-native-simple-animations";
 
 const moment = require("moment");
 const { width, height } = Dimensions.get("window");
@@ -216,14 +217,24 @@ function GroupedStoreOrderDetails(props) {
                 {showRestockOrderItems ? "Hide" : "Show"}
               </Button>
             </Block>
-            {showRestockOrderItems &&
-              groupedStoreOrder.inStoreRestockOrderItems.map(item => (
-                <LineItem
-                  productVariant={item.productStock.productVariant}
-                  quantity={item.quantity}
-                  key={item.inStoreRestockItemId}
-                />
-              ))}
+
+            {showRestockOrderItems && (
+              <SimpleAnimation
+                duration={300}
+                direction="down"
+                movementType="slide"
+                distance={50}
+                useNativeDriver
+              >
+                {groupedStoreOrder.inStoreRestockOrderItems.map(item => (
+                  <LineItem
+                    productVariant={item.productStock.productVariant}
+                    quantity={item.quantity}
+                    key={item.inStoreRestockOrderItemId}
+                  />
+                ))}
+              </SimpleAnimation>
+            )}
           </Block>
 
           <Block
@@ -252,13 +263,22 @@ function GroupedStoreOrderDetails(props) {
                 {showCustomerOrders ? "Hide" : "Show"}
               </Button>
             </Block>
-            {showCustomerOrders &&
-              groupedStoreOrder.transactions.map(item => (
-                <ExpandableTransactionItem
-                  transaction={item}
-                  key={item.transactionId}
-                />
-              ))}
+            {showCustomerOrders && (
+              <SimpleAnimation
+                duration={300}
+                direction="down"
+                movementType="slide"
+                distance={50}
+                useNativeDriver
+              >
+                {groupedStoreOrder.transactions.map(item => (
+                  <ExpandableTransactionItem
+                    transaction={item}
+                    key={item.transactionId}
+                  />
+                ))}
+              </SimpleAnimation>
+            )}
           </Block>
         </ScrollView>
       )}
