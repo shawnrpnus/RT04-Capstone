@@ -85,7 +85,9 @@ function ViewDetails(props) {
         retrieveProductVariantBySKU(
           productStock.productVariant.sku,
           navigation,
-          setSKU
+          setSKU,
+          productStock.store,
+          productStock.productStockId
         )
       );
     } else {
