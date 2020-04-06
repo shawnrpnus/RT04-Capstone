@@ -32,7 +32,6 @@ public class AdvertisementService {
         Staff staff = staffService.retrieveStaffByStaffId(staffId);
         Advertisement advertisement = new Advertisement(advertisementImgUrl, staff);
         if (retrieveAllAdvertisement().size() == 0) {
-            System.out.println("First advertisement set to active");
             advertisement.setActive(Boolean.TRUE);
         }
         advertisementRepository.save(advertisement);

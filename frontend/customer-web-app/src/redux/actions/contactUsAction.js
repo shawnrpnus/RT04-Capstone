@@ -16,38 +16,38 @@ const dispatchErrorMapError = (err, dispatch) => {
   if (errorMap) {
     dispatch(errorMapError(errorMap));
   } else {
-    console.log(err);
+    // console.log(err);
   }
 };
 
-const errorMapError = data => ({
+const errorMapError = (data) => ({
   type: GET_ERRORS,
-  errorMap: data
+  errorMap: data,
 });
 export const retrieveAllContactUsCategoryEnum = () => {
-  return dispatch => {
+  return (dispatch) => {
     //redux thunk passes dispatch
     axios
       .get(CONTACT_US_BASE_URL + "/retrieveAllContactUsCategoryEnum")
-      .then(response => {
+      .then((response) => {
         // const { data } = jsog.decode(response);
-        console.log(response.data);
+        // console.log(response.data);
         dispatch(retrieveAllContactUsCategoryEnumSuccess(response.data));
       })
-      .catch(err => {
+      .catch((err) => {
         dispatch(retrieveAllContactUsCategoryEnumError(err.response.data));
       });
   };
 };
 
-const retrieveAllContactUsCategoryEnumSuccess = data => ({
+const retrieveAllContactUsCategoryEnumSuccess = (data) => ({
   type: types.RETRIEVE_ALL_CONTACT_US_CATEGORY_ENUM_SUCCESS,
-  allContactUsCategoryEnum: data
+  allContactUsCategoryEnum: data,
 });
 
-const retrieveAllContactUsCategoryEnumError = data => ({
+const retrieveAllContactUsCategoryEnumError = (data) => ({
   type: types.GET_ERRORS,
-  errorMap: data
+  errorMap: data,
 });
 
 export const createNewContactUs = (
@@ -55,33 +55,33 @@ export const createNewContactUs = (
   enqueueSnackbar,
   setInputState
 ) => {
-  return dispatch => {
+  return (dispatch) => {
     //redux thunk passes dispatch
     axios
       .post(CONTACT_US_BASE_URL + "/createNewContactUs", createContactUsRequest)
-      .then(response => {
+      .then((response) => {
         const { data } = jsog.decode(response);
         dispatch(contactUsSuccess(data));
         enqueueSnackbar("Ticket submitted!", {
           variant: "success",
-          autoHideDuration: 2000
+          autoHideDuration: 2000,
         });
         setInputState({
           contactUsCategory: "",
           customerEmail: "",
           content: "",
           firstName: "",
-          lastName: ""
+          lastName: "",
         });
       })
-      .catch(err => {
+      .catch((err) => {
         dispatchErrorMapError(err, dispatch);
-        console.log(err.response.data);
+        // console.log(err.response.data);
       });
   };
 };
 
-export const contactUsSuccess = data => ({
+export const contactUsSuccess = (data) => ({
   type: CONTACT_US_SUCCESS,
-  currentContactUs: data
+  currentContactUs: data,
 });

@@ -1,7 +1,7 @@
+import React, { useState } from "react";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import headersStyle from "assets/jss/material-kit-pro-react/views/sectionsSections/headersStyle";
 import typographyStyle from "assets/jss/material-kit-pro-react/views/componentsSections/typographyStyle";
-import React, { useState } from "react";
 import Hidden from "@material-ui/core/Hidden";
 import Button from "components/UI/CustomButtons/Button";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -11,10 +11,7 @@ import colours from "assets/colours";
 import Card from "components/UI/Card/Card";
 import GridItem from "components/Layout/components/Grid/GridItem";
 import { useSelector } from "react-redux";
-import ShoppingCart from "@material-ui/icons/ShoppingCart";
-import Divider from "@material-ui/core/Divider";
 import { Favorite } from "@material-ui/icons";
-import ListItem from "@material-ui/core/ListItem";
 
 const _ = require("lodash");
 const useHeaderStyles = makeStyles(headersStyle);
@@ -43,7 +40,10 @@ function WishlistNavbar(props) {
 function WishlistToolTip(props) {
   const { classes, category } = props;
   const [open, setOpen] = useState(false);
-  const tooltipOpen = useSelector(state => state.customer.wishlistTooltipOpen);
+  const tooltipOpen = useSelector(
+    (state) => state.customer.wishlistTooltipOpen
+  );
+
   return (
     <React.Fragment>
       <HtmlTooltip
@@ -66,13 +66,13 @@ function WishlistToolTip(props) {
 
 // Renders tooltip content after hovering button
 function WishlistToolTipContent(props) {
-  const customer = useSelector(state => state.customer.loggedInCustomer);
+  const customer = useSelector((state) => state.customer.loggedInCustomer);
   return (
     <React.Fragment>
       {customer && customer.wishlistItems.length > 0 ? (
         <GridContainer style={{ width: "105%" }}>
           <GridItem xs={12} style={{ maxHeight: "70vh", overflowY: "scroll" }}>
-            {customer.wishlistItems.map(productVariant => (
+            {customer.wishlistItems.map((productVariant) => (
               <WishlistItemCard
                 key={productVariant.productVariantId}
                 productVariant={productVariant}
@@ -131,7 +131,7 @@ function WishlistItemCard(props) {
 
 export { WishlistNavbar };
 
-const HtmlTooltip = withStyles(theme => ({
+const HtmlTooltip = withStyles((theme) => ({
   tooltip: {
     backgroundColor: "white",
     //color: "rgba(0, 0, 0, 0.87)",
@@ -141,6 +141,6 @@ const HtmlTooltip = withStyles(theme => ({
     borderRadius: "0",
     minWidth: "350px",
     padding: "10px",
-    marginTop: "30px"
-  }
+    marginTop: "30px",
+  },
 }))(Tooltip);

@@ -71,7 +71,6 @@ public class AprioriService {
     }
 
     public static String fileToPath(String filename) throws UnsupportedEncodingException {
-        System.out.println("filename : " + filename);
         URL url = AprioriService.class.getResource(filename);
         return java.net.URLDecoder.decode(url.getPath(), "UTF-8");
     }

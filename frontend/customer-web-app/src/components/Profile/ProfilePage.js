@@ -37,13 +37,11 @@ const useStyles = makeStyles(profilePageStyle);
 
 export default function ProfilePage(props) {
   const dispatch = useDispatch();
-  const customer = useSelector(state => state.customer.loggedInCustomer);
+  const customer = useSelector((state) => state.customer.loggedInCustomer);
   const classes = useStyles();
   const { mode, transactionId, refundId } = useParams();
   const [largeModal, setLargeModal] = useState(false);
 
-  console.log(refundId);
-  console.log(transactionId);
   useEffect(() => {
     window.scrollTo(0, 0);
     document.body.scrollTop = 0;
@@ -66,13 +64,13 @@ export default function ProfilePage(props) {
       tabButton: "Account",
       tabIcon: Palette,
       route: "/account/profile/info",
-      tabContent: <AccountInfo setIsLoading={setIsLoading} />
+      tabContent: <AccountInfo setIsLoading={setIsLoading} />,
     },
     {
       tabButton: "Orders",
       tabIcon: People,
       route: "/account/profile/orderHistory",
-      tabContent: <OrderHistoryPage />
+      tabContent: <OrderHistoryPage />,
     },
     {
       tabButton: "Personalize",
@@ -89,14 +87,14 @@ export default function ProfilePage(props) {
             </GridItem>
           </GridContainer>
         </div>
-      )
+      ),
     },
     {
       tabButton: "Refunds",
       tabIcon: Cached,
       route: "/account/profile/refundHistory",
-      tabContent: <RefundHistoryPage />
-    }
+      tabContent: <RefundHistoryPage />,
+    },
   ];
 
   if (mode === "viewOrder") {
@@ -104,14 +102,14 @@ export default function ProfilePage(props) {
       tabButton: "Order Details",
       tabIcon: Camera,
       route: `/account/profile/viewOrder/${transactionId}`,
-      tabContent: <OrderDetails />
+      tabContent: <OrderDetails />,
     });
   } else if (mode === "viewRefund") {
     tabs.push({
       tabButton: "Refund Details",
       tabIcon: Camera,
       route: `/account/profile/viewRefund/${refundId}`,
-      tabContent: <RefundDetails />
+      tabContent: <RefundDetails />,
     });
   }
 

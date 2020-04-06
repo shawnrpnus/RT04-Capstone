@@ -10,7 +10,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import ReviewCard from "../Reviews/ReviewCard";
 import {
   checkIfCanWriteReview,
-  retrieveAllReviewsByProductId
+  retrieveAllReviewsByProductId,
 } from "../../redux/actions/reviewAction";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Backdrop from "@material-ui/core/Backdrop";
@@ -24,13 +24,12 @@ function ProductDetailsPage(props) {
 
   const dispatch = useDispatch();
   const currentProductDetail = useSelector(
-    state => state.product.currentProductDetail,
+    (state) => state.product.currentProductDetail,
     _.isEqual
   );
 
-  const currentProductReviews = useSelector(state => state.review.allReviews);
+  const currentProductReviews = useSelector((state) => state.review.allReviews);
 
-  console.log(currentProductReviews);
   const [isLoading, setIsLoading] = useState(true);
   //Make API call to retrieve single prod from url param
   useEffect(() => {

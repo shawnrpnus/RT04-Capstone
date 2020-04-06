@@ -277,14 +277,14 @@ public class TransactionService {
                         && productStock.getWarehouse() != null) {
                     // Deduct from warehouse
                     System.out.println("Deduct from warehouse");
-                    productStock.setQuantity(productStock.getQuantity() - 1);
+                    productStock.setQuantity(productStock.getQuantity() - shoppingCartItem.getQuantity());
                 } else if (collectionModeEnum.equals(CollectionModeEnum.IN_STORE) &&
                         productStock.getStore() != null &&
                         productStock.getStore().getStoreId().equals(storeId)) {
                     // Deduct from the correct store ONLY when buying in store
                     System.out.println("Deduct from db store ID: " + productStock.getStore().getStoreId() + " - pass in store ID "
                             + storeId);
-                    productStock.setQuantity(productStock.getQuantity() - 1);
+                    productStock.setQuantity(productStock.getQuantity() - shoppingCartItem.getQuantity());
                 }
             }
         }

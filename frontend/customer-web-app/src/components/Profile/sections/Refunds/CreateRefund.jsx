@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import React, { useEffect, useState } from "react";
 import {
   retrieveTransactionById,
-  updatedViewedTransaction
+  updatedViewedTransaction,
 } from "../../../../redux/actions/transactionActions";
 import { clearErrors } from "../../../../redux/actions";
 import { createOnlineRefundRequest } from "../../../../redux/actions/refundAction";
@@ -32,13 +32,11 @@ const useStyles = makeStyles(style);
 
 const CreateRefund = ({
   largeModal: [largeModal, setLargeModal],
-  transactionId: transactionId
+  transactionId: transactionId,
 }) => {
-  const errors = useSelector(state => state.errors);
+  const errors = useSelector((state) => state.errors);
   const dispatch = useDispatch();
   const history = useHistory();
-
-  console.log(transactionId);
   const classes = useStyles();
   // const [largeModal, setLargeModal] = React.useState(false);
 
@@ -56,22 +54,20 @@ const CreateRefund = ({
     quantityToRefund: new Array(12).fill(0),
     customerId: "",
     promoCode: "-",
-    promoCodeName: ""
+    promoCodeName: "",
   });
   useEffect(() => {
     dispatch(updatedViewedTransaction());
   }, []);
   const currTransaction = useSelector(
-    state => state.transaction.viewedTransaction
+    (state) => state.transaction.viewedTransaction
   );
-  const currCustomer = useSelector(state => state.customer.loggedInCustomer);
-  console.log(currTransaction);
-  console.log(inputState);
+  const currCustomer = useSelector((state) => state.customer.loggedInCustomer);
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   useEffect(
     () =>
-      setInputState(inputState => ({
+      setInputState((inputState) => ({
         ...inputState,
         quantityToRefund: _.get(currTransaction, "transactionLineItems.length")
           ? new Array(
@@ -91,26 +87,20 @@ const CreateRefund = ({
           : 0,
         promoCodeName: _.get(currTransaction, "promoCode")
           ? _.get(currTransaction, "promoCode.promoCodeName")
-          : 0
+          : 0,
       })),
     [currTransaction]
   );
-  // console.log(allRefundModeEnums);
-  console.log(inputState);
-  const onChange = e => {
+  const onChange = (e) => {
     e.persist();
-    console.log(e);
-    setInputState(inputState => ({
+    setInputState((inputState) => ({
       ...inputState,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     }));
     if (Object.keys(errors).length !== 0) {
       dispatch(clearErrors());
     }
-    // console.log(inputState);
   };
-
-  console.log("promoCode", inputState.promoCode);
 
   const closeModal = () => {
     setInputState(() => ({
@@ -126,7 +116,7 @@ const CreateRefund = ({
       quantityToRefund: new Array(12).fill(0),
       customerId: "",
       promoCode: "-",
-      promoCodeName: ""
+      promoCodeName: "",
     }));
     dispatch(updatedViewedTransaction());
     setLargeModal(false);
@@ -154,7 +144,6 @@ const CreateRefund = ({
       inputState.customerId,
       storeId
     );
-    console.log(refundRequest);
     dispatch(
       createOnlineRefundRequest(refundRequest, history, enqueueSnackbar)
     );
@@ -166,7 +155,7 @@ const CreateRefund = ({
         <Dialog
           classes={{
             root: classes.modalRoot,
-            paper: classes.modal + " " + classes.modalLarge
+            paper: classes.modal + " " + classes.modalLarge,
           }}
           open={largeModal}
           TransitionComponent={Transition}
@@ -242,7 +231,7 @@ const CreateRefund = ({
                         >
                           <ShortText className={classes.inputAdornmentIcon} />
                         </InputAdornment>
-                      )
+                      ),
                     }}
                   />
                 </Grid>
@@ -255,7 +244,7 @@ const CreateRefund = ({
                       onClick={onSubmit}
                       style={{
                         margin: "5% 2%",
-                        fontSize: "20px"
+                        fontSize: "20px",
                       }}
                     >
                       SUBMIT REFUND

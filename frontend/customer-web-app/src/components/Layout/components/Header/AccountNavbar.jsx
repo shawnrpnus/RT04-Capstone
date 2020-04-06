@@ -60,7 +60,7 @@ function RenderAccountToolTip(props) {
 function AccountToolTipContent(props) {
   const headerClasses = useHeaderStyles();
   const typoClasses = useTypoStyles();
-  const customer = useSelector(state => state.customer.loggedInCustomer);
+  const customer = useSelector((state) => state.customer.loggedInCustomer);
 
   return (
     <React.Fragment>
@@ -93,7 +93,7 @@ function AccountToolTipContent(props) {
 function RenderAccountDropdownDrawer(props) {
   const { dropdownHoverColor, classes } = props;
   const links = renderAccDropdownLinks(classes);
-  console.log(links);
+  // console.log(links);
   return (
     <CustomDropdown
       noLiPadding
@@ -102,7 +102,7 @@ function RenderAccountDropdownDrawer(props) {
       buttonText="Account"
       buttonProps={{
         className: classes.navLink,
-        color: "transparent"
+        color: "transparent",
       }}
       buttonIcon={AccountCircle}
       dropdownList={links}
@@ -130,7 +130,7 @@ const renderAccDropdownLinks = (classes, Component, componentProps) => {
       ) : (
         "Register"
       )}
-    </Link>
+    </Link>,
   ];
 };
 
@@ -156,14 +156,14 @@ function AccDropDownLinksAfterLogin(props) {
       onClick={() => dispatch(customerLogout())}
     >
       {Component ? <Component {...componentProps}>Logout</Component> : "Logout"}
-    </Link>
+    </Link>,
   ];
 }
 
 export default AccountNavbar;
 
 // Styling of tooltip content
-const HtmlTooltip = withStyles(theme => ({
+const HtmlTooltip = withStyles((theme) => ({
   tooltip: {
     backgroundColor: "white",
     // color: "rgba(0, 0, 0, 0.87)",
@@ -173,6 +173,6 @@ const HtmlTooltip = withStyles(theme => ({
     borderRadius: "0",
     width: "200px",
     padding: "0",
-    marginTop: "30px"
-  }
+    marginTop: "30px",
+  },
 }))(Tooltip);

@@ -20,6 +20,7 @@ public class RelationshipService {
     }
 
     public void clearCustomerRelationships(Customer customer) {
+        customer.setRefunds(null);
         customer.setVerificationCode(null);
         customer.setPassword(null);
         for (ShoppingCartItem sci : customer.getOnlineShoppingCart().getShoppingCartItems()) {
@@ -90,15 +91,17 @@ public class RelationshipService {
 
     private void removeStoreStocksFromProductVariant(ProductVariant pv) {
         List<ProductStock> pdtStocks = pv.getProductStocks();
-        for (int i = 0; i < pdtStocks.size(); i++) { //remove all store stocks
-            if (pdtStocks.get(i).getStore() != null) {
-                pv.getProductStocks().remove(pdtStocks.get(i));
-                i--;
+        if (pdtStocks != null) {
+            for (int i = 0; i < pdtStocks.size(); i++) { //remove all store stocks
+                if (pdtStocks.get(i).getStore() != null) {
+                    pv.getProductStocks().remove(pdtStocks.get(i));
+                    i--;
+                }
             }
-        }
-        for (ProductStock ps : pv.getProductStocks()) {
-            ps.setProductVariant(null);
-            ps.setWarehouse(null);
+            for (ProductStock ps : pv.getProductStocks()) {
+                ps.setProductVariant(null);
+                ps.setWarehouse(null);
+            }
         }
         applyDiscount(pv);
     }
@@ -154,18 +157,10 @@ public class RelationshipService {
         clearCustomerRelationships(transaction.getCustomer());
         transaction.setDeliveries(null);
 
+
         for (TransactionLineItem transactionLineItem : transaction.getTransactionLineItems()) {
-            ProductVariant productVariant = transactionLineItem.getProductVariant();
-            productVariant.setProductStocks(null);
-            applyDiscount(productVariant);
-            Product product = transactionLineItem.getProductVariant().getProduct();
-            transactionLineItem.getProductVariant().getProduct().setCategory(null);
-            transactionLineItem.getProductVariant().getProduct().setProductVariants(null);
-            transactionLineItem.getProductVariant().getProduct().setStyles(null);
-            transactionLineItem.setTransaction(null);
-            product.setTags(null);
-            product.setReviews(null);
-            product.setDiscounts(null);
+            clearTransactionLineItemRelationship(transactionLineItem);
+            transactionLineItem.getProductVariant().getProduct().setDiscounts(null);
         }
         if (transaction.getStoreToCollect() != null)
             clearStoreRelationships(transaction.getStoreToCollect());
@@ -173,18 +168,23 @@ public class RelationshipService {
 
     public void clearTransactionRelationshipsForStaffSide(Transaction transaction) {
         for (TransactionLineItem transactionLineItem : transaction.getTransactionLineItems()) {
-            ProductVariant productVariant = transactionLineItem.getProductVariant();
-            productVariant.setProductStocks(null);
-            Product product = transactionLineItem.getProductVariant().getProduct();
-            transactionLineItem.getProductVariant().getProduct().setCategory(null);
-            transactionLineItem.getProductVariant().getProduct().setProductVariants(null);
-            transactionLineItem.getProductVariant().getProduct().setStyles(null);
-            product.setTags(null);
-            product.setReviews(null);
-//            product.setPromoCodes(null);
-            product.setDiscounts(null);
+            clearTransactionLineItemRelationship(transactionLineItem);
+            transactionLineItem.getProductVariant().getProduct().setDiscounts(null);
         }
-//        transaction.setCustomer(null);
+    }
+
+    public void clearTransactionLineItemRelationship(TransactionLineItem transactionLineItem) {
+        transactionLineItem.setRefundLineItems(null);
+        ProductVariant productVariant = transactionLineItem.getProductVariant();
+        productVariant.setProductStocks(null);
+        applyDiscount(productVariant);
+        Product product = transactionLineItem.getProductVariant().getProduct();
+        transactionLineItem.getProductVariant().getProduct().setCategory(null);
+        transactionLineItem.getProductVariant().getProduct().setProductVariants(null);
+        transactionLineItem.getProductVariant().getProduct().setStyles(null);
+        transactionLineItem.setTransaction(null);
+        product.setTags(null);
+        product.setReviews(null);
     }
 
 
@@ -232,7 +232,8 @@ public class RelationshipService {
     }
 
     public void clearDiscountRelationships(List<Discount> discounts) {
-        discounts.forEach(discount -> discount.setProducts(null));
+        if (discounts != null)
+            discounts.forEach(discount -> discount.setProducts(null));
     }
 
     public void clearRestockOrderRelationship(List<InStoreRestockOrder> inStoreRestockOrders) {
@@ -259,5 +260,22 @@ public class RelationshipService {
         clearProductVariantRelationships(productVariant);
         inStoreRestockOrderItem.setInStoreRestockOrder(null);
         inStoreRestockOrderItem.setDelivery(null);
+    }
+
+    public void clearRefundRelationships(Refund refund) {
+        refund.setCustomer(null);
+        for (RefundLineItem refundLineItem : refund.getRefundLineItems()) {
+            refundLineItem.setRefund(null);
+            for (RefundLineItemHandler refundLineItemHandler : refundLineItem.getRefundLineItemHandlerList()) {
+                refundLineItemHandler.setRefundLineItem(null);
+            }
+            clearTransactionLineItemRelationship(refundLineItem.getTransactionLineItem());
+
+            if (refund.getStore() != null) clearStoreRelationships(refund.getStore());
+            if (refund.getWarehouse() != null) {
+                refund.getWarehouse().setInStoreRestockOrders(null);
+                refund.getWarehouse().setProductStocks(null);
+            }
+        }
     }
 }
