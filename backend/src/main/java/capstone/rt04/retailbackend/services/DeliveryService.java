@@ -215,7 +215,9 @@ public class DeliveryService {
                         groupedStoreOrderItems.setStore(transaction.getStoreToCollect());
                     }
                     groupedStoreOrderItems.getTransactions().add(transaction);
-                    if(!transaction.getDeliveryStatus().equals(DeliveryStatusEnum.DELIVERED)){
+                    if(!(transaction.getDeliveryStatus().equals(DeliveryStatusEnum.DELIVERED)
+                            || transaction.getDeliveryStatus().equals(DeliveryStatusEnum.READY_FOR_COLLECTION)
+                            || transaction.getDeliveryStatus().equals(DeliveryStatusEnum.COLLECTED))){
                         groupedStoreOrderItems.setDeliveryStatus(DeliveryStatusEnum.IN_TRANSIT);
                     }
                 } else if (transaction.getDeliveryAddress() != null &&
