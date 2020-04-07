@@ -170,10 +170,22 @@ function RefundDetails(props) {
               </GridItem>
               <GridItem md={1} />
               {refund.refundLineItems.map((lineItem, index) => {
-                const val =
-                  (lineItem.transactionLineItem.initialSubTotal *
+                let val = 0;
+                let initialVal = 0;
+                if(lineItem.transactionLineItem.finalSubTotal) {
+                  val =
+                    (lineItem.transactionLineItem.finalSubTotal *
+                      lineItem.quantity) /
+                    lineItem.transactionLineItem.quantity;
+                  initialVal = (lineItem.transactionLineItem.initialSubTotal *
                     lineItem.quantity) /
-                  lineItem.transactionLineItem.quantity;
+                    lineItem.transactionLineItem.quantity;
+                } else {
+                  val = (lineItem.transactionLineItem.initialSubTotal *
+                    lineItem.quantity) /
+                    lineItem.transactionLineItem.quantity;
+                }
+
                 return (
                   <GridItem md={12} key={index}>
                     <Divider light />
@@ -188,10 +200,7 @@ function RefundDetails(props) {
                             lineItem.transactionLineItem.productVariant
                           }
                           quantity={lineItem.quantity}
-                          // initialSubTotal={val}
-                          initialSubTotal={
-                            lineItem.transactionLineItem.finalSubTotal
-                          }
+                          initialSubTotal={initialVal}
                           finalSubTotal={val}
                         />
                       </GridItem>
