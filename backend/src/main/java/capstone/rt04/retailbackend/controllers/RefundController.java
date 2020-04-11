@@ -90,4 +90,14 @@ public class RefundController {
         }
         return new ResponseEntity<>(refunds, HttpStatus.OK);
     }
+
+    @GetMapping(RETRIEVE_REFUNDS_BY_TRANSACTION_ID)
+    public ResponseEntity<?> retrieveRefundByTransactionId(@RequestParam Long transactionId) throws RefundNotFoundException {
+        System.out.println("did call");
+        List<Refund> refunds = refundService.retrieveRefundByTransactionId(transactionId);
+        for (Refund refund : refunds) {
+            relationshipService.clearRefundRelationships(refund);
+        }
+        return new ResponseEntity<>(refunds, HttpStatus.OK);
+    }
 }

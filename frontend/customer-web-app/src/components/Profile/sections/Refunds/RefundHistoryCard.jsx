@@ -133,16 +133,23 @@ function RefundHistoryCard(props) {
                     lineItem.transactionLineItem.quantity;
                 }
                 return (
-                  <ProductVariantCard
-                    key={
-                      lineItem.transactionLineItem.productVariant
-                        .productVariantId
-                    }
-                    productVariant={lineItem.transactionLineItem.productVariant}
-                    quantity={lineItem.quantity}
-                    initialSubTotal={initialVal}
-                    finalSubTotal={val}
-                  />
+                  <>
+                  {
+                    lineItem.quantity ?
+                      <ProductVariantCard
+                        key={
+                          lineItem.transactionLineItem.productVariant
+                            .productVariantId
+                        }
+                        productVariant={lineItem.transactionLineItem.productVariant}
+                        quantity={lineItem.quantity}
+                        initialSubTotal={initialVal}
+                        finalSubTotal={val}
+                      />
+                      :
+                      ""
+                  }
+                  </>
                 );
               })}
             </GridItem>

@@ -28,6 +28,7 @@ const useStyles = makeStyles(style);
 const CreateRefund = ({
   largeModal: [largeModal, setLargeModal],
   transactionId: transactionId,
+                        totalForEachItem: totalForEachItem
 }) => {
   const errors = useSelector((state) => state.errors);
   const dispatch = useDispatch();
@@ -50,6 +51,7 @@ const CreateRefund = ({
     customerId: "",
     promoCode: "-",
     promoCodeName: "",
+    promoCodeClaimed: false
   });
   useEffect(() => {
     dispatch(updatedViewedTransaction());
@@ -80,9 +82,11 @@ const CreateRefund = ({
         promoCode: _.get(currTransaction, "promoCode")
           ? _.get(currTransaction, "promoCode")
           : 0,
-        promoCodeName: _.get(currTransaction, "promoCode")
+        promoCodeName:
+          _.get(currTransaction, "promoCode")
           ? _.get(currTransaction, "promoCode.promoCodeName")
-          : 0,
+          : "-",
+        promoCodeClaimed: _.get(currTransaction, "transactionLineItems[0].refundLineItems[0]") && _.get(currTransaction, "promoCode")
       })),
     [currTransaction]
   );
@@ -156,6 +160,7 @@ const CreateRefund = ({
       )
     );
   };
+  // console.log("totalForEachItem CREATE REFUND", totalForEachItem);
 
   return (
     <React.Fragment>
@@ -199,12 +204,22 @@ const CreateRefund = ({
               largeModal={[largeModal, setLargeModal]}
               currTransaction={currTransaction}
               inputState={[inputState, setInputState]}
+              totalForEachItem={totalForEachItem}
             />
             {currTransaction ? (
               <GridContainer>
                 <Grid item md={6} style={{ paddingLeft: "40px" }}>
                   <h5>
-                    Promo Code Used: <b>{inputState.promoCodeName}</b>
+                    Promo Code Used:
+                    <b>{inputState.promoCodeName}</b>
+                    &nbsp;
+                    {
+                      inputState.promoCodeClaimed
+                      ?<b>(CLAIMED)</b>
+                        :
+                        ""
+                    }
+
                   </h5>
                 </Grid>
                 <Grid item md={2}></Grid>

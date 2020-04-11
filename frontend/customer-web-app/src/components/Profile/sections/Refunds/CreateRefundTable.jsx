@@ -1,6 +1,6 @@
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
-import React from "react";
+import React, {useEffect, useState} from "react";
 import shoppingCartStyle from "../../../../assets/jss/material-kit-pro-react/views/shoppingCartStyle";
 import classNames from "classnames";
 import Card from "../../../UI/Card/Card";
@@ -14,6 +14,7 @@ import CancelIcon from "@material-ui/icons/Cancel";
 import colourList from "../../../../assets/colours";
 import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
+import {retrieveRefundsByTransactionId} from "../../../../redux/actions/refundAction";
 
 const _ = require("lodash");
 
@@ -24,6 +25,7 @@ function CreateRefundTable({
   largeModal: [largeModal, setLargeModal],
   currTransaction: currTransaction,
   inputState: [inputState, setInputState],
+ totalForEachItem: totalForEachItem
 }) {
   const classes = useStyles();
 
@@ -64,11 +66,7 @@ function CreateRefundTable({
         amt += (item.initialSubTotal / item.quantity) * arr[index];
         arrayAmt[index] = item.initialSubTotal / item.quantity;
       }
-      if (inputState.promoCode) {
-        amt -= inputState.promoCode.flatDiscount;
-        let val = 1 - inputState.promoCode.percentageDiscount / 100.0;
-        amt *= val;
-      }
+
 
       setInputState((inputState) => ({
         ...inputState,
@@ -76,12 +74,19 @@ function CreateRefundTable({
       }));
       return amt;
     }
+    if (inputState.promoCode && !inputState.promoCodeClaimed) {
+      amt -= inputState.promoCode.flatDiscount;
+      let val = 1 - inputState.promoCode.percentageDiscount / 100.0;
+      amt *= val;
+    }
     if (amt < 0) {
       amt = 0;
     }
     return amt;
   };
 
+  // console.log("currTransaction",currTransaction);
+  // console.log(totalForEachItem);
   return (
     <div className={classNames(classes.main)}>
       <div className={classes.container}>
@@ -108,7 +113,18 @@ function CreateRefundTable({
                       } = lineItem;
                       const afterDiscount = finalSubTotal / quantity;
                       const beforeDiscount = initialSubTotal / quantity;
-                      const quantityToRefund = quantity + 1;
+                      if(!totalForEachItem) {
+                        totalForEachItem = new Array(index).fill(0);
+                      }
+                      console.log(lineItem);
+                      console.log(index);
+                      console.log(totalForEachItem[index]);
+                      if(!totalForEachItem[index]) {
+                        totalForEachItem[index] = 0;
+                      }
+                      const quantityToRefund = quantity + 1 - totalForEachItem[index];
+                      // const quantityToRefund = quantity +1;
+
                       return (
                         <div key={index}>
                           <Card plain>

@@ -145,14 +145,18 @@ function RefundDetails(props) {
           >
             <h4 style={{ margin: "0" }}>
               Refund Items
-              {promoCode && (
+              {promoCode && !refund.multipleRefund ?
                 <span style={{ float: "right" }}>
                   Promo Code Used:{" "}
                   <span style={{ fontWeight: 400 }}>
                     {promoCode.promoCodeName}
                   </span>
                 </span>
-              )}
+                :
+                <span style={{ float: "right" }}>
+                  Promo Code Used: -
+                </span>
+              }
             </h4>
           </GridItem>
           <GridItem md={12} xs={12}>
@@ -185,31 +189,46 @@ function RefundDetails(props) {
                     lineItem.quantity) /
                     lineItem.transactionLineItem.quantity;
                 }
-
+                console.log("lineItemQuantity",lineItem.quantity);
                 return (
-                  <GridItem md={12} key={index}>
-                    <Divider light />
-                    <GridContainer>
-                      <GridItem md={8}>
-                        <ProductVariantCard
-                          key={
-                            lineItem.transactionLineItem.productVariant
-                              .productVariantId
+
+                    <GridItem md={12} key={index}>
+                      {lineItem.quantity ?
+                        <Divider light/>
+                        :
+                        ""
+                      }
+                      <GridContainer>
+                        <GridItem md={8}>
+                          {lineItem.quantity ?
+                            <ProductVariantCard
+                              key={
+                                lineItem.transactionLineItem.productVariant
+                                  .productVariantId
+                              }
+                              productVariant={
+                                lineItem.transactionLineItem.productVariant
+                              }
+                              quantity={lineItem.quantity}
+                              initialSubTotal={initialVal}
+                              finalSubTotal={val}
+                            />
+                            :
+                            ""
                           }
-                          productVariant={
-                            lineItem.transactionLineItem.productVariant
+
+                        </GridItem>
+                        <GridItem md={3}>
+                          {lineItem.quantity ?
+                            <h5 style={{float: "right"}}>SGD${val.toFixed(2)}</h5>
+                            :
+                            ""
                           }
-                          quantity={lineItem.quantity}
-                          initialSubTotal={initialVal}
-                          finalSubTotal={val}
-                        />
-                      </GridItem>
-                      <GridItem md={3}>
-                        <h5 style={{ float: "right" }}>SGD${val.toFixed(2)}</h5>
-                      </GridItem>
-                      <GridItem md={1} />
-                    </GridContainer>
-                  </GridItem>
+                        </GridItem>
+                        <GridItem md={1} />
+                      </GridContainer>
+                    </GridItem>
+
                 );
               })}
             </GridContainer>
@@ -218,7 +237,8 @@ function RefundDetails(props) {
           <GridItem md={7} />
           <GridItem md={4}>
             <h5 style={{ textAlign: "right" }}>
-              {promoCode && (
+              {promoCode && !refund.multipleRefund ?
+
                 <>
                   <div>SGD$ {amountBeforePromoCode.toFixed(2)}</div>
                   <div>
@@ -227,7 +247,9 @@ function RefundDetails(props) {
                     <Divider style={{ marginLeft: "20%" }} />
                   </div>
                 </>
-              )}
+                :
+                ""
+              }
               <b>Refund Amount : </b> SGD$ {refund.refundAmount.toFixed(2)}
             </h5>
           </GridItem>

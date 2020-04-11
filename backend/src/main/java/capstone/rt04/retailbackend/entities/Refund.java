@@ -55,6 +55,8 @@ public class    Refund implements Serializable {
     
     private String reason;
 
+    private boolean isMultipleRefund;
+
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
     private Customer customer;
@@ -82,13 +84,14 @@ public class    Refund implements Serializable {
         this.refundLineItems = new ArrayList<>();
     }
 
-    public Refund(Integer quantity, BigDecimal refundAmount, RefundModeEnum refundMode, RefundStatusEnum refundStatus, String reason) {
+    public Refund(Integer quantity, BigDecimal refundAmount, RefundModeEnum refundMode, RefundStatusEnum refundStatus, String reason, boolean isMultipleRefund) {
         this();
         this.quantity = quantity;
         this.refundAmount = refundAmount;
         this.refundMode = refundMode;
         this.refundStatus = refundStatus;
         this.reason = reason;
+        this.isMultipleRefund = isMultipleRefund;
 //        this.customer = customer;
 //        this.transactionLineItem = transactionLineItem;
     }

@@ -174,7 +174,14 @@ public class RelationshipService {
     }
 
     public void clearTransactionLineItemRelationship(TransactionLineItem transactionLineItem) {
-        transactionLineItem.setRefundLineItems(null);
+//        transactionLineItem.setRefundLineItems(null);
+//        if(transactionLineItem.getRefundLineItems() != null) {
+//            for(RefundLineItem rli : transactionLineItem.getRefundLineItems()) {
+//                rli.getTransactionLineItem().setRefundLineItems(null);
+//                rli.getRefund().setRefundLineItems(null);
+//            }
+//        }
+
         ProductVariant productVariant = transactionLineItem.getProductVariant();
         productVariant.setProductStocks(null);
         applyDiscount(productVariant);
