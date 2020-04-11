@@ -1,7 +1,6 @@
 import axios from "axios";
 import * as types from "./types";
 import { toast } from "react-toastify";
-import {retrieveAllPromoCodes} from "./promoCodeActions";
 axios.defaults.baseURL = process.env.REACT_APP_SPRING_API_URL;
 
 const LEAVE_BASE_URL = "/api/leave";

@@ -14,8 +14,8 @@ const _ = require("lodash");
 
 const UpdateLeaveDialog = ({ open, onClose, leaveId, loggedInStaff, history }) => {
     const dispatch = useDispatch();
-    const [fromDateTime, setFromDateTime] = useState("2020-04-06");
-    const [toDateTime, setToDateTime] = useState("2020-04-06");
+    const [fromDateTime, setFromDateTime] = useState("2020-04-11");
+    const [toDateTime, setToDateTime] = useState("2020-04-11");
 
     const onChangeFrom =(date) => {
         setFromDateTime(date);

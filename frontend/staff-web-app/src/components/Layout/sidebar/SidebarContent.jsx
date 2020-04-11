@@ -79,6 +79,12 @@ class SidebarContent extends Component {
                     route="/leave/hr"
                     onClick={this.hideSidebar}
                   />
+
+                  <SidebarLink
+                      title="Payrolls Management"
+                      route="/payrolls/createPayrolls"
+                      onClick={this.hideSidebar}
+                  />
                 </React.Fragment>
               )}
 

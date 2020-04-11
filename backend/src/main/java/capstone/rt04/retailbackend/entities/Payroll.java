@@ -16,7 +16,8 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.util.Date;
 
 /**
  *
@@ -39,7 +40,8 @@ public class Payroll implements Serializable {
     @Column(nullable = false)
     private BigDecimal amount;
     
-    private Timestamp paymentDateTime;
+    private LocalDate paymentDateTime;
+    private Boolean status;
 
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
@@ -48,9 +50,11 @@ public class Payroll implements Serializable {
     public Payroll() {
     }
 
-    public Payroll(BigDecimal amount, Staff staff) {
+    public Payroll(BigDecimal amount, Staff staff, LocalDate paymentDateTime) {
+        this.status = false;
         this.amount = amount;
         this.staff = staff;
+        this.paymentDateTime = paymentDateTime;
     }
     
   

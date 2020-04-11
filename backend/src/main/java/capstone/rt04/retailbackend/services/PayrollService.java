@@ -1,0 +1,85 @@
+package capstone.rt04.retailbackend.services;
+
+import capstone.rt04.retailbackend.entities.Payroll;
+import capstone.rt04.retailbackend.entities.Staff;
+import capstone.rt04.retailbackend.entities.StaffLeave;
+import capstone.rt04.retailbackend.repositories.LeaveRepository;
+import capstone.rt04.retailbackend.repositories.PayrollRepository;
+import capstone.rt04.retailbackend.repositories.StaffRepository;
+import capstone.rt04.retailbackend.util.enums.LeaveStatusEnum;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.util.ArrayList;
+import java.util.Date;
+import java.time.ZoneId;
+import java.util.Calendar;
+import java.util.List;
+
+@Service
+@Transactional
+public class PayrollService {
+    private final ValidationService validationService;
+    private final StaffService staffService;
+    private final StaffRepository staffRepository;
+    private final PayrollRepository payrollRepository;
+    private final LeaveRepository leaveRepository;
+
+
+    public PayrollService(ValidationService validationService, StaffService staffService, StaffRepository staffRepository, PayrollRepository payrollRepository, LeaveRepository leaveRepository) {
+        this.validationService = validationService;
+        this.staffService = staffService;
+        this.staffRepository = staffRepository;
+        this.payrollRepository = payrollRepository;
+        this.leaveRepository = leaveRepository;
+    }
+
+    public List<Payroll> calculateMonthlySalary(LocalDate d){
+
+        List<Staff> allStaff = staffRepository.findAll();
+        List<Payroll> payrolls = new ArrayList<Payroll>();
+        int year = d.getYear();
+        int month = d.getMonthValue();
+
+        for(Staff s : allStaff){
+            //Get the number of days in the given month of a given year
+            YearMonth yearMonthObject = YearMonth.of(year, month);
+            int daysInMonth = yearMonthObject.lengthOfMonth();
+
+            //Get all the leaves of the staff
+            List<StaffLeave> allLeaves = s.getLeaves();
+
+            //For each approved leave, iterate through the leave period. If month and year corresponds with the current month and year, subtract 1 day from total number of days in month
+            for(StaffLeave leave : allLeaves){
+                if(leave.getStatus().equals(LeaveStatusEnum.APPROVED)) {
+
+                    //iterate through each day of the leave period to check the month and year
+                    for (LocalDate date = leave.getFromDateTime(); (date.isBefore(leave.getToDateTime()) || date.equals(leave.getToDateTime())); date = date.plusDays(1)) {
+                        if(date.getMonthValue()== month && date.getYear() == year){
+                            daysInMonth --;
+                        }
+                    }
+                }
+                }
+            BigDecimal salaryPerDay = s.getSalary();
+            BigDecimal finalMonthlyAmount = salaryPerDay.multiply(new BigDecimal(daysInMonth));
+            Payroll payroll = new Payroll(finalMonthlyAmount, s, d);
+            payrolls.add(payroll);
+            }
+
+        return payrolls;
+
+        }
+
+    public List<Payroll> createPayrolls(List<Payroll> payrolls){
+        List<Payroll> existingPayrolls = payrollRepository.findAll();
+        for(Payroll p : payrolls){
+            payrollRepository.save(p);
+        }
+        return payrolls;
+
+    }
+    }

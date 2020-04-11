@@ -33,7 +33,7 @@ public class StaffService {
     private final AdvertisementRepository advertisementRepository;
     private final DeliveryRepository deliveryRepository;
     private final DepartmentRepository departmentRepository;
-    private final StaffLeaveRepository staffLeaveRepository;
+    private final LeaveRepository leaveRepository;
     private final PayrollRepository payrollRepository;
     private final ReviewRepository reviewRepository;
     private final RoleRepository roleRepository;
@@ -42,7 +42,7 @@ public class StaffService {
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
 
-    public StaffService(JavaMailSender javaMailSender, Environment environment, ValidationService validationService, StaffRepository staffRepository, AddressRepository addressRepository, VerificationCodeRepository verificationCodeRepository, AdvertisementRepository advertisementRepository, DeliveryRepository deliveryRepository, DepartmentRepository departmentRepository, StaffLeaveRepository staffLeaveRepository, ReviewRepository reviewRepository, PayrollRepository payrollRepository, RoleRepository roleRepository, StoreRepository storeRepository, WarehouseRepository warehouseRepository) {
+    public StaffService(JavaMailSender javaMailSender, Environment environment, ValidationService validationService, StaffRepository staffRepository, AddressRepository addressRepository, VerificationCodeRepository verificationCodeRepository, AdvertisementRepository advertisementRepository, DeliveryRepository deliveryRepository, DepartmentRepository departmentRepository, LeaveRepository leaveRepository, ReviewRepository reviewRepository, PayrollRepository payrollRepository, RoleRepository roleRepository, StoreRepository storeRepository, WarehouseRepository warehouseRepository) {
         this.javaMailSender = javaMailSender;
         this.environment = environment;
         this.validationService = validationService;
@@ -52,7 +52,7 @@ public class StaffService {
         this.advertisementRepository = advertisementRepository;
         this.deliveryRepository = deliveryRepository;
         this.departmentRepository = departmentRepository;
-        this.staffLeaveRepository = staffLeaveRepository;
+        this.leaveRepository = leaveRepository;
         this.reviewRepository = reviewRepository;
         this.payrollRepository = payrollRepository;
         this.roleRepository = roleRepository;
@@ -435,7 +435,7 @@ public class StaffService {
                 l.setApplicant(null);
                 l.setApprover(null);
                 l.setEndorser(null);
-                staffLeaveRepository.delete(l);
+                leaveRepository.delete(l);
             }
             existingStaff.setLeaves(null);
             // ----------------------------------------------------

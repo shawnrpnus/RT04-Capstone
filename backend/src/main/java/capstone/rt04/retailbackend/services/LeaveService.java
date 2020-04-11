@@ -17,11 +17,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.PersistenceException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.sql.Date;
+import java.util.Date;
 
 @Service
 @Transactional
@@ -46,8 +47,8 @@ public class LeaveService {
                 .orElseThrow(() -> new StaffNotFoundException("Staff with id: " + staffLeave.getApplicant().getStaffId() + " does not exist"));
 
         for(StaffLeave leave : existingStaff.getLeaves()){
-            if((!leave.getStatus().equals(LeaveStatusEnum.REJECTED))&& (staffLeave.getFromDateTime().equals(leave.getFromDateTime()) || (staffLeave.getFromDateTime().after(staffLeave.getToDateTime())) ||
-                    (staffLeave.getFromDateTime().after(leave.getFromDateTime()) && staffLeave.getFromDateTime().before(leave.getToDateTime())) ||
+            if((!leave.getStatus().equals(LeaveStatusEnum.REJECTED))&& (staffLeave.getFromDateTime().equals(leave.getFromDateTime()) || (staffLeave.getFromDateTime().isAfter(staffLeave.getToDateTime())) ||
+                    (staffLeave.getFromDateTime().isAfter(leave.getFromDateTime()) && staffLeave.getFromDateTime().isBefore(leave.getToDateTime())) ||
                 staffLeave.getFromDateTime().equals(leave.getToDateTime())) ){
                 Map<String, String> errorMap = new HashMap<>();
                 errorMap.put("fromDateTime", ErrorMessages.OVERLAP_IN_LEAVE);
@@ -62,7 +63,7 @@ public class LeaveService {
 
     }
 
-    public StaffLeave updateLeave(Long leaveId, Staff applicant, Date fromDate, Date toDate) throws InputDataValidationException, StaffNotFoundException, StaffLeaveCannotUpdateException, StaffLeaveNotFoundException {
+    public StaffLeave updateLeave(Long leaveId, Staff applicant, LocalDate fromDate, LocalDate toDate) throws InputDataValidationException, StaffNotFoundException, StaffLeaveCannotUpdateException, StaffLeaveNotFoundException {
         StaffLeave existingLeave = leaveRepository.findById(leaveId)
                 .orElseThrow(() -> new StaffLeaveNotFoundException("Leave with id: " + leaveId + " does not exist"));
 
@@ -77,8 +78,8 @@ public class LeaveService {
             if(!leave.getStaffLeaveId().equals(leaveId) &&
                     ((!leave.getStatus().equals(LeaveStatusEnum.REJECTED))&&
                             ((fromDate.equals(leave.getFromDateTime()) ||
-                    (fromDate.after(toDate)) ||
-                    (fromDate.after(leave.getFromDateTime()) && fromDate.before(leave.getToDateTime())) ||
+                    (fromDate.isAfter(toDate)) ||
+                    (fromDate.isAfter(leave.getFromDateTime()) && fromDate.isBefore(leave.getToDateTime())) ||
                     fromDate.equals(leave.getToDateTime())))) ){
                 Map<String, String> errorMap = new HashMap<>();
                 errorMap.put("fromDateTime", ErrorMessages.OVERLAP_IN_LEAVE);
@@ -157,7 +158,7 @@ public class LeaveService {
     }
 
     public List<StaffLeave> retrieveAllLeavesHR(){
-        List<StaffLeave> allLeaves = (List<StaffLeave>) leaveRepository.findAll();
+        List<StaffLeave> allLeaves = leaveRepository.findAll();
         List<StaffLeave> leaves = new ArrayList<StaffLeave>();
 
         for(StaffLeave leave : allLeaves){
