@@ -66,17 +66,18 @@ function CreateRefundTable({
         amt += (item.initialSubTotal / item.quantity) * arr[index];
         arrayAmt[index] = item.initialSubTotal / item.quantity;
       }
-      if (inputState.promoCode) {
-        amt -= inputState.promoCode.flatDiscount;
-        let val = 1 - inputState.promoCode.percentageDiscount / 100.0;
-        amt *= val;
-      }
+
 
       setInputState((inputState) => ({
         ...inputState,
         refundAmt: arrayAmt,
       }));
       return amt;
+    }
+    if (inputState.promoCode && !inputState.promoCodeClaimed) {
+      amt -= inputState.promoCode.flatDiscount;
+      let val = 1 - inputState.promoCode.percentageDiscount / 100.0;
+      amt *= val;
     }
     if (amt < 0) {
       amt = 0;

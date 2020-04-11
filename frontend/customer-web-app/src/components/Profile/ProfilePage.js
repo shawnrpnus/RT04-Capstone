@@ -28,7 +28,7 @@ import OrderDetails from "components/Profile/sections/Orders/OrderDetails";
 import ReviewCardForProfilePage from "components/Reviews/ReviewCardForProfilePage";
 import Backdrop from "@material-ui/core/Backdrop";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import { Cached } from "@material-ui/icons";
+import {AttachMoney, Cached} from "@material-ui/icons";
 import RefundHistoryPage from "./sections/Refunds/RefundHistoryPage";
 import RefundDetails from "./sections/Refunds/RefundDetails";
 import CreateRefund from "./sections/Refunds/CreateRefund";
@@ -91,7 +91,7 @@ export default function ProfilePage(props) {
     },
     {
       tabButton: "Refunds",
-      tabIcon: Cached,
+      tabIcon: AttachMoney,
       route: "/account/profile/refundHistory",
       tabContent: <RefundHistoryPage />,
     },
