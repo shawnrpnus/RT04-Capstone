@@ -129,5 +129,10 @@ public class Staff implements Serializable {
     }
 
 
+    public void DecrementLeave (){
+      this.leaveRemaining --;
+    }
+
+
 
 }

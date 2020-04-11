@@ -7,6 +7,8 @@ import capstone.rt04.retailbackend.repositories.LeaveRepository;
 import capstone.rt04.retailbackend.repositories.PayrollRepository;
 import capstone.rt04.retailbackend.repositories.StaffRepository;
 import capstone.rt04.retailbackend.util.enums.LeaveStatusEnum;
+import capstone.rt04.retailbackend.util.exceptions.payroll.PayrollCannotCreateException;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -66,7 +68,8 @@ public class PayrollService {
                 }
             BigDecimal salaryPerDay = s.getSalary();
             BigDecimal finalMonthlyAmount = salaryPerDay.multiply(new BigDecimal(daysInMonth));
-            Payroll payroll = new Payroll(finalMonthlyAmount, s, d);
+            LocalDate dd = d.of(year, month, 29);
+            Payroll payroll = new Payroll(finalMonthlyAmount, s, dd);
             payrolls.add(payroll);
             }
 
@@ -74,8 +77,18 @@ public class PayrollService {
 
         }
 
-    public List<Payroll> createPayrolls(List<Payroll> payrolls){
+    public List<Payroll> createPayrolls(LocalDate d) throws PayrollCannotCreateException {
         List<Payroll> existingPayrolls = payrollRepository.findAll();
+        int year = d.getYear();
+        int month = d.getMonthValue();
+        LocalDate dd = d.of(year, month, 29);
+        for(Payroll e : existingPayrolls){
+            if(e.getPaymentDateTime().equals(dd)){
+                    throw new PayrollCannotCreateException("Payrolls for the month have already been created");
+            }
+        }
+
+        List<Payroll> payrolls = calculateMonthlySalary(d);
         for(Payroll p : payrolls){
             payrollRepository.save(p);
         }

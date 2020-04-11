@@ -69,4 +69,5 @@ public class StaffLeave implements Serializable {
         this.applicant = staff;
     }
 
+
 }

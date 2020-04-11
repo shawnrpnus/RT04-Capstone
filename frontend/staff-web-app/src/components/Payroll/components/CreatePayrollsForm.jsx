@@ -7,7 +7,7 @@ import {connect} from "react-redux";
 import DateFnsUtils from "@date-io/date-fns";
 import {Button, ButtonToolbar} from "reactstrap";
 import CalculateMonthlyPayrollRequest from "../../../models/payroll/CalculateMonthlyPayrollRequest";
-import {calculateMonthlySalary} from "../../../redux/actions/payrollAction";
+import {calculateMonthlySalary, createPayrolls} from "../../../redux/actions/payrollAction";
 import MaterialTable from "material-table";
 import {
     AddBox,
@@ -20,6 +20,7 @@ import {
     SaveAlt, Search,
     SearchOutlined, ViewColumn
 } from "@material-ui/icons";
+import CreatePayrollsRequest from "../../../models/payroll/CreatePayrollsRequest";
 const tableIcons = {
     Add: AddBox,
     Check: Check,
@@ -52,7 +53,8 @@ class CreatePayrollsForm extends React.Component {
         this.handleShowTable = this.handleShowTable.bind(this);
         this.state = ({
             selectedDate: "2020-04-01",
-            showTable:false
+            showTable:false,
+            payrolls:[]
         });
     }
 
@@ -82,6 +84,9 @@ class CreatePayrollsForm extends React.Component {
 
     handleConfirm = e => {
         e.preventDefault();
+        console.log(this.props.allSalary);
+        const req = new CreatePayrollsRequest(this.state.selectedDate);
+        this.props.createPayrolls(req, this.props.history);
     };
 
     handleSubmit = e => {
@@ -89,7 +94,6 @@ class CreatePayrollsForm extends React.Component {
         this.handleShowTable();
         const req = new CalculateMonthlyPayrollRequest(this.state.selectedDate);
         this.props.calculateMonthlySalary(req, this.props.history);
-        console.log(this.props.allSalary)
     };
 
     render() {
@@ -105,6 +109,7 @@ class CreatePayrollsForm extends React.Component {
                             minDate={new Date("2020")}
                             views={["year", "month"]}
                             label="Generate payroll for:"
+                            disabled={this.state.mode}
                             helperText="Select year and month"
                             value={this.state.selectedDate}
                             onChange={date => {
@@ -165,8 +170,8 @@ class CreatePayrollsForm extends React.Component {
                                             { title: "ID", field: "staff.staffId" },
                                             {title: "Staff's First Name", field: "staff.firstName"},
                                             {title: "Staff's Last Name", field: "staff.lastName"},
-                                            { title: "Year-Month", field: "paymentDateTime" },
-                                            { title: "Amount", field: "amount" }
+                                            { title: "Date payment will be made", field: "paymentDateTime"},
+                                            { title: "Amount ($)", field: "amount" }
 
                                         ]}
                                         options={{
@@ -209,7 +214,8 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = {
-    calculateMonthlySalary
+    calculateMonthlySalary,
+    createPayrolls
 };
 
 export default connect(
