@@ -28,6 +28,7 @@ const useStyles = makeStyles(style);
 const CreateRefund = ({
   largeModal: [largeModal, setLargeModal],
   transactionId: transactionId,
+                        totalForEachItem: totalForEachItem
 }) => {
   const errors = useSelector((state) => state.errors);
   const dispatch = useDispatch();
@@ -156,6 +157,7 @@ const CreateRefund = ({
       )
     );
   };
+  // console.log("totalForEachItem CREATE REFUND", totalForEachItem);
 
   return (
     <React.Fragment>
@@ -199,6 +201,7 @@ const CreateRefund = ({
               largeModal={[largeModal, setLargeModal]}
               currTransaction={currTransaction}
               inputState={[inputState, setInputState]}
+              totalForEachItem={totalForEachItem}
             />
             {currTransaction ? (
               <GridContainer>

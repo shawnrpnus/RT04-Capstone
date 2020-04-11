@@ -2,7 +2,8 @@ import * as types from "../actions/types";
 
 const initialState = {
   refunds: null,
-  currRefund: null
+  currRefund: null,
+  refundsToCheck : null,
 };
 
 export default function(state = initialState, action) {
@@ -21,6 +22,11 @@ export default function(state = initialState, action) {
       return {
         ...state,
         currRefund: action.currRefund
+      };
+    case types.GET_REFUND_BY_TRANSACTION_ID:
+      return {
+        ...state,
+        refundsToCheck: action.refundsToCheck
       };
     default:
       return state;

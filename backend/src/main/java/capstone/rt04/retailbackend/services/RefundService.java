@@ -339,6 +339,16 @@ public class RefundService {
         return refunds;
     }
 
+    public List<Refund> retrieveRefundByTransactionId(Long transactionId) throws RefundNotFoundException {
+        List<Refund> refunds = refundRepository.findByTransactionId(transactionId);
+        if(refunds.isEmpty() || refunds.size() == 0) {
+            throw new RefundNotFoundException("Refund with Transaction ID " + transactionId + " does not exist!");
+        }
+
+        System.out.println("REFUNDDDDD ID" + refunds.get(0).getRefundId());
+        return refunds;
+    }
+
     public void lazilyLoadRefunds(List<Refund> refunds) {
         for (Refund refund : refunds) {
             refund.getCustomer();
