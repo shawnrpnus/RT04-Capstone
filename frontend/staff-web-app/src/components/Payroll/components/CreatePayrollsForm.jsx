@@ -167,11 +167,10 @@ class CreatePayrollsForm extends React.Component {
                                         icons={tableIcons}
                                         data={this.props.allSalary}
                                         columns={[
-                                            { title: "ID", field: "staff.staffId" },
                                             {title: "Staff's First Name", field: "staff.firstName"},
                                             {title: "Staff's Last Name", field: "staff.lastName"},
-                                            { title: "Date payment will be made", field: "paymentDateTime"},
-                                            { title: "Amount ($)", field: "amount" }
+                                            { title: "Wage($)/day", field: "staff.salary"},
+                                            { title: "Final Amount($)", field: "amount" }
 
                                         ]}
                                         options={{
