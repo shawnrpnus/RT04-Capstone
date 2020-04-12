@@ -6,8 +6,7 @@ import * as PropTypes from "prop-types";
 import {connect} from "react-redux";
 import DateFnsUtils from "@date-io/date-fns";
 import {Button, ButtonToolbar} from "reactstrap";
-import CalculateMonthlyPayrollRequest from "../../../models/payroll/CalculateMonthlyPayrollRequest";
-import {calculateMonthlySalary, createPayrolls, retrievePayrollsForAMonth} from "../../../redux/actions/payrollAction";
+import {retrievePayrollsForAMonth} from "../../../redux/actions/payrollAction";
 import MaterialTable from "material-table";
 import {
     AddBox,
@@ -20,7 +19,6 @@ import {
     SaveAlt, Search,
     SearchOutlined, ViewColumn, Visibility
 } from "@material-ui/icons";
-import CreatePayrollsRequest from "../../../models/payroll/CreatePayrollsRequest";
 import RetrievePayrollsForAMonthRequest from "../../../models/payroll/RetrievePayrollsForAMonthRequest";
 import Chip from "@material-ui/core/Chip";
 const tableIcons = {

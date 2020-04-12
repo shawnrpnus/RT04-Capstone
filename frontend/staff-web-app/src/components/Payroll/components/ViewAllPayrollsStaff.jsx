@@ -1,17 +1,15 @@
 import React from "react";
 import { Grid } from "@material-ui/core";
-import {DatePicker, KeyboardDatePicker, MuiPickersUtilsProvider} from "@material-ui/pickers";
 import withPage from "../../Layout/page/withPage";
 import * as PropTypes from "prop-types";
 import {connect} from "react-redux";
-import DateFnsUtils from "@date-io/date-fns";
-import {Button, ButtonToolbar} from "reactstrap";
-import CalculateMonthlyPayrollRequest from "../../../models/payroll/CalculateMonthlyPayrollRequest";
-import {calculateMonthlySalary, createPayrolls, retrievePayrollsForAMonth} from "../../../redux/actions/payrollAction";
+import {
+    retrieveAllPayrolls
+} from "../../../redux/actions/payrollAction";
 import MaterialTable from "material-table";
 import {
-    AddBox,
-    Check, ChevronLeft,
+    AddBox, CancelOutlined,
+    Check, CheckCircleOutline, ChevronLeft,
     ChevronRight,
     Clear, Delete,
     DeleteOutline,
@@ -20,7 +18,6 @@ import {
     SaveAlt, Search,
     SearchOutlined, ViewColumn, Visibility
 } from "@material-ui/icons";
-import RetrievePayrollsForAMonthRequest from "../../../models/payroll/RetrievePayrollsForAMonthRequest";
 import Chip from "@material-ui/core/Chip";
 const tableIcons = {
     Add: AddBox,
@@ -48,86 +45,20 @@ class ViewAllPayrollsStaff extends React.Component {
         clearErrors: PropTypes.func
     };
 
-
-    constructor(props) {
-        super(props);
-        this.handleShowTable = this.handleShowTable.bind(this);
-        this.state = ({
-            selectedDate: "2020-04-01",
-            showTable:false,
-        });
+    componentDidMount() {
+        console.log(this.props.loggedInStaff.staffId);
+        this.props.retrieveAllPayrolls(this.props.loggedInStaff.staffId);
     }
 
-    onChange = (date, attr) =>{
-        console.log(date);
-        console.log(attr);
-        this.setState({
-            [attr]: date
-        });
-    };
-
-    handleShowTable() {
-        this.setState({ mode: true });
-    }
-
-    clear = () => {
-        this.setState({
-            selectedDate: "2020-04-01"
-        });
-    };
-
-    cancel = () => {
-        this.setState({
-            mode: false
-        });
-    };
-
-
-    handleSubmit = e => {
-        e.preventDefault();
-        this.handleShowTable();
-        const req = new RetrievePayrollsForAMonthRequest(this.state.selectedDate);
-        this.props.retrievePayrollsForAMonth(req);
+    handleVerify = payrollId => {
+        console.log(payrollId);
+        console.log(this.props.loggedInStaff.staffId);
     };
 
     render() {
         return(
-
-            <MuiPickersUtilsProvider utils={DateFnsUtils}>
                 <form className="material-form">
                     <Grid container spacing={3}>
-                        <Grid item xs={12} md={3}>
-                            <DatePicker
-                                variant="inline"
-                                openTo="year"
-                                minDate={new Date("2020")}
-                                views={["year", "month"]}
-                                label="Retrieve payroll for:"
-                                helperText="Select year and month"
-                                value={this.state.selectedDate}
-                                onChange={date => {
-                                    this.onChange(date, "selectedDate");
-                                }}
-                            />
-                        </Grid>
-
-                        <Grid item xs={12} md={3}>
-                            <ButtonToolbar className="form__button-toolbar">
-                                <Button
-                                    color="primary"
-                                    onClick={e => this.handleSubmit(e, this.state)}
-                                >
-                                    Retrieve
-                                </Button>
-                                <Button type="button" onClick={this.clear}>
-                                    Clear
-                                </Button>
-                            </ButtonToolbar>
-                        </Grid>
-
-                        <Grid item xs={12} md={6}></Grid>
-
-                        {this.state.mode && (
                             <div
                                 className="table"
                                 style={{
@@ -135,21 +66,15 @@ class ViewAllPayrollsStaff extends React.Component {
                                     verticalAlign: "middle",
                                     textAlign: "right"
                                 }}
-                            >
-
-
-                                {this.props.allPayrolls ? (
+                            >  {this.props.allPayrollsStaff ? (
                                     <MaterialTable
                                         title="Payrolls"
                                         icons={tableIcons}
-                                        data={this.props.allPayrolls}
+                                        data={this.props.allPayrollsStaff}
                                         columns={[
-                                            {title: "First Name", field: "staff.firstName"},
-                                            {title: "Last Name", field: "staff.lastName"},
-                                            {title: "Department", field: "staff.department.departmentName"},
-                                            {title: "Role", field: "staff.role.roleName"},
                                             { title: "Payment Date", field: "paymentDateTime"},
                                             { title: "Leaves taken this month", field: "numLeavesTakenThisMonth"},
+                                            { title: "Wage($)/day", field: "staff.salary"},
                                             { title: "Final Amount($)", field: "amount" },
                                             {
                                                 title: "Verified",
@@ -176,8 +101,15 @@ class ViewAllPayrollsStaff extends React.Component {
                                                     );
                                                 }
                                             }
+                                        ]}
 
-
+                                        actions={[
+                                            {
+                                                icon: CheckCircleOutline,
+                                                tooltip: "Verify",
+                                                onClick: (event, rowData) =>
+                                                    this.handleVerify(rowData.payrollId)
+                                            }
                                         ]}
 
 
@@ -199,12 +131,11 @@ class ViewAllPayrollsStaff extends React.Component {
                                     this.props.renderLoader()
                                 )}
                             </div>
-                        )}
+
 
 
                     </Grid>
                 </form>
-            </MuiPickersUtilsProvider>
 
 
         )
@@ -214,11 +145,12 @@ class ViewAllPayrollsStaff extends React.Component {
 
 //mapping global state to this component
 const mapStateToProps = state => ({
-    allPayrolls: state.payroll.allPayrolls
+    loggedInStaff: state.staffEntity.loggedInStaff,
+    allPayrollsStaff: state.payroll.allPayrollsStaff
 });
 
 const mapDispatchToProps = {
-    retrievePayrollsForAMonth
+    retrieveAllPayrolls
 };
 
 export default connect(

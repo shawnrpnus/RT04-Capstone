@@ -80,7 +80,7 @@ export const retrieveAllPayrolls = staffId => {
 
 const retrieveAllPayrollsSuccess = data => ({
     type: types.RETRIEVE_ALL_PAYROLLS,
-    allPayrolls: data
+    allPayrollsStaff: data
 });
 
 const retrieveAllPayrollsError = data => ({
