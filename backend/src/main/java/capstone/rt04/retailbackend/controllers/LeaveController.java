@@ -1,10 +1,7 @@
 package capstone.rt04.retailbackend.controllers;
 
 import capstone.rt04.retailbackend.entities.StaffLeave;
-import capstone.rt04.retailbackend.request.leave.ApproveRejectLeaveRequest;
-import capstone.rt04.retailbackend.request.leave.EndorseRejectLeaveRequest;
-import capstone.rt04.retailbackend.request.leave.LeaveCreateRequest;
-import capstone.rt04.retailbackend.request.leave.UpdateLeaveRequest;
+import capstone.rt04.retailbackend.request.leave.*;
 import capstone.rt04.retailbackend.response.GenericErrorResponse;
 import capstone.rt04.retailbackend.services.LeaveService;
 import capstone.rt04.retailbackend.services.ValidationService;
@@ -143,6 +140,16 @@ public class LeaveController {
         } catch (InputDataValidationException ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
         } catch (StaffLeaveCannotUpdateException ex){
+            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping(RETRIEVE_LEAVE_COUNT_IN_A_MONTH)
+    public ResponseEntity<?> retrieveLeaveCountInAMonth(@RequestBody RetrieveLeaveCountInAMonthRequest req) {
+        try {
+            int days = leaveService.retrieveLeaveCountInAMonth(req.getStaffId(),req.getSelectedDate());
+            return new ResponseEntity<>(days, HttpStatus.OK);
+        } catch (StaffNotFoundException ex){
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }

@@ -43,6 +43,7 @@ export const createPayrolls = (createPayrollsRequest, history) => {
                 toast.success("Successfully created payrolls!", {
                     position: toast.POSITION.TOP_CENTER
                 });
+                history.push(`/payrolls/viewAllHR`);
             })
             .catch(err => {
                 toast.error("Payrolls have already been created for the month!", {
@@ -63,3 +64,50 @@ const createError = data => ({
     errorMap: data
 });
 
+export const retrieveAllPayrolls = staffId => {
+    return dispatch => {
+        axios
+            .get(PAYROLL_BASE_URL + "/retrieveAllPayrolls/" + staffId)
+            .then(response => {
+                const { data } = jsog.decode(response);
+                dispatch(retrieveAllPayrollsSuccess(data));
+            })
+            .catch(err => {
+                dispatch(retrieveAllPayrollsError(err.response.data));
+            });
+    };
+};
+
+const retrieveAllPayrollsSuccess = data => ({
+    type: types.RETRIEVE_ALL_PAYROLLS,
+    allPayrolls: data
+});
+
+const retrieveAllPayrollsError = data => ({
+    type: types.GET_ERRORS,
+    errorMap: data
+});
+
+export const retrievePayrollsForAMonth = (retrievePayrollsForAMonthRequest) => {
+    return dispatch => {
+        axios
+            .post(PAYROLL_BASE_URL + "/retrievePayrollsForAMonth",  retrievePayrollsForAMonthRequest)
+            .then(response => {
+                const { data } = jsog.decode(response);
+                dispatch(retrievePayrollsForAMonthSuccess(data));
+            })
+            .catch(err => {
+                dispatch(retrievePayrollsForAMonthError(err.response.data));
+            });
+    };
+};
+
+const retrievePayrollsForAMonthSuccess = data => ({
+    type: types.RETRIEVE_PAYROLLS_FOR_A_MONTH,
+    allPayrolls: data
+});
+
+const retrievePayrollsForAMonthError = data => ({
+    type: types.GET_ERRORS,
+    errorMap: data
+});

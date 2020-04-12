@@ -8,6 +8,7 @@ import capstone.rt04.retailbackend.repositories.PayrollRepository;
 import capstone.rt04.retailbackend.repositories.StaffRepository;
 import capstone.rt04.retailbackend.util.enums.LeaveStatusEnum;
 import capstone.rt04.retailbackend.util.exceptions.payroll.PayrollCannotCreateException;
+import capstone.rt04.retailbackend.util.exceptions.staff.StaffNotFoundException;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,6 +51,7 @@ public class PayrollService {
             //Get the number of days in the given month of a given year
             YearMonth yearMonthObject = YearMonth.of(year, month);
             int daysInMonth = yearMonthObject.lengthOfMonth();
+            int count=0;
 
             //Get all the leaves of the staff
             List<StaffLeave> allLeaves = s.getLeaves();
@@ -62,6 +64,7 @@ public class PayrollService {
                     for (LocalDate date = leave.getFromDateTime(); (date.isBefore(leave.getToDateTime()) || date.equals(leave.getToDateTime())); date = date.plusDays(1)) {
                         if(date.getMonthValue()== month && date.getYear() == year){
                             daysInMonth --;
+                            count++;
                         }
                     }
                 }
@@ -69,7 +72,7 @@ public class PayrollService {
             BigDecimal salaryPerDay = s.getSalary();
             BigDecimal finalMonthlyAmount = salaryPerDay.multiply(new BigDecimal(daysInMonth));
             LocalDate dd = d.of(year, month, 29);
-            Payroll payroll = new Payroll(finalMonthlyAmount, s, dd);
+            Payroll payroll = new Payroll(finalMonthlyAmount, s, dd, count);
             payrolls.add(payroll);
             }
 
@@ -95,4 +98,34 @@ public class PayrollService {
         return payrolls;
 
     }
+
+
+    public List<Payroll> retrieveLeaveCountInAMonth(LocalDate d){
+        List<Payroll> payrolls = new ArrayList<Payroll>();
+        List<Payroll> existingPayrolls = payrollRepository.findAll();
+        int year = d.getYear();
+        int month = d.getMonthValue();
+        for(Payroll e : existingPayrolls){
+            if(e.getPaymentDateTime().getYear()== year && e.getPaymentDateTime().getMonthValue()==month){
+                payrolls.add(e);
+            }
+        }
+        return payrolls;
+
     }
+
+
+    public List<Payroll> retrieveAllPayrolls(Long staffId) throws StaffNotFoundException {
+        Staff existingStaff = staffRepository.findById(staffId)
+                .orElseThrow(() -> new StaffNotFoundException("Staff with id: " + staffId + " does not exist"));
+        List<Payroll> payrolls = new ArrayList<Payroll>();
+        List<Payroll> existingPayrolls = payrollRepository.findAll();
+        for(Payroll e : existingPayrolls){
+            if(e.getStaff().equals(existingStaff)){
+                payrolls.add(e);
+            }
+        }
+        return payrolls;
+
+    }
+}

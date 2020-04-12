@@ -18,6 +18,18 @@ export default function(state = initialState, action) {
                 allPayrolls: action.allPayrolls
             };
 
+        case types.RETRIEVE_ALL_PAYROLLS:
+            return {
+                ...state,
+                allPayrolls: action.allPayrolls
+            };
+
+        case types.RETRIEVE_PAYROLLS_FOR_A_MONTH:
+            return {
+                ...state,
+                allPayrolls: action.allPayrolls
+            };
+
         default:
             return state;
     }

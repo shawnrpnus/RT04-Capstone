@@ -12,4 +12,5 @@ public class LeaveControllerRoutes {
     public static final String RETRIEVE_ALL_LEAVES_HR = "/retrieveAllLeavesHR"; //for hr to retrieve all endorsed leaves
     public static final String ENDORSE_REJECT_LEAVE = "/endorseRejectLeave";
     public static final String APPROVE_REJECT_LEAVE = "/approveRejectLeave";
+    public static final String RETRIEVE_LEAVE_COUNT_IN_A_MONTH = "/retrieveLeaveCountInAMonth";
 }

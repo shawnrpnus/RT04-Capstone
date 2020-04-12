@@ -42,6 +42,7 @@ public class Payroll implements Serializable {
     
     private LocalDate paymentDateTime;
     private Boolean status;
+    private int numLeavesTakenThisMonth;
 
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
@@ -50,11 +51,12 @@ public class Payroll implements Serializable {
     public Payroll() {
     }
 
-    public Payroll(BigDecimal amount, Staff staff, LocalDate paymentDateTime) {
+    public Payroll(BigDecimal amount, Staff staff, LocalDate paymentDateTime, int numLeavesTakenThisMonth) {
         this.status = false;
         this.amount = amount;
         this.staff = staff;
         this.paymentDateTime = paymentDateTime;
+        this.numLeavesTakenThisMonth = numLeavesTakenThisMonth;
     }
     
   

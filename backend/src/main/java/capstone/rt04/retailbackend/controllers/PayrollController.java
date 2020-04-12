@@ -4,6 +4,7 @@ import capstone.rt04.retailbackend.entities.Payroll;
 import capstone.rt04.retailbackend.entities.StaffLeave;
 import capstone.rt04.retailbackend.request.payroll.CalculateMonthlyPayrollRequest;
 import capstone.rt04.retailbackend.request.payroll.CreatePayrollsRequest;
+import capstone.rt04.retailbackend.request.payroll.RetrievePayrollsForAMonthRequest;
 import capstone.rt04.retailbackend.response.GenericErrorResponse;
 import capstone.rt04.retailbackend.services.PayrollService;
 import capstone.rt04.retailbackend.services.ValidationService;
@@ -12,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static capstone.rt04.retailbackend.util.routeconstants.LeaveControllerRoutes.RETRIEVE_ALL_LEAVES;
@@ -47,6 +49,26 @@ public class PayrollController {
             System.out.println(payrolls);
             return new ResponseEntity<>(payrolls, HttpStatus.OK);
         } catch (PayrollCannotCreateException ex) {
+            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping(RETRIEVE_ALL_PAYROLLS)
+    public ResponseEntity<?> retrieveAllPayrolls(@PathVariable Long staffId) {
+        try {
+            List<Payroll> payrolls = payrollService.retrieveAllPayrolls(staffId);
+            return new ResponseEntity<>(payrolls, HttpStatus.OK);
+        } catch (Exception ex) {
+            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping(RETRIEVE_PAYROLLS_FOR_A_MONTH)
+    public ResponseEntity<?> retrievePayrollsForAMonth(@RequestBody RetrievePayrollsForAMonthRequest retrievePayrollsForAMonthRequest) {
+        try {
+            List<Payroll> payrolls = payrollService.retrieveLeaveCountInAMonth(retrievePayrollsForAMonthRequest.getSelectedDate());
+            return new ResponseEntity<>(payrolls, HttpStatus.OK);
+        } catch (Exception ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

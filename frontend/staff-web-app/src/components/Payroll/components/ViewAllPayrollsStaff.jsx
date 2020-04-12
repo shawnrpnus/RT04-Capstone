@@ -7,7 +7,7 @@ import {connect} from "react-redux";
 import DateFnsUtils from "@date-io/date-fns";
 import {Button, ButtonToolbar} from "reactstrap";
 import CalculateMonthlyPayrollRequest from "../../../models/payroll/CalculateMonthlyPayrollRequest";
-import {calculateMonthlySalary, createPayrolls} from "../../../redux/actions/payrollAction";
+import {calculateMonthlySalary, createPayrolls, retrievePayrollsForAMonth} from "../../../redux/actions/payrollAction";
 import MaterialTable from "material-table";
 import {
     AddBox,
@@ -20,7 +20,8 @@ import {
     SaveAlt, Search,
     SearchOutlined, ViewColumn, Visibility
 } from "@material-ui/icons";
-import CreatePayrollsRequest from "../../../models/payroll/CreatePayrollsRequest";
+import RetrievePayrollsForAMonthRequest from "../../../models/payroll/RetrievePayrollsForAMonthRequest";
+import Chip from "@material-ui/core/Chip";
 const tableIcons = {
     Add: AddBox,
     Check: Check,
@@ -41,7 +42,7 @@ const tableIcons = {
     ViewColumn: ViewColumn
 };
 
-class CreatePayrollsForm extends React.Component {
+class ViewAllPayrollsStaff extends React.Component {
     static propTypes = {
         errors: PropTypes.object,
         clearErrors: PropTypes.func
@@ -81,75 +82,52 @@ class CreatePayrollsForm extends React.Component {
         });
     };
 
-    handleConfirm = e => {
-        e.preventDefault();
-        console.log(this.props.allSalary);
-        const req = new CreatePayrollsRequest(this.state.selectedDate);
-        this.props.createPayrolls(req, this.props.history);
-    };
 
     handleSubmit = e => {
         e.preventDefault();
         this.handleShowTable();
-        const req = new CalculateMonthlyPayrollRequest(this.state.selectedDate);
-        this.props.calculateMonthlySalary(req, this.props.history);
+        const req = new RetrievePayrollsForAMonthRequest(this.state.selectedDate);
+        this.props.retrievePayrollsForAMonth(req);
     };
 
     render() {
         return(
 
-                <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                    <form className="material-form">
-                        <Grid container spacing={3}>
-                            <Grid item xs={12} md={3}>
-                        <DatePicker
-                            variant="inline"
-                            openTo="year"
-                            minDate={new Date("2020")}
-                            views={["year", "month"]}
-                            label="Generate payroll for:"
-                            disabled={this.state.mode}
-                            helperText="Select year and month"
-                            value={this.state.selectedDate}
-                            onChange={date => {
-                                this.onChange(date, "selectedDate");
-                            }}
-                        />
-                            </Grid>
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                <form className="material-form">
+                    <Grid container spacing={3}>
+                        <Grid item xs={12} md={3}>
+                            <DatePicker
+                                variant="inline"
+                                openTo="year"
+                                minDate={new Date("2020")}
+                                views={["year", "month"]}
+                                label="Retrieve payroll for:"
+                                helperText="Select year and month"
+                                value={this.state.selectedDate}
+                                onChange={date => {
+                                    this.onChange(date, "selectedDate");
+                                }}
+                            />
+                        </Grid>
 
-                            {!this.state.mode ? (
-                            <Grid item xs={12} md={3}>
-                                <ButtonToolbar className="form__button-toolbar">
-                                    <Button
-                                        color="primary"
-                                        onClick={e => this.handleSubmit(e, this.state)}
-                                    >
-                                        Generate
-                                    </Button>
-                                    <Button type="button" onClick={this.clear}>
-                                        Clear
-                                    </Button>
-                                </ButtonToolbar>
-                            </Grid>
-                                ):(
-                                <Grid item xs={12} md={6}>
-                                    <ButtonToolbar className="form__button-toolbar">
-                                        <Button
-                                            color="danger"
-                                            onClick={e => this.handleConfirm(e, this.state)}
-                                        >
-                                            Confirm payrolls
-                                        </Button>
-                                        <Button type="button" onClick={this.cancel}>
-                                            Cancel
-                                        </Button>
-                                    </ButtonToolbar>
-                                </Grid>
-                            )}
+                        <Grid item xs={12} md={3}>
+                            <ButtonToolbar className="form__button-toolbar">
+                                <Button
+                                    color="primary"
+                                    onClick={e => this.handleSubmit(e, this.state)}
+                                >
+                                    Retrieve
+                                </Button>
+                                <Button type="button" onClick={this.clear}>
+                                    Clear
+                                </Button>
+                            </ButtonToolbar>
+                        </Grid>
 
-                            <Grid item xs={12} md={6}></Grid>
+                        <Grid item xs={12} md={6}></Grid>
 
-                            {this.state.mode && (
+                        {this.state.mode && (
                             <div
                                 className="table"
                                 style={{
@@ -160,19 +138,45 @@ class CreatePayrollsForm extends React.Component {
                             >
 
 
-                                {this.props.allSalary ? (
+                                {this.props.allPayrolls ? (
                                     <MaterialTable
                                         title="Payrolls"
                                         icons={tableIcons}
-                                        data={this.props.allSalary}
+                                        data={this.props.allPayrolls}
                                         columns={[
                                             {title: "First Name", field: "staff.firstName"},
                                             {title: "Last Name", field: "staff.lastName"},
                                             {title: "Department", field: "staff.department.departmentName"},
                                             {title: "Role", field: "staff.role.roleName"},
-                                            { title: "Wage($)/day", field: "staff.salary"},
+                                            { title: "Payment Date", field: "paymentDateTime"},
                                             { title: "Leaves taken this month", field: "numLeavesTakenThisMonth"},
-                                            { title: "Final Amount($)", field: "amount" }
+                                            { title: "Final Amount($)", field: "amount" },
+                                            {
+                                                title: "Verified",
+                                                field: "status",
+                                                filtering: false,
+                                                render: rowData => {
+                                                    let style;
+                                                    let label;
+                                                    const { status } = rowData;
+
+                                                    if (status === true) {
+                                                        style = { backgroundColor: "green" };
+                                                        label = "VERIFIED";
+                                                    } else {
+                                                        style = { backgroundColor: "#1975d2" };
+                                                        label = "PENDING";
+                                                    }
+
+                                                    return (
+                                                        <Chip
+                                                            style={{ ...style, color: "white" }}
+                                                            label={label}
+                                                        />
+                                                    );
+                                                }
+                                            }
+
 
                                         ]}
 
@@ -195,12 +199,12 @@ class CreatePayrollsForm extends React.Component {
                                     this.props.renderLoader()
                                 )}
                             </div>
-                                )}
+                        )}
 
 
-                        </Grid>
-                    </form>
-                </MuiPickersUtilsProvider>
+                    </Grid>
+                </form>
+            </MuiPickersUtilsProvider>
 
 
         )
@@ -210,15 +214,14 @@ class CreatePayrollsForm extends React.Component {
 
 //mapping global state to this component
 const mapStateToProps = state => ({
-    allSalary: state.payroll.allSalary
+    allPayrolls: state.payroll.allPayrolls
 });
 
 const mapDispatchToProps = {
-    calculateMonthlySalary,
-    createPayrolls
+    retrievePayrollsForAMonth
 };
 
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(withPage(CreatePayrollsForm, "Payroll Management"));
+)(withPage(ViewAllPayrollsStaff, "View All"));

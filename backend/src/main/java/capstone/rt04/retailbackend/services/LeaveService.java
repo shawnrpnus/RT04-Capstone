@@ -99,6 +99,27 @@ public class LeaveService {
         return existingStaff.getLeaves();
     }
 
+    public int retrieveLeaveCountInAMonth(Long staffId, LocalDate d) throws StaffNotFoundException {
+        int year = d.getYear();
+        int month = d.getMonthValue();
+        Staff existingStaff = staffRepository.findById(staffId)
+                .orElseThrow(() -> new StaffNotFoundException("Staff with id: " + staffId + " does not exist"));
+       int count= 0;
+        for(StaffLeave leave : existingStaff.getLeaves()){
+            if(leave.getStatus().equals(LeaveStatusEnum.APPROVED)) {
+
+                //iterate through each day of the leave period to check the month and year
+                for (LocalDate date = leave.getFromDateTime(); (date.isBefore(leave.getToDateTime()) || date.equals(leave.getToDateTime())); date = date.plusDays(1)) {
+                    if(date.getMonthValue()== month && date.getYear() == year){
+                        count++;
+                    }
+                }
+            }
+        }
+
+        return count;
+    }
+
     public StaffLeave removeLeave(Long leaveId) throws StaffLeaveCannotDeleteException, StaffLeaveNotFoundException, StaffNotFoundException {
         StaffLeave existingLeave = leaveRepository.findById(leaveId)
                 .orElseThrow(() -> new StaffLeaveNotFoundException("Leave with id: " + leaveId + " does not exist"));
