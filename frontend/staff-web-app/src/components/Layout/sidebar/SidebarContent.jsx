@@ -75,6 +75,12 @@ class SidebarContent extends Component {
                     route="/staff/resetPassword"
                     onClick={this.hideSidebar}
                   />
+
+                  <SidebarLink
+                      title="Manage Roster"
+                      route="/staff/reassignStaffToStore"
+                      onClick={this.hideSidebar}
+                  />
                 </React.Fragment>
               )}
             </SidebarCategory>

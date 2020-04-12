@@ -7,6 +7,7 @@ import HRRoute from "../HRRoute";
 import SecureRoute from "../SecureRoute";
 import ResetPasswordForm from "../../../components/Staff/components/ResetPasswordForm";
 import StaffViewEditPage from "../../../components/Staff/components/StaffViewEditPage";
+import ReassignStaffToStore from "../../../components/Staff/components/ReassignStaffToStore";
 
 export default () => (
   <Switch>
@@ -21,6 +22,10 @@ export default () => (
       <SecureRoute
           path="/staff/update/:staffId"
           render={props => <StaffViewEditPage {...props} mode="update" />}
+      />
+      <SecureRoute
+          path="/staff/reassignStaffToStore"
+          component={ReassignStaffToStore}
       />
   </Switch>
 );

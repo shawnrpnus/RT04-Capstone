@@ -11,7 +11,10 @@ const initialState = {
   currentRole: null,
   currentDepartment: null,
   currentAddress: null,
-  selectedStore: null
+  selectedStore: null,
+  store: null,
+  storeStaff: null,
+  staffOfStore: null
 };
 
 export default function(state = initialState, action) {
@@ -92,6 +95,25 @@ export default function(state = initialState, action) {
         ...state,
         currentStaff: null
       };
+
+    case types.REASSIGN_STAFF_STORE:
+      return {
+        ...state,
+        store: action.store
+      };
+
+    case types.RETRIEVE_ALL_STORE_STAFF:
+      return {
+        ...state,
+        storeStaff: action.staffEntity
+      };
+
+    case types.RETRIEVE_STAFF_OF_STORE:
+      return {
+        ...state,
+        staffOfStore: action.staffEntity
+      };
+
 
     default:
       return state;

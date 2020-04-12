@@ -1,15 +1,17 @@
 package capstone.rt04.retailbackend.controllers;
 
-import capstone.rt04.retailbackend.entities.Department;
-import capstone.rt04.retailbackend.entities.Role;
-import capstone.rt04.retailbackend.entities.Staff;
-import capstone.rt04.retailbackend.entities.Store;
+import capstone.rt04.retailbackend.entities.*;
 import capstone.rt04.retailbackend.request.staff.*;
+import capstone.rt04.retailbackend.request.tag.AddTagToProductRequest;
 import capstone.rt04.retailbackend.response.GenericErrorResponse;
 import capstone.rt04.retailbackend.services.StaffService;
 import capstone.rt04.retailbackend.services.ValidationService;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
+import capstone.rt04.retailbackend.util.exceptions.product.ProductNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.staff.*;
+import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.tag.TagNotFoundException;
+import capstone.rt04.retailbackend.util.routeconstants.TagControllerRoutes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -228,6 +230,33 @@ public class StaffController {
         Staff staff = staffService.registerPushNotificationToken(req.getStaffId(), req.getToken());
         clearStaffRelationship(staff);
         return new ResponseEntity<>(staff, HttpStatus.OK);
+    }
+
+    @PostMapping(REASSIGN_STAFF_STORE)
+    public ResponseEntity<?> reassignStaffStore(@RequestBody ReassignStaffStoreRequest reassignStaffStoreRequest) throws StoreNotFoundException, StaffNotFoundException {
+        Store store = staffService.reassignStaffStore(reassignStaffStoreRequest.getStoreId(), reassignStaffStoreRequest.getStaffIds());
+        return new ResponseEntity<>(store, HttpStatus.OK);
+    }
+
+    @GetMapping(RETRIEVE_ALL_STORE_STAFF)
+    public ResponseEntity<?> retrieveAllStoreStaff() {
+        try {
+            List<Staff> staff = staffService.retrieveStoreStaff();
+            System.out.print(staff);
+            return new ResponseEntity<>(staff, HttpStatus.OK);
+        } catch (Exception ex) {
+            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping(RETRIEVE_STAFF_OF_STORE)
+    public ResponseEntity<?> retrieveStoreStaff(@PathVariable Long storeId) {
+        try {
+            List<Staff> staff = staffService.retrieveStaffOfStore(storeId);
+            return new ResponseEntity<>(staff, HttpStatus.OK);
+        } catch (Exception ex) {
+            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     private void clearStaffRelationship(Staff staff) {

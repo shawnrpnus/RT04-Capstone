@@ -2,6 +2,7 @@ import axios from "axios";
 import * as types from "./types";
 import { toast } from "react-toastify";
 import { GET_ERRORS } from "./types";
+import {retrieveProductsDetails} from "./productActions";
 axios.defaults.baseURL = process.env.REACT_APP_SPRING_API_URL;
 
 const STAFF_BASE_URL = "/api/staff";
@@ -379,4 +380,85 @@ const retrieveError = data => ({
 
 export const clearCurrentStaff = () => ({
   type: types.CLEAR_CURRENT_STAFF
+});
+
+export const reassignStaffStore = (reassignStaffStoreRequest, history) => {
+    return dispatch => {
+        //redux thunk passes dispatch
+        axios
+            .post(STAFF_BASE_URL + "/reassignStaffStore", reassignStaffStoreRequest)
+            .then(response => {
+                const data = jsog.decode(response);
+                dispatch(reassignSuccess(data));
+                toast.success("Successfully reassigned!", {
+                    position: toast.POSITION.TOP_CENTER
+                });
+                window.location.reload(false);
+            })
+            .catch(err => {
+                console.log(err);
+                dispatch(reassignError(err.response.data));
+            });
+    };
+};
+
+const reassignSuccess = data => ({
+    type: types.REASSIGN_STAFF_STORE,
+    store: data
+});
+
+const reassignError = data => ({
+    type: types.GET_ERRORS,
+    errorMap: data
+});
+
+export const retrieveAllStoreStaff = () => {
+    return dispatch => {
+        //redux thunk passes dispatch
+        axios
+            .get(STAFF_BASE_URL + `/retrieveAllStoreStaff`)
+            .then(response => {
+                const { data } = jsog.decode(response);
+                dispatch(retrieveStoreStaffSuccess(data));
+            })
+            .catch(err => {
+                dispatch(retrieveStoreStaffError(err.response.data));
+            });
+    };
+};
+
+const retrieveStoreStaffSuccess = data => ({
+    type: types.RETRIEVE_ALL_STORE_STAFF,
+    staffEntity: data
+});
+
+const retrieveStoreStaffError = data => ({
+    type: types.GET_ERRORS,
+    errorMap: data
+});
+
+export const retrieveStoreStaff = (storeId) => {
+    return dispatch => {
+        //redux thunk passes dispatch
+        axios
+            .get(STAFF_BASE_URL + `/retrieveStoreStaff/` + storeId)
+            .then(response => {
+                const { data } = jsog.decode(response);
+                console.log(data);
+                dispatch(retrieveStaffOfStoreSuccess(data));
+            })
+            .catch(err => {
+                dispatch(retrieveStaffOfStoreError(err.response.data));
+            });
+    };
+};
+
+const retrieveStaffOfStoreSuccess = data => ({
+    type: types.RETRIEVE_STAFF_OF_STORE,
+    staffEntity: data
+});
+
+const retrieveStaffOfStoreError = data => ({
+    type: types.GET_ERRORS,
+    errorMap: data
 });
