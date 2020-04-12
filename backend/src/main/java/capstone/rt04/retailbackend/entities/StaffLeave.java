@@ -43,8 +43,8 @@ public class StaffLeave implements Serializable {
     @NotNull
     @Column(nullable = false)
     private LocalDate toDateTime;
-    
-    
+
+    private int numDays;
     private LeaveStatusEnum status;
     
     @ManyToOne(optional = false)

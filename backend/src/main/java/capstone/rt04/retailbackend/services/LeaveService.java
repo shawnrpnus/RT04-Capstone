@@ -56,6 +56,11 @@ public class LeaveService {
             }
         }
 
+        int count= 0;
+        for (LocalDate date = staffLeave.getFromDateTime(); (date.isBefore(staffLeave.getToDateTime()) || date.equals(staffLeave.getToDateTime())); date = date.plusDays(1)) {
+                count++;
+        }
+        staffLeave.setNumDays(count);
         staffLeave.setStatus(LeaveStatusEnum.PENDING);
         StaffLeave savedLeave = leaveRepository.save(staffLeave);
         existingStaff.getLeaves().add(savedLeave);
@@ -87,6 +92,11 @@ public class LeaveService {
             }
         }
 
+        int count= 0;
+        for (LocalDate date = fromDate; (date.isBefore(toDate) || date.equals(toDate)); date = date.plusDays(1)) {
+            count++;
+        }
+        existingLeave.setNumDays(count);
         existingLeave.setToDateTime(toDate);
         existingLeave.setFromDateTime(fromDate);
         return  existingLeave;

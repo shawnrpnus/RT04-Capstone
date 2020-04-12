@@ -70,8 +70,8 @@ class LeaveApplicationForm extends React.Component {
   constructor(props) {
       super(props);
       this.state = ({
-          fromDateTime: "2020-04-11",
-          toDateTime: "2020-04-11",
+          fromDateTime: "2020-04-13",
+          toDateTime: "2020-04-13",
           open: false,
           selectedId:""
       });
@@ -81,8 +81,8 @@ class LeaveApplicationForm extends React.Component {
 
     clear = () => {
         this.setState({
-            fromDateTime: "2020-04-11",
-            toDateTime: "2020-04-11"
+            fromDateTime: "2020-04-13",
+            toDateTime: "2020-04-13"
         });
     };
 
@@ -186,6 +186,7 @@ class LeaveApplicationForm extends React.Component {
                                     columns={[
                                         { title: "Start Date", field: "fromDateTime" },
                                         { title: "End Date", field: "toDateTime" },
+                                        { title: "Number of days taken", field: "numDays" },
 
                                         {
                                             title: "Status",
