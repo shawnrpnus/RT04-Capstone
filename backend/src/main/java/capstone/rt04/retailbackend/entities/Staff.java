@@ -64,10 +64,6 @@ public class Staff implements Serializable {
 
     @NotNull
     @Column(nullable = false)
-    private Integer leaveRemaining;
-
-    @NotNull
-    @Column(nullable = false)
     @Size(min =1 , message =ErrorMessages.NRIC_REQUIRED)
     @Size(max =4 , message =ErrorMessages.NRIC_MAX)
     private String nric;
@@ -118,20 +114,16 @@ public class Staff implements Serializable {
         this.leaves = new ArrayList<>();
     }
 
-    public Staff(String firstName, String lastName, Integer leaveRemaining, String nric, String email, BigDecimal salary) {
+    public Staff(String firstName, String lastName, String nric, String email, BigDecimal salary) {
         this();
         this.firstName = firstName;
         this.lastName = lastName;
-        this.leaveRemaining = leaveRemaining;
         this.nric = nric;
         this.email = email;
         this.salary = salary;
     }
 
 
-    public void DecrementLeave (){
-      this.leaveRemaining --;
-    }
 
 
 

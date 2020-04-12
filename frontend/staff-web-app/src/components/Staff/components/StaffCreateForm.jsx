@@ -76,7 +76,6 @@ class StaffCreateForm extends Component {
       lastName: "",
       email: "",
       nric: "",
-      leaveRemaining: "",
       departmentId: "",
       roleId: "",
       salary: "",
@@ -123,7 +122,6 @@ class StaffCreateForm extends Component {
     const staff = new Staff(
       this.state.firstName,
       this.state.lastName,
-      this.state.leaveRemaining,
       this.state.nric,
       this.state.email,
       this.state.salary
@@ -277,27 +275,19 @@ class StaffCreateForm extends Component {
 
             <Grid item xs={12} md={6}>
               <MaterialTextField
-                fieldLabel="Salary"
+                fieldLabel="Wage/day"
                 onChange={this.onChange}
                 fieldName="salary"
                 state={this.state}
                 errors={errors}
                 disabled={disabled}
                 autoFocus={true}
+                InputProps={{
+                  startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                }}
               />
             </Grid>
 
-            <Grid item xs={12} md={6}>
-              <MaterialNumberSelect
-                onChange={this.onChange}
-                state={this.state}
-                fieldLabel="Leave Remaining"
-                fieldName="leaveRemaining"
-                optionStart={1}
-                optionEnd={20}
-                disabled={disabled}
-              />
-            </Grid>
 
             <Grid item xs={12} md={6}>
               <Autocomplete

@@ -2,7 +2,8 @@ import * as types from "../actions/types";
 const initialState = {
     allSalary : null,
     allPayrolls : null,
-    allPayrollsStaff: null
+    allPayrollsStaff: null,
+    payroll: null,
 };
 
 export default function(state = initialState, action) {
@@ -29,6 +30,12 @@ export default function(state = initialState, action) {
             return {
                 ...state,
                 allPayrolls: action.allPayrolls
+            };
+
+        case types.UPDATE_PAYROLL_STATUS:
+            return {
+                ...state,
+                payroll: action.payroll
             };
 
         default:

@@ -6,4 +6,5 @@ public class PayrollControllerRoutes {
     public static final String CREATE_PAYROLLS = "/createPayrolls";
     public static final String RETRIEVE_PAYROLLS_FOR_A_MONTH = "/retrievePayrollsForAMonth";
     public static final String RETRIEVE_ALL_PAYROLLS = "/retrieveAllPayrolls/{staffId}";
+    public static final String UPDATE_PAYROLL_STATUS= "/updatePayrollStatus/{payrollId}";
 }

@@ -72,4 +72,14 @@ public class PayrollController {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @PostMapping(UPDATE_PAYROLL_STATUS)
+    public ResponseEntity<?> updatePayrollStatus(@PathVariable Long payrollId) {
+        try {
+            Payroll payroll = payrollService.updateStatus(payrollId);
+            return new ResponseEntity<>(payroll, HttpStatus.OK);
+        } catch (Exception ex) {
+            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

@@ -234,7 +234,6 @@ public class LeaveService {
         if(action == true){
             leave.setStatus(LeaveStatusEnum.APPROVED);
             leave.setApprover(hr);
-            leave.getApplicant().DecrementLeave();
         } else{
             leave.setStatus(LeaveStatusEnum.REJECTED);
             leave.setRejectedBy(hr);

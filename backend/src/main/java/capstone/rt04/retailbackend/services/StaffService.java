@@ -127,6 +127,8 @@ public class StaffService {
             //If staff does not exist
             //Set address, role and department before saving because of sql constraint
             //Address ID, role ID and department ID column cannot be empty
+            staffAddress.setLat("1.378466");
+            staffAddress.setLng("103.746107");
             addressRepository.save(staffAddress);
 
 
@@ -281,13 +283,15 @@ public class StaffService {
             Staff staffToUpdate = retrieveStaffByStaffId(staff.getStaffId());
             Address oldAddress = staffToUpdate.getAddress();
             Store oldStore = staffToUpdate.getStore();
+            address.setLng("103.746107");
+            address.setLat("1.378466");
+
             addressRepository.save(address);
 
             staffToUpdate.setFirstName(staff.getFirstName());
             staffToUpdate.setLastName(staff.getLastName());
             staffToUpdate.setNric(staff.getNric());
             staffToUpdate.setEmail(staff.getEmail());
-            staffToUpdate.setLeaveRemaining(staff.getLeaveRemaining());
             staffToUpdate.setAddress(address);
             addressRepository.delete(oldAddress);
 

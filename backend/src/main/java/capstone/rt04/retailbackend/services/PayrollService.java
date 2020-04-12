@@ -8,6 +8,7 @@ import capstone.rt04.retailbackend.repositories.PayrollRepository;
 import capstone.rt04.retailbackend.repositories.StaffRepository;
 import capstone.rt04.retailbackend.util.enums.LeaveStatusEnum;
 import capstone.rt04.retailbackend.util.exceptions.payroll.PayrollCannotCreateException;
+import capstone.rt04.retailbackend.util.exceptions.payroll.PayrollNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.staff.StaffNotFoundException;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
@@ -126,6 +127,15 @@ public class PayrollService {
             }
         }
         return payrolls;
+
+    }
+
+    public Payroll updateStatus(Long payrollId) throws PayrollNotFoundException {
+        Payroll p = payrollRepository.findById(payrollId)
+                .orElseThrow(() -> new PayrollNotFoundException("Payroll with id: " + payrollId + " does not exist"));
+
+        p.setStatus(true);
+        return p;
 
     }
 }

@@ -4,7 +4,7 @@ import withPage from "../../Layout/page/withPage";
 import * as PropTypes from "prop-types";
 import {connect} from "react-redux";
 import {
-    retrieveAllPayrolls
+    retrieveAllPayrolls, updatePayrollStatus
 } from "../../../redux/actions/payrollAction";
 import MaterialTable from "material-table";
 import {
@@ -53,6 +53,7 @@ class ViewAllPayrollsStaff extends React.Component {
     handleVerify = payrollId => {
         console.log(payrollId);
         console.log(this.props.loggedInStaff.staffId);
+        this.props.updatePayrollStatus(payrollId, this.props.loggedInStaff.staffId);
     };
 
     render() {
@@ -150,7 +151,8 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = {
-    retrieveAllPayrolls
+    retrieveAllPayrolls,
+    updatePayrollStatus
 };
 
 export default connect(

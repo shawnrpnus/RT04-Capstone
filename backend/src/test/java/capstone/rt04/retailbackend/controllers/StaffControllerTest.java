@@ -55,7 +55,7 @@ public class StaffControllerTest{
     @Before
     public void setUp() throws Exception {
         RestAssured.port = port;
-        Staff expectedValidStaff = new Staff("Bob", "Vance", 10, "S1111111D", VALID_STAFF_EMAIL,BigDecimal.valueOf(10000));
+        Staff expectedValidStaff = new Staff("Bob", "Vance",  "S1111111D", VALID_STAFF_EMAIL,BigDecimal.valueOf(10000));
 
         //Role and department has to be created beforehand
         RoleNameEnum rolename = RoleNameEnum.valueOf("ASSISTANT");
@@ -118,7 +118,7 @@ public class StaffControllerTest{
     public void createInvalidStaff() {
         //Valid address
         Address a = new Address("aba", "aaa", "123456", "blah");
-        Staff invalidStaff = new Staff("bob", "vance", 10, "S111111D", "bob@Bob@com",BigDecimal.valueOf(10000));
+        Staff invalidStaff = new Staff("bob", "vance", "S111111D", "bob@Bob@com",BigDecimal.valueOf(10000));
 
 
         StaffCreateRequest staffCreateRequest = new StaffCreateRequest(invalidStaff, a, testRole.getRoleId(), testDepartment.getDepartmentId(), null);

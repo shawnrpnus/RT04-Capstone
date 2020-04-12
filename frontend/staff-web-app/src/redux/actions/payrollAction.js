@@ -1,6 +1,7 @@
 import axios from "axios";
 import * as types from "./types";
 import { toast } from "react-toastify";
+import {retrieveAllLeaves} from "./leaveActions";
 axios.defaults.baseURL = process.env.REACT_APP_SPRING_API_URL;
 
 const PAYROLL_BASE_URL = "/api/payroll";
@@ -95,6 +96,9 @@ export const retrievePayrollsForAMonth = (retrievePayrollsForAMonthRequest) => {
             .then(response => {
                 const { data } = jsog.decode(response);
                 dispatch(retrievePayrollsForAMonthSuccess(data));
+                toast.success("Successfully retrieved payrolls!", {
+                    position: toast.POSITION.TOP_CENTER
+                });
             })
             .catch(err => {
                 dispatch(retrievePayrollsForAMonthError(err.response.data));
@@ -108,6 +112,34 @@ const retrievePayrollsForAMonthSuccess = data => ({
 });
 
 const retrievePayrollsForAMonthError = data => ({
+    type: types.GET_ERRORS,
+    errorMap: data
+});
+
+export const updatePayrollStatus = (payrollId,staffId) => {
+    return dispatch => {
+        axios
+            .post(PAYROLL_BASE_URL + "/updatePayrollStatus/" + payrollId)
+            .then(response => {
+                const { data } = jsog.decode(response);
+                dispatch(updateSuccess(data));
+                toast.success("Successfully verified payroll!", {
+                    position: toast.POSITION.TOP_CENTER
+                });
+                retrieveAllPayrolls(staffId)(dispatch);
+            })
+            .catch(err => {
+                dispatch(updateError(err.response.data));
+            });
+    };
+};
+
+const updateSuccess = data => ({
+    type: types.UPDATE_PAYROLL_STATUS,
+    payroll: data
+});
+
+const updateError = data => ({
     type: types.GET_ERRORS,
     errorMap: data
 });
