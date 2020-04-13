@@ -4,6 +4,7 @@ import capstone.rt04.retailbackend.entities.*;
 import capstone.rt04.retailbackend.repositories.AddressRepository;
 import capstone.rt04.retailbackend.repositories.TransactionLineItemRepository;
 import capstone.rt04.retailbackend.repositories.TransactionRepository;
+import capstone.rt04.retailbackend.response.analytics.SalesByDay;
 import capstone.rt04.retailbackend.util.Constants;
 import capstone.rt04.retailbackend.util.enums.CollectionModeEnum;
 import capstone.rt04.retailbackend.util.enums.DeliveryStatusEnum;
@@ -20,12 +21,17 @@ import capstone.rt04.retailbackend.util.exceptions.transaction.TransactionNotFou
 import com.stripe.exception.StripeException;
 import com.stripe.model.PaymentMethod;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cglib.core.Local;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.*;
 
 @Service
@@ -478,5 +484,93 @@ public class TransactionService {
                 }
             }
         }
+    }
+
+    //Strings must be YYYY-MM-DD
+    public List<SalesByDay> retrieveSalesByDayWithParameters(String fromDateString, String toDateString, List<Long> fromStoreIds) {
+        List<SalesByDay> result = new ArrayList<>();
+        List<Transaction> allTransactions = transactionRepository.findAllByOrderByCreatedDateTime();
+
+        SalesByDay salesForDay = new SalesByDay();
+        LocalDate earliestTransactionDate = allTransactions.get(0).getCreatedLocalDate();
+        salesForDay.setDate(earliestTransactionDate);
+        for (Transaction transaction : allTransactions) {
+            boolean dateCheck = transaction.isBetween(fromDateString, toDateString);
+            boolean storeCheck = false;
+            if (fromStoreIds == null) {
+                storeCheck = true;
+            } else if (transaction.getStore() != null
+                    && fromStoreIds.contains(transaction.getStore().getStoreId())) {
+                storeCheck = true;
+            }
+
+            if (!(dateCheck && storeCheck)) continue;
+
+            LocalDate transactionDate = transaction.getCreatedLocalDate();
+            if (!salesForDay.getDate().isEqual(transactionDate)) {
+                //if different date and have transactions, calculate average, then add old object to the result
+                if (salesForDay.getTotalTransactions() > 0) {
+                    salesForDay.calculateAverageTotalSales();
+                    result.add(salesForDay.createCopy());
+                }
+                //create new object to be tracked outside loop
+                salesForDay = new SalesByDay();
+                salesForDay.setDate(transactionDate);
+            }
+            //if same date, just add to total and increment num transactions
+            salesForDay.addToTotalSales(transaction.getFinalTotalPrice());
+            salesForDay.incrementTotalTransactions();
+        }
+        // if same day until the end of loop
+        if (salesForDay.getTotalTransactions() > 0) {
+            salesForDay.calculateAverageTotalSales();
+            result.add(salesForDay.createCopy());
+        }
+
+        //fill in empty dates
+        List<LocalDate> dateList = new ArrayList<>();
+        LocalDate latestTransactionDate = allTransactions.get(allTransactions.size() - 1).getCreatedLocalDate();
+        if (!(fromDateString == null && toDateString == null)) {
+            if (fromDateString != null && toDateString == null) {
+                dateList = generateLocalDateInterval(LocalDate.parse(fromDateString), latestTransactionDate);
+            } else if (fromDateString == null) { //only haveToDateString
+                dateList = generateLocalDateInterval(earliestTransactionDate, LocalDate.parse(toDateString));
+            } else { //have both
+                dateList = generateLocalDateInterval(LocalDate.parse(fromDateString), LocalDate.parse(toDateString));
+            }
+        } else {
+            dateList = generateLocalDateInterval(earliestTransactionDate, latestTransactionDate);
+        }
+
+        int currDateIndex = 0;
+        int currResultIndex = 0;
+        while (currDateIndex < dateList.size()) {
+            LocalDate currDate = dateList.get(currDateIndex);
+            if (currResultIndex < result.size()) {
+                SalesByDay currElement = result.get(currResultIndex);
+                if (!currElement.getDate().isEqual(currDate) && currResultIndex < result.size()) {
+                    SalesByDay emptySalesByDay = new SalesByDay();
+                    emptySalesByDay.setDate(currDate);
+                    result.add(currResultIndex, emptySalesByDay);
+                }
+            } else {
+                SalesByDay emptySalesByDay = new SalesByDay();
+                emptySalesByDay.setDate(currDate);
+                result.add(emptySalesByDay);
+            }
+            currDateIndex++;
+            currResultIndex++;
+
+        }
+        return result;
+    }
+
+    private List<LocalDate> generateLocalDateInterval(LocalDate fromDate, LocalDate toDate) {
+        List<LocalDate> result = new ArrayList<>();
+        for (LocalDate date = fromDate; date.isBefore(toDate) || date.isEqual(toDate); date = date.plusDays(1)) {
+            log.info(date.toString());
+            result.add(date);
+        }
+        return result;
     }
 }

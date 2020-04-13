@@ -17,4 +17,4 @@ const Dashboard = props => {
   );
 };
 
-export default withPage(Dashboard);
+export default withPage(Dashboard, "Dashboard");

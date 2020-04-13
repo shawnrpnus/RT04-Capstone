@@ -1,8 +1,10 @@
 package capstone.rt04.retailbackend.controllers;
 
 import capstone.rt04.retailbackend.entities.Transaction;
+import capstone.rt04.retailbackend.request.transaction.SalesByDayRequest;
 import capstone.rt04.retailbackend.request.transaction.TransactionRetrieveRequest;
 import capstone.rt04.retailbackend.response.GenericErrorResponse;
+import capstone.rt04.retailbackend.response.analytics.SalesByDay;
 import capstone.rt04.retailbackend.services.RelationshipService;
 import capstone.rt04.retailbackend.services.TransactionService;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
@@ -139,5 +141,12 @@ public class TransactionController {
         transactionService.generateTestTransactions(numTxns);
         return new ResponseEntity<>("Transactions generated successfully", HttpStatus.OK);
 
+    }
+
+    @PostMapping("/retrieveSalesByDay")
+    public ResponseEntity<?> retrieveSalesByDay(@RequestBody SalesByDayRequest req){
+        List<SalesByDay> res = transactionService.retrieveSalesByDayWithParameters(req.getFromDateString(),
+                req.getToDateString(), req.getFromStoreIds());
+        return new ResponseEntity<>(res, HttpStatus.OK);
     }
 }
