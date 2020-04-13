@@ -19,15 +19,9 @@ import { Button, ButtonToolbar } from "reactstrap";
 import * as PropTypes from "prop-types";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import axios from "axios";
-import MaterialNumberSelect from "../../../shared/components/Form/MaterialNumberSelect";
 import ContentSaveIcon from "mdi-react/ContentSaveIcon";
 import CloseCircleIcon from "mdi-react/CloseCircleIcon";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import FormControl from "@material-ui/core/FormControl";
-import InputLabel from "@material-ui/core/InputLabel";
-import Select from "@material-ui/core/Select";
-import MenuItem from "@material-ui/core/MenuItem";
-import makeStyles from "@material-ui/core/styles/makeStyles";
 
 class StaffCreateForm extends Component {
   static propTypes = {
@@ -76,7 +70,6 @@ class StaffCreateForm extends Component {
       lastName: "",
       email: "",
       nric: "",
-      leaveRemaining: "",
       departmentId: "",
       roleId: "",
       salary: "",
@@ -123,7 +116,6 @@ class StaffCreateForm extends Component {
     const staff = new Staff(
       this.state.firstName,
       this.state.lastName,
-      this.state.leaveRemaining,
       this.state.nric,
       this.state.email,
       this.state.salary
@@ -277,27 +269,19 @@ class StaffCreateForm extends Component {
 
             <Grid item xs={12} md={6}>
               <MaterialTextField
-                fieldLabel="Salary"
+                fieldLabel="Wage/day"
                 onChange={this.onChange}
                 fieldName="salary"
                 state={this.state}
                 errors={errors}
                 disabled={disabled}
                 autoFocus={true}
+                InputProps={{
+                  startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                }}
               />
             </Grid>
 
-            <Grid item xs={12} md={6}>
-              <MaterialNumberSelect
-                onChange={this.onChange}
-                state={this.state}
-                fieldLabel="Leave Remaining"
-                fieldName="leaveRemaining"
-                optionStart={1}
-                optionEnd={20}
-                disabled={disabled}
-              />
-            </Grid>
 
             <Grid item xs={12} md={6}>
               <Autocomplete

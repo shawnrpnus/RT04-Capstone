@@ -98,6 +98,7 @@ class EndorsedLeavesTable extends React.Component {
               { title: "Applicant's Last Name", field: "applicant.lastName" },
               { title: "Start Date", field: "fromDateTime" },
               { title: "End Date", field: "toDateTime" },
+              { title: "Number of days taken", field: "numDays" },
 
               {
                 title: "Status",

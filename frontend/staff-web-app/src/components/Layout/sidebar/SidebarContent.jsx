@@ -12,6 +12,8 @@ import {
   FaFileInvoice,
   FaMoneyBillAlt,
   FaStaylinked,
+  FaLeaf,
+  FaMoneyCheckAlt
 } from "react-icons/fa";
 import {
   MdFeedback,
@@ -52,7 +54,7 @@ class SidebarContent extends Component {
     return (
       <div className="sidebar__content">
         <ul className="sidebar__block">
-          {(hr || manager) && (
+          {(hr) && (
             <SidebarCategory title="Staff" customIcon={<MdPeople />}>
               {hr && (
                 <React.Fragment>
@@ -75,21 +77,55 @@ class SidebarContent extends Component {
                   />
 
                   <SidebarLink
-                    title="Leave Management"
-                    route="/leave/hr"
-                    onClick={this.hideSidebar}
+                      title="Manage Roster"
+                      route="/staff/reassignStaffToStore"
+                      onClick={this.hideSidebar}
                   />
                 </React.Fragment>
               )}
-
-              {manager && (
-                <SidebarLink
-                  title="Leave Management"
-                  route="/leave/manager"
-                  onClick={this.hideSidebar}
-                />
-              )}
             </SidebarCategory>
+          )}
+
+          {(hr || manager) && (
+              <SidebarCategory title="Leave" customIcon={<FaLeaf />}>
+                {hr && (
+                    <React.Fragment>
+                      <SidebarLink
+                          title="Leave Management"
+                          route="/leave/hr"
+                          onClick={this.hideSidebar}
+                      />
+                    </React.Fragment>
+                )}
+
+                {manager && (
+                    <SidebarLink
+                        title="Leave Management"
+                        route="/leave/manager"
+                        onClick={this.hideSidebar}
+                    />
+                )}
+              </SidebarCategory>
+          )}
+          {(hr) && (
+              <SidebarCategory title="Payroll" customIcon={<FaMoneyCheckAlt />}>
+                {hr && (
+                    <React.Fragment>
+
+                      <SidebarLink
+                          title="Create"
+                          route="/payrolls/createPayrolls"
+                          onClick={this.hideSidebar}
+                      />
+
+                      <SidebarLink
+                          title="View All"
+                          route="/payrolls/viewAllHR"
+                          onClick={this.hideSidebar}
+                      />
+                    </React.Fragment>
+                )}
+              </SidebarCategory>
           )}
           {warehouse && (
             <SidebarCategory title="Stores" customIcon={<MdStore />}>

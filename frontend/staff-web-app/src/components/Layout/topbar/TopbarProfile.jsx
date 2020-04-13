@@ -62,6 +62,12 @@ class TopbarProfile extends PureComponent {
               onClick={this.toggle}
             />
             <TopbarMenuLink
+                title="My Payrolls"
+                icon="gift"
+                path="/payrolls/viewAll"
+                onClick={this.toggle}
+            />
+            <TopbarMenuLink
               title="Logout"
               icon="exit"
               path="/login"

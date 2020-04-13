@@ -58,7 +58,7 @@ public class StaffServiceTest {
     @Before
     public void beforeEachTest() throws Exception{
         BigDecimal salary = new BigDecimal(1000);
-        Staff expectedValidStaff = new Staff("Bob", "Vance", 10, "S1111111D", VALID_STAFF_EMAIL, salary);
+        Staff expectedValidStaff = new Staff("Bob", "Vance",  "S1111111D", VALID_STAFF_EMAIL, salary);
 
         //Role and department has to be created beforehand
         RoleNameEnum rolename = RoleNameEnum.valueOf("ASSISTANT");
@@ -95,7 +95,7 @@ public class StaffServiceTest {
         //Valid address
         Address a = new Address("aba", "aaa", "123456", "blah");
         BigDecimal salary = new BigDecimal(1000);
-        Staff invalidStaff = new Staff("bob", "vance", 10, "S111111D",  "bob@Bob@com", salary);
+        Staff invalidStaff = new Staff("bob", "vance",  "S111111D",  "bob@Bob@com", salary);
 
         try {
            staffService.createNewStaff(invalidStaff, a, testRole.getRoleId(), testDepartment.getDepartmentId(), testStore.getStoreId());

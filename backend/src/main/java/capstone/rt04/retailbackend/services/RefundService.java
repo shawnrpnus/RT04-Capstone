@@ -71,6 +71,7 @@ public class RefundService {
         BigDecimal refundAmount = BigDecimal.ZERO;
         Customer customer = customerService.retrieveCustomerByCustomerId(refundRequest.getCustomerId());
         Long promoCodeId = Long.valueOf("0");
+        boolean isRefundedBefore = false;
 
         if (refundRequest.getReason() == null || refundRequest.getReason().isEmpty()) {
             errorMap.put("reason", ErrorMessages.REFUND_REASON_EMPTY);
@@ -87,6 +88,9 @@ public class RefundService {
         for (RefundLineItemRequest refundLineItemRequest : refundRequest.getRefundLineItemRequests()) {
             TransactionLineItem transactionLineItem = transactionService.retrieveTransactionLineItemById(refundLineItemRequest.getTransactionLineItemId());
             BigDecimal unitPrice;
+            if(transactionLineItem.getRefundLineItems().size() > 0) {
+                isRefundedBefore = true;
+            }
             if (transactionLineItem.getFinalSubTotal() != null) {
                 unitPrice = transactionLineItem.getFinalSubTotal().divide(new BigDecimal(transactionLineItem.getQuantity()));
             } else {
@@ -118,7 +122,7 @@ public class RefundService {
         }
 
         PromoCode promoCode;
-        if(promoCodeId != Long.valueOf("0")) {
+        if(promoCodeId != Long.valueOf("0") && !isRefundedBefore) {
             promoCode = promoCodeService.retrievePromoCodeById(promoCodeId);
             if(!(promoCode.getFlatDiscount() == null)){
                 refundAmount = refundAmount.subtract(promoCode.getFlatDiscount());
@@ -134,9 +138,9 @@ public class RefundService {
         // Create Refund
         Refund refund;
         if(refundRequest.getStoreId() == null) {
-            refund = new Refund(totalQuantity, refundAmount, RefundModeEnum.valueOf(refundRequest.getRefundMode()), RefundStatusEnum.PENDING, refundRequest.getReason());
+            refund = new Refund(totalQuantity, refundAmount, RefundModeEnum.valueOf(refundRequest.getRefundMode()), RefundStatusEnum.PENDING, refundRequest.getReason(), isRefundedBefore);
         } else {
-            refund = new Refund(totalQuantity, refundAmount, RefundModeEnum.valueOf(refundRequest.getRefundMode()), RefundStatusEnum.PROCESSING, refundRequest.getReason());
+            refund = new Refund(totalQuantity, refundAmount, RefundModeEnum.valueOf(refundRequest.getRefundMode()), RefundStatusEnum.PROCESSING, refundRequest.getReason(), isRefundedBefore);
         }
 
 
@@ -336,6 +340,16 @@ public class RefundService {
     public List<Refund> retrieveRefundsByCustomerId(Long customerId) {
         List<Refund> refunds = refundRepository.findAllByCustomer_CustomerId(customerId);
         lazilyLoadRefunds(refunds);
+        return refunds;
+    }
+
+    public List<Refund> retrieveRefundByTransactionId(Long transactionId) throws RefundNotFoundException {
+        List<Refund> refunds = refundRepository.findByTransactionId(transactionId);
+        if(refunds.isEmpty() || refunds.size() == 0) {
+            throw new RefundNotFoundException("Refund with Transaction ID " + transactionId + " does not exist!");
+        }
+
+        System.out.println("REFUNDDDDD ID" + refunds.get(0).getRefundId());
         return refunds;
     }
 

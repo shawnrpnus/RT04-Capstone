@@ -34,7 +34,6 @@ import {
 } from "@material-ui/icons";
 import Chip from "@material-ui/core/Chip";
 import withMaterialConfirmDialog from "../../Layout/page/withMaterialConfirmDialog";
-import UpdateLeaveRequest from "../../../models/leave/UpdateLeaveRequest";
 import UpdateLeaveDialog from "./UpdateLeaveDialog";
 
 const tableIcons = {
@@ -71,8 +70,8 @@ class LeaveApplicationForm extends React.Component {
   constructor(props) {
       super(props);
       this.state = ({
-          fromDateTime: "2020-04-06",
-          toDateTime: "2020-04-06",
+          fromDateTime: "2020-04-13",
+          toDateTime: "2020-04-13",
           open: false,
           selectedId:""
       });
@@ -82,8 +81,8 @@ class LeaveApplicationForm extends React.Component {
 
     clear = () => {
         this.setState({
-            fromDateTime: "2020-04-05",
-            toDateTime: "2020-04-05"
+            fromDateTime: "2020-04-13",
+            toDateTime: "2020-04-13"
         });
     };
 
@@ -106,15 +105,12 @@ class LeaveApplicationForm extends React.Component {
 
     handleSubmit = e => {
         e.preventDefault();
-
         const leave = new StaffLeave(
             this.state.fromDateTime,
             this.state.toDateTime,
             this.props.loggedInStaff
         );
         const req = new LeaveCreateRequest(leave);
-        console.log(req);
-
         this.props.applyForLeave(req, this.props.history);
     };
 
@@ -190,6 +186,7 @@ class LeaveApplicationForm extends React.Component {
                                     columns={[
                                         { title: "Start Date", field: "fromDateTime" },
                                         { title: "End Date", field: "toDateTime" },
+                                        { title: "Number of days taken", field: "numDays" },
 
                                         {
                                             title: "Status",

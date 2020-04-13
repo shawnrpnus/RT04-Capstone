@@ -130,3 +130,26 @@ const sendRefundLabelSuccess = (data) => ({
   type: types.CREATE_REFUND_LABEL_SUCCESS,
   createPDF: data,
 });
+
+export const retrieveRefundsByTransactionId = (transactionId) => {
+  return axios
+      .get(REFUND_BASE_URL + `/retrieveRefundsByTransactionId`, {
+        params: {transactionId}
+      })
+      .then((response) => {
+        const data = jsog.decode(response.data);
+        // console.log(data);
+        return data;
+        // dispatch(retrieveRefundsByTransactionIdSuccess(data));
+      })
+      .catch((err) => {
+        // console.log(err.response);
+      });
+
+};
+
+const retrieveRefundsByTransactionIdSuccess = (data) => ({
+  type: types.GET_REFUND_BY_TRANSACTION_ID,
+  refundsToCheck: data,
+});
+

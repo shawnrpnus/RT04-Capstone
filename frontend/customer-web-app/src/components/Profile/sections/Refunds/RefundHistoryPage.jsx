@@ -27,14 +27,15 @@ function RefundHistoryPage(props) {
   const dispatch = useDispatch();
 
   const customer = useSelector(
-    state => state.customer.loggedInCustomer,
-    _.isEqual
+    state => state.customer.loggedInCustomer
+    // _.isEqual
   );
-  const refunds = useSelector(state => state.refund.refunds);
-
   useEffect(() => {
     dispatch(retrieveRefundsByCustomerId(customer.customerId));
-  }, [customer.customerId]);
+  }, [customer]);
+  const refunds = useSelector(state => state.refund.refunds);
+
+
 
   return (
     <GridContainer>

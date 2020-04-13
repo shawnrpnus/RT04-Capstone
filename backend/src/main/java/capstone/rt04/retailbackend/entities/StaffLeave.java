@@ -16,7 +16,8 @@ import lombok.ToString;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.sql.Date;
+import java.time.LocalDate;
+import java.util.Date;
 
 /**
  *
@@ -37,13 +38,13 @@ public class StaffLeave implements Serializable {
     
     @NotNull
     @Column(nullable = false)
-    private Date fromDateTime;
+    private LocalDate fromDateTime;
     
     @NotNull
     @Column(nullable = false)
-    private Date toDateTime;
-    
-    
+    private LocalDate toDateTime;
+
+    private int numDays;
     private LeaveStatusEnum status;
     
     @ManyToOne(optional = false)
@@ -62,10 +63,11 @@ public class StaffLeave implements Serializable {
     public StaffLeave() {
     }
 
-    public StaffLeave(Date fromDateTime, Date toDateTime, Staff staff) {
+    public StaffLeave(LocalDate fromDateTime, LocalDate toDateTime, Staff staff) {
         this.fromDateTime = fromDateTime;
         this.toDateTime = toDateTime;
         this.applicant = staff;
     }
+
 
 }

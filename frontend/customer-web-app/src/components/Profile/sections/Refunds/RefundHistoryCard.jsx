@@ -117,21 +117,39 @@ function RefundHistoryCard(props) {
               style={{ height: "200px", overflowY: "scroll" }}
             >
               {lineItems.map((lineItem) => {
-                const val =
-                  (lineItem.transactionLineItem.initialSubTotal *
+                let val = 0;
+                let initialVal = 0;
+                if(lineItem.transactionLineItem.finalSubTotal) {
+                  val =
+                    (lineItem.transactionLineItem.finalSubTotal *
+                      lineItem.quantity) /
+                    lineItem.transactionLineItem.quantity;
+                  initialVal = (lineItem.transactionLineItem.initialSubTotal *
                     lineItem.quantity) /
-                  lineItem.transactionLineItem.quantity;
+                    lineItem.transactionLineItem.quantity;
+                } else {
+                  val = (lineItem.transactionLineItem.initialSubTotal *
+                    lineItem.quantity) /
+                    lineItem.transactionLineItem.quantity;
+                }
                 return (
-                  <ProductVariantCard
-                    key={
-                      lineItem.transactionLineItem.productVariant
-                        .productVariantId
-                    }
-                    productVariant={lineItem.transactionLineItem.productVariant}
-                    quantity={lineItem.quantity}
-                    initialSubTotal={val}
-                    finalSubTotal={lineItem.transactionLineItem.finalSubTotal}
-                  />
+                  <>
+                  {
+                    lineItem.quantity ?
+                      <ProductVariantCard
+                        key={
+                          lineItem.transactionLineItem.productVariant
+                            .productVariantId
+                        }
+                        productVariant={lineItem.transactionLineItem.productVariant}
+                        quantity={lineItem.quantity}
+                        initialSubTotal={initialVal}
+                        finalSubTotal={val}
+                      />
+                      :
+                      ""
+                  }
+                  </>
                 );
               })}
             </GridItem>

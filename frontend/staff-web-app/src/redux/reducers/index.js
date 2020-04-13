@@ -21,6 +21,7 @@ import discountReducer from "./discountReducer";
 import transactionReducer from "./transactionReducer";
 import dashboardReducer from "./dashboardReducer";
 import leaveReducer from "./leaveReducer";
+import payrollReducer from "./payrollReducer";
 
 const rootReducer = combineReducers({
   errors: errorReducer,
@@ -30,6 +31,7 @@ const rootReducer = combineReducers({
   style: styleReducer,
   promoCode: promoCodeReducer,
   leave: leaveReducer,
+  payroll: payrollReducer,
   product: productReducer,
   category: categoryReducer,
   staffEntity: staffReducer,
