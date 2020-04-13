@@ -45,6 +45,7 @@ function PurchaseDetails(props) {
             </Text>
           </Block>
           {transaction.deliveryStatus !== "DELIVERED" &&
+              transaction.deliveryStatus !== "COLLECTED" &&
             transaction.collectionMode === "IN_STORE" && (
               <Block
                 flex
