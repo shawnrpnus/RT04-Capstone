@@ -12,6 +12,7 @@ import ContentSaveIcon from "mdi-react/ContentSaveIcon";
 import ButtonToolbar from "reactstrap/es/ButtonToolbar";
 import StaffChangePasswordRequest from "../../../models/staff/StaffChangePasswordRequest";
 import { changePassword } from "../../../redux/actions/staffActions";
+import InputAdornment from "@material-ui/core/InputAdornment";
 
 const _ = require("lodash");
 
@@ -34,7 +35,6 @@ class StaffDetailsPage extends Component {
       lastName: this.props.loggedInStaff.lastName,
       email: this.props.loggedInStaff.email,
       nric: this.props.loggedInStaff.nric,
-      leaveRemaining: this.props.loggedInStaff.leaveRemaining,
       salary: this.props.loggedInStaff.salary,
       username: this.props.loggedInStaff.username,
       line1: this.props.loggedInStaff.address.line1,
@@ -249,23 +249,15 @@ class StaffDetailsPage extends Component {
 
               <Grid item xs={12} md={6}>
                 <MaterialTextField
-                  fieldLabel="Salary"
+                  fieldLabel="Wage/day"
                   onChange={this.onChange}
                   fieldName="salary"
                   state={this.state}
                   errors={errors}
                   disabled={true}
-                />
-              </Grid>
-
-              <Grid item xs={12} md={6}>
-                <MaterialTextField
-                  onChange={this.onChange}
-                  state={this.state}
-                  fieldLabel="Leave Remaining"
-                  fieldName="leaveRemaining"
-                  disabled={true}
-                  errors={errors}
+                  InputProps={{
+                    startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                  }}
                 />
               </Grid>
 

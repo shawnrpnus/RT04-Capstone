@@ -5,8 +5,10 @@ import capstone.rt04.retailbackend.repositories.*;
 import capstone.rt04.retailbackend.util.ErrorMessages;
 import capstone.rt04.retailbackend.util.enums.RoleNameEnum;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
+import capstone.rt04.retailbackend.util.exceptions.product.ProductNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.staff.*;
 import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.tag.TagNotFoundException;
 import org.springframework.core.env.Environment;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -33,7 +35,7 @@ public class StaffService {
     private final AdvertisementRepository advertisementRepository;
     private final DeliveryRepository deliveryRepository;
     private final DepartmentRepository departmentRepository;
-    private final StaffLeaveRepository staffLeaveRepository;
+    private final LeaveRepository leaveRepository;
     private final PayrollRepository payrollRepository;
     private final ReviewRepository reviewRepository;
     private final RoleRepository roleRepository;
@@ -42,7 +44,7 @@ public class StaffService {
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
 
-    public StaffService(JavaMailSender javaMailSender, Environment environment, ValidationService validationService, StaffRepository staffRepository, AddressRepository addressRepository, VerificationCodeRepository verificationCodeRepository, AdvertisementRepository advertisementRepository, DeliveryRepository deliveryRepository, DepartmentRepository departmentRepository, StaffLeaveRepository staffLeaveRepository, ReviewRepository reviewRepository, PayrollRepository payrollRepository, RoleRepository roleRepository, StoreRepository storeRepository, WarehouseRepository warehouseRepository) {
+    public StaffService(JavaMailSender javaMailSender, Environment environment, ValidationService validationService, StaffRepository staffRepository, AddressRepository addressRepository, VerificationCodeRepository verificationCodeRepository, AdvertisementRepository advertisementRepository, DeliveryRepository deliveryRepository, DepartmentRepository departmentRepository, LeaveRepository leaveRepository, ReviewRepository reviewRepository, PayrollRepository payrollRepository, RoleRepository roleRepository, StoreRepository storeRepository, WarehouseRepository warehouseRepository) {
         this.javaMailSender = javaMailSender;
         this.environment = environment;
         this.validationService = validationService;
@@ -52,7 +54,7 @@ public class StaffService {
         this.advertisementRepository = advertisementRepository;
         this.deliveryRepository = deliveryRepository;
         this.departmentRepository = departmentRepository;
-        this.staffLeaveRepository = staffLeaveRepository;
+        this.leaveRepository = leaveRepository;
         this.reviewRepository = reviewRepository;
         this.payrollRepository = payrollRepository;
         this.roleRepository = roleRepository;
@@ -127,6 +129,8 @@ public class StaffService {
             //If staff does not exist
             //Set address, role and department before saving because of sql constraint
             //Address ID, role ID and department ID column cannot be empty
+            staffAddress.setLat("1.378466");
+            staffAddress.setLng("103.746107");
             addressRepository.save(staffAddress);
 
 
@@ -281,13 +285,15 @@ public class StaffService {
             Staff staffToUpdate = retrieveStaffByStaffId(staff.getStaffId());
             Address oldAddress = staffToUpdate.getAddress();
             Store oldStore = staffToUpdate.getStore();
+            address.setLng("103.746107");
+            address.setLat("1.378466");
+
             addressRepository.save(address);
 
             staffToUpdate.setFirstName(staff.getFirstName());
             staffToUpdate.setLastName(staff.getLastName());
             staffToUpdate.setNric(staff.getNric());
             staffToUpdate.setEmail(staff.getEmail());
-            staffToUpdate.setLeaveRemaining(staff.getLeaveRemaining());
             staffToUpdate.setAddress(address);
             addressRepository.delete(oldAddress);
 
@@ -334,6 +340,32 @@ public class StaffService {
                 .orElseThrow(() -> new StaffNotFoundException("Staff username: " + username + "does not exist!"));
 
         return lazyLoadStaffFields(staff);
+    }
+
+    public List<Staff> retrieveStoreStaff() {
+        List<Staff> allStaff = staffRepository.findAll();
+        List<Staff> storeStaff = new ArrayList<Staff>();
+
+        for(Staff s: allStaff){
+            if(s.getStore() != null){
+                storeStaff.add(s);
+            }
+        }
+
+        return storeStaff;
+    }
+
+    public List<Staff> retrieveStaffOfStore(Long storeId) {
+        List<Staff> allStaff = retrieveStoreStaff();
+        List<Staff> storeStaff = new ArrayList<Staff>();
+
+        for(Staff s: allStaff){
+            if(s.getStore().getStoreId().equals(storeId)){
+                storeStaff.add(s);
+            }
+        }
+
+        return storeStaff;
     }
 
     //staff logins with username
@@ -435,7 +467,7 @@ public class StaffService {
                 l.setApplicant(null);
                 l.setApprover(null);
                 l.setEndorser(null);
-                staffLeaveRepository.delete(l);
+                leaveRepository.delete(l);
             }
             existingStaff.setLeaves(null);
             // ----------------------------------------------------
@@ -514,6 +546,21 @@ public class StaffService {
         msg.setSubject("Your Password Has Been Reset");
         msg.setText("Your New Password is:" + password);
         javaMailSender.send(msg);
+    }
+
+    public Store reassignStaffStore(Long storeId, List<Long> staffIds) throws StoreNotFoundException, StaffNotFoundException {
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new StoreNotFoundException("Store with id: " + storeId + " does not exist"));
+        for(Long s : staffIds) {
+            Staff staff = staffRepository.findByStaffId(s);
+            try{
+                staff.setStore(store);
+            } catch(NullPointerException ex) {
+                throw new StaffNotFoundException("Staff with Staff ID: " + s + " not found!");
+            }
+        }
+
+        return store;
     }
 
 
