@@ -81,8 +81,6 @@ const TransactionDetailsDialog = ({ elements, open, onClose }) => {
     setItemsByStore(elements);
   }, []);
 
-  console.log(selectedStoreId);
-
   const data = itemsByStore.map((item) => {
     let {
       transactionId,

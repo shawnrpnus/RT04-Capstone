@@ -99,4 +99,14 @@ public class RefundController {
         }
         return new ResponseEntity<>(refunds, HttpStatus.OK);
     }
+
+    @GetMapping(RETRIEVE_ALL_REFUNDS_BY_PARAMETER)
+    public ResponseEntity<?> retrieveProductStocksByParameter(@RequestParam(required = false) Long warehouseId,
+                                                              @RequestParam(required = false) Long storeId) {
+        List<Refund> refunds = refundService.retrieveAllRefundsByParameter(storeId, warehouseId);
+        for (Refund refund : refunds) {
+            relationshipService.clearRefundRelationships(refund);
+        }
+        return new ResponseEntity<>(refunds, HttpStatus.OK);
+    }
 }

@@ -101,6 +101,19 @@ public class TransactionService {
         return transaction;
     }
 
+    /*view order details*/
+    public Transaction retrieveTransactionByQRCode(Long transactionId, Long storeId) throws TransactionNotFoundException {
+        Transaction transaction = retrieveTransactionById(transactionId);
+
+        if(transaction.getStoreToCollect() == null) {
+            throw new TransactionNotFoundException("Collection Mode is not In-Store!");
+        }
+        if(!transaction.getStoreToCollect().getStoreId().equals(storeId)){
+            throw new TransactionNotFoundException("Wrong Store! Please collect at: " + transaction.getStoreToCollect().getStoreName());
+        }
+        return transaction;
+    }
+
     public TransactionLineItem retrieveTransactionLineItemById(Long transactionLineItemId) throws TransactionNotFoundException {
         if (transactionLineItemId == null) {
             throw new TransactionNotFoundException("Transaction Line Item ID not provided");
@@ -388,6 +401,19 @@ public class TransactionService {
         return retrieveTransactionsToBeDelivered();
     }
 
+    public Transaction confirmReceivedTransaction(Long transactionId) throws TransactionNotFoundException {
+        Transaction transaction = retrieveTransactionById(transactionId);
+        if (!transaction.getCollectionMode().equals(CollectionModeEnum.IN_STORE)) {
+            throw new TransactionNotFoundException("Collection Mode is not In-Store!");
+        }
+        if (!transaction.getDeliveryStatus().equals(DeliveryStatusEnum.READY_FOR_COLLECTION)) {
+            throw new TransactionNotFoundException("Transaction " + transaction.getOrderNumber() +" not ready for collection");
+        }
+        transaction.setDeliveryStatus(DeliveryStatusEnum.COLLECTED);
+
+        return transaction;
+    }
+
     public List<Transaction> retrieveAllTransaction() {
         List<Transaction> transactions = transactionRepository.findAll();
         lazyLoadTransaction(transactions);
@@ -445,14 +471,16 @@ public class TransactionService {
                 if (collectOrDeliver == 0) { //collect
                     // (3) Buy online, collect in store: storeId == null, storeToCollectId != null,
                     // collectionModeEnum == IN_STORE
-                    createNewTransaction(customer.getCustomerId(), null, Constants.ONLINE_SHOPPING_CART,
+                    Transaction t = createNewTransaction(customer.getCustomerId(), null, Constants.ONLINE_SHOPPING_CART,
                             address, address, stores.get(r.nextInt(stores.size())).getStoreId(),
                             null, CollectionModeEnum.IN_STORE, "Visa", "4242", null);
+                    t.setDeliveryStatus(DeliveryStatusEnum.COLLECTED);
                 } else { //deliver
                     // (4) Buy online, deliver home: storeId == null, storeToCollectId == null, collectionModeEnum == DELIVERY
-                    createNewTransaction(customer.getCustomerId(), null, Constants.ONLINE_SHOPPING_CART,
+                    Transaction t = createNewTransaction(customer.getCustomerId(), null, Constants.ONLINE_SHOPPING_CART,
                             address, address, null,
                             null, CollectionModeEnum.DELIVERY, "Visa", "4242", null);
+                    t.setDeliveryStatus(DeliveryStatusEnum.DELIVERED);
                 }
 
             } else { //IN-STORE
@@ -469,44 +497,49 @@ public class TransactionService {
                 Long storeId = stores.get(r.nextInt(stores.size())).getStoreId();
                 if (collectOrDeliver == 0) { //collect
                     // (1) Buy in store, collect in store: storeId == storeToCollectId, collectionModeEnum == IN_STORE
-                    createNewTransaction(customer.getCustomerId(), storeId, Constants.IN_STORE_SHOPPING_CART,
+                    Transaction t = createNewTransaction(customer.getCustomerId(), storeId, Constants.IN_STORE_SHOPPING_CART,
                             address, address, storeId,
                             null, CollectionModeEnum.IN_STORE, "Visa", "4242", null);
+                    t.setDeliveryStatus(DeliveryStatusEnum.COLLECTED);
                 } else { //deliver
                     // (2) Buy in store, deliver home: storeId != null, storeToCollectId == null, collectionModeEnum == DELIVERY
-                    createNewTransaction(customer.getCustomerId(), storeId, Constants.IN_STORE_SHOPPING_CART,
+                    Transaction t = createNewTransaction(customer.getCustomerId(), storeId, Constants.IN_STORE_SHOPPING_CART,
                             address, address, null,
                             null, CollectionModeEnum.DELIVERY, "Visa", "4242", null);
+                    t.setDeliveryStatus(DeliveryStatusEnum.DELIVERED);
                 }
             }
         }
     }
 
     //Strings must be YYYY-MM-DD
-    public List<SalesByDay> retrieveSalesByDayWithParameters(String fromDateString, String toDateString, List<Long> fromStoreIds) {
+    public List<SalesByDay> retrieveSalesByDayWithParameters(String fromDateString, String toDateString, List<Long> fromStoreIds, Boolean onlineSelected) {
         List<SalesByDay> result = new ArrayList<>();
         List<Transaction> allTransactions = transactionRepository.findAllByOrderByCreatedDateTime();
 
         SalesByDay salesForDay = new SalesByDay();
         LocalDate earliestTransactionDate = allTransactions.get(0).getCreatedLocalDate();
+        LocalDate latestTransactionDate = allTransactions.get(allTransactions.size() - 1).getCreatedLocalDate();
         salesForDay.setDate(earliestTransactionDate);
         for (Transaction transaction : allTransactions) {
-            boolean dateCheck = transaction.isBetween(fromDateString, toDateString);
-            boolean storeCheck = false;
-            if (fromStoreIds == null) {
-                storeCheck = true;
-            } else if (transaction.getStore() != null
-                    && fromStoreIds.contains(transaction.getStore().getStoreId())) {
-                storeCheck = true;
-            }
+            //date not in range --> exclude
+            if (!transaction.isBetween(fromDateString, toDateString)) continue;
 
-            if (!(dateCheck && storeCheck)) continue;
+            // if stores are selected, and my transaction's store is not inside, don't include
+            if (fromStoreIds != null
+                    && transaction.getStore() != null
+                    && !fromStoreIds.contains(transaction.getStore().getStoreId())) continue;
+
+            //if online is FALSE, and my transaction is made online, don't include
+            if (onlineSelected != null && !onlineSelected && transaction.getStore() == null) continue;
+
 
             LocalDate transactionDate = transaction.getCreatedLocalDate();
             if (!salesForDay.getDate().isEqual(transactionDate)) {
                 //if different date and have transactions, calculate average, then add old object to the result
                 if (salesForDay.getTotalTransactions() > 0) {
-                    salesForDay.calculateAverageTotalSales();
+                    //salesForDay.calculateAverageTotalSales();
+                    addZeroValues(salesForDay, fromStoreIds, onlineSelected);
                     result.add(salesForDay.createCopy());
                 }
                 //create new object to be tracked outside loop
@@ -516,16 +549,86 @@ public class TransactionService {
             //if same date, just add to total and increment num transactions
             salesForDay.addToTotalSales(transaction.getFinalTotalPrice());
             salesForDay.incrementTotalTransactions();
-        }
-        // if same day until the end of loop
-        if (salesForDay.getTotalTransactions() > 0) {
             salesForDay.calculateAverageTotalSales();
+            if (transaction.getStore() != null) {
+                salesForDay.addTotalSalesForStore(transaction.getStore().getStoreId(), transaction.getFinalTotalPrice());
+                salesForDay.incrementTotalTransactionsForStore(transaction.getStore().getStoreId());
+                salesForDay.calculateAverageTotalSalesForStore(transaction.getStore().getStoreId());
+            } else {
+                salesForDay.addTotalSalesForOnline(transaction.getFinalTotalPrice());
+                salesForDay.incrementTotalTransactionsForOnline();
+                salesForDay.calculateAverageTotalSalesForOnline();
+            }
+        }
+        // add the last salesForDay (since in the loop is only added when date changes)
+        if (salesForDay.getTotalTransactions() > 0) {
+            //salesForDay.calculateAverageTotalSales();
+            addZeroValues(salesForDay, fromStoreIds, onlineSelected);
             result.add(salesForDay.createCopy());
         }
 
         //fill in empty dates
-        List<LocalDate> dateList = new ArrayList<>();
-        LocalDate latestTransactionDate = allTransactions.get(allTransactions.size() - 1).getCreatedLocalDate();
+        List<LocalDate> dateList = generateDateList(fromDateString, toDateString, earliestTransactionDate, latestTransactionDate);
+        int currDateIndex = 0;
+        int currResultIndex = 0;
+        while (currDateIndex < dateList.size()) {
+            LocalDate currDate = dateList.get(currDateIndex);
+            if (currResultIndex < result.size()) {
+                //dates within earliest & latest transaction dates
+                SalesByDay currElement = result.get(currResultIndex);
+                if (!currElement.getDate().isEqual(currDate)) {
+                    SalesByDay emptySalesByDay = new SalesByDay();
+                    emptySalesByDay.setDate(currDate);
+                    addZeroValues(emptySalesByDay, fromStoreIds,onlineSelected);
+                    result.add(currResultIndex, emptySalesByDay);
+                }
+            } else {
+                //dates extending past latest transaction date
+                SalesByDay emptySalesByDay = new SalesByDay();
+                emptySalesByDay.setDate(currDate);
+                addZeroValues(emptySalesByDay, fromStoreIds,onlineSelected);
+                result.add(emptySalesByDay);
+            }
+            currDateIndex++;
+            currResultIndex++;
+
+        }
+        return result;
+    }
+
+    private void addZeroValues(SalesByDay salesForDay, List<Long> storeIds, Boolean onlineSelected) {
+        Map<String, Object> pointOfPurchaseData = salesForDay.getPointOfPurchaseData();
+        if (storeIds == null) {
+            storeIds = new ArrayList<>();
+            List<Store> stores = storeService.retrieveAllStores();
+            for (Store s : stores) {
+                storeIds.add(s.getStoreId());
+            }
+        }
+
+        for (Long storeId : storeIds) {
+            String totalSalesKey = storeId + "-totalSales";
+            String totalTransactionsKey = storeId + "-totalTransactions";
+            String avgKey = storeId + "-averageTotalSales";
+            if (pointOfPurchaseData.get(totalSalesKey) == null) {
+                pointOfPurchaseData.put(totalSalesKey, BigDecimal.ZERO);
+                pointOfPurchaseData.put(totalTransactionsKey, 0);
+                pointOfPurchaseData.put(avgKey, BigDecimal.ZERO);
+            }
+        }
+
+        if ((onlineSelected == null || onlineSelected) && pointOfPurchaseData.get("online-totalSales") == null) {
+            String totalSalesKey = "online-totalSales";
+            String totalTransactionsKey = "online-totalTransactions";
+            String avgKey = "online-averageTotalSales";
+            pointOfPurchaseData.put(totalSalesKey, BigDecimal.ZERO);
+            pointOfPurchaseData.put(totalTransactionsKey, 0);
+            pointOfPurchaseData.put(avgKey, BigDecimal.ZERO);
+        }
+    }
+
+    private List<LocalDate> generateDateList(String fromDateString, String toDateString, LocalDate earliestTransactionDate, LocalDate latestTransactionDate) {
+        List<LocalDate> dateList;
         if (!(fromDateString == null && toDateString == null)) {
             if (fromDateString != null && toDateString == null) {
                 dateList = generateLocalDateInterval(LocalDate.parse(fromDateString), latestTransactionDate);
@@ -537,28 +640,7 @@ public class TransactionService {
         } else {
             dateList = generateLocalDateInterval(earliestTransactionDate, latestTransactionDate);
         }
-
-        int currDateIndex = 0;
-        int currResultIndex = 0;
-        while (currDateIndex < dateList.size()) {
-            LocalDate currDate = dateList.get(currDateIndex);
-            if (currResultIndex < result.size()) {
-                SalesByDay currElement = result.get(currResultIndex);
-                if (!currElement.getDate().isEqual(currDate) && currResultIndex < result.size()) {
-                    SalesByDay emptySalesByDay = new SalesByDay();
-                    emptySalesByDay.setDate(currDate);
-                    result.add(currResultIndex, emptySalesByDay);
-                }
-            } else {
-                SalesByDay emptySalesByDay = new SalesByDay();
-                emptySalesByDay.setDate(currDate);
-                result.add(emptySalesByDay);
-            }
-            currDateIndex++;
-            currResultIndex++;
-
-        }
-        return result;
+        return dateList;
     }
 
     private List<LocalDate> generateLocalDateInterval(LocalDate fromDate, LocalDate toDate) {

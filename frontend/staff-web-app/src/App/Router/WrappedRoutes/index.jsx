@@ -22,7 +22,7 @@ import Transaction from "./Transaction";
 import Dashboard from "./Dashboard";
 import Leave from "./Leave";
 import Payrolls from "./Payrolls";
-import SalesGraph from "../../../components/Dashboard/SalesGraphs/SalesGraph";
+import SalesGraph from "../../../components/SalesGraphs/SalesGraph";
 
 export default () => (
   <div>

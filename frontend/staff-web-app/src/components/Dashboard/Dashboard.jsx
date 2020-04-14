@@ -4,7 +4,7 @@ import Grid from "@material-ui/core/Grid";
 import MarketBasketAnalysis from "./MarketBasketAnalysis/MarketBasketAnalysis";
 import LowStockAlert from "./ProductStock/LowStockAlert";
 
-const Dashboard = props => {
+const Dashboard = (props) => {
   const department = props.staff.department.departmentName;
 
   const storeandwarehouse =
@@ -19,7 +19,7 @@ const Dashboard = props => {
           </Grid>
         )}
         {salesmarketing && (
-          <Grid item xs={12} md={8}>
+          <Grid item xs={12} sm={6}>
             <MarketBasketAnalysis />
           </Grid>
         )}

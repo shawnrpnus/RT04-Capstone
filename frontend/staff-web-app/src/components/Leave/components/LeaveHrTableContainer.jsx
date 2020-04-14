@@ -37,7 +37,7 @@ class LeaveHrTableContainer extends React.Component {
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
               {this.state.mode ? (
-                <h5 className="bold-text">Pending Endorsed Leaves</h5>
+                <h5 className="bold-text">Pending Approval</h5>
               ) : (
                 <h5 className="bold-text">All Approved/Rejected Leaves</h5>
               )}
@@ -50,14 +50,14 @@ class LeaveHrTableContainer extends React.Component {
                   size="small"
                   variant={this.state.mode ? "contained" : "outlined"}
                 >
-                  Endorsed
+                  Pending
                 </Button>
                 <Button
                   onClick={this.handleChangeAll}
                   size="small"
                   variant={this.state.mode ? "outlined" : "contained"}
                 >
-                  All
+                  Approved/Rejected
                 </Button>
               </ButtonGroup>
             </Grid>

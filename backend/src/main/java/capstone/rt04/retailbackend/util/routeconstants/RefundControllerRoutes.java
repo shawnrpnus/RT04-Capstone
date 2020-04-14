@@ -12,4 +12,6 @@ public class RefundControllerRoutes {
     public static final String RETRIEVE_REFUND_BY_ID = "/retrieveRefundById/{refundId}";
     public static final String RETRIEVE_REFUNDS_BY_CUSTOMER_ID = "/retrieveRefundsByCustomerId/{customerId}";
     public static final String RETRIEVE_REFUNDS_BY_TRANSACTION_ID = "/retrieveRefundsByTransactionId";
+    public static final String RETRIEVE_ALL_REFUNDS_BY_PARAMETER = "/retrieveAllRefundsByParameter";
+
 }

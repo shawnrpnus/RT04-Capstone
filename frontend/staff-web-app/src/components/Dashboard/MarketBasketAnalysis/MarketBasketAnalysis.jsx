@@ -12,13 +12,13 @@ const useStyles = makeStyles({
   card: {
     textAlign: "center",
     height: "70vh",
-    overflowY: "scroll"
-  }
+    overflowY: "scroll",
+  },
 });
 
-const MarketBasketAnalysis = props => {
+const MarketBasketAnalysis = (props) => {
   const dispatch = useDispatch();
-  const basket = useSelector(state => state.dashboard.basket);
+  const basket = useSelector((state) => state.dashboard.basket);
   const classes = useStyles();
 
   useEffect(() => {

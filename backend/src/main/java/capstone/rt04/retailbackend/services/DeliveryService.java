@@ -2,6 +2,7 @@ package capstone.rt04.retailbackend.services;
 
 import capstone.rt04.retailbackend.entities.*;
 import capstone.rt04.retailbackend.repositories.DeliveryRepository;
+import capstone.rt04.retailbackend.request.delivery.DeliveryNotificationNodeRequest;
 import capstone.rt04.retailbackend.response.GroupedStoreOrderItems;
 import capstone.rt04.retailbackend.util.enums.CollectionModeEnum;
 import capstone.rt04.retailbackend.util.enums.DeliveryStatusEnum;
@@ -24,7 +25,10 @@ import org.springframework.web.client.RestTemplate;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 @Service
 @Transactional
@@ -188,14 +192,21 @@ public class DeliveryService {
     @Transactional(readOnly = true)
     public void sendDeliveryNotificationEmail(List<Transaction> transactions) {
         restTemplate = new RestTemplate();
+        List<DeliveryNotificationNodeRequest> requests = new ArrayList<>();
+        DeliveryNotificationNodeRequest request;
+        Customer customer;
 
-        List<Transaction> newList = new ArrayList<>(transactions);
-        for (Transaction transaction : newList) {
-            relationshipService.clearTransactionRelationships(transaction);
+        for (Transaction transaction : transactions) {
+            request = new DeliveryNotificationNodeRequest();
+            customer = transaction.getCustomer();
+            request.setEmail(customer.getEmail());
+            request.setFullName(customer.getFirstName() + " " + customer.getLastName());
+            request.setOrderNumber(transaction.getOrderNumber());
+            requests.add(request);
         }
 
         String endpoint = NODE_API_URL + "/email/" + deliveryNotificationPath;
-        ResponseEntity<?> response = restTemplate.postForEntity(endpoint, newList, Object.class);
+        ResponseEntity<?> response = restTemplate.postForEntity(endpoint, requests, Object.class);
         if (response.getStatusCode().equals(HttpStatus.OK)) {
             System.out.println("Email sent successfully");
         } else {
