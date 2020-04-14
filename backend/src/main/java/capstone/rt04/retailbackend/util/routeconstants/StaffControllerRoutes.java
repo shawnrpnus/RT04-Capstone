@@ -20,5 +20,4 @@ public class StaffControllerRoutes {
     public static final String RETRIEVE_STAFF_WITH_NO_ACCOUNT = "/retrieveStaffWithNoAccount";
     public static final String REGISTER_PUSH_NOTIF_TOKEN = "/registerPushNotificationToken";
     public static final String RETRIEVE_ALL_STORE_STAFF = "/retrieveAllStoreStaff";
-    public static final String RETRIEVE_STAFF_OF_STORE = "/retrieveStoreStaff/{storeId}";
 }

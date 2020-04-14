@@ -13,8 +13,7 @@ const initialState = {
   currentAddress: null,
   selectedStore: null,
   store: null,
-  storeStaff: null,
-  staffOfStore: null
+  storeStaff: null
 };
 
 export default function(state = initialState, action) {
@@ -106,12 +105,6 @@ export default function(state = initialState, action) {
       return {
         ...state,
         storeStaff: action.staffEntity
-      };
-
-    case types.RETRIEVE_STAFF_OF_STORE:
-      return {
-        ...state,
-        staffOfStore: action.staffEntity
       };
 
 

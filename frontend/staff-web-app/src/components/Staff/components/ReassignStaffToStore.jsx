@@ -6,7 +6,7 @@ import {connect} from "react-redux";
 import withPage from "../../Layout/page/withPage";
 import Grid from "@material-ui/core/Grid";
 import MaterialObjectSelect from "../../../shared/components/Form/MaterialObjectSelect";
-import {reassignStaffStore, retrieveAllStoreStaff, retrieveStoreStaff} from "../../../redux/actions/staffActions";
+import {reassignStaffStore, retrieveAllStoreStaff} from "../../../redux/actions/staffActions";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
 import Button from "@material-ui/core/Button";
 import MaterialTable from "material-table";
@@ -77,7 +77,6 @@ class ReassignStaffToStore extends Component {
         const name = e.target.name;
         this.setState({ [name]: e.target.value }); //computed property name syntax
         this.setState({ showTable: true });
-        this.props.retrieveStoreStaff(e.target.value);
     };
 
     onChangeNewStore = e => {
@@ -113,6 +112,7 @@ class ReassignStaffToStore extends Component {
     }
 
     render() {
+        console.log(this.props.storeStaff);
         return (
             <React.Fragment>
             <div className="card__title">
@@ -207,7 +207,10 @@ class ReassignStaffToStore extends Component {
                                 fieldLabel= "Reassign To"
                                 onChange={this.onChangeNewStore}
                                 state={this.state}
-                                objects={this.props.allStores}
+                                objects={this.props.allStores.filter(
+                                    s =>
+                                        s.storeId !== this.state.storeId
+                                )}
                                 objectFieldForValue="storeId"
                                 objectFieldForKey="storeId"
                                 objectFieldToDisplay="storeName"
@@ -236,7 +239,7 @@ class ReassignStaffToStore extends Component {
                             verticalAlign: "middle"
                         }}
                     >
-                        {this.props.staffOfStore ? (
+                        {this.props.storeStaff? (
                             <MaterialTable
                                 title="Staff"
                                 style={{ boxShadow: "none" }}
@@ -248,7 +251,10 @@ class ReassignStaffToStore extends Component {
                                     { title: "Role", field: "role.roleName" },
                                     { title: "Store", field: "store.storeName" }
                                 ]}
-                                data={this.props.staffOfStore}
+                                data={this.props.storeStaff.filter(
+                                    s =>
+                                        s.store.storeId === this.state.storeId
+                                )}
                                 actions={[
                                     {
                                         tooltip: "Reassign Store",
@@ -289,7 +295,6 @@ class ReassignStaffToStore extends Component {
 const mapStateToProps = state => ({
     allStores: state.storeEntity.allStores,
     storeStaff: state.staffEntity.storeStaff,
-    staffOfStore : state.staffEntity.staffOfStore,
     errors: state.errors
 });
 
@@ -298,7 +303,6 @@ const mapDispatchToProps = {
     updateErrors,
     retrieveAllStores,
     retrieveAllStoreStaff,
-    retrieveStoreStaff,
     reassignStaffStore
 };
 
