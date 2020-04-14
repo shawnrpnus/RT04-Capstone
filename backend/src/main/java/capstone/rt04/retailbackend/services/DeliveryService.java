@@ -98,6 +98,17 @@ public class DeliveryService {
         deliveryRepository.save(delivery);
     }
 
+    public double estimateNumberOfDeliveryManRequired() {
+        List<Transaction> transactions = transactionService.retrieveTransactionsToBeDelivered();
+        List<InStoreRestockOrderItem> inStoreRestockOrderItems = inStoreRestockOrderService.retrieveAllRestockOrderItemToDeliver();
+        Integer quantity = inStoreRestockOrderItems.size();
+
+        for(Transaction transaction : transactions) {
+            quantity += transaction.getTotalQuantity();
+        }
+        return Math.ceil(quantity / 100.00);
+    }
+
     public void automateDeliveryAllocation(Long staffId) throws StaffNotFoundException, DeliveryNotFoundException, NoItemForDeliveryException {
         Staff staff = staffService.retrieveStaffByStaffId(staffId);
         // Includes warehouse-customer, warehouse-store (self collection), store-customer

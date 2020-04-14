@@ -348,8 +348,6 @@ public class RefundService {
         if(refunds.isEmpty() || refunds.size() == 0) {
             throw new RefundNotFoundException("Refund with Transaction ID " + transactionId + " does not exist!");
         }
-
-        System.out.println("REFUNDDDDD ID" + refunds.get(0).getRefundId());
         return refunds;
     }
 

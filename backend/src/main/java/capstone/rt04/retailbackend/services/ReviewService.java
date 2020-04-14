@@ -2,6 +2,7 @@ package capstone.rt04.retailbackend.services;
 
 import capstone.rt04.retailbackend.entities.*;
 import capstone.rt04.retailbackend.repositories.ReviewRepository;
+import capstone.rt04.retailbackend.util.enums.DeliveryStatusEnum;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.customer.CustomerNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductNotFoundException;
@@ -44,7 +45,7 @@ public class ReviewService {
             review.setCustomer(customer);
 
             Map<String, String> errorMap = validationService.generateErrorMap(review);
-            if (errorMap != null){
+            if (errorMap != null) {
                 throw new InputDataValidationException(errorMap, "Review is invalid!");
             }
 
@@ -52,7 +53,7 @@ public class ReviewService {
             product.getReviews().add(newReview);
 
             customer.getReviews().add(newReview);
-        } catch (PersistenceException | ProductNotFoundException | CustomerNotFoundException ex){
+        } catch (PersistenceException | ProductNotFoundException | CustomerNotFoundException ex) {
             throw new CreateNewReviewException("Error creating new review");
         }
         return review;
@@ -123,10 +124,17 @@ public class ReviewService {
 
     public Boolean checkIfAllowedToWriteReview(Long productId, Long customerId) throws CustomerNotFoundException {
         Customer customer = customerService.retrieveCustomerByCustomerId(customerId);
-        for(Transaction transaction : customer.getTransactions()) {
-            for(TransactionLineItem tle : transaction.getTransactionLineItems()) {
-                if(tle.getProductVariant().getProduct().getProductId().equals(productId)) {
-                    return true;
+        for(Review review : customer.getReviews()) {
+            if (review.getProduct().getProductId().equals(productId)) {
+                return false;
+            }
+        }
+        for (Transaction transaction : customer.getTransactions()) {
+            for (TransactionLineItem tle : transaction.getTransactionLineItems()) {
+                if (tle.getProductVariant().getProduct().getProductId().equals(productId)) {
+                    DeliveryStatusEnum deliveryStatus = transaction.getDeliveryStatus();
+                    return (deliveryStatus.equals(DeliveryStatusEnum.DELIVERED) ||
+                            deliveryStatus.equals(DeliveryStatusEnum.COLLECTED));
                 }
             }
         }

@@ -84,6 +84,12 @@ public class DeliveryController {
         return new ResponseEntity<>(transactions, HttpStatus.OK);
     }
 
+    @GetMapping(ESTIMATE_NUMBER_OF_DELIVERYMAN_REQUIRED)
+    public ResponseEntity<?> estimateNumberOfDeliveryManRequired() {
+        double numberOfDeliveryManRequired = deliveryService.estimateNumberOfDeliveryManRequired();
+        return new ResponseEntity<>(ResponseEntity.ok(numberOfDeliveryManRequired), HttpStatus.OK);
+    }
+
     @GetMapping(AUTOMATE_DELIVERY_ALLOCATION)
     public ResponseEntity<?> automateDeliveryAllocation(@PathVariable Long staffId) throws StaffNotFoundException, DeliveryNotFoundException, NoItemForDeliveryException {
         deliveryService.automateDeliveryAllocation(staffId);

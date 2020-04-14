@@ -74,7 +74,7 @@ export const confirmTransactionDelivery = request => {
   };
 };
 
-export const automateDeliveryAllocation = staffId => {
+export const automateDeliveryAllocation = (staffId, onClose) => {
   return dispatch => {
     dispatch(openCircularProgress());
     axios
@@ -86,6 +86,7 @@ export const automateDeliveryAllocation = staffId => {
           position: toast.POSITION.TOP_CENTER
         });
         dispatch(closeCircularProgress());
+        onClose();
       })
       .catch(err => {
         toast.error(err.response.data.errorMessage, {
@@ -117,6 +118,26 @@ export const generateDeliveryRoute = deliveryId => {
         dispatch(closeCircularProgress());
       });
   };
+};
+
+export const estimateNumberOfDeliveryManRequired = () => {
+  // return dispatch => {
+  //   dispatch(openCircularProgress());
+  return axios
+    .get(DELIVERY_BASE_URL + "/estimateNumberOfDeliveryManRequired")
+    .then(response => {
+      // dispatch(closeCircularProgress());
+      return response.data.body;
+    })
+    .catch(err => {
+      if (err.response)
+        toast.error(err.response, {
+          position: toast.POSITION.TOP_CENTER
+        });
+      console.log(err);
+      // dispatch(closeCircularProgress());
+    });
+  // };
 };
 
 // NOTE: End delivery

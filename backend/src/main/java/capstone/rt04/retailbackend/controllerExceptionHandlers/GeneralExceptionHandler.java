@@ -23,6 +23,7 @@ import capstone.rt04.retailbackend.util.exceptions.promoCode.CreateNewPromoCodeE
 import capstone.rt04.retailbackend.util.exceptions.promoCode.InvalidPromoCodeException;
 import capstone.rt04.retailbackend.util.exceptions.promoCode.PromoCodeNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.promoCode.PromoCodeUsedException;
+import capstone.rt04.retailbackend.util.exceptions.refund.RefundNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.reservation.CreateNewReservationException;
 import capstone.rt04.retailbackend.util.exceptions.reservation.ReservationNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.review.ReviewNotFoundException;
@@ -95,7 +96,7 @@ public class GeneralExceptionHandler extends ResponseEntityExceptionHandler {
             AdvertisementNotFoundException.class, InStoreRestockOrderItemNotFoundException.class,
             InstagramPostNotFoundException.class, ReviewNotFoundException.class, DiscountNotFoundException.class,
             StaffNotFoundException.class, PromoCodeNotFoundException.class, TransactionNotFoundException.class,
-            DeliveryNotFoundException.class
+            DeliveryNotFoundException.class, RefundNotFoundException.class
     })
     public final ResponseEntity<Object> handleNotFoundExceptions(Exception ex, WebRequest req) {
         return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);

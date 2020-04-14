@@ -12,6 +12,7 @@ public class DeliveryControllerRoutes {
     public static final String RETRIEVE_DELIVERY_BY_ID = "/retrieveDeliveryById/{deliveryId}";
     public static final String DELETE_DELIVERY = "/deleteDelivery/{deliveryId}";
     public static final String AUTOMATE_DELIVERY_ALLOCATION = "/automateDeliveryAllocation/{staffId}";
+    public static final String ESTIMATE_NUMBER_OF_DELIVERYMAN_REQUIRED = "/estimateNumberOfDeliveryManRequired";
     public static final String GENERATE_DELIVERY_ROUTE = "/generateDeliveryRoute/{deliveryId}";
     public static final String GENERATE_DELIVERY_ROUTE_FOR_TODAY = "/generateDeliveryRouteForToday";
 
