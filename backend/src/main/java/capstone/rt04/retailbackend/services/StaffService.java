@@ -355,19 +355,6 @@ public class StaffService {
         return storeStaff;
     }
 
-    public List<Staff> retrieveStaffOfStore(Long storeId) {
-        List<Staff> allStaff = retrieveStoreStaff();
-        List<Staff> storeStaff = new ArrayList<Staff>();
-
-        for(Staff s: allStaff){
-            if(s.getStore().getStoreId().equals(storeId)){
-                storeStaff.add(s);
-            }
-        }
-
-        return storeStaff;
-    }
-
     //staff logins with username
     public Staff staffLogin(String username, String password) throws InvalidStaffCredentialsException, InputDataValidationException {
 

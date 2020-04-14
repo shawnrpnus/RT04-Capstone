@@ -147,7 +147,7 @@ class AddStyleToProduct extends Component {
                         p.product.styles.filter(
                           t => t.styleId === this.state.styleId
                         ).length === 0
-                    )}
+                  )}
                     selectionAction={{
                       tooltip: "Add Style To Products",
                       icon: Add,

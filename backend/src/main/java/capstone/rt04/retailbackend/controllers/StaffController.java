@@ -249,16 +249,6 @@ public class StaffController {
         }
     }
 
-    @GetMapping(RETRIEVE_STAFF_OF_STORE)
-    public ResponseEntity<?> retrieveStoreStaff(@PathVariable Long storeId) {
-        try {
-            List<Staff> staff = staffService.retrieveStaffOfStore(storeId);
-            return new ResponseEntity<>(staff, HttpStatus.OK);
-        } catch (Exception ex) {
-            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
     private void clearStaffRelationship(Staff staff) {
         Store s = staff.getStore();
         if (s != null) {

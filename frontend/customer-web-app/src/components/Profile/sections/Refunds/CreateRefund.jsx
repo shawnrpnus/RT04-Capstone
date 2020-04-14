@@ -86,7 +86,8 @@ const CreateRefund = ({
           _.get(currTransaction, "promoCode")
           ? _.get(currTransaction, "promoCode.promoCodeName")
           : "-",
-        promoCodeClaimed: _.get(currTransaction, "transactionLineItems[0].refundLineItems[0]") && _.get(currTransaction, "promoCode")
+        promoCodeClaimed: _.get(currTransaction, "transactionLineItems[0].refundLineItems[0]")
+          && _.get(currTransaction, "promoCode") && _.get(currTransaction, "promoCode.flatDiscount")
       })),
     [currTransaction]
   );

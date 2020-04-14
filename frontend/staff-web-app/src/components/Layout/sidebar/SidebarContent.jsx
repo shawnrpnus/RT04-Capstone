@@ -245,7 +245,7 @@ class SidebarContent extends Component {
               />
             </SidebarCategory>
           )}
-          {store && (
+          {(store || warehouse) && (
             <SidebarCategory title="Refund" customIcon={<MdPayment />}>
               <SidebarLink
                 title="Create Refund"
@@ -347,6 +347,11 @@ class SidebarContent extends Component {
               <SidebarLink
                 title="View transaction"
                 route="/transaction/viewAll"
+                onClick={this.hideSidebar}
+              />
+              <SidebarLink
+                title="View details"
+                route="/transaction/viewOne"
                 onClick={this.hideSidebar}
               />
             </SidebarCategory>

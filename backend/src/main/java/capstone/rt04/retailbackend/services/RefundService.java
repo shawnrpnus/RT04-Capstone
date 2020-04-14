@@ -122,9 +122,9 @@ public class RefundService {
         }
 
         PromoCode promoCode;
-        if(promoCodeId != Long.valueOf("0") && !isRefundedBefore) {
+        if(promoCodeId != Long.valueOf("0")) {
             promoCode = promoCodeService.retrievePromoCodeById(promoCodeId);
-            if(!(promoCode.getFlatDiscount() == null)){
+            if(!(promoCode.getFlatDiscount() == null) && !isRefundedBefore){
                 refundAmount = refundAmount.subtract(promoCode.getFlatDiscount());
             } else if (!(promoCode.getPercentageDiscount() == null)) {
                 BigDecimal val = promoCode.getPercentageDiscount().multiply(BigDecimal.valueOf(0.01));
@@ -337,6 +337,26 @@ public class RefundService {
         return refunds;
     }
 
+    public List<Refund> retrieveAllRefundsByParameter(Long storeId, Long warehouseId) {
+        List<Refund> refunds = retrieveAllRefunds();
+        List<Refund> refundsByParameter = new ArrayList<>();
+        if(storeId != null) {
+            for(Refund r: refunds) {
+                if(r.getRefundMode()== RefundModeEnum.IN_STORE && r.getStore().getStoreId().equals(storeId)) {
+                    refundsByParameter.add(r);
+                }
+            }
+        } else {
+            for(Refund r: refunds) {
+                if(r.getRefundMode() == RefundModeEnum.ONLINE) {
+                    refundsByParameter.add(r);
+                }
+            }
+        }
+        lazilyLoadRefunds(refundsByParameter);
+        return refundsByParameter;
+    }
+
     public List<Refund> retrieveRefundsByCustomerId(Long customerId) {
         List<Refund> refunds = refundRepository.findAllByCustomer_CustomerId(customerId);
         lazilyLoadRefunds(refunds);
@@ -349,7 +369,6 @@ public class RefundService {
             throw new RefundNotFoundException("Refund with Transaction ID " + transactionId + " does not exist!");
         }
 
-        System.out.println("REFUNDDDDD ID" + refunds.get(0).getRefundId());
         return refunds;
     }
 

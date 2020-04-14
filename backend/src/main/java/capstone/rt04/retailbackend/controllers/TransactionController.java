@@ -3,6 +3,7 @@ package capstone.rt04.retailbackend.controllers;
 import capstone.rt04.retailbackend.entities.Transaction;
 import capstone.rt04.retailbackend.request.transaction.SalesByDayRequest;
 import capstone.rt04.retailbackend.request.transaction.TransactionRetrieveRequest;
+import capstone.rt04.retailbackend.request.transaction.UpdateTransactionRequest;
 import capstone.rt04.retailbackend.response.GenericErrorResponse;
 import capstone.rt04.retailbackend.response.analytics.SalesByDay;
 import capstone.rt04.retailbackend.services.RelationshipService;
@@ -53,6 +54,17 @@ public class TransactionController {
     public ResponseEntity<?> retrieveTransactionById(@PathVariable Long transactionId) {
         try {
             Transaction transaction = transactionService.retrieveTransactionById(transactionId);
+            relationshipService.clearTransactionRelationships(transaction);
+            return new ResponseEntity<>(transaction, HttpStatus.OK);
+        } catch (TransactionNotFoundException ex) {
+            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping(RETRIEVE_TRANSACTION_BY_QR_CODE)
+    public ResponseEntity<?> retrieveTransactionByQRCode(@PathVariable Long transactionId, @PathVariable Long storeId) {
+        try {
+            Transaction transaction = transactionService.retrieveTransactionByQRCode(transactionId, storeId);
             relationshipService.clearTransactionRelationships(transaction);
             return new ResponseEntity<>(transaction, HttpStatus.OK);
         } catch (TransactionNotFoundException ex) {
@@ -135,6 +147,16 @@ public class TransactionController {
         }
     }
 
+    @PostMapping(CONFIRM_RECEIVED_TRANSACTION)
+    public ResponseEntity<?> confirmReceivedTransaction(@RequestBody UpdateTransactionRequest updateTransactionRequest) {
+        try {
+            System.out.println("did run");
+            Transaction transaction = transactionService.confirmReceivedTransaction(updateTransactionRequest.getTransactionId());
+            return new ResponseEntity<>(transaction, HttpStatus.OK);
+        } catch (TransactionNotFoundException ex) {
+            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     @GetMapping("/generateTestTransactions/{numTxns}")
     public ResponseEntity<?> generateTestTransactions(@PathVariable Integer numTxns) throws PromoCodeNotFoundException, StoreNotFoundException, InvalidCartTypeException, StripeException, AddressNotFoundException, InputDataValidationException, ProductVariantNotFoundException, InsufficientStockException, CustomerNotFoundException {
 
