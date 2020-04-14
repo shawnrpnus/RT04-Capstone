@@ -1,6 +1,6 @@
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import shoppingCartStyle from "../../../../assets/jss/material-kit-pro-react/views/shoppingCartStyle";
 import classNames from "classnames";
 import Card from "../../../UI/Card/Card";
@@ -14,7 +14,7 @@ import CancelIcon from "@material-ui/icons/Cancel";
 import colourList from "../../../../assets/colours";
 import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
-import {retrieveRefundsByTransactionId} from "../../../../redux/actions/refundAction";
+import { retrieveRefundsByTransactionId } from "../../../../redux/actions/refundAction";
 
 const _ = require("lodash");
 
@@ -25,7 +25,7 @@ function CreateRefundTable({
   largeModal: [largeModal, setLargeModal],
   currTransaction: currTransaction,
   inputState: [inputState, setInputState],
- totalForEachItem: totalForEachItem
+  totalForEachItem: totalForEachItem
 }) {
   const classes = useStyles();
 
@@ -44,15 +44,15 @@ function CreateRefundTable({
     let amount = 0;
     amount = calculateTotalRefundAmount(arr);
 
-    setInputState((inputState) => ({
+    setInputState(inputState => ({
       ...inputState,
       quantityToRefund: arr,
       quantity: totalQuantity,
-      totalRefundAmount: amount,
+      totalRefundAmount: amount
     }));
   };
 
-  const calculateTotalRefundAmount = (arr) => {
+  const calculateTotalRefundAmount = arr => {
     const lineItems = currTransaction.transactionLineItems;
     let amt = 0;
     let temp = { ...inputState };
@@ -67,10 +67,9 @@ function CreateRefundTable({
         arrayAmt[index] = item.initialSubTotal / item.quantity;
       }
 
-
-      setInputState((inputState) => ({
+      setInputState(inputState => ({
         ...inputState,
-        refundAmt: arrayAmt,
+        refundAmt: arrayAmt
       }));
       return amt;
     }
@@ -85,8 +84,6 @@ function CreateRefundTable({
     return amt;
   };
 
-  // console.log("currTransaction",currTransaction);
-  // console.log(totalForEachItem);
   return (
     <div className={classNames(classes.main)}>
       <div className={classes.container}>
@@ -103,26 +100,24 @@ function CreateRefundTable({
                         product,
                         sizeDetails,
                         colour,
-                        productVariantId,
+                        productVariantId
                       } = lineItem.productVariant;
                       const { productName, discountedPrice, price } = product;
                       const {
                         quantity,
                         initialSubTotal,
-                        finalSubTotal,
+                        finalSubTotal
                       } = lineItem;
                       const afterDiscount = finalSubTotal / quantity;
                       const beforeDiscount = initialSubTotal / quantity;
-                      if(!totalForEachItem) {
+                      if (!totalForEachItem) {
                         totalForEachItem = new Array(index).fill(0);
                       }
-                      console.log(lineItem);
-                      console.log(index);
-                      console.log(totalForEachItem[index]);
-                      if(!totalForEachItem[index]) {
+                      if (!totalForEachItem[index]) {
                         totalForEachItem[index] = 0;
                       }
-                      const quantityToRefund = quantity + 1 - totalForEachItem[index];
+                      const quantityToRefund =
+                        quantity + 1 - totalForEachItem[index];
                       // const quantityToRefund = quantity +1;
 
                       return (
@@ -183,7 +178,7 @@ function CreateRefundTable({
                                   value={
                                     inputState.quantityToRefund[index] || 0
                                   }
-                                  onChange={(e) => {
+                                  onChange={e => {
                                     onChangeTable(e, index, lineItem);
                                   }}
                                   fullWidth

@@ -92,7 +92,8 @@ public class DeliveryController {
 
     @GetMapping(AUTOMATE_DELIVERY_ALLOCATION)
     public ResponseEntity<?> automateDeliveryAllocation(@PathVariable Long staffId) throws StaffNotFoundException, DeliveryNotFoundException, NoItemForDeliveryException {
-        deliveryService.automateDeliveryAllocation(staffId);
+        List<Transaction> transactions = deliveryService.automateDeliveryAllocation(staffId);
+        deliveryService.sendDeliveryNotificationEmail(transactions);
         return new ResponseEntity<>(ResponseEntity.ok("Delivery generated for staff " + staffId), HttpStatus.OK);
     }
 

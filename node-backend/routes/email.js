@@ -11,8 +11,8 @@ const mailGenerator = new Mailgen({
     // Optional product logo
     logo:
       "https://res.cloudinary.com/rt04capstone/image/upload/v1583433855/rsz_1apricot-nut-logo-word_jzhocy.png",
-    copyright: "Copyright © 2020 apricot & nut. All rights reserved.",
-  },
+    copyright: "Copyright © 2020 apricot & nut. All rights reserved."
+  }
 });
 const transporter = Nodemailer.createTransport({
   host: "smtp.gmail.com",
@@ -20,8 +20,8 @@ const transporter = Nodemailer.createTransport({
   secure: false, // true for 465, false for other ports
   auth: {
     user: "rt04capstone@gmail.com", // generated ethereal user
-    pass: "retailretail", // generated ethereal password
-  },
+    pass: "retailretail" // generated ethereal password
+  }
 });
 
 // req fields: email, fullName, link
@@ -37,11 +37,11 @@ router.post("/sendVerificationEmail", async (req, res) => {
         button: {
           color: "#22BC66", // Optional action button color
           text: "Verify",
-          link: link,
-        },
+          link: link
+        }
       },
-      outro: "This link is valid for 1 hour.",
-    },
+      outro: "This link is valid for 1 hour."
+    }
   };
 
   const emailBody = mailGenerator.generate(emailContent);
@@ -53,7 +53,7 @@ router.post("/sendVerificationEmail", async (req, res) => {
       to: email,
       subject: "Verify your account",
       text: emailText,
-      html: emailBody,
+      html: emailBody
     },
     (error, info) => {
       if (error) {
@@ -78,11 +78,11 @@ router.post("/sendForgotPasswordEmail", async (req, res) => {
         button: {
           color: "#22BC66", // Optional action button color
           text: "Reset Password",
-          link: link,
-        },
+          link: link
+        }
       },
-      outro: "This link is valid for 1 hour.",
-    },
+      outro: "This link is valid for 1 hour."
+    }
   };
 
   const emailBody = mailGenerator.generate(emailContent);
@@ -94,7 +94,7 @@ router.post("/sendForgotPasswordEmail", async (req, res) => {
       to: email,
       subject: "Reset your password",
       text: emailText,
-      html: emailBody,
+      html: emailBody
     },
     (error, info) => {
       if (error) {
@@ -118,10 +118,10 @@ router.post("/sendUnattendedCartEmail", async (req, res) => {
         button: {
           color: "#22BC66", // Optional action button color
           text: "Go to cart",
-          link: link,
-        },
-      },
-    },
+          link: link
+        }
+      }
+    }
   };
 
   const emailBody = mailGenerator.generate(emailContent);
@@ -133,7 +133,7 @@ router.post("/sendUnattendedCartEmail", async (req, res) => {
       to: email,
       subject: "Hi, you've left something in your shopping cart!",
       text: emailText,
-      html: emailBody,
+      html: emailBody
     },
     (error, info) => {
       if (error) {
@@ -175,9 +175,9 @@ router.post("/contactUsConfirmation", async (req, res) => {
       intro: response,
       outro: [
         "\nNeed help, or have questions?",
-        "Just reply to this email, we'd love to help.",
-      ],
-    },
+        "Just reply to this email, we'd love to help."
+      ]
+    }
   };
 
   const emailBody = mailGenerator.generate(emailContent);
@@ -189,7 +189,7 @@ router.post("/contactUsConfirmation", async (req, res) => {
       to: email,
       subject: "apricot & nut - Feedback confirmation email",
       text: emailText,
-      html: emailBody,
+      html: emailBody
     },
     (error, info) => {
       if (error) {
@@ -211,9 +211,9 @@ router.post("/replyToEmail", async (req, res) => {
       intro: reply,
       outro: [
         "\nNeed help, or have questions?",
-        "Just reply to this email, we'd love to help.",
-      ],
-    },
+        "Just reply to this email, we'd love to help."
+      ]
+    }
   };
 
   const emailBody = mailGenerator.generate(emailContent);
@@ -225,7 +225,7 @@ router.post("/replyToEmail", async (req, res) => {
       to: email,
       subject: "apricot & nut - Support Ticket",
       text: emailText,
-      html: emailBody,
+      html: emailBody
     },
     (error, info) => {
       if (error) {
@@ -245,13 +245,13 @@ router.post("/massSendEmail", async (req, res) => {
     intro,
     instructions,
     buttonText: text,
-    link,
+    link
   } = req.body;
   const enableAction = instructions && text && link;
   const emails = list.split(",");
 
   Promise.all(
-    emails.map((email) => {
+    emails.map(email => {
       const emailContent = {
         body: {
           title: subject,
@@ -262,11 +262,11 @@ router.post("/massSendEmail", async (req, res) => {
                 button: {
                   color: "#22BC66", // Action button color
                   text,
-                  link,
-                },
+                  link
+                }
               }
-            : null,
-        },
+            : null
+        }
       };
 
       const emailBody = mailGenerator.generate(emailContent);
@@ -278,7 +278,7 @@ router.post("/massSendEmail", async (req, res) => {
           to: email,
           subject,
           text: emailText,
-          html: emailBody,
+          html: emailBody
         },
         (error, info) => {
           if (error) {
@@ -295,10 +295,49 @@ router.post("/massSendEmail", async (req, res) => {
       console.log("Email Sent");
       res.status(200).send({ message: "Email Sent" });
     })
-    .catch((err) => {
+    .catch(err => {
       console.log(err.response);
       res.status(500).send(err.response);
     });
+});
+
+// send delivery notification
+router.post("/deliveryNotification", async (req, res) => {
+  // const { email, orderNumber, fullName } = req.body;
+  console.log(req.body);
+  console.log("parsing");
+  console.log(JSON.stringify(req.body));
+
+  // intro = [];
+
+  // const emailContent = {
+  //   body: {
+  //     name: fullName,
+  //     intro: `Your purchase(s) with order no. (${orderNumber}) will be delivered today! Please be there to collect your items!`
+  //   }
+  // };
+
+  // const emailBody = mailGenerator.generate(emailContent);
+  // const emailText = mailGenerator.generatePlaintext(emailContent);
+
+  // transporter.sendMail(
+  //   {
+  //     from: "rt04capstone@gmail.com",
+  //     to: email,
+  //     subject: "apricot & nut - Your purchase(s) is/are coming to you!",
+  //     text: emailText,
+  //     html: emailBody
+  //   },
+  //   (error, info) => {
+  //     if (error) {
+  //       console.log(error);
+  //       res.status(500).send({ message: "Email failed to send" });
+  //     } else {
+  //       res.status(200).send({ message: "Email sent" });
+  //     }
+  //   }
+  // );
+  res.status(200).send({ message: "Email Sent" });
 });
 
 // send refund label
@@ -315,11 +354,11 @@ router.post("/sendRefundLabel", async (req, res) => {
     body: {
       name: `${name}`,
       intro:
-        "We've submitted a refund for your returned merchandise. You can find the Refund Label attached.",
+        "We've submitted a refund for your returned merchandise. You can find the refund label attached.",
       outro:
         "We hope you'll shop with us again. " +
-        "Feel free to contact us @ 6512 5534 with any questions. ",
-    },
+        "Feel free to contact us @ 6512 5534 with any questions. "
+    }
   };
 
   const emailBody = mailGenerator.generate(emailContent);
@@ -338,11 +377,11 @@ router.post("/sendRefundLabel", async (req, res) => {
       html: emailBody,
       attachments: [
         {
-          filename: `RefundLabel_${refundId}.pdf`,
+          filename: `RefundLabel_${refundId}`,
           path,
-          contentType: "application/pdf",
-        },
-      ],
+          contentType: "application/pdf"
+        }
+      ]
     },
     (error, info) => {
       if (error) {

@@ -13,7 +13,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.springframework.cglib.core.Local;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
@@ -48,9 +47,10 @@ public class Transaction implements Serializable {
     private CollectionModeEnum collectionMode;
 
     private Integer totalQuantity;
-
+    @Column(precision = 11, scale = 2)
     private BigDecimal initialTotalPrice;
 
+    @Column(precision = 11, scale = 2)
     private BigDecimal finalTotalPrice; //after discounts etc.
 
     private DeliveryStatusEnum deliveryStatus;

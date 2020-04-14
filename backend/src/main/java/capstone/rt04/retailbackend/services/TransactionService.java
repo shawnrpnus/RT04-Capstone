@@ -21,7 +21,6 @@ import capstone.rt04.retailbackend.util.exceptions.transaction.TransactionNotFou
 import com.stripe.exception.StripeException;
 import com.stripe.model.PaymentMethod;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cglib.core.Local;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,9 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.*;
 
 @Service
@@ -268,7 +264,7 @@ public class TransactionService {
                     transactionLineItem.setFinalSubTotal(finalPrice.multiply(quantity));
                     break;
                 } else {
-                    transactionLineItem.setFinalSubTotal(transactionLineItem.getInitialSubTotal());
+                    transactionLineItem.setFinalSubTotal(null);
                 }
             }
 
