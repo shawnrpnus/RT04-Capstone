@@ -52,8 +52,7 @@ class ViewAllPayrollsHR extends React.Component {
         super(props);
         this.handleShowTable = this.handleShowTable.bind(this);
         this.state = ({
-            selectedDate: "2020-04-01",
-            showTable:false,
+            selectedDate: "2020-04-01"
         });
     }
 

@@ -22,6 +22,14 @@
     <br/>
     <br/>
 
+### Preloading Data
+1. Run the application. This will create all database tables and fill with some preloaded information. 
+2. Call API: GET http://localhost:8080/api/product/updateAlgolia. This will update the Algolia search index with our product information. 
+3. Run update1000.sql in src/main/resources/scripts. This will preload stocks to be used for preloading transactions.
+4. Call API: GET http://localhost:8080/api/transaction/generateTestTransactions/300, where 300 is the number of transactions to preload.
+5. Run randomTxnDate.sql in src/main/resources/scripts. This will randomise the preloaded transactions' dates.
+6. Run update.sql in src/main/resources/scripts. This will preload the appropriate stock data.
+
 ## Node.js Backend
 
 ### Setup

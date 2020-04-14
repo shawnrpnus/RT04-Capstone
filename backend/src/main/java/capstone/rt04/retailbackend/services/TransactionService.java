@@ -4,30 +4,39 @@ import capstone.rt04.retailbackend.entities.*;
 import capstone.rt04.retailbackend.repositories.AddressRepository;
 import capstone.rt04.retailbackend.repositories.TransactionLineItemRepository;
 import capstone.rt04.retailbackend.repositories.TransactionRepository;
+import capstone.rt04.retailbackend.response.analytics.SalesByDay;
+import capstone.rt04.retailbackend.util.Constants;
 import capstone.rt04.retailbackend.util.enums.CollectionModeEnum;
 import capstone.rt04.retailbackend.util.enums.DeliveryStatusEnum;
 import capstone.rt04.retailbackend.util.enums.SortEnum;
+import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.customer.AddressNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.customer.CustomerNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.inStoreRestockOrder.InsufficientStockException;
+import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.promoCode.PromoCodeNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.shoppingcart.InvalidCartTypeException;
 import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.transaction.TransactionNotFoundException;
 import com.stripe.exception.StripeException;
 import com.stripe.model.PaymentMethod;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cglib.core.Local;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.*;
 
 @Service
 @Transactional
+@Slf4j
 public class TransactionService {
 
     private final TransactionRepository transactionRepository;
@@ -225,7 +234,6 @@ public class TransactionService {
         return transactionsToReturn;
     }
 
-    // TODO: Make this method reusable for in-store checkout
     /*
     (1) Buy in store, collect in store: storeId == storeToCollectId, collectionModeEnum == IN_STORE
     (2) Buy in store, deliver home: storeId != null, storeToCollectId == null, collectionModeEnum == DELIVERY
@@ -233,9 +241,9 @@ public class TransactionService {
     (4) Buy online, deliver home: storeId == null, storeToCollectId == null, collectionModeEnum == DELIVERY
     */
     public Transaction createNewTransaction(Long customerId, Long storeId, String cartType, Address deliveryAddress,
-                                         Address billingAddress, Long storeToCollectId, Long promoCodeId,
-                                         CollectionModeEnum collectionModeEnum, String cardIssuer, String cardLast4,
-                                         String paymentMethodId) throws CustomerNotFoundException, InvalidCartTypeException, AddressNotFoundException, StoreNotFoundException, PromoCodeNotFoundException, StripeException {
+                                            Address billingAddress, Long storeToCollectId, Long promoCodeId,
+                                            CollectionModeEnum collectionModeEnum, String cardIssuer, String cardLast4,
+                                            String paymentMethodId) throws CustomerNotFoundException, InvalidCartTypeException, AddressNotFoundException, StoreNotFoundException, PromoCodeNotFoundException, StripeException {
         Customer customer = customerService.retrieveCustomerByCustomerId(customerId);
         ShoppingCart shoppingCart = shoppingCartService.retrieveShoppingCart(customerId, cartType);
 
@@ -274,16 +282,16 @@ public class TransactionService {
             // Looping through product stock of the selected product variant to find warehouse stock
             for (ProductStock productStock : shoppingCartItem.getProductVariant().getProductStocks()) {
                 if ((collectionModeEnum.equals(CollectionModeEnum.DELIVERY) || storeId == null)
-                        && productStock.getWarehouse() != null) {
+                        && productStock.getWarehouse() != null) { //cover all except buy & collect in store
                     // Deduct from warehouse
-                    System.out.println("Deduct from warehouse");
+                    //System.out.println("Deduct from warehouse");
                     productStock.setQuantity(productStock.getQuantity() - shoppingCartItem.getQuantity());
                 } else if (collectionModeEnum.equals(CollectionModeEnum.IN_STORE) &&
                         productStock.getStore() != null &&
                         productStock.getStore().getStoreId().equals(storeId)) {
                     // Deduct from the correct store ONLY when buying in store
-                    System.out.println("Deduct from db store ID: " + productStock.getStore().getStoreId() + " - pass in store ID "
-                            + storeId);
+//                    System.out.println("Deduct from db store ID: " + productStock.getStore().getStoreId() + " - pass in store ID "
+//                            + storeId);
                     productStock.setQuantity(productStock.getQuantity() - shoppingCartItem.getQuantity());
                 }
             }
@@ -396,9 +404,173 @@ public class TransactionService {
         return inStoreTxns;
     }
 
-    public List<Transaction> getCustomerInStoreCollectionTransactions(Long customerId){
+    public List<Transaction> getCustomerInStoreCollectionTransactions(Long customerId) {
         List<Transaction> txns = transactionRepository.findAllByCustomer_CustomerIdAndStoreIsNullAndStoreToCollectIsNotNull(customerId);
         lazyLoadTransaction(txns);
         return txns;
+    }
+
+    public void generateTestTransactions(Integer numTxns) throws AddressNotFoundException, StripeException, InvalidCartTypeException, CustomerNotFoundException, PromoCodeNotFoundException, StoreNotFoundException, InputDataValidationException, ProductVariantNotFoundException, InsufficientStockException {
+        Random r = new Random();
+        // 4 types of transactions
+        List<Customer> allCustomers = customerService.retrieveAllCustomers();
+        List<ProductVariant> productVariants = productService.retrieveAllProductVariant();
+        List<Store> stores = storeService.retrieveAllStores();
+
+        Address address = new Address("Residential College 4", null, "138614",
+                "NUS RC4", "1.306610", "103.773840");
+
+        for (int i = 0; i < numTxns; i++) {
+            // Random customer
+            Customer customer = allCustomers.get(r.nextInt(allCustomers.size()));
+
+            int onlineOrInstore = r.nextInt(2); // 0 for online, 1 for in-store
+            int collectOrDeliver = r.nextInt(2); // 0 for collect, 1 for deliver
+            int numProductVariants = r.nextInt(5) + 1;
+
+            List<Address> addresses = customer.getShippingAddresses();
+            if (addresses == null || addresses.size() == 0) {
+                customer = customerService.addShippingAddress(customer.getCustomerId(), address);
+                address = customer.getShippingAddresses().get(0);
+            } else {
+                address = customer.getShippingAddresses().get(0);
+            }
+
+            if (onlineOrInstore == 0) { //ONLINE
+                // Update ONLINE shopping cart with random num of items
+                for (int p = 0; p < numProductVariants; p++) {
+                    ProductVariant pv = productVariants.get(r.nextInt(productVariants.size()));
+
+                    customer = shoppingCartService.updateQuantityOfProductVariant(r.nextInt(2) + 1,
+                            pv.getProductVariantId(), customer.getCustomerId(), Constants.ONLINE_SHOPPING_CART);
+
+                }
+                // Either collect in store, or deliver home
+                if (collectOrDeliver == 0) { //collect
+                    // (3) Buy online, collect in store: storeId == null, storeToCollectId != null,
+                    // collectionModeEnum == IN_STORE
+                    createNewTransaction(customer.getCustomerId(), null, Constants.ONLINE_SHOPPING_CART,
+                            address, address, stores.get(r.nextInt(stores.size())).getStoreId(),
+                            null, CollectionModeEnum.IN_STORE, "Visa", "4242", null);
+                } else { //deliver
+                    // (4) Buy online, deliver home: storeId == null, storeToCollectId == null, collectionModeEnum == DELIVERY
+                    createNewTransaction(customer.getCustomerId(), null, Constants.ONLINE_SHOPPING_CART,
+                            address, address, null,
+                            null, CollectionModeEnum.DELIVERY, "Visa", "4242", null);
+                }
+
+            } else { //IN-STORE
+                // Update IN-STORE shopping cart
+                Store store = stores.get(r.nextInt(stores.size()));
+                for (int p2 = 0; p2 < numProductVariants; p2++) {
+                    ProductVariant pv = productVariants.get(r.nextInt(productVariants.size()));
+
+                    customer = shoppingCartService.updateQuantityOfProductVariantWithStore(r.nextInt(2) + 1,
+                            pv.getProductVariantId(), customer.getCustomerId(), store.getStoreId());
+
+                }
+                // Either collect in store, or deliver home
+                Long storeId = stores.get(r.nextInt(stores.size())).getStoreId();
+                if (collectOrDeliver == 0) { //collect
+                    // (1) Buy in store, collect in store: storeId == storeToCollectId, collectionModeEnum == IN_STORE
+                    createNewTransaction(customer.getCustomerId(), storeId, Constants.IN_STORE_SHOPPING_CART,
+                            address, address, storeId,
+                            null, CollectionModeEnum.IN_STORE, "Visa", "4242", null);
+                } else { //deliver
+                    // (2) Buy in store, deliver home: storeId != null, storeToCollectId == null, collectionModeEnum == DELIVERY
+                    createNewTransaction(customer.getCustomerId(), storeId, Constants.IN_STORE_SHOPPING_CART,
+                            address, address, null,
+                            null, CollectionModeEnum.DELIVERY, "Visa", "4242", null);
+                }
+            }
+        }
+    }
+
+    //Strings must be YYYY-MM-DD
+    public List<SalesByDay> retrieveSalesByDayWithParameters(String fromDateString, String toDateString, List<Long> fromStoreIds) {
+        List<SalesByDay> result = new ArrayList<>();
+        List<Transaction> allTransactions = transactionRepository.findAllByOrderByCreatedDateTime();
+
+        SalesByDay salesForDay = new SalesByDay();
+        LocalDate earliestTransactionDate = allTransactions.get(0).getCreatedLocalDate();
+        salesForDay.setDate(earliestTransactionDate);
+        for (Transaction transaction : allTransactions) {
+            boolean dateCheck = transaction.isBetween(fromDateString, toDateString);
+            boolean storeCheck = false;
+            if (fromStoreIds == null) {
+                storeCheck = true;
+            } else if (transaction.getStore() != null
+                    && fromStoreIds.contains(transaction.getStore().getStoreId())) {
+                storeCheck = true;
+            }
+
+            if (!(dateCheck && storeCheck)) continue;
+
+            LocalDate transactionDate = transaction.getCreatedLocalDate();
+            if (!salesForDay.getDate().isEqual(transactionDate)) {
+                //if different date and have transactions, calculate average, then add old object to the result
+                if (salesForDay.getTotalTransactions() > 0) {
+                    salesForDay.calculateAverageTotalSales();
+                    result.add(salesForDay.createCopy());
+                }
+                //create new object to be tracked outside loop
+                salesForDay = new SalesByDay();
+                salesForDay.setDate(transactionDate);
+            }
+            //if same date, just add to total and increment num transactions
+            salesForDay.addToTotalSales(transaction.getFinalTotalPrice());
+            salesForDay.incrementTotalTransactions();
+        }
+        // if same day until the end of loop
+        if (salesForDay.getTotalTransactions() > 0) {
+            salesForDay.calculateAverageTotalSales();
+            result.add(salesForDay.createCopy());
+        }
+
+        //fill in empty dates
+        List<LocalDate> dateList = new ArrayList<>();
+        LocalDate latestTransactionDate = allTransactions.get(allTransactions.size() - 1).getCreatedLocalDate();
+        if (!(fromDateString == null && toDateString == null)) {
+            if (fromDateString != null && toDateString == null) {
+                dateList = generateLocalDateInterval(LocalDate.parse(fromDateString), latestTransactionDate);
+            } else if (fromDateString == null) { //only haveToDateString
+                dateList = generateLocalDateInterval(earliestTransactionDate, LocalDate.parse(toDateString));
+            } else { //have both
+                dateList = generateLocalDateInterval(LocalDate.parse(fromDateString), LocalDate.parse(toDateString));
+            }
+        } else {
+            dateList = generateLocalDateInterval(earliestTransactionDate, latestTransactionDate);
+        }
+
+        int currDateIndex = 0;
+        int currResultIndex = 0;
+        while (currDateIndex < dateList.size()) {
+            LocalDate currDate = dateList.get(currDateIndex);
+            if (currResultIndex < result.size()) {
+                SalesByDay currElement = result.get(currResultIndex);
+                if (!currElement.getDate().isEqual(currDate) && currResultIndex < result.size()) {
+                    SalesByDay emptySalesByDay = new SalesByDay();
+                    emptySalesByDay.setDate(currDate);
+                    result.add(currResultIndex, emptySalesByDay);
+                }
+            } else {
+                SalesByDay emptySalesByDay = new SalesByDay();
+                emptySalesByDay.setDate(currDate);
+                result.add(emptySalesByDay);
+            }
+            currDateIndex++;
+            currResultIndex++;
+
+        }
+        return result;
+    }
+
+    private List<LocalDate> generateLocalDateInterval(LocalDate fromDate, LocalDate toDate) {
+        List<LocalDate> result = new ArrayList<>();
+        for (LocalDate date = fromDate; date.isBefore(toDate) || date.isEqual(toDate); date = date.plusDays(1)) {
+            log.info(date.toString());
+            result.add(date);
+        }
+        return result;
     }
 }

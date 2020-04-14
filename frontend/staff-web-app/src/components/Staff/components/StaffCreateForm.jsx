@@ -19,15 +19,9 @@ import { Button, ButtonToolbar } from "reactstrap";
 import * as PropTypes from "prop-types";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import axios from "axios";
-import MaterialNumberSelect from "../../../shared/components/Form/MaterialNumberSelect";
 import ContentSaveIcon from "mdi-react/ContentSaveIcon";
 import CloseCircleIcon from "mdi-react/CloseCircleIcon";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import FormControl from "@material-ui/core/FormControl";
-import InputLabel from "@material-ui/core/InputLabel";
-import Select from "@material-ui/core/Select";
-import MenuItem from "@material-ui/core/MenuItem";
-import makeStyles from "@material-ui/core/styles/makeStyles";
 
 class StaffCreateForm extends Component {
   static propTypes = {

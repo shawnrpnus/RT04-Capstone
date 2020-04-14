@@ -20,4 +20,6 @@ public interface TransactionRepository extends CrudRepository<Transaction, Long>
     List<Transaction> findAllByCustomer_CustomerIdAndStoreIsNotNull(Long customerId);
 
     List<Transaction> findAllByCustomer_CustomerIdAndStoreIsNullAndStoreToCollectIsNotNull(Long customerId);
+
+    List<Transaction> findAllByOrderByCreatedDateTime();
 }

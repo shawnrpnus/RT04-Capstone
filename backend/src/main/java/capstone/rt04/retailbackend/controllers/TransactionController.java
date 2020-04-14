@@ -1,11 +1,22 @@
 package capstone.rt04.retailbackend.controllers;
 
 import capstone.rt04.retailbackend.entities.Transaction;
+import capstone.rt04.retailbackend.request.transaction.SalesByDayRequest;
 import capstone.rt04.retailbackend.request.transaction.TransactionRetrieveRequest;
 import capstone.rt04.retailbackend.response.GenericErrorResponse;
+import capstone.rt04.retailbackend.response.analytics.SalesByDay;
 import capstone.rt04.retailbackend.services.RelationshipService;
 import capstone.rt04.retailbackend.services.TransactionService;
+import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
+import capstone.rt04.retailbackend.util.exceptions.customer.AddressNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.customer.CustomerNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.inStoreRestockOrder.InsufficientStockException;
+import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.promoCode.PromoCodeNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.shoppingcart.InvalidCartTypeException;
+import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.transaction.TransactionNotFoundException;
+import com.stripe.exception.StripeException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -100,7 +111,7 @@ public class TransactionController {
     }
 
     @GetMapping(RETRIEVE_CUSTOMER_IN_STORE_COLLECION_TRANSACTIONS)
-    public ResponseEntity<?> retrieveCustomerInStoreCollectionTransactions(@RequestParam Long customerId){
+    public ResponseEntity<?> retrieveCustomerInStoreCollectionTransactions(@RequestParam Long customerId) {
         List<Transaction> txns = transactionService.getCustomerInStoreCollectionTransactions(customerId);
         for (Transaction txn : txns) {
             relationshipService.clearTransactionRelationships(txn);
@@ -122,5 +133,20 @@ public class TransactionController {
         } catch (Exception ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @GetMapping("/generateTestTransactions/{numTxns}")
+    public ResponseEntity<?> generateTestTransactions(@PathVariable Integer numTxns) throws PromoCodeNotFoundException, StoreNotFoundException, InvalidCartTypeException, StripeException, AddressNotFoundException, InputDataValidationException, ProductVariantNotFoundException, InsufficientStockException, CustomerNotFoundException {
+
+        transactionService.generateTestTransactions(numTxns);
+        return new ResponseEntity<>("Transactions generated successfully", HttpStatus.OK);
+
+    }
+
+    @PostMapping("/retrieveSalesByDay")
+    public ResponseEntity<?> retrieveSalesByDay(@RequestBody SalesByDayRequest req){
+        List<SalesByDay> res = transactionService.retrieveSalesByDayWithParameters(req.getFromDateString(),
+                req.getToDateString(), req.getFromStoreIds());
+        return new ResponseEntity<>(res, HttpStatus.OK);
     }
 }

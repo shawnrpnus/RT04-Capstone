@@ -5,8 +5,10 @@ import capstone.rt04.retailbackend.repositories.*;
 import capstone.rt04.retailbackend.util.ErrorMessages;
 import capstone.rt04.retailbackend.util.enums.RoleNameEnum;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
+import capstone.rt04.retailbackend.util.exceptions.product.ProductNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.staff.*;
 import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.tag.TagNotFoundException;
 import org.springframework.core.env.Environment;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -340,6 +342,32 @@ public class StaffService {
         return lazyLoadStaffFields(staff);
     }
 
+    public List<Staff> retrieveStoreStaff() {
+        List<Staff> allStaff = staffRepository.findAll();
+        List<Staff> storeStaff = new ArrayList<Staff>();
+
+        for(Staff s: allStaff){
+            if(s.getStore() != null){
+                storeStaff.add(s);
+            }
+        }
+
+        return storeStaff;
+    }
+
+    public List<Staff> retrieveStaffOfStore(Long storeId) {
+        List<Staff> allStaff = retrieveStoreStaff();
+        List<Staff> storeStaff = new ArrayList<Staff>();
+
+        for(Staff s: allStaff){
+            if(s.getStore().getStoreId().equals(storeId)){
+                storeStaff.add(s);
+            }
+        }
+
+        return storeStaff;
+    }
+
     //staff logins with username
     public Staff staffLogin(String username, String password) throws InvalidStaffCredentialsException, InputDataValidationException {
 
@@ -518,6 +546,21 @@ public class StaffService {
         msg.setSubject("Your Password Has Been Reset");
         msg.setText("Your New Password is:" + password);
         javaMailSender.send(msg);
+    }
+
+    public Store reassignStaffStore(Long storeId, List<Long> staffIds) throws StoreNotFoundException, StaffNotFoundException {
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new StoreNotFoundException("Store with id: " + storeId + " does not exist"));
+        for(Long s : staffIds) {
+            Staff staff = staffRepository.findByStaffId(s);
+            try{
+                staff.setStore(store);
+            } catch(NullPointerException ex) {
+                throw new StaffNotFoundException("Staff with Staff ID: " + s + " not found!");
+            }
+        }
+
+        return store;
     }
 
 
