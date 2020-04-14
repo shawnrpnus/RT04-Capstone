@@ -355,6 +355,18 @@ class SidebarContent extends Component {
               />
             </SidebarCategory>
           )}
+          {salesmarketing && (
+            <SidebarCategory
+              title="Analytics"
+              customIcon={<FaMoneyBillAlt />}
+            >
+              <SidebarLink
+                title="Sales"
+                route="/analytics/sales"
+                onClick={this.hideSidebar}
+              />
+            </SidebarCategory>
+          )}
         </ul>
       </div>
     );

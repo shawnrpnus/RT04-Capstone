@@ -18,7 +18,7 @@ import "./graphStyle.css";
 const _ = require("lodash");
 
 function Graph(props) {
-  const { popOptions, lineMode, allStores } = props;
+  const { popOptions, lineMode, allStores, yAxis } = props;
 
   const storeIds = _.keys(popOptions).filter(
     key => key !== "online" && popOptions[key]
@@ -35,17 +35,28 @@ function Graph(props) {
         .storeName;
     }
   };
+
+  const renderYAxisName = () => {
+    if (yAxis === "averageTotalSales") {
+      return "Average Sales ($)";
+    } else if (yAxis === "totalSales") {
+      return "Total Sales ($)";
+    } else if (yAxis === "totalTransactions") {
+      return "Total Transactions";
+    }
+  };
+
   return (
     <>
       {salesByDay ? (
         <ResponsiveContainer
           width="100%"
-          height={500}
+          height={550}
           style={{ fill: "black" }}
         >
           <AreaChart
             data={salesByDay}
-            margin={{ top: 5, right: 30, left: 20, bottom: 50 }}
+            margin={{ top: 5, right: 30, left: 20, bottom: 100 }}
           >
             <CartesianGrid strokeDasharray="3 3" style={{ opacity: 0.5 }} />
             <XAxis
@@ -54,12 +65,12 @@ function Graph(props) {
               domain={["dataMin", "dataMax"]}
               interval="preserveStartEnd"
             >
-              <Label value="Date (YYYY-MM-DD)" offset={40} position="bottom" />
+              <Label value="Date (YYYY-MM-DD)" offset={50} position="bottom" />
             </XAxis>
             <YAxis
               domain={["dataMin", "dataMax"]}
               label={{
-                value: "Average Sales ($)",
+                value: renderYAxisName(),
                 angle: -90,
                 position: "insideTopLeft",
                 dy: 200
@@ -69,9 +80,9 @@ function Graph(props) {
             <Legend verticalAlign="top" height={36} iconType="circle" />
             {lineMode === "separate" && onlineSelected && (
               <Area
-                name="Online Average Sales"
+                name={`Online ${renderYAxisName()}`}
                 type="monotone"
-                dataKey="pointOfPurchaseData.online-averageTotalSales"
+                dataKey={`pointOfPurchaseData.online-${yAxis}`}
                 stroke={lineColors[lineColors.length - 1]}
                 fillOpacity={1}
                 fill={lineColors[lineColors.length - 1]}
@@ -84,16 +95,16 @@ function Graph(props) {
                   name={getStoreNameFromId(storeId)}
                   type="monotone"
                   stroke={lineColors[index]}
-                  dataKey={`pointOfPurchaseData.${storeId}-averageTotalSales`}
+                  dataKey={`pointOfPurchaseData.${storeId}-${yAxis}`}
                   fillOpacity={0.6}
                   fill={lineColors[index]}
                 />
               ))}
             {lineMode === "combined" && (
               <Area
-                name={"Combined Average Sales"}
+                name={`Combined ${renderYAxisName()}`}
                 type="monotone"
-                dataKey="averageTotalSales"
+                dataKey={`${yAxis}`}
                 stroke={lineColors[1]}
                 fillOpacity={1}
                 fill={lineColors[1]}
