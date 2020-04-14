@@ -16,11 +16,15 @@ import {
   FormGroup,
   FormControlLabel,
   Checkbox,
-  Button as MuiButton
+  Button as MuiButton,
+  Select,
+  MenuItem,
+  InputLabel
 } from "@material-ui/core";
 import FormControl from "@material-ui/core/FormControl";
 import FormLabel from "@material-ui/core/FormLabel";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
+import Divider from "@material-ui/core/Divider";
 
 const moment = require("moment");
 const _ = require("lodash");
@@ -35,6 +39,7 @@ function SalesGraph(props) {
   const [initialToDateMoment, setInitialToDateMoment] = useState(null);
   const [popOptions, setPopOptions] = useState({});
   const [lineMode, setLineMode] = useState("combined");
+  const [yAxis, setYAxis] = useState("averageTotalSales");
 
   useEffect(() => {
     dispatch(retrieveSalesByDay(null, null, null, null));
@@ -69,7 +74,7 @@ function SalesGraph(props) {
   }, [salesByDay]);
 
   useEffect(() => {
-    setInitialOptions()
+    setInitialOptions();
   }, [allStores]);
 
   const setInitialOptions = () => {
@@ -81,14 +86,14 @@ function SalesGraph(props) {
       options.online = true;
       setPopOptions(options);
     }
-  }
+  };
 
   const reset = () => {
     setFromDateMoment(initialFromDateMoment);
     setToDateMoment(initialToDateMoment);
     setInitialOptions();
     setLineMode("combined");
-  }
+  };
 
   const handleCheckboxChange = e => {
     setPopOptions(prevState => {
@@ -129,7 +134,11 @@ function SalesGraph(props) {
                     <h4 style={{ fontWeight: "bold" }}>Filter</h4>
                   </Grid>
                   <Grid item xs={4}>
-                    <MuiButton variant="contained" color="secondary" onClick={reset}>
+                    <MuiButton
+                      variant="contained"
+                      color="secondary"
+                      onClick={reset}
+                    >
                       Reset
                     </MuiButton>
                   </Grid>
@@ -216,6 +225,28 @@ function SalesGraph(props) {
                   </MuiButton>
                 </ButtonGroup>
               </Grid>
+              <Grid item xs={12} style={{ marginTop: 20 }}>
+                <FormControl variant="outlined" style={{ width: "95%" }}>
+                  <FormLabel style={{ fontSize: 16, fontWeight: "bold" }}>
+                    Y-Axis
+                  </FormLabel>
+                  <Select
+                    labelId="demo-simple-select-outlined-label"
+                    id="demo-simple-select-outlined"
+                    value={yAxis}
+                    onChange={e => setYAxis(e.target.value)}
+                    style={{ width: "100%" }}
+                  >
+                    <MenuItem value={"averageTotalSales"}>
+                      Average Sales ($)
+                    </MenuItem>
+                    <MenuItem value={"totalSales"}>Total Sales ($)</MenuItem>
+                    <MenuItem value={"totalTransactions"}>
+                      Number of Transactions
+                    </MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
             </form>
           </MuiPickersUtilsProvider>
         )}
@@ -225,6 +256,7 @@ function SalesGraph(props) {
           popOptions={{ ...popOptions }}
           lineMode={lineMode}
           allStores={allStores}
+          yAxis={yAxis}
         />
       </Grid>
     </Grid>
