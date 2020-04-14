@@ -2,7 +2,7 @@ import * as types from "../actions/types";
 
 const initialState = {
   allTransactions: null,
-  transactions: [],
+  transactions: null,
   transaction: null
 };
 
