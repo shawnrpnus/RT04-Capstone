@@ -1,6 +1,7 @@
 import axios from "axios";
 import { dispatchErrorMapError } from "./index";
 import { RETRIEVE_TRANSACTION_BY_ORDER_NUMBER_SUCCESS } from "./types";
+import {toast} from "react-toastify";
 
 axios.defaults.baseURL = process.env.REACT_APP_SPRING_API_URL;
 const TRANSACTION_BASE_URL = "/api/transaction";
@@ -19,6 +20,9 @@ export const retrieveTransactionByOrderNumber = orderNumber => {
         dispatch(retrieveTransactionByOrderNumberSuccess(data));
       })
       .catch(err => {
+        toast.error(err.response.data.errorMessage.toString(), {
+          position: toast.POSITION.TOP_CENTER
+        });
         dispatchErrorMapError(err, dispatch);
       });
 };

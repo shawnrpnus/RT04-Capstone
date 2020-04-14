@@ -96,6 +96,19 @@ public class TransactionService {
         return transaction;
     }
 
+    /*view order details*/
+    public Transaction retrieveTransactionByQRCode(Long transactionId, Long storeId) throws TransactionNotFoundException {
+        Transaction transaction = retrieveTransactionById(transactionId);
+
+        if(transaction.getStoreToCollect() == null) {
+            throw new TransactionNotFoundException("Collection Mode is not In-Store!");
+        }
+        if(!transaction.getStoreToCollect().getStoreId().equals(storeId)){
+            throw new TransactionNotFoundException("Wrong Store! Please collect at: " + transaction.getStoreToCollect().getStoreName());
+        }
+        return transaction;
+    }
+
     public TransactionLineItem retrieveTransactionLineItemById(Long transactionLineItemId) throws TransactionNotFoundException {
         if (transactionLineItemId == null) {
             throw new TransactionNotFoundException("Transaction Line Item ID not provided");
@@ -382,6 +395,19 @@ public class TransactionService {
             }
         }
         return retrieveTransactionsToBeDelivered();
+    }
+
+    public Transaction confirmReceivedTransaction(Long transactionId) throws TransactionNotFoundException {
+        Transaction transaction = retrieveTransactionById(transactionId);
+        if (!transaction.getCollectionMode().equals(CollectionModeEnum.IN_STORE)) {
+            throw new TransactionNotFoundException("Collection Mode is not In-Store!");
+        }
+        if (!transaction.getDeliveryStatus().equals(DeliveryStatusEnum.READY_FOR_COLLECTION)) {
+            throw new TransactionNotFoundException("Transaction " + transaction.getOrderNumber() +" not ready for collection");
+        }
+        transaction.setDeliveryStatus(DeliveryStatusEnum.COLLECTED);
+
+        return transaction;
     }
 
     public List<Transaction> retrieveAllTransaction() {

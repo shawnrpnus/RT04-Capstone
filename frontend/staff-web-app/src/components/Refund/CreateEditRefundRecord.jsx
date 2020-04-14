@@ -95,6 +95,7 @@ const CreateEditRefundRecord = props => {
     customerId: "",
     promoCode: "-",
     promoCodeName: "",
+    claimed: "CLAIMED",
     isRefundable: false
   });
   const [textToDisplay, setTextToDisplay] = useState("");
@@ -130,7 +131,7 @@ const CreateEditRefundRecord = props => {
           ? _.get(currTransaction, "promoCode.promoCodeName")
           : 0,
         promoCodeClaimed: _.get(currTransaction, "transactionLineItems[0].refundLineItems[0]")
-          && _.get(currTransaction, "promoCode"),
+          && _.get(currTransaction, "promoCode") && _.get(currTransaction, "promoCode.flatDiscount"),
         isRefundable: checkRefundable(currTransaction)
       })),
     [currTransaction]
@@ -154,6 +155,7 @@ const CreateEditRefundRecord = props => {
     let toRefund = false;
     let totalRefundQuantity = 0;
     let totalForEachItem = 0;
+
     setTextToDisplay('this is not supposed to appear, let me know if it does');
 
     totalForEachItem = new Array(transaction.transactionLineItems.length).fill(0);
@@ -221,7 +223,7 @@ const CreateEditRefundRecord = props => {
       ...inputState,
       quantityToRefund: arr,
       quantity: totalQuantity,
-      totalRefundAmount: amount
+      totalRefundAmount: amount.toFixed(2)
     }));
   };
   console.log("promoCode", inputState.promoCode);
@@ -242,17 +244,20 @@ const CreateEditRefundRecord = props => {
         amt += (item.initialSubTotal / item.quantity) * arr[index];
         arrayAmt[index] = item.initialSubTotal / item.quantity;
       }
-      if (inputState.promoCode) {
-        amt -= inputState.promoCode.flatDiscount;
-        let val = 1 - inputState.promoCode.percentageDiscount / 100.0;
-        amt *= val;
-      }
 
       setInputState(inputState => ({
         ...inputState,
         refundAmt: arrayAmt
       }));
       return amt;
+    }
+    if (inputState.promoCode && !inputState.promoCodeClaimed) {
+      amt -= inputState.promoCode.flatDiscount;
+      let val = 1 - inputState.promoCode.percentageDiscount / 100.0;
+      amt *= val;
+    }
+    if (amt < 0) {
+      amt = 0;
     }
     console.log(amt);
     return amt;
@@ -415,7 +420,7 @@ const CreateEditRefundRecord = props => {
                     render: rowData => {
                       const rowTotal = rowData.initialSubTotal;
                       let valToDisplay = rowTotal / rowData.quantity;
-                      return valToDisplay;
+                      return valToDisplay.toFixed(2);
                     }
                   },
                   {
@@ -434,7 +439,7 @@ const CreateEditRefundRecord = props => {
                       } else {
                         valToDisplay = rowData.initialSubTotal;
                       }
-                      return valToDisplay;
+                      return valToDisplay.toFixed(2);
                     }
                   },
                   {
@@ -444,6 +449,14 @@ const CreateEditRefundRecord = props => {
                       const tableData = rowData.tableData;
                       console.log("tableData", tableData);
                       console.log("rowData", rowData);
+                      // console.log(totalForEachItem);
+                      let rowTotal = 0;
+                      for(let i = 0; i < rowData.refundLineItems.length; i++) {
+                        rowTotal += rowData.refundLineItems[i].quantity;
+                      }
+
+                      const qtyToRefund = rowData.quantity + 1 -rowTotal;
+                      console.log(qtyToRefund);
                       return (
                         <Select
                           name="quantityToRefund[tableData.id]"
@@ -455,7 +468,7 @@ const CreateEditRefundRecord = props => {
                           label="Refund Status"
                           disabled={!inputState.isRefundable}
                         >
-                          {_.range(0, rowData.quantity + 1).map(function(
+                          {_.range(0, qtyToRefund).map(function(
                             item,
                             index
                           ) {
@@ -516,7 +529,7 @@ const CreateEditRefundRecord = props => {
                 : ("")}
           </Grid>
           <Grid item xs={12} md={6}>
-            {currTransaction && inputState.isRefundable? (
+            {currTransaction && !inputState.promoCodeClaimed ? (
               <MaterialTextField
                 fieldLabel="Promo Code Used"
                 fieldName="promoCodeName"
@@ -525,13 +538,19 @@ const CreateEditRefundRecord = props => {
                 onChange={onChange}
                 disabled={true}
               />
-            ) : currTransaction && !inputState.isRefundable
-              ? (
-                ""
-              ) : ("")}
+            ) : currTransaction && inputState.promoCodeClaimed ?
+              (<MaterialTextField
+                fieldLabel="Promo Code Used"
+                fieldName="claimed"
+                state={inputState}
+                errors={errors}
+                onChange={onChange}
+                disabled={true}
+              />)
+              :("")}
           </Grid>
           <Grid item xs={12} md={6}>
-            {currTransaction && inputState.isRefundable ? (
+            {currTransaction ? (
               <MaterialTextField
                 fieldLabel="Total Quantity"
                 fieldName="quantity"
@@ -541,13 +560,10 @@ const CreateEditRefundRecord = props => {
                 onChange={onChange}
                 disabled={true}
               />
-            ) : currTransaction && !inputState.isRefundable
-              ? (
-                ""
-              ) : ("")}
+            ) : ("")}
           </Grid>
           <Grid item xs={12} md={6}>
-            {currTransaction && inputState.isRefundable? (
+            {currTransaction ? (
               <MaterialTextField
                 fieldLabel="Total Refund Amount"
                 fieldName="totalRefundAmount"
@@ -556,10 +572,7 @@ const CreateEditRefundRecord = props => {
                 onChange={onChange}
                 disabled={true}
               />
-            ) : currTransaction && !inputState.isRefundable
-              ? (
-                ""
-              ) : ("")}
+            ) : ("")}
           </Grid>
 
           <Grid item xs={12} md={10}></Grid>

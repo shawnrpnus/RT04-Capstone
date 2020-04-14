@@ -1,10 +1,8 @@
 import axios from "axios";
 import { toast } from "react-toastify";
 import * as types from "./types";
-import { retrieveAllTags } from "./tagAction";
 import { dispatchErrorMapError } from "./index";
 import { CREATE_IN_STORE_REFUND_RECORD } from "./types";
-import UpdateRefundLineItemHandlerRequest from "../../models/refund/UpdateRefundLineItemHandlerRequest";
 import { UPDATE_REFUND_RECORD } from "./types";
 
 axios.defaults.baseURL = process.env.REACT_APP_SPRING_API_URL;
@@ -37,6 +35,9 @@ export const createInStoreRefundRequest = (
         // });
       })
       .catch(err => {
+        toast.error(err.response.data.errorMessage.toString(), {
+          position: toast.POSITION.TOP_CENTER
+        });
         dispatchErrorMapError(err, dispatch);
         console.log(err.response.data);
       });
@@ -196,3 +197,24 @@ const retrieveAllRefundsSuccess = data => ({
   type: types.RETRIEVE_ALL_REFUNDS,
   allRefunds: data
 });
+
+export const retrieveAllRefundsByParameter = (
+  storeId,
+  warehouseId,
+) => {
+  return dispatch => {
+    //redux thunk passes dispatch
+    axios
+      .get(REFUND_BASE_URL + `retrieveAllRefundsByParameter`, {
+        params: { storeId, warehouseId }
+      })
+      .then(response => {
+        const data = jsog.decode(response.data);
+        // console.log(data);
+        dispatch(retrieveAllRefundsSuccess(data));
+      })
+      .catch(err => {
+        dispatchErrorMapError(err, dispatch);
+      });
+  };
+};
