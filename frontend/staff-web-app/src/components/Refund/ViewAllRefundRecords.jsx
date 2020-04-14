@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import React, { useEffect, useState } from "react";
-import { retrieveAllRefunds } from "../../redux/actions/refundAction";
+import { retrieveAllRefundsByParameter} from "../../redux/actions/refundAction";
 import withPage from "../Layout/page/withPage";
 import MaterialTable from "material-table";
 import {
@@ -17,7 +17,6 @@ import {
   Remove,
   SaveAlt,
   Search,
-  ShoppingCart,
   ViewColumn,
   Visibility
 } from "@material-ui/icons";
@@ -43,13 +42,35 @@ const tableIcons = {
   ThirdStateCheck: Remove,
   ViewColumn: ViewColumn
 };
+const _ = require("lodash");
+
 const ViewAllRefundRecords = props => {
   // const classes = useStyles();
   const dispatch = useDispatch();
   const errors = useSelector(state => state.errors);
   const history = useHistory();
 
-  useEffect(() => dispatch(retrieveAllRefunds()), []);
+  const { renderLoader, store, staff } = props;
+
+  const warehouse =
+    _.get(staff, "department.departmentName", "") === "Warehouse";
+
+  useEffect(() => {
+    if (warehouse) {
+      dispatch(retrieveAllRefundsByParameter());
+    } else if (_.get(store, "storeId", false)) {
+      dispatch(retrieveAllRefundsByParameter(store.storeId));
+    }
+  }, []);
+
+  // useEffect(() => {
+  //   if (warehouse) {
+  //     dispatch(retrieveProductStocksByParameter());
+  //   } else if (_.get(store, "storeId", false)) {
+  //     dispatch(retrieveProductStocksByParameter(store.storeId));
+  //   }
+  // }, [_.isEqual(productStocks)]);
+
 
   const allRefunds = useSelector(state => state.refund.allRefunds);
   console.log(allRefunds);

@@ -3,6 +3,9 @@ import { toast } from "react-toastify";
 import * as types from "./types";
 import { dispatchErrorMapError } from "./index";
 import { openCircularProgress, closeCircularProgress } from "./utilActions";
+import {RETRIEVE_TRANSACTION_BY_ORDER_NUMBER_SUCCESS} from "./types";
+import {RETRIEVE_TRANSACTION_BY_TRANSACTION_ID_SUCCESS} from "./types";
+import {CONFIRM_RECEIVED_TRANSACTION} from "./types";
 axios.defaults.baseURL = process.env.REACT_APP_SPRING_API_URL;
 
 const TRANSACTION_BASE_URL = "/api/transaction";
@@ -47,3 +50,56 @@ export const retrieveTransactionToSendForDelivery = () => {
       });
   };
 };
+
+export const retrieveTransactionByQRCode = (transactionId,storeId) => {
+  return dispatch => {
+    axios
+      .get(TRANSACTION_BASE_URL + `/retrieveTransactionByQRCode/${transactionId}/${storeId}`)
+      .then(response => {
+        const { data } = jsog.decode(response);
+        console.log(data);
+        dispatch(retrieveTransactionByTransactionIdSuccess(data));
+      })
+      .catch(err => {
+        // console.log(err);
+        dispatchErrorMapError(err, dispatch);
+        toast.error(err.response.data.errorMessage.toString(), {
+          position: toast.POSITION.TOP_CENTER
+        });
+      });
+  };
+};
+
+export const retrieveTransactionByTransactionIdSuccess = data => ({
+  type: RETRIEVE_TRANSACTION_BY_TRANSACTION_ID_SUCCESS,
+  transaction: data
+});
+
+export const confirmReceivedTransaction = transactionId => {
+  return dispatch => {
+    axios
+      .post(TRANSACTION_BASE_URL + "/confirmReceivedTransaction",transactionId)
+      .then(response => {
+        const { data } = jsog.decode(response);
+        console.log(data);
+        dispatch(confirmReceivedTransactionSuccess(data));
+        toast.success("Thank you for shopping with us!", {
+          position: toast.POSITION.TOP_CENTER
+        });
+      })
+      .catch(err => {
+        // console.log(err);
+        dispatchErrorMapError(err, dispatch);
+        toast.error(err.response.data.errorMessage.toString(), {
+          position: toast.POSITION.TOP_CENTER
+        });
+
+      });
+  };
+};
+
+export const confirmReceivedTransactionSuccess = data => ({
+  type: CONFIRM_RECEIVED_TRANSACTION,
+  transaction: data
+});
+

@@ -93,8 +93,17 @@ public class RefundController {
 
     @GetMapping(RETRIEVE_REFUNDS_BY_TRANSACTION_ID)
     public ResponseEntity<?> retrieveRefundByTransactionId(@RequestParam Long transactionId) throws RefundNotFoundException {
-        System.out.println("did call");
         List<Refund> refunds = refundService.retrieveRefundByTransactionId(transactionId);
+        for (Refund refund : refunds) {
+            relationshipService.clearRefundRelationships(refund);
+        }
+        return new ResponseEntity<>(refunds, HttpStatus.OK);
+    }
+
+    @GetMapping(RETRIEVE_ALL_REFUNDS_BY_PARAMETER)
+    public ResponseEntity<?> retrieveProductStocksByParameter(@RequestParam(required = false) Long warehouseId,
+                                                              @RequestParam(required = false) Long storeId) {
+        List<Refund> refunds = refundService.retrieveAllRefundsByParameter(storeId, warehouseId);
         for (Refund refund : refunds) {
             relationshipService.clearRefundRelationships(refund);
         }
