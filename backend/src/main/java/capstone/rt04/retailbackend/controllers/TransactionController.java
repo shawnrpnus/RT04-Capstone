@@ -146,7 +146,7 @@ public class TransactionController {
     @PostMapping("/retrieveSalesByDay")
     public ResponseEntity<?> retrieveSalesByDay(@RequestBody SalesByDayRequest req){
         List<SalesByDay> res = transactionService.retrieveSalesByDayWithParameters(req.getFromDateString(),
-                req.getToDateString(), req.getFromStoreIds());
+                req.getToDateString(), req.getFromStoreIds(), req.getOnlineSelected());
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
 }

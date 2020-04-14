@@ -449,14 +449,16 @@ public class TransactionService {
                 if (collectOrDeliver == 0) { //collect
                     // (3) Buy online, collect in store: storeId == null, storeToCollectId != null,
                     // collectionModeEnum == IN_STORE
-                    createNewTransaction(customer.getCustomerId(), null, Constants.ONLINE_SHOPPING_CART,
+                    Transaction t = createNewTransaction(customer.getCustomerId(), null, Constants.ONLINE_SHOPPING_CART,
                             address, address, stores.get(r.nextInt(stores.size())).getStoreId(),
                             null, CollectionModeEnum.IN_STORE, "Visa", "4242", null);
+                    t.setDeliveryStatus(DeliveryStatusEnum.COLLECTED);
                 } else { //deliver
                     // (4) Buy online, deliver home: storeId == null, storeToCollectId == null, collectionModeEnum == DELIVERY
-                    createNewTransaction(customer.getCustomerId(), null, Constants.ONLINE_SHOPPING_CART,
+                    Transaction t = createNewTransaction(customer.getCustomerId(), null, Constants.ONLINE_SHOPPING_CART,
                             address, address, null,
                             null, CollectionModeEnum.DELIVERY, "Visa", "4242", null);
+                    t.setDeliveryStatus(DeliveryStatusEnum.DELIVERED);
                 }
 
             } else { //IN-STORE
@@ -473,44 +475,48 @@ public class TransactionService {
                 Long storeId = stores.get(r.nextInt(stores.size())).getStoreId();
                 if (collectOrDeliver == 0) { //collect
                     // (1) Buy in store, collect in store: storeId == storeToCollectId, collectionModeEnum == IN_STORE
-                    createNewTransaction(customer.getCustomerId(), storeId, Constants.IN_STORE_SHOPPING_CART,
+                    Transaction t = createNewTransaction(customer.getCustomerId(), storeId, Constants.IN_STORE_SHOPPING_CART,
                             address, address, storeId,
                             null, CollectionModeEnum.IN_STORE, "Visa", "4242", null);
+                    t.setDeliveryStatus(DeliveryStatusEnum.COLLECTED);
                 } else { //deliver
                     // (2) Buy in store, deliver home: storeId != null, storeToCollectId == null, collectionModeEnum == DELIVERY
-                    createNewTransaction(customer.getCustomerId(), storeId, Constants.IN_STORE_SHOPPING_CART,
+                    Transaction t = createNewTransaction(customer.getCustomerId(), storeId, Constants.IN_STORE_SHOPPING_CART,
                             address, address, null,
                             null, CollectionModeEnum.DELIVERY, "Visa", "4242", null);
+                    t.setDeliveryStatus(DeliveryStatusEnum.DELIVERED);
                 }
             }
         }
     }
 
     //Strings must be YYYY-MM-DD
-    public List<SalesByDay> retrieveSalesByDayWithParameters(String fromDateString, String toDateString, List<Long> fromStoreIds) {
+    public List<SalesByDay> retrieveSalesByDayWithParameters(String fromDateString, String toDateString, List<Long> fromStoreIds, Boolean onlineSelected) {
         List<SalesByDay> result = new ArrayList<>();
         List<Transaction> allTransactions = transactionRepository.findAllByOrderByCreatedDateTime();
 
         SalesByDay salesForDay = new SalesByDay();
         LocalDate earliestTransactionDate = allTransactions.get(0).getCreatedLocalDate();
+        LocalDate latestTransactionDate = allTransactions.get(allTransactions.size() - 1).getCreatedLocalDate();
         salesForDay.setDate(earliestTransactionDate);
         for (Transaction transaction : allTransactions) {
-            boolean dateCheck = transaction.isBetween(fromDateString, toDateString);
-            boolean storeCheck = false;
-            if (fromStoreIds == null) {
-                storeCheck = true;
-            } else if (transaction.getStore() != null
-                    && fromStoreIds.contains(transaction.getStore().getStoreId())) {
-                storeCheck = true;
-            }
+            //date not in range --> exclude
+            if (!transaction.isBetween(fromDateString, toDateString)) continue;
 
-            if (!(dateCheck && storeCheck)) continue;
+            // if stores are selected, and my transaction's store is not inside, don't include
+            if (fromStoreIds != null
+                    && transaction.getStore() != null
+                    && !fromStoreIds.contains(transaction.getStore().getStoreId())) continue;
+
+            //if online is FALSE, and my transaction is made online, don't include
+            if (onlineSelected != null && !onlineSelected && transaction.getStore() == null) continue;
+
 
             LocalDate transactionDate = transaction.getCreatedLocalDate();
             if (!salesForDay.getDate().isEqual(transactionDate)) {
                 //if different date and have transactions, calculate average, then add old object to the result
                 if (salesForDay.getTotalTransactions() > 0) {
-                    salesForDay.calculateAverageTotalSales();
+                    //salesForDay.calculateAverageTotalSales();
                     result.add(salesForDay.createCopy());
                 }
                 //create new object to be tracked outside loop
@@ -520,28 +526,25 @@ public class TransactionService {
             //if same date, just add to total and increment num transactions
             salesForDay.addToTotalSales(transaction.getFinalTotalPrice());
             salesForDay.incrementTotalTransactions();
-        }
-        // if same day until the end of loop
-        if (salesForDay.getTotalTransactions() > 0) {
             salesForDay.calculateAverageTotalSales();
+            if (transaction.getStore() != null){
+                salesForDay.addTotalSalesForStore(transaction.getStore().getStoreId(), transaction.getFinalTotalPrice());
+                salesForDay.incrementTotalTransactionsForStore(transaction.getStore().getStoreId());
+                salesForDay.calculateAverageTotalSalesForStore(transaction.getStore().getStoreId());
+            } else {
+                salesForDay.addTotalSalesForOnline(transaction.getFinalTotalPrice());
+                salesForDay.incrementTotalTransactionsForOnline();
+                salesForDay.calculateAverageTotalSalesForOnline();
+            }
+        }
+        // add the last salesForDay (since in the loop is only added when date changes)
+        if (salesForDay.getTotalTransactions() > 0) {
+            //salesForDay.calculateAverageTotalSales();
             result.add(salesForDay.createCopy());
         }
 
         //fill in empty dates
-        List<LocalDate> dateList = new ArrayList<>();
-        LocalDate latestTransactionDate = allTransactions.get(allTransactions.size() - 1).getCreatedLocalDate();
-        if (!(fromDateString == null && toDateString == null)) {
-            if (fromDateString != null && toDateString == null) {
-                dateList = generateLocalDateInterval(LocalDate.parse(fromDateString), latestTransactionDate);
-            } else if (fromDateString == null) { //only haveToDateString
-                dateList = generateLocalDateInterval(earliestTransactionDate, LocalDate.parse(toDateString));
-            } else { //have both
-                dateList = generateLocalDateInterval(LocalDate.parse(fromDateString), LocalDate.parse(toDateString));
-            }
-        } else {
-            dateList = generateLocalDateInterval(earliestTransactionDate, latestTransactionDate);
-        }
-
+        List<LocalDate> dateList = generateDateList(fromDateString, toDateString, earliestTransactionDate, latestTransactionDate);
         int currDateIndex = 0;
         int currResultIndex = 0;
         while (currDateIndex < dateList.size()) {
@@ -563,6 +566,22 @@ public class TransactionService {
 
         }
         return result;
+    }
+
+    private List<LocalDate> generateDateList(String fromDateString, String toDateString, LocalDate earliestTransactionDate, LocalDate latestTransactionDate){
+        List<LocalDate> dateList;
+        if (!(fromDateString == null && toDateString == null)) {
+            if (fromDateString != null && toDateString == null) {
+                dateList = generateLocalDateInterval(LocalDate.parse(fromDateString), latestTransactionDate);
+            } else if (fromDateString == null) { //only haveToDateString
+                dateList = generateLocalDateInterval(earliestTransactionDate, LocalDate.parse(toDateString));
+            } else { //have both
+                dateList = generateLocalDateInterval(LocalDate.parse(fromDateString), LocalDate.parse(toDateString));
+            }
+        } else {
+            dateList = generateLocalDateInterval(earliestTransactionDate, latestTransactionDate);
+        }
+        return dateList;
     }
 
     private List<LocalDate> generateLocalDateInterval(LocalDate fromDate, LocalDate toDate) {

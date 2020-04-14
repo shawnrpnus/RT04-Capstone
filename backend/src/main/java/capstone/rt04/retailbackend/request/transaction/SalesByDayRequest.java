@@ -18,4 +18,6 @@ public class SalesByDayRequest {
     private String toDateString;
 
     private List<Long> fromStoreIds;
+
+    private Boolean onlineSelected;
 }

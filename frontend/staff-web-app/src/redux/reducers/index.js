@@ -22,6 +22,7 @@ import transactionReducer from "./transactionReducer";
 import dashboardReducer from "./dashboardReducer";
 import leaveReducer from "./leaveReducer";
 import payrollReducer from "./payrollReducer";
+import analyticsReducer from "./analyticsReducer";
 
 const rootReducer = combineReducers({
   errors: errorReducer,
@@ -46,7 +47,8 @@ const rootReducer = combineReducers({
   instagram: instagramReducer,
   discount: discountReducer,
   dashboard: dashboardReducer,
-  util: utilReducer
+  util: utilReducer,
+  analytics: analyticsReducer
 });
 
 export default rootReducer;
