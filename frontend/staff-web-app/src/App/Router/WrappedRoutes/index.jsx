@@ -23,6 +23,7 @@ import Dashboard from "./Dashboard";
 import Leave from "./Leave";
 import Payrolls from "./Payrolls";
 import SalesGraph from "../../../components/SalesGraphs/SalesGraph";
+import Analytics from "./Analytics";
 
 export default () => (
   <div>
@@ -49,8 +50,8 @@ export default () => (
         <Route path="/transaction" component={Transaction} />
         <Route path="/dashboard" component={Dashboard} />
         <Route path="/leave" component={Leave} />
-        <Route path = "/payrolls" component ={Payrolls} />
-        <Route path="/salesGraph" component={SalesGraph}/>
+        <Route path="/payrolls" component={Payrolls} />
+        <Route path="/analytics" component={Analytics} />
         <Redirect from="/" exact to="/dashboard" />
       </Switch>
     </div>
