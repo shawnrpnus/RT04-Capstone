@@ -126,7 +126,7 @@ public class TransactionController {
         for (Transaction txn : txns) {
             relationshipService.clearTransactionRelationships(txn);
         }
-        Collections.sort(txns, Comparator.comparing(Transaction::getTransactionId).reversed());
+        Collections.sort(txns, Comparator.comparing(Transaction::getCreatedDateTime).reversed());
         return new ResponseEntity<>(txns, HttpStatus.OK);
     }
 
@@ -136,7 +136,7 @@ public class TransactionController {
         for (Transaction txn : txns) {
             relationshipService.clearTransactionRelationships(txn);
         }
-        Collections.sort(txns, Comparator.comparing(Transaction::getTransactionId).reversed());
+        Collections.sort(txns, Comparator.comparing(Transaction::getCreatedDateTime).reversed());
         return new ResponseEntity<>(txns, HttpStatus.OK);
     }
 
@@ -146,7 +146,7 @@ public class TransactionController {
         for (Transaction txn : txns) {
             relationshipService.clearTransactionRelationships(txn);
         }
-        Collections.sort(txns, Comparator.comparing(Transaction::getTransactionId).reversed());
+        Collections.sort(txns, Comparator.comparing(Transaction::getCreatedDateTime).reversed());
         return new ResponseEntity<>(txns, HttpStatus.OK);
     }
 

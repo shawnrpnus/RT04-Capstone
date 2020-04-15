@@ -376,7 +376,11 @@ public class TransactionService {
         }
         //Collection mode - IN_STORE or DELIVERY
         transaction.setCollectionMode(collectionModeEnum);
-        transaction.setDeliveryStatus(DeliveryStatusEnum.TO_BE_DELIVERED);
+        if (collectionModeEnum.equals(CollectionModeEnum.IN_STORE) && storeId != null){
+            transaction.setDeliveryStatus(DeliveryStatusEnum.READY_FOR_COLLECTION);
+        } else{
+            transaction.setDeliveryStatus(DeliveryStatusEnum.TO_BE_DELIVERED);
+        }
         Transaction savedTransaction = transactionRepository.save(transaction);
 
         for (TransactionLineItem lineItem : transactionLineItems) {
