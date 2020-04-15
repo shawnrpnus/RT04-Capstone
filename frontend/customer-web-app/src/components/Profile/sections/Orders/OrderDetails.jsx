@@ -24,9 +24,6 @@ function OrderDetails(props) {
     dispatch(retrieveTransactionById(transactionId));
   }, [transactionId]);
 
-  console.log(transactionId);
-  console.log(transaction);
-
   const deliveryStatusEnumMap = {
     PROCESSING: "PROCESSING",
     TO_BE_DELIVERED: "PROCESSING",

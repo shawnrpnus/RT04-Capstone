@@ -11,12 +11,13 @@ import ReviewCard from "../Reviews/ReviewCard";
 import ProductCard from "components/Shop/ProductCard";
 import {
   checkIfCanWriteReview,
-  retrieveAllReviewsByProductId
+  retrieveAllReviewsByProductId,
 } from "../../redux/actions/reviewAction";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Backdrop from "@material-ui/core/Backdrop";
 import Typography from "@material-ui/core/Typography";
 import Divider from "@material-ui/core/Divider";
+import Grid from "@material-ui/core/Grid";
 
 const _ = require("lodash");
 const useStyles = makeStyles(productStyle);
@@ -27,7 +28,7 @@ function ProductDetailsPage(props) {
 
   const dispatch = useDispatch();
   const currentProductDetail = useSelector(
-    state => state.product.currentProductDetail,
+    (state) => state.product.currentProductDetail,
     _.isEqual
   );
 
@@ -39,24 +40,24 @@ function ProductDetailsPage(props) {
 
   let productDataList = [];
   if (recommendedProducts) {
-    productDataList = recommendedProducts.map(productDetail => {
+    productDataList = recommendedProducts.map((productDetail) => {
       const { product, colourToSizeImageMaps, discountedPrice } = productDetail;
-      const colourToImageAndSizes = colourToSizeImageMaps.map(csiMap => {
+      const colourToImageAndSizes = colourToSizeImageMaps.map((csiMap) => {
         return {
           colour: csiMap.colour,
           image: _.get(csiMap, "productImages[0].productImageUrl"),
-          sizes: csiMap.sizeMaps.map(sizeMap => sizeMap.size)
+          sizes: csiMap.sizeMaps.map((sizeMap) => sizeMap.size),
         };
       });
       return {
         product,
         colourToImageAndSizes,
-        discountedPrice
+        discountedPrice,
       };
     });
   }
 
-  const currentProductReviews = useSelector(state => state.review.allReviews);
+  const currentProductReviews = useSelector((state) => state.review.allReviews);
 
   const [isLoading, setIsLoading] = useState(true);
   //Make API call to retrieve single prod from url param
@@ -99,13 +100,15 @@ function ProductDetailsPage(props) {
                     You may also like
                   </Typography>
                   <Divider style={{ marginBottom: "5%" }} />
-                  {productDataList.map(productDetail => (
-                    <ProductCard
-                      productDetail={productDetail}
-                      discountedPrice={productDetail.discountedPrice}
-                      key={productDetail.product.productId}
-                    />
-                  ))}
+                  <Grid container>
+                    {productDataList.map((productDetail) => (
+                      <ProductCard
+                        productDetail={productDetail}
+                        discountedPrice={productDetail.discountedPrice}
+                        key={productDetail.product.productId}
+                      />
+                    ))}
+                  </Grid>
                 </>
               )}
             </div>

@@ -161,6 +161,11 @@ public class RelationshipService {
         for (TransactionLineItem transactionLineItem : transaction.getTransactionLineItems()) {
             clearTransactionLineItemRelationship(transactionLineItem);
             transactionLineItem.getProductVariant().getProduct().setDiscounts(null);
+            transactionLineItem.getRefundLineItems().forEach(refundLineItem -> {
+                refundLineItem.setTransactionLineItem(null);
+                refundLineItem.setRefund(null);
+                refundLineItem.setRefundLineItemHandlerList(null);
+            });
         }
         if (transaction.getStoreToCollect() != null)
             clearStoreRelationships(transaction.getStoreToCollect());
@@ -273,17 +278,23 @@ public class RelationshipService {
         Transaction transaction = refund.getRefundLineItems().get(0).getTransactionLineItem().getTransaction();
         if (transaction != null) {
             PromoCode promoCode = transaction.getPromoCode();
-            if (promoCode != null) refund.setPromoCode(promoCode);
+            if (promoCode != null) {
+                refund.setPromoCode(promoCode);
+                refund.getPromoCode().setTransactions(null);
+            }
         }
 
-        clearCustomerRelationships(refund.getCustomer());
+        refund.setCustomer(null);
         for (RefundLineItem refundLineItem : refund.getRefundLineItems()) {
             refundLineItem.setRefund(null);
+            refundLineItem.getTransactionLineItem().setRefundLineItems(null);
             for (RefundLineItemHandler refundLineItemHandler : refundLineItem.getRefundLineItemHandlerList()) {
                 refundLineItemHandler.setRefundLineItem(null);
             }
             clearTransactionLineItemRelationship(refundLineItem.getTransactionLineItem());
-
+            for (Discount d : refundLineItem.getTransactionLineItem().getProductVariant().getProduct().getDiscounts()) {
+                d.setProducts(null);
+            }
             if (refund.getStore() != null) clearStoreRelationships(refund.getStore());
             if (refund.getWarehouse() != null) {
                 refund.getWarehouse().setInStoreRestockOrders(null);
@@ -305,7 +316,7 @@ public class RelationshipService {
             productStock.getWarehouse().setProductStocks(null);
             productStock.getWarehouse().setInStoreRestockOrders(null);
         }
-        if (productStock.getStore() != null){
+        if (productStock.getStore() != null) {
             productStock.getStore().setProductStocks(null);
             productStock.getStore().setStaff(null);
             productStock.getStore().setTransactions(null);

@@ -1,10 +1,6 @@
 package capstone.rt04.retailbackend.services;
 
 import capstone.rt04.retailbackend.entities.Reservation;
-import capstone.rt04.retailbackend.entities.Tag;
-import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,11 +9,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
+import java.time.*;
+import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -51,6 +44,18 @@ public class ReservationServiceTest {
         System.out.print(t.toInstant());
         System.out.println(t.toString());
     }
+
+    @Test
+    public void testStuff() throws Exception{
+        List<Reservation> reservations = reservationService
+                .getReservationsFromStoresForLocalTimeWithinDate(
+                        LocalTime.of(14, 15), null, null, null);
+        for (Reservation r : reservations){
+            System.out.println(r.getReservationId());
+            System.out.println(r.getReservationDateTime());
+        }
+    }
+
 
 
 

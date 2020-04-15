@@ -47,7 +47,7 @@ function CheckoutProdVariantCard(props) {
             </GridItem>
             <GridItem xs={6} md={12}>
               <h3 style={{ marginTop: "10px" }}>
-                {discountedPrice && <span>${discountedPrice}</span>}
+                {discountedPrice && <span>${discountedPrice.toFixed(2)}</span>}
                 <span className={discountedPrice && classes.discountedPrice}>
                   ${price.toFixed(2)}
                 </span>

@@ -1,6 +1,8 @@
 package capstone.rt04.retailbackend.controllers;
 
 import capstone.rt04.retailbackend.entities.Customer;
+import capstone.rt04.retailbackend.entities.Product;
+import capstone.rt04.retailbackend.entities.ProductVariant;
 import capstone.rt04.retailbackend.entities.Review;
 import capstone.rt04.retailbackend.request.review.ReviewCreateRequest;
 import capstone.rt04.retailbackend.request.review.ReviewResponseRequest;
@@ -56,7 +58,18 @@ public class ReviewController {
         for (Review r : reviews) {
             Customer c = r.getCustomer();
             relationshipService.clearCustomerRelationships(c);
-            relationshipService.clearProductRelationships(r.getProduct());
+            Product product = r.getProduct();
+            product.setStyles(null);
+            product.setReviews(null);
+            product.setCategory(null);
+            product.setTags(null);
+            product.setDiscounts(null);
+            for(ProductVariant pv: r.getProduct().getProductVariants()) {
+                pv.setProductStocks(null);
+                pv.setProduct(null);
+            }
+//            product.setProductVariants(null);
+//            relationshipService.clearProductRelationships(r.getProduct());
             r.setStaff(null);
         }
         return new ResponseEntity<>(reviews, HttpStatus.OK);

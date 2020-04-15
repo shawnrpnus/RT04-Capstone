@@ -14,6 +14,8 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,6 +65,33 @@ public class Reservation implements Serializable {
         this.productVariants.addAll(productVariants);
         this.customer = customer;
         this.store = store;
+    }
+
+    public LocalDate getReservationLocalDate() {
+        return this.reservationDateTime.toInstant().atZone(ZoneId.of("Singapore")).toLocalDate();
+    }
+
+    public boolean isBetween(String fromDateString, String toDateString) {
+        LocalDate createdLocalDate = getReservationLocalDate();
+        if (fromDateString == null && toDateString == null) {
+            return true;
+        }
+
+        if (fromDateString == null) {
+            LocalDate toDate = LocalDate.parse(toDateString);
+            return (createdLocalDate.isEqual(toDate) || createdLocalDate.isBefore(toDate));
+        }
+
+        if (toDateString == null) {
+            LocalDate fromDate = LocalDate.parse(fromDateString);
+            return (createdLocalDate.isEqual(fromDate) || createdLocalDate.isAfter(fromDate));
+        }
+
+        LocalDate toDate = LocalDate.parse(toDateString);
+        LocalDate fromDate = LocalDate.parse(fromDateString);
+        return ((createdLocalDate.isEqual(fromDate) || createdLocalDate.isEqual(toDate)) ||
+                (createdLocalDate.isAfter(fromDate) && createdLocalDate.isBefore(toDate)));
+
     }
 
 }

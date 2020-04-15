@@ -255,9 +255,13 @@ export default function CheckOutPage() {
         setTotalAmount(totalAmount - code.flatDiscount);
       } else if (_.get(code, "percentageDiscount", null)) {
         setTotalAmount(
-          Math.round(
-            ((totalAmount * (100 - code.percentageDiscount)) / 100) * 100
-          ) / 100
+          Number(
+            (
+              Math.round(
+                ((totalAmount * (100 - code.percentageDiscount)) / 100) * 100
+              ) / 100
+            ).toFixed(2)
+          )
         );
       }
     }

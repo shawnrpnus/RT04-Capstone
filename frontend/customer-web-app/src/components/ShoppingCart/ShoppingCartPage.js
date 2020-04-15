@@ -180,7 +180,7 @@ export default function ShoppingCartPage() {
                                 <GridItem md={12}>
                                   <h3 style={{ marginTop: "10px" }}>
                                     {discountedPrice && (
-                                      <span>${discountedPrice}</span>
+                                      <span>${discountedPrice.toFixed(2)}</span>
                                     )}
                                     <span
                                       className={
@@ -245,7 +245,7 @@ export default function ShoppingCartPage() {
                                         : "10px",
                                     }}
                                   >
-                                    ${discountedPrice * quantity}
+                                    ${(discountedPrice * quantity).toFixed(2)}
                                   </h3>
                                 )}
                                 <h3

@@ -9,14 +9,14 @@ import { retrieveRefundsByCustomerId } from "../../../../redux/actions/refundAct
 import RefundHistoryCard from "./RefundHistoryCard";
 
 const _ = require("lodash");
-const styles = theme => ({
+const styles = (theme) => ({
   filterDrawer: {
-    width: "300px"
+    width: "300px",
   },
   backdrop: {
     zIndex: theme.zIndex.drawer + 999,
-    color: "#fff"
-  }
+    color: "#fff",
+  },
 });
 const useStyles = makeStyles(styles);
 const useTypoStyles = makeStyles(typographyStyle);
@@ -27,15 +27,14 @@ function RefundHistoryPage(props) {
   const dispatch = useDispatch();
 
   const customer = useSelector(
-    state => state.customer.loggedInCustomer
+    (state) => state.customer.loggedInCustomer
     // _.isEqual
   );
+  const refunds = useSelector((state) => state.refund.refunds);
+
   useEffect(() => {
     dispatch(retrieveRefundsByCustomerId(customer.customerId));
   }, [customer]);
-  const refunds = useSelector(state => state.refund.refunds);
-
-
 
   return (
     <GridContainer>
@@ -44,7 +43,7 @@ function RefundHistoryPage(props) {
         style={{
           display: "flex",
           justifyContent: "space-between",
-          alignItems: "flex-end"
+          alignItems: "flex-end",
         }}
       >
         <h4 className={typoClasses.title} style={{ float: "left", margin: 0 }}>
@@ -54,7 +53,7 @@ function RefundHistoryPage(props) {
       <GridItem md={12}>
         {refunds &&
           refunds.length > 0 &&
-          refunds.map(refund => (
+          refunds.map((refund) => (
             <React.Fragment key={refund.refundId}>
               <RefundHistoryCard key={refund.refundId} currRefund={refund} />
             </React.Fragment>

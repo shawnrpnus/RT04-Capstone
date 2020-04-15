@@ -5,7 +5,7 @@ import { Button } from "components/UI/CustomButtons/Button";
 import { useDispatch, useSelector } from "react-redux";
 import {
   retrieveCustomerTransactions,
-  updatedViewedTransaction
+  updatedViewedTransaction,
 } from "redux/actions/transactionActions";
 import OrderHistoryCard from "components/Profile/sections/Orders/OrderHistoryCard";
 import { makeStyles } from "@material-ui/core/styles";
@@ -21,14 +21,14 @@ const _ = require("lodash");
 
 const useTypoStyles = makeStyles(typographyStyle);
 
-const styles = theme => ({
+const styles = (theme) => ({
   filterDrawer: {
-    width: "300px"
+    width: "300px",
   },
   backdrop: {
     zIndex: theme.zIndex.drawer + 999,
-    color: "#fff"
-  }
+    color: "#fff",
+  },
 });
 
 const useStyles = makeStyles(styles);
@@ -39,11 +39,11 @@ function OrderHistoryPage(props) {
 
   const dispatch = useDispatch();
   const customer = useSelector(
-    state => state.customer.loggedInCustomer,
+    (state) => state.customer.loggedInCustomer,
     _.isEqual
   );
   const transactions = useSelector(
-    state => state.transaction.displayedTransactions
+    (state) => state.transaction.displayedTransactions
   );
 
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
@@ -57,6 +57,8 @@ function OrderHistoryPage(props) {
     dispatch(retrieveCustomerTransactions(customer.customerId));
   }, [customer.customerId]);
 
+  console.log(transactions);
+
   return (
     <GridContainer>
       <GridItem
@@ -64,7 +66,7 @@ function OrderHistoryPage(props) {
         style={{
           display: "flex",
           justifyContent: "space-between",
-          alignItems: "flex-end"
+          alignItems: "flex-end",
         }}
       >
         <h4 className={typoClasses.title} style={{ float: "left", margin: 0 }}>
@@ -81,7 +83,7 @@ function OrderHistoryPage(props) {
       <GridItem md={12}>
         {transactions &&
           transactions.length > 0 &&
-          transactions.map(transaction => (
+          transactions.map((transaction) => (
             <React.Fragment key={transaction.transactionId}>
               <OrderHistoryCard
                 key={transaction.transactionId}

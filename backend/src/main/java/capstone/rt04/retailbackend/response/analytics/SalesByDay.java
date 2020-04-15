@@ -59,7 +59,7 @@ public class SalesByDay {
     public void calculateAverageTotalSales() {
 //        log.info("Total Sales: " + this.totalSales);
 //        log.info("Total Txns: " + this.totalTransactions);
-        this.averageTotalSales = this.totalSales.divide(BigDecimal.valueOf(totalTransactions), RoundingMode.HALF_EVEN);
+        this.averageTotalSales = this.totalSales.divide(BigDecimal.valueOf(totalTransactions), 2, RoundingMode.HALF_EVEN);
     }
 
 

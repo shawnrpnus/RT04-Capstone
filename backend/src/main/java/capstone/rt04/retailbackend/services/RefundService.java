@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -92,9 +93,9 @@ public class RefundService {
                 isRefundedBefore = true;
             }
             if (transactionLineItem.getFinalSubTotal() != null) {
-                unitPrice = transactionLineItem.getFinalSubTotal().divide(new BigDecimal(transactionLineItem.getQuantity()));
+                unitPrice = transactionLineItem.getFinalSubTotal().divide(new BigDecimal(transactionLineItem.getQuantity()), 2, RoundingMode.HALF_EVEN);
             } else {
-                unitPrice = transactionLineItem.getInitialSubTotal().divide(new BigDecimal(transactionLineItem.getQuantity()));
+                unitPrice = transactionLineItem.getInitialSubTotal().divide(new BigDecimal(transactionLineItem.getQuantity()), 2, RoundingMode.HALF_EVEN);
             }
             if(transactionLineItem.getTransaction().getPromoCode() != null) {
                 promoCodeId = transactionLineItem.getTransaction().getPromoCode().getPromoCodeId();
