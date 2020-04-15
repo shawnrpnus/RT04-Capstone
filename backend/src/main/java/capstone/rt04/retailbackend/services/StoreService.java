@@ -109,8 +109,10 @@ public class StoreService {
                 }
                 //initially set address and made changes to the address
                 if (storeToUpdate.getAddress() != null && store.getAddress() != null) {
-                    if (storeToUpdate.getAddress() != store.getAddress()) {
-                        storeToUpdate.setAddress(store.getAddress());
+                    if (store.getAddress().getAddressId() != null &&
+                            storeToUpdate.getAddress().getAddressId().equals(store.getAddress().getAddressId())) {
+                        storeToUpdate.getAddress().copyFields(store.getAddress());
+
                     }
                 }
                 storeRepository.save(storeToUpdate);

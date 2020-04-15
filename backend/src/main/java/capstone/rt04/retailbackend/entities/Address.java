@@ -85,4 +85,15 @@ public class Address implements Serializable {
         this.isDefault = isDefault;
         this.isBilling = isBilling;
     }
+
+    public void copyFields(Address other){
+        this.line1 = other.getLine1();
+        this.line2 = other.getLine2();
+        this.postalCode = other.getPostalCode();
+        this.buildingName = other.getBuildingName();
+        this.isDefault = other.isDefault();
+        this.isBilling = other.isBilling();
+        this.lat = other.getLat();
+        this.lng = other.getLng();
+    }
 }
