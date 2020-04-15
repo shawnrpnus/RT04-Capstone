@@ -24,7 +24,7 @@ function ReservationList(props) {
           setLoading={setLoading}
         />
       )}
-      showsVerticalScrollIndicator={false}
+      showsVerticalScrollIndicator={true}
       keyExtractor={item => item.reservationId.toString()}
       ListEmptyComponent={renderEmpty()}
       onRefresh={onRefresh}

@@ -102,7 +102,7 @@ function PurchaseHistory(props) {
             routeToNavigate={routeToNavigate}
           />
         )}
-        showsVerticalScrollIndicator={false}
+        showsVerticalScrollIndicator={true}
         keyExtractor={item => item.transactionId.toString()}
         ListEmptyComponent={renderEmpty()}
         onRefresh={onRefresh}

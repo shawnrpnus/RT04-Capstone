@@ -74,19 +74,19 @@ function TransactionLineItem(props) {
       <Block flex row style={{ alignItems: "center" }}>
         <Block flex={0.3}>
           <Image
-            key={productVariant.productImages[0].productImageUrl}
+            key={productVariant?.productImages[0]?.productImageUrl}
             style={{ width: width * 0.3, height: height * 0.18 }}
             resizeMethod="scale"
             resizeMode="contain"
             source={{
-              uri: productVariant.productImages[0].productImageUrl
+              uri: productVariant?.productImages[0]?.productImageUrl
             }}
           />
         </Block>
         <Block flex={0.7} style={{ paddingLeft: 5 }}>
           <Block flex row space="between">
             <Text h5 bold style={{ fontSize: 20, width: "100%" }}>
-              {productVariant.product.productName}
+              {productVariant?.product?.productName}
             </Text>
           </Block>
           <Block flex row style={{ alignItems: "center", marginBottom: 0 }}>

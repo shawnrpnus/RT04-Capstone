@@ -1,7 +1,7 @@
 export const renderStatus = transaction => {
   if (transaction.deliveryStatus === "DELIVERED") {
     return ["Delivered", "green"];
-  } else if (transaction.collectionMode === "COLLECTED") {
+  } else if (transaction.deliveryStatus === "COLLECTED") {
     return ["Collected", "green"];
   } else if (transaction.deliveryStatus === "READY_FOR_COLLECTION") {
     return ["Ready for collection", "#3D9970"];
