@@ -7,10 +7,7 @@ import capstone.rt04.retailbackend.request.customer.CreateReservationRequest;
 import capstone.rt04.retailbackend.request.customer.UpdateReservationRequest;
 import capstone.rt04.retailbackend.request.customer.UpdateReservationStatusRequest;
 import capstone.rt04.retailbackend.request.reservation.ReservationsByTimeslotRequest;
-import capstone.rt04.retailbackend.request.transaction.SalesByDayRequest;
 import capstone.rt04.retailbackend.response.ReservationStockCheckResponse;
-import capstone.rt04.retailbackend.response.analytics.ReservationsByTimeSlot;
-import capstone.rt04.retailbackend.response.analytics.SalesByDay;
 import capstone.rt04.retailbackend.services.RelationshipService;
 import capstone.rt04.retailbackend.services.ReservationService;
 import capstone.rt04.retailbackend.services.ValidationService;
@@ -58,7 +55,7 @@ public class ReservationController {
 
     @GetMapping(CustomerControllerRoutes.GET_AVAIL_SLOTS_FOR_STORE)
     public List<ZonedDateTime> getAvailSlotsForStore(@RequestParam Long storeId) throws StoreNotFoundException {
-        return reservationService.getAvailTimelotsForStore(storeId);
+        return reservationService.getAvailTimeSlotsForStore(storeId);
     }
 
     @GetMapping(CustomerControllerRoutes.GET_UPCOMING_RESERVATIONS)
