@@ -45,7 +45,10 @@ function OrderHistoryCard(props) {
     setMyRefund(refundsToCheck);
   }
   useEffect(() => {
-    fetchData();
+    // console.log(transaction.transactionLineItems[0].refundLineItems.length === 0 );
+    if(transaction.transactionLineItems[0].refundLineItems.length !== 0) {
+      fetchData();
+    }
   }, []);
 
   // const refunds = useSelector(
