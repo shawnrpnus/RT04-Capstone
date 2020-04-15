@@ -137,7 +137,7 @@ public class ReservationService {
         return count;
     }
 
-    public List<ZonedDateTime> getAvailTimelotsForStore(Long storeId) throws StoreNotFoundException {
+    public List<ZonedDateTime> getAvailTimeSlotsForStore(Long storeId) throws StoreNotFoundException {
         return getAvailTimeSlotsByStoreAndZonedDateTime(storeId, ZonedDateTime.now(ZoneId.of("Singapore")));
     }
 

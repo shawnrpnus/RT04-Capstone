@@ -88,7 +88,7 @@ function TransactionCard(props) {
             resizeMethod="resize"
             resizeMode="contain"
             source={{
-              uri: tli.productVariant.productImages[0].productImageUrl
+              uri: tli.productVariant?.productImages[0]?.productImageUrl
             }}
           />
         ))}

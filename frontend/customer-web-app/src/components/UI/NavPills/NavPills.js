@@ -81,6 +81,7 @@ export default function NavPills(props) {
       >
         {tabs.map((prop, key) => {
           return (
+             key === active &&
             <div
               className={classes.tabContent}
               key={key}

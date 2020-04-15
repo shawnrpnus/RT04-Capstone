@@ -33,13 +33,13 @@ function AddressCard(props) {
   const setAddrDefault = () => {
     const updatedAddress = _.clone(address);
     updatedAddress.default = true;
-    dispatch(updateShippingAddress(customer.customerId, updatedAddress));
+    dispatch(updateShippingAddress(customer.customerId, updatedAddress, null, setLoading));
   };
 
   const setAddrBilling = () => {
     const updatedAddress = _.clone(address);
     updatedAddress.billing = true;
-    dispatch(updateShippingAddress(customer.customerId, updatedAddress));
+    dispatch(updateShippingAddress(customer.customerId, updatedAddress, null, setLoading));
   };
 
   const showDeleteConfirmationAlert = () => {

@@ -1,21 +1,27 @@
-import React from "react";
+import React, { useState } from "react";
 import { Block, Text } from "galio-framework";
-import { Dimensions, ScrollView } from "react-native";
+import { Dimensions, RefreshControl, ScrollView } from "react-native";
 import { QRCode } from "react-native-custom-qr-codes-expo";
 import AddressCardCheckout from "src/screens/Checkout/AddressCardCheckout";
 import TransactionLineItem from "src/screens/Purchases/TransactionLineItem";
-import { useSelector } from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import { Divider } from "react-native-paper";
 import PurchaseDetailsTotals from "src/screens/Purchases/PurchaseDetailsTotals";
 import { renderStatus } from "src/screens/Shared/TransactionFunctions";
 import { useRoute } from "@react-navigation/native";
+import {setViewedTransaction} from "src/redux/actions/transactionActions";
 
 const moment = require("moment");
 const { width, height } = Dimensions.get("window");
 
 function PurchaseDetails(props) {
   const transaction = useSelector(state => state.transaction.viewedTransaction);
+  const dispatch = useDispatch();
+  const [refreshing, setRefreshing] = useState(false);
 
+  const refresh = () => {
+      dispatch(setViewedTransaction(transaction.transactionId, null, setRefreshing, null))
+  }
   return (
     <Block
       flex={1}
@@ -27,7 +33,11 @@ function PurchaseDetails(props) {
       }}
     >
       {transaction && (
-        <ScrollView>
+        <ScrollView
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={refresh} />
+          }
+        >
           <Block
             flex
             card
@@ -45,7 +55,7 @@ function PurchaseDetails(props) {
             </Text>
           </Block>
           {transaction.deliveryStatus !== "DELIVERED" &&
-              transaction.deliveryStatus !== "COLLECTED" &&
+            transaction.deliveryStatus !== "COLLECTED" &&
             transaction.collectionMode === "IN_STORE" && (
               <Block
                 flex
@@ -123,9 +133,7 @@ function PurchaseDetails(props) {
                 Purchased
               </Text>
               <Text h5 style={{ width: "70%", fontSize: 16 }}>
-                {transaction.store
-                  ? "In Store"
-                  : "Online"}
+                {transaction.store ? "In Store" : "Online"}
               </Text>
             </Block>
 
