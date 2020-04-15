@@ -565,7 +565,7 @@ public class TransactionService {
                     && transaction.getStore() != null
                     && !fromStoreIds.contains(transaction.getStore().getStoreId())) continue;
 
-            //if online is FALSE, and my transaction is made online, don't include
+            //if online is not selected, and my transaction is made online, don't include
             if (onlineSelected != null && !onlineSelected && transaction.getStore() == null) continue;
 
 

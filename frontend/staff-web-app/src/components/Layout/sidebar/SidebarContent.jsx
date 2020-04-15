@@ -23,6 +23,7 @@ import {
   MdPeople,
   MdStore
 } from "react-icons/md";
+import {DiGoogleAnalytics} from "react-icons/all";
 
 import { TiSocialInstagram } from "react-icons/ti";
 import { IoMdPricetags } from "react-icons/io";
@@ -356,14 +357,16 @@ class SidebarContent extends Component {
             </SidebarCategory>
           )}
           {salesmarketing && (
-            <SidebarCategory
-              title="Analytics"
-              customIcon={<FaMoneyBillAlt />}
-            >
+            <SidebarCategory title="Analytics" customIcon={<DiGoogleAnalytics />}>
               <SidebarLink
                 title="Sales"
                 route="/analytics/sales"
                 onClick={this.hideSidebar}
+              />
+              <SidebarLink
+                title={"Reservations"}
+                route="/analytics/reservations"
+                onCLick={this.hideSidebar}
               />
             </SidebarCategory>
           )}

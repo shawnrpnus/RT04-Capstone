@@ -28,7 +28,8 @@
 3. Run update1000.sql in src/main/resources/scripts. This will preload stocks to be used for preloading transactions.
 4. Call API: GET http://localhost:8080/api/transaction/generateTestTransactions/300, where 300 is the number of transactions to preload.
 5. Run randomTxnDate.sql in src/main/resources/scripts. This will randomise the preloaded transactions' dates.
-6. Run update.sql in src/main/resources/scripts. This will preload the appropriate stock data.
+6. Call API: GET http://localhost:8080/api/reservation/generateTestReservations/300, where 300 is the number of reservations to preload. 
+7. Run update.sql in src/main/resources/scripts. This will preload the appropriate stock data.
 
 ## Node.js Backend
 
