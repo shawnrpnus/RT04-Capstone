@@ -64,9 +64,11 @@ function ProductCard(props) {
               </GridItem>
               <GridItem xs>
                 <h6 className={classes.price}>
-                  {discountedPrice && <span>${props.discountedPrice}</span>}
+                  {discountedPrice && (
+                    <span>${props.discountedPrice.toFixed(2)}</span>
+                  )}
                   <span className={discountedPrice && classes.discountedPrice}>
-                    ${product.price}
+                    ${product.price.toFixed(2)}
                   </span>
                 </h6>
               </GridItem>
@@ -90,7 +92,7 @@ function ProductCard(props) {
                         style={{
                           fill: cis.colour,
                           strokeWidth: cis.colour === "#FFFFFF" ? 2 : 0,
-                          stroke: cis.colour === "#FFFFFF" ? "black" : "none"
+                          stroke: cis.colour === "#FFFFFF" ? "black" : "none",
                         }}
                       />
                     </svg>
@@ -124,7 +126,7 @@ function ProductCard(props) {
 }
 
 ProductCard.propTypes = {
-  productDetail: PropTypes.object.isRequired
+  productDetail: PropTypes.object.isRequired,
 };
 
 export default ProductCard;

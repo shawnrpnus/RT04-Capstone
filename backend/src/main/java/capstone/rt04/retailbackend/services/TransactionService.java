@@ -267,14 +267,14 @@ public class TransactionService {
         // Transferring to transaction line item
         for (ShoppingCartItem shoppingCartItem : shoppingCartItems) {
             quantity = new BigDecimal(shoppingCartItem.getQuantity());
-            transactionLineItem = new TransactionLineItem(shoppingCartItem.getProductVariant().getProduct().getPrice().multiply(quantity),
+            transactionLineItem = new TransactionLineItem(shoppingCartItem.getProductVariant().getProduct().getPrice().multiply(quantity).setScale(2, BigDecimal.ROUND_HALF_UP),
                     shoppingCartItem.getQuantity(), null, shoppingCartItem.getProductVariant());
             //TODO: Update final subtotal based on discount and promo code
 
             for (Discount discount : shoppingCartItem.getProductVariant().getProduct().getDiscounts()) {
                 finalPrice = productService.applyDiscount(discount, shoppingCartItem.getProductVariant().getProduct(), null);
                 if (finalPrice != null) {
-                    transactionLineItem.setFinalSubTotal(finalPrice.multiply(quantity));
+                    transactionLineItem.setFinalSubTotal(finalPrice.multiply(quantity).setScale(2, BigDecimal.ROUND_HALF_UP));
                     break;
                 } else {
                     transactionLineItem.setFinalSubTotal(null);
@@ -351,7 +351,7 @@ public class TransactionService {
                     transaction.setFinalTotalPrice(shoppingCart.getFinalTotalAmount().subtract(promoCode.getFlatDiscount()));
                 } else if (promoCode.getPercentageDiscount() != null && promoCode.getPercentageDiscount().compareTo(BigDecimal.ZERO) != 0) {
                     transaction.setFinalTotalPrice(shoppingCart.getFinalTotalAmount().multiply(BigDecimal.ONE.subtract(
-                            promoCode.getPercentageDiscount().divide(BigDecimal.valueOf(100)))));
+                            promoCode.getPercentageDiscount().divide(BigDecimal.valueOf(100)))).setScale(2, BigDecimal.ROUND_HALF_UP));
                 }
                 customer.getUsedPromoCodes().add(promoCode);
                 promoCode.getTransactions().add(transaction);

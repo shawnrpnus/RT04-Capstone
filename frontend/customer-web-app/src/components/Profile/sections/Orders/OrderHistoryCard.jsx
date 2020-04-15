@@ -34,19 +34,18 @@ function OrderHistoryCard(props) {
     IN_TRANSIT: "IN TRANSIT",
     DELIVERED: "DELIVERED",
     COLLECTED: "COLLECTED",
-    READY_FOR_COLLECTION: "READY FOR COLLECTION"
+    READY_FOR_COLLECTION: "READY FOR COLLECTION",
   };
 
   async function fetchData() {
     const refundsToCheck = await retrieveRefundsByTransactionId(
       transaction.transactionId
     );
-
     setMyRefund(refundsToCheck);
   }
   useEffect(() => {
     // console.log(transaction.transactionLineItems[0].refundLineItems.length === 0 );
-    if(transaction.transactionLineItems[0].refundLineItems.length !== 0) {
+    if (transaction.transactionLineItems[0].refundLineItems.length !== 0) {
       fetchData();
     }
   }, []);
@@ -85,7 +84,7 @@ function OrderHistoryCard(props) {
   // console.log('l', totalForEachItem);
   let toRefund = false;
 
-  const isRefundable = transaction => {
+  const isRefundable = (transaction) => {
     if (transaction.deliveredDateTime) {
       let datePastRefund = new Date(transaction.deliveredDateTime);
       datePastRefund.setDate(datePastRefund.getDate() + 14);
@@ -145,7 +144,7 @@ function OrderHistoryCard(props) {
   //   return lineItem.productVariant;
   // });
 
-  const openModal = transactionId => {
+  const openModal = (transactionId) => {
     setLargeModal(true);
     dispatch(retrieveTransactionById(transactionId));
   };
@@ -156,7 +155,7 @@ function OrderHistoryCard(props) {
       style={{
         padding: "20px",
         margin: "10px 0",
-        borderRadius: "0px"
+        borderRadius: "0px",
       }}
     >
       <GridContainer>
@@ -228,7 +227,7 @@ function OrderHistoryCard(props) {
               xs={12}
               style={{ height: "200px", overflowY: "scroll" }}
             >
-              {lineItems.map(lineItem => {
+              {lineItems.map((lineItem) => {
                 return (
                   <ProductVariantCard
                     key={lineItem.productVariant.productVariantId}

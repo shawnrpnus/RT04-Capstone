@@ -129,7 +129,7 @@ public class DeliveryService {
         return Math.ceil(quantity / 100.00);
     }
 
-    public List<Transaction> automateDeliveryAllocation(Long staffId) throws StaffNotFoundException, DeliveryNotFoundException, NoItemForDeliveryException {
+    public List<Transaction> automateDeliveryAllocation(Long staffId, Integer maxCapacity) throws StaffNotFoundException, DeliveryNotFoundException, NoItemForDeliveryException {
         Staff staff = staffService.retrieveStaffByStaffId(staffId);
         // Includes warehouse-customer, warehouse-store (self collection), store-customer
         List<Transaction> emails = new ArrayList<>();
@@ -151,7 +151,6 @@ public class DeliveryService {
         Delivery delivery = retrieveDeliveryById(newDelivery.getDeliveryId());
 
         Integer quantity = 0;
-        Integer maxCapacity = delivery.getMaxCapacity();
         Integer transactionIndex = 0;
         Integer inStoreRestockOrderIndex = 0;
         List<InStoreRestockOrderItem> affectedItems = new ArrayList<>();

@@ -91,8 +91,8 @@ public class DeliveryController {
     }
 
     @GetMapping(AUTOMATE_DELIVERY_ALLOCATION)
-    public ResponseEntity<?> automateDeliveryAllocation(@PathVariable Long staffId) throws StaffNotFoundException, DeliveryNotFoundException, NoItemForDeliveryException {
-        List<Transaction> transactions = deliveryService.automateDeliveryAllocation(staffId);
+    public ResponseEntity<?> automateDeliveryAllocation(@RequestParam Long staffId, @RequestParam Integer maxCapacity) throws StaffNotFoundException, DeliveryNotFoundException, NoItemForDeliveryException {
+        List<Transaction> transactions = deliveryService.automateDeliveryAllocation(staffId, maxCapacity);
         deliveryService.sendDeliveryNotificationEmail(transactions);
         return new ResponseEntity<>(ResponseEntity.ok("Delivery generated for staff " + staffId), HttpStatus.OK);
     }
@@ -164,14 +164,14 @@ public class DeliveryController {
                 relationshipService.clearTransactionRelationships((Transaction) item);
             } else if (item.getClass().equals(InStoreRestockOrderItem.class)) {
                 clearRestockOrderItemRelationships((InStoreRestockOrderItem) item);
-            } else if (item.getClass().equals(GroupedStoreOrderItems.class)){
-                for (InStoreRestockOrderItem inStoreRestockOrderItem : ((GroupedStoreOrderItems)item).getInStoreRestockOrderItems()){
+            } else if (item.getClass().equals(GroupedStoreOrderItems.class)) {
+                for (InStoreRestockOrderItem inStoreRestockOrderItem : ((GroupedStoreOrderItems) item).getInStoreRestockOrderItems()) {
                     clearRestockOrderItemRelationships(inStoreRestockOrderItem);
                 }
-                for (Transaction transaction : ((GroupedStoreOrderItems)item).getTransactions()){
+                for (Transaction transaction : ((GroupedStoreOrderItems) item).getTransactions()) {
                     relationshipService.clearTransactionRelationships(transaction);
                 }
-                relationshipService.clearStoreRelationships(((GroupedStoreOrderItems)item).getStore());
+                relationshipService.clearStoreRelationships(((GroupedStoreOrderItems) item).getStore());
             }
         }
     }

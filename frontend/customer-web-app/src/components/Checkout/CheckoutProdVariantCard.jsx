@@ -22,7 +22,7 @@ function CheckoutProdVariantCard(props) {
     product,
     sizeDetails,
     colour,
-    productVariantId
+    productVariantId,
   } = cartItem.productVariant;
   const { productName, discountedPrice, price } = product;
   const { quantity } = cartItem;
@@ -49,7 +49,7 @@ function CheckoutProdVariantCard(props) {
               <h3 style={{ marginTop: "10px" }}>
                 {discountedPrice && <span>${discountedPrice}</span>}
                 <span className={discountedPrice && classes.discountedPrice}>
-                  ${price}
+                  ${price.toFixed(2)}
                 </span>
               </h3>
             </GridItem>

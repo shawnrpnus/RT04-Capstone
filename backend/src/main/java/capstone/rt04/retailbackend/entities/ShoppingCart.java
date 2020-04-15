@@ -73,15 +73,15 @@ public class ShoppingCart implements Serializable {
                 if (discountedPrice != null) break;
             }
             BigDecimal unitPrice = item.getProductVariant().getProduct().getPrice();
-            subTotal = unitPrice.multiply(quantity);
+            subTotal = unitPrice.multiply(quantity).setScale(2, BigDecimal.ROUND_HALF_UP);
             // original total with non-discounted price
-            initialTotal = initialTotal.add(subTotal);
+            initialTotal = initialTotal.add(subTotal).setScale(2, BigDecimal.ROUND_HALF_UP);
 
             if (discountedPrice != null) unitPrice = discountedPrice;
 
-            subTotal = unitPrice.multiply(quantity);
+            subTotal = unitPrice.multiply(quantity).setScale(2, BigDecimal.ROUND_HALF_UP);
             // total with discounted price
-            finalTotal = finalTotal.add(subTotal);
+            finalTotal = finalTotal.add(subTotal).setScale(2, BigDecimal.ROUND_HALF_UP);
         }
 
         this.setInitialTotalAmount(initialTotal);

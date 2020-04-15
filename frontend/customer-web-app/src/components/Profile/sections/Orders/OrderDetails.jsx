@@ -15,12 +15,17 @@ const _ = require("lodash");
 function OrderDetails(props) {
   const { mode, transactionId } = useParams();
   const dispatch = useDispatch();
-  const transaction = useSelector(state => state.transaction.viewedTransaction);
+  const transaction = useSelector(
+    (state) => state.transaction.viewedTransaction
+  );
   const promoCode = _.get(transaction, "promoCode", {});
 
   useEffect(() => {
     dispatch(retrieveTransactionById(transactionId));
   }, [transactionId]);
+
+  console.log(transactionId);
+  console.log(transaction);
 
   const deliveryStatusEnumMap = {
     PROCESSING: "PROCESSING",
@@ -28,7 +33,7 @@ function OrderDetails(props) {
     IN_TRANSIT: "IN TRANSIT",
     DELIVERED: "DELIVERED",
     COLLECTED: "COLLECTED",
-    READY_FOR_COLLECTION: "READY FOR COLLECTION"
+    READY_FOR_COLLECTION: "READY FOR COLLECTION",
   };
 
   const status = transaction
@@ -56,7 +61,7 @@ function OrderDetails(props) {
       style={{
         padding: "20px",
         margin: "10px 0",
-        borderRadius: "0px"
+        borderRadius: "0px",
       }}
     >
       {transaction && (
@@ -111,13 +116,18 @@ function OrderDetails(props) {
               </>
             )}
           </GridItem>
+          <GridItem xs={12}>
+            <Divider style={{ margin: "1% 0" }} />
+            <b>Payment Information:</b> &nbsp;
+            {transaction.cardIssuer} ending with {transaction.cardLast4}
+          </GridItem>
           <GridItem
             md={12}
             xs={12}
             style={{
               backgroundColor: "lightgray",
               padding: "10px 15px",
-              marginTop: "15px"
+              marginTop: "15px",
             }}
           >
             <h4 style={{ margin: "0" }}>
