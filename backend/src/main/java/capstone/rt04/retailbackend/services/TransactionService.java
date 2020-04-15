@@ -105,10 +105,10 @@ public class TransactionService {
     public Transaction retrieveTransactionByQRCode(Long transactionId, Long storeId) throws TransactionNotFoundException {
         Transaction transaction = retrieveTransactionById(transactionId);
 
-        if(transaction.getStoreToCollect() == null) {
+        if (transaction.getStoreToCollect() == null) {
             throw new TransactionNotFoundException("Collection Mode is not In-Store!");
         }
-        if(!transaction.getStoreToCollect().getStoreId().equals(storeId)){
+        if (!transaction.getStoreToCollect().getStoreId().equals(storeId)) {
             throw new TransactionNotFoundException("Wrong Store! Please collect at: " + transaction.getStoreToCollect().getStoreName());
         }
         return transaction;
@@ -407,7 +407,7 @@ public class TransactionService {
             throw new TransactionNotFoundException("Collection Mode is not In-Store!");
         }
         if (!transaction.getDeliveryStatus().equals(DeliveryStatusEnum.READY_FOR_COLLECTION)) {
-            throw new TransactionNotFoundException("Transaction " + transaction.getOrderNumber() +" not ready for collection");
+            throw new TransactionNotFoundException("Transaction " + transaction.getOrderNumber() + " not ready for collection");
         }
         transaction.setDeliveryStatus(DeliveryStatusEnum.COLLECTED);
 
@@ -418,6 +418,41 @@ public class TransactionService {
         List<Transaction> transactions = transactionRepository.findAll();
         lazyLoadTransaction(transactions);
         return transactions;
+    }
+
+    public List<Transaction> retrieveAllTransactionsByStoreId(Long storeId) {
+        List<Transaction> transactions = retrieveAllTransaction();
+        List<Transaction> transactionsForStoreOrWarehouse = new ArrayList<>();
+        if (storeId != null) {
+            transactionsForStoreOrWarehouse = transactionRepository.findAllByStore_StoreId(storeId);
+        } else {
+            //warehouse [online purchase]
+            for (Transaction t : transactions) {
+                if (t.getStore() == null) {
+                    transactionsForStoreOrWarehouse.add(t);
+                }
+            }
+        }
+        lazyLoadTransaction(transactionsForStoreOrWarehouse);
+        return transactionsForStoreOrWarehouse;
+    }
+
+    public List<Transaction> retrieveAllTransactionsByStoreToCollectId(Long storeToCollectId) {
+        List<Transaction> transactions = retrieveAllTransaction();
+        List<Transaction> transactionsForStoreOrWarehouse = new ArrayList<>();
+        if (storeToCollectId != null) {
+            transactionsForStoreOrWarehouse = transactionRepository.findAllByStoreToCollect_StoreId(storeToCollectId);
+        } else {
+            //warehouse [delivery]
+            for (Transaction t : transactions) {
+                if (t.getCollectionMode() == CollectionModeEnum.DELIVERY) {
+                    transactionsForStoreOrWarehouse.add(t);
+                }
+            }
+        }
+        lazyLoadTransaction(transactionsForStoreOrWarehouse);
+
+        return transactionsForStoreOrWarehouse;
     }
 
     public List<Transaction> getCustomerInStoreTransactions(Long customerId) {
@@ -579,14 +614,14 @@ public class TransactionService {
                 if (!currElement.getDate().isEqual(currDate)) {
                     SalesByDay emptySalesByDay = new SalesByDay();
                     emptySalesByDay.setDate(currDate);
-                    addZeroValues(emptySalesByDay, fromStoreIds,onlineSelected);
+                    addZeroValues(emptySalesByDay, fromStoreIds, onlineSelected);
                     result.add(currResultIndex, emptySalesByDay);
                 }
             } else {
                 //dates extending past latest transaction date
                 SalesByDay emptySalesByDay = new SalesByDay();
                 emptySalesByDay.setDate(currDate);
-                addZeroValues(emptySalesByDay, fromStoreIds,onlineSelected);
+                addZeroValues(emptySalesByDay, fromStoreIds, onlineSelected);
                 result.add(emptySalesByDay);
             }
             currDateIndex++;
