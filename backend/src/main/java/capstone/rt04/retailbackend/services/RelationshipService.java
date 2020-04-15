@@ -276,14 +276,17 @@ public class RelationshipService {
             if (promoCode != null) refund.setPromoCode(promoCode);
         }
 
-        clearCustomerRelationships(refund.getCustomer());
+        refund.setCustomer(null);
         for (RefundLineItem refundLineItem : refund.getRefundLineItems()) {
             refundLineItem.setRefund(null);
+            refundLineItem.getTransactionLineItem().setRefundLineItems(null);
             for (RefundLineItemHandler refundLineItemHandler : refundLineItem.getRefundLineItemHandlerList()) {
                 refundLineItemHandler.setRefundLineItem(null);
             }
             clearTransactionLineItemRelationship(refundLineItem.getTransactionLineItem());
-
+            for(Discount d : refundLineItem.getTransactionLineItem().getProductVariant().getProduct().getDiscounts()) {
+                d.setProducts(null);
+            }
             if (refund.getStore() != null) clearStoreRelationships(refund.getStore());
             if (refund.getWarehouse() != null) {
                 refund.getWarehouse().setInStoreRestockOrders(null);

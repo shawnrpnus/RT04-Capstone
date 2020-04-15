@@ -256,11 +256,11 @@ export default function CheckOutPage() {
       } else if (_.get(code, "percentageDiscount", null)) {
         console.log(code.percentageDiscount);
         setTotalAmount(
-          (
+          Number((
             Math.ceil(
               ((totalAmount * (100 - code.percentageDiscount)) / 100) * 100
             ) / 100
-          ).toFixed(2)
+          ).toFixed(2))
         );
       }
     }

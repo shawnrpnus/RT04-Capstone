@@ -138,7 +138,7 @@ export const retrieveRefundsByTransactionId = transactionId => {
     })
     .then(response => {
       const data = jsog.decode(response.data);
-      // console.log(data);
+      console.log(data);
       return data;
       // dispatch(retrieveRefundsByTransactionIdSuccess(data));
     })

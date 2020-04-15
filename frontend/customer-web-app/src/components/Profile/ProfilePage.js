@@ -28,10 +28,11 @@ import OrderDetails from "components/Profile/sections/Orders/OrderDetails";
 import ReviewCardForProfilePage from "components/Reviews/ReviewCardForProfilePage";
 import Backdrop from "@material-ui/core/Backdrop";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import {AttachMoney, Cached} from "@material-ui/icons";
+import {AttachMoney, Cached, ThumbsUpDown} from "@material-ui/icons";
 import RefundHistoryPage from "./sections/Refunds/RefundHistoryPage";
 import RefundDetails from "./sections/Refunds/RefundDetails";
 import CreateRefund from "./sections/Refunds/CreateRefund";
+import ViewAllReviews from "./sections/Reviews/ViewAllReviews";
 
 const useStyles = makeStyles(profilePageStyle);
 
@@ -94,6 +95,12 @@ export default function ProfilePage(props) {
       tabIcon: AttachMoney,
       route: "/account/profile/refundHistory",
       tabContent: <RefundHistoryPage />,
+    },
+    {
+      tabButton: "Reviews",
+      tabIcon: ThumbsUpDown,
+      route: "/account/profile/reviews",
+      tabContent: <ViewAllReviews />,
     },
   ];
 
@@ -165,10 +172,12 @@ export default function ProfilePage(props) {
                   ? 2
                   : mode === "refundHistory"
                   ? 3
+                  : mode === "reviews"
+                  ? 4
                   : mode === "viewOrder"
-                  ? 4
+                  ? 5
                   : mode === "viewRefund"
-                  ? 4
+                  ? 5
                   : 0
               }
               tabs={tabs}
