@@ -140,9 +140,49 @@ public class TransactionController {
         return new ResponseEntity<>(txns, HttpStatus.OK);
     }
 
+    @GetMapping("/retrieveCustomerCompletedInStoreTransactions")
+    public ResponseEntity<?> retrieveCustomerCompletedInStoreTransactions(@RequestParam Long customerId) {
+        List<Transaction> txns = transactionService.getCustomerCompletedInStoreTransactions(customerId);
+        for (Transaction txn : txns) {
+            relationshipService.clearTransactionRelationships(txn);
+        }
+        Collections.sort(txns, Comparator.comparing(Transaction::getCreatedDateTime).reversed());
+        return new ResponseEntity<>(txns, HttpStatus.OK);
+    }
+
+    @GetMapping("/retrieveCustomerPendingInStoreTransactions")
+    public ResponseEntity<?> retrieveCustomerPendingInStoreTransactions(@RequestParam Long customerId) {
+        List<Transaction> txns = transactionService.getCustomerPendingInStoreTransaction(customerId);
+        for (Transaction txn : txns) {
+            relationshipService.clearTransactionRelationships(txn);
+        }
+        Collections.sort(txns, Comparator.comparing(Transaction::getCreatedDateTime).reversed());
+        return new ResponseEntity<>(txns, HttpStatus.OK);
+    }
+
     @GetMapping(RETRIEVE_CUSTOMER_IN_STORE_COLLECION_TRANSACTIONS)
     public ResponseEntity<?> retrieveCustomerInStoreCollectionTransactions(@RequestParam Long customerId) {
         List<Transaction> txns = transactionService.getCustomerInStoreCollectionTransactions(customerId);
+        for (Transaction txn : txns) {
+            relationshipService.clearTransactionRelationships(txn);
+        }
+        Collections.sort(txns, Comparator.comparing(Transaction::getCreatedDateTime).reversed());
+        return new ResponseEntity<>(txns, HttpStatus.OK);
+    }
+
+    @GetMapping("/retrieveCustomerCompletedInStoreCollections")
+    public ResponseEntity<?> retrieveCustomerCompletedInStoreCollectionTransactions(@RequestParam Long customerId) {
+        List<Transaction> txns = transactionService.getCustomerCompletedInStoreCollectionTransactions(customerId);
+        for (Transaction txn : txns) {
+            relationshipService.clearTransactionRelationships(txn);
+        }
+        Collections.sort(txns, Comparator.comparing(Transaction::getCreatedDateTime).reversed());
+        return new ResponseEntity<>(txns, HttpStatus.OK);
+    }
+
+    @GetMapping("/retrieveCustomerPendingInStoreCollections")
+    public ResponseEntity<?> retrieveCustomerPendingInStoreCollectionTransactions(@RequestParam Long customerId) {
+        List<Transaction> txns = transactionService.getCustomerPendingInStoreCollectionTransactions(customerId);
         for (Transaction txn : txns) {
             relationshipService.clearTransactionRelationships(txn);
         }

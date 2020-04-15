@@ -3,7 +3,11 @@ import * as types from "../actions/types";
 const initialState = {
   transactions: null,
   viewedTransaction: null,
-  collections: null
+  collections: null,
+  pendingPurchases: null,
+  completedPurchases: null,
+  pendingCollections:  null,
+  completedCollections: null
 };
 
 export default function(state = initialState, action) {
@@ -23,6 +27,26 @@ export default function(state = initialState, action) {
         ...state,
         collections: action.collections
       };
+    case types.RETRIEVE_PENDING_PURCHASES:
+      return {
+        ...state,
+        pendingPurchases: action.transactions
+      }
+    case types.RETRIEVE_COMPLETED_PURCHASES:
+      return {
+        ...state,
+        completedPurchases: action.transactions
+      }
+    case types.RETRIEVE_PENDING_COLLECTIONS:
+      return {
+        ...state,
+        pendingCollections: action.transactions
+      }
+    case types.RETRIEVE_COMPLETED_COLLECTIONS:
+      return {
+        ...state,
+        completedCollections: action.transactions
+      }
     default:
       return state;
   }

@@ -14,7 +14,8 @@ import ViewCreditCards from "src/screens/Profile/CreditCard/ViewCreditCards";
 import {
   FontAwesome,
   MaterialCommunityIcons,
-  Entypo
+  Entypo,
+  MaterialIcons
 } from "@expo/vector-icons";
 import CreateAddress from "src/screens/Profile/Address/CreateAddress";
 import UpdateAddress from "src/screens/Profile/Address/UpdateAddress";
@@ -27,6 +28,9 @@ import PurchaseDetails from "src/screens/Purchases/PurchaseDetails";
 import UpcomingReservations from "src/screens/Reservation/UpcomingReservations";
 import PastReservations from "src/screens/Reservation/PastReservations";
 import ReservationDetails from "src/screens/Reservation/ReservationDetails";
+import PendingPurchases from "src/screens/Purchases/PendingPurchases";
+import CompletedPurchases from "src/screens/Purchases/CompletedPurchases";
+import PendingCollections from "src/screens/Purchases/Collections/PendingCollections";
 
 // screens
 
@@ -296,10 +300,14 @@ function ProductScanTabs(props) {
 
 function PurchasesStack(props) {
   return (
-    <Stack.Navigator mode="card" headerMode="screen" initialRouteName="Shop">
+    <Stack.Navigator
+      mode="card"
+      headerMode="screen"
+      initialRouteName="Purchases"
+    >
       <Stack.Screen
-        name="Purchase History"
-        component={PurchaseHistory}
+        name="Purchases"
+        component={PurchaseHistoryTabs}
         options={{
           header: props => <CustomHeader title="Purchase History" {...props} />,
           headerStyle: { height: 100 }
@@ -317,14 +325,55 @@ function PurchasesStack(props) {
   );
 }
 
+function PurchaseHistoryTabs(props) {
+  return (
+    <Tab.Navigator
+      initialRouteName="Pending Purchases"
+      tabBarPosition="bottom"
+      tabBarOptions={{
+        activeTintColor: theme.COLORS.PRIMARY,
+        inactiveTintColor: "lightgrey",
+        style: { backgroundColor: theme.COLORS.CAPTION },
+        showIcon: true,
+        indicatorStyle: { backgroundColor: theme.COLORS.PRIMARY }
+      }}
+    >
+      <Tab.Screen
+        name="Pending Purchases"
+        component={PendingPurchases}
+        options={{
+          tabBarLabel: "Pending",
+          tabBarIcon: ({ focused, color }) => (
+            <MaterialCommunityIcons name="timer-sand" color={color} size={23} />
+          )
+        }}
+      />
+      <Tab.Screen
+        name="Completed Purchases"
+        component={CompletedPurchases}
+        options={{
+          tabBarLabel: "Completed",
+          tabBarIcon: ({ focused, color }) => (
+            <MaterialIcons name="done" color={color} size={23} />
+          )
+        }}
+      />
+    </Tab.Navigator>
+  );
+}
+
 function CollectionsStack(props) {
   return (
-    <Stack.Navigator mode="card" headerMode="screen" initialRouteName="Shop">
+    <Stack.Navigator
+      mode="card"
+      headerMode="screen"
+      initialRouteName="Collections"
+    >
       <Stack.Screen
-        name="Pending Collections"
-        component={PurchaseHistory}
+        name="Collections"
+        component={CollectionsTabs}
         options={{
-          header: props => <CustomHeader title="Pending Collections" {...props} />,
+          header: props => <CustomHeader title="Collections" {...props} />,
           headerStyle: { height: 100 }
         }}
       />
@@ -337,6 +386,43 @@ function CollectionsStack(props) {
         }}
       />
     </Stack.Navigator>
+  );
+}
+
+function CollectionsTabs(props) {
+  return (
+    <Tab.Navigator
+      initialRouteName="Pending Collections"
+      tabBarPosition="bottom"
+      tabBarOptions={{
+        activeTintColor: theme.COLORS.PRIMARY,
+        inactiveTintColor: "lightgrey",
+        style: { backgroundColor: theme.COLORS.CAPTION },
+        showIcon: true,
+        indicatorStyle: { backgroundColor: theme.COLORS.PRIMARY }
+      }}
+    >
+      <Tab.Screen
+        name="Pending Collections"
+        component={PendingCollections}
+        options={{
+          tabBarLabel: "Pending",
+          tabBarIcon: ({ focused, color }) => (
+            <MaterialCommunityIcons name="timer-sand" color={color} size={23} />
+          )
+        }}
+      />
+      <Tab.Screen
+        name="Completed Collections"
+        component={CompletedPurchases}
+        options={{
+          tabBarLabel: "Completed",
+          tabBarIcon: ({ focused, color }) => (
+            <MaterialIcons name="done" color={color} size={23} />
+          )
+        }}
+      />
+    </Tab.Navigator>
   );
 }
 
@@ -368,7 +454,7 @@ function ReservationsStack(props) {
 function ReservationTabs(props) {
   return (
     <Tab.Navigator
-      initialRouteName="Upcoming"
+      initialRouteName="Upcoming Reservations"
       tabBarPosition="bottom"
       tabBarOptions={{
         activeTintColor: theme.COLORS.PRIMARY,
