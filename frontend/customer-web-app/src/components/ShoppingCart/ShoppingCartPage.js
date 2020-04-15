@@ -147,6 +147,7 @@ export default function ShoppingCartPage() {
                         productVariantId,
                       } = cartItem.productVariant;
                       const { productName, discountedPrice, price } = product;
+                      console.log(discountedPrice);
                       const { quantity } = cartItem;
                       return (
                         <div key={index}>
@@ -179,7 +180,7 @@ export default function ShoppingCartPage() {
                                 <GridItem md={12}>
                                   <h3 style={{ marginTop: "10px" }}>
                                     {discountedPrice && (
-                                      <span>${discountedPrice}</span>
+                                      <span>${discountedPrice.toFixed(2)}</span>
                                     )}
                                     <span
                                       className={
@@ -187,7 +188,7 @@ export default function ShoppingCartPage() {
                                         classes.discountedPrice
                                       }
                                     >
-                                      ${price}
+                                      ${price.toFixed(2)}
                                     </span>
                                   </h3>
                                 </GridItem>

@@ -160,6 +160,9 @@ public class CategoryController {
                     p.setTags(null);
                     p.setProductVariants(null);
                     p.setCategory(null);
+                    p.setStyles(null);
+                    p.setDiscounts(null);
+                    p.setReviews(null);
                 }
                 clearChildCategoryRelationships(childCat);
             }

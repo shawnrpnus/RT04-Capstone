@@ -28,7 +28,7 @@ import OrderDetails from "components/Profile/sections/Orders/OrderDetails";
 import ReviewCardForProfilePage from "components/Reviews/ReviewCardForProfilePage";
 import Backdrop from "@material-ui/core/Backdrop";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import {AttachMoney, Cached, ThumbsUpDown} from "@material-ui/icons";
+import { AttachMoney, Cached, ThumbsUpDown } from "@material-ui/icons";
 import RefundHistoryPage from "./sections/Refunds/RefundHistoryPage";
 import RefundDetails from "./sections/Refunds/RefundDetails";
 import CreateRefund from "./sections/Refunds/CreateRefund";

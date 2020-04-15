@@ -18,7 +18,7 @@ function ProductVariantCard(props) {
     initialSubTotal,
     finalSubTotal,
     quantity,
-    detail
+    detail,
   } = props;
   const { product } = productVariant;
   const { productName, discountedPrice, price, productId } = product;

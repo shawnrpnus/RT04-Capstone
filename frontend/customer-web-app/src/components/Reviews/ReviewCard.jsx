@@ -13,14 +13,14 @@ import {
   Edit,
   Favorite,
   Reply,
-  Star
+  Star,
 } from "@material-ui/icons";
 import sectionCommentsStyle from "../../assets/jss/material-kit-pro-react/views/blogPostSections/sectionCommentsStyle";
 import Media from "../Layout/components/Media/Media";
 import Rating from "@material-ui/lab/Rating";
 import {
   checkIfCanWriteReview,
-  deleteReviewDetails
+  deleteReviewDetails,
 } from "../../redux/actions/reviewAction";
 import AddEditReview from "./AddEditReview";
 
@@ -38,11 +38,11 @@ export default function ReviewCard(props) {
   // const [editReview, setEditReview] = useState(false); // <Edit/>
   const [currReview, setCurrReview] = useState("");
 
-  const currCustomer = useSelector(state => state.customer.loggedInCustomer);
+  const currCustomer = useSelector((state) => state.customer.loggedInCustomer);
   const currentProductId = useSelector(
-    state => state.product.currentProductDetail.product.productId
+    (state) => state.product.currentProductDetail.product.productId
   );
-  const canWrite = useSelector(state => state.review.canWrite);
+  const canWrite = useSelector((state) => state.review.canWrite);
   useEffect(() => {
     if (currCustomer !== null) {
       // wait for transaction to be made then test
@@ -52,7 +52,7 @@ export default function ReviewCard(props) {
     }
   });
 
-  const onDelete = item => {
+  const onDelete = (item) => {
     dispatch(
       deleteReviewDetails(
         item.product.productId,
@@ -66,11 +66,11 @@ export default function ReviewCard(props) {
     setAddNewReview(!addNewReview);
     console.log(addNewReview);
   };
-  const handleEditReview = item => {
+  const handleEditReview = (item) => {
     // setAddNewReview(!addNewReview);
     setCurrReview(item);
   };
-  const handleCurrReview = item => {
+  const handleCurrReview = (item) => {
     setCurrReview(item);
     console.log(item);
   };
@@ -101,7 +101,7 @@ export default function ReviewCard(props) {
                           onClick={handleAddNewReview}
                           style={{
                             position: "absolute",
-                            right: "15px"
+                            right: "15px",
                           }}
                         >
                           <Add />
@@ -147,7 +147,6 @@ export default function ReviewCard(props) {
 
                 {reviews !== null
                   ? reviews.map(function(item, index) {
-                      console.log(item);
                       const months = [
                         "January",
                         "February",
@@ -160,7 +159,7 @@ export default function ReviewCard(props) {
                         "September",
                         "October",
                         "November",
-                        "December"
+                        "December",
                       ];
                       const dateTime = new Date(item.createdDateTime);
                       const formatted_date =
@@ -272,7 +271,7 @@ export default function ReviewCard(props) {
                                   </span>
                                 }
                               />
-                            )
+                            ),
                           ]}
                         />
                       );

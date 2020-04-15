@@ -59,8 +59,6 @@ const tableIcons = {
 
 const TransactionDetailsDialog = ({ elements, open, onClose }) => {
   const dispatch = useDispatch();
-  const history = useHistory();
-  const confirmDialog = useConfirm();
   const [itemsByStore, setItemsByStore] = useState([]);
   const [stores, setStores] = useState([]);
   const [selectedStoreId, setSelectedStoreId] = useState("");
@@ -99,6 +97,9 @@ const TransactionDetailsDialog = ({ elements, open, onClose }) => {
       ? deliveryAddress
       : storeToCollect.address;
     const address = `${line1}, ${line2}${line2 ? "," : ""} ${postalCode}`;
+    const { firstName, lastName } = item.customer;
+    const name = `${firstName} ${lastName}`;
+    console.log(item);
     return {
       transactionId,
       orderNumber,
@@ -108,6 +109,7 @@ const TransactionDetailsDialog = ({ elements, open, onClose }) => {
       deliveryStatus: deliveryStatus.split("_").join(" "),
       deliveryAddress: address,
       storeToCollect,
+      name,
     };
   });
 
@@ -194,6 +196,7 @@ const TransactionDetailsDialog = ({ elements, open, onClose }) => {
                 );
               },
             },
+            { title: "Customer name", field: "name" },
             {
               title: "Delivery address",
               field: "deliveryAddress",

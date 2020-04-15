@@ -285,7 +285,7 @@ public class ProductService {
                 if (discount.getFlatDiscount().compareTo(product.getPrice()) >= 0) return null;
                 discountedPrice = product.getPrice().subtract(discount.getFlatDiscount());
             } else {
-                discountedPrice = product.getPrice().multiply(BigDecimal.ONE.subtract(discount.getPercentageDiscount()));
+                discountedPrice = product.getPrice().subtract(product.getPrice().multiply(discount.getPercentageDiscount()).setScale(2, BigDecimal.ROUND_HALF_UP));
             }
             if (productDetailsResponse != null) productDetailsResponse.setDiscountedPrice(discountedPrice);
             return discountedPrice;
