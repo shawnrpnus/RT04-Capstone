@@ -7,7 +7,6 @@ import Account from "App/Routes/WrappedRoutes/Account";
 import Product from "App/Routes/WrappedRoutes/Product";
 import ContactUs from "App/Routes/WrappedRoutes/ContactUs";
 import Lookbook from "App/Routes/WrappedRoutes/Lookbook";
-import Location from "components/Location";
 
 export default () => (
   <div>
@@ -18,7 +17,6 @@ export default () => (
       <Route path="/contactUs" component={ContactUs} />
       <Route path="/shop" component={Product} />
       <Route path="/lookbook" component={Lookbook} />
-      <Route path="/location" component={Location} />
       {/*<Route path="*">*/}
       {/*  <Redirect to="/" />*/}
       {/*</Route>*/}

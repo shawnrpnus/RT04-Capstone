@@ -57,8 +57,6 @@ function OrderHistoryPage(props) {
     dispatch(retrieveCustomerTransactions(customer.customerId));
   }, [customer.customerId]);
 
-  console.log(transactions);
-
   return (
     <GridContainer>
       <GridItem

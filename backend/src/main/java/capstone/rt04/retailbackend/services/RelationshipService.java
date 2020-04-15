@@ -161,11 +161,13 @@ public class RelationshipService {
         for (TransactionLineItem transactionLineItem : transaction.getTransactionLineItems()) {
             clearTransactionLineItemRelationship(transactionLineItem);
             transactionLineItem.getProductVariant().getProduct().setDiscounts(null);
-            transactionLineItem.getRefundLineItems().forEach(refundLineItem -> {
-                refundLineItem.setTransactionLineItem(null);
-                refundLineItem.setRefund(null);
-                refundLineItem.setRefundLineItemHandlerList(null);
-            });
+            if (transactionLineItem.getRefundLineItems() != null) {
+                transactionLineItem.getRefundLineItems().forEach(refundLineItem -> {
+                    refundLineItem.setTransactionLineItem(null);
+                    refundLineItem.setRefund(null);
+                    refundLineItem.setRefundLineItemHandlerList(null);
+                });
+            }
         }
         if (transaction.getStoreToCollect() != null)
             clearStoreRelationships(transaction.getStoreToCollect());
@@ -284,7 +286,7 @@ public class RelationshipService {
             }
         }
 
-        refund.setCustomer(null);
+        clearCustomerRelationships(refund.getCustomer());
         for (RefundLineItem refundLineItem : refund.getRefundLineItems()) {
             refundLineItem.setRefund(null);
             refundLineItem.getTransactionLineItem().setRefundLineItems(null);

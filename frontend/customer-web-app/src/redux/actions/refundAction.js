@@ -29,6 +29,7 @@ export const createOnlineRefundRequest = (
       .then((response) => {
         const { data } = jsog.decode(response);
         dispatch(createOnlineRefundSuccess(data));
+        console.log(data);
         const generateRefundLabel = new GenerateRefundLabel(
           deliveryAddress,
           name,
@@ -47,7 +48,8 @@ export const createOnlineRefundRequest = (
       })
       .catch((err) => {
         dispatchErrorMapError(err, dispatch);
-        console.log(err.response.data);
+        if (err.response) console.log(err.response.data);
+        else console.log(err);
       });
   };
 };
