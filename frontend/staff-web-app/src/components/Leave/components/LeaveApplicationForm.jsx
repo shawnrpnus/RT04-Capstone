@@ -132,6 +132,7 @@ class LeaveApplicationForm extends React.Component {
                             id="date-picker-inline"
                             label="Enter Start Date"
                             value={this.state.fromDateTime}
+                            errors = {this.props.errors}
                             onChange={date => {
                                 this.onChange(date, "fromDateTime");
                             }}
@@ -148,6 +149,7 @@ class LeaveApplicationForm extends React.Component {
                             margin="normal"
                             id="date-picker-inline"
                             label="Enter End Date"
+                            errors = {this.props.errors}
                             value={this.state.toDateTime}
                             onChange={date => {
                                 this.onChange(date, "toDateTime");

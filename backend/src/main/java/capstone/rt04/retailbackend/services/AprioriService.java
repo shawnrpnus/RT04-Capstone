@@ -25,8 +25,8 @@ public class AprioriService {
         // String input = path;
         // String output = null;
         /** Note : we here set the output file path to null
-            because we want that the algorithm save the
-            result in memory for this example.
+         because we want that the algorithm save the
+         result in memory for this example.
          */
 
         double minsup = 0.05; // means a minsup of (n) matching transactions (we used a relative support)
@@ -39,9 +39,9 @@ public class AprioriService {
 
         Itemsets result;
         if (path != null) {
-            result =algorithm.runAlgorithm(minsup, path, null, null);
+            result = algorithm.runAlgorithm(minsup, path, null, null);
         } else {
-            result =algorithm.runAlgorithm(minsup, null, null, data);
+            result = algorithm.runAlgorithm(minsup, null, null, data);
         }
         // algorithm.printStats();
         // result.printItemsets(algorithm.getDatabaseSize());
@@ -55,7 +55,7 @@ public class AprioriService {
                 for (int transactionId : itemset.getItems()) {
                     transactionIds.add(Long.valueOf(transactionId));
                 }
-                if (transactionIds.size() > 1)
+                if (transactionIds.size() == 2)
                     transactionIdsList.add(transactionIds);
             }
         }

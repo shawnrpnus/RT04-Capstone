@@ -42,7 +42,7 @@ class LeaveManagerTableContainer extends React.Component {
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
               {this.state.mode ? (
-                <h5 className="bold-text">Pending Leaves</h5>
+                <h5 className="bold-text">Pending Endorsement</h5>
               ) : (
                 <h5 className="bold-text">All Endorsed/Rejected Leaves</h5>
               )}
@@ -62,7 +62,7 @@ class LeaveManagerTableContainer extends React.Component {
                   size="small"
                   variant={this.state.mode ? "outlined" : "contained"}
                 >
-                  All
+                 Endorsed/Rejected
                 </Button>
               </ButtonGroup>
             </Grid>

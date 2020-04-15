@@ -84,7 +84,6 @@ const ViewRefundRecordDetails = props => {
   const [isLoading, setIsLoading] = useState(true);
   const [disabled, setDisabled] = useState(false);
   const currRefund = useSelector(state => state.refund.currRefund);
-  console.log(currRefund);
 
   //State
   const [inputState, setInputState] = useState({
@@ -110,7 +109,6 @@ const ViewRefundRecordDetails = props => {
 
   const onChange = e => {
     e.persist();
-    console.log(e);
     setInputState(inputState => ({
       ...inputState,
       [e.target.name]: e.target.value
@@ -118,10 +116,8 @@ const ViewRefundRecordDetails = props => {
     if (Object.keys(errors).length !== 0) {
       dispatch(clearErrors());
     }
-    // console.log(inputState);
   };
 
-  console.log(refundId);
   //Make API call to retrieve single prod from url param
   useEffect(() => {
     setIsLoading(true);
@@ -165,8 +161,7 @@ const ViewRefundRecordDetails = props => {
       }));
     }
   }, [currTransaction]);
-  // console.log(currTransaction);
-  console.log(currRefund);
+
   return (
     <div>
       <div>

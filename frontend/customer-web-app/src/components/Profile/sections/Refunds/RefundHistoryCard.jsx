@@ -24,7 +24,7 @@ function RefundHistoryCard(props) {
     PARTIALLY_COMPLETE: "PARTIALLY COMPLETE",
     COMPLETED: "COMPLETED",
     COMPLETED_WITH_REJECTED_PRODUCTS: "COMPLETED WITH REJECTED PRODUCTS",
-    REJECTED: "REJECTED",
+    REJECTED: "REJECTED"
   };
   const status = refundStatusEnumMap[currRefund.refundStatus];
 
@@ -71,7 +71,7 @@ function RefundHistoryCard(props) {
       style={{
         padding: "20px",
         margin: "10px 0",
-        borderRadius: "0px",
+        borderRadius: "0px"
       }}
     >
       <GridContainer>
@@ -116,40 +116,44 @@ function RefundHistoryCard(props) {
               xs={12}
               style={{ height: "200px", overflowY: "scroll" }}
             >
-              {lineItems.map((lineItem) => {
+              {lineItems.map(lineItem => {
                 let val = 0;
                 let initialVal = 0;
-                if(lineItem.transactionLineItem.finalSubTotal) {
+                if (lineItem.transactionLineItem.finalSubTotal) {
                   val =
                     (lineItem.transactionLineItem.finalSubTotal *
                       lineItem.quantity) /
                     lineItem.transactionLineItem.quantity;
-                  initialVal = (lineItem.transactionLineItem.initialSubTotal *
-                    lineItem.quantity) /
+                  initialVal =
+                    (lineItem.transactionLineItem.initialSubTotal *
+                      lineItem.quantity) /
                     lineItem.transactionLineItem.quantity;
                 } else {
-                  val = (lineItem.transactionLineItem.initialSubTotal *
-                    lineItem.quantity) /
+                  val =
+                    (lineItem.transactionLineItem.initialSubTotal *
+                      lineItem.quantity) /
                     lineItem.transactionLineItem.quantity;
                 }
                 return (
-                  <>
-                  {
-                    lineItem.quantity ?
+                  <React.Fragment
+                    key={
+                      lineItem.transactionLineItem.productVariant
+                        .productVariantId
+                    }
+                  >
+                    {lineItem.quantity ? (
                       <ProductVariantCard
-                        key={
+                        productVariant={
                           lineItem.transactionLineItem.productVariant
-                            .productVariantId
                         }
-                        productVariant={lineItem.transactionLineItem.productVariant}
                         quantity={lineItem.quantity}
                         initialSubTotal={initialVal}
                         finalSubTotal={val}
                       />
-                      :
+                    ) : (
                       ""
-                  }
-                  </>
+                    )}
+                  </React.Fragment>
                 );
               })}
             </GridItem>

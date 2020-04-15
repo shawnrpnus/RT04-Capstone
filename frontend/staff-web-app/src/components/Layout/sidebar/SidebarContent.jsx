@@ -21,7 +21,7 @@ import {
   MdLocalShipping,
   MdPayment,
   MdPeople,
-  MdStore,
+  MdStore
 } from "react-icons/md";
 
 import { TiSocialInstagram } from "react-icons/ti";
@@ -31,7 +31,7 @@ const _ = require("lodash");
 
 class SidebarContent extends Component {
   static propTypes = {
-    onClick: PropTypes.func.isRequired,
+    onClick: PropTypes.func.isRequired
   };
 
   hideSidebar = () => {
@@ -54,7 +54,7 @@ class SidebarContent extends Component {
     return (
       <div className="sidebar__content">
         <ul className="sidebar__block">
-          {(hr) && (
+          {hr && (
             <SidebarCategory title="Staff" customIcon={<MdPeople />}>
               {hr && (
                 <React.Fragment>
@@ -77,9 +77,9 @@ class SidebarContent extends Component {
                   />
 
                   <SidebarLink
-                      title="Manage Roster"
-                      route="/staff/reassignStaffToStore"
-                      onClick={this.hideSidebar}
+                    title="Manage Roster"
+                    route="/staff/reassignStaffToStore"
+                    onClick={this.hideSidebar}
                   />
                 </React.Fragment>
               )}
@@ -87,45 +87,44 @@ class SidebarContent extends Component {
           )}
 
           {(hr || manager) && (
-              <SidebarCategory title="Leave" customIcon={<FaLeaf />}>
-                {hr && (
-                    <React.Fragment>
-                      <SidebarLink
-                          title="Leave Management"
-                          route="/leave/hr"
-                          onClick={this.hideSidebar}
-                      />
-                    </React.Fragment>
-                )}
+            <SidebarCategory title="Leave" customIcon={<FaLeaf />}>
+              {hr && (
+                <React.Fragment>
+                  <SidebarLink
+                    title="Leave Management"
+                    route="/leave/hr"
+                    onClick={this.hideSidebar}
+                  />
+                </React.Fragment>
+              )}
 
-                {manager && (
-                    <SidebarLink
-                        title="Leave Management"
-                        route="/leave/manager"
-                        onClick={this.hideSidebar}
-                    />
-                )}
-              </SidebarCategory>
+              {manager && (
+                <SidebarLink
+                  title="Leave Management"
+                  route="/leave/manager"
+                  onClick={this.hideSidebar}
+                />
+              )}
+            </SidebarCategory>
           )}
-          {(hr) && (
-              <SidebarCategory title="Payroll" customIcon={<FaMoneyCheckAlt />}>
-                {hr && (
-                    <React.Fragment>
+          {hr && (
+            <SidebarCategory title="Payroll" customIcon={<FaMoneyCheckAlt />}>
+              {hr && (
+                <React.Fragment>
+                  <SidebarLink
+                    title="Create"
+                    route="/payrolls/createPayrolls"
+                    onClick={this.hideSidebar}
+                  />
 
-                      <SidebarLink
-                          title="Create"
-                          route="/payrolls/createPayrolls"
-                          onClick={this.hideSidebar}
-                      />
-
-                      <SidebarLink
-                          title="View All"
-                          route="/payrolls/viewAllHR"
-                          onClick={this.hideSidebar}
-                      />
-                    </React.Fragment>
-                )}
-              </SidebarCategory>
+                  <SidebarLink
+                    title="View All"
+                    route="/payrolls/viewAllHR"
+                    onClick={this.hideSidebar}
+                  />
+                </React.Fragment>
+              )}
+            </SidebarCategory>
           )}
           {warehouse && (
             <SidebarCategory title="Stores" customIcon={<MdStore />}>
@@ -352,6 +351,18 @@ class SidebarContent extends Component {
               <SidebarLink
                 title="View details"
                 route="/transaction/viewOne"
+                onClick={this.hideSidebar}
+              />
+            </SidebarCategory>
+          )}
+          {salesmarketing && (
+            <SidebarCategory
+              title="Analytics"
+              customIcon={<FaMoneyBillAlt />}
+            >
+              <SidebarLink
+                title="Sales"
+                route="/analytics/sales"
                 onClick={this.hideSidebar}
               />
             </SidebarCategory>

@@ -24,4 +24,6 @@ public class ProductDetailsResponse {
 
     private BigDecimal discountedPrice;
 
+    private List<ProductDetailsResponse> recommendedProducts = new ArrayList<>();
+
 }

@@ -180,7 +180,8 @@ const ProductsStockTable = props => {
               actionsColumnIndex: -1,
               headerStyle: { textAlign: "center" }, //change header padding
               cellStyle: { textAlign: "center" },
-              selection: true
+              selection: true,
+              draggable: false
             }}
             actions={[
               warehouse

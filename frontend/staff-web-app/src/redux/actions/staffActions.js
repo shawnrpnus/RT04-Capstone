@@ -2,7 +2,6 @@ import axios from "axios";
 import * as types from "./types";
 import { toast } from "react-toastify";
 import { GET_ERRORS } from "./types";
-import {retrieveProductsDetails} from "./productActions";
 axios.defaults.baseURL = process.env.REACT_APP_SPRING_API_URL;
 
 const STAFF_BASE_URL = "/api/staff";
@@ -393,7 +392,7 @@ export const reassignStaffStore = (reassignStaffStoreRequest, history) => {
                 toast.success("Successfully reassigned!", {
                     position: toast.POSITION.TOP_CENTER
                 });
-                window.location.reload(false);
+                retrieveAllStoreStaff()(dispatch);
             })
             .catch(err => {
                 console.log(err);
@@ -433,32 +432,6 @@ const retrieveStoreStaffSuccess = data => ({
 });
 
 const retrieveStoreStaffError = data => ({
-    type: types.GET_ERRORS,
-    errorMap: data
-});
-
-export const retrieveStoreStaff = (storeId) => {
-    return dispatch => {
-        //redux thunk passes dispatch
-        axios
-            .get(STAFF_BASE_URL + `/retrieveStoreStaff/` + storeId)
-            .then(response => {
-                const { data } = jsog.decode(response);
-                console.log(data);
-                dispatch(retrieveStaffOfStoreSuccess(data));
-            })
-            .catch(err => {
-                dispatch(retrieveStaffOfStoreError(err.response.data));
-            });
-    };
-};
-
-const retrieveStaffOfStoreSuccess = data => ({
-    type: types.RETRIEVE_STAFF_OF_STORE,
-    staffEntity: data
-});
-
-const retrieveStaffOfStoreError = data => ({
     type: types.GET_ERRORS,
     errorMap: data
 });

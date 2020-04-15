@@ -21,7 +21,6 @@ import capstone.rt04.retailbackend.util.exceptions.transaction.TransactionNotFou
 import com.stripe.exception.StripeException;
 import com.stripe.model.PaymentMethod;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cglib.core.Local;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,9 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.*;
 
 @Service
@@ -281,7 +277,7 @@ public class TransactionService {
                     transactionLineItem.setFinalSubTotal(finalPrice.multiply(quantity));
                     break;
                 } else {
-                    transactionLineItem.setFinalSubTotal(transactionLineItem.getInitialSubTotal());
+                    transactionLineItem.setFinalSubTotal(null);
                 }
             }
 
@@ -543,6 +539,7 @@ public class TransactionService {
                 //if different date and have transactions, calculate average, then add old object to the result
                 if (salesForDay.getTotalTransactions() > 0) {
                     //salesForDay.calculateAverageTotalSales();
+                    addZeroValues(salesForDay, fromStoreIds, onlineSelected);
                     result.add(salesForDay.createCopy());
                 }
                 //create new object to be tracked outside loop
@@ -553,7 +550,7 @@ public class TransactionService {
             salesForDay.addToTotalSales(transaction.getFinalTotalPrice());
             salesForDay.incrementTotalTransactions();
             salesForDay.calculateAverageTotalSales();
-            if (transaction.getStore() != null){
+            if (transaction.getStore() != null) {
                 salesForDay.addTotalSalesForStore(transaction.getStore().getStoreId(), transaction.getFinalTotalPrice());
                 salesForDay.incrementTotalTransactionsForStore(transaction.getStore().getStoreId());
                 salesForDay.calculateAverageTotalSalesForStore(transaction.getStore().getStoreId());
@@ -566,6 +563,7 @@ public class TransactionService {
         // add the last salesForDay (since in the loop is only added when date changes)
         if (salesForDay.getTotalTransactions() > 0) {
             //salesForDay.calculateAverageTotalSales();
+            addZeroValues(salesForDay, fromStoreIds, onlineSelected);
             result.add(salesForDay.createCopy());
         }
 
@@ -576,15 +574,19 @@ public class TransactionService {
         while (currDateIndex < dateList.size()) {
             LocalDate currDate = dateList.get(currDateIndex);
             if (currResultIndex < result.size()) {
+                //dates within earliest & latest transaction dates
                 SalesByDay currElement = result.get(currResultIndex);
-                if (!currElement.getDate().isEqual(currDate) && currResultIndex < result.size()) {
+                if (!currElement.getDate().isEqual(currDate)) {
                     SalesByDay emptySalesByDay = new SalesByDay();
                     emptySalesByDay.setDate(currDate);
+                    addZeroValues(emptySalesByDay, fromStoreIds,onlineSelected);
                     result.add(currResultIndex, emptySalesByDay);
                 }
             } else {
+                //dates extending past latest transaction date
                 SalesByDay emptySalesByDay = new SalesByDay();
                 emptySalesByDay.setDate(currDate);
+                addZeroValues(emptySalesByDay, fromStoreIds,onlineSelected);
                 result.add(emptySalesByDay);
             }
             currDateIndex++;
@@ -594,7 +596,38 @@ public class TransactionService {
         return result;
     }
 
-    private List<LocalDate> generateDateList(String fromDateString, String toDateString, LocalDate earliestTransactionDate, LocalDate latestTransactionDate){
+    private void addZeroValues(SalesByDay salesForDay, List<Long> storeIds, Boolean onlineSelected) {
+        Map<String, Object> pointOfPurchaseData = salesForDay.getPointOfPurchaseData();
+        if (storeIds == null) {
+            storeIds = new ArrayList<>();
+            List<Store> stores = storeService.retrieveAllStores();
+            for (Store s : stores) {
+                storeIds.add(s.getStoreId());
+            }
+        }
+
+        for (Long storeId : storeIds) {
+            String totalSalesKey = storeId + "-totalSales";
+            String totalTransactionsKey = storeId + "-totalTransactions";
+            String avgKey = storeId + "-averageTotalSales";
+            if (pointOfPurchaseData.get(totalSalesKey) == null) {
+                pointOfPurchaseData.put(totalSalesKey, BigDecimal.ZERO);
+                pointOfPurchaseData.put(totalTransactionsKey, 0);
+                pointOfPurchaseData.put(avgKey, BigDecimal.ZERO);
+            }
+        }
+
+        if ((onlineSelected == null || onlineSelected) && pointOfPurchaseData.get("online-totalSales") == null) {
+            String totalSalesKey = "online-totalSales";
+            String totalTransactionsKey = "online-totalTransactions";
+            String avgKey = "online-averageTotalSales";
+            pointOfPurchaseData.put(totalSalesKey, BigDecimal.ZERO);
+            pointOfPurchaseData.put(totalTransactionsKey, 0);
+            pointOfPurchaseData.put(avgKey, BigDecimal.ZERO);
+        }
+    }
+
+    private List<LocalDate> generateDateList(String fromDateString, String toDateString, LocalDate earliestTransactionDate, LocalDate latestTransactionDate) {
         List<LocalDate> dateList;
         if (!(fromDateString == null && toDateString == null)) {
             if (fromDateString != null && toDateString == null) {

@@ -76,12 +76,10 @@ const DeliveryTable = (props) => {
     transaction
   ) => {
     if (transaction) {
-      console.log("customer orders");
       setOrderDetails(customerOrdersToDeliver);
       setOpenCustomerOrderDialog(true);
     } else {
       // if (inStoreRestockOrderItems.length > 0)
-      console.log("restock orders");
       setOrderDetails(inStoreRestockOrderItems);
       setOpenRestockOrderDialog(true);
     }
@@ -135,8 +133,6 @@ const DeliveryTable = (props) => {
       };
     });
   }
-
-  console.log(deliveries);
 
   return (
     <div
@@ -205,8 +201,8 @@ const DeliveryTable = (props) => {
             //   icon: Room,
             //   tooltip: "Generate delivery route",
             //   onClick: (event, rowData) =>
-            //     dispatch(generateDeliveryRoute(rowData.deliveryId))
-            // }
+            //     dispatch(generateDeliveryRoute(rowData.deliveryId)),
+            // },
           ]}
         />
       ) : (

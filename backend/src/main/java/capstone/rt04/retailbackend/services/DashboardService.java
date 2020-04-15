@@ -21,16 +21,21 @@ import static capstone.rt04.retailbackend.util.Constants.DEV_MARKET_BASKET_ANALY
 public class DashboardService {
 
     private final AprioriService aprioriService;
-
     private final TransactionService transactionService;
     private final ProductService productService;
     private final RelationshipService relationshipService;
+    private final WarehouseService warehouseService;
+    private final StoreService storeService;
 
-    public DashboardService(AprioriService aprioriService, TransactionService transactionService, ProductService productService, RelationshipService relationshipService) {
+    public DashboardService(AprioriService aprioriService, TransactionService transactionService,
+                            ProductService productService, RelationshipService relationshipService,
+                            WarehouseService warehouseService, StoreService storeService) {
         this.aprioriService = aprioriService;
         this.transactionService = transactionService;
         this.productService = productService;
         this.relationshipService = relationshipService;
+        this.warehouseService = warehouseService;
+        this.storeService = storeService;
     }
 
     @Transactional(readOnly = true)
@@ -85,9 +90,14 @@ public class DashboardService {
             productDetailsResponses.add(products);
         }
 
-        for (List<ProductDetailsResponse> response : productDetailsResponses) {
-            relationshipService.clearPdrRelationships(response, false);
-        }
+//        for (List<ProductDetailsResponse> response : productDetailsResponses) {
+//            relationshipService.clearPdrRelationships(response, false);
+//        }
         return productDetailsResponses;
+    }
+
+
+    public Integer retrieveLowStockProducts(Long storeId) {
+        return productService.retrieveLowStockProducts(storeId).size();
     }
 }
