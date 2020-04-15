@@ -129,6 +129,9 @@ function OrderHistoryCard(props) {
         textToDisplay = "Refund Date Exceeded";
       }
       break;
+    case "COLLECTED":
+      statusColor = "green";
+      break;
     default:
       statusColor = "sandybrown";
   }

@@ -150,6 +150,17 @@ function AccDropDownLinksAfterLogin(props) {
       )}
     </Link>,
     <Link
+      key="profile"
+      to="/account/profile/orderHistory"
+      className={classes ? classes.dropdownLink : null}
+    >
+      {Component ? (
+        <Component {...componentProps}>My Orders</Component>
+      ) : (
+        "My Orders"
+      )}
+    </Link>,
+    <Link
       key="logout"
       to="/"
       className={classes ? classes.dropdownLink : null}
