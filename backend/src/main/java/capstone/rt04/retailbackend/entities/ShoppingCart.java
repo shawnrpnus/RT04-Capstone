@@ -37,9 +37,10 @@ public class ShoppingCart implements Serializable {
     private Long shoppingCartId;
 
     @NotNull
-    @Column(nullable = false)
+    @Column(nullable = false, precision = 11, scale = 2)
     private BigDecimal initialTotalAmount;
 
+    @Column(precision = 11, scale = 2)
     private BigDecimal finalTotalAmount;
 
     private Timestamp lastUpdated;

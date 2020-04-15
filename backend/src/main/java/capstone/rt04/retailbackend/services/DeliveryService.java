@@ -2,6 +2,7 @@ package capstone.rt04.retailbackend.services;
 
 import capstone.rt04.retailbackend.entities.*;
 import capstone.rt04.retailbackend.repositories.DeliveryRepository;
+import capstone.rt04.retailbackend.request.delivery.DeliveryNotificationNodeRequest;
 import capstone.rt04.retailbackend.response.GroupedStoreOrderItems;
 import capstone.rt04.retailbackend.util.enums.CollectionModeEnum;
 import capstone.rt04.retailbackend.util.enums.DeliveryStatusEnum;
@@ -13,33 +14,48 @@ import capstone.rt04.retailbackend.util.exceptions.staff.StaffNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.transaction.TransactionNotFoundException;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 @Service
 @Transactional
 public class DeliveryService {
 
-    private final DeliveryRepository deliveryRepository;
+    private RestTemplate restTemplate;
+    @Value("${node.backend.url}")
+    private String NODE_API_URL;
+    private final String deliveryNotificationPath = "deliveryNotification";
 
+    private final DeliveryRepository deliveryRepository;
     private final StaffService staffService;
     private final WarehouseService warehouseService;
     private final TransactionService transactionService;
     private final InStoreRestockOrderService inStoreRestockOrderService;
+    private final RelationshipService relationshipService;
 
     public DeliveryService(DeliveryRepository deliveryRepository, StaffService staffService,
-                           WarehouseService warehouseService, @Lazy TransactionService transactionService, @Lazy InStoreRestockOrderService inStoreRestockOrderService) {
+                           WarehouseService warehouseService, @Lazy TransactionService transactionService,
+                           @Lazy InStoreRestockOrderService inStoreRestockOrderService,
+                           @Lazy RelationshipService relationshipService) {
         this.deliveryRepository = deliveryRepository;
         this.warehouseService = warehouseService;
         this.transactionService = transactionService;
         this.inStoreRestockOrderService = inStoreRestockOrderService;
         this.staffService = staffService;
+        this.relationshipService = relationshipService;
     }
 
     public Delivery retrieveDeliveryById(Long deliveryId) throws DeliveryNotFoundException {
@@ -94,13 +110,30 @@ public class DeliveryService {
         Staff staff = staffService.retrieveStaffByStaffId(staffId);
         Delivery delivery = new Delivery(new Timestamp(System.currentTimeMillis()), staff);
         delivery.getCustomerOrdersToDeliver().addAll(transactions);
-        transactions.forEach(item -> item.getDeliveries().add(delivery));
+        transactions.forEach(item -> {
+            item.getDeliveries().add(delivery);
+            // TODO: Uncomment
+            // sendDeliveryNotificationEmail(item);
+        });
         deliveryRepository.save(delivery);
     }
 
-    public void automateDeliveryAllocation(Long staffId) throws StaffNotFoundException, DeliveryNotFoundException, NoItemForDeliveryException {
+    public double estimateNumberOfDeliveryManRequired() {
+        List<Transaction> transactions = transactionService.retrieveTransactionsToBeDelivered();
+        List<InStoreRestockOrderItem> inStoreRestockOrderItems = inStoreRestockOrderService.retrieveAllRestockOrderItemToDeliver();
+        Integer quantity = inStoreRestockOrderItems.size();
+
+        for (Transaction transaction : transactions) {
+            quantity += transaction.getTotalQuantity();
+        }
+        return Math.ceil(quantity / 100.00);
+    }
+
+    public List<Transaction> automateDeliveryAllocation(Long staffId) throws StaffNotFoundException, DeliveryNotFoundException, NoItemForDeliveryException {
         Staff staff = staffService.retrieveStaffByStaffId(staffId);
         // Includes warehouse-customer, warehouse-store (self collection), store-customer
+        List<Transaction> emails = new ArrayList<>();
+
         List<Transaction> transactions = transactionService.retrieveTransactionsToBeDelivered();
         Collections.sort(transactions, Comparator.comparing(Transaction::getCreatedDateTime));
 
@@ -124,6 +157,7 @@ public class DeliveryService {
         List<InStoreRestockOrderItem> affectedItems = new ArrayList<>();
 
         while (quantity < maxCapacity) {
+            // Give priority to restock order items
             if (inStoreRestockOrderItems.size() > 0 && inStoreRestockOrderIndex < inStoreRestockOrderItemSize
                     && inStoreRestockOrderItems.get(inStoreRestockOrderIndex).getQuantity() + quantity <= maxCapacity) {
                 delivery.getInStoreRestockOrderItems().add(inStoreRestockOrderItems.get(inStoreRestockOrderIndex));
@@ -142,6 +176,7 @@ public class DeliveryService {
 
                 transactions.get(transactionIndex).setDeliveryStatus(DeliveryStatusEnum.IN_TRANSIT);
                 quantity += transactions.get(transactionIndex).getTotalQuantity();
+                emails.add(transactions.get(transactionIndex));
             }
 
             inStoreRestockOrderIndex += 1;
@@ -151,6 +186,32 @@ public class DeliveryService {
                 break;
         }
         updateRestockOrderStatus(affectedItems);
+        return emails;
+    }
+
+    @Transactional(readOnly = true)
+    public void sendDeliveryNotificationEmail(List<Transaction> transactions) {
+        restTemplate = new RestTemplate();
+        List<DeliveryNotificationNodeRequest> requests = new ArrayList<>();
+        DeliveryNotificationNodeRequest request;
+        Customer customer;
+
+        for (Transaction transaction : transactions) {
+            request = new DeliveryNotificationNodeRequest();
+            customer = transaction.getCustomer();
+            request.setEmail(customer.getEmail());
+            request.setFullName(customer.getFirstName() + " " + customer.getLastName());
+            request.setOrderNumber(transaction.getOrderNumber());
+            requests.add(request);
+        }
+
+        String endpoint = NODE_API_URL + "/email/" + deliveryNotificationPath;
+        ResponseEntity<?> response = restTemplate.postForEntity(endpoint, requests, Object.class);
+        if (response.getStatusCode().equals(HttpStatus.OK)) {
+            System.out.println("Email sent successfully");
+        } else {
+            System.err.println("Error sending emails");
+        }
     }
 
     @Transactional(readOnly = true)
@@ -166,7 +227,7 @@ public class DeliveryService {
             if (transaction.getDeliveryAddress() != null) {
                 addresses.add(transaction.getDeliveryAddress());
             } else if (transaction.getStoreToCollect() != null) {
-                if (!addresses.contains(transaction.getStoreToCollect().getAddress())){
+                if (!addresses.contains(transaction.getStoreToCollect().getAddress())) {
                     addresses.add(transaction.getStoreToCollect().getAddress());
                 }
             }
@@ -215,9 +276,9 @@ public class DeliveryService {
                         groupedStoreOrderItems.setStore(transaction.getStoreToCollect());
                     }
                     groupedStoreOrderItems.getTransactions().add(transaction);
-                    if(!(transaction.getDeliveryStatus().equals(DeliveryStatusEnum.DELIVERED)
+                    if (!(transaction.getDeliveryStatus().equals(DeliveryStatusEnum.DELIVERED)
                             || transaction.getDeliveryStatus().equals(DeliveryStatusEnum.READY_FOR_COLLECTION)
-                            || transaction.getDeliveryStatus().equals(DeliveryStatusEnum.COLLECTED))){
+                            || transaction.getDeliveryStatus().equals(DeliveryStatusEnum.COLLECTED))) {
                         groupedStoreOrderItems.setDeliveryStatus(DeliveryStatusEnum.IN_TRANSIT);
                     }
                 } else if (transaction.getDeliveryAddress() != null &&
@@ -236,7 +297,7 @@ public class DeliveryService {
                         groupedStoreOrderItems.setStore(inStoreRestockOrderItem.getInStoreRestockOrder().getStore());
                     }
                     groupedStoreOrderItems.getInStoreRestockOrderItems().add(inStoreRestockOrderItem);
-                    if(!inStoreRestockOrderItem.getItemDeliveryStatus().equals(ItemDeliveryStatusEnum.DELIVERED)){
+                    if (!inStoreRestockOrderItem.getItemDeliveryStatus().equals(ItemDeliveryStatusEnum.DELIVERED)) {
                         groupedStoreOrderItems.setDeliveryStatus(DeliveryStatusEnum.IN_TRANSIT);
                     }
                 }

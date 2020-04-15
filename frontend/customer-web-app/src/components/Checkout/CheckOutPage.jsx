@@ -129,6 +129,8 @@ export default function CheckOutPage() {
 
   const handleMakePaymentWithNewCard = () => {
     // Send back to server to get client_secret to complete payment
+    console.log(totalAmount);
+
     getClientSecret(totalAmount, setClientSecret);
   };
 
@@ -253,7 +255,13 @@ export default function CheckOutPage() {
         setTotalAmount(totalAmount - code.flatDiscount);
       } else if (_.get(code, "percentageDiscount", null)) {
         console.log(code.percentageDiscount);
-        setTotalAmount((totalAmount * (100 - code.percentageDiscount)) / 100);
+        setTotalAmount(
+          (
+            Math.ceil(
+              ((totalAmount * (100 - code.percentageDiscount)) / 100) * 100
+            ) / 100
+          ).toFixed(2)
+        );
       }
     }
     setPromoCode(code);

@@ -291,4 +291,26 @@ public class RelationshipService {
             }
         }
     }
+
+    public void clearProductStockRelationship(ProductStock productStock) {
+        productStock.getProductVariant().setProductStocks(null);
+        Product product = productStock.getProductVariant().getProduct();
+        product.setProductVariants(null);
+        product.setDiscounts(null);
+        product.setTags(null);
+        product.setCategory(null);
+        product.setReviews(null);
+        product.setStyles(null);
+        if (productStock.getWarehouse() != null) {
+            productStock.getWarehouse().setProductStocks(null);
+            productStock.getWarehouse().setInStoreRestockOrders(null);
+        }
+        if (productStock.getStore() != null){
+            productStock.getStore().setProductStocks(null);
+            productStock.getStore().setStaff(null);
+            productStock.getStore().setTransactions(null);
+            productStock.getStore().setReservations(null);
+            productStock.getStore().setInStoreRestockOrders(null);
+        }
+    }
 }

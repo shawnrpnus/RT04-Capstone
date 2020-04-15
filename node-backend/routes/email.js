@@ -301,6 +301,55 @@ router.post("/massSendEmail", async (req, res) => {
     });
 });
 
+// send delivery notification
+router.post("/deliveryNotification", async (req, res) => {
+  // const { email, orderNumber, fullName } = req.body;
+  const emails = req.body;
+
+  console.log(emails);
+
+  Promise.all(
+    emails.map(({ email, orderNumber, fullName }) => {
+      console.log(email, orderNumber, fullName);
+      const emailContent = {
+        body: {
+          name: fullName,
+          intro: `Your purchase(s) for order ${orderNumber} will be delivered today! Please be there to collect your items!`,
+        },
+      };
+
+      const emailBody = mailGenerator.generate(emailContent);
+      const emailText = mailGenerator.generatePlaintext(emailContent);
+
+      transporter.sendMail(
+        {
+          from: "rt04capstone@gmail.com",
+          to: email,
+          subject: "apricot & nut - Delivery coming your way!",
+          text: emailText,
+          html: emailBody,
+        },
+        (error, info) => {
+          if (error) {
+            console.log(error);
+          } else {
+            console.log(info);
+            return true;
+          }
+        }
+      );
+    })
+  )
+    .then(() => {
+      console.log("Email Sent");
+      res.status(200).send({ message: "Email Sent" });
+    })
+    .catch((err) => {
+      console.log(err.response);
+      res.status(500).send(err.response);
+    });
+});
+
 // send refund label
 router.post("/sendRefundLabel", async (req, res) => {
   const deliveryAddress = JSON.parse(req.body.deliveryAddress);
@@ -315,7 +364,7 @@ router.post("/sendRefundLabel", async (req, res) => {
     body: {
       name: `${name}`,
       intro:
-        "We've submitted a refund for your returned merchandise. You can find the Refund Label attached.",
+        "We've submitted a refund for your returned merchandise. You can find the refund label attached.",
       outro:
         "We hope you'll shop with us again. " +
         "Feel free to contact us @ 6512 5534 with any questions. ",
@@ -324,6 +373,8 @@ router.post("/sendRefundLabel", async (req, res) => {
 
   const emailBody = mailGenerator.generate(emailContent);
   const emailText = mailGenerator.generatePlaintext(emailContent);
+
+  console.log(__dirname);
 
   const path =
     __dirname.split("routes")[0] +
@@ -338,7 +389,7 @@ router.post("/sendRefundLabel", async (req, res) => {
       html: emailBody,
       attachments: [
         {
-          filename: `RefundLabel_${refundId}.pdf`,
+          filename: `RefundLabel_${refundId}`,
           path,
           contentType: "application/pdf",
         },

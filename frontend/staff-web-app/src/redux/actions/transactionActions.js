@@ -33,6 +33,44 @@ export const retrieveAllTransaction = () => {
   };
 };
 
+export const retrieveAllTransactionByStoreId = (storeId) => {
+  return dispatch => {
+    axios
+      .get(TRANSACTION_BASE_URL + `/retrieveAllStoreTransactions`, {
+        params: {storeId}
+      })
+      .then(response => {
+        const { data } = jsog.decode(response);
+        dispatch(handleRetrieveTransactions(data));
+      })
+      .catch(err => {
+        if (err.response && err.response.data)
+          toast.error(err.response.data.errorMessage, {
+            position: toast.POSITION.TOP_CENTER
+          });
+      });
+  };
+};
+
+export const retrieveAllTransactionByStoreToCollectId = (storeId) => {
+  return dispatch => {
+    axios
+      .get(TRANSACTION_BASE_URL + `/retrieveAllStoreToCollectTransactions`, {
+        params: {storeId}
+      })
+      .then(response => {
+        const { data } = jsog.decode(response);
+        dispatch(handleRetrieveTransactions(data));
+      })
+      .catch(err => {
+        if (err.response && err.response.data)
+          toast.error(err.response.data.errorMessage, {
+            position: toast.POSITION.TOP_CENTER
+          });
+      });
+  };
+};
+
 export const retrieveTransactionToSendForDelivery = () => {
   return dispatch => {
     axios

@@ -24,6 +24,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,17 +45,14 @@ public class ProductController {
     }
 
     @GetMapping(ProductControllerRoutes.RETRIEVE_PRODUCT_BY_ID)
-    public ResponseEntity<?> retrieveProductById(@PathVariable Long productId) {
-        try {
-            List<ProductDetailsResponse> products = productService.retrieveProductsDetails(null, productId, null);
-            if (products.size() == 0) throw new ProductNotFoundException();
-            relationshipService.clearPdrRelationships(products, true);
-            return new ResponseEntity<>(products.get(0), HttpStatus.OK);
-        } catch (ProductNotFoundException ex) {
-            return new ResponseEntity<>(ex.getErrorMap(), HttpStatus.NOT_FOUND);
-        } catch (Exception ex) {
-            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseEntity<?> retrieveProductById(@PathVariable Long productId) throws IOException, ProductNotFoundException {
+        List<ProductDetailsResponse> products = productService.retrieveProductsDetails(null, productId, null);
+        if (products.size() == 0) throw new ProductNotFoundException();
+        relationshipService.clearPdrRelationships(products, true);
+        for(ProductDetailsResponse response:products) {
+            relationshipService.clearPdrRelationships(response.getRecommendedProducts(), false);
         }
+        return new ResponseEntity<>(products.get(0), HttpStatus.OK);
     }
 
 //    @GetMapping(ProductControllerRoutes.RETRIEVE_PRODUCTS_BY_CRITERIA)
@@ -66,7 +64,7 @@ public class ProductController {
 //    }
 
     @GetMapping(ProductControllerRoutes.RETRIEVE_PRODUCTS_DETAILS)
-    public ResponseEntity<?> retrieveProductsDetails(@RequestParam(required = false) Long storeOrWarehouseId, @RequestParam(required = false) Long categoryId) throws ProductNotFoundException {
+    public ResponseEntity<?> retrieveProductsDetails(@RequestParam(required = false) Long storeOrWarehouseId, @RequestParam(required = false) Long categoryId) throws ProductNotFoundException, IOException {
         if (categoryId != null) {
             List<ProductDetailsResponse> products = productService.retrieveProductDetailsForCategory(storeOrWarehouseId, categoryId);
             relationshipService.clearPdrRelationships(products, false);
@@ -80,7 +78,7 @@ public class ProductController {
 
 
     @PostMapping(ProductControllerRoutes.RETRIEVE_PRODUCTS_DETAILS_BY_CRITERIA)
-    public ResponseEntity<?> retrieveProductsDetailsByCriteria(@RequestBody ProductRetrieveRequest productRetrieveRequest) throws ProductNotFoundException, StyleNotFoundException {
+    public ResponseEntity<?> retrieveProductsDetailsByCriteria(@RequestBody ProductRetrieveRequest productRetrieveRequest) throws ProductNotFoundException, StyleNotFoundException, IOException {
         List<ProductDetailsResponse> products = productService.retrieveProductsDetailsByCriteria(productRetrieveRequest.getCategoryId(),
                 productRetrieveRequest.getTags(), productRetrieveRequest.getColours(), productRetrieveRequest.getSizes(),
                 productRetrieveRequest.getMinPrice(), productRetrieveRequest.getMaxPrice(),
@@ -143,7 +141,7 @@ public class ProductController {
     }
 
     @GetMapping(ProductControllerRoutes.UPDATE_ALGOLIA)
-    public ResponseEntity<?> updateAlgolia() throws ProductNotFoundException {
+    public ResponseEntity<?> updateAlgolia() throws ProductNotFoundException, IOException {
         List<ProductDetailsResponse> PDRs = productService.retrieveProductsDetails(null, null, null);
 
         relationshipService.clearPdrRelationships(PDRs, false);

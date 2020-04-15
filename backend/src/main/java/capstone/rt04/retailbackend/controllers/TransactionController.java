@@ -102,6 +102,24 @@ public class TransactionController {
         return new ResponseEntity<>(txns, HttpStatus.OK);
     }
 
+    @GetMapping(RETRIEVE_ALL_STORE_TRANSACTION)
+    public ResponseEntity<?> retrieveAllStoreTransactions(@RequestParam(required = false) Long storeId) {
+        List<Transaction> txns = transactionService.retrieveAllTransactionsByStoreId(storeId);
+        for (Transaction txn : txns) {
+            relationshipService.clearTransactionRelationships(txn);
+        }
+        return new ResponseEntity<>(txns, HttpStatus.OK);
+    }
+
+    @GetMapping(RETRIEVE_ALL_STORE_TO_COLLECT_TRANSACTION)
+    public ResponseEntity<?> retrieveAllStoreToCollectTransactions(@RequestParam(required = false) Long storeId) {
+        List<Transaction> txns = transactionService.retrieveAllTransactionsByStoreToCollectId(storeId);
+        for (Transaction txn : txns) {
+            relationshipService.clearTransactionRelationships(txn);
+        }
+        return new ResponseEntity<>(txns, HttpStatus.OK);
+    }
+
     @GetMapping(RETRIEVE_CUSTOMER_TRANSACTIONS)
     public ResponseEntity<?> retrieveCustomerTransactions(@RequestParam Long customerId) {
         List<Transaction> txns = transactionService.retrieveCustomerTransactions(customerId);

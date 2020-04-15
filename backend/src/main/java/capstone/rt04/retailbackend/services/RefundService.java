@@ -368,7 +368,6 @@ public class RefundService {
         if(refunds.isEmpty() || refunds.size() == 0) {
             throw new RefundNotFoundException("Refund with Transaction ID " + transactionId + " does not exist!");
         }
-
         return refunds;
     }
 

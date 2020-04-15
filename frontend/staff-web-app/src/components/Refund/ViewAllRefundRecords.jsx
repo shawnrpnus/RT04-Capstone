@@ -73,13 +73,9 @@ const ViewAllRefundRecords = props => {
 
 
   const allRefunds = useSelector(state => state.refund.allRefunds);
-  console.log(allRefunds);
 
   const handleViewDetails = (event, rowData) => {
-    console.log("Event", event);
-    console.log(rowData);
     const refundId = rowData.refundId;
-    console.log(refundId);
     history.push(`/refund/viewRefundRecord/${refundId}`);
   };
 
@@ -102,10 +98,7 @@ const ViewAllRefundRecords = props => {
   };
 
   const updateDetails = (event, rowData) => {
-    console.log("Event", event);
-    console.log(rowData);
     const refundId = rowData.refundId;
-    console.log(refundId);
     history.push(`/refund/updateRefundRecord/${refundId}`);
   };
 
@@ -141,11 +134,9 @@ const ViewAllRefundRecords = props => {
               title: "Refund Progress",
               field: "refundProgress",
               render: rowData => {
-                // console.log(rowData);
                 const progress = rowData.refundStatus;
                 let valWords = "";
                 let style = { backgroundColor: "#f65a5a" };
-                // console.log("progress",progress);
                 switch (progress) {
                   case "PENDING":
                     style = { backgroundColor: "#19d2d2" };

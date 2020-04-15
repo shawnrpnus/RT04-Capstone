@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import Card from "components/UI/Card/Card";
 import GridContainer from "components/Layout/components/Grid/GridContainer";
 import GridItem from "components/Layout/components/Grid/GridItem";
@@ -9,10 +9,10 @@ import typographyStyle from "assets/jss/material-kit-pro-react/views/componentsS
 import { makeStyles } from "@material-ui/core/styles";
 import { useHistory } from "react-router-dom";
 import CreateRefund from "../Refunds/CreateRefund";
-import {retrieveTransactionById} from "../../../../redux/actions/transactionActions";
-import {useDispatch, useSelector} from "react-redux";
-import {retrieveRefundsByTransactionId} from "../../../../redux/actions/refundAction";
-import {emailSent} from "../../../../redux/actions/customerActions";
+import { retrieveTransactionById } from "../../../../redux/actions/transactionActions";
+import { useDispatch, useSelector } from "react-redux";
+import { retrieveRefundsByTransactionId } from "../../../../redux/actions/refundAction";
+import { emailSent } from "../../../../redux/actions/customerActions";
 import Tooltip from "@material-ui/core/Tooltip";
 import tooltipsStyle from "../../../../assets/jss/material-kit-pro-react/tooltipsStyle";
 
@@ -34,18 +34,21 @@ function OrderHistoryCard(props) {
     IN_TRANSIT: "IN TRANSIT",
     DELIVERED: "DELIVERED",
     COLLECTED: "COLLECTED",
-    READY_FOR_COLLECTION: "READY FOR COLLECTION",
+    READY_FOR_COLLECTION: "READY FOR COLLECTION"
   };
 
-
   async function fetchData() {
-    const refundsToCheck = await retrieveRefundsByTransactionId(transaction.transactionId);
+    const refundsToCheck = await retrieveRefundsByTransactionId(
+      transaction.transactionId
+    );
 
     setMyRefund(refundsToCheck);
-
   }
-  useEffect( () => {
-    fetchData();
+  useEffect(() => {
+    // console.log(transaction.transactionLineItems[0].refundLineItems.length === 0 );
+    if(transaction.transactionLineItems[0].refundLineItems.length !== 0) {
+      fetchData();
+    }
   }, []);
 
   // const refunds = useSelector(
@@ -55,26 +58,25 @@ function OrderHistoryCard(props) {
   const [refunds, setMyRefund] = useState(null);
   // setTimeout(() => setMyRefund(currRefund), 2000);
 
-
-  // console.log("WHAT IS MY REFUND", refunds);
-
   let totalRefundQuantity = 0;
   let totalForEachItem = 0;
-  let textToDisplay = 'this is not supposed to appear, let me know if it does';
-  if(refunds) {
+  let textToDisplay = "this is not supposed to appear, let me know if it does";
+  if (refunds) {
     totalRefundQuantity = new Array(refunds.length).fill(0);
-    for(let i = 0; i < refunds.length; i++) {
-      totalRefundQuantity[i] = new Array(refunds[i].refundLineItems.length).fill(0);
+    for (let i = 0; i < refunds.length; i++) {
+      totalRefundQuantity[i] = new Array(
+        refunds[i].refundLineItems.length
+      ).fill(0);
       // console.log('l', refunds[i].refundLineItems);
-      for(let j = 0; j < refunds[i].refundLineItems.length; j++) {
+      for (let j = 0; j < refunds[i].refundLineItems.length; j++) {
         // console.log(refunds[i].refundLineItems[j].quantity);
         totalRefundQuantity[i][j] = refunds[i].refundLineItems[j].quantity;
       }
     }
 
     totalForEachItem = new Array(totalRefundQuantity[0].length).fill(0);
-    for(let i = 0; i < totalRefundQuantity.length; i++) {
-      for(let j = 0; j < totalRefundQuantity[i].length; j++) {
+    for (let i = 0; i < totalRefundQuantity.length; i++) {
+      for (let j = 0; j < totalRefundQuantity[i].length; j++) {
         // console.log("totalRefundQuantity[j][i]",totalRefundQuantity[i][j]);
         totalForEachItem[j] += totalRefundQuantity[i][j];
       }
@@ -83,11 +85,11 @@ function OrderHistoryCard(props) {
   // console.log('l', totalForEachItem);
   let toRefund = false;
 
-  const isRefundable = (transaction) => {
-    if(transaction.deliveredDateTime ) {
+  const isRefundable = transaction => {
+    if (transaction.deliveredDateTime) {
       let datePastRefund = new Date(transaction.deliveredDateTime);
       datePastRefund.setDate(datePastRefund.getDate() + 14);
-      if(datePastRefund < new Date()) {
+      if (datePastRefund < new Date()) {
         toRefund = false;
         return toRefund;
       }
@@ -95,16 +97,15 @@ function OrderHistoryCard(props) {
     }
 
     //no refund before
-    if(totalForEachItem == 0) {
+    if (totalForEachItem == 0) {
       toRefund = true;
       return toRefund;
     }
 
-
-    for(let i = 0; i < transaction.transactionLineItems.length; i++) {
+    for (let i = 0; i < transaction.transactionLineItems.length; i++) {
       let val = totalForEachItem[i];
       // console.log(val);
-      if(transaction.transactionLineItems[i].quantity > val) {
+      if (transaction.transactionLineItems[i].quantity > val) {
         toRefund = true;
         return toRefund;
       }
@@ -119,18 +120,22 @@ function OrderHistoryCard(props) {
   switch (status) {
     case "PROCESSING":
       statusColor = "red";
-      textToDisplay = "Delivery not available [because processing, will disable button later]";
+      textToDisplay =
+        "Delivery not available [because processing, will disable button later]";
       break;
     case "DELIVERED":
       statusColor = "green";
-      if(transaction.deliveredDateTime) {
+      if (transaction.deliveredDateTime) {
         textToDisplay = "Refund Date Exceeded";
       }
+      break;
+    case "COLLECTED":
+      statusColor = "green";
       break;
     default:
       statusColor = "sandybrown";
   }
-  if(transaction) {
+  if (transaction) {
     isRefundable(transaction);
   }
 
@@ -140,7 +145,7 @@ function OrderHistoryCard(props) {
   //   return lineItem.productVariant;
   // });
 
-  const openModal = (transactionId) => {
+  const openModal = transactionId => {
     setLargeModal(true);
     dispatch(retrieveTransactionById(transactionId));
   };
@@ -151,7 +156,7 @@ function OrderHistoryCard(props) {
       style={{
         padding: "20px",
         margin: "10px 0",
-        borderRadius: "0px",
+        borderRadius: "0px"
       }}
     >
       <GridContainer>
@@ -206,15 +211,15 @@ function OrderHistoryCard(props) {
                 classes={{ tooltip: toolTipClasses.tooltip }}
               >
                 <span>
-                <Button
-                  fullWidth
-                  color="primary"
-                  style={{ float: "bottom" }}
-                  onClick={() => openModal(transaction.transactionId)}
-                  disabled={!toRefund}
-                >
-                  Make a Refund
-                </Button>
+                  <Button
+                    fullWidth
+                    color="primary"
+                    style={{ float: "bottom" }}
+                    onClick={() => openModal(transaction.transactionId)}
+                    disabled={!toRefund}
+                  >
+                    Make a Refund
+                  </Button>
                 </span>
               </Tooltip>
             </GridItem>
@@ -223,7 +228,7 @@ function OrderHistoryCard(props) {
               xs={12}
               style={{ height: "200px", overflowY: "scroll" }}
             >
-              {lineItems.map((lineItem) => {
+              {lineItems.map(lineItem => {
                 return (
                   <ProductVariantCard
                     key={lineItem.productVariant.productVariantId}
