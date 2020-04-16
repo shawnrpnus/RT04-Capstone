@@ -224,10 +224,22 @@ const CreateRefund = ({
                   </h5>
                 </Grid>
                 <Grid item md={2}></Grid>
-                <Grid item md={4}>
+                <Grid item md={3}>
                   <h5>
                     Refund Quantity: <b>{inputState.quantity}</b>
                   </h5>
+                  {/*<h5><b>*/}
+                  {/*<CustomTextField style={{left:"auto"}}*/}
+                  {/*  fieldLabel="Quantity"*/}
+                  {/*  fieldName="quantity"*/}
+                  {/*  inputState={inputState}*/}
+                  {/*  onChange={onChange}*/}
+                  {/*  errors={errors}*/}
+                  {/*  disabled={true}*/}
+
+                  {/*/></b></h5>*/}
+                </Grid>
+                <Grid item md={1}>
                 </Grid>
                 <Grid item md={8}></Grid>
                 <Grid item md={4}>
@@ -270,6 +282,7 @@ const CreateRefund = ({
                         margin: "5% 2%",
                         fontSize: "20px",
                       }}
+                      disabled={inputState.quantity === 0}
                     >
                       SUBMIT REFUND
                     </Button>

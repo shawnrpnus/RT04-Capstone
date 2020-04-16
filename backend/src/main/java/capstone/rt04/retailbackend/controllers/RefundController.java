@@ -12,6 +12,7 @@ import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.customer.CustomerNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.promoCode.PromoCodeNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.refund.RefundNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.staff.StaffNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.transaction.TransactionNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.warehouse.WarehouseNotFoundException;
@@ -38,7 +39,7 @@ public class RefundController {
     }
 
     @PostMapping(CREATE_IN_STORE_REFUND_RECORD)
-    public ResponseEntity<?> createRefundRecord(@RequestBody RefundRequest refundRequest) throws CustomerNotFoundException, TransactionNotFoundException, InputDataValidationException, PromoCodeNotFoundException, RefundNotFoundException, StoreNotFoundException, WarehouseNotFoundException {
+    public ResponseEntity<?> createRefundRecord(@RequestBody RefundRequest refundRequest) throws CustomerNotFoundException, TransactionNotFoundException, InputDataValidationException, PromoCodeNotFoundException, RefundNotFoundException, StoreNotFoundException, WarehouseNotFoundException, StaffNotFoundException {
         Refund refund = refundService.createRefund(refundRequest);
         //need to clear customer so that the response is faster
         relationshipService.clearRefundRelationships(refund);
@@ -46,7 +47,7 @@ public class RefundController {
     }
 
     @PostMapping(UPDATE_REFUND_RECORD)
-    public ResponseEntity<?> updateRefundRecord(@RequestBody List<UpdateRefundLineItemHandlerRequest> updateRefundLineItemHandlerRequests) throws RefundNotFoundException {
+    public ResponseEntity<?> updateRefundRecord(@RequestBody List<UpdateRefundLineItemHandlerRequest> updateRefundLineItemHandlerRequests) throws RefundNotFoundException, WarehouseNotFoundException, StaffNotFoundException {
         Refund refund = refundService.updateRefundLineItemsStatus(updateRefundLineItemHandlerRequests);
         return new ResponseEntity<>(refund, HttpStatus.OK);
     }
