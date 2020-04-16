@@ -66,6 +66,7 @@ public class TransactionController {
         try {
             Transaction transaction = transactionService.retrieveTransactionByQRCode(transactionId, storeId);
             relationshipService.clearTransactionRelationships(transaction);
+            relationshipService.clearTransactionForQRCodeRelationships(transaction);
             return new ResponseEntity<>(transaction, HttpStatus.OK);
         } catch (TransactionNotFoundException ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
@@ -208,7 +209,6 @@ public class TransactionController {
     @PostMapping(CONFIRM_RECEIVED_TRANSACTION)
     public ResponseEntity<?> confirmReceivedTransaction(@RequestBody UpdateTransactionRequest updateTransactionRequest) {
         try {
-            System.out.println("did run");
             Transaction transaction = transactionService.confirmReceivedTransaction(updateTransactionRequest.getTransactionId());
             return new ResponseEntity<>(transaction, HttpStatus.OK);
         } catch (TransactionNotFoundException ex) {
