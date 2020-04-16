@@ -9,6 +9,7 @@ import capstone.rt04.retailbackend.util.exceptions.category.DeleteCategoryExcept
 import capstone.rt04.retailbackend.util.exceptions.category.UpdateCategoryException;
 import capstone.rt04.retailbackend.util.exceptions.contactUs.ContactUsNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.customer.*;
+import capstone.rt04.retailbackend.util.exceptions.delivery.DeliveryCreationException;
 import capstone.rt04.retailbackend.util.exceptions.delivery.DeliveryHasAlreadyBeenConfirmedException;
 import capstone.rt04.retailbackend.util.exceptions.delivery.DeliveryNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.delivery.NoItemForDeliveryException;
@@ -116,7 +117,8 @@ public class GeneralExceptionHandler extends ResponseEntityExceptionHandler {
             VerificationCodeExpiredException.class, InvalidCartTypeException.class, WishlistException.class, CreateNewReservationException.class,
             DeleteProductVariantException.class, InStoreRestockOrderUpdateException.class, InsufficientStockException.class, CreateNewStaffAccountException.class,
             DeliveryHasAlreadyBeenConfirmedException.class, ReviewNotUpdatedException.class, NoItemForDeliveryException.class,
-            PromoCodeUsedException.class, InvalidPromoCodeException.class, CreateNewPromoCodeException.class, StripeException.class
+            PromoCodeUsedException.class, InvalidPromoCodeException.class, CreateNewPromoCodeException.class, StripeException.class,
+            DeliveryCreationException.class
     })
     public final ResponseEntity<Object> handleBadRequestExceptions(Exception ex, WebRequest req) {
         return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);

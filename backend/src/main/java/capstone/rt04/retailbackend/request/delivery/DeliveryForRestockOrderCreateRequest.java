@@ -15,5 +15,7 @@ public class DeliveryForRestockOrderCreateRequest {
 
     private List<Long> inStoreRestockOrderItemIds;
 
-    private Long staffId;
+    private List<Long> staffIds;
+
+    private Integer maxCapacity;
 }

@@ -238,9 +238,9 @@ function ProductDetailsCard(props) {
             </Tooltip>
           </h2>
           <h3 className={classes.mainPrice}>
-            {discountedPrice && <span>${discountedPrice}</span>}
+            {discountedPrice && <span>${discountedPrice.toFixed(2)}</span>}
             <span className={discountedPrice && classes.discountedPrice}>
-              ${product.price}
+              ${product.price.toFixed(2)}
             </span>
           </h3>
           <Accordion

@@ -13,7 +13,7 @@ import {
   FaMoneyBillAlt,
   FaStaylinked,
   FaLeaf,
-  FaMoneyCheckAlt
+  FaMoneyCheckAlt,
 } from "react-icons/fa";
 import {
   MdFeedback,
@@ -21,9 +21,9 @@ import {
   MdLocalShipping,
   MdPayment,
   MdPeople,
-  MdStore
+  MdStore,
 } from "react-icons/md";
-import {DiGoogleAnalytics} from "react-icons/all";
+import { DiGoogleAnalytics } from "react-icons/all";
 
 import { TiSocialInstagram } from "react-icons/ti";
 import { IoMdPricetags } from "react-icons/io";
@@ -32,7 +32,7 @@ const _ = require("lodash");
 
 class SidebarContent extends Component {
   static propTypes = {
-    onClick: PropTypes.func.isRequired
+    onClick: PropTypes.func.isRequired,
   };
 
   hideSidebar = () => {
@@ -289,7 +289,7 @@ class SidebarContent extends Component {
               />
             </SidebarCategory>
           )}
-          {delivery && (
+          {delivery && manager && (
             <SidebarCategory title="Delivery" customIcon={<MdLocalShipping />}>
               <>
                 <SidebarLink
@@ -357,7 +357,10 @@ class SidebarContent extends Component {
             </SidebarCategory>
           )}
           {salesmarketing && (
-            <SidebarCategory title="Analytics" customIcon={<DiGoogleAnalytics />}>
+            <SidebarCategory
+              title="Analytics"
+              customIcon={<DiGoogleAnalytics />}
+            >
               <SidebarLink
                 title="Sales"
                 route="/analytics/sales"
