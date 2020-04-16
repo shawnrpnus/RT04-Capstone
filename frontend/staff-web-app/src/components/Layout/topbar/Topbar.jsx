@@ -6,20 +6,18 @@ import TopbarProfile from "./TopbarProfile";
 import TopbarMail from "./TopbarMail";
 import TopbarNotification from "./TopbarNotification";
 import TopbarSearch from "./TopbarSearch";
-import { UserProps } from "../../../shared/prop-types/ReducerProps";
-import { useSelector } from "react-redux";
 
 class Topbar extends PureComponent {
   static propTypes = {
     changeMobileSidebarVisibility: PropTypes.func.isRequired,
     changeSidebarVisibility: PropTypes.func.isRequired,
-    loggedInStaff: PropTypes.object
+    loggedInStaff: PropTypes.object,
   };
 
   render() {
     const {
       changeMobileSidebarVisibility,
-      changeSidebarVisibility
+      changeSidebarVisibility,
     } = this.props;
 
     return (
@@ -30,12 +28,18 @@ class Topbar extends PureComponent {
               changeMobileSidebarVisibility={changeMobileSidebarVisibility}
               changeSidebarVisibility={changeSidebarVisibility}
             />
-            <Link className="topbar__logo" to="/dashboard" />
+
+            <Link to="/dashboard">
+              <img
+                style={{ width: "50%" }}
+                src="https://res.cloudinary.com/rt04capstone/image/upload/v1583433855/rsz_1apricot-nut-logo-word_jzhocy.png"
+              />
+            </Link>
           </div>
           <div className="topbar__right">
-            <TopbarSearch />
+            {/* <TopbarSearch />
             <TopbarNotification />
-            <TopbarMail new />
+            <TopbarMail new /> */}
             <TopbarProfile loggedInStaff={this.props.loggedInStaff} />
           </div>
         </div>

@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
  * @author shawn
  */
 @Entity
@@ -41,23 +40,23 @@ public class Delivery implements Serializable {
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
     private Staff deliveryStaff;
-    
+
     @ManyToMany //each txn can have multiple deliveries in case of failed deliveries
     private List<Transaction> customerOrdersToDeliver;
-    
+
     @OneToMany
     private List<InStoreRestockOrderItem> inStoreRestockOrderItems;
 
     public Delivery() {
-        this.maxCapacity = 100;
         this.customerOrdersToDeliver = new ArrayList<>();
         this.inStoreRestockOrderItems = new ArrayList<>();
     }
 
-    public Delivery(Timestamp deliveryDateTime, Staff deliveryStaff) {
+    public Delivery(Timestamp deliveryDateTime, Staff deliveryStaff, Integer maxCapacity) {
         this();
+        this.maxCapacity = maxCapacity;
         this.deliveryDateTime = deliveryDateTime;
         this.deliveryStaff = deliveryStaff;
     }
-    
+
 }

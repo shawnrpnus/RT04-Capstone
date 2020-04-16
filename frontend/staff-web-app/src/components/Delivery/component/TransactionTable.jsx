@@ -1,7 +1,5 @@
-import React, { useEffect } from "react";
-import { useHistory } from "react-router-dom";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useConfirm } from "material-ui-confirm";
 import dateformat from "dateformat";
 import {
   AddBox,
@@ -17,15 +15,15 @@ import {
   SaveAlt,
   Search,
   ViewColumn,
-  LocalShipping
+  LocalShipping,
 } from "@material-ui/icons";
 import MaterialTable from "material-table";
 import Chip from "@material-ui/core/Chip";
 // Redux
 import { getDeliveryStatusColour } from "../../../redux/actions/restockOrderAction";
 import { retrieveTransactionToSendForDelivery } from "../../../redux/actions/transactionActions";
-import { createDeliveryForTransaction } from "../../../redux/actions/deliveryActions";
 import withPage from "../../Layout/page/withPage";
+import StaffSelectionDialog from "./StaffSelectionDialog";
 
 const _ = require("lodash");
 const tableIcons = {
@@ -45,42 +43,30 @@ const tableIcons = {
   Search: Search,
   SortArrow: () => <div />,
   ThirdStateCheck: Remove,
-  ViewColumn: ViewColumn
+  ViewColumn: ViewColumn,
 };
 
-const TransactionTable = props => {
+const TransactionTable = (props) => {
   const dispatch = useDispatch();
-  const confirmDialog = useConfirm();
-  const transactions = useSelector(state => state.transaction.transactions);
-  const history = useHistory();
-  const { renderLoader, staff } = props;
+  const transactions = useSelector((state) => state.transaction.transactions);
+  const { renderLoader } = props;
+  const [open, setOpen] = useState(false);
+  const [request, setRequest] = useState("");
 
   useEffect(() => {
     dispatch(retrieveTransactionToSendForDelivery());
   }, [_.isEqual(transactions)]);
 
-  console.log(transactions);
-
   const handleCreateDelivery = (evt, data) => {
     evt.preventDefault();
-    const ids = data.map(e => e.transactionId);
-    const request = {
-      transactionIds: ids,
-      staffId: _.get(staff, "staffId")
-    };
-    confirmDialog({
-      description:
-        "A new delivery will be created with the selected transaction"
-    })
-      .then(() => {
-        dispatch(createDeliveryForTransaction(request, history));
-      })
-      .catch(() => null);
+    const ids = data.map((e) => e.transactionId);
+    setRequest({ transactionIds: ids });
+    setOpen(true);
   };
 
   let data = [];
   if (transactions) {
-    data = transactions.map(item => {
+    data = transactions.map((item) => {
       let {
         transactionId,
         orderNumber,
@@ -89,7 +75,7 @@ const TransactionTable = props => {
         deliveryStatus,
         deliveryAddress,
         transactionLineItems,
-        storeToCollect
+        storeToCollect,
       } = item;
 
       let address = deliveryAddress ? deliveryAddress : storeToCollect.address;
@@ -104,7 +90,7 @@ const TransactionTable = props => {
         collectionMode,
         deliveryStatus: deliveryStatus.split("_").join(" "),
         deliveryAddress: address,
-        transactionLineItems
+        transactionLineItems,
       };
     });
   }
@@ -120,12 +106,12 @@ const TransactionTable = props => {
             { title: "Transaction ID", field: "transactionId" },
             {
               title: "Order no.",
-              field: "orderNumber"
+              field: "orderNumber",
             },
             { title: "Created date", field: "createdDateTime" },
             {
               title: "Collection mode",
-              field: "collectionMode"
+              field: "collectionMode",
             },
             {
               title: "Delivery status",
@@ -138,12 +124,12 @@ const TransactionTable = props => {
                     label={deliveryStatus}
                   />
                 );
-              }
+              },
             },
             {
               title: "Delivery address",
-              field: "deliveryAddress"
-            }
+              field: "deliveryAddress",
+            },
           ]}
           data={data}
           options={{
@@ -155,19 +141,25 @@ const TransactionTable = props => {
             headerStyle: { textAlign: "center" }, //change header padding
             cellStyle: { textAlign: "center" },
             selection: true,
-            draggable: false
+            draggable: false,
           }}
           actions={[
             {
               icon: LocalShipping,
               tooltip: "Create new delivery",
-              onClick: (event, rowData) => handleCreateDelivery(event, rowData)
-            }
+              onClick: (event, rowData) => handleCreateDelivery(event, rowData),
+            },
           ]}
         />
       ) : (
         renderLoader()
       )}
+      <StaffSelectionDialog
+        open={open}
+        onClose={() => setOpen(false)}
+        transaction={true}
+        request={request}
+      />
     </div>
   );
 };
