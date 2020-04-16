@@ -29,7 +29,8 @@ const StaffSelectionDialog = ({ open, onClose }) => {
   const [maxCapacity, setMaxCapacity] = useState(100);
 
   const onSelectStaff = (e) => {
-    if (e.target.value <= numOfDeliverymanRequired) setStaffIds(e.target.value);
+    if (e.target.value.length <= numOfDeliverymanRequired)
+      setStaffIds(e.target.value);
   };
 
   useEffect(() => {
