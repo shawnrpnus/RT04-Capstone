@@ -78,6 +78,6 @@ public class ErrorMessages {
     public static final String REFUND_REASON_EMPTY = "Reason must not be empty";
     public static final String REFUND_MODE = "Refund Mode must be selected";
     public static final String REFUND_STORE_ID_EMPTY = "Store Id must be valid";
-    public static final String OVERLAP_IN_LEAVE = "Date overlaps with previous applied leaves or invalid dates!";
+    public static final String OVERLAP_IN_LEAVE = "Invalid dates selected. Please make sure dates do not overlap with previous applied leaves.";
 
 }
