@@ -17,19 +17,26 @@ const ViewTransactionDetails = props => {
   const confirmDialog = useConfirm();
   const [transactionId, setTransactionId] = useState(null);
   const [textToDisplay, setTextToDisplay] = useState("Scan Transaction QR");
+  const [isConfirm, setIsConfirm] = useState(false);
   const handleOpenQR = () => {
     setOpenQR(true);
-    console.log(openQR);
   };
   const currTransaction = useSelector(state => state.transaction.transaction);
   const currStaff = useSelector(state => state.staffEntity.loggedInStaff);
 
-  console.log(transactionId);
   useEffect(() => {
     if (transactionId) {
       dispatch(retrieveTransactionByQRCode(transactionId, currStaff.store.storeId));
     }
   }, [transactionId]);
+
+  useEffect(() => {
+    if(currTransaction) {
+      if(currTransaction.deliveryStatus === "DELIVERED") {
+        setIsConfirm(true);
+      }
+    }
+  }, [currTransaction]);
 
   const handleConfirm = () => {
     const request = new UpdateTransactionRequest(transactionId);
@@ -69,7 +76,7 @@ const ViewTransactionDetails = props => {
             <Button
               color="primary"
               onClick={handleConfirm}
-
+              disabled={setIsConfirm}
             > Confirm
             </Button>
             :
