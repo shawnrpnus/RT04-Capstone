@@ -8,16 +8,16 @@ const STAFF_BASE_URL = "/api/staff";
 const jsog = require("jsog");
 
 export const retrieveStaffById = (staffId, history) => {
-  return dispatch => {
+  return (dispatch) => {
     axios
       .get(STAFF_BASE_URL + "/retrieveStaffById/" + staffId)
-      .then(response => {
+      .then((response) => {
         const { data } = jsog.decode(response);
         dispatch(retrieveStaffSuccess(data));
       })
-      .catch(err => {
+      .catch((err) => {
         toast.error("Staff Not Found!", {
-          position: toast.POSITION.TOP_CENTER
+          position: toast.POSITION.TOP_CENTER,
         });
         history.push(`/staff/viewAll`);
         dispatch(retrieveStaffError(err.response.data));
@@ -25,312 +25,312 @@ export const retrieveStaffById = (staffId, history) => {
   };
 };
 
-const retrieveStaffSuccess = data => ({
+const retrieveStaffSuccess = (data) => ({
   type: types.RETRIEVE_STAFF,
-  retrievedStaff: data
+  retrievedStaff: data,
 });
 
-const retrieveStaffError = data => ({
+const retrieveStaffError = (data) => ({
   type: types.GET_ERRORS,
-  errorMap: data
+  errorMap: data,
 });
 
 export const retrieveAllStaff = () => {
-  return dispatch => {
+  return (dispatch) => {
     //redux thunk passes dispatch
     axios
       .get(STAFF_BASE_URL + `/retrieveAllStaff`)
-      .then(response => {
+      .then((response) => {
         const { data } = jsog.decode(response);
         dispatch(retrieveAllStaffSuccess(data));
       })
-      .catch(err => {
+      .catch((err) => {
         dispatch(retrieveAllStaffError(err.response.data));
       });
   };
 };
 
 export const retrieveAllDeliveryStaff = () => {
-  return dispatch => {
+  return (dispatch) => {
     //redux thunk passes dispatch
     axios
       .get(STAFF_BASE_URL + `/retrieveAllDeliveryStaff`)
-      .then(response => {
+      .then((response) => {
         const { data } = jsog.decode(response);
         dispatch(retrieveAllStaffSuccess(data));
       })
-      .catch(err => {
-        dispatch(retrieveAllStaffError(err.response.data));
+      .catch((err) => {
+        if (err.response) dispatch(retrieveAllStaffError(err.response.data));
       });
   };
 };
 
-const retrieveAllStaffSuccess = data => ({
+const retrieveAllStaffSuccess = (data) => ({
   type: types.RETRIEVE_ALL_STAFF,
-  staffEntity: data
+  staffEntity: data,
 });
 
-const retrieveAllStaffError = data => ({
+const retrieveAllStaffError = (data) => ({
   type: GET_ERRORS,
-  errorMap: data
+  errorMap: data,
 });
 
 export const createNewStaff = (staffCreateRequest, history) => {
-  return dispatch => {
+  return (dispatch) => {
     //redux thunk passes dispatch
     axios
       .post(STAFF_BASE_URL + "/createNewStaff", staffCreateRequest)
-      .then(response => {
+      .then((response) => {
         const { data } = jsog.decode(response);
         const staffId = data.staffId;
         dispatch(createStaffSuccess(data));
         toast.success("Staff Created!", {
-          position: toast.POSITION.TOP_CENTER
+          position: toast.POSITION.TOP_CENTER,
         });
         history.push(`/staff/viewAll`);
       })
-      .catch(err => {
+      .catch((err) => {
         dispatch(createStaffError(err.response.data));
         //console.log(err.response.data);
       });
   };
 };
 
-const createStaffSuccess = data => ({
+const createStaffSuccess = (data) => ({
   type: types.CREATE_STAFF,
-  staffEntity: data
+  staffEntity: data,
 });
 
-const createStaffError = data => ({
+const createStaffError = (data) => ({
   type: types.GET_ERRORS,
-  errorMap: data
+  errorMap: data,
 });
 
 export const updateStaff = (staffDetailsUpdateRequest, history) => {
-  return dispatch => {
+  return (dispatch) => {
     //redux thunk passes dispatch
     axios
       .post(STAFF_BASE_URL + "/updateStaffDetails", staffDetailsUpdateRequest)
-      .then(response => {
+      .then((response) => {
         const { data } = jsog.decode(response);
         const staffId = data.staffId;
         dispatch(updateStaffSuccess(data));
         toast.success("Staff Updated!", {
-          position: toast.POSITION.TOP_CENTER
+          position: toast.POSITION.TOP_CENTER,
         });
 
         history.push(`/staff/view/${staffId}`);
         window.location.reload(false);
       })
-      .catch(err => {
+      .catch((err) => {
         dispatch(updateStaffError(err.response.data));
         //console.log(err.response.data);
       });
   };
 };
 
-const updateStaffSuccess = data => ({
+const updateStaffSuccess = (data) => ({
   type: types.UPDATE_STAFF,
-  staffEntity: data
+  staffEntity: data,
 });
 
-const updateStaffError = data => ({
+const updateStaffError = (data) => ({
   type: types.GET_ERRORS,
-  errorMap: data
+  errorMap: data,
 });
 
 export const createNewStaffAccount = (staffAccountCreateRequest, history) => {
-  return dispatch => {
+  return (dispatch) => {
     //redux thunk passes dispatch
     axios
       .post(
         STAFF_BASE_URL + "/createNewStaffAccount",
         staffAccountCreateRequest
       )
-      .then(response => {
+      .then((response) => {
         const { data } = jsog.decode(response);
         dispatch(createStaffAccountSuccess(data));
         toast.success("Staff Account Created!", {
-          position: toast.POSITION.TOP_CENTER
+          position: toast.POSITION.TOP_CENTER,
         });
         //window.location.reload(true);
         history.push(`/`); // TODO: update redirect path
       })
-      .catch(err => {
+      .catch((err) => {
         dispatch(createStaffAccountError(err.response.data));
         //console.log(err.response.data);
       });
   };
 };
 
-const createStaffAccountSuccess = data => ({
+const createStaffAccountSuccess = (data) => ({
   type: types.CREATE_STAFF_ACCOUNT,
-  staffEntity: data
+  staffEntity: data,
 });
 
-const createStaffAccountError = data => ({
+const createStaffAccountError = (data) => ({
   type: types.GET_ERRORS,
-  errorMap: data
+  errorMap: data,
 });
 
 export const changePassword = (staffChangePasswordRequest, history) => {
-  return dispatch => {
+  return (dispatch) => {
     //redux thunk passes dispatch
     axios
       .post(STAFF_BASE_URL + "/changeStaffPassword", staffChangePasswordRequest)
-      .then(response => {
+      .then((response) => {
         const { data } = jsog.decode(response);
         dispatch(changeStaffPasswordSuccess(data));
         toast.success("Staff password changed!", {
-          position: toast.POSITION.TOP_CENTER
+          position: toast.POSITION.TOP_CENTER,
         });
         history.push(`/`); // TODO: update redirect path
       })
-      .catch(err => {
+      .catch((err) => {
         dispatch(changeStaffPasswordError(err.response.data));
         //console.log(err.response.data);
       });
   };
 };
 
-const changeStaffPasswordSuccess = data => ({
+const changeStaffPasswordSuccess = (data) => ({
   type: types.CHANGE_STAFF_PASSWORD,
-  staffEntity: data
+  staffEntity: data,
 });
 
-const changeStaffPasswordError = data => ({
+const changeStaffPasswordError = (data) => ({
   type: types.GET_ERRORS,
-  errorMap: data
+  errorMap: data,
 });
 
 export const resetPassword = (resetStaffPasswordRequest, history) => {
-  return dispatch => {
+  return (dispatch) => {
     //redux thunk passes dispatch
     axios
       .post(STAFF_BASE_URL + "/resetStaffPassword", resetStaffPasswordRequest)
-      .then(response => {
+      .then((response) => {
         const { data } = jsog.decode(response);
         dispatch(resetStaffPasswordSuccess(data));
         toast.success(
           "Staff password reset! Please inform staff of new password!",
           {
-            position: toast.POSITION.TOP_CENTER
+            position: toast.POSITION.TOP_CENTER,
           }
         );
         history.push(`/`);
       })
-      .catch(err => {
+      .catch((err) => {
         dispatch(resetStaffPasswordError(err.response.data));
         //console.log(err.response.data);
       });
   };
 };
 
-const resetStaffPasswordSuccess = data => ({
+const resetStaffPasswordSuccess = (data) => ({
   type: types.RESET_STAFF_PASSWORD,
-  staffEntity: data
+  staffEntity: data,
 });
 
-const resetStaffPasswordError = data => ({
+const resetStaffPasswordError = (data) => ({
   type: types.GET_ERRORS,
-  errorMap: data
+  errorMap: data,
 });
 
 export const retrieveAllRoles = () => {
-  return dispatch => {
+  return (dispatch) => {
     //redux thunk passes dispatch
     axios
       .get(STAFF_BASE_URL + `/retrieveAllRoles`)
-      .then(response => {
+      .then((response) => {
         const { data } = jsog.decode(response);
         dispatch(retrieveAllRolesSuccess(data));
       })
-      .catch(err => {
+      .catch((err) => {
         dispatch(retrieveAllRolesError(err.response.data));
       });
   };
 };
 
-const retrieveAllRolesSuccess = data => ({
+const retrieveAllRolesSuccess = (data) => ({
   type: types.RETRIEVE_ALL_ROLES,
-  roleEntity: data
+  roleEntity: data,
 });
 
-const retrieveAllRolesError = data => ({
+const retrieveAllRolesError = (data) => ({
   type: types.GET_ERRORS,
-  errorMap: data
+  errorMap: data,
 });
 
 export const retrieveAllDepartments = () => {
-  return dispatch => {
+  return (dispatch) => {
     //redux thunk passes dispatch
     axios
       .get(STAFF_BASE_URL + `/retrieveAllDepartments`)
-      .then(response => {
+      .then((response) => {
         const { data } = jsog.decode(response);
         dispatch(retrieveAllDepartmentsSuccess(data));
       })
-      .catch(err => {
+      .catch((err) => {
         dispatch(retrieveAllDepartmentsError(err.response.data));
       });
   };
 };
 
-const retrieveAllDepartmentsSuccess = data => ({
+const retrieveAllDepartmentsSuccess = (data) => ({
   type: types.RETRIEVE_ALL_DEPARTMENTS,
-  allDepartments: data
+  allDepartments: data,
 });
 
-const retrieveAllDepartmentsError = data => ({
+const retrieveAllDepartmentsError = (data) => ({
   type: types.GET_ERRORS,
-  errorMap: data
+  errorMap: data,
 });
 
 export const deleteStaff = (staffId, history) => {
-  return dispatch => {
+  return (dispatch) => {
     axios
       .delete(STAFF_BASE_URL + "/deleteStaff/" + staffId)
-      .then(response => {
+      .then((response) => {
         const { data } = jsog.decode(response);
         toast.success("Staff Deleted!", {
-          position: toast.POSITION.TOP_CENTER
+          position: toast.POSITION.TOP_CENTER,
         });
         dispatch(deleteStaffSuccess(data));
         retrieveAllStaff()(dispatch);
         history.push(`/staff/viewAll`);
       })
-      .catch(err => {
+      .catch((err) => {
         dispatch(deleteStaffError(err.response.data));
       });
   };
 };
 
-const deleteStaffSuccess = data => ({
+const deleteStaffSuccess = (data) => ({
   type: types.DELETE_STAFF,
-  deletedStaff: data
+  deletedStaff: data,
 });
 
-const deleteStaffError = data => ({
+const deleteStaffError = (data) => ({
   type: types.GET_ERRORS,
-  errorMap: data
+  errorMap: data,
 });
 
 export const staffLogin = (staffLoginRequest, history, store) => {
-  return dispatch => {
+  return (dispatch) => {
     //redux thunk passes dispatch
     axios
       .post(STAFF_BASE_URL + "/loginStaff", staffLoginRequest)
-      .then(response => {
+      .then((response) => {
         const { data } = jsog.decode(response);
         console.log(data);
         const staffId = data.staffId;
         dispatch(loginStaffSuccess(data, store));
         toast.success("You are logged in!", {
-          position: toast.POSITION.TOP_CENTER
+          position: toast.POSITION.TOP_CENTER,
         });
         history.push(`/`); // TODO: update redirect path
       })
-      .catch(err => {
+      .catch((err) => {
         if (err.response) dispatch(loginStaffError(err.response.data));
         //console.log(err.response.data);
       });
@@ -340,98 +340,98 @@ export const staffLogin = (staffLoginRequest, history, store) => {
 const loginStaffSuccess = (data, store) => ({
   type: types.STAFF_LOGIN,
   staff: data,
-  store
+  store,
 });
 
-const loginStaffError = data => ({
+const loginStaffError = (data) => ({
   type: types.GET_ERRORS,
-  errorMap: data
+  errorMap: data,
 });
 
 export const staffLogout = () => ({
-  type: types.STAFF_LOGOUT
+  type: types.STAFF_LOGOUT,
 });
 
 export const retrieveStaffWithNoAccount = () => {
-  return dispatch => {
+  return (dispatch) => {
     //redux thunk passes dispatch
     axios
       .get(STAFF_BASE_URL + `/retrieveStaffWithNoAccount`)
-      .then(response => {
+      .then((response) => {
         const { data } = jsog.decode(response);
         dispatch(retrieveSuccess(data));
       })
-      .catch(err => {
+      .catch((err) => {
         dispatch(retrieveError(err.response.data));
       });
   };
 };
 
-const retrieveSuccess = data => ({
+const retrieveSuccess = (data) => ({
   type: types.RETRIEVE_STAFF_WITH_NO_ACCOUNT,
-  staffEntity: data
+  staffEntity: data,
 });
 
-const retrieveError = data => ({
+const retrieveError = (data) => ({
   type: GET_ERRORS,
-  errorMap: data
+  errorMap: data,
 });
 
 export const clearCurrentStaff = () => ({
-  type: types.CLEAR_CURRENT_STAFF
+  type: types.CLEAR_CURRENT_STAFF,
 });
 
 export const reassignStaffStore = (reassignStaffStoreRequest, history) => {
-    return dispatch => {
-        //redux thunk passes dispatch
-        axios
-            .post(STAFF_BASE_URL + "/reassignStaffStore", reassignStaffStoreRequest)
-            .then(response => {
-                const data = jsog.decode(response);
-                dispatch(reassignSuccess(data));
-                toast.success("Successfully reassigned!", {
-                    position: toast.POSITION.TOP_CENTER
-                });
-                retrieveAllStoreStaff()(dispatch);
-            })
-            .catch(err => {
-                console.log(err);
-                dispatch(reassignError(err.response.data));
-            });
-    };
+  return (dispatch) => {
+    //redux thunk passes dispatch
+    axios
+      .post(STAFF_BASE_URL + "/reassignStaffStore", reassignStaffStoreRequest)
+      .then((response) => {
+        const data = jsog.decode(response);
+        dispatch(reassignSuccess(data));
+        toast.success("Successfully reassigned!", {
+          position: toast.POSITION.TOP_CENTER,
+        });
+        retrieveAllStoreStaff()(dispatch);
+      })
+      .catch((err) => {
+        console.log(err);
+        dispatch(reassignError(err.response.data));
+      });
+  };
 };
 
-const reassignSuccess = data => ({
-    type: types.REASSIGN_STAFF_STORE,
-    store: data
+const reassignSuccess = (data) => ({
+  type: types.REASSIGN_STAFF_STORE,
+  store: data,
 });
 
-const reassignError = data => ({
-    type: types.GET_ERRORS,
-    errorMap: data
+const reassignError = (data) => ({
+  type: types.GET_ERRORS,
+  errorMap: data,
 });
 
 export const retrieveAllStoreStaff = () => {
-    return dispatch => {
-        //redux thunk passes dispatch
-        axios
-            .get(STAFF_BASE_URL + `/retrieveAllStoreStaff`)
-            .then(response => {
-                const { data } = jsog.decode(response);
-                dispatch(retrieveStoreStaffSuccess(data));
-            })
-            .catch(err => {
-                dispatch(retrieveStoreStaffError(err.response.data));
-            });
-    };
+  return (dispatch) => {
+    //redux thunk passes dispatch
+    axios
+      .get(STAFF_BASE_URL + `/retrieveAllStoreStaff`)
+      .then((response) => {
+        const { data } = jsog.decode(response);
+        dispatch(retrieveStoreStaffSuccess(data));
+      })
+      .catch((err) => {
+        dispatch(retrieveStoreStaffError(err.response.data));
+      });
+  };
 };
 
-const retrieveStoreStaffSuccess = data => ({
-    type: types.RETRIEVE_ALL_STORE_STAFF,
-    staffEntity: data
+const retrieveStoreStaffSuccess = (data) => ({
+  type: types.RETRIEVE_ALL_STORE_STAFF,
+  staffEntity: data,
 });
 
-const retrieveStoreStaffError = data => ({
-    type: types.GET_ERRORS,
-    errorMap: data
+const retrieveStoreStaffError = (data) => ({
+  type: types.GET_ERRORS,
+  errorMap: data,
 });

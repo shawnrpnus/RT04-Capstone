@@ -4,9 +4,11 @@ import capstone.rt04.retailbackend.entities.Product;
 import capstone.rt04.retailbackend.entities.ProductVariant;
 import capstone.rt04.retailbackend.entities.Tag;
 import capstone.rt04.retailbackend.request.algolia.AlgoliaProductDetailsResponse;
+import capstone.rt04.retailbackend.request.product.EligibleStoreForRecommendationRequest;
 import capstone.rt04.retailbackend.request.product.ProductCreateRequest;
 import capstone.rt04.retailbackend.request.product.ProductRetrieveRequest;
 import capstone.rt04.retailbackend.request.product.ProductTagRequest;
+import capstone.rt04.retailbackend.response.EligibleStoreResponse;
 import capstone.rt04.retailbackend.response.GenericErrorResponse;
 import capstone.rt04.retailbackend.response.ProductDetailsResponse;
 import capstone.rt04.retailbackend.services.ProductService;
@@ -49,10 +51,20 @@ public class ProductController {
         List<ProductDetailsResponse> products = productService.retrieveProductsDetails(null, productId, null);
         if (products.size() == 0) throw new ProductNotFoundException();
         relationshipService.clearPdrRelationships(products, true);
-        for(ProductDetailsResponse response:products) {
+        for (ProductDetailsResponse response : products) {
             relationshipService.clearPdrRelationships(response.getRecommendedProducts(), false);
         }
         return new ResponseEntity<>(products.get(0), HttpStatus.OK);
+    }
+
+    @PostMapping(ProductControllerRoutes.GET_ELIGIBLE_STORE_FOR_RECOMMENDATION)
+    public ResponseEntity<?> getEligibleStoreForRecommendation(@RequestBody EligibleStoreForRecommendationRequest request) {
+        List<EligibleStoreResponse> responses = productService.getEligibleStoreForRecommendation(request.getProductIds(),
+                request.getLat(), request.getLng());
+        for(EligibleStoreResponse response : responses) {
+            relationshipService.clearStoreRelationships(response.getStore());
+        }
+        return new ResponseEntity<>(responses, HttpStatus.OK);
     }
 
 //    @GetMapping(ProductControllerRoutes.RETRIEVE_PRODUCTS_BY_CRITERIA)

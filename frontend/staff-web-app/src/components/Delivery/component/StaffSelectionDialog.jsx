@@ -11,6 +11,9 @@ import Button from "@material-ui/core/Button";
 import { retrieveAllDeliveryStaff } from "./../../../redux/actions/staffActions";
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
+import Input from "@material-ui/core/Input";
+import Checkbox from "@material-ui/core/Checkbox";
+import ListItemText from "@material-ui/core/ListItemText";
 import {
   automateDeliveryAllocation,
   estimateNumberOfDeliveryManRequired,
@@ -21,12 +24,13 @@ const _ = require("lodash");
 const StaffSelectionDialog = ({ open, onClose }) => {
   const dispatch = useDispatch();
   const staffList = useSelector((state) => state.staffEntity.allStaff);
-  const [staffId, setStaffId] = useState("");
+  const [staffIds, setStaffIds] = useState([]);
   const [numOfDeliverymanRequired, setNumOfDeliverymanRequired] = useState("");
   const [maxCapacity, setMaxCapacity] = useState(100);
 
   const onSelectStaff = (e) => {
-    setStaffId(e.target.value);
+    if (e.target.value.length <= numOfDeliverymanRequired)
+      setStaffIds(e.target.value);
   };
 
   useEffect(() => {
@@ -38,7 +42,7 @@ const StaffSelectionDialog = ({ open, onClose }) => {
   }, []);
 
   const handleAllocateDelivery = () => {
-    dispatch(automateDeliveryAllocation(staffId, onClose, maxCapacity));
+    dispatch(automateDeliveryAllocation(staffIds, onClose, maxCapacity));
   };
 
   const onChangeNumber = (e) => {
@@ -47,8 +51,6 @@ const StaffSelectionDialog = ({ open, onClose }) => {
     if (value === "NaN") value = "";
     setMaxCapacity(value);
   };
-
-  console.log(numOfDeliverymanRequired);
 
   return (
     <Dialog onClose={onClose} open={open} fullWidth maxWidth={"xs"}>
@@ -74,12 +76,28 @@ const StaffSelectionDialog = ({ open, onClose }) => {
           {numOfDeliverymanRequired} staff(s) needed
         </Typography>
         <InputLabel>Select staff: </InputLabel>
-        <Select fullWidth defaultValue={""} onChange={onSelectStaff}>
+        <Select
+          labelId="demo-mutiple-checkbox-label"
+          id="demo-mutiple-checkbox"
+          input={<Input />}
+          fullWidth
+          // defaultValue={""}
+          value={staffIds}
+          multiple
+          onChange={onSelectStaff}
+          renderValue={(selected) => {
+            const names = staffList.map((staff) => {
+              if (selected.includes(staff.staffId)) return staff.username;
+            });
+            return names.join(", ");
+          }}
+        >
           {staffList &&
             staffList.map(({ staffId, username }) => {
               return (
                 <MenuItem key={staffId} value={staffId}>
-                  {username}
+                  <Checkbox checked={staffIds.indexOf(staffId) > -1} />
+                  <ListItemText primary={username} />
                 </MenuItem>
               );
             })}
@@ -92,7 +110,7 @@ const StaffSelectionDialog = ({ open, onClose }) => {
         <Button
           color="primary"
           onClick={handleAllocateDelivery}
-          disabled={!staffId}
+          disabled={staffIds.length === 0}
         >
           Allocate delivery to staff
         </Button>

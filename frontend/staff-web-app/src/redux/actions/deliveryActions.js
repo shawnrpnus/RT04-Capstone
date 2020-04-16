@@ -74,15 +74,13 @@ export const confirmTransactionDelivery = (request) => {
   };
 };
 
-export const automateDeliveryAllocation = (staffId, onClose, maxCapacity) => {
+export const automateDeliveryAllocation = (staffIds, onClose, maxCapacity) => {
   return (dispatch) => {
     dispatch(openCircularProgress());
     axios
-      .get(DELIVERY_BASE_URL + `/automateDeliveryAllocation`, {
-        params: {
-          staffId,
-          maxCapacity,
-        },
+      .post(DELIVERY_BASE_URL + `/automateDeliveryAllocation`, {
+        staffIds,
+        maxCapacity,
       })
       .then((response) => {
         console.log(response);

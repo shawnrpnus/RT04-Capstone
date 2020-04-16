@@ -22,7 +22,7 @@ export const applyForLeave = (leaveCreateRequest, history) => {
         history.push(`/leave/apply`);
       })
       .catch(err => {
-        toast.error("Date overlaps with previous applied leave!", {
+        toast.error("Invalid dates selected. Please ensure that the start date comes before the end date and that the dates do not overlap with previous leaves.", {
           position: toast.POSITION.TOP_CENTER
         });
         dispatch(applyForLeaveError(err.response.data));

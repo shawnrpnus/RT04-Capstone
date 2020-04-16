@@ -361,7 +361,7 @@ public class DeliveryService {
      *
      * @returns Distance in Meters
      */
-    private double distance(double lat1, double lon1, double lat2,
+    public double distance(double lat1, double lon1, double lat2,
                             double lon2, double el1, double el2) {
 
         final int R = 6371; // Radius of the earth

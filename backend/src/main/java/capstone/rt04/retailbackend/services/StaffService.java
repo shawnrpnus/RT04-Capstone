@@ -5,10 +5,9 @@ import capstone.rt04.retailbackend.repositories.*;
 import capstone.rt04.retailbackend.util.ErrorMessages;
 import capstone.rt04.retailbackend.util.enums.RoleNameEnum;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
-import capstone.rt04.retailbackend.util.exceptions.product.ProductNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.staff.*;
 import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
-import capstone.rt04.retailbackend.util.exceptions.tag.TagNotFoundException;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -18,7 +17,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.management.relation.RoleNotFoundException;
 import javax.persistence.PersistenceException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional
@@ -28,6 +30,7 @@ public class StaffService {
     private final Environment environment;
 
     private final ValidationService validationService;
+    private final DeliveryService deliveryService;
 
     private final StaffRepository staffRepository;
     private final AddressRepository addressRepository;
@@ -44,10 +47,18 @@ public class StaffService {
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
 
-    public StaffService(JavaMailSender javaMailSender, Environment environment, ValidationService validationService, StaffRepository staffRepository, AddressRepository addressRepository, VerificationCodeRepository verificationCodeRepository, AdvertisementRepository advertisementRepository, DeliveryRepository deliveryRepository, DepartmentRepository departmentRepository, LeaveRepository leaveRepository, ReviewRepository reviewRepository, PayrollRepository payrollRepository, RoleRepository roleRepository, StoreRepository storeRepository, WarehouseRepository warehouseRepository) {
+    public StaffService(JavaMailSender javaMailSender, Environment environment, ValidationService validationService,
+                        @Lazy DeliveryService deliveryService, StaffRepository staffRepository,
+                        AddressRepository addressRepository, VerificationCodeRepository verificationCodeRepository,
+                        AdvertisementRepository advertisementRepository, DeliveryRepository deliveryRepository,
+                        DepartmentRepository departmentRepository, LeaveRepository leaveRepository,
+                        ReviewRepository reviewRepository, PayrollRepository payrollRepository,
+                        RoleRepository roleRepository, StoreRepository storeRepository,
+                        WarehouseRepository warehouseRepository) {
         this.javaMailSender = javaMailSender;
         this.environment = environment;
         this.validationService = validationService;
+        this.deliveryService = deliveryService;
         this.staffRepository = staffRepository;
         this.addressRepository = addressRepository;
         this.verificationCodeRepository = verificationCodeRepository;
@@ -62,7 +73,7 @@ public class StaffService {
         this.warehouseRepository = warehouseRepository;
     }
 
-    public Role createNewRole(RoleNameEnum name) throws CreateRoleException {
+    public Role createNewRole(RoleNameEnum name) {
 
         Role newRole = new Role(name);
         Role r = roleRepository.save(newRole);
@@ -71,7 +82,7 @@ public class StaffService {
 
     }
 
-    public Department createNewDepartment(String name) throws CreateDepartmentException {
+    public Department createNewDepartment(String name) {
 
         Department newDepartment = new Department(name);
         Department d = departmentRepository.save(newDepartment);
@@ -227,11 +238,17 @@ public class StaffService {
     }
 
     // For Delivery manager to assign delivery to delivery staff
-    public List<Staff> retrieveAllDeliveryStaff() {
-        List<Staff> deliveryStaff = staffRepository.findAllByDepartment_DepartmentNameEqualsAndRole_RoleNameEquals(
+    public List<Staff> retrieveAllEligibleDeliveryStaff() {
+        List<Staff> staffs = staffRepository.findAllByDepartment_DepartmentNameEqualsAndRole_RoleNameEquals(
                 "Delivery", RoleNameEnum.ASSISTANT);
-        for (Staff staff : deliveryStaff) {
-            lazyLoadStaffFields(staff);
+        List<Staff> deliveryStaff = new ArrayList<>();
+        Delivery delivery;
+        for (Staff staff : staffs) {
+            delivery = deliveryService.getTodaysDeliveryForStaff(staff.getStaffId());
+            if (delivery == null) {
+                lazyLoadStaffFields(staff);
+                deliveryStaff.add(staff);
+            }
         }
         return deliveryStaff;
     }
@@ -346,8 +363,8 @@ public class StaffService {
         List<Staff> allStaff = staffRepository.findAll();
         List<Staff> storeStaff = new ArrayList<Staff>();
 
-        for(Staff s: allStaff){
-            if(s.getStore() != null){
+        for (Staff s : allStaff) {
+            if (s.getStore() != null) {
                 storeStaff.add(s);
             }
         }
@@ -538,11 +555,11 @@ public class StaffService {
     public Store reassignStaffStore(Long storeId, List<Long> staffIds) throws StoreNotFoundException, StaffNotFoundException {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new StoreNotFoundException("Store with id: " + storeId + " does not exist"));
-        for(Long s : staffIds) {
+        for (Long s : staffIds) {
             Staff staff = staffRepository.findByStaffId(s);
-            try{
+            try {
                 staff.setStore(store);
-            } catch(NullPointerException ex) {
+            } catch (NullPointerException ex) {
                 throw new StaffNotFoundException("Staff with Staff ID: " + s + " not found!");
             }
         }

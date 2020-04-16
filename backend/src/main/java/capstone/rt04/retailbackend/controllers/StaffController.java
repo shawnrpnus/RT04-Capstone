@@ -1,17 +1,16 @@
 package capstone.rt04.retailbackend.controllers;
 
-import capstone.rt04.retailbackend.entities.*;
+import capstone.rt04.retailbackend.entities.Department;
+import capstone.rt04.retailbackend.entities.Role;
+import capstone.rt04.retailbackend.entities.Staff;
+import capstone.rt04.retailbackend.entities.Store;
 import capstone.rt04.retailbackend.request.staff.*;
-import capstone.rt04.retailbackend.request.tag.AddTagToProductRequest;
 import capstone.rt04.retailbackend.response.GenericErrorResponse;
 import capstone.rt04.retailbackend.services.StaffService;
 import capstone.rt04.retailbackend.services.ValidationService;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
-import capstone.rt04.retailbackend.util.exceptions.product.ProductNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.staff.*;
 import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
-import capstone.rt04.retailbackend.util.exceptions.tag.TagNotFoundException;
-import capstone.rt04.retailbackend.util.routeconstants.TagControllerRoutes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -37,7 +36,7 @@ public class StaffController {
     //Address will need to save in address repository cause it is new
     //role and department already exist in database from the start so no need to save
     @PostMapping(CREATE_NEW_STAFF)
-    public ResponseEntity<?> createNewStaff(@RequestBody StaffCreateRequest staffCreateRequest) throws InputDataValidationException, CreateNewStaffException, CreateNewStaffAccountException, javax.management.relation.RoleNotFoundException {
+    public ResponseEntity<?> createNewStaff(@RequestBody StaffCreateRequest staffCreateRequest) throws CreateNewStaffException, CreateNewStaffAccountException, javax.management.relation.RoleNotFoundException {
 
         System.out.println(staffCreateRequest.getRoleId());
         try {
@@ -55,24 +54,16 @@ public class StaffController {
     }
 
     @PostMapping(CREATE_NEW_ROLE)
-    public ResponseEntity<?> createNewRole(@RequestBody RoleCreateRequest roleCreateRequest) throws CreateRoleException {
-        try {
-            Role newRole = staffService.createNewRole(roleCreateRequest.getRoleName());
-            return new ResponseEntity<>(newRole, HttpStatus.CREATED);
-        } catch (CreateRoleException ex) {
-            return new ResponseEntity<>(ex, HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<?> createNewRole(@RequestBody RoleCreateRequest roleCreateRequest) {
+        Role newRole = staffService.createNewRole(roleCreateRequest.getRoleName());
+        return new ResponseEntity<>(newRole, HttpStatus.CREATED);
     }
 
 
     @PostMapping(CREATE_NEW_DEPARTMENT)
-    public ResponseEntity<?> createNewDepartment(@RequestBody DepartmentCreateRequest departmentCreateRequest) throws CreateDepartmentException {
-        try {
-            Department newDepartment = staffService.createNewDepartment(departmentCreateRequest.getDepartmentName());
-            return new ResponseEntity<>(newDepartment, HttpStatus.CREATED);
-        } catch (CreateDepartmentException ex) {
-            return new ResponseEntity<>(ex, HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<?> createNewDepartment(@RequestBody DepartmentCreateRequest departmentCreateRequest) {
+        Department newDepartment = staffService.createNewDepartment(departmentCreateRequest.getDepartmentName());
+        return new ResponseEntity<>(newDepartment, HttpStatus.CREATED);
     }
 
 
@@ -118,7 +109,7 @@ public class StaffController {
 
     @GetMapping(RETRIEVE_ALL_DELIVERY_STAFF)
     public ResponseEntity<?> retrieveAllDeliveryStaff() {
-        List<Staff> staff = staffService.retrieveAllDeliveryStaff();
+        List<Staff> staff = staffService.retrieveAllEligibleDeliveryStaff();
         staff.forEach(this::clearStaffRelationship);
         return new ResponseEntity<>(staff, HttpStatus.OK);
     }
