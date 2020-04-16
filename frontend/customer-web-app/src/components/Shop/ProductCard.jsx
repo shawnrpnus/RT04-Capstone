@@ -25,6 +25,7 @@ function ProductCard(props) {
   const [activeColourIndex, setActiveColourIndex] = useState(0);
   const [isHoverFavorite, setIsHoverFavorite] = useState(false);
   const { discountedPrice } = props;
+  const storeForRecommendation = props.storeForRecommendation;
 
   return (
     <GridItem md={3} sm={6} xs={6}>
@@ -118,6 +119,20 @@ function ProductCard(props) {
                 })}
               </GridItem>
             </GridContainer>
+            {storeForRecommendation &&
+              storeForRecommendation.map((e) => {
+                if (product.productId === e.productId)
+                  return (
+                    <h6
+                      className={classes.cardTitle}
+                      style={{ color: "#4C9A2A" }}
+                      key={e.productId}
+                    >
+                      {e.numOfAvailableColour} colour(s) is in stock at{" "}
+                      {e.store.storeName}{" "}
+                    </h6>
+                  );
+              })}
           </div>
         </CardBody>
       </Card>

@@ -1,6 +1,7 @@
 package capstone.rt04.retailbackend.controllers;
 
 import capstone.rt04.retailbackend.entities.*;
+import capstone.rt04.retailbackend.request.delivery.AutomateDeliveryRequest;
 import capstone.rt04.retailbackend.request.delivery.DeliveryForRestockOrderCreateRequest;
 import capstone.rt04.retailbackend.request.delivery.DeliveryForTransactionCreateRequest;
 import capstone.rt04.retailbackend.request.delivery.ReceiveRestockOrderRequest;
@@ -90,11 +91,13 @@ public class DeliveryController {
         return new ResponseEntity<>(ResponseEntity.ok(numberOfDeliveryManRequired), HttpStatus.OK);
     }
 
-    @GetMapping(AUTOMATE_DELIVERY_ALLOCATION)
-    public ResponseEntity<?> automateDeliveryAllocation(@RequestParam Long staffId, @RequestParam Integer maxCapacity) throws StaffNotFoundException, DeliveryNotFoundException, NoItemForDeliveryException {
-        List<Transaction> transactions = deliveryService.automateDeliveryAllocation(staffId, maxCapacity);
-        deliveryService.sendDeliveryNotificationEmail(transactions);
-        return new ResponseEntity<>(ResponseEntity.ok("Delivery generated for staff " + staffId), HttpStatus.OK);
+    @PostMapping(AUTOMATE_DELIVERY_ALLOCATION)
+    public ResponseEntity<?> automateDeliveryAllocation(@RequestBody AutomateDeliveryRequest request) throws StaffNotFoundException, DeliveryNotFoundException, NoItemForDeliveryException {
+        for(Long staffId : request.getStaffIds()) {
+            List<Transaction> transactions = deliveryService.automateDeliveryAllocation(staffId, request.getMaxCapacity());
+            deliveryService.sendDeliveryNotificationEmail(transactions);
+        }
+        return new ResponseEntity<>(ResponseEntity.ok("Delivery generated for selected staff(s)"), HttpStatus.OK);
     }
 
     @GetMapping(GENERATE_DELIVERY_ROUTE)
