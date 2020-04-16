@@ -173,6 +173,16 @@ public class RelationshipService {
             clearStoreRelationships(transaction.getStoreToCollect());
     }
 
+    public void clearTransactionForQRCodeRelationships(Transaction transaction) {
+        transaction.getCustomer().setShippingAddresses(null);
+        transaction.getCustomer().setCreditCards(null);
+        transaction.getCustomer().setOnlineShoppingCart(null);
+        transaction.getCustomer().setInStoreShoppingCart(null);
+        transaction.getCustomer().setReservations(null);
+        transaction.getCustomer().setReservationCartItems(null);
+        transaction.getCustomer().setUsedPromoCodes(null);
+    }
+
     public void clearTransactionRelationshipsForStaffSide(Transaction transaction) {
         for (TransactionLineItem transactionLineItem : transaction.getTransactionLineItems()) {
             clearTransactionLineItemRelationship(transactionLineItem);

@@ -29,6 +29,7 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -465,8 +466,47 @@ public class TransactionService {
         return inStoreTxns;
     }
 
+    public List<Transaction> getCustomerPendingInStoreTransaction(Long customerId){
+        List<Transaction> inStoreTxns = transactionRepository.findAllByCustomer_CustomerIdAndStoreIsNotNull(customerId);
+        inStoreTxns = inStoreTxns.stream()
+                .filter(t -> !(t.getDeliveryStatus().equals(DeliveryStatusEnum.DELIVERED)
+                                || t.getDeliveryStatus().equals(DeliveryStatusEnum.COLLECTED)))
+                .collect(Collectors.toList());
+        lazyLoadTransaction(inStoreTxns);
+        return inStoreTxns;
+    }
+
+    public List<Transaction> getCustomerCompletedInStoreTransactions(Long customerId){
+        List<Transaction> inStoreTxns = transactionRepository.findAllByCustomer_CustomerIdAndStoreIsNotNull(customerId);
+        inStoreTxns = inStoreTxns.stream()
+                .filter(t -> t.getDeliveryStatus().equals(DeliveryStatusEnum.DELIVERED)
+                        || t.getDeliveryStatus().equals(DeliveryStatusEnum.COLLECTED))
+                .collect(Collectors.toList());
+        lazyLoadTransaction(inStoreTxns);
+        return inStoreTxns;
+    }
+
     public List<Transaction> getCustomerInStoreCollectionTransactions(Long customerId) {
         List<Transaction> txns = transactionRepository.findAllByCustomer_CustomerIdAndStoreIsNullAndStoreToCollectIsNotNull(customerId);
+        lazyLoadTransaction(txns);
+        return txns;
+    }
+
+    public List<Transaction> getCustomerPendingInStoreCollectionTransactions(Long customerId) {
+        List<Transaction> txns = transactionRepository.findAllByCustomer_CustomerIdAndStoreIsNullAndStoreToCollectIsNotNull(customerId);
+        txns = txns.stream()
+                .filter(t -> !(t.getDeliveryStatus().equals(DeliveryStatusEnum.DELIVERED)
+                        || t.getDeliveryStatus().equals(DeliveryStatusEnum.COLLECTED)))
+                .collect(Collectors.toList());
+        lazyLoadTransaction(txns);
+        return txns;
+    }
+
+    public List<Transaction> getCustomerCompletedInStoreCollectionTransactions(Long customerId) {
+        List<Transaction> txns = transactionRepository.findAllByCustomer_CustomerIdAndStoreIsNullAndStoreToCollectIsNotNull(customerId);
+        txns = txns.stream()
+                .filter(t -> t.getDeliveryStatus().equals(DeliveryStatusEnum.COLLECTED))
+                .collect(Collectors.toList());
         lazyLoadTransaction(txns);
         return txns;
     }
