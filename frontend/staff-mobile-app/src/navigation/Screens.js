@@ -204,7 +204,7 @@ function DeliveryStack(props) {
         component={GroupedStoreOrderDetails}
         back
         options={{
-          header: props => <CustomHeader title="Store Order(s)" {...props} />,
+          header: props => <CustomHeader title="Store Order(s)" back {...props} />,
           headerStyle: { height: 100 }
         }}
       />
@@ -213,7 +213,7 @@ function DeliveryStack(props) {
         component={TransactionDetails}
         back
         options={{
-          header: props => <CustomHeader title="Customer Order" {...props} />,
+          header: props => <CustomHeader title="Customer Order" back {...props} />,
           headerStyle: { height: 100 }
         }}
       />
