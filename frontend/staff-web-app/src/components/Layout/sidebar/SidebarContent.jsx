@@ -349,11 +349,14 @@ class SidebarContent extends Component {
                 route="/transaction/viewAll"
                 onClick={this.hideSidebar}
               />
-              <SidebarLink
-                title="View details"
-                route="/transaction/viewOne"
-                onClick={this.hideSidebar}
-              />
+              {store && (
+                <SidebarLink
+                  title="View details"
+                  route="/transaction/viewOne"
+                  onClick={this.hideSidebar}
+                />
+              )}
+
             </SidebarCategory>
           )}
           {salesmarketing && (

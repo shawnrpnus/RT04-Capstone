@@ -165,13 +165,13 @@ const CreateEditRefundRecord = props => {
       }
     }
 
-    // if(transaction.deliveryStatus !== "DELIVERED" && transaction.deliveryStatus !== "COLLECTED") {
-    //   // console.log(transaction.deliveryStatus);
-    //   // console.log(transaction.deliveryStatus === "DELIVERED");
-    //     setTextToDisplay("Refund Not Available: Delivery not available");
-    //
-    //   return false;
-    // }
+    if(transaction.deliveryStatus !== "DELIVERED" && transaction.deliveryStatus !== "COLLECTED") {
+      // console.log(transaction.deliveryStatus);
+      // console.log(transaction.deliveryStatus === "DELIVERED");
+        setTextToDisplay("Refund Not Available: Customer yet to receive goods");
+
+      return false;
+    }
 
     if(transaction.deliveredDateTime ) {
       let datePastRefund = new Date(transaction.deliveredDateTime);
