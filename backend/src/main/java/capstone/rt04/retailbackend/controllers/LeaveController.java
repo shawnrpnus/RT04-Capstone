@@ -6,6 +6,7 @@ import capstone.rt04.retailbackend.response.GenericErrorResponse;
 import capstone.rt04.retailbackend.services.LeaveService;
 import capstone.rt04.retailbackend.services.ValidationService;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
+import capstone.rt04.retailbackend.util.exceptions.leave.StaffLeaveCannotCreateException;
 import capstone.rt04.retailbackend.util.exceptions.leave.StaffLeaveCannotDeleteException;
 import capstone.rt04.retailbackend.util.exceptions.leave.StaffLeaveCannotUpdateException;
 import capstone.rt04.retailbackend.util.exceptions.leave.StaffLeaveNotFoundException;
@@ -36,13 +37,9 @@ public class LeaveController {
 
     @PostMapping(APPLY_FOR_LEAVE)
     public ResponseEntity<?> createNewLeave(@RequestBody LeaveCreateRequest leaveCreateRequest)
-            throws InputDataValidationException, PromoCodeNotFoundException, CreateNewPromoCodeException, StaffNotFoundException {
-        try {
+            throws StaffNotFoundException, StaffLeaveCannotCreateException, InputDataValidationException {
             StaffLeave newLeave = leaveService.createNewLeave(leaveCreateRequest.getLeave());
             return new ResponseEntity<>(newLeave, HttpStatus.CREATED);
-        }catch (InputDataValidationException ex){
-            return new ResponseEntity<>(ex.getErrorMap(), HttpStatus.BAD_REQUEST);
-        }
     }
 
     @GetMapping(RETRIEVE_ALL_LEAVES)
@@ -132,16 +129,10 @@ public class LeaveController {
     }
 
     @PostMapping(UPDATE_LEAVE)
-    public ResponseEntity<?> updateLeave(@RequestBody UpdateLeaveRequest updateLeaveRequest) throws StaffLeaveNotFoundException, StaffNotFoundException, StaffLeaveCannotUpdateException {
-        try {
+    public ResponseEntity<?> updateLeave(@RequestBody UpdateLeaveRequest updateLeaveRequest) throws StaffLeaveNotFoundException, StaffNotFoundException, StaffLeaveCannotUpdateException, InputDataValidationException {
             StaffLeave leave = leaveService.updateLeave(updateLeaveRequest.getLeaveId(), updateLeaveRequest.getApplicant(),
                     updateLeaveRequest.getFromDateTime(), updateLeaveRequest.getToDateTime());
             return new ResponseEntity<>(leave, HttpStatus.OK);
-        } catch (InputDataValidationException ex) {
-            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
-        } catch (StaffLeaveCannotUpdateException ex){
-            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
-        }
     }
 
     @PostMapping(RETRIEVE_LEAVE_COUNT_IN_A_MONTH)

@@ -105,7 +105,7 @@ class CreatePayrollsForm extends React.Component {
                         <DatePicker
                             variant="inline"
                             openTo="year"
-                            minDate={new Date("2020")}
+                            minDate={new Date("2020-04")}
                             views={["year", "month"]}
                             label="Generate payroll for:"
                             disabled={this.state.mode}

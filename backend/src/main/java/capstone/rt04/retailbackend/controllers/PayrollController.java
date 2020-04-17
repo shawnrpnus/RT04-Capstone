@@ -43,14 +43,10 @@ public class PayrollController {
     }
 
     @PostMapping(CREATE_PAYROLLS)
-    public ResponseEntity<?> createPayrolls(@RequestBody CreatePayrollsRequest createPayrollsRequest) {
-        try {
+    public ResponseEntity<?> createPayrolls(@RequestBody CreatePayrollsRequest createPayrollsRequest) throws PayrollCannotCreateException {
             List<Payroll> payrolls = payrollService.createPayrolls(createPayrollsRequest.getSelectedDate());
             System.out.println(payrolls);
             return new ResponseEntity<>(payrolls, HttpStatus.OK);
-        } catch (PayrollCannotCreateException ex) {
-            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
     }
 
     @GetMapping(RETRIEVE_ALL_PAYROLLS)

@@ -21,10 +21,13 @@ export const applyForLeave = (leaveCreateRequest, history) => {
         retrieveAllLeaves(leaveCreateRequest.leave.applicant.staffId)(dispatch);
         history.push(`/leave/apply`);
       })
-      .catch(err => {
-        toast.error("Invalid dates selected. Please ensure that the start date comes before the end date and that the dates do not overlap with previous leaves.", {
-          position: toast.POSITION.TOP_CENTER
-        });
+
+        .catch(err => {
+            if (err.response) {
+                toast.error(err.response.data.errorMessage, {
+                    position: toast.POSITION.TOP_CENTER
+                });
+            }
         dispatch(applyForLeaveError(err.response.data));
         //console.log(err.response.data);
       });
@@ -78,10 +81,12 @@ export const deleteLeave = (leaveId, staffId, history) => {
         retrieveAllLeaves(staffId)(dispatch);
         history.push(`/leave/apply`);
       })
-      .catch(err => {
-        toast.error("Leave is already endorsed or approved!", {
-          position: toast.POSITION.TOP_CENTER
-        });
+        .catch(err => {
+            if (err.response) {
+                toast.error(err.response.data.errorMessage, {
+                    position: toast.POSITION.TOP_CENTER
+                });
+            }
         dispatch(deleteLeaveError(err.response.data));
       });
   };
@@ -269,10 +274,14 @@ export const updateLeave = (updateLeaveRequest, history) => {
                 retrieveAllLeaves(updateLeaveRequest.applicant.staffId)(dispatch);
                 history.push(`/leave/apply`);
             })
+
             .catch(err => {
-                toast.error("Leave has already been endorsed or approved", {
-                    position: toast.POSITION.TOP_CENTER
-                });
+                if (err.response) {
+                    toast.error(err.response.data.errorMessage, {
+                        position: toast.POSITION.TOP_CENTER
+                    });
+                }
+
                 dispatch(updateLeavesError(err.response.data));
                 // console.log(err.response.data);
             });
