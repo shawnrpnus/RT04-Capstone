@@ -9,7 +9,7 @@ import { Check, Home, Place } from "@material-ui/icons";
 import Button from "components/UI/CustomButtons/Button";
 import {
   addShippingAddressDetails,
-  updateShippingAddressDetails
+  updateShippingAddressDetails,
 } from "redux/actions/customerActions";
 import Address from "models/customer/Address";
 import AddUpdateAddressRequest from "models/customer/AddUpdateAddressRequest";
@@ -18,14 +18,14 @@ import Checkbox from "@material-ui/core/Checkbox";
 import customCheckboxRadioSwitch from "assets/jss/material-kit-pro-react/customCheckboxRadioSwitchStyle";
 import { useSnackbar } from "notistack";
 import axios from "axios";
-import { key } from "key.js";
+// import { key } from "key.js";
 
 const useStyles = makeStyles(customCheckboxRadioSwitch);
 
 // do this to edit props (pass in props as a tuple)
 export default function AddAddress({
   addNewAddress: [addNewAddress, setAddNewAddress],
-  currAddress: [currAddress, setCurrAddress]
+  currAddress: [currAddress, setCurrAddress],
 }) {
   //Hooks
   const classes = useStyles();
@@ -34,8 +34,8 @@ export default function AddAddress({
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   //Redux
   const dispatch = useDispatch();
-  const errors = useSelector(state => state.errors);
-  const currCustomer = useSelector(state => state.customer.loggedInCustomer);
+  const errors = useSelector((state) => state.errors);
+  const currCustomer = useSelector((state) => state.customer.loggedInCustomer);
 
   //State
   const [inputState, setInputState] = useState({
@@ -45,14 +45,14 @@ export default function AddAddress({
     buildingName: currAddress ? currAddress.buildingName : "",
     default: currAddress ? currAddress.default : false,
     billing: currAddress ? currAddress.billing : false,
-    addressId: currAddress ? currAddress.addressId : undefined
+    addressId: currAddress ? currAddress.addressId : undefined,
   });
 
-  const onChange = e => {
+  const onChange = (e) => {
     e.persist();
-    setInputState(inputState => ({
+    setInputState((inputState) => ({
       ...inputState,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     }));
     if (Object.keys(errors).length !== 0) {
       dispatch(clearErrors());
@@ -62,9 +62,9 @@ export default function AddAddress({
   const handleAddAddress = () => {
     axios
       .get(
-        `https://maps.googleapis.com/maps/api/geocode/json?address=Singapore${inputState.postalCode}&key=${key}`
+        `https://maps.googleapis.com/maps/api/geocode/json?address=Singapore+${inputState.postalCode}|result_type=postal_code&key=AIzaSyBwSEn5eVyay7QWpufONLyFn6beB1Vf5rc`
       )
-      .then(response => {
+      .then((response) => {
         console.log(response.data);
 
         if (response.data.status === "OK") {
@@ -115,23 +115,23 @@ export default function AddAddress({
         } else {
           enqueueSnackbar("Invalid postal code", {
             variant: "error",
-            autoHideDuration: 1200
+            autoHideDuration: 1200,
           });
         }
       })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   };
 
-  const handleToggle = e => {
+  const handleToggle = (e) => {
     if (e === "delivery") {
-      setInputState(inputState => ({
+      setInputState((inputState) => ({
         ...inputState,
-        default: !inputState.default
+        default: !inputState.default,
       }));
     } else {
-      setInputState(inputState => ({
+      setInputState((inputState) => ({
         ...inputState,
-        billing: !inputState.billing
+        billing: !inputState.billing,
       }));
     }
 
@@ -174,7 +174,7 @@ export default function AddAddress({
               <InputAdornment position="start">
                 <Place />
               </InputAdornment>
-            )
+            ),
           }}
         />
         <CustomTextField
@@ -188,7 +188,7 @@ export default function AddAddress({
               <InputAdornment position="start">
                 <Home />
               </InputAdornment>
-            )
+            ),
           }}
         />
         <CustomTextField
@@ -202,7 +202,7 @@ export default function AddAddress({
               <InputAdornment position="start">
                 <Home />
               </InputAdornment>
-            )
+            ),
           }}
         />
 
@@ -217,7 +217,7 @@ export default function AddAddress({
               <InputAdornment position="start">
                 <Home />
               </InputAdornment>
-            )
+            ),
           }}
         />
         <FormControlLabel
@@ -230,7 +230,7 @@ export default function AddAddress({
               icon={<Check className={classes.uncheckedIcon} />}
               classes={{
                 checked: classes.checked,
-                root: classes.checkRoot
+                root: classes.checkRoot,
               }}
             />
           }
@@ -248,7 +248,7 @@ export default function AddAddress({
               icon={<Check className={classes.uncheckedIcon} />}
               classes={{
                 checked: classes.checked,
-                root: classes.checkRoot
+                root: classes.checkRoot,
               }}
             />
           }
