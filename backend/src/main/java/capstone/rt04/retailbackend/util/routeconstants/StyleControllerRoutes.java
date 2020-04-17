@@ -9,5 +9,8 @@ public class StyleControllerRoutes {
     public static final String DELETE_STYLE = "/deleteStyle/{styleId}";
     public static final String ADD_STYLE_TO_PRODUCTS = "/addStyleToProducts";
     public static final String DELETE_STYLE_FROM_PRODUCTS = "/deleteStyleFromProducts";
-
+    public static final String CREATE_STYLE_QUIZ_QNS = "/createStyleQuizQns";
+    public static final String DELETE_STYLE_QUIZ_QNS = "/deleteStyleQuizQns/{qnsNum}";
+    public static final String UPDATE_STYLE_QUIZ_QNS = "/updateStyleQuizQns";
+    public static final String CREATE_NEW_STYLE_WITH_ANS = "/createNewStyleWithAns";
 }

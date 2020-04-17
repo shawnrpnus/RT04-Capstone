@@ -4,7 +4,8 @@ import StyleForm from "./StyleForm";
 import {
   createNewStyle,
   retrieveAllStyles,
-  updateStyle
+  updateStyle,
+  createNewStyleWithAns
 } from "../../../redux/actions/styleAction";
 import { clearErrors } from "../../../redux/actions";
 import connect from "react-redux/es/connect/connect";
@@ -13,6 +14,7 @@ import CreateUpdateStyleRequest from "../../../models/CreateUpdateStyleRequest";
 import * as PropTypes from "prop-types";
 import StyleTable from "./StyleTable";
 import { Grid } from "@material-ui/core";
+import StyleIdAnswerMap from "../../../models/style/StyleIdAnswerMap";
 
 class StyleContainer extends Component {
   static propTypes = {
@@ -21,7 +23,7 @@ class StyleContainer extends Component {
     errors: PropTypes.object,
     clearErrors: PropTypes.func.isRequired,
     createNewStyle: PropTypes.func,
-    updateStyle: PropTypes.func
+    updateStyle: PropTypes.func,
   };
 
   componentDidMount() {
@@ -35,31 +37,49 @@ class StyleContainer extends Component {
   // this method makes the api calls
   handleSubmit = (e, formState) => {
     e.preventDefault();
-    const { styleName } = formState;
+    const { styleName, qnsCreated, answers } = formState;
     console.log(formState);
-    const req = new CreateUpdateStyleRequest(styleName);
-
-    switch (this.props.mode) {
-      case "viewAll":
-        this.props.createNewStyle(req, this.props.history);
-        this.props.retrieveAllStyles();
-        formState.styleName = "";
-        break;
-      case "viewOne":
-        req.styleId = this.props.currentStyle.styleId;
-        this.props.updateStyle(req, this.props.history);
-        break;
-      default:
+    if (qnsCreated.length == 0 && answers.length) {
+      //if no quiz qns
+      const req = new CreateUpdateStyleRequest(styleName);
+      switch (this.props.mode) {
+        case "viewAll":
+          this.props.createNewStyle(req, this.props.history);
+          this.props.retrieveAllStyles();
+          formState.styleName = "";
+          break;
+        case "viewOne":
+          req.styleId = this.props.currentStyle.styleId;
+          this.props.updateStyle(req, this.props.history);
+          break;
+        default:
+      }
+    } else {
+      //need to create qnsIdAnsMap
+      const styleIdAnswerMaps = [];
+      for (let i = 0; i < answers.length; i++) {
+        styleIdAnswerMaps.push(
+          new StyleIdAnswerMap(i, answers[i])
+        );
+      }
+      console.log(styleIdAnswerMaps);
+      this.props.createNewStyleWithAns({ styleName, styleIdAnswerMaps });
     }
   };
 
   render() {
-    const { errors, clearErrors, mode, currentStyle, renderLoader } = this.props;
+    const {
+      errors,
+      clearErrors,
+      mode,
+      currentStyle,
+      renderLoader,
+    } = this.props;
     const header =
       mode === "viewAll"
-        ? "Style Information"
+        ? "Create Style"
         : mode === "viewOne"
-        ? "Style Information"
+        ? "Create Style"
         : "";
     return (
       <React.Fragment>
@@ -70,7 +90,7 @@ class StyleContainer extends Component {
           //View All, Create, Update, Delete
           <div>
             <Grid container spacing={3}>
-              <Grid item xs={12} md={3}>
+              <Grid item xs={12} md={4}>
                 <StyleForm
                   handleSubmit={this.handleSubmit}
                   clearErrors={clearErrors}
@@ -78,7 +98,7 @@ class StyleContainer extends Component {
                   history={this.props.history}
                 />
               </Grid>
-              <Grid item xs={12} md={9}>
+              <Grid item xs={12} md={8}>
                 <StyleTable
                   history={this.props.history}
                   renderLoader={renderLoader}
@@ -97,15 +117,16 @@ class StyleContainer extends Component {
 }
 
 //mapping global state to this component
-const mapStateToProps = state => ({
-  errors: state.errors
+const mapStateToProps = (state) => ({
+  errors: state.errors,
 });
 
 const mapDispatchToProps = {
-  createNewStyle, 
+  createNewStyle,
   updateStyle,
   clearErrors,
-  retrieveAllStyles
+  retrieveAllStyles,
+  createNewStyleWithAns
 };
 
 export default connect(

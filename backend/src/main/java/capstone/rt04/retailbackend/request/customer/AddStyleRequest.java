@@ -20,5 +20,8 @@ public class AddStyleRequest {
     private String stylePreference;
 
     @NotNull
+    private Long styleId;
+
+    @NotNull
     private String gender;
 }

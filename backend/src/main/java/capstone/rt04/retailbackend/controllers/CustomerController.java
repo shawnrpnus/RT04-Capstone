@@ -263,7 +263,7 @@ public class CustomerController {
 
     @PostMapping(CustomerControllerRoutes.ADD_STYLE)
     public ResponseEntity<?> addStyle(@RequestBody AddStyleRequest req) throws CustomerNotFoundException, StyleNotFoundException {
-        Customer customer = customerService.addStyle(req.getCustomerId(), req.getStylePreference(), req.getGender());
+        Customer customer = customerService.addStyle(req.getCustomerId(), req.getStylePreference(), req.getStyleId(), req.getGender());
         relationshipService.clearCustomerRelationships(customer);
         return new ResponseEntity<>(customer, HttpStatus.OK);
     }

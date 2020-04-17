@@ -18,6 +18,7 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -48,6 +49,12 @@ public class Style implements Serializable {
 
     private String stylePreference;
     private String gender;
+
+    @ElementCollection
+    private List<String> questions;
+
+    @ElementCollection
+    private Map<String, String> answers; //key is question, value is answer
 
     public Style() {
         this.products = new ArrayList<>();

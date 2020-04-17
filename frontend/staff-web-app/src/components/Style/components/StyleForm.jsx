@@ -3,34 +3,46 @@ import PropTypes from "prop-types";
 import { withRouter } from "react-router-dom";
 import "moment";
 import { connect } from "react-redux";
-
+import { retrieveAllStyles } from "../../../redux/actions/styleAction";
 import { clearErrors } from "../../../redux/actions";
 import {
   KeyboardTimePicker,
-  MuiPickersUtilsProvider
+  MuiPickersUtilsProvider,
 } from "@material-ui/pickers";
 import MaterialTextField from "../../../shared/components/Form/MaterialTextField";
 import { Grid, MenuItem, Select } from "@material-ui/core";
 import { Button, ButtonToolbar } from "reactstrap";
 import MomentUtils from "@date-io/moment";
 
+const _ = require("lodash");
+
 class StyleForm extends React.Component {
   static propTypes = {
     handleSubmit: PropTypes.func,
     errors: PropTypes.object,
     clearErrors: PropTypes.func.isRequired,
-    disabled: PropTypes.bool
+    disabled: PropTypes.bool,
   };
   constructor(props) {
     super(props);
     this.state = {
-      styleName: ""
+      styleName: "",
+      qnsCreated: [],
+      answers: [],
     };
   }
 
-  onChange = e => {
-    this.setState({ styleName: e.target.value }); 
+  onChange = (e) => {
+    this.setState({ styleName: e.target.value });
     if (Object.keys(this.props.errors).length !== 0) this.props.clearErrors();
+  };
+
+  //for adding style ans when creating qns
+  handleTextChange = (e, index) => {
+    console.log(e.target.value);
+    const ansCopy = _.cloneDeep(this.state.answers);
+    ansCopy[index] = e.target.value;
+    this.setState({ answers: ansCopy });
   };
 
   clear = () => {
@@ -40,6 +52,10 @@ class StyleForm extends React.Component {
   render() {
     const { handleSubmit, errors } = this.props;
     const hasErrors = Object.keys(this.props.errors).length !== 0;
+    const qnsCreated = [];
+    if (this.props.allStyles && this.props.allStyles[0].questions.length !== 0 && this.state.qnsCreated.length == 0) {
+      this.setState({ qnsCreated: this.props.allStyles[0].questions });
+    }
     return (
       <MuiPickersUtilsProvider utils={MomentUtils}>
         <form className="material-form">
@@ -53,11 +69,47 @@ class StyleForm extends React.Component {
                 errors={errors}
               />
             </Grid>
-            <Grid item xs={12}>
+            {this.state.qnsCreated.length !== 0 ? (
+              <Grid item xs={12}>
+                <h5 className="bold-text">
+                  Add Answer to Created Style Questions
+                </h5>
+                <br/>
+                {this.state.qnsCreated.map((key, index) => {
+                  return (
+                    <Grid>
+                      <MaterialTextField
+                        fieldLabel={key}
+                        fieldName={`answers[${index}]`}
+                        state={this.state}
+                        errors={errors}
+                        onChange={(event) =>
+                          this.handleTextChange(event, index)
+                        }
+                      />
+                      <br />
+                    </Grid>
+                  );
+                })}
+                <ButtonToolbar className="form__button-toolbar">
+                <Button
+                  color="primary"
+                  onClick={(e) => handleSubmit(e, this.state)}
+                  disabled={hasErrors || this.state.answers.length == 0}
+                >
+                  Submit
+                </Button>
+                <Button type="button" onClick={this.clear}>
+                  Clear
+                </Button>
+              </ButtonToolbar>
+              </Grid>
+            ) : (
+              <Grid item xs={12}>
               <ButtonToolbar className="form__button-toolbar">
                 <Button
                   color="primary"
-                  onClick={e => handleSubmit(e, this.state)}
+                  onClick={(e) => handleSubmit(e, this.state)}
                   disabled={hasErrors}
                 >
                   Submit
@@ -67,10 +119,23 @@ class StyleForm extends React.Component {
                 </Button>
               </ButtonToolbar>
             </Grid>
+            )}
           </Grid>
         </form>
       </MuiPickersUtilsProvider>
     );
   }
 }
-export default StyleForm;
+
+//mapping global state to this component
+const mapStateToProps = (state) => ({
+  allStyles: state.style.allStyles,
+  errors: state.errors,
+});
+
+const mapDispatchToProps = {
+  retrieveAllStyles,
+  clearErrors,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(StyleForm);
