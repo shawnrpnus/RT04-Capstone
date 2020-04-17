@@ -177,7 +177,7 @@ class SidebarContent extends Component {
             <SidebarCategory title="Style" customIcon={<FaStaylinked />}>
               {salesmarketing && (
                 <SidebarLink
-                  title="Create"
+                  title="Create Style"
                   route="/style/manage"
                   onClick={this.hideSidebar}
                 />
@@ -192,7 +192,7 @@ class SidebarContent extends Component {
           {salesmarketing && (
             <SidebarCategory title="Promo Code" customIcon={<FaBarcode />}>
               <SidebarLink
-                title="Manage"
+                title="Create Promo Code"
                 route="/promoCode/create"
                 onClick={this.hideSidebar}
               />
@@ -220,7 +220,7 @@ class SidebarContent extends Component {
                 </>
               )}
               <SidebarLink
-                title="Manage Products"
+                title={salesmarketing ? "Manage Products" : "View Products"}
                 route="/discount/associateProducts"
                 onClick={this.hideSidebar}
               />
@@ -356,7 +356,6 @@ class SidebarContent extends Component {
                   onClick={this.hideSidebar}
                 />
               )}
-
             </SidebarCategory>
           )}
           {salesmarketing && (
