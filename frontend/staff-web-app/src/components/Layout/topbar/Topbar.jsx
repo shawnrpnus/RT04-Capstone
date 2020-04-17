@@ -24,15 +24,16 @@ class Topbar extends PureComponent {
       <div className="topbar">
         <div className="topbar__wrapper">
           <div className="topbar__left">
-            <TopbarSidebarButton
-              changeMobileSidebarVisibility={changeMobileSidebarVisibility}
-              changeSidebarVisibility={changeSidebarVisibility}
-            />
+            {/*<TopbarSidebarButton*/}
+            {/*  changeMobileSidebarVisibility={changeMobileSidebarVisibility}*/}
+            {/*  changeSidebarVisibility={changeSidebarVisibility}*/}
+            {/*/>*/}
 
             <Link to="/dashboard">
               <img
-                style={{ width: "50%" }}
-                src="https://res.cloudinary.com/rt04capstone/image/upload/v1583433855/rsz_1apricot-nut-logo-word_jzhocy.png"
+                style={{ width: "30%", paddingTop: "0.7rem", paddingLeft: "0.7rem" }}
+                // src="https://res.cloudinary.com/rt04capstone/image/upload/v1583433855/rsz_1apricot-nut-logo-word_jzhocy.png"
+                src="https://res.cloudinary.com/alastairtanjh/image/upload/v1587108118/apricot-nut-logo-and-word-rectangle_buhwa8.png"
               />
             </Link>
           </div>

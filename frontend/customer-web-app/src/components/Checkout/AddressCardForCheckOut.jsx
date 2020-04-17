@@ -74,10 +74,11 @@ export default function AddressCardForCheckOut({
   });
 
   const [shownShippingAddress, setShownShippingAddress] = useState( () => {
+
       if(shippingAddresses && !shippingAddresses.find((item) => item.default)) {
         return shippingAddresses[0];
       } else {
-        shippingAddresses.find((item) => item.default);
+        return shippingAddresses.find((item) => item.default);
       }
   }
   );
@@ -85,7 +86,7 @@ export default function AddressCardForCheckOut({
       if(shippingAddresses && !shippingAddresses.find((item) => item.billing)) {
         return shippingAddresses[0];
       } else {
-        shippingAddresses.find((item) => item.billing);
+        return shippingAddresses.find((item) => item.billing);
       }
     }
   );

@@ -51,6 +51,9 @@ import { updateShoppingCart } from "redux/actions/shoppingCartActions";
 import { retrieveAllStore } from "redux/actions/storeActions";
 import { applyPromoCode } from "redux/actions/promoCodeActions";
 import UpdateShoppingCartRequest from "../../models/shoppingCart/UpdateShoppingCartRequest.js";
+import Radio from "@material-ui/core/Radio";
+import {FiberManualRecord} from "@material-ui/icons";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
 
 const useStyles = makeStyles(checkoutStyle);
 
@@ -438,12 +441,58 @@ export default function CheckOutPage() {
                             xs={12}
                             style={{ textAlign: "right", width: "100%" }}
                           >
-                            <Button
-                              onClick={toggleDeliveryMode}
-                              className={classes.checkoutButton}
-                            >
-                              {isDelivery ? "Collect in store" : "Delivery"}
-                            </Button>
+                            {/*<Button*/}
+                            {/*  onClick={toggleDeliveryMode}*/}
+                            {/*  className={classes.checkoutButton}*/}
+                            {/*>*/}
+                            {/*  {isDelivery ? "Collect in store" : "Delivery"}*/}
+                            {/*</Button>*/}
+                            <FormControlLabel
+                              control={
+                                <Radio
+                                  checked={isDelivery}
+                                  onChange={toggleDeliveryMode}
+                                  value="a"
+                                  name="radio button enabled"
+                                  aria-label="A"
+                                  icon={<FiberManualRecord className={classes.radioUnchecked} />}
+                                  checkedIcon={
+                                    <FiberManualRecord className={classes.radioChecked} />
+                                  }
+                                  classes={{
+                                    checked: classes.radio,
+                                    root: classes.radioRoot
+                                  }}
+                                />
+                              }
+                              classes={{
+                                label: classes.label
+                              }}
+                              label="DELIVERY"
+                            />
+                            <FormControlLabel
+                              control={
+                                <Radio
+                                  checked={!isDelivery}
+                                  onChange={toggleDeliveryMode}
+                                  value="a"
+                                  name="radio button enabled"
+                                  aria-label="A"
+                                  icon={<FiberManualRecord className={classes.radioUnchecked} />}
+                                  checkedIcon={
+                                    <FiberManualRecord className={classes.radioChecked} />
+                                  }
+                                  classes={{
+                                    checked: classes.radio,
+                                    root: classes.radioRoot
+                                  }}
+                                />
+                              }
+                              classes={{
+                                label: classes.label
+                              }}
+                              label="COLLECT IN STORE"
+                            />
                           </Grid>
                           {!isDelivery && (
                             <>
