@@ -208,7 +208,7 @@ const TransactionDetailsDialog = ({ elements, open, onClose }) => {
             headerStyle: { textAlign: "center" }, //change header padding
             cellStyle: { textAlign: "center" },
             draggable: false,
-            selection: !selectedStoreId || !byList ? false : true,
+            // selection: !selectedStoreId || !byList ? false : true,
             actionsColumnIndex: -1,
           }}
           // actions={[

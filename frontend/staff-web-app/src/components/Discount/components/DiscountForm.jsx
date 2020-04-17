@@ -5,7 +5,7 @@ import Grid from "@material-ui/core/Grid";
 
 import {
   MuiPickersUtilsProvider,
-  KeyboardDatePicker
+  KeyboardDatePicker,
 } from "@material-ui/pickers";
 import MomentUtils from "@date-io/moment";
 
@@ -17,7 +17,7 @@ import { ButtonToolbar, Button } from "reactstrap";
 import {
   createDiscount,
   updateDiscount,
-  retrieveDiscountById
+  retrieveDiscountById,
 } from "../../../redux/actions/discountActions";
 import { clearErrors } from "./../../../redux/actions/index";
 
@@ -35,13 +35,13 @@ const startState = {
     .utcOffset(8)
     .set({ hour: 23, minute: 59, second: 59, millisecond: 999 }),
   flatDiscount: "",
-  percentageDiscount: ""
+  percentageDiscount: "",
 };
 
-const DiscountForm = props => {
+const DiscountForm = (props) => {
   const dispatch = useDispatch();
-  const errors = useSelector(state => state.errors);
-  const discount = useSelector(state => state.discount.discount);
+  const errors = useSelector((state) => state.errors);
+  const discount = useSelector((state) => state.discount.discount);
   const [state, setState] = useState(startState);
   const [endError, setEndError] = useState(false);
   const [startError, setStartError] = useState(false);
@@ -51,7 +51,7 @@ const DiscountForm = props => {
     fromDateTime,
     toDateTime,
     flatDiscount,
-    percentageDiscount
+    percentageDiscount,
   } = state;
 
   useEffect(() => {
@@ -78,7 +78,7 @@ const DiscountForm = props => {
     }
   }, [discount]);
 
-  const onChange = e => {
+  const onChange = (e) => {
     const name = e.target.name;
     const newState = { ...state };
     newState[name] = e.target.value;
@@ -88,7 +88,7 @@ const DiscountForm = props => {
     }
   };
 
-  const onChangeNumber = e => {
+  const onChangeNumber = (e) => {
     const name = e.target.name;
     const stateValue = state[name];
     let value = e.target.value;
@@ -142,7 +142,7 @@ const DiscountForm = props => {
     setState(newState);
   };
 
-  const handleSubmit = e => {
+  const handleSubmit = (e) => {
     e.preventDefault();
 
     const newState = { ...state };
@@ -189,7 +189,7 @@ const DiscountForm = props => {
               variant="dialog"
               inputVariant="standard"
               value={moment(fromDateTime)}
-              onChange={date => {
+              onChange={(date) => {
                 handleDateChange(date, "fromDateTime");
               }}
             />
@@ -208,7 +208,7 @@ const DiscountForm = props => {
               variant="dialog"
               inputVariant="standard"
               value={moment(toDateTime)}
-              onChange={date => {
+              onChange={(date) => {
                 handleDateChange(date, "toDateTime");
               }}
             />
@@ -278,4 +278,4 @@ const DiscountForm = props => {
   );
 };
 
-export default withPage(DiscountForm, "Promo Code Form");
+export default withPage(DiscountForm, "Discount Form");
