@@ -39,6 +39,7 @@ class StyleQuiz extends Component {
       hasUpdated: false,
       answers: [],
       fieldsNotChanged: true,
+      fieldsNotFilled: true
     };
   }
 
@@ -101,8 +102,15 @@ class StyleQuiz extends Component {
     ) {
       return true;
     }
+    const ansOnly = [];
     if (this.state.answers.length !== 0) {
-      const ansOnly = this.state.answers;
+      for (let i = 0; i < this.state.answers.length; i++) {
+        ansOnly.push(this.state.answers[i]);
+        if (this.state.answers[i] === "") {
+          console.log("cannot submit");
+          return true;
+        }
+      }
       if (this.checkIfDuplicateExists(ansOnly)) {
         return true;
       }
@@ -133,7 +141,7 @@ class StyleQuiz extends Component {
       }
       if (ansOnly.length !== 0) {
         console.log(ansOnly);
-        let duplicateExists = this.checkIfDuplicateExists(ansOnly)
+        let duplicateExists = this.checkIfDuplicateExists(ansOnly);
         if (duplicateExists) {
           return true;
         }
@@ -145,6 +153,7 @@ class StyleQuiz extends Component {
   checkIfDuplicateExists(w) {
     return new Set(w).size !== w.length;
   }
+  
 
   //for adding style ans when creating qns
   handleTextChange = (e, index) => {
@@ -205,6 +214,15 @@ class StyleQuiz extends Component {
     });
   }
 
+  checkIfCanClearForm = () => {
+    //cannot clear if both qns and answers not filled up
+    if (this.state.question == "" && this.state.answers.length == 0) {
+      console.log("cannot clear")
+      return true
+    } 
+    return false
+  }
+
   //handle delete style qns
   handleDeleteQns(qnsToDelete) {
     let qnsCreated = this.props.allStyles[0].questions;
@@ -248,9 +266,14 @@ class StyleQuiz extends Component {
       fieldsNotChanged: true,
       hasUpdated: false,
     });
-    //set hasUpdated to false
-    // this.setState({ hasUpdated: false, qnsCreated: [] });
   };
+
+  clearForm = (e) => {
+    this.setState({
+      answers: [],
+      question: "",
+    });
+  }
 
   resetFields = (e) => {
     const ans = [];
@@ -374,16 +397,26 @@ class StyleQuiz extends Component {
                         );
                       })}
                     <br />
-                    <Button
-                      style={{ justifyContent: "center" }}
-                      color="primary"
-                      variant="contained"
-                      style={{ marginLeft: "350px" }}
-                      disabled={this.checkIfCanSubmit()}
-                      onClick={(event) => this.handleSubmit(event)}
-                    >
-                      Submit
-                    </Button>
+                    <Grid align="center">
+                      <Button
+                        style={{ justifyContent: "center" }}
+                        color="primary"
+                        variant="contained"
+                        style={{ marginRight: "10px" }}
+                        disabled={this.checkIfCanSubmit()}
+                        onClick={(event) => this.handleSubmit(event)}
+                      >
+                        Submit
+                      </Button>
+                      <Button
+                        color="primary"
+                        variant="contained"
+                        disabled={this.checkIfCanClearForm()}
+                        onClick={(e) => this.clearForm(e)}
+                      >
+                        Clear
+                      </Button>
+                    </Grid>
                   </Grid>
                 ) : (
                   <h5>No Styles Found</h5>

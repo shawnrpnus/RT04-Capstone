@@ -46,14 +46,45 @@ class StyleForm extends React.Component {
   };
 
   clear = () => {
-    this.setState({ styleName: "" });
+    this.setState({ styleName: "", answers: [] });
   };
+
+  checkIfCanSubmit = () => {
+    if (
+      this.props.allStyles &&
+      this.state.answers.length !== this.props.allStyles[0].questions.length
+    ) {
+      return true;
+    }
+    const ansOnly = [];
+    if (this.state.answers.length !== 0) {
+      for (let i = 0; i < this.state.answers.length; i++) {
+        ansOnly.push(this.state.answers[i]);
+        if (this.state.answers[i] === "") {
+          console.log("cannot submit");
+          return true;
+        }
+      }
+      if (this.checkIfDuplicateExists(ansOnly)) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  checkIfDuplicateExists(w) {
+    return new Set(w).size !== w.length;
+  }
 
   render() {
     const { handleSubmit, errors } = this.props;
     const hasErrors = Object.keys(this.props.errors).length !== 0;
     const qnsCreated = [];
-    if (this.props.allStyles && this.props.allStyles[0].questions.length !== 0 && this.state.qnsCreated.length == 0) {
+    if (
+      this.props.allStyles &&
+      this.props.allStyles[0].questions.length !== 0 &&
+      this.state.qnsCreated.length == 0
+    ) {
       this.setState({ qnsCreated: this.props.allStyles[0].questions });
     }
     return (
@@ -74,7 +105,7 @@ class StyleForm extends React.Component {
                 <h5 className="bold-text">
                   Add Answer to Created Style Questions
                 </h5>
-                <br/>
+                <br />
                 {this.state.qnsCreated.map((key, index) => {
                   return (
                     <Grid>
@@ -92,33 +123,33 @@ class StyleForm extends React.Component {
                   );
                 })}
                 <ButtonToolbar className="form__button-toolbar">
-                <Button
-                  color="primary"
-                  onClick={(e) => handleSubmit(e, this.state)}
-                  disabled={hasErrors || this.state.answers.length == 0}
-                >
-                  Submit
-                </Button>
-                <Button type="button" onClick={this.clear}>
-                  Clear
-                </Button>
-              </ButtonToolbar>
+                  <Button
+                    color="primary"
+                    onClick={(e) => handleSubmit(e, this.state)}
+                    disabled={hasErrors || this.checkIfCanSubmit()}
+                  >
+                    Submit
+                  </Button>
+                  <Button type="button" onClick={this.clear}>
+                    Clear
+                  </Button>
+                </ButtonToolbar>
               </Grid>
             ) : (
               <Grid item xs={12}>
-              <ButtonToolbar className="form__button-toolbar">
-                <Button
-                  color="primary"
-                  onClick={(e) => handleSubmit(e, this.state)}
-                  disabled={hasErrors}
-                >
-                  Submit
-                </Button>
-                <Button type="button" onClick={this.clear}>
-                  Clear
-                </Button>
-              </ButtonToolbar>
-            </Grid>
+                <ButtonToolbar className="form__button-toolbar">
+                  <Button
+                    color="primary"
+                    onClick={(e) => handleSubmit(e, this.state)}
+                    disabled={hasErrors}
+                  >
+                    Submit
+                  </Button>
+                  <Button type="button" onClick={this.clear}>
+                    Clear
+                  </Button>
+                </ButtonToolbar>
+              </Grid>
             )}
           </Grid>
         </form>
