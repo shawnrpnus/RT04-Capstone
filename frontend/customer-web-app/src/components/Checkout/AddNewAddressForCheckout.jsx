@@ -16,7 +16,7 @@ import { useHistory } from "react-router-dom";
 import AddUpdateAddressRequest from "../../models/customer/AddUpdateAddressRequest";
 import { addShippingAddressDetailsAtCheckout } from "../../redux/actions/transactionActions";
 import axios from "axios";
-import {key} from "key";
+import {key} from "../../key";
 
 const useStyles = makeStyles(customCheckboxRadioSwitch);
 
