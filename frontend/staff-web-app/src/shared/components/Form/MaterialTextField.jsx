@@ -2,6 +2,8 @@ import React from "react";
 import * as PropTypes from "prop-types";
 import TextField from "@material-ui/core/TextField";
 
+const _ = require("lodash");
+
 //fieldName MUST correspond to entity's attribute name AND state attribute name
 const MaterialTextField = props => {
   const {
@@ -23,7 +25,7 @@ const MaterialTextField = props => {
       <TextField
         className="material-form__field"
         name={fieldName}
-        value={state[fieldName]}
+        value={_.get(state, fieldName)}
         error={!!errors[fieldName]}
         helperText={errors[fieldName]}
         onChange={onChange}
