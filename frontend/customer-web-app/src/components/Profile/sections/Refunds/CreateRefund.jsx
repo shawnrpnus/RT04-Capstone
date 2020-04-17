@@ -148,8 +148,12 @@ const CreateRefund = ({
     const name = currCustomer.firstName + " " + currCustomer.lastName;
     const orderNumber = currTransaction.orderNumber;
     // console.log("NAMEEEEE",name);
-    const deliveryAddress = JSON.stringify(currTransaction.deliveryAddress);
-
+    let deliveryAddress = JSON.stringify(currTransaction.billingAddress);
+    if(currTransaction.collectionMode === "DELIVERY") {
+      deliveryAddress = JSON.stringify(currTransaction.deliveryAddress);
+    }
+    // console.log(orderNumber);
+    // console.log(deliveryAddress);
     dispatch(
       createOnlineRefundRequest(
         refundRequest,
