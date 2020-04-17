@@ -18,7 +18,7 @@ import {
   Search,
   ViewColumn,
   Delete,
-  Block
+  Block,
 } from "@material-ui/icons";
 import { AiOutlineSelect } from "react-icons/ai";
 import MaterialTable from "material-table";
@@ -29,7 +29,7 @@ import {
   retrieveAllAdvertisement,
   activateAdvertisement,
   disableAdvertisement,
-  deleteAdvertisement
+  deleteAdvertisement,
 } from "../../../redux/actions/advertisementActions";
 import withPage from "../../Layout/page/withPage";
 import AdvertisementUploadDialog from "./AdvertisementUploadDialog";
@@ -52,13 +52,13 @@ const tableIcons = {
   Search: Search,
   SortArrow: () => <div />,
   ThirdStateCheck: Remove,
-  ViewColumn: ViewColumn
+  ViewColumn: ViewColumn,
 };
 
-const AdvertisementTable = props => {
+const AdvertisementTable = (props) => {
   const dispatch = useDispatch();
   const advertisements = useSelector(
-    state => state.advertisement.advertisements
+    (state) => state.advertisement.advertisements
   );
   const confirmDialog = useConfirm();
   const classes = useStyle();
@@ -75,14 +75,14 @@ const AdvertisementTable = props => {
 
   let data = [];
   if (advertisements.length > 0) {
-    data = advertisements.map(e => {
+    data = advertisements.map((e) => {
       const { advertisementId, advertisementImgUrl, creator, active } = e;
       const staffName = `${creator.firstName} ${creator.lastName}`;
       return {
         advertisementId,
         advertisementImgUrl,
         staffName,
-        active: active ? "ACTIVE" : "DISABLED"
+        active: active ? "ACTIVE" : "DISABLED",
       };
     });
   }
@@ -101,7 +101,7 @@ const AdvertisementTable = props => {
         CREATE ADVERTISEMENT
       </Button>
       <MaterialTable
-        title="Feedback"
+        title="Advertisement"
         style={{ boxShadow: "none" }}
         icons={tableIcons}
         columns={[
@@ -110,18 +110,18 @@ const AdvertisementTable = props => {
             title: "Preview image",
             field: "advertisementImgUrl",
             filtering: false,
-            render: rowData => (
+            render: (rowData) => (
               <img
                 className={classes.image}
                 src={rowData.advertisementImgUrl}
               />
-            )
+            ),
           },
           { title: "Staff name", field: "staffName" },
           {
             title: "Active status",
             field: "active",
-            render: rowData => {
+            render: (rowData) => {
               let style;
               const { active } = rowData;
               if (active === "ACTIVE") style = { backgroundColor: "#33ba0a" };
@@ -129,8 +129,8 @@ const AdvertisementTable = props => {
               return (
                 <Chip style={{ ...style, color: "white" }} label={active} />
               );
-            }
-          }
+            },
+          },
         ]}
         data={data}
         options={{
@@ -141,38 +141,38 @@ const AdvertisementTable = props => {
           actionsColumnIndex: -1,
           headerStyle: { textAlign: "center" }, //change header padding
           cellStyle: { textAlign: "center" },
-          draggable: false
+          draggable: false,
         }}
         actions={[
-          rowData =>
+          (rowData) =>
             rowData.active === "ACTIVE"
               ? {
                   icon: Block,
                   tooltip: "Disable",
                   onClick: (e, { advertisementId }) => {
                     dispatch(disableAdvertisement(advertisementId));
-                  }
+                  },
                 }
               : {
                   icon: AiOutlineSelect,
                   tooltip: "Activate",
                   onClick: (e, { advertisementId }) => {
                     dispatch(activateAdvertisement(advertisementId));
-                  }
+                  },
                 },
           {
             icon: Delete,
             tooltip: "Delete",
             onClick: (e, { advertisementId }) => {
               confirmDialog({
-                description: "The selected advertisement will be deleted"
+                description: "The selected advertisement will be deleted",
               })
                 .then(() => {
                   dispatch(deleteAdvertisement(advertisementId));
                 })
                 .catch(() => null);
-            }
-          }
+            },
+          },
         ]}
       />
       {open && (
@@ -190,9 +190,9 @@ const styles = {
   image: {
     "&:hover": {
       transform: "scale(2.0)",
-      zIndex: 100000
-    }
-  }
+      zIndex: 100000,
+    },
+  },
 };
 const useStyle = makeStyles(styles);
 

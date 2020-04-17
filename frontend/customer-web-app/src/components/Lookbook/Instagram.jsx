@@ -25,6 +25,8 @@ const Instagram = () => {
   const [hoveredProductId, setHoveredProductId] = useState("");
 
   useEffect(() => {
+    window.scrollTo(0, 0);
+    document.body.scrollTop = 0;
     dispatch(retrieveAllActiveInstagramPost());
   }, []);
 

@@ -75,7 +75,7 @@ public class DeliveryController {
                     request.getMaxCapacity());
             customerToEmail.addAll(transactions);
         }
-        deliveryService.sendDeliveryNotificationEmail(customerToEmail);
+        deliveryService.sendDeliveryNotificationEmail(customerToEmail, Boolean.TRUE);
         return new ResponseEntity<>(ResponseEntity.ok("Delivery created!"), HttpStatus.OK);
     }
 
@@ -89,10 +89,11 @@ public class DeliveryController {
     @PostMapping(RECEIVE_TRANSACTION_THROUGH_DELIVERY)
     public ResponseEntity<?> receiveTransactionThroughDelivery(@RequestBody TransactionReceiveDeliveryRequest request) throws TransactionNotFoundException {
         List<Transaction> transactions = transactionService.receiveTransactionThroughDelivery(request.getTransactionIds());
-        for (Transaction transaction : transactions) {
-            relationshipService.clearTransactionRelationships(transaction);
-        }
-        return new ResponseEntity<>(transactions, HttpStatus.OK);
+//        for (Transaction transaction : transactions) {
+//            relationshipService.clearTransactionRelationships(transaction);
+//        }
+        deliveryService.sendDeliveryNotificationEmail(transactions, Boolean.FALSE);
+        return new ResponseEntity<>(ResponseEntity.ok("Delivery confirmed"), HttpStatus.OK);
     }
 
     @GetMapping(ESTIMATE_NUMBER_OF_DELIVERYMAN_REQUIRED)
@@ -109,7 +110,7 @@ public class DeliveryController {
             List<Transaction> transactions = deliveryService.automateDeliveryAllocation(staffId, request.getMaxCapacity());
             customerToEmail.addAll(transactions);
         }
-        deliveryService.sendDeliveryNotificationEmail(customerToEmail);
+        deliveryService.sendDeliveryNotificationEmail(customerToEmail, Boolean.TRUE);
         return new ResponseEntity<>(ResponseEntity.ok("Delivery generated for selected staff(s)"), HttpStatus.OK);
     }
 

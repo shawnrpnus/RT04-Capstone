@@ -19,6 +19,10 @@ import capstone.rt04.retailbackend.util.exceptions.inStoreRestockOrder.InStoreRe
 import capstone.rt04.retailbackend.util.exceptions.inStoreRestockOrder.InStoreRestockOrderUpdateException;
 import capstone.rt04.retailbackend.util.exceptions.inStoreRestockOrder.InsufficientStockException;
 import capstone.rt04.retailbackend.util.exceptions.instagramPost.InstagramPostNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.leave.StaffLeaveCannotCreateException;
+import capstone.rt04.retailbackend.util.exceptions.leave.StaffLeaveCannotDeleteException;
+import capstone.rt04.retailbackend.util.exceptions.leave.StaffLeaveCannotUpdateException;
+import capstone.rt04.retailbackend.util.exceptions.payroll.PayrollCannotCreateException;
 import capstone.rt04.retailbackend.util.exceptions.product.*;
 import capstone.rt04.retailbackend.util.exceptions.promoCode.CreateNewPromoCodeException;
 import capstone.rt04.retailbackend.util.exceptions.promoCode.InvalidPromoCodeException;
@@ -117,8 +121,10 @@ public class GeneralExceptionHandler extends ResponseEntityExceptionHandler {
             VerificationCodeExpiredException.class, InvalidCartTypeException.class, WishlistException.class, CreateNewReservationException.class,
             DeleteProductVariantException.class, InStoreRestockOrderUpdateException.class, InsufficientStockException.class, CreateNewStaffAccountException.class,
             DeliveryHasAlreadyBeenConfirmedException.class, ReviewNotUpdatedException.class, NoItemForDeliveryException.class,
-            PromoCodeUsedException.class, InvalidPromoCodeException.class, CreateNewPromoCodeException.class, StripeException.class,
-            DeliveryCreationException.class
+
+            PromoCodeUsedException.class, InvalidPromoCodeException.class, CreateNewPromoCodeException.class, StripeException.class, StaffLeaveCannotCreateException.class, StaffLeaveCannotUpdateException.class,
+            PayrollCannotCreateException.class, StaffLeaveCannotDeleteException.class
+
     })
     public final ResponseEntity<Object> handleBadRequestExceptions(Exception ex, WebRequest req) {
         return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);

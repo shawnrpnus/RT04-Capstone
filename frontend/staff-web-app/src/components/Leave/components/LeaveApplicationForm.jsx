@@ -227,7 +227,7 @@ class LeaveApplicationForm extends React.Component {
                                     actions={[
                                         {
                                             icon: Edit,
-                                            tooltip: "Update Staff",
+                                            tooltip: "Update Leave",
                                             disabled: false,
                                             onClick: (event, rowData) => {
                                                 this.setState({

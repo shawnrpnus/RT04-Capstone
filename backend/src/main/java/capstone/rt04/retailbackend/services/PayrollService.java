@@ -72,7 +72,7 @@ public class PayrollService {
                 }
             BigDecimal salaryPerDay = s.getSalary();
             BigDecimal finalMonthlyAmount = salaryPerDay.multiply(new BigDecimal(daysInMonth));
-            LocalDate dd = d.of(year, month, 29);
+            LocalDate dd = d.of(year, month, 28);
             Payroll payroll = new Payroll(finalMonthlyAmount, s, dd, count);
             payrolls.add(payroll);
             }
@@ -82,10 +82,19 @@ public class PayrollService {
         }
 
     public List<Payroll> createPayrolls(LocalDate d) throws PayrollCannotCreateException {
-        List<Payroll> existingPayrolls = payrollRepository.findAll();
+        LocalDate today = LocalDate.now();
         int year = d.getYear();
         int month = d.getMonthValue();
-        LocalDate dd = d.of(year, month, 29);
+        System.out.print(today.getMonthValue());
+
+
+        if(month != today.getMonthValue() || today.getYear()!= year){
+            throw new PayrollCannotCreateException("You cannot create payrolls in advance!");
+        }
+
+        List<Payroll> existingPayrolls = payrollRepository.findAll();
+
+        LocalDate dd = d.of(year, month, 28);
         for(Payroll e : existingPayrolls){
             if(e.getPaymentDateTime().equals(dd)){
                     throw new PayrollCannotCreateException("Payrolls for the month have already been created");

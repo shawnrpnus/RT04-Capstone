@@ -181,6 +181,7 @@ const TransactionDetailsDialog = ({ elements, open, onClose }) => {
               title: "Order number",
               field: "orderNumber",
             },
+            { title: "Customer name", field: "name" },
             { title: "Created Date", field: "createdDateTime" },
             { title: "Collection mode", field: "collectionMode" },
             {
@@ -196,7 +197,6 @@ const TransactionDetailsDialog = ({ elements, open, onClose }) => {
                 );
               },
             },
-            { title: "Customer name", field: "name" },
             {
               title: "Delivery address",
               field: "deliveryAddress",
@@ -208,34 +208,34 @@ const TransactionDetailsDialog = ({ elements, open, onClose }) => {
             headerStyle: { textAlign: "center" }, //change header padding
             cellStyle: { textAlign: "center" },
             draggable: false,
-            selection: !selectedStoreId || !byList ? false : true,
+            // selection: !selectedStoreId || !byList ? false : true,
             actionsColumnIndex: -1,
           }}
-          actions={[
-            selectedStoreId && byList
-              ? (rowData) => ({
-                  icon: Check,
-                  tooltip: "Confirm delivery",
-                  onClick: (event, rowData) => handleOpenDialog(),
-                  // handleConfirmDelivery(itemsByStore),
-                  disabled: itemsByStore.every(
-                    (item) => item.deliveryStatus === "DELIVERED"
-                  ),
-                })
-              : (rowData) => ({
-                  icon: Check,
-                  tooltip: "Confirm delivery",
-                  onClick: (event, rowData) => {
-                    if (rowData.storeToCollect)
-                      setSelectedStoreId(rowData.storeToCollect.storeId);
-                    setSelectedTransaction([rowData]);
-                    handleOpenDialog([rowData]);
-                  },
-                  disabled:
-                    rowData.deliveryStatus === "DELIVERED" ||
-                    rowData.deliveryStatus === "READY FOR COLLECTION",
-                }),
-          ]}
+          // actions={[
+          //   selectedStoreId && byList
+          //     ? (rowData) => ({
+          //         icon: Check,
+          //         tooltip: "Confirm delivery",
+          //         onClick: (event, rowData) => handleOpenDialog(),
+          //         // handleConfirmDelivery(itemsByStore),
+          //         disabled: itemsByStore.every(
+          //           (item) => item.deliveryStatus === "DELIVERED"
+          //         ),
+          //       })
+          //     : (rowData) => ({
+          //         icon: Check,
+          //         tooltip: "Confirm delivery",
+          //         onClick: (event, rowData) => {
+          //           if (rowData.storeToCollect)
+          //             setSelectedStoreId(rowData.storeToCollect.storeId);
+          //           setSelectedTransaction([rowData]);
+          //           handleOpenDialog([rowData]);
+          //         },
+          //         disabled:
+          //           rowData.deliveryStatus === "DELIVERED" ||
+          //           rowData.deliveryStatus === "READY FOR COLLECTION",
+          //       }),
+          // ]}
         />
       </DialogContent>
       <DialogActions>

@@ -306,11 +306,8 @@ router.post("/deliveryNotification", async (req, res) => {
   // const { email, orderNumber, fullName } = req.body;
   const emails = req.body;
 
-  console.log(emails);
-
   Promise.all(
     emails.map(({ email, orderNumber, fullName }) => {
-      console.log(email, orderNumber, fullName);
       const emailContent = {
         body: {
           name: fullName,
@@ -326,6 +323,52 @@ router.post("/deliveryNotification", async (req, res) => {
           from: "rt04capstone@gmail.com",
           to: email,
           subject: "apricot & nut - Delivery coming your way!",
+          text: emailText,
+          html: emailBody,
+        },
+        (error, info) => {
+          if (error) {
+            console.log(error);
+          } else {
+            console.log(info);
+            return true;
+          }
+        }
+      );
+    })
+  )
+    .then(() => {
+      console.log("Email Sent");
+      res.status(200).send({ message: "Email Sent" });
+    })
+    .catch((err) => {
+      console.log(err.response);
+      res.status(500).send(err.response);
+    });
+});
+
+router.post("/readyForCollection", async (req, res) => {
+  // const { email, orderNumber, fullName } = req.body;
+  const emails = req.body;
+
+  Promise.all(
+    emails.map(({ email, orderNumber, fullName, store }) => {
+      console.log(email, orderNumber, fullName);
+      const emailContent = {
+        body: {
+          name: fullName,
+          intro: `Your purchase(s) for order ${orderNumber} is now ready for collection at ${store}! Visit the store to get your purchase(s) now!`,
+        },
+      };
+
+      const emailBody = mailGenerator.generate(emailContent);
+      const emailText = mailGenerator.generatePlaintext(emailContent);
+
+      transporter.sendMail(
+        {
+          from: "rt04capstone@gmail.com",
+          to: email,
+          subject: "apricot & nut - Ready for collection!",
           text: emailText,
           html: emailBody,
         },

@@ -17,7 +17,7 @@ import {
   ViewColumn,
   Delete,
   Block,
-  Visibility
+  Visibility,
 } from "@material-ui/icons";
 import { AiOutlineSelect } from "react-icons/ai";
 import MaterialTable from "material-table";
@@ -27,7 +27,7 @@ import {
   retrieveAllInstagramPost,
   activateInstagramPost,
   disableInstagramPost,
-  deleteInstagramPost
+  deleteInstagramPost,
 } from "../../../redux/actions/instagramActions";
 import withPage from "../../Layout/page/withPage";
 import ProductTableDialog from "./ProductTableDialog";
@@ -51,12 +51,12 @@ const tableIcons = {
   Search: Search,
   SortArrow: () => <div />,
   ThirdStateCheck: Remove,
-  ViewColumn: ViewColumn
+  ViewColumn: ViewColumn,
 };
 
-const InstagramManagementTable = props => {
+const InstagramManagementTable = (props) => {
   const dispatch = useDispatch();
-  const instagramPosts = useSelector(state => state.instagram.instagramPosts);
+  const instagramPosts = useSelector((state) => state.instagram.instagramPosts);
   const confirmDialog = useConfirm();
 
   const [openAdd, setOpenAdd] = useState(false);
@@ -87,7 +87,7 @@ const InstagramManagementTable = props => {
         active,
         caption,
         shortCode,
-        associatedProducts
+        associatedProducts,
       }) => {
         return {
           instagramPostId,
@@ -95,13 +95,13 @@ const InstagramManagementTable = props => {
           active: active ? "ACTIVE" : "DISABLED",
           caption,
           shortCode,
-          associatedProducts
+          associatedProducts,
         };
       }
     );
   }
 
-  const handleDeleteInstagramPost = instagramPostId => {
+  const handleDeleteInstagramPost = (instagramPostId) => {
     confirmDialog({ description: "Deleting Instagram post..." })
       .then(() => dispatch(deleteInstagramPost(instagramPostId)))
       .catch(() => null);
@@ -113,7 +113,7 @@ const InstagramManagementTable = props => {
       style={{ verticalAlign: "middle", textAlign: "right" }}
     >
       <MaterialTable
-        title="Instagram Post Management"
+        title=""
         style={{ boxShadow: "none" }}
         icons={tableIcons}
         onChangePage={() => {
@@ -122,7 +122,7 @@ const InstagramManagementTable = props => {
         columns={[
           {
             title: "Instagram post ID",
-            field: "instagramPostId"
+            field: "instagramPostId",
           },
           { title: "Shortcode", field: "shortCode" },
           {
@@ -136,12 +136,12 @@ const InstagramManagementTable = props => {
             ),
             cellStyle: {
               width: 150,
-              maxWidth: 150
+              maxWidth: 150,
             },
             headerStyle: {
               width: 150,
-              maxWidth: 150
-            }
+              maxWidth: 150,
+            },
           },
           {
             title: "Caption",
@@ -149,12 +149,12 @@ const InstagramManagementTable = props => {
             render: ({ caption }) =>
               _.get(caption, "length", -1) > 100
                 ? `${caption.slice(0, 100)}...`
-                : caption
+                : caption,
           },
           {
             title: "Status",
             field: "active",
-            render: rowData => {
+            render: (rowData) => {
               let style;
               const { active } = rowData;
               if (active === "ACTIVE") style = { backgroundColor: "#33ba0a" };
@@ -162,8 +162,8 @@ const InstagramManagementTable = props => {
               return (
                 <Chip style={{ ...style, color: "white" }} label={active} />
               );
-            }
-          }
+            },
+          },
         ]}
         data={data}
         options={{
@@ -174,24 +174,24 @@ const InstagramManagementTable = props => {
           actionsColumnIndex: -1,
           headerStyle: { textAlign: "center" }, //change header padding
           cellStyle: { textAlign: "center" },
-          draggable: false
+          draggable: false,
         }}
         actions={[
-          rowData =>
+          (rowData) =>
             rowData.active === "ACTIVE"
               ? {
                   icon: Block,
                   tooltip: "Disable",
                   onClick: (e, { instagramPostId }) => {
                     dispatch(disableInstagramPost(instagramPostId));
-                  }
+                  },
                 }
               : {
                   icon: AiOutlineSelect,
                   tooltip: "Activate",
                   onClick: (e, { instagramPostId }) => {
                     dispatch(activateInstagramPost(instagramPostId));
-                  }
+                  },
                 },
           ,
           {
@@ -201,7 +201,7 @@ const InstagramManagementTable = props => {
               setAssociatedProducts(associatedProducts);
               setPostId(instagramPostId);
               toggleViewDialog();
-            }
+            },
           },
           {
             icon: AddBox,
@@ -209,15 +209,15 @@ const InstagramManagementTable = props => {
             onClick: (e, { instagramPostId }) => {
               setPostId(instagramPostId);
               toggleAddDialog();
-            }
+            },
           },
           {
             icon: Delete,
             tooltip: "Delete Instagram post",
             onClick: (e, { instagramPostId }) => {
               handleDeleteInstagramPost(instagramPostId);
-            }
-          }
+            },
+          },
         ]}
       />
       {openAdd && (
@@ -242,4 +242,4 @@ const InstagramManagementTable = props => {
   );
 };
 
-export default withPage(InstagramManagementTable);
+export default withPage(InstagramManagementTable, "Instagram Post Management");

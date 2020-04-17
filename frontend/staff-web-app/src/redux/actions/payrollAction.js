@@ -47,9 +47,11 @@ export const createPayrolls = (createPayrollsRequest, history) => {
                 history.push(`/payrolls/viewAllHR`);
             })
             .catch(err => {
-                toast.error("Payrolls have already been created for the month!", {
-                    position: toast.POSITION.TOP_CENTER
-                });
+                if (err.response) {
+                    toast.error(err.response.data.errorMessage, {
+                        position: toast.POSITION.TOP_CENTER
+                    });
+                }
                 dispatch(createError(err.response.data));
             });
     };

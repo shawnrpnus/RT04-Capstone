@@ -7,7 +7,9 @@ import capstone.rt04.retailbackend.repositories.LeaveRepository;
 import capstone.rt04.retailbackend.repositories.StaffRepository;
 import capstone.rt04.retailbackend.util.ErrorMessages;
 import capstone.rt04.retailbackend.util.enums.LeaveStatusEnum;
+import capstone.rt04.retailbackend.util.enums.RoleNameEnum;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
+import capstone.rt04.retailbackend.util.exceptions.leave.StaffLeaveCannotCreateException;
 import capstone.rt04.retailbackend.util.exceptions.leave.StaffLeaveCannotDeleteException;
 import capstone.rt04.retailbackend.util.exceptions.leave.StaffLeaveCannotUpdateException;
 import capstone.rt04.retailbackend.util.exceptions.leave.StaffLeaveNotFoundException;
@@ -41,24 +43,41 @@ public class LeaveService {
         this.staffRepository = staffRepository;
     }
 
-    public StaffLeave createNewLeave(StaffLeave staffLeave) throws InputDataValidationException, StaffNotFoundException {
+    public StaffLeave createNewLeave(StaffLeave staffLeave) throws InputDataValidationException, StaffNotFoundException, StaffLeaveCannotCreateException {
         validationService.throwExceptionIfInvalidBean(staffLeave);
         Staff existingStaff = staffRepository.findById(staffLeave.getApplicant().getStaffId())
                 .orElseThrow(() -> new StaffNotFoundException("Staff with id: " + staffLeave.getApplicant().getStaffId() + " does not exist"));
 
+        //When end date is before start date
         if(staffLeave.getToDateTime().isBefore(staffLeave.getFromDateTime())){
-            Map<String, String> errorMap = new HashMap<>();
-            errorMap.put("fromDateTime", ErrorMessages.OVERLAP_IN_LEAVE);
-            throw new InputDataValidationException(errorMap, ErrorMessages.OVERLAP_IN_LEAVE);
-
+            throw new StaffLeaveCannotCreateException("Invalid dates selected: Start date is after end date!");
         }
+
+        LocalDate today = LocalDate.now();
+
+        if(staffLeave.getFromDateTime().isBefore(today)){
+            throw new StaffLeaveCannotCreateException("Invalid dates selected: Start date is before today's date!");
+        }
+
+        //When dates overlap with previous applied leaves' date
         for(StaffLeave leave : existingStaff.getLeaves()){
-            if((!leave.getStatus().equals(LeaveStatusEnum.REJECTED))&& (staffLeave.getFromDateTime().equals(leave.getFromDateTime()) || (staffLeave.getFromDateTime().isAfter(staffLeave.getToDateTime())) ||
-                    (staffLeave.getFromDateTime().isAfter(leave.getFromDateTime()) && staffLeave.getFromDateTime().isBefore(leave.getToDateTime())) ||
-                staffLeave.getFromDateTime().equals(leave.getToDateTime())) ){
-                Map<String, String> errorMap = new HashMap<>();
-                errorMap.put("fromDateTime", ErrorMessages.OVERLAP_IN_LEAVE);
-                throw new InputDataValidationException(errorMap, ErrorMessages.OVERLAP_IN_LEAVE);
+            if(
+                    (!leave.getStatus().equals(LeaveStatusEnum.REJECTED)) && (
+
+                    staffLeave.getFromDateTime().equals(leave.getFromDateTime()) ||
+                    (
+                            staffLeave.getFromDateTime().isAfter(leave.getFromDateTime()) && staffLeave.getFromDateTime().isBefore(leave.getToDateTime())
+                    ) || (
+                            staffLeave.getFromDateTime().isBefore(leave.getFromDateTime()) && (staffLeave.getToDateTime().isAfter(leave.getFromDateTime()) && (staffLeave.getToDateTime().isBefore(leave.getToDateTime())||staffLeave.getToDateTime().isAfter(leave.getToDateTime()) ))
+                    ) || ((staffLeave.getFromDateTime().isAfter(leave.getFromDateTime()) && staffLeave.getFromDateTime().isBefore(leave.getToDateTime()) )
+
+                            ) ||
+                staffLeave.getFromDateTime().equals(leave.getToDateTime())
+
+            )
+
+            ){
+                throw new StaffLeaveCannotCreateException( "Invalid dates selected: Please make sure dates do not overlap with previous applied leaves!");
             }
         }
 
@@ -66,8 +85,16 @@ public class LeaveService {
         for (LocalDate date = staffLeave.getFromDateTime(); (date.isBefore(staffLeave.getToDateTime()) || date.equals(staffLeave.getToDateTime())); date = date.plusDays(1)) {
                 count++;
         }
+
         staffLeave.setNumDays(count);
-        staffLeave.setStatus(LeaveStatusEnum.PENDING);
+        if(staffLeave.getApplicant().getRole().getRoleName().equals(RoleNameEnum.MANAGER)){
+            staffLeave.setStatus(LeaveStatusEnum.ENDORSED);
+        } else if (staffLeave.getApplicant().getDepartment().getDepartmentName().equals("HR")){
+            staffLeave.setStatus(LeaveStatusEnum.APPROVED);
+        } else {
+            staffLeave.setStatus(LeaveStatusEnum.PENDING);
+        }
+
         StaffLeave savedLeave = leaveRepository.save(staffLeave);
         existingStaff.getLeaves().add(savedLeave);
         return  savedLeave;
@@ -78,23 +105,57 @@ public class LeaveService {
         StaffLeave existingLeave = leaveRepository.findById(leaveId)
                 .orElseThrow(() -> new StaffLeaveNotFoundException("Leave with id: " + leaveId + " does not exist"));
 
-        if(existingLeave.getStatus().equals(LeaveStatusEnum.APPROVED) || existingLeave.getStatus().equals(LeaveStatusEnum.ENDORSED)){
-            throw new StaffLeaveCannotUpdateException("Leave has already been endorsed or approved");
-        }
-
         Staff existingStaff = staffRepository.findById(applicant.getStaffId())
                 .orElseThrow(() -> new StaffNotFoundException("Staff with id: " + applicant.getStaffId() + " does not exist"));
+        if(existingStaff.getDepartment().getDepartmentName().equals("HR")){
 
+        } else if(existingStaff.getRole().getRoleName().equals(RoleNameEnum.MANAGER)){
+            if(existingLeave.getStatus().equals(LeaveStatusEnum.APPROVED)){
+                throw new StaffLeaveCannotUpdateException("Leave has already been approved");
+            }
+
+        } else{
+            //When staff leave had already been approved or endorsed
+            if(existingLeave.getStatus().equals(LeaveStatusEnum.APPROVED) || existingLeave.getStatus().equals(LeaveStatusEnum.ENDORSED)){
+                String e = existingLeave.getStatus().toString();
+                throw new StaffLeaveCannotUpdateException("Leave has already been " + e);
+            }
+        }
+
+
+
+        LocalDate today = LocalDate.now();
+
+        if(fromDate.isBefore(today)){
+            throw new StaffLeaveCannotUpdateException("Invalid dates selected: Start date is before today's date!");
+        }
+
+
+        //When end date is before start date
+        if(toDate.isBefore(fromDate)){
+            throw new StaffLeaveCannotUpdateException("Invalid dates selected: Start date is after end date!");
+        }
+
+        //When dates overlap with previous applied leaves' date
         for(StaffLeave leave : existingStaff.getLeaves()){
             if(!leave.getStaffLeaveId().equals(leaveId) &&
                     ((!leave.getStatus().equals(LeaveStatusEnum.REJECTED))&&
-                            ((fromDate.equals(leave.getFromDateTime()) ||
-                    (fromDate.isAfter(toDate)) ||
-                    (fromDate.isAfter(leave.getFromDateTime()) && fromDate.isBefore(leave.getToDateTime())) ||
-                    fromDate.equals(leave.getToDateTime())))) ){
-                Map<String, String> errorMap = new HashMap<>();
-                errorMap.put("fromDateTime", ErrorMessages.OVERLAP_IN_LEAVE);
-                throw new InputDataValidationException(errorMap, ErrorMessages.OVERLAP_IN_LEAVE);
+                            (
+
+                                   fromDate.equals(leave.getFromDateTime()) ||
+                                            (
+                                                    fromDate.isAfter(leave.getFromDateTime()) && fromDate.isBefore(leave.getToDateTime())
+                                            ) || (
+                                           fromDate.isBefore(leave.getFromDateTime()) && (toDate.isAfter(leave.getFromDateTime()) && (toDate.isBefore(leave.getToDateTime())|| toDate.isAfter(leave.getToDateTime())))
+                                    ) || ((fromDate.isAfter(leave.getFromDateTime()) && fromDate.isBefore(leave.getToDateTime()) )
+
+                                    ) ||
+                                           fromDate.equals(leave.getToDateTime())
+
+                            )
+
+                    ) ){
+                throw new StaffLeaveCannotUpdateException( "Invalid dates selected: Please make sure dates do not overlap with previous applied leaves!");
             }
         }
 
@@ -140,11 +201,24 @@ public class LeaveService {
         StaffLeave existingLeave = leaveRepository.findById(leaveId)
                 .orElseThrow(() -> new StaffLeaveNotFoundException("Leave with id: " + leaveId + " does not exist"));
 
-        if(existingLeave.getStatus().equals(LeaveStatusEnum.APPROVED) || existingLeave.getStatus().equals(LeaveStatusEnum.ENDORSED)){
-            throw new StaffLeaveCannotDeleteException("Leave has already been endorsed or approved");
-        }
         Staff staff = staffRepository.findById(existingLeave.getApplicant().getStaffId())
                 .orElseThrow(() -> new StaffNotFoundException("Staff with id: " + existingLeave.getApplicant().getStaffId() + " does not exist"));
+
+        if(staff.getDepartment().getDepartmentName().equals("HR")){
+
+        } else if(staff.getRole().getRoleName().equals(RoleNameEnum.MANAGER)){
+            if(existingLeave.getStatus().equals(LeaveStatusEnum.APPROVED)){
+                throw new StaffLeaveCannotDeleteException("Leave has already been approved");
+            }
+
+        } else{
+            //When staff leave had already been approved or endorsed
+            if(existingLeave.getStatus().equals(LeaveStatusEnum.APPROVED) || existingLeave.getStatus().equals(LeaveStatusEnum.ENDORSED)){
+                String e = existingLeave.getStatus().toString();
+                throw new StaffLeaveCannotDeleteException("Leave has already been " + e);
+            }
+        }
+
         staff.getLeaves().remove(existingLeave);
         leaveRepository.delete(existingLeave);
         return existingLeave;

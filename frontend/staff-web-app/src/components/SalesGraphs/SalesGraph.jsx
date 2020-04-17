@@ -7,7 +7,7 @@ import withPage from "../Layout/page/withPage";
 import MomentUtils from "@date-io/moment";
 import {
   KeyboardDatePicker,
-  MuiPickersUtilsProvider
+  MuiPickersUtilsProvider,
 } from "@material-ui/pickers";
 import { Button } from "reactstrap";
 import FilterIcon from "mdi-react/FilterIcon";
@@ -19,7 +19,7 @@ import {
   Button as MuiButton,
   Select,
   MenuItem,
-  InputLabel
+  InputLabel,
 } from "@material-ui/core";
 import FormControl from "@material-ui/core/FormControl";
 import FormLabel from "@material-ui/core/FormLabel";
@@ -31,8 +31,8 @@ const _ = require("lodash");
 
 function SalesGraph(props) {
   const dispatch = useDispatch();
-  const salesByDay = useSelector(state => state.analytics.salesByDay);
-  const allStores = useSelector(state => state.storeEntity.allStores);
+  const salesByDay = useSelector((state) => state.analytics.salesByDay);
+  const allStores = useSelector((state) => state.storeEntity.allStores);
   const [fromDateMoment, setFromDateMoment] = useState(null);
   const [toDateMoment, setToDateMoment] = useState(null);
   const [initialFromDateMoment, setInitialFromDateMoment] = useState(null);
@@ -80,7 +80,7 @@ function SalesGraph(props) {
   const setInitialOptions = () => {
     if (allStores) {
       const options = {};
-      allStores.forEach(store => {
+      allStores.forEach((store) => {
         options[store.storeId] = true;
       });
       options.online = true;
@@ -95,11 +95,11 @@ function SalesGraph(props) {
     setLineMode("combined");
   };
 
-  const handleCheckboxChange = e => {
-    setPopOptions(prevState => {
+  const handleCheckboxChange = (e) => {
+    setPopOptions((prevState) => {
       return {
         ...prevState,
-        [e.target.name]: e.target.checked
+        [e.target.name]: e.target.checked,
       };
     });
   };
@@ -108,7 +108,7 @@ function SalesGraph(props) {
     const fromDateString = fromDateMoment.format("YYYY-MM-DD");
     const toDateString = toDateMoment.format("YYYY-MM-DD");
     const storeIds = _.keys(popOptions).filter(
-      key => key !== "online" && popOptions[key]
+      (key) => key !== "online" && popOptions[key]
     );
     const onlineSelected = popOptions.online;
     dispatch(
@@ -152,7 +152,7 @@ function SalesGraph(props) {
                     inputVariant="standard"
                     value={fromDateMoment}
                     maxDate={toDateMoment}
-                    onChange={date => {
+                    onChange={(date) => {
                       setFromDateMoment(date);
                     }}
                   />
@@ -166,7 +166,7 @@ function SalesGraph(props) {
                     inputVariant="standard"
                     value={toDateMoment}
                     disableFuture
-                    onChange={date => {
+                    onChange={(date) => {
                       setToDateMoment(date);
                     }}
                   />
@@ -181,7 +181,7 @@ function SalesGraph(props) {
                     {allStores &&
                       _.keys(popOptions).length === allStores.length + 1 && (
                         <>
-                          {allStores.map(store => (
+                          {allStores.map((store) => (
                             <FormControlLabel
                               key={store.storeId}
                               control={
@@ -234,7 +234,7 @@ function SalesGraph(props) {
                     labelId="demo-simple-select-outlined-label"
                     id="demo-simple-select-outlined"
                     value={yAxis}
-                    onChange={e => setYAxis(e.target.value)}
+                    onChange={(e) => setYAxis(e.target.value)}
                     style={{ width: "100%" }}
                   >
                     <MenuItem value={"averageTotalSales"}>
