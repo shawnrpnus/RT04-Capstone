@@ -58,6 +58,11 @@ function RefundHistoryPage(props) {
               <RefundHistoryCard key={refund.refundId} currRefund={refund} />
             </React.Fragment>
           ))}
+        {refunds && refunds.length === 0 && (
+          <h3 style={{ textAlign: "center" }}>
+            You do not have any past refunds.
+          </h3>
+        )}
       </GridItem>
     </GridContainer>
   );
