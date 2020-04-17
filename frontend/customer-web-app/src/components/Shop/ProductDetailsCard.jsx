@@ -238,9 +238,9 @@ function ProductDetailsCard(props) {
             </Tooltip>
           </h2>
           <h3 className={classes.mainPrice}>
-            {discountedPrice && <span>${discountedPrice}</span>}
+            {discountedPrice && <span>${discountedPrice.toFixed(2)}</span>}
             <span className={discountedPrice && classes.discountedPrice}>
-              ${product.price}
+              ${product.price.toFixed(2)}
             </span>
           </h3>
           <Accordion
@@ -374,26 +374,68 @@ function ProductDetailsCard(props) {
               )}
             </GridItem>
             <GridItem md={12} sm={12} style={{ marginTop: "10px" }}>
-              <Button
-                color="primary"
-                onClick={addToShoppingCart}
-                style={{ float: "right", width: "245px" }}
-                disabled={
-                  selectedStock <= 0 || selectedSize === "None" || !customer
+              <Tooltip
+                title={
+                  !customer
+                    ? "Please log in"
+                    : selectedStock <= 0
+                    ? "Out of Stock"
+                    : selectedSize === "None"
+                    ? "Please select a size"
+                    : ""
                 }
+                placement="left"
+                classes={{ tooltip: classes.tooltip }}
               >
-                Add to Shopping Cart &nbsp; <ShoppingCart />
-              </Button>
+                <span
+                  style={{
+                    float: "right",
+                    width: "245px",
+                    cursor: "not-allowed"
+                  }}
+                >
+                  <Button
+                    color="primary"
+                    onClick={addToShoppingCart}
+                    style={{ float: "right", width: "245px" }}
+                    disabled={
+                      selectedStock <= 0 || selectedSize === "None" || !customer
+                    }
+                  >
+                    Add to Shopping Cart &nbsp; <ShoppingCart />
+                  </Button>
+                </span>
+              </Tooltip>
             </GridItem>
             <GridItem md={12} sm={12}>
-              <Button
-                color="primary"
-                onClick={addToReservationCart}
-                style={{ float: "right", width: "245px" }}
-                disabled={selectedSize === "None" || !customer}
+              <Tooltip
+                title={
+                  !customer
+                    ? "Please log in"
+                    : selectedSize === "None"
+                    ? "Please select a size"
+                    : ""
+                }
+                placement="left"
+                classes={{ tooltip: classes.tooltip }}
               >
-                Add to Reservation Cart &nbsp; <ShoppingCart />
-              </Button>
+                <span
+                  style={{
+                    float: "right",
+                    width: "245px",
+                    cursor: "not-allowed"
+                  }}
+                >
+                  <Button
+                    color="primary"
+                    onClick={addToReservationCart}
+                    style={{ float: "right", width: "245px" }}
+                    disabled={selectedSize === "None" || !customer}
+                  >
+                    Add to Reservation Cart &nbsp; <ShoppingCart />
+                  </Button>
+                </span>
+              </Tooltip>
             </GridItem>
           </GridContainer>
         </GridItem>

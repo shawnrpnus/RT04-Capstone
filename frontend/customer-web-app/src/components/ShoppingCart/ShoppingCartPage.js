@@ -16,6 +16,7 @@ import AddBoxIcon from "@material-ui/icons/AddBox";
 import MinusBoxIcon from "@material-ui/icons/IndeterminateCheckBox";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
+import { useSnackbar } from "notistack";
 // core components
 import Parallax from "components/UI/Parallax/Parallax.js";
 import GridContainer from "components/Layout/components/Grid/GridContainer.js";
@@ -27,7 +28,7 @@ import shoppingCartStyle from "assets/jss/material-kit-pro-react/views/shoppingC
 
 import {
   updateShoppingCart,
-  clearShoppingCart
+  clearShoppingCart,
 } from "./../../redux/actions/shoppingCartActions";
 import UpdateShoppingCartRequest from "../../models/shoppingCart/UpdateShoppingCartRequest.js";
 import colourList from "assets/colours.json";
@@ -43,10 +44,11 @@ const useStyles = makeStyles(shoppingCartStyle);
 export default function ShoppingCartPage() {
   const classes = useStyles();
   const history = useHistory();
+  const { enqueueSnackbar } = useSnackbar();
   // Redux dispatch to call actions
   const dispatch = useDispatch();
   // Redux mapping state to props
-  const customer = useSelector(state => state.customer.loggedInCustomer);
+  const customer = useSelector((state) => state.customer.loggedInCustomer);
 
   //popper
   const [popoverOpen, setPopoverOpen] = useState(false);
@@ -56,7 +58,7 @@ export default function ShoppingCartPage() {
   useEffect(() => {
     window.scrollTo(0, 0);
     document.body.scrollTop = 0;
-    _.get(customer, "onlineShoppingCart.shoppingCartItems", []).map(item => {
+    _.get(customer, "onlineShoppingCart.shoppingCartItems", []).map((item) => {
       const request = new UpdateShoppingCartRequest(
         -1,
         item.productVariant.productVariantId,
@@ -87,7 +89,7 @@ export default function ShoppingCartPage() {
       customer.customerId,
       "online"
     );
-    dispatch(updateShoppingCart(request));
+    dispatch(updateShoppingCart(request, enqueueSnackbar, null, true));
   };
 
   const handleCheckout = () => {
@@ -99,7 +101,7 @@ export default function ShoppingCartPage() {
     setPopoverOpen(false);
   };
 
-  const clearConfirmation = e => {
+  const clearConfirmation = (e) => {
     setAnchorEl(e.currentTarget);
     setPopoverOpen(true);
   };
@@ -142,9 +144,10 @@ export default function ShoppingCartPage() {
                         product,
                         sizeDetails,
                         colour,
-                        productVariantId
+                        productVariantId,
                       } = cartItem.productVariant;
                       const { productName, discountedPrice, price } = product;
+                      console.log(discountedPrice);
                       const { quantity } = cartItem;
                       return (
                         <div key={index}>
@@ -177,7 +180,7 @@ export default function ShoppingCartPage() {
                                 <GridItem md={12}>
                                   <h3 style={{ marginTop: "10px" }}>
                                     {discountedPrice && (
-                                      <span>${discountedPrice}</span>
+                                      <span>${discountedPrice.toFixed(2)}</span>
                                     )}
                                     <span
                                       className={
@@ -185,7 +188,7 @@ export default function ShoppingCartPage() {
                                         classes.discountedPrice
                                       }
                                     >
-                                      ${price}
+                                      ${price.toFixed(2)}
                                     </span>
                                   </h3>
                                 </GridItem>
@@ -202,7 +205,7 @@ export default function ShoppingCartPage() {
                               >
                                 <IconButton
                                   className={classes.buttonTopMargin}
-                                  onClick={e =>
+                                  onClick={(e) =>
                                     handleUpdateQuantity(
                                       quantity - 1,
                                       productVariantId
@@ -222,7 +225,7 @@ export default function ShoppingCartPage() {
                               >
                                 <IconButton
                                   className={classes.buttonTopMargin}
-                                  onClick={e =>
+                                  onClick={(e) =>
                                     handleUpdateQuantity(
                                       quantity + 1,
                                       productVariantId
@@ -237,7 +240,9 @@ export default function ShoppingCartPage() {
                                 {discountedPrice && (
                                   <h3
                                     style={{
-                                      marginBottom: discountedPrice ? 0 : "10px"
+                                      marginBottom: discountedPrice
+                                        ? 0
+                                        : "10px",
                                     }}
                                   >
                                     ${(discountedPrice * quantity).toFixed(2)}
@@ -248,7 +253,7 @@ export default function ShoppingCartPage() {
                                     discountedPrice && classes.discountedPrice
                                   }
                                   style={{
-                                    marginTop: discountedPrice ? 0 : "20px"
+                                    marginTop: discountedPrice ? 0 : "20px",
                                   }}
                                 >
                                   ${(price * quantity).toFixed(2)}
@@ -258,7 +263,7 @@ export default function ShoppingCartPage() {
                               <GridItem md={1}>
                                 <IconButton
                                   className={classes.buttonTopMargin}
-                                  onClick={e =>
+                                  onClick={(e) =>
                                     handleUpdateQuantity(
                                       e,
                                       productVariantId,
@@ -283,7 +288,7 @@ export default function ShoppingCartPage() {
                       onClick={clearConfirmation}
                       style={{
                         margin: "5% 0",
-                        fontSize: "20px"
+                        fontSize: "20px",
                       }}
                     >
                       Clear Shopping Cart
@@ -316,7 +321,7 @@ export default function ShoppingCartPage() {
                           onClick={handleCheckout}
                           style={{
                             margin: "5% 2%",
-                            fontSize: "20px"
+                            fontSize: "20px",
                           }}
                         >
                           Checkout

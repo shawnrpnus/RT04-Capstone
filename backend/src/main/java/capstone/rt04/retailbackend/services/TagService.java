@@ -65,7 +65,6 @@ public class TagService {
     public Tag addTagToProduct(Long tagId, List<Long> productIds) throws TagNotFoundException, ProductNotFoundException {
         Tag tag = retrieveTagByTagId(tagId);
         for(Long p : productIds) {
-            System.out.println("LONG: " + p);
             Product retrieveProduct = productRepository.findByProductId(p);
             //add tag both ways is implemented in the entity
             try{

@@ -5,6 +5,7 @@ import capstone.rt04.retailbackend.repositories.*;
 import capstone.rt04.retailbackend.util.ErrorMessages;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.customer.*;
+import capstone.rt04.retailbackend.util.exceptions.inStoreRestockOrder.InsufficientStockException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.shoppingcart.InvalidCartTypeException;
 import capstone.rt04.retailbackend.util.exceptions.style.StyleNotFoundException;
@@ -479,8 +480,8 @@ public class CustomerService {
         addressToUpdate.setLine1(newShippingAddress.getLine1());
         addressToUpdate.setLine2(newShippingAddress.getLine2());
         addressToUpdate.setPostalCode(newShippingAddress.getPostalCode());
-        addressToUpdate.setXCoordinate(newShippingAddress.getXCoordinate());
-        addressToUpdate.setYCoordinate(newShippingAddress.getYCoordinate());
+        addressToUpdate.setLat(newShippingAddress.getLat());
+        addressToUpdate.setLng(newShippingAddress.getLng());
         Customer customer = retrieveCustomerByCustomerId(customerId);
         return customer;
     }
@@ -520,7 +521,7 @@ public class CustomerService {
     }
 
     // ONLINE CART ONLY
-    public Customer addWishlistToShoppingCart(Long customerId) throws CustomerNotFoundException, InvalidCartTypeException, ProductVariantNotFoundException {
+    public Customer addWishlistToShoppingCart(Long customerId) throws CustomerNotFoundException, InvalidCartTypeException, ProductVariantNotFoundException, InsufficientStockException {
         Customer customer = retrieveCustomerByCustomerId(customerId);
         for (ProductVariant pv : customer.getWishlistItems()) {
             shoppingCartService.updateQuantityOfProductVariant(1, pv.getProductVariantId(), customerId, ONLINE_SHOPPING_CART);

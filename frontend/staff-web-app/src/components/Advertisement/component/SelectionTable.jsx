@@ -16,7 +16,7 @@ import {
   SaveAlt,
   Search,
   ViewColumn,
-  Instagram
+  Instagram,
 } from "@material-ui/icons";
 import MaterialTable from "material-table";
 import Button from "@material-ui/core/Button";
@@ -25,11 +25,11 @@ import TextField from "@material-ui/core/TextField";
 import {
   getInstagramPostsByHashtag,
   getInstagramPostByShortcode,
-  createInstagramPost
+  createInstagramPost,
 } from "../../../redux/actions/instagramActions";
 import {
   openCircularProgress,
-  closeCircularProgress
+  closeCircularProgress,
 } from "./../../../redux/actions/utilActions";
 import withPage from "../../Layout/page/withPage";
 import { toast } from "react-toastify";
@@ -53,10 +53,10 @@ const tableIcons = {
   Search: Search,
   SortArrow: () => <div />,
   ThirdStateCheck: Remove,
-  ViewColumn: ViewColumn
+  ViewColumn: ViewColumn,
 };
 
-const SelectionTable = props => {
+const SelectionTable = (props) => {
   const dispatch = useDispatch();
   const confirmDialog = useConfirm();
 
@@ -82,7 +82,7 @@ const SelectionTable = props => {
 
   useEffect(() => {}, [_.isEqual(edges)]);
 
-  const handleCreateInstagramPost = data => {
+  const handleCreateInstagramPost = (data) => {
     confirmDialog({ description: "Add Instagram post to database" })
       .then(() =>
         dispatch(
@@ -97,11 +97,11 @@ const SelectionTable = props => {
   const handleSearchTag = async () => {
     dispatch(openCircularProgress());
     await getInstagramPostsByHashtag(searchTerm.replace(/[^a-z^A-Z]/g, ""))
-      .then(response => {
+      .then((response) => {
         setEdges(response);
         dispatch(closeCircularProgress());
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err.response);
         dispatch(closeCircularProgress());
       });
@@ -110,17 +110,17 @@ const SelectionTable = props => {
   const handleSearchPost = async () => {
     dispatch(openCircularProgress());
     await getInstagramPostByShortcode(searchTerm)
-      .then(response => {
+      .then((response) => {
         setEdges(response);
         dispatch(closeCircularProgress());
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err.response);
         dispatch(closeCircularProgress());
       });
   };
 
-  const onChange = e => {
+  const onChange = (e) => {
     setSearchTerm(e.target.value.trim());
   };
 
@@ -139,7 +139,7 @@ const SelectionTable = props => {
       return {
         caption,
         shortCode,
-        instagramImgUrl
+        instagramImgUrl,
       };
     });
   } else if (edges && !byHashtag) {
@@ -181,7 +181,7 @@ const SelectionTable = props => {
         fullWidth
         margin="normal"
         InputLabelProps={{
-          shrink: true
+          shrink: true,
         }}
         variant="outlined"
         onChange={onChange}
@@ -201,7 +201,7 @@ const SelectionTable = props => {
         {byHashtag ? "Search by hashtag" : "Search by post"}
       </Button>
       <MaterialTable
-        title="Instagram post"
+        title=""
         style={{ boxShadow: "none" }}
         icons={tableIcons}
         onChangePage={() => {
@@ -220,12 +220,12 @@ const SelectionTable = props => {
             ),
             cellStyle: {
               width: 200,
-              maxWidth: 200
+              maxWidth: 200,
             },
             headerStyle: {
               width: 200,
-              maxWidth: 200
-            }
+              maxWidth: 200,
+            },
           },
           {
             title: "Caption",
@@ -236,13 +236,13 @@ const SelectionTable = props => {
                 : caption,
             cellStyle: {
               width: 200,
-              maxWidth: 200
+              maxWidth: 200,
             },
             headerStyle: {
               width: 200,
-              maxWidth: 200
-            }
-          }
+              maxWidth: 200,
+            },
+          },
         ]}
         data={data}
         options={{
@@ -253,7 +253,7 @@ const SelectionTable = props => {
           actionsColumnIndex: -1,
           headerStyle: { textAlign: "center" }, //change header padding
           cellStyle: { textAlign: "center" },
-          draggable: false
+          draggable: false,
         }}
         actions={[
           {
@@ -261,12 +261,12 @@ const SelectionTable = props => {
             tooltip: "Add to Instagram list",
             onClick: (e, rowData) => {
               handleCreateInstagramPost(rowData);
-            }
-          }
+            },
+          },
         ]}
       />
     </div>
   );
 };
 
-export default withPage(SelectionTable);
+export default withPage(SelectionTable, "Instagram Post");

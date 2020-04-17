@@ -5,6 +5,7 @@ import {
   UPDATE_SHOPPING_CART_SUCCESS
 } from "redux/actions/types";
 import { dispatchErrorMapError } from "redux/actions/index";
+import { refreshCustomerEmail } from "./customerActions";
 axios.defaults.baseURL = process.env.REACT_APP_SPRING_API_URL;
 
 const CUSTOMER_BASE_URL = "/api/customer";
@@ -15,7 +16,8 @@ const jsog = require("jsog");
 export const updateShoppingCart = (
   updateShoppingCartRequest,
   enqueueSnackbar,
-  removeFromWishlistAPI
+  removeFromWishlistAPI,
+  updateShoppingCartQty
 ) => {
   return dispatch => {
     //redux thunk passes dispatch
@@ -26,27 +28,35 @@ export const updateShoppingCart = (
       )
       .then(response => {
         handleUpdateShoppingCart(response.data, dispatch);
-        if (removeFromWishlistAPI) {
-          //for transferring from wishlist to cart
-          dispatch(
-            removeFromWishlistAPI(
-              updateShoppingCartRequest.customerId,
-              updateShoppingCartRequest.productVariantId
-            )
-          );
-          enqueueSnackbar("Moved to shopping cart!", {
-            variant: "success",
-            autoHideDuration: 1200
-          });
-        } else {
-          enqueueSnackbar &&
-            enqueueSnackbar("Item Added!", {
+        if (!updateShoppingCartQty) {
+          if (removeFromWishlistAPI) {
+            //for transferring from wishlist to cart
+            dispatch(
+              removeFromWishlistAPI(
+                updateShoppingCartRequest.customerId,
+                updateShoppingCartRequest.productVariantId
+              )
+            );
+            enqueueSnackbar("Moved to shopping cart!", {
               variant: "success",
               autoHideDuration: 1200
             });
+          } else {
+            enqueueSnackbar &&
+              enqueueSnackbar("Item Added!", {
+                variant: "success",
+                autoHideDuration: 1200
+              });
+          }
         }
       })
       .catch(err => {
+        if (err.response && err.response.data)
+          enqueueSnackbar &&
+            enqueueSnackbar("Insufficient stock!", {
+              variant: "error",
+              autoHideDuration: 1200
+            });
         dispatchErrorMapError(err, dispatch);
       });
   };
@@ -66,7 +76,7 @@ const handleUpdateShoppingCart = (responseData, dispatch) => {
 export const getClientSecret = (totalAmount, setClientSecret) => {
   axios
     .post(`/directPayment`, null, {
-      params: { totalAmount: totalAmount * 100 }
+      params: { totalAmount: (totalAmount * 100).toFixed(0) }
     })
     .then(resp => {
       // Return a client_secret string
@@ -78,15 +88,14 @@ export const getClientSecret = (totalAmount, setClientSecret) => {
     });
 };
 
-export const completeDirectPayment = (paymentRequest, history) => {
+export const completeDirectPayment = (paymentRequest, history, email) => {
   return dispatch => {
     axios
       .post(`/completeDirectPayment`, paymentRequest)
       .then(resp => {
         // Return a customer object
         // Update customer
-        console.log(resp);
-        handleUpdateShoppingCart(resp.data, dispatch);
+        dispatch(refreshCustomerEmail(email));
         history.push("/account/profile/orderHistory");
       })
       .catch(err => {
@@ -95,15 +104,14 @@ export const completeDirectPayment = (paymentRequest, history) => {
   };
 };
 
-export const makePaymentWithSavedCard = (paymentRequest, history) => {
+export const makePaymentWithSavedCard = (paymentRequest, history, email) => {
   return dispatch => {
     axios
       .post(`/makePaymentWithSavedCard`, paymentRequest)
       .then(resp => {
         // Return a customer object
         // Update customer
-        console.log(resp);
-        handleUpdateShoppingCart(resp.data, dispatch);
+        dispatch(refreshCustomerEmail(email));
         history.push("/account/profile/orderHistory");
       })
       .catch(err => {

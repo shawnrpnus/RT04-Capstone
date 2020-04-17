@@ -1,9 +1,10 @@
 import React from "react";
-import { Route, Switch } from "react-router-dom";
+import { Switch } from "react-router-dom";
 import { Dashboard } from "../../../components/Dashboard";
+import RetailRoute from "./../RetailRoute";
 
 export default () => (
   <Switch>
-    <Route exact path="/dashboard" component={Dashboard}></Route>
+    <RetailRoute exact path="/dashboard" component={Dashboard} />
   </Switch>
 );

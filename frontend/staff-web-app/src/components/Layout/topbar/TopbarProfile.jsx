@@ -2,17 +2,9 @@ import React, { PureComponent } from "react";
 import DownIcon from "mdi-react/ChevronDownIcon";
 import { Collapse } from "reactstrap";
 import TopbarMenuLink from "./TopbarMenuLink";
-import {
-  createNewStaff,
-  retrieveAllDepartments,
-  retrieveAllRoles,
-  staffLogout
-} from "../../../redux/actions/staffActions";
-import { UserProps, AuthOProps } from "../../../shared/prop-types/ReducerProps";
+import { staffLogout } from "../../../redux/actions/staffActions";
 import * as PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { clearErrors, updateErrors } from "../../../redux/actions";
-import { useDispatch } from "react-redux";
 
 class TopbarProfile extends PureComponent {
   static propTypes = {
@@ -28,7 +20,6 @@ class TopbarProfile extends PureComponent {
 
   toggle = () => {
     this.setState(prevState => ({ collapse: !prevState.collapse }));
-    console.log(this.props.loggedInStaff);
   };
 
   logout = () => {
@@ -63,6 +54,18 @@ class TopbarProfile extends PureComponent {
               icon="user"
               path="/staff/viewProfile"
               onClick={this.toggle}
+            />
+            <TopbarMenuLink
+              title="My Leaves"
+              icon="leaf"
+              path="/leave/apply"
+              onClick={this.toggle}
+            />
+            <TopbarMenuLink
+                title="My Payrolls"
+                icon="gift"
+                path="/payrolls/viewAll"
+                onClick={this.toggle}
             />
             <TopbarMenuLink
               title="Logout"

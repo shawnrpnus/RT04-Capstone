@@ -15,7 +15,8 @@ import {
   SaveAlt,
   Search,
   ViewColumn,
-  Visibility
+  Visibility,
+  Room,
 } from "@material-ui/icons";
 import { AiOutlineTransaction } from "react-icons/ai";
 import MaterialTable from "material-table";
@@ -25,11 +26,12 @@ import Button from "@material-ui/core/Button";
 import { getDeliveryStatusColour } from "../../../redux/actions/restockOrderAction";
 import {
   retrieveAllDelivery,
-  automateDeliveryAllocation
+  generateDeliveryRoute,
 } from "../../../redux/actions/deliveryActions";
 import withPage from "../../Layout/page/withPage";
 import RestockOrderDetailsDialog from "./RestockOrderDetailsDialog";
 import TransactionDetailsDialog from "./TransactionDetailsDialog";
+import StaffSelectionDialog from "./StaffSelectionDialog";
 
 const _ = require("lodash");
 const tableIcons = {
@@ -49,15 +51,18 @@ const tableIcons = {
   Search: Search,
   SortArrow: () => <div />,
   ThirdStateCheck: Remove,
-  ViewColumn: ViewColumn
+  ViewColumn: ViewColumn,
 };
 
-const DeliveryTable = props => {
+const DeliveryTable = (props) => {
   const dispatch = useDispatch();
-  const deliveries = useSelector(state => state.delivery.deliveries);
+  const deliveries = useSelector((state) => state.delivery.deliveries);
 
   const [openCustomerOrderDialog, setOpenCustomerOrderDialog] = useState(false);
   const [openRestockOrderDialog, setOpenRestockOrderDialog] = useState(false);
+  const [openStaffSelectionDialog, setOpenStaffSelectionDialog] = useState(
+    false
+  );
   const [orderDetails, setOrderDetails] = useState([]);
   const { renderLoader, staff } = props;
 
@@ -71,12 +76,10 @@ const DeliveryTable = props => {
     transaction
   ) => {
     if (transaction) {
-      console.log("customer orders");
       setOrderDetails(customerOrdersToDeliver);
       setOpenCustomerOrderDialog(true);
     } else {
       // if (inStoreRestockOrderItems.length > 0)
-      console.log("restock orders");
       setOrderDetails(inStoreRestockOrderItems);
       setOpenRestockOrderDialog(true);
     }
@@ -87,19 +90,19 @@ const DeliveryTable = props => {
     setOpenRestockOrderDialog(false);
   };
 
-  const handleAllocateDelivery = () => {
-    dispatch(automateDeliveryAllocation(staff.staffId));
+  const handleOpenStaffSelectionDialog = () => {
+    setOpenStaffSelectionDialog(true);
   };
 
   let data = [];
   if (deliveries) {
-    data = deliveries.map(item => {
+    data = deliveries.map((item) => {
       let {
         deliveryId,
         deliveryDateTime,
         deliveryStaff,
         customerOrdersToDeliver,
-        inStoreRestockOrderItems
+        inStoreRestockOrderItems,
       } = item;
       let date = deliveryDateTime;
       if (deliveryDateTime)
@@ -107,7 +110,7 @@ const DeliveryTable = props => {
       const { firstName, lastName } = deliveryStaff;
       const status =
         inStoreRestockOrderItems.some(
-          e => e.itemDeliveryStatus !== "DELIVERED"
+          (e) => e.itemDeliveryStatus !== "DELIVERED"
         ) ||
         customerOrdersToDeliver.some(
           ({ deliveryStatus }) =>
@@ -126,7 +129,7 @@ const DeliveryTable = props => {
         deliveryStaffName: name,
         customerOrdersToDeliver: customerOrdersToDeliver,
         inStoreRestockOrderItems: inStoreRestockOrderItems,
-        status: status.split("_").join(" ")
+        status: status.split("_").join(" "),
       };
     });
   }
@@ -139,7 +142,7 @@ const DeliveryTable = props => {
       <Button
         variant="contained"
         color="primary"
-        onClick={handleAllocateDelivery}
+        onClick={handleOpenStaffSelectionDialog}
         style={{ marginRight: "1%" }}
       >
         Create and allocate delivery
@@ -153,11 +156,11 @@ const DeliveryTable = props => {
             { title: "Delivery ID", field: "deliveryId" },
             {
               title: "Date created",
-              field: "deliveryDateTime"
+              field: "deliveryDateTime",
             },
             {
               title: "Delivery staff",
-              field: "deliveryStaffName"
+              field: "deliveryStaffName",
             },
             {
               title: "Status",
@@ -167,8 +170,8 @@ const DeliveryTable = props => {
                 return (
                   <Chip style={{ ...style, color: "white" }} label={status} />
                 );
-              }
-            }
+              },
+            },
           ]}
           data={data}
           options={{
@@ -179,21 +182,27 @@ const DeliveryTable = props => {
             actionsColumnIndex: -1,
             headerStyle: { textAlign: "center" }, //change header padding
             cellStyle: { textAlign: "center" },
-            draggable: false
+            draggable: false,
           }}
           actions={[
             {
               icon: Visibility,
               tooltip: "View restock order details",
               onClick: (event, rowData) =>
-                openOrderDetailsDialog(event, rowData)
+                openOrderDetailsDialog(event, rowData),
             },
             {
               icon: AiOutlineTransaction,
               tooltip: "View transactions",
               onClick: (event, rowData) =>
-                openOrderDetailsDialog(event, rowData, true)
-            }
+                openOrderDetailsDialog(event, rowData, true),
+            },
+            // {
+            //   icon: Room,
+            //   tooltip: "Generate delivery route",
+            //   onClick: (event, rowData) =>
+            //     dispatch(generateDeliveryRoute(rowData.deliveryId)),
+            // },
           ]}
         />
       ) : (
@@ -213,6 +222,12 @@ const DeliveryTable = props => {
           open={openCustomerOrderDialog}
           onClose={closeOrderDetailsDialog}
           elements={orderDetails}
+        />
+      )}
+      {openStaffSelectionDialog && (
+        <StaffSelectionDialog
+          open={openStaffSelectionDialog}
+          onClose={() => setOpenStaffSelectionDialog(false)}
         />
       )}
     </div>

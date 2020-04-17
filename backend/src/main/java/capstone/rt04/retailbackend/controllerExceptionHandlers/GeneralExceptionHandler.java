@@ -9,7 +9,9 @@ import capstone.rt04.retailbackend.util.exceptions.category.DeleteCategoryExcept
 import capstone.rt04.retailbackend.util.exceptions.category.UpdateCategoryException;
 import capstone.rt04.retailbackend.util.exceptions.contactUs.ContactUsNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.customer.*;
+import capstone.rt04.retailbackend.util.exceptions.delivery.DeliveryCreationException;
 import capstone.rt04.retailbackend.util.exceptions.delivery.DeliveryHasAlreadyBeenConfirmedException;
+import capstone.rt04.retailbackend.util.exceptions.delivery.DeliveryNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.delivery.NoItemForDeliveryException;
 import capstone.rt04.retailbackend.util.exceptions.discount.DiscountNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.inStoreRestockOrder.InStoreRestockOrderItemNotFoundException;
@@ -17,11 +19,16 @@ import capstone.rt04.retailbackend.util.exceptions.inStoreRestockOrder.InStoreRe
 import capstone.rt04.retailbackend.util.exceptions.inStoreRestockOrder.InStoreRestockOrderUpdateException;
 import capstone.rt04.retailbackend.util.exceptions.inStoreRestockOrder.InsufficientStockException;
 import capstone.rt04.retailbackend.util.exceptions.instagramPost.InstagramPostNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.leave.StaffLeaveCannotCreateException;
+import capstone.rt04.retailbackend.util.exceptions.leave.StaffLeaveCannotDeleteException;
+import capstone.rt04.retailbackend.util.exceptions.leave.StaffLeaveCannotUpdateException;
+import capstone.rt04.retailbackend.util.exceptions.payroll.PayrollCannotCreateException;
 import capstone.rt04.retailbackend.util.exceptions.product.*;
 import capstone.rt04.retailbackend.util.exceptions.promoCode.CreateNewPromoCodeException;
 import capstone.rt04.retailbackend.util.exceptions.promoCode.InvalidPromoCodeException;
 import capstone.rt04.retailbackend.util.exceptions.promoCode.PromoCodeNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.promoCode.PromoCodeUsedException;
+import capstone.rt04.retailbackend.util.exceptions.refund.RefundNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.reservation.CreateNewReservationException;
 import capstone.rt04.retailbackend.util.exceptions.reservation.ReservationNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.review.ReviewNotFoundException;
@@ -40,6 +47,7 @@ import capstone.rt04.retailbackend.util.exceptions.tag.TagNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.tag.UpdateTagException;
 import capstone.rt04.retailbackend.util.exceptions.transaction.TransactionNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.warehouse.WarehouseNotFoundException;
+import com.stripe.exception.StripeException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,6 +58,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -74,7 +83,8 @@ public class GeneralExceptionHandler extends ResponseEntityExceptionHandler {
             CreateNewCustomerException.class, CustomerCannotDeleteException.class,
             CreateNewStyleException.class, UpdateStyleException.class, DeleteStyleException.class,
             CreateNewTagException.class, DeleteTagException.class, UpdateTagException.class,
-            CreateNewCategoryException.class, UpdateCategoryException.class, DeleteCategoryException.class
+            CreateNewCategoryException.class, UpdateCategoryException.class, DeleteCategoryException.class,
+            IOException.class
     })
     public final ResponseEntity<Object> handlePersistenceExceptions(Exception ex, WebRequest req) {
         return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -90,7 +100,8 @@ public class GeneralExceptionHandler extends ResponseEntityExceptionHandler {
             StyleNotFoundException.class, ContactUsNotFoundException.class, InStoreRestockOrderNotFoundException.class,
             AdvertisementNotFoundException.class, InStoreRestockOrderItemNotFoundException.class,
             InstagramPostNotFoundException.class, ReviewNotFoundException.class, DiscountNotFoundException.class,
-            StaffNotFoundException.class, PromoCodeNotFoundException.class, TransactionNotFoundException.class
+            StaffNotFoundException.class, PromoCodeNotFoundException.class, TransactionNotFoundException.class,
+            DeliveryNotFoundException.class, RefundNotFoundException.class
     })
     public final ResponseEntity<Object> handleNotFoundExceptions(Exception ex, WebRequest req) {
         return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
@@ -110,7 +121,10 @@ public class GeneralExceptionHandler extends ResponseEntityExceptionHandler {
             VerificationCodeExpiredException.class, InvalidCartTypeException.class, WishlistException.class, CreateNewReservationException.class,
             DeleteProductVariantException.class, InStoreRestockOrderUpdateException.class, InsufficientStockException.class, CreateNewStaffAccountException.class,
             DeliveryHasAlreadyBeenConfirmedException.class, ReviewNotUpdatedException.class, NoItemForDeliveryException.class,
-            PromoCodeUsedException.class, InvalidPromoCodeException.class, CreateNewPromoCodeException.class
+
+            PromoCodeUsedException.class, InvalidPromoCodeException.class, CreateNewPromoCodeException.class, StripeException.class, StaffLeaveCannotCreateException.class, StaffLeaveCannotUpdateException.class,
+            PayrollCannotCreateException.class, StaffLeaveCannotDeleteException.class
+
     })
     public final ResponseEntity<Object> handleBadRequestExceptions(Exception ex, WebRequest req) {
         return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);

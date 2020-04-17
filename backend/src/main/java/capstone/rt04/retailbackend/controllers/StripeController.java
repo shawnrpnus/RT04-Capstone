@@ -1,5 +1,6 @@
 package capstone.rt04.retailbackend.controllers;
 
+import capstone.rt04.retailbackend.entities.Transaction;
 import capstone.rt04.retailbackend.request.stripe.AddCreditCardMobileRequest;
 import capstone.rt04.retailbackend.request.stripe.DeleteCardRequest;
 import capstone.rt04.retailbackend.request.stripe.PaymentWithSavedCardRequest;
@@ -7,6 +8,8 @@ import capstone.rt04.retailbackend.request.stripe.SaveCardRequest;
 import capstone.rt04.retailbackend.services.RelationshipService;
 import capstone.rt04.retailbackend.services.StripeService;
 import capstone.rt04.retailbackend.services.TransactionService;
+import capstone.rt04.retailbackend.services.ValidationService;
+import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.customer.AddressNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.customer.CreditCardNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.customer.CustomerNotFoundException;
@@ -33,18 +36,19 @@ public class StripeController {
     private StripeService stripeService;
     private TransactionService transactionService;
     private RelationshipService relationshipService;
+    private final ValidationService validationService;
 
-    public StripeController(StripeService stripeService, @Lazy TransactionService transactionService, RelationshipService relationshipService) {
+    public StripeController(StripeService stripeService, @Lazy TransactionService transactionService, RelationshipService relationshipService, ValidationService validationService) {
         this.stripeService = stripeService;
         this.transactionService = transactionService;
         this.relationshipService = relationshipService;
+        this.validationService = validationService;
     }
 
     // Not using saved card
     @PostMapping("/directPayment")
     public ResponseEntity<?> directPayment(@RequestParam Long totalAmount) {
         try {
-            System.out.println(totalAmount);
             PaymentIntent paymentIntent = stripeService.makeDirectPayment(totalAmount);
             return new ResponseEntity<>(paymentIntent.getClientSecret(), HttpStatus.OK);
         } catch (StripeException e) {
@@ -55,11 +59,13 @@ public class StripeController {
 
     @PostMapping("/completeDirectPayment")
     public ResponseEntity<?> completeDirectPayment(@RequestBody PaymentWithSavedCardRequest request)
-            throws CustomerNotFoundException, InvalidCartTypeException, AddressNotFoundException, StoreNotFoundException, PromoCodeNotFoundException {
-        capstone.rt04.retailbackend.entities.Customer customer = transactionService.createNewTransaction(request.getCustomerId(),
+            throws CustomerNotFoundException, InvalidCartTypeException, AddressNotFoundException, StoreNotFoundException, PromoCodeNotFoundException, StripeException {
+        Transaction transaction = transactionService.createNewTransaction(request.getCustomerId(),
                 request.getStoreId(), ONLINE_SHOPPING_CART, request.getDeliveryAddress(),
-                request.getBillingAddress(), request.getStoreToCollectId(), request.getPromoCodeId());
-        return new ResponseEntity<>(customer, HttpStatus.OK);
+                request.getBillingAddress(), request.getStoreToCollectId(),
+                request.getPromoCodeId(), request.getCollectionModeEnum(),
+                request.getCardIssuer(), request.getCardLast4(), request.getPaymentMethodId());
+        return new ResponseEntity<>(transaction, HttpStatus.OK);
     }
 
     @GetMapping("/initiateSaveCardRequest/{customerId}")
@@ -104,15 +110,17 @@ public class StripeController {
 
     @PostMapping("/makePaymentWithSavedCard")
     public ResponseEntity<?> makePaymentWithSavedCard(@RequestBody PaymentWithSavedCardRequest request)
-            throws CustomerNotFoundException, InvalidCartTypeException, AddressNotFoundException, StoreNotFoundException, PromoCodeNotFoundException {
+            throws CustomerNotFoundException, InvalidCartTypeException, AddressNotFoundException, StoreNotFoundException, PromoCodeNotFoundException, InputDataValidationException {
+        validationService.throwExceptionIfInvalidBean(request);
         try {
-            capstone.rt04.retailbackend.entities.Customer customer = stripeService.makePaymentWithSavedCard(request.getCustomerId(),
+            Transaction transaction = stripeService.makePaymentWithSavedCard(request.getCustomerId(),
                     request.getPaymentMethodId(), request.getTotalAmount(), request.getStoreId(),
-                    request.getDeliveryAddress(), request.getBillingAddress(), request.getStoreToCollectId(), request.getPromoCodeId());
-            relationshipService.clearCustomerRelationships(customer);
-            return new ResponseEntity<>(customer, HttpStatus.OK);
+                    request.getDeliveryAddress(), request.getBillingAddress(), request.getStoreToCollectId(),
+                    request.getPromoCodeId(), request.getCollectionModeEnum(), request.getCardIssuer(), request.getCardLast4());
+            relationshipService.clearTransactionRelationships(transaction);
+            return new ResponseEntity<>(transaction, HttpStatus.OK);
         } catch (StripeException e) {
-            System.out.println("Error creating customer");
+            System.out.println("Error with payment");
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }

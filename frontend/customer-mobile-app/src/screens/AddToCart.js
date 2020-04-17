@@ -1,19 +1,48 @@
 import React, { useEffect, useState } from "react";
 import { Block, Text } from "galio-framework";
 import { BarCodeScanner } from "expo-barcode-scanner";
-import { Alert, Dimensions, Modal, StyleSheet } from "react-native";
+import {
+  Alert,
+  Dimensions,
+  Modal,
+  StyleSheet,
+  InteractionManager,
+  Animated
+} from "react-native";
 import { retrieveProductStockById } from "src/redux/actions/productVariantActions";
 import { updateInStoreShoppingCart } from "src/redux/actions/customerActions";
 import { useDispatch, useSelector } from "react-redux";
+import { useIsFocused } from "@react-navigation/native";
+import { useFocusEffect } from "@react-navigation/native";
+import Spinner from "react-native-loading-spinner-overlay";
+import { ActivityIndicator } from "react-native-paper";
+import Theme from "src/constants/Theme";
 
 const _ = require("lodash");
 const { width, height } = Dimensions.get("window");
 
 function AddToCart(props) {
   const [alertOpen, setAlertOpen] = useState(null);
+  const [displayCamera, setDisplayCamera] = useState(false);
 
   const dispatch = useDispatch();
   const customer = useSelector(state => state.customer.loggedInCustomer);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const task = InteractionManager.runAfterInteractions(() => {
+        setTimeout(() => {
+          setDisplayCamera(true);
+        }, 200);
+      });
+
+      return () => {
+        task.cancel();
+        setAlertOpen(false);
+        setTimeout(() => setDisplayCamera(false), 200);
+      };
+    }, [])
+  );
 
   useEffect(() => {
     requestPermissions();
@@ -40,7 +69,7 @@ function AddToCart(props) {
     );
 
   const handleQRScanned = async ({ type, data }) => {
-    console.log(alertOpen);
+    //console.log(alertOpen);
     if (!alertOpen) {
       setAlertOpen(true);
       const productStock = await retrieveProductStockById(data);
@@ -117,11 +146,29 @@ function AddToCart(props) {
             Scan QR
           </Text>
         </Block>
-        <Block flex={0.75} style={{ width: width * 0.85, height: width * 0.85 }}>
-          <BarCodeScanner
-            onBarCodeScanned={handleQRScanned}
-            style={{ ...StyleSheet.absoluteFillObject }}
-            barCodeTypes={["qr"]}
+        <Block
+          flex={0.75}
+          style={{ width: width * 0.85, height: width * 0.85 }}
+        >
+          {displayCamera && (
+            <BarCodeScanner
+              onBarCodeScanned={handleQRScanned}
+              style={{
+                ...StyleSheet.absoluteFillObject,
+                width: width * 0.85,
+                height: width * 0.85,
+                top: 40
+              }}
+              barCodeTypes={["qr"]}
+            />
+          )}
+
+          <ActivityIndicator
+            animating={!displayCamera}
+            style={{ height: "100%" }}
+            size={200}
+            color={Theme.COLORS.PRIMARY}
+            hidesWhenStopped
           />
         </Block>
       </Block>

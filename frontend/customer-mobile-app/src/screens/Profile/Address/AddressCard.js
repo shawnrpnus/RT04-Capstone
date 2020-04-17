@@ -33,13 +33,13 @@ function AddressCard(props) {
   const setAddrDefault = () => {
     const updatedAddress = _.clone(address);
     updatedAddress.default = true;
-    dispatch(updateShippingAddress(customer.customerId, updatedAddress));
+    dispatch(updateShippingAddress(customer.customerId, updatedAddress, null, setLoading));
   };
 
   const setAddrBilling = () => {
     const updatedAddress = _.clone(address);
     updatedAddress.billing = true;
-    dispatch(updateShippingAddress(customer.customerId, updatedAddress));
+    dispatch(updateShippingAddress(customer.customerId, updatedAddress, null, setLoading));
   };
 
   const showDeleteConfirmationAlert = () => {
@@ -101,7 +101,7 @@ function AddressCard(props) {
           <Feather name="x" size={28} />
         </TouchableOpacity>
       </Block>
-      {address.buildingName ? <Text h5>{address.buildingName}</Text> : null}
+      {address.buildingName ? <Text h5 style={{fontStyle: "italic"}}>{address.buildingName}</Text> : null}
       <Text h5>{address.line1}</Text>
       {address.line2 ? <Text h5>{address.line2}</Text> : null}
       <Text h5>{address.postalCode}</Text>

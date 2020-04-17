@@ -3,7 +3,10 @@ import GridContainer from "components/Layout/components/Grid/GridContainer";
 import GridItem from "components/Layout/components/Grid/GridItem";
 import { Button } from "components/UI/CustomButtons/Button";
 import { useDispatch, useSelector } from "react-redux";
-import { retrieveCustomerTransactions } from "redux/actions/transactionActions";
+import {
+  retrieveCustomerTransactions,
+  updatedViewedTransaction,
+} from "redux/actions/transactionActions";
 import OrderHistoryCard from "components/Profile/sections/Orders/OrderHistoryCard";
 import { makeStyles } from "@material-ui/core/styles";
 import typographyStyle from "assets/jss/material-kit-pro-react/views/componentsSections/typographyStyle";
@@ -18,14 +21,14 @@ const _ = require("lodash");
 
 const useTypoStyles = makeStyles(typographyStyle);
 
-const styles = theme => ({
+const styles = (theme) => ({
   filterDrawer: {
-    width: "300px"
+    width: "300px",
   },
   backdrop: {
     zIndex: theme.zIndex.drawer + 999,
-    color: "#fff"
-  }
+    color: "#fff",
+  },
 });
 
 const useStyles = makeStyles(styles);
@@ -36,19 +39,23 @@ function OrderHistoryPage(props) {
 
   const dispatch = useDispatch();
   const customer = useSelector(
-    state => state.customer.loggedInCustomer,
+    (state) => state.customer.loggedInCustomer,
     _.isEqual
   );
   const transactions = useSelector(
-    state => state.transaction.displayedTransactions
+    (state) => state.transaction.displayedTransactions
   );
 
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    dispatch(updatedViewedTransaction());
+  }, []);
+
+  useEffect(() => {
     dispatch(retrieveCustomerTransactions(customer.customerId));
-  }, [customer.custoemrId]);
+  }, [customer.customerId]);
 
   return (
     <GridContainer>
@@ -57,7 +64,7 @@ function OrderHistoryPage(props) {
         style={{
           display: "flex",
           justifyContent: "space-between",
-          alignItems: "flex-end"
+          alignItems: "flex-end",
         }}
       >
         <h4 className={typoClasses.title} style={{ float: "left", margin: 0 }}>
@@ -74,7 +81,7 @@ function OrderHistoryPage(props) {
       <GridItem md={12}>
         {transactions &&
           transactions.length > 0 &&
-          transactions.map(transaction => (
+          transactions.map((transaction) => (
             <React.Fragment key={transaction.transactionId}>
               <OrderHistoryCard
                 key={transaction.transactionId}

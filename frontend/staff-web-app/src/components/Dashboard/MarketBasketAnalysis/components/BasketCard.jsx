@@ -5,7 +5,12 @@ import Typography from "@material-ui/core/Typography";
 
 const BasketCard = ({ products }) => {
   return (
-    <Grid container>
+    <Grid
+      container
+      style={{
+        justifyContent: "center",
+      }}
+    >
       {products.map(({ product, colourToSizeImageMaps }, index) => {
         return (
           <div key={index} style={{ textAlign: "center", width: "200px" }}>

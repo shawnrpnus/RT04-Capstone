@@ -37,7 +37,7 @@ const loadLoggedInStaff = () => {
   return dispatch => {
     AsyncStorage.getItem("state", (err, result) => {
       if (err){
-        console.log(err);
+        //console.log(err);
         SplashScreen.hide();
         return initialState;
       }
@@ -64,6 +64,7 @@ const unsubscribe = store.subscribe(() => {
 
 //populate store with logged in staff
 store.dispatch(loadLoggedInStaff());
+
 
 export default store;
 

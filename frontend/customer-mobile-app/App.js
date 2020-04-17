@@ -9,6 +9,9 @@ import Screens from "src/navigation/Screens";
 import store from "src/redux/store";
 import theme from "src/constants/Theme";
 import {PaymentsStripe as stripe} from "expo-payments-stripe";
+import { enableScreens } from 'react-native-screens';
+
+enableScreens();
 
 const STRIPE_PUBLISHABLE_KEY = "pk_test_ZmdBnDvGqXb5mo5QFHaP0NI000bsSGDp5k";
 

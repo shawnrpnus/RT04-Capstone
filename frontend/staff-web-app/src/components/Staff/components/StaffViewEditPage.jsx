@@ -67,7 +67,6 @@ class StaffViewEditPage extends Component {
         lastName: currentStaff.lastName,
         email: currentStaff.email,
         nric: currentStaff.nric,
-        leaveRemaining: currentStaff.leaveRemaining,
         departmentId: currentStaff.department.departmentId,
         roleId: currentStaff.role.roleId,
         salary: currentStaff.salary,
@@ -131,7 +130,6 @@ class StaffViewEditPage extends Component {
       lastName: currentStaff ? currentStaff.lastName : "",
       email: currentStaff ? currentStaff.email : "",
       nric: currentStaff ? currentStaff.nric : "",
-      leaveRemaining: currentStaff ? currentStaff.leaveRemaining : "",
       departmentId: currentStaff ? currentStaff.department.departmentId : "",
       roleId: currentStaff ? currentStaff.role.roleId : "",
       salary: currentStaff ? currentStaff.salary : "",
@@ -185,7 +183,6 @@ class StaffViewEditPage extends Component {
       this.state.staffId,
       this.state.firstName,
       this.state.lastName,
-      this.state.leaveRemaining,
       this.state.nric,
       this.state.email,
       this.state.salary
@@ -360,27 +357,19 @@ class StaffViewEditPage extends Component {
 
                 <Grid item xs={12} md={6}>
                   <MaterialTextField
-                    fieldLabel="Salary"
+                    fieldLabel="Wage/day"
                     onChange={this.onChange}
                     fieldName="salary"
                     state={this.state}
                     errors={errors}
                     disabled={mode === "view"}
                     autoFocus={true}
+                    InputProps={{
+                      startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                    }}
                   />
                 </Grid>
 
-                <Grid item xs={12} md={6}>
-                  <MaterialNumberSelect
-                    onChange={this.onChange}
-                    state={this.state}
-                    fieldLabel="Leave Remaining"
-                    fieldName="leaveRemaining"
-                    optionStart={1}
-                    optionEnd={20}
-                    disabled={mode === "view"}
-                  />
-                </Grid>
 
                 <Grid item xs={12} md={6}>
                   {mode === "view" ? (

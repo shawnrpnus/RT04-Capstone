@@ -20,15 +20,16 @@ import java.util.List;
 @Service
 public class AprioriService {
 
-    public List<List<Long>> performBasketAnalysis(String path) throws IOException {
+    public List<List<Long>> performBasketAnalysis(String path, String data) throws IOException {
 
-        String input = path;
-        String output = null;
-        // Note : we here set the output file path to null
-        // because we want that the algorithm save the
-        // result in memory for this example.
+        // String input = path;
+        // String output = null;
+        /** Note : we here set the output file path to null
+         because we want that the algorithm save the
+         result in memory for this example.
+         */
 
-        double minsup = 0.2; // means a minsup of (n) matching transactions (we used a relative support)
+        double minsup = 0.05; // means a minsup of (n) matching transactions (we used a relative support)
 
         // Applying the Apriori algorithm
         AlgoApriori algorithm = new AlgoApriori();
@@ -36,9 +37,14 @@ public class AprioriService {
         // Uncomment the following line to set the maximum pattern length (number of items per itemset, e.g. 3 )
         // apriori.setMaximumPatternLength(3);
 
-        Itemsets result = algorithm.runAlgorithm(minsup, input, output);
-//        algorithm.printStats();
-//        result.printItemsets(algorithm.getDatabaseSize());
+        Itemsets result;
+        if (path != null) {
+            result = algorithm.runAlgorithm(minsup, path, null, null);
+        } else {
+            result = algorithm.runAlgorithm(minsup, null, null, data);
+        }
+        // algorithm.printStats();
+        // result.printItemsets(algorithm.getDatabaseSize());
 
         List<List<Long>> transactionIdsList = new ArrayList<>();
         List<Long> transactionIds;
@@ -49,7 +55,7 @@ public class AprioriService {
                 for (int transactionId : itemset.getItems()) {
                     transactionIds.add(Long.valueOf(transactionId));
                 }
-                if (transactionIds.size() > 1)
+                if (transactionIds.size() == 2)
                     transactionIdsList.add(transactionIds);
             }
         }
@@ -65,7 +71,6 @@ public class AprioriService {
     }
 
     public static String fileToPath(String filename) throws UnsupportedEncodingException {
-        System.out.println("filename : " + filename);
         URL url = AprioriService.class.getResource(filename);
         return java.net.URLDecoder.decode(url.getPath(), "UTF-8");
     }

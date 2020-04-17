@@ -1,7 +1,6 @@
 package capstone.rt04.retailbackend.repositories;
 
 import capstone.rt04.retailbackend.entities.ProductStock;
-import capstone.rt04.retailbackend.entities.Store;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
@@ -19,10 +18,15 @@ public interface ProductStockRepository extends CrudRepository<ProductStock, Lon
 
     ProductStock findByWarehouse_WarehouseIdAndProductVariant_ProductVariantId(Long warehouseId, Long productVariantId);
 
-    List<ProductStock> findAllByProductVariantProductVariantId(Long productVariantId);
+    List<ProductStock> findAllByWarehouse_WarehouseIdAndQuantityLessThan(Long warehouseId, Integer quantity);
+
+    List<ProductStock> findAllByStore_StoreIdAndQuantityLessThan(Long warehouseId, Integer quantity);
 
     @Query("SELECT ps FROM ProductStock ps WHERE ps.store.storeId =?1 AND ps.productVariant.productVariantId =?2")
     ProductStock findAllByStoreStoreIdAndProductVariantProductVariantId(Long storeId, Long productVariantId);
+
+    @Query("SELECT ps FROM ProductStock ps WHERE ps.warehouse.warehouseId =?1 AND ps.productVariant.productVariantId =?2")
+    ProductStock findWarehouseProductStockByVariant(Long warehouseId, Long productVariantId);
 
     @Query("SELECT ps FROM ProductStock ps WHERE ps.quantity <= ps.notificationLevel AND ps.warehouse.warehouseId =?1")
     List<ProductStock> findAllQuantityLessThanNotificationLevel(Long warehouseId);

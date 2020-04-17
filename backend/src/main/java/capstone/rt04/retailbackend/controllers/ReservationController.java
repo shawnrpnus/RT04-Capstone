@@ -3,9 +3,11 @@ package capstone.rt04.retailbackend.controllers;
 import capstone.rt04.retailbackend.entities.ProductVariant;
 import capstone.rt04.retailbackend.entities.Reservation;
 import capstone.rt04.retailbackend.entities.Store;
+import capstone.rt04.retailbackend.entities.Transaction;
 import capstone.rt04.retailbackend.request.customer.CreateReservationRequest;
 import capstone.rt04.retailbackend.request.customer.UpdateReservationRequest;
 import capstone.rt04.retailbackend.request.customer.UpdateReservationStatusRequest;
+import capstone.rt04.retailbackend.request.reservation.ReservationsByTimeslotRequest;
 import capstone.rt04.retailbackend.response.ReservationStockCheckResponse;
 import capstone.rt04.retailbackend.services.RelationshipService;
 import capstone.rt04.retailbackend.services.ReservationService;
@@ -21,6 +23,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.ZonedDateTime;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -54,13 +58,14 @@ public class ReservationController {
 
     @GetMapping(CustomerControllerRoutes.GET_AVAIL_SLOTS_FOR_STORE)
     public List<ZonedDateTime> getAvailSlotsForStore(@RequestParam Long storeId) throws StoreNotFoundException {
-        return reservationService.getAvailTimelotsForStore(storeId);
+        return reservationService.getAvailTimeSlotsForStore(storeId);
     }
 
     @GetMapping(CustomerControllerRoutes.GET_UPCOMING_RESERVATIONS)
     public List<Reservation> getUpcomingReservations(@RequestParam Long customerId) throws CustomerNotFoundException {
         List<Reservation> upcomingReservations = reservationService.getCustomerUpcomingReservations(customerId);
         upcomingReservations.forEach(this::clearReservationRelationships);
+        Collections.sort(upcomingReservations, Comparator.comparing(Reservation::getReservationDateTime).reversed());
         return upcomingReservations;
     }
 
@@ -68,6 +73,7 @@ public class ReservationController {
     public List<Reservation> getPastReservations(@RequestParam Long customerId) throws CustomerNotFoundException {
         List<Reservation> pastReservations = reservationService.getCustomerPastReservations(customerId);
         pastReservations.forEach(this::clearReservationRelationships);
+        Collections.sort(pastReservations, Comparator.comparing(Reservation::getReservationDateTime).reversed());
         return pastReservations;
     }
 
@@ -120,11 +126,7 @@ public class ReservationController {
     public ResponseEntity<?> getReservationsForStore(@RequestParam Long storeId) {
         List<Reservation> reservations = reservationService.getUpcomingReservationsForStore(storeId);
         reservations.forEach(this::clearReservationRelationships);
-        reservations.sort((r1, r2) ->
-                r1.getReservationDateTime().equals(r2.getReservationDateTime())
-                ? 0
-                : r1.getReservationDateTime().before(r2.getReservationDateTime())
-                ? -1 : 1);
+        Collections.sort(reservations, Comparator.comparing(Reservation::getReservationDateTime).reversed());
         return new ResponseEntity<>(reservations, HttpStatus.OK);
     }
 
@@ -135,6 +137,18 @@ public class ReservationController {
         return new ResponseEntity<>(reservation, HttpStatus.OK);
     }
 
+    @GetMapping("/generateTestReservations/{numReservations}")
+    public ResponseEntity<?> generateTestReservations(@PathVariable Integer numReservations) throws ProductVariantNotFoundException, StoreNotFoundException, CustomerNotFoundException {
+        reservationService.generateTestReservations(numReservations);
+        return new ResponseEntity<>("Reservations generated successfully", HttpStatus.OK);
+    }
+
+    @PostMapping("/retrieveReservationsByTimeslot")
+    public ResponseEntity<?> retrieveSalesByDay(@RequestBody ReservationsByTimeslotRequest req){
+        Map<String, Object> res = reservationService.getReservationsPerTimeSlotData(req.getFromDateString(),
+                req.getToDateString(), req.getStoreIds());
+        return new ResponseEntity<>(res, HttpStatus.OK);
+    }
 
     private void clearReservationStockCheckResponseRelationships(ReservationStockCheckResponse rscp) {
         Store store = rscp.getStore();
@@ -142,6 +156,8 @@ public class ReservationController {
         store.setInStoreRestockOrders(null);
         store.setReservations(null);
         store.setStaff(null);
+        store.setTransactions(null);
+
     }
 
 
@@ -162,12 +178,12 @@ public class ReservationController {
             reservation.getCustomer().setTransactions(null);
             reservation.getCustomer().setStyle(null);
             reservation.getCustomer().setReviews(null);
+            reservation.getCustomer().setCreditCards(null);
+            reservation.getCustomer().setShippingAddresses(null);
+            reservation.getCustomer().setUsedPromoCodes(null);
         }
         if (reservation.getStore() != null) {
-            reservation.getStore().setReservations(null);
-            reservation.getStore().setProductStocks(null);
-            reservation.getStore().setStaff(null);
+            relationshipService.clearStoreRelationships(reservation.getStore());
         }
-        relationshipService.clearStoreRelationships(reservation.getStore());
     }
 }

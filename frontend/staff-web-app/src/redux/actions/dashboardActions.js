@@ -30,3 +30,25 @@ export const retrieveMarketBasketAnalysisResult = () => {
       });
   };
 };
+
+export const retrieveLowStockProducts = storeId => {
+  // return dispatch => {
+  //   dispatch(openCircularProgress());
+  return axios
+    .get(DASHBOARD_BASE_URL + "/retrieveLowStockProducts", {
+      params: { storeId }
+    })
+    .then(response => {
+      // dispatch(closeCircularProgress());
+      return response.data.body;
+    })
+    .catch(err => {
+      if (err.response)
+        toast.error(err.response, {
+          position: toast.POSITION.TOP_CENTER
+        });
+      console.log(err);
+      // dispatch(closeCircularProgress());
+    });
+  // };
+};

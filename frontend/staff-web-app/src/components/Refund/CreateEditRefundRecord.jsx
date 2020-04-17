@@ -11,7 +11,7 @@ import {
   createInStoreRefundRequest,
   createInStoreRefundSuccess,
   retrieveAllRefundModeEnum,
-  retrieveAllRefundStatusEnum
+  retrieveAllRefundStatusEnum,
 } from "../../redux/actions/refundAction";
 import MenuItem from "@material-ui/core/MenuItem";
 import InputLabel from "@material-ui/core/InputLabel";
@@ -20,7 +20,7 @@ import { Button } from "reactstrap";
 import axios from "axios";
 import {
   retrieveTransactionByOrderNumber,
-  retrieveTransactionByOrderNumberSuccess
+  retrieveTransactionByOrderNumberSuccess,
 } from "../../redux/actions/transactionAction";
 import MaterialTable from "material-table";
 import {
@@ -39,7 +39,7 @@ import {
   Search,
   ShoppingCart,
   ViewColumn,
-  Visibility
+  Visibility,
 } from "@material-ui/icons";
 import store from "../../App/store";
 import MaterialNumberSelect from "../../shared/components/Form/MaterialNumberSelect";
@@ -48,6 +48,7 @@ import Refund from "../../App/Router/WrappedRoutes/Refund";
 import RefundRequest from "../../models/refund/RefundRequest";
 import { useHistory } from "react-router-dom";
 import FormControl from "@material-ui/core/FormControl";
+import Box from "@material-ui/core/Box";
 
 const tableIcons = {
   Add: AddBox,
@@ -66,13 +67,13 @@ const tableIcons = {
   Search: Search,
   SortArrow: () => <div />,
   ThirdStateCheck: Remove,
-  ViewColumn: ViewColumn
+  ViewColumn: ViewColumn,
 };
 
 const _ = require("lodash");
 
-const CreateEditRefundRecord = props => {
-  const errors = useSelector(state => state.errors);
+const CreateEditRefundRecord = (props) => {
+  const errors = useSelector((state) => state.errors);
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -93,25 +94,27 @@ const CreateEditRefundRecord = props => {
     quantityToRefund: new Array(12).fill(0),
     customerId: "",
     promoCode: "-",
-    promoCodeName: ""
+    promoCodeName: "",
+    claimed: "CLAIMED",
+    isRefundable: false,
   });
+  const [textToDisplay, setTextToDisplay] = useState("");
   const allRefundStatusEnums = useSelector(
-    state => state.refund.allRefundStatusEnum
+    (state) => state.refund.allRefundStatusEnum
   );
   const allRefundModeEnums = useSelector(
-    state => state.refund.allRefundModeEnum
+    (state) => state.refund.allRefundModeEnum
   );
-  const currStaff = useSelector(state => state.staffEntity.loggedInStaff);
-  const currTransaction = useSelector(state => state.transaction.transaction);
+  const currStaff = useSelector((state) => state.staffEntity.loggedInStaff);
+  const currTransaction = useSelector((state) => state.transaction.transaction);
   // const currLength = useSelector(state => state.transaction.transaction.transactionLineItems.length);
-  console.log(currTransaction);
-  console.log(inputState);
+  // console.log(inputState);
   useEffect(() => {
     dispatch(retrieveTransactionByOrderNumberSuccess());
   }, []);
   useEffect(
     () =>
-      setInputState(inputState => ({
+      setInputState((inputState) => ({
         ...inputState,
         quantityToRefund: new Array(
           _.get(currTransaction, "transactionLineItems.length")
@@ -125,27 +128,95 @@ const CreateEditRefundRecord = props => {
           : 0,
         promoCodeName: _.get(currTransaction, "promoCode")
           ? _.get(currTransaction, "promoCode.promoCodeName")
-          : 0
+          : 0,
+        promoCodeClaimed:
+          _.get(
+            currTransaction,
+            "transactionLineItems[0].refundLineItems[0]"
+          ) &&
+          _.get(currTransaction, "promoCode") &&
+          _.get(currTransaction, "promoCode.flatDiscount"),
+        isRefundable: checkRefundable(currTransaction),
       })),
     [currTransaction]
   );
-  // console.log(allRefundModeEnums);
-  console.log(inputState);
-  const onChange = e => {
+  const onChange = (e) => {
     e.persist();
     console.log(e);
-    setInputState(inputState => ({
+    setInputState((inputState) => ({
       ...inputState,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     }));
     if (Object.keys(errors).length !== 0) {
       dispatch(clearErrors());
     }
-    // console.log(inputState);
+  };
+
+  const checkRefundable = (transaction) => {
+    if (!transaction) {
+      return false;
+    }
+    let toRefund = false;
+    let totalRefundQuantity = 0;
+    let totalForEachItem = 0;
+
+    setTextToDisplay("this is not supposed to appear, let me know if it does");
+
+    totalForEachItem = new Array(transaction.transactionLineItems.length).fill(
+      0
+    );
+    for (let i = 0; i < transaction.transactionLineItems.length; i++) {
+      for (
+        let j = 0;
+        j < transaction.transactionLineItems[i].refundLineItems.length;
+        j++
+      ) {
+        totalForEachItem[i] +=
+          transaction.transactionLineItems[i].refundLineItems[j].quantity;
+      }
+    }
+
+    if (
+      transaction.deliveryStatus !== "DELIVERED" &&
+      transaction.deliveryStatus !== "COLLECTED"
+    ) {
+      // console.log(transaction.deliveryStatus);
+      // console.log(transaction.deliveryStatus === "DELIVERED");
+      setTextToDisplay("Refund Not Available: Customer yet to receive goods");
+
+      return false;
+    }
+
+    if (transaction.deliveredDateTime) {
+      let datePastRefund = new Date(transaction.deliveredDateTime);
+      datePastRefund.setDate(datePastRefund.getDate() + 14);
+      if (datePastRefund < new Date()) {
+        toRefund = false;
+        setTextToDisplay("Refund Not Available: Refund Date Exceeded");
+        return toRefund;
+      }
+    }
+
+    //no refund before
+    if (totalForEachItem === 0) {
+      toRefund = true;
+      return toRefund;
+    }
+
+    for (let i = 0; i < transaction.transactionLineItems.length; i++) {
+      let val = totalForEachItem[i];
+      if (transaction.transactionLineItems[i].quantity > val) {
+        toRefund = true;
+        return toRefund;
+      }
+    }
+    // cannot refund because max liao
+    setTextToDisplay("Refund Not Available: Fully Refunded");
+    return toRefund;
   };
 
   const onChangeTable = (e, index, rowData) => {
-    console.log(e);
+    // console.log(e);
     // const temp = { ...inputState };
     // temp.quantityToRefund[index] = e.target.value;
     // setInputState(temp);
@@ -153,7 +224,7 @@ const CreateEditRefundRecord = props => {
     let temp = { ...inputState };
     let arr = [...inputState.quantityToRefund];
     arr[index] = e.target.value;
-    console.log(arr);
+    // console.log(arr);
     let totalQuantity = arr.reduce((a, b) => a + b, 0);
     // let amount = inputState.refundAmt;
     // amount += (e.target.value * rowData.initialSubTotal);
@@ -161,16 +232,15 @@ const CreateEditRefundRecord = props => {
     let amount = 0;
     amount = calculateTotalRefundAmount(arr);
 
-    setInputState(inputState => ({
+    setInputState((inputState) => ({
       ...inputState,
       quantityToRefund: arr,
       quantity: totalQuantity,
-      totalRefundAmount: amount
+      totalRefundAmount: amount.toFixed(2),
     }));
   };
-  console.log("promoCode", inputState.promoCode);
 
-  const calculateTotalRefundAmount = arr => {
+  const calculateTotalRefundAmount = (arr) => {
     console.log(arr);
     const lineItems = currTransaction.transactionLineItems;
     console.log(lineItems);
@@ -186,17 +256,20 @@ const CreateEditRefundRecord = props => {
         amt += (item.initialSubTotal / item.quantity) * arr[index];
         arrayAmt[index] = item.initialSubTotal / item.quantity;
       }
-      if (inputState.promoCode) {
-        amt -= inputState.promoCode.flatDiscount;
-        let val = 1 - inputState.promoCode.percentageDiscount / 100.0;
-        amt *= val;
-      }
 
-      setInputState(inputState => ({
+      setInputState((inputState) => ({
         ...inputState,
-        refundAmt: arrayAmt
+        refundAmt: arrayAmt,
       }));
       return amt;
+    }
+    if (inputState.promoCode && !inputState.promoCodeClaimed) {
+      amt -= inputState.promoCode.flatDiscount;
+      let val = 1 - inputState.promoCode.percentageDiscount / 100.0;
+      amt *= val;
+    }
+    if (amt < 0) {
+      amt = 0;
     }
     console.log(amt);
     return amt;
@@ -221,12 +294,13 @@ const CreateEditRefundRecord = props => {
           Search
         </Button>
       </InputAdornment>
-    )
+    ),
   };
 
   const onSubmit = () => {
     const lineItems = currTransaction.transactionLineItems;
     const staffId = currStaff.staffId;
+    const storeId = currStaff.store.storeId;
     const refundLineItems = [];
     lineItems.forEach(myFunction);
     function myFunction(item, index) {
@@ -245,7 +319,8 @@ const CreateEditRefundRecord = props => {
       inputState.refundMode,
       inputState.reason,
       refundLineItems,
-      inputState.customerId
+      inputState.customerId,
+      storeId
     );
     console.log(refundRequest);
     dispatch(createInStoreRefundRequest(refundRequest, history, setInputState));
@@ -308,7 +383,24 @@ const CreateEditRefundRecord = props => {
           </Grid>
           <Grid item xs={12} md={6}></Grid>
 
-          <Grid item xs={12} md={12}>
+          <Grid item xs={12} md={12} justify="center">
+            {currTransaction && !inputState.isRefundable ? (
+              <Box
+                style={{
+                  margin: "auto",
+                  width: "50%",
+                  backgroundColor: "#ffe6cc",
+                  padding: "10px",
+                  textAlign: "center",
+                }}
+                component="span"
+                display="block"
+              >
+                <b>{textToDisplay}</b>
+              </Box>
+            ) : (
+              ""
+            )}
             {currTransaction ? (
               <MaterialTable
                 title="Transaction Details"
@@ -317,45 +409,45 @@ const CreateEditRefundRecord = props => {
                 columns={[
                   {
                     title: "Serial No.",
-                    field: "productVariant.product.serialNumber"
+                    field: "productVariant.product.serialNumber",
                   },
                   {
                     title: "Product Name",
-                    field: "productVariant.product.productName"
+                    field: "productVariant.product.productName",
                   },
                   {
                     title: "Image",
                     field: "image",
-                    render: rowData => (
+                    render: (rowData) => (
                       <img
                         style={{
                           width: "50%",
-                          borderRadius: "10%"
+                          borderRadius: "10%",
                         }}
                         src={
                           rowData.productVariant.productImages[0]
                             .productImageUrl
                         }
                       />
-                    )
+                    ),
                   },
                   {
                     title: "Unit Price",
                     field: "initialSubTotal",
-                    render: rowData => {
+                    render: (rowData) => {
                       const rowTotal = rowData.initialSubTotal;
                       let valToDisplay = rowTotal / rowData.quantity;
-                      return valToDisplay;
-                    }
+                      return valToDisplay.toFixed(2);
+                    },
                   },
                   {
                     title: "Quantity",
-                    field: "quantity"
+                    field: "quantity",
                   },
                   {
                     title: "Price",
                     field: "finalSubTotal",
-                    render: rowData => {
+                    render: (rowData) => {
                       const finalSubTotal = rowData.finalSubTotal;
                       // console.log(finalSubTotal);
                       let valToDisplay = 0;
@@ -364,30 +456,36 @@ const CreateEditRefundRecord = props => {
                       } else {
                         valToDisplay = rowData.initialSubTotal;
                       }
-                      return valToDisplay;
-                    }
+                      return valToDisplay.toFixed(2);
+                    },
                   },
                   {
                     title: "Quantity to Refund",
                     field: "quantityToRefund[tableData.id]",
-                    render: rowData => {
+                    render: (rowData) => {
                       const tableData = rowData.tableData;
                       console.log("tableData", tableData);
                       console.log("rowData", rowData);
+                      // console.log(totalForEachItem);
+                      let rowTotal = 0;
+                      for (let i = 0; i < rowData.refundLineItems.length; i++) {
+                        rowTotal += rowData.refundLineItems[i].quantity;
+                      }
+
+                      const qtyToRefund = rowData.quantity + 1 - rowTotal;
+                      console.log(qtyToRefund);
                       return (
                         <Select
                           name="quantityToRefund[tableData.id]"
                           value={inputState.quantityToRefund[tableData.id] || 0}
-                          onChange={e => {
+                          onChange={(e) => {
                             onChangeTable(e, tableData.id, rowData);
                           }}
                           fullWidth
                           label="Refund Status"
+                          disabled={!inputState.isRefundable}
                         >
-                          {_.range(0, rowData.quantity + 1).map(function(
-                            item,
-                            index
-                          ) {
+                          {_.range(0, qtyToRefund).map(function(item, index) {
                             return (
                               <MenuItem value={item} key={index}>
                                 {item}
@@ -396,8 +494,8 @@ const CreateEditRefundRecord = props => {
                           })}
                         </Select>
                       );
-                    }
-                  }
+                    },
+                  },
                 ]}
                 data={currTransaction.transactionLineItems}
                 options={{
@@ -407,7 +505,7 @@ const CreateEditRefundRecord = props => {
                   pageSizeOptions: [3, 5, 10],
                   actionsColumnIndex: -1,
                   headerStyle: { textAlign: "center" }, //change header padding
-                  cellStyle: { textAlign: "center" }
+                  cellStyle: { textAlign: "center" },
                   // selection: true
                 }}
                 // actions={[
@@ -430,14 +528,35 @@ const CreateEditRefundRecord = props => {
                 // ]}
               />
             ) : (
+              //   : currTransaction && !inputState.isRefundable
+              // ? (
+              //     <Box style={{
+              //       margin: "auto",
+              //       width: "50%",
+              //       border: "3px solid green",
+              //       padding: "10px",
+              //       textAlign: "center"
+              //     }} component="span" display="block">
+              //       <b>{textToDisplay}</b>
+              //     </Box>
+              // )
               ""
             )}
           </Grid>
           <Grid item xs={12} md={6}>
-            {currTransaction ? (
+            {currTransaction && !inputState.promoCodeClaimed ? (
               <MaterialTextField
                 fieldLabel="Promo Code Used"
                 fieldName="promoCodeName"
+                state={inputState}
+                errors={errors}
+                onChange={onChange}
+                disabled={true}
+              />
+            ) : currTransaction && inputState.promoCodeClaimed ? (
+              <MaterialTextField
+                fieldLabel="Promo Code Used"
+                fieldName="claimed"
                 state={inputState}
                 errors={errors}
                 onChange={onChange}
@@ -485,7 +604,7 @@ const CreateEditRefundRecord = props => {
               onClick={onSubmit}
               round
               color="primary"
-              disabled={!currTransaction}
+              disabled={!inputState.isRefundable}
             >
               Submit
             </Button>

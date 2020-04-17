@@ -1,6 +1,8 @@
 package capstone.rt04.retailbackend.services;
 
 import capstone.rt04.retailbackend.entities.CreditCard;
+import capstone.rt04.retailbackend.entities.Transaction;
+import capstone.rt04.retailbackend.util.enums.CollectionModeEnum;
 import capstone.rt04.retailbackend.util.exceptions.customer.AddressNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.customer.CreditCardNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.customer.CustomerNotFoundException;
@@ -18,11 +20,9 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import static capstone.rt04.retailbackend.util.Constants.IN_STORE_SHOPPING_CART;
 import static capstone.rt04.retailbackend.util.Constants.ONLINE_SHOPPING_CART;
 
 @Service
@@ -122,10 +122,10 @@ public class StripeService {
         return paymentMethods;
     }
 
-    public capstone.rt04.retailbackend.entities.Customer makePaymentWithSavedCard(Long customerId, String paymentMethodId, Long totalAmount,
-                                                                                  Long shoppingCartId, capstone.rt04.retailbackend.entities.Address deliveryAddress,
-                                                                                  capstone.rt04.retailbackend.entities.Address billingAddress, Long storeToCollectId,
-                                                                                  Long promoCodeId)
+    public Transaction makePaymentWithSavedCard(Long customerId, String paymentMethodId, Long totalAmount,
+                                                Long storeId, capstone.rt04.retailbackend.entities.Address deliveryAddress,
+                                                capstone.rt04.retailbackend.entities.Address billingAddress, Long storeToCollectId,
+                                                Long promoCodeId, CollectionModeEnum collectionModeEnum, String cardIssuer, String cardLast4)
             throws CustomerNotFoundException, StripeException, InvalidCartTypeException, AddressNotFoundException, StoreNotFoundException, PromoCodeNotFoundException {
         Stripe.apiKey = "sk_test_E81pq87cIYZxL2NkXaXKsEEd00MGrcKvYx";
 
@@ -143,10 +143,15 @@ public class StripeService {
         try {
             PaymentIntent intent = PaymentIntent.create(createParams);
             // TODO: Convert shopping cart item to transaction line item and create new transaction
-            transactionService.createNewTransaction(customerId, shoppingCartId, ONLINE_SHOPPING_CART, deliveryAddress, billingAddress, storeToCollectId, promoCodeId);
-            System.out.println("Payment success!");
-            System.out.print(intent.getClientSecret());
-            return customer;
+            if (storeId == null) {
+                System.out.println("Online Payment success!");
+                return transactionService.createNewTransaction(customerId, storeId, ONLINE_SHOPPING_CART, deliveryAddress, billingAddress, storeToCollectId, promoCodeId, collectionModeEnum, cardIssuer, cardLast4, paymentMethodId);
+            } else {
+                System.out.println("In Store Payment success!");
+                System.out.print(intent.getClientSecret());
+                return transactionService.createNewTransaction(customerId, storeId, IN_STORE_SHOPPING_CART, deliveryAddress, billingAddress, storeToCollectId, promoCodeId, collectionModeEnum, cardIssuer, cardLast4, paymentMethodId);
+            }
+
         } catch (CardException err) {
             // Error code will be authentication_required if authentication is needed
             System.out.println("Error code is : " + err.getCode());
@@ -166,7 +171,6 @@ public class StripeService {
 
         for (CreditCard creditCard : creditCards) {
             if (creditCard.getCreditCardId().equals(creditCardId)) {
-                System.out.println("Deleting card");
                 PaymentMethod paymentMethod = PaymentMethod.retrieve(creditCard.getPaymentMethodId());
                 paymentMethod.detach();
                 customerService.deleteCreditCard(customerId, creditCard.getCreditCardId());

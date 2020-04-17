@@ -65,7 +65,10 @@ class AddStyleToProduct extends Component {
       // console.log(element.productId);
       productIds.push(element.productId);
     });
-    const req = new DeleteStyleFromProductsRequest(this.state.styleId, productIds);
+    const req = new DeleteStyleFromProductsRequest(
+      this.state.styleId,
+      productIds
+    );
     this.props
       .confirmDialog({
         description: "Style will be deleted for the selected products."
@@ -141,9 +144,10 @@ class AddStyleToProduct extends Component {
                     selectable={true}
                     products={this.props.allProducts.filter(
                       p =>
-                        p.product.styles.filter(t => t.styleId === this.state.styleId)
-                          .length === 0
-                    )}
+                        p.product.styles.filter(
+                          t => t.styleId === this.state.styleId
+                        ).length === 0
+                  )}
                     selectionAction={{
                       tooltip: "Add Style To Products",
                       icon: Add,
@@ -163,8 +167,9 @@ class AddStyleToProduct extends Component {
                     selectable={salesmarketing ? true : false}
                     products={this.props.allProducts.filter(
                       p =>
-                        p.product.styles.filter(t => t.styleId === this.state.styleId)
-                          .length !== 0
+                        p.product.styles.filter(
+                          t => t.styleId === this.state.styleId
+                        ).length !== 0
                     )}
                     selectionAction={
                       salesmarketing

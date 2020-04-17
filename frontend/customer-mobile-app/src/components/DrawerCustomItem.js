@@ -1,12 +1,13 @@
 import React from "react";
-import {AsyncStorage, StyleSheet, TouchableOpacity} from "react-native";
+import { AsyncStorage, StyleSheet, TouchableOpacity } from "react-native";
 import { Block, Text, theme } from "galio-framework";
 
 import Icon from "./Icon";
 import materialTheme from "src/constants/Theme";
-import {useDispatch} from "react-redux";
-import {customerLogout} from "src/redux/actions/customerActions";
-import { StackActions } from '@react-navigation/native';
+import { useDispatch } from "react-redux";
+import { customerLogout } from "src/redux/actions/customerActions";
+import { StackActions } from "@react-navigation/native";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 function DrawerCustomItem(props) {
   const { title, focused, navigation } = props;
@@ -18,7 +19,7 @@ function DrawerCustomItem(props) {
       case "ShopStack":
         return (
           <Icon
-            size={14}
+            size={20}
             name="shop"
             family="entypo"
             color={focused ? "white" : materialTheme.COLORS.MUTED}
@@ -27,16 +28,48 @@ function DrawerCustomItem(props) {
       case "ProfileStack":
         return (
           <Icon
-            size={16}
+            size={20}
             name="home"
             family="entypo"
             color={focused ? "white" : materialTheme.COLORS.MUTED}
           />
         );
+      case "PurchasesStack":
+        return (
+          <Icon
+            size={20}
+            name="payment"
+            family="MaterialIcons"
+            color={focused ? "white" : materialTheme.COLORS.MUTED}
+          />
+        );
+      case "CollectionsStack":
+        return (
+          <Icon
+            size={20}
+            name="shopping-bag"
+            family="entypo"
+            color={focused ? "white" : materialTheme.COLORS.MUTED}
+          />
+        );
+      case "ReservationsStack":
+        return (
+          // <Icon
+          //   size={20}
+          //   name="calendar-multiselect"
+          //   family="MaterialCommunityIcons"
+          //   color={focused ? "white" : materialTheme.COLORS.MUTED}
+          // />
+          <MaterialCommunityIcons
+            name="calendar-multiselect"
+            size={20}
+            style={{ color: focused ? "white" : materialTheme.COLORS.MUTED }}
+          />
+        );
       case "Log Out":
         return (
           <Icon
-            size={16}
+            size={20}
             name="log-out"
             family="entypo"
             color={focused ? "white" : materialTheme.COLORS.MUTED}
@@ -49,13 +82,14 @@ function DrawerCustomItem(props) {
 
   const logout = () => {
     AsyncStorage.removeItem("state").then(() => dispatch(customerLogout));
-  }
-
+  };
 
   return (
     <TouchableOpacity
       style={{ height: 55 }}
-      onPress={title === "Log Out" ? () => logout() : () => navigation.navigate(title)}
+      onPress={
+        title === "Log Out" ? () => logout() : () => navigation.navigate(title)
+      }
     >
       <Block
         flex
@@ -65,15 +99,21 @@ function DrawerCustomItem(props) {
           focused ? [styles.activeStyle, styles.shadow] : null
         ]}
       >
-        <Block middle flex={0.1} style={{ marginRight: 28 }}>
+        <Block middle flex={0.15} style={{ marginRight: 10 }}>
           {renderIcon()}
         </Block>
-        <Block flex={0.9}>
+        <Block flex={0.85}>
           <Text size={15} color={focused ? "white" : "black"}>
             {title === "ProfileStack"
               ? "Profile"
               : title === "ShopStack"
               ? "Shop"
+              : title === "PurchasesStack"
+              ? "Purchases"
+              : title === "ReservationsStack"
+              ? "Reservations"
+              : title === "CollectionsStack"
+              ? "Collections"
               : title}
           </Text>
         </Block>
@@ -88,7 +128,8 @@ const styles = StyleSheet.create({
   defaultStyle: {
     paddingVertical: 16,
     paddingHorizontal: 16,
-    marginBottom: 6
+    marginBottom: 6,
+    alignItems: "center"
   },
   activeStyle: {
     backgroundColor: materialTheme.COLORS.ACCENT_LIGHTER,

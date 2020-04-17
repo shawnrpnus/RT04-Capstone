@@ -22,6 +22,15 @@
     <br/>
     <br/>
 
+### Preloading Data
+1. Run the application. This will create all database tables and fill with some preloaded information. 
+2. Call API: GET http://localhost:8080/api/product/updateAlgolia. This will update the Algolia search index with our product information. 
+3. Run update1000.sql in src/main/resources/scripts. This will preload stocks to be used for preloading transactions.
+4. Call API: GET http://localhost:8080/api/transaction/generateTestTransactions/300, where 300 is the number of transactions to preload.
+5. Run randomTxnDate.sql in src/main/resources/scripts. This will randomise the preloaded transactions' dates.
+6. Call API: GET http://localhost:8080/api/reservation/generateTestReservations/300, where 300 is the number of reservations to preload. 
+7. Run update.sql in src/main/resources/scripts. This will preload the appropriate stock data.
+
 ## Node.js Backend
 
 ### Setup
@@ -52,11 +61,13 @@ npm start
 
 | Username         | Password | Department          |
 | ---------------- | -------- | ------------------- |
-| Warehouse42      | password | Warehouse           |
-| ITStaff44        | password | IT                  |
-| HRStaff46        | password | HR                  |
-| SalesMarketing48 | password | Sales and Marketing |
-| Store50          | password | Store               |
+| Warehouse43      | password | Warehouse           | 
+| HRStaff45        | password | HR                  | 
+| SalesMarketing47 | password | Sales and Marketing | 
+| Store1Staff49    | password | Store               | 
+| Store2Staff51    | password | Store               | 
+| Deliveryguy53    | password | Delivery            | 
+| Customerservice55| password | Customer Service    | 
 
 <br/>
 <br/>
@@ -76,4 +87,49 @@ npm start
 ### Using the website
 
 1. Register an account and verify the account using the link sent to the registered email
+2. Start shopping!
+
+<br/>
+<br/>
+
+## Staff Mobile App
+
+### Setup
+
+1. From the root folder of `RT04-Capstone`, navigate to staff-mobile-app folder by `cd frontend/staff-mobile-app`
+2. Run the following command to get started
+
+```
+npm install -g expo-cli
+npm install
+expo start
+```
+
+### Using the mobile app
+
+1. Login with the preconfigured roles with username and password combination specified below
+
+| Username         | Password | Department          |
+| ---------------- | -------- | ------------------- |
+| Store1Staff49    | password | Store               | 
+| Store2Staff51    | password | Store               | 
+
+<br/>
+<br/>
+
+## Customer Mobile App
+
+### Setup
+
+1. From the root folder of `RT04-Capstone`, navigate to customer-mobile-app folder by `cd frontend/customer-mobile-app`
+2. Run the following command to get started
+
+```
+npm install
+expo start
+```
+
+### Using the mobile app
+
+1. Login with your account registered on the customer web app.
 2. Start shopping!

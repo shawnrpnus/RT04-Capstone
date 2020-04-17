@@ -12,7 +12,7 @@ export default function CardSetupForm({ setIsLoading }) {
   const stripe = useStripe();
   const elements = useElements();
   const dispatch = useDispatch();
-  const customer = useSelector(state => state.customer.loggedInCustomer);
+  const customer = useSelector((state) => state.customer.loggedInCustomer);
 
   /*  
   Flow of events:
@@ -22,7 +22,7 @@ export default function CardSetupForm({ setIsLoading }) {
      - Return customer and dispatch to redux store to update information
   */
 
-  const handleSubmit = async event => {
+  const handleSubmit = async (event) => {
     // We don't want to let default form submission happen here,
     // which would refresh the page.
     setIsLoading(true);
@@ -36,7 +36,7 @@ export default function CardSetupForm({ setIsLoading }) {
 
     axios
       .get(`/initiateSaveCardRequest/${customer.customerId}`)
-      .then(async resp => {
+      .then(async (resp) => {
         console.log(resp);
         const client_secret = resp.data;
 
@@ -44,18 +44,18 @@ export default function CardSetupForm({ setIsLoading }) {
           payment_method: {
             card: elements.getElement(CardElement),
             billing_details: {
-              name: `${customer.firstName} ${customer.lastName}`
-            }
-          }
+              name: `${customer.firstName} ${customer.lastName}`,
+            },
+          },
         });
 
-        console.log(result);
+        // console.log(result);
 
         if (result.error) {
           console.log(result.error);
           // Display result.error.message in your UI.
         } else {
-          console.log(result.setupIntent.payment_method);
+          // console.log(result.setupIntent.payment_method);
           dispatch(
             saveCard({ customerId: customer.customerId, defaultCard: false })
           );
@@ -65,7 +65,7 @@ export default function CardSetupForm({ setIsLoading }) {
         }
         setIsLoading(false);
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
       });
   };

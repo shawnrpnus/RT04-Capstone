@@ -284,7 +284,6 @@ function Style(props) {
     const styleChosen = customer.style.styleName;
     const req = { customerId, styleChosen };
     dispatch(deleteStylePreferences(req, enqueueSnackbar, setAddedStyle));
-
     setPopoverOpen(false);
   };
 

@@ -1,7 +1,6 @@
 import axios from "axios";
 import * as types from "./types";
 import { toast } from "react-toastify";
-import { retrieveAllTags } from "./tagAction";
 axios.defaults.baseURL = process.env.REACT_APP_SPRING_API_URL;
 
 const PROMOCODE_BASE_URL = "/api/promoCode";
@@ -77,7 +76,10 @@ export const deletePromoCode = (promoCodeId, history) => {
         history.push(`/promoCode/viewAll`);
       })
       .catch(err => {
-        console.log(err);
+          //will catch PromoCodeLinkedToTransactionsException from backend but quantity will still be set to 0
+          toast.success("Promo Code quantity set to 0!", {
+              position: toast.POSITION.TOP_CENTER
+          });
         dispatch(deletePromoCodeError(err.response.data));
       });
   };

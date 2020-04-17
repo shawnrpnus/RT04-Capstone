@@ -7,6 +7,7 @@ import materialTheme from "src/constants/Theme";
 import { useDispatch } from "react-redux";
 import { staffLogout } from "src/redux/actions/staffActions";
 import { StackActions } from "@react-navigation/native";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 function DrawerCustomItem(props) {
   const { title, focused, navigation } = props;
@@ -40,6 +41,14 @@ function DrawerCustomItem(props) {
             name="home"
             family="entypo"
             color={focused ? "white" : materialTheme.COLORS.MUTED}
+          />
+        );
+      case "DeliveryStack":
+        return (
+          <MaterialCommunityIcons
+            size={20}
+            name="truck-delivery"
+            style={{ color: focused ? "white" : materialTheme.COLORS.MUTED }}
           />
         );
       case "Log Out":
@@ -86,6 +95,8 @@ function DrawerCustomItem(props) {
               ? "Product"
               : title === "ReservationStack"
               ? "Reservation"
+              : title === "DeliveryStack"
+              ? "Deliveries"
               : title}
           </Text>
         </Block>
@@ -100,7 +111,8 @@ const styles = StyleSheet.create({
   defaultStyle: {
     paddingVertical: 16,
     paddingHorizontal: 16,
-    marginBottom: 6
+    marginBottom: 6,
+    alignItems: "center"
   },
   activeStyle: {
     backgroundColor: materialTheme.COLORS.ACCENT_LIGHTER,

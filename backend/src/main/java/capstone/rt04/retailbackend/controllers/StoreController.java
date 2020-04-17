@@ -35,6 +35,7 @@ public class StoreController {
     @PostMapping(StoreControllerRoutes.CREATE_STORE)
     public ResponseEntity<?> createStore(@RequestBody Store store) throws InputDataValidationException, ProductVariantNotFoundException, WarehouseNotFoundException, StoreNotFoundException {
         Store newStore = storeService.createNewStore(store);
+        relationshipService.clearStoreRelationships(newStore);
         return new ResponseEntity<>(newStore, HttpStatus.CREATED);
     }
 
@@ -42,6 +43,7 @@ public class StoreController {
     public ResponseEntity<?> retrieveStoreById(@PathVariable Long storeId) {
         try {
             Store store = storeService.retrieveStoreById(storeId);
+            relationshipService.clearStoreRelationships(store);
             return new ResponseEntity<>(store, HttpStatus.OK);
         } catch (StoreNotFoundException ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
@@ -53,7 +55,7 @@ public class StoreController {
     @GetMapping(StoreControllerRoutes.RETRIEVE_ALL_STORES)
     public ResponseEntity<?> retrieveAllStores() {
         List<Store> stores = storeService.retrieveAllStores();
-        stores.forEach(store -> relationshipService.clearStoreRelationships(store));
+        stores.forEach(relationshipService::clearStoreRelationships);
         return new ResponseEntity<>(stores, HttpStatus.OK);
     }
 
@@ -62,6 +64,7 @@ public class StoreController {
     public ResponseEntity<?> updateStore(@RequestBody Store existingStore) throws InputDataValidationException {
         try {
             Store updatedStore = storeService.updateStore(existingStore);
+            relationshipService.clearStoreRelationships(updatedStore);
             return new ResponseEntity<>(updatedStore, HttpStatus.OK);
         } catch (StoreUnableToUpdateException ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
@@ -72,6 +75,7 @@ public class StoreController {
     public ResponseEntity<?> deleteStore(@PathVariable Long storeId) {
         try {
             Store deletedStore = storeService.deleteStore(storeId);
+            relationshipService.clearStoreRelationships(deletedStore);
             return new ResponseEntity<>(deletedStore, HttpStatus.OK);
         } catch (StoreNotFoundException ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
@@ -81,5 +85,6 @@ public class StoreController {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
 
 }

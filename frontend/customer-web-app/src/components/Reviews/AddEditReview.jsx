@@ -4,15 +4,12 @@ import sectionCommentsStyle from "../../assets/jss/material-kit-pro-react/views/
 import { useDispatch, useSelector } from "react-redux";
 import { useSnackbar } from "notistack";
 import Media from "../Layout/components/Media/Media";
-import React, { useEffect, useState } from "react";
-import CustomInput from "../UI/CustomInput/CustomInput";
+import React, { useState } from "react";
 import Button from "@material-ui/core/Button";
 import { useHistory } from "react-router-dom";
 import Rating from "@material-ui/lab/Rating";
-import { Delete, Edit, Place } from "@material-ui/icons";
 import withStyles from "@material-ui/core/styles/withStyles";
 import { clearErrors } from "../../redux/actions";
-import InputAdornment from "@material-ui/core/InputAdornment";
 import CustomTextField from "../UI/CustomInput/CustomTextField";
 import Review from "../../models/review/Review";
 import AddEditReviewRequest from "../../models/review/AddEditReviewRequest";
@@ -79,7 +76,6 @@ export default function AddEditReview(props) {
 
   const onChange = e => {
     e.persist();
-    console.log(e);
     setInputState(inputState => ({
       ...inputState,
       [e.target.name]: e.target.value
@@ -87,7 +83,6 @@ export default function AddEditReview(props) {
     if (Object.keys(errors).length !== 0) {
       dispatch(clearErrors());
     }
-    // console.log(inputState);
   };
 
   const onSubmit = () => {

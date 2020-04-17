@@ -5,6 +5,7 @@
  */
 package capstone.rt04.retailbackend.entities;
 
+import capstone.rt04.retailbackend.util.enums.LeaveStatusEnum;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.voodoodyne.jackson.jsog.JSOGGenerator;
 import lombok.EqualsAndHashCode;
@@ -15,7 +16,8 @@ import lombok.ToString;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.util.Date;
 
 /**
  *
@@ -36,23 +38,24 @@ public class StaffLeave implements Serializable {
     
     @NotNull
     @Column(nullable = false)
-    private Timestamp fromDateTime;
+    private LocalDate fromDateTime;
     
     @NotNull
     @Column(nullable = false)
-    private Timestamp toDateTime;
-    
-    
-    private boolean endorsed; //by direct superior
-    
-    private boolean approved; //by HR
+    private LocalDate toDateTime;
+
+    private int numDays;
+    private LeaveStatusEnum status;
     
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
     private Staff applicant;
-    
+
     @ManyToOne
-    private Staff endorser; 
+    private Staff rejectedBy;
+
+    @ManyToOne
+    private Staff endorser;
     
     @ManyToOne
     private Staff approver;
@@ -60,10 +63,11 @@ public class StaffLeave implements Serializable {
     public StaffLeave() {
     }
 
-    public StaffLeave(Timestamp fromDateTime, Timestamp toDateTime, Staff staff) {
+    public StaffLeave(LocalDate fromDateTime, LocalDate toDateTime, Staff staff) {
         this.fromDateTime = fromDateTime;
         this.toDateTime = toDateTime;
         this.applicant = staff;
     }
+
 
 }

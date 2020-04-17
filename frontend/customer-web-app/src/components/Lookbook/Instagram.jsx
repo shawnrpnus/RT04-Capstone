@@ -20,12 +20,13 @@ const _ = require("lodash");
 const Instagram = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const instagramPosts = useSelector(state => state.instagram.instagramPosts);
+  const instagramPosts = useSelector((state) => state.instagram.instagramPosts);
   const [isHovering, setIsHovering] = useState(false);
   const [hoveredProductId, setHoveredProductId] = useState("");
 
-  console.log(hoveredProductId);
   useEffect(() => {
+    window.scrollTo(0, 0);
+    document.body.scrollTop = 0;
     dispatch(retrieveAllActiveInstagramPost());
   }, []);
 
@@ -54,7 +55,7 @@ const Instagram = () => {
                           src={instagramImgUrl}
                           style={{
                             height: "350px",
-                            width: "auto"
+                            width: "auto",
                           }}
                           alt={shortCode}
                         />
@@ -63,7 +64,7 @@ const Instagram = () => {
                         className={classes.coloredShadow}
                         style={{
                           backgroundImage: `url(${instagramImgUrl})`,
-                          opacity: "1"
+                          opacity: "1",
                         }}
                       />
                     </CardHeader>
@@ -80,11 +81,11 @@ const Instagram = () => {
                                 <h6
                                   className={classes.cardCategory}
                                   id={productId}
-                                  onMouseEnter={e => {
+                                  onMouseEnter={(e) => {
                                     setHoveredProductId(e.currentTarget.id);
                                     setIsHovering(true);
                                   }}
-                                  onMouseLeave={e => setIsHovering(false)}
+                                  onMouseLeave={(e) => setIsHovering(false)}
                                 >
                                   {productName}
                                 </h6>
@@ -100,7 +101,7 @@ const Instagram = () => {
                                       position: "absolute",
                                       height: "40%",
                                       bottom: "1px",
-                                      zIndex: 500
+                                      zIndex: 500,
                                     }}
                                     src={
                                       productVariants[0].productImages[0]

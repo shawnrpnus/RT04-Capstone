@@ -9,6 +9,11 @@ import { dispatchErrorMapError } from "src/redux/actions/index";
 import { Notifications } from "expo";
 import * as Permissions from "expo-permissions";
 import { Alert } from "react-native";
+import {
+  retrieveCustomerInStoreTransactions,
+  setViewedTransaction
+} from "src/redux/actions/transactionActions";
+import { StackActions } from "@react-navigation/native";
 
 const jsog = require("jsog");
 
@@ -45,7 +50,7 @@ export const refreshCustomer = (customerId, setRefreshing) => {
       })
       .then(response => {
         dispatchUpdatedCustomer(response.data, dispatch);
-        setRefreshing(false);
+        if (setRefreshing) setRefreshing(false);
       })
       .catch(err => {
         dispatchErrorMapError(err, dispatch);
@@ -122,10 +127,15 @@ export const updateInStoreShoppingCart = (
   };
 };
 
-export const getShoppingCartItemsStock = (customerId, inStoreDeliverHome) => {
+export const getShoppingCartItemsStock = (
+  customerId,
+  inStoreDeliverHome,
+  setLoading
+) => {
   const reqParams = inStoreDeliverHome
     ? { customerId, cartType: "instore", inStoreDeliverHome }
     : { customerId, cartType: "instore" };
+  if (setLoading) setLoading(true);
   return dispatch => {
     axios
       .get(CUSTOMER_BASE_URL + "/getShoppingCartItemsStock", {
@@ -133,9 +143,11 @@ export const getShoppingCartItemsStock = (customerId, inStoreDeliverHome) => {
       })
       .then(response => {
         dispatch(updateShoppingCartItemsStock(response.data));
+        if (setLoading) setLoading(false);
       })
       .catch(err => {
         console.log(err);
+        if (setLoading) setLoading(false);
       });
   };
 };
@@ -232,16 +244,17 @@ export const removeShippingAddress = (
 
 export const addCreditCard = (customerId, tokenId, setLoading) => {
   const req = { customerId, tokenId };
-  setLoading(true);
+  if (setLoading) setLoading(true);
   return dispatch => {
     axios
       .post(SPRING_BACKEND_URL + "/addCreditCardMobile", req)
       .then(response => {
         dispatchUpdatedCustomer(response.data, dispatch);
-        setLoading(false);
+        if (setLoading) setLoading(false);
       })
       .catch(err => {
         console.log(err);
+        if (setLoading) setLoading(false);
       });
   };
 };
@@ -258,6 +271,67 @@ export const removeCreditCard = (customerId, creditCardId, setLoading) => {
       })
       .catch(err => {
         console.log(err);
+      });
+  };
+};
+
+export const addAddressAtCheckout = (
+  customerId,
+  shippingAddress,
+  dispatch,
+  setAddressModalMode,
+  setCheckoutAddress
+) => {
+  return axios
+    .post(CUSTOMER_BASE_URL + "/addShippingAddressAtCheckout", {
+      customerId,
+      shippingAddress
+    })
+    .then(response => {
+      const { data } = jsog.decode(response);
+      setAddressModalMode(null);
+      setCheckoutAddress(data);
+      dispatch(refreshCustomer(customerId));
+      return data;
+    })
+    .catch(err => {
+      dispatchErrorMapError(err, dispatch);
+    });
+};
+
+export const makePaymentMobile = (req, customerId, setLoading, navigation) => {
+  setLoading(true);
+  return dispatch => {
+    axios
+      .post(SPRING_BACKEND_URL + "/makePaymentWithSavedCard", req)
+      .then(response => {
+        const { data } = jsog.decode(response);
+        axios
+          .get(CUSTOMER_BASE_URL + "/retrieveCustomerById", {
+            params: { customerId }
+          })
+          .then(response => {
+            dispatch(retrieveCustomerInStoreTransactions(customerId));
+            const redirectFunction = () => {
+              navigation.popToTop();
+              navigation.navigate("PurchasesStack", {
+                screen: "Purchase Details"
+              });
+            };
+            dispatch(
+              setViewedTransaction(
+                data.transactionId,
+                redirectFunction,
+                setLoading,
+                () => dispatchUpdatedCustomer(response.data, dispatch)
+              )
+            );
+          })
+          .catch(err => console.log(err));
+      })
+      .catch(err => {
+        console.log(err);
+        setLoading(false);
       });
   };
 };

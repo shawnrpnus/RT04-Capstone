@@ -39,22 +39,23 @@ import { ReservationNavbar } from "components/Layout/components/Header/Reservati
 
 const useStyles = makeStyles(styles);
 
-const HtmlTooltip = withStyles(theme => ({
+const HtmlTooltip = withStyles((theme) => ({
   tooltip: {
     backgroundColor: "#f5f5f9",
     color: "rgba(0, 0, 0, 0.87)",
     maxWidth: "100%",
     fontSize: theme.typography.pxToRem(12),
-    border: "1px solid #dadde9"
-  }
+    border: "1px solid #dadde9",
+  },
 }))(Tooltip);
 
 export default function HeaderLinks(props) {
-  const rootCategories = useSelector(state => state.category.rootCategories);
+  const rootCategories = useSelector((state) => state.category.rootCategories);
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(retrieveAllRootCategories());
   }, []);
+
   const easeInOutQuad = (t, b, c, d) => {
     t /= d / 2;
     if (t < 1) return (c / 2) * t * t + b;
@@ -122,7 +123,7 @@ export default function HeaderLinks(props) {
       </List> */}
       <List className={classes.list} style={{ width: "100%" }}>
         {rootCategories &&
-          rootCategories.map(rc => (
+          rootCategories.map((rc) => (
             <ListItem key={rc.categoryId} className={classes.listItem}>
               <CategoryNavbar category={rc} />
             </ListItem>
@@ -159,7 +160,7 @@ export default function HeaderLinks(props) {
 }
 
 HeaderLinks.defaultProps = {
-  hoverColor: "primary"
+  hoverColor: "primary",
 };
 
 HeaderLinks.propTypes = {
@@ -170,6 +171,6 @@ HeaderLinks.propTypes = {
     "success",
     "warning",
     "danger",
-    "rose"
-  ])
+    "rose",
+  ]),
 };

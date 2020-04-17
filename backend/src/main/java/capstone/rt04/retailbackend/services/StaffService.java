@@ -7,6 +7,7 @@ import capstone.rt04.retailbackend.util.enums.RoleNameEnum;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.staff.*;
 import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -16,7 +17,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.management.relation.RoleNotFoundException;
 import javax.persistence.PersistenceException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional
@@ -26,6 +30,7 @@ public class StaffService {
     private final Environment environment;
 
     private final ValidationService validationService;
+    private final DeliveryService deliveryService;
 
     private final StaffRepository staffRepository;
     private final AddressRepository addressRepository;
@@ -33,7 +38,7 @@ public class StaffService {
     private final AdvertisementRepository advertisementRepository;
     private final DeliveryRepository deliveryRepository;
     private final DepartmentRepository departmentRepository;
-    private final StaffLeaveRepository staffLeaveRepository;
+    private final LeaveRepository leaveRepository;
     private final PayrollRepository payrollRepository;
     private final ReviewRepository reviewRepository;
     private final RoleRepository roleRepository;
@@ -42,17 +47,25 @@ public class StaffService {
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
 
-    public StaffService(JavaMailSender javaMailSender, Environment environment, ValidationService validationService, StaffRepository staffRepository, AddressRepository addressRepository, VerificationCodeRepository verificationCodeRepository, AdvertisementRepository advertisementRepository, DeliveryRepository deliveryRepository, DepartmentRepository departmentRepository, StaffLeaveRepository staffLeaveRepository, ReviewRepository reviewRepository, PayrollRepository payrollRepository, RoleRepository roleRepository, StoreRepository storeRepository, WarehouseRepository warehouseRepository) {
+    public StaffService(JavaMailSender javaMailSender, Environment environment, ValidationService validationService,
+                        @Lazy DeliveryService deliveryService, StaffRepository staffRepository,
+                        AddressRepository addressRepository, VerificationCodeRepository verificationCodeRepository,
+                        AdvertisementRepository advertisementRepository, DeliveryRepository deliveryRepository,
+                        DepartmentRepository departmentRepository, LeaveRepository leaveRepository,
+                        ReviewRepository reviewRepository, PayrollRepository payrollRepository,
+                        RoleRepository roleRepository, StoreRepository storeRepository,
+                        WarehouseRepository warehouseRepository) {
         this.javaMailSender = javaMailSender;
         this.environment = environment;
         this.validationService = validationService;
+        this.deliveryService = deliveryService;
         this.staffRepository = staffRepository;
         this.addressRepository = addressRepository;
         this.verificationCodeRepository = verificationCodeRepository;
         this.advertisementRepository = advertisementRepository;
         this.deliveryRepository = deliveryRepository;
         this.departmentRepository = departmentRepository;
-        this.staffLeaveRepository = staffLeaveRepository;
+        this.leaveRepository = leaveRepository;
         this.reviewRepository = reviewRepository;
         this.payrollRepository = payrollRepository;
         this.roleRepository = roleRepository;
@@ -60,7 +73,7 @@ public class StaffService {
         this.warehouseRepository = warehouseRepository;
     }
 
-    public Role createNewRole(RoleNameEnum name) throws CreateRoleException {
+    public Role createNewRole(RoleNameEnum name) {
 
         Role newRole = new Role(name);
         Role r = roleRepository.save(newRole);
@@ -69,7 +82,7 @@ public class StaffService {
 
     }
 
-    public Department createNewDepartment(String name) throws CreateDepartmentException {
+    public Department createNewDepartment(String name) {
 
         Department newDepartment = new Department(name);
         Department d = departmentRepository.save(newDepartment);
@@ -103,12 +116,11 @@ public class StaffService {
         }
 
         //if department is HR or IT, cannot assign any store
-        if((d.getDepartmentName().equals("HR") || d.getDepartmentName().equals("IT")) && storeId !=null){
+        if ((d.getDepartmentName().equals("HR") || d.getDepartmentName().equals("IT")) && storeId != null) {
             Map<String, String> errorMap = new HashMap<>();
             errorMap.put("storeId", ErrorMessages.STORE_CANNOT_ASSIGN);
             throw new InputDataValidationException(errorMap, ErrorMessages.STORE_CANNOT_ASSIGN);
         }
-
 
 
         try {
@@ -128,9 +140,9 @@ public class StaffService {
             //If staff does not exist
             //Set address, role and department before saving because of sql constraint
             //Address ID, role ID and department ID column cannot be empty
+            staffAddress.setLat("1.378466");
+            staffAddress.setLng("103.746107");
             addressRepository.save(staffAddress);
-
-
 
 
             if (storeId != null) {
@@ -200,10 +212,7 @@ public class StaffService {
         }
 
         try {
-
-
             Staff staff = retrieveStaffByUsername(username);
-
             String password = "password";
             staff.setPassword(encoder.encode(password));
 
@@ -211,7 +220,6 @@ public class StaffService {
 //                //send an email to staff informing staff new password
 //                sendEmail(staffId.toString(), password, "shawnroshan@gmail.com"); //TODO: to change to actual email
 //            }
-
             return staff;
         } catch (StaffNotFoundException ex) {
             Map<String, String> errorMap = new HashMap<>();
@@ -223,20 +231,26 @@ public class StaffService {
     //for HR to retrieve all staff
     public List<Staff> retrieveAllStaff() {
         List<Staff> allStaff = staffRepository.findAll();
-
         for (Staff staff : allStaff) {
-            staff.getLeaves().size();
-            staff.getRepliedReviews().size();
-            staff.getStore();
-            staff.getRole();
-            staff.getDepartment();
-            staff.getPayrolls().size();
-            staff.getDeliveries().size();
-            staff.getBankDetails();
-            staff.getAddress();
-            staff.getAdvertisements().size();
+            lazyLoadStaffFields(staff);
         }
         return allStaff;
+    }
+
+    // For Delivery manager to assign delivery to delivery staff
+    public List<Staff> retrieveAllEligibleDeliveryStaff() {
+        List<Staff> staffs = staffRepository.findAllByDepartment_DepartmentNameEqualsAndRole_RoleNameEquals(
+                "Delivery", RoleNameEnum.ASSISTANT);
+        List<Staff> deliveryStaff = new ArrayList<>();
+        Delivery delivery;
+        for (Staff staff : staffs) {
+            delivery = deliveryService.getTodaysDeliveryForStaff(staff.getStaffId());
+            if (delivery == null) {
+                lazyLoadStaffFields(staff);
+                deliveryStaff.add(staff);
+            }
+        }
+        return deliveryStaff;
     }
 
     public List<Role> retrieveAllRoles() {
@@ -288,13 +302,15 @@ public class StaffService {
             Staff staffToUpdate = retrieveStaffByStaffId(staff.getStaffId());
             Address oldAddress = staffToUpdate.getAddress();
             Store oldStore = staffToUpdate.getStore();
+            address.setLng("103.746107");
+            address.setLat("1.378466");
+
             addressRepository.save(address);
 
             staffToUpdate.setFirstName(staff.getFirstName());
             staffToUpdate.setLastName(staff.getLastName());
             staffToUpdate.setNric(staff.getNric());
             staffToUpdate.setEmail(staff.getEmail());
-            staffToUpdate.setLeaveRemaining(staff.getLeaveRemaining());
             staffToUpdate.setAddress(address);
             addressRepository.delete(oldAddress);
 
@@ -308,18 +324,17 @@ public class StaffService {
             staffToUpdate.setRole(r);
 
             //In the event that a store staff is changed to HR/IT
-            if(oldStore!=null && (oldStore.getStoreId().equals(storeId)) &&(d.getDepartmentName().equals("HR") || d.getDepartmentName().equals("IT"))){
+            if (oldStore != null && (oldStore.getStoreId().equals(storeId)) && (d.getDepartmentName().equals("HR") || d.getDepartmentName().equals("IT"))) {
                 staffToUpdate.setStore(null);
-                storeId=null;
+                storeId = null;
             }
 
             //if department is HR or IT, cannot assign any store
-            if((d.getDepartmentName().equals("HR") || d.getDepartmentName().equals("IT")) && storeId !=null){
+            if ((d.getDepartmentName().equals("HR") || d.getDepartmentName().equals("IT")) && storeId != null) {
                 Map<String, String> errorMap = new HashMap<>();
                 errorMap.put("storeName", ErrorMessages.STORE_CANNOT_ASSIGN);
                 throw new InputDataValidationException(errorMap, ErrorMessages.STORE_CANNOT_ASSIGN);
             }
-
 
 
             if (storeId != null) {
@@ -342,6 +357,19 @@ public class StaffService {
                 .orElseThrow(() -> new StaffNotFoundException("Staff username: " + username + "does not exist!"));
 
         return lazyLoadStaffFields(staff);
+    }
+
+    public List<Staff> retrieveStoreStaff() {
+        List<Staff> allStaff = staffRepository.findAll();
+        List<Staff> storeStaff = new ArrayList<Staff>();
+
+        for (Staff s : allStaff) {
+            if (s.getStore() != null) {
+                storeStaff.add(s);
+            }
+        }
+
+        return storeStaff;
     }
 
     //staff logins with username
@@ -397,7 +425,7 @@ public class StaffService {
 
             }
 
-            if(!newPassword.equals(confirmPassword)){
+            if (!newPassword.equals(confirmPassword)) {
                 Map<String, String> errorMap = new HashMap<>();
                 errorMap.put("confirmPassword", ErrorMessages.NEW_PASSWORDS_DO_NOT_MATCH);
                 throw new InvalidStaffCredentialsException(errorMap, ErrorMessages.NEW_PASSWORDS_DO_NOT_MATCH);
@@ -443,7 +471,7 @@ public class StaffService {
                 l.setApplicant(null);
                 l.setApprover(null);
                 l.setEndorser(null);
-                staffLeaveRepository.delete(l);
+                leaveRepository.delete(l);
             }
             existingStaff.setLeaves(null);
             // ----------------------------------------------------
@@ -490,7 +518,7 @@ public class StaffService {
 
     }
 
-    public Staff registerPushNotificationToken (Long staffId, String token) throws StaffNotFoundException {
+    public Staff registerPushNotificationToken(Long staffId, String token) throws StaffNotFoundException {
         Staff staff = retrieveStaffByStaffId(staffId);
         staff.setPushNotificationToken(token);
         return staff;
@@ -522,6 +550,21 @@ public class StaffService {
         msg.setSubject("Your Password Has Been Reset");
         msg.setText("Your New Password is:" + password);
         javaMailSender.send(msg);
+    }
+
+    public Store reassignStaffStore(Long storeId, List<Long> staffIds) throws StoreNotFoundException, StaffNotFoundException {
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new StoreNotFoundException("Store with id: " + storeId + " does not exist"));
+        for (Long s : staffIds) {
+            Staff staff = staffRepository.findByStaffId(s);
+            try {
+                staff.setStore(store);
+            } catch (NullPointerException ex) {
+                throw new StaffNotFoundException("Staff with Staff ID: " + s + " not found!");
+            }
+        }
+
+        return store;
     }
 
 

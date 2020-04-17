@@ -54,7 +54,6 @@ public class StyleService {
     public Style addStyleToProduct(Long styleId, List<Long> productIds) throws StyleNotFoundException, ProductNotFoundException {
         Style style = retrieveStyleByStyleId(styleId);
         for(Long p : productIds) {
-            System.out.println("LONG: " + p);
             Product retrieveProduct = productRepository.findByProductId(p);
             try{
                 retrieveProduct.addStyle(style);

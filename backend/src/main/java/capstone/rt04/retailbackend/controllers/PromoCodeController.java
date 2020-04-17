@@ -8,10 +8,7 @@ import capstone.rt04.retailbackend.services.PromoCodeService;
 import capstone.rt04.retailbackend.services.ValidationService;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.customer.CustomerNotFoundException;
-import capstone.rt04.retailbackend.util.exceptions.promoCode.CreateNewPromoCodeException;
-import capstone.rt04.retailbackend.util.exceptions.promoCode.InvalidPromoCodeException;
-import capstone.rt04.retailbackend.util.exceptions.promoCode.PromoCodeNotFoundException;
-import capstone.rt04.retailbackend.util.exceptions.promoCode.PromoCodeUsedException;
+import capstone.rt04.retailbackend.util.exceptions.promoCode.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -64,9 +61,13 @@ public class PromoCodeController {
     }
 
     @DeleteMapping(REMOVE_PROMO_CODE)
-    public ResponseEntity<?> removePromoCode(@PathVariable Long promoCodeId) throws PromoCodeNotFoundException {
-        PromoCode deletedPromoCode = promoCodeService.deletePromoCode(promoCodeId);
-        return new ResponseEntity<>(deletedPromoCode, HttpStatus.OK);
+    public ResponseEntity<?> removePromoCode(@PathVariable Long promoCodeId) throws PromoCodeNotFoundException, PromoCodeLinkedToTransactionsException {
+        try {
+            PromoCode deletedPromoCode = promoCodeService.deletePromoCode(promoCodeId);
+            return new ResponseEntity<>(deletedPromoCode, HttpStatus.OK);
+        }catch (PromoCodeLinkedToTransactionsException ex){
+            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PostMapping(UPDATE_PROMO_CODE)

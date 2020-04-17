@@ -16,4 +16,15 @@ public interface TransactionRepository extends CrudRepository<Transaction, Long>
     Transaction findByOrderNumber(String orderNumber);
 
     List<Transaction> findAllByDeliveryStatusEquals(DeliveryStatusEnum deliveryStatusEnum);
+
+    List<Transaction> findAllByCustomer_CustomerIdAndStoreIsNotNull(Long customerId);
+
+    List<Transaction> findAllByCustomer_CustomerIdAndStoreIsNullAndStoreToCollectIsNotNull(Long customerId);
+
+    List<Transaction> findAllByOrderByCreatedDateTime();
+
+    List<Transaction> findAllByStoreToCollect_StoreId(Long storeId);
+
+    List<Transaction> findAllByStore_StoreId(Long storeId);
+
 }

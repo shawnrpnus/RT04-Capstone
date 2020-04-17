@@ -7,6 +7,7 @@ import capstone.rt04.retailbackend.repositories.ProductStockRepository;
 import capstone.rt04.retailbackend.repositories.ProductVariantRepository;
 import capstone.rt04.retailbackend.request.product.ColourToImageUrlsMap;
 import capstone.rt04.retailbackend.response.ColourToSizeImageMap;
+import capstone.rt04.retailbackend.response.EligibleStoreResponse;
 import capstone.rt04.retailbackend.response.ProductDetailsResponse;
 import capstone.rt04.retailbackend.response.SizeToProductVariantAndStockMap;
 import capstone.rt04.retailbackend.util.ErrorMessages;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.PersistenceException;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.*;
@@ -44,6 +46,8 @@ public class ProductService {
     private final WarehouseService warehouseService;
     private final SizeDetailsService sizeDetailsService;
     private final TransactionService transactionService;
+    private final DashboardService dashboardService;
+    private final DeliveryService deliveryService;
 
     private final ProductRepository productRepository;
     private final ProductImageRepository productImageRepository;
@@ -53,7 +57,8 @@ public class ProductService {
     public ProductService(ValidationService validationService, TagService tagService, CategoryService categoryService, DiscountService discountService, StyleService styleService,
                           StoreService storeService, ProductRepository productRepository, ProductVariantRepository productVariantRepository,
                           ProductStockRepository productStockRepository, ProductImageRepository productImageRepository, PromoCodeService promoCodeService,
-                          WarehouseService warehouseService, SizeDetailsService sizeDetailsService, @Lazy TransactionService transactionService) {
+                          WarehouseService warehouseService, SizeDetailsService sizeDetailsService, @Lazy TransactionService transactionService,
+                          @Lazy DashboardService dashboardService, @Lazy DeliveryService deliveryService) {
         this.validationService = validationService;
         this.tagService = tagService;
         this.categoryService = categoryService;
@@ -68,6 +73,8 @@ public class ProductService {
         this.warehouseService = warehouseService;
         this.sizeDetailsService = sizeDetailsService;
         this.transactionService = transactionService;
+        this.dashboardService = dashboardService;
+        this.deliveryService = deliveryService;
     }
 
     public Product createNewProduct(Product product, Long categoryId, List<Long> tagIds, List<Long> styleIds, List<SizeEnum> sizes, List<ColourToImageUrlsMap> colourToImageUrlsMaps) throws InputDataValidationException, CreateNewProductException, CategoryNotFoundException {
@@ -143,7 +150,7 @@ public class ProductService {
         return products;
     }
 
-    public List<ProductDetailsResponse> retrieveProductDetailsForCategory(Long storeOrWarehouseId, Long categoryId) throws ProductNotFoundException {
+    public List<ProductDetailsResponse> retrieveProductDetailsForCategory(Long storeOrWarehouseId, Long categoryId) throws ProductNotFoundException, IOException {
         List<ProductDetailsResponse> productDetailsResponses = retrieveProductsDetails(storeOrWarehouseId, null, null);
         List<ProductDetailsResponse> result = new ArrayList<>();
         for (ProductDetailsResponse p : productDetailsResponses) {
@@ -162,7 +169,7 @@ public class ProductService {
     }
 
     public List<ProductDetailsResponse> retrieveProductsDetailsByCriteria(Long categoryId, List<Tag> tags, List<String> colours, List<SizeEnum> sizes,
-                                                                          BigDecimal minPrice, BigDecimal maxPrice, SortEnum sortEnum, Style style) throws ProductNotFoundException, StyleNotFoundException {
+                                                                          BigDecimal minPrice, BigDecimal maxPrice, SortEnum sortEnum, Style style) throws ProductNotFoundException, StyleNotFoundException, IOException {
 
         List<Product> filteredProducts = retrieveProductByCriteria(categoryId, tags, colours, sizes, minPrice, maxPrice, sortEnum, style);
 
@@ -170,7 +177,8 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public List<ProductDetailsResponse> retrieveProductsDetails(Long storeOrWarehouseId, Long productId, List<Product> filteredProducts) throws ProductNotFoundException {
+    public List<ProductDetailsResponse> retrieveProductsDetails(Long storeOrWarehouseId, Long productId,
+                                                                List<Product> filteredProducts) throws ProductNotFoundException, IOException {
         // Each product can have multiple colour
         // Each colours will have a list of sizes
         // Every sizes of each colour will show the productVariantId and productStock
@@ -260,8 +268,13 @@ public class ProductService {
 
             productDetailsResponse.setLeafNodeName(categoryService.generateLeafNodeName(product.getCategory(), ""));
             productDetailsResponse.setProduct(product);
+            if (productId != null) {
+                productDetailsResponse.setRecommendedProducts(getRecommendedProducts(productId));
+            }
             productDetailsResponses.add(productDetailsResponse);
         }
+
+
         return productDetailsResponses;
     }
 
@@ -276,7 +289,7 @@ public class ProductService {
                 if (discount.getFlatDiscount().compareTo(product.getPrice()) >= 0) return null;
                 discountedPrice = product.getPrice().subtract(discount.getFlatDiscount());
             } else {
-                discountedPrice = product.getPrice().multiply(BigDecimal.ONE.subtract(discount.getPercentageDiscount()));
+                discountedPrice = product.getPrice().subtract(product.getPrice().multiply(discount.getPercentageDiscount()).setScale(2, BigDecimal.ROUND_HALF_UP));
             }
             if (productDetailsResponse != null) productDetailsResponse.setDiscountedPrice(discountedPrice);
             return discountedPrice;
@@ -409,7 +422,8 @@ public class ProductService {
             product.getTags().size();
             product.getReviews().size();
             product.getDiscounts().size();
-            product.getProductVariants().size();
+            if (product.getProductVariants() != null)
+                product.getProductVariants().size();
             product.getStyles().size();
         }
     }
@@ -724,6 +738,14 @@ public class ProductService {
         return productStock;
     }
 
+    public ProductStock retrieveProductStockByWarehouseIdAndProductVariantId(Long warehouseId, Long productVariantId) {
+        ProductStock productStock = null;
+        if (warehouseId != null && productVariantId != null) {
+            productStock = productStockRepository.findWarehouseProductStockByVariant(warehouseId, productVariantId);
+        }
+        return productStock;
+    }
+
     // Substituted by retrieveProductsDetails
     @Transactional(readOnly = true)
     public List<Product> retrieveProductStocksThroughProductByParameter(Long storeId, Long warehouseId, Long
@@ -779,6 +801,20 @@ public class ProductService {
     public ProductStock retrieveProductStockByWarehouseAndProductVariantId(Long warehouseId, Long productVariantId) {
         return productStockRepository.findByWarehouse_WarehouseIdAndProductVariant_ProductVariantId(warehouseId, productVariantId);
     }
+
+    public List<ProductStock> retrieveLowStockProducts(Long storeId) {
+        Warehouse warehouse = warehouseService.retrieveAllWarehouses().get(0);
+        List<ProductStock> productStocks;
+
+        if (storeId == null) {
+            productStocks = productStockRepository.findAllByWarehouse_WarehouseIdAndQuantityLessThan(warehouse.getWarehouseId(), 10);
+        } else {
+            productStocks = productStockRepository.findAllByStore_StoreIdAndQuantityLessThan(storeId, 10);
+        }
+        lazilyLoadProductStock(productStocks);
+        return productStocks;
+    }
+
 
     public List<ProductStock> retrieveAllProductStock() {
         List<ProductStock> productStocks = (List<ProductStock>) productStockRepository.findAll();
@@ -1105,5 +1141,110 @@ public class ProductService {
                 style.getProducts().add(product);
             }
         }
+    }
+
+    @Transactional(readOnly = true)
+    public List<ProductDetailsResponse> getRecommendedProducts(Long productId) throws IOException, ProductNotFoundException {
+        List<List<ProductDetailsResponse>> productDetailsResponseList = dashboardService.generateMarketBasketAnalysis();
+        List<ProductDetailsResponse> listToSend = new ArrayList<>();
+        Boolean addToList;
+        int index;
+
+        for (List<ProductDetailsResponse> productDetailsResponse : productDetailsResponseList) {
+            addToList = Boolean.FALSE;
+            index = 0;
+
+            for (ProductDetailsResponse productDetail : productDetailsResponse) {
+                if (productDetail.getProduct().getProductId().equals(productId)) {
+                    addToList = Boolean.TRUE;
+                    break;
+                }
+                index++;
+            }
+
+            if (addToList == Boolean.TRUE) {
+                productDetailsResponse.remove(index);
+                listToSend.addAll(productDetailsResponse);
+            }
+        }
+        return listToSend;
+    }
+
+    @Transactional(readOnly = true)
+    public List<EligibleStoreResponse> getEligibleStoreForRecommendation(List<Long> productIds, double lat, double lng) {
+        List<Store> stores = storeService.retrieveAllStores();
+        List<EligibleStoreResponse> eligibleStores;
+        // stores list for each recommended product
+        List<EligibleStoreResponse> finalStoreList = new ArrayList<>();
+        Integer numOfAvailableColour;
+        List<ProductVariant> productVariants;
+        HashMap<String, Boolean> hashMap;
+        HashMap<String, Boolean> colourMap;
+
+        for (Long productId : productIds) {
+            productVariants = retrieveProductVariantByProduct(productId);
+            eligibleStores = new ArrayList<>();
+
+            hashMap = new HashMap<>();
+            for (ProductVariant productVariant : productVariants) {
+                if (!hashMap.containsKey(productVariant.getColour())) {
+                    hashMap.put(productVariant.getColour(), Boolean.TRUE);
+                }
+            }
+
+            for (Store store : stores) {
+                // Reset hashmap state
+                colourMap = new HashMap<>(hashMap);
+
+                // Logic start
+                numOfAvailableColour = 0;
+                // Different colour and sizes of that product
+                for (ProductVariant productVariant : productVariants) {
+                    for (ProductStock productStock : productVariant.getProductStocks()) {
+                        // Finding the product stock that matches the product stock of the store
+                        if (store.getProductStocks().contains(productStock)) {
+                            if (productStock.getQuantity() <= 0) {
+                                colourMap.replace(productVariant.getColour(), Boolean.FALSE);
+                            }
+                        }
+                        // If >= 1 variant is available is available, send the numOfVariant available
+                    }
+                }
+                // Find how many colourMap is true
+                for (Boolean hashmapValue : colourMap.values()) {
+                    if (hashmapValue)
+                        numOfAvailableColour++;
+                }
+                if (numOfAvailableColour > 0)
+                    eligibleStores.add(new EligibleStoreResponse(productId, store, numOfAvailableColour));
+            }
+
+            // Find nearest store
+            if (eligibleStores.size() > 1) {
+                List<Double> distances = new ArrayList<>();
+                Address address;
+                double minDistance = 0;
+                Integer minDistanceIndex = 0;
+                Integer index = 0;
+                for (EligibleStoreResponse response : eligibleStores) {
+                    address = response.getStore().getAddress();
+                    distances.add(deliveryService.distance(lat, lng, Double.valueOf(address.getLat()), Double.valueOf(address.getLng()),
+                            0, 0));
+                }
+
+                for (Double distance : distances) {
+                    if (distance < minDistance) {
+                        minDistance = distance;
+                        minDistanceIndex = index;
+                    }
+                    index++;
+                }
+                // stores list for each recommended product
+                finalStoreList.add(eligibleStores.get(minDistanceIndex));
+            } else {
+                if (eligibleStores.size() != 0) finalStoreList.add(eligibleStores.get(0));
+            }
+        }
+        return finalStoreList;
     }
 }

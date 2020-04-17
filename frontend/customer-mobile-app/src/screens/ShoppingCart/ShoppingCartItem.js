@@ -19,6 +19,8 @@ import { Feather } from "@expo/vector-icons";
 import { Divider, Menu, TextInput } from "react-native-paper";
 import { AntDesign } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import {renderPrices} from "src/screens/Shared/LineItemPrices";
+import {renderLineItemStock} from "src/screens/Shared/LineItemStock";
 
 const _ = require("lodash");
 const colours = _.keyBy(colourList, "hex");
@@ -60,93 +62,12 @@ function ShoppingCartItem(props) {
 
   const stock =
       _.get(shoppingCartItemsStock, `${shoppingCartItem.shoppingCartItemId}.quantity`)
-  const stockStatus =
-    stock === 0
-      ? "Out of stock"
-      : stock === 0 || shoppingCartItem.quantity > stock
-      ? "Insufficient Stock"
-      : stock < 10
-      ? "Low in stock"
-      : "In stock";
-  const stockIcon = (
-    <MaterialCommunityIcons
-      name={
-        stock > 0 && shoppingCartItem.quantity <= stock
-          ? "check-circle-outline"
-          : "close-circle-outline"
-      }
-      style={{
-        color:
-          stock === 0 || shoppingCartItem.quantity > stock
-            ? "red"
-            : stock < 10
-            ? "orange"
-            : "green"
-      }}
-      size={20}
-    />
-  );
-  const stockElement = (
-    <Block flex row style={{ marginLeft: 10, alignItems: "center" }}>
-      {stockIcon}
-      <Text
-        h6
-        style={{
-          marginLeft: 2,
-          color:
-            stock === 0 || shoppingCartItem.quantity > stock
-              ? "red"
-              : stock < 10
-              ? "orange"
-              : "green"
-        }}
-      >
-        {stockStatus}
-      </Text>
-    </Block>
-  );
 
   const upperBoundQty = Math.min(stock, 20);
 
   const qtyOptions = Array.from({ length: upperBoundQty }, (v, k) => ({
     value: k + 1
   }));
-
-  const renderPrices = () => {
-    const hasDiscount = !!productVariant.product.discountedPrice;
-
-    const price = productVariant.product.price.toFixed(2);
-    if (hasDiscount) {
-      const discountedPrice = productVariant.product.discountedPrice.toFixed(2);
-      return (
-        <>
-          <Text h6 style={{ fontSize: 16 }}>
-            ${discountedPrice}{" "}
-            <Text
-              h6
-              style={{ textDecorationLine: "line-through", color: "grey" }}
-            >
-              ${price}
-            </Text>
-          </Text>
-          <Text h6 style={{ fontSize: 16, fontWeight: "bold" }}>
-            ${(discountedPrice * shoppingCartItem.quantity).toFixed(2)}
-          </Text>
-        </>
-      );
-    } else {
-      return (
-        <>
-          <Text h6 style={{ fontSize: 16 }}>
-            ${price}
-          </Text>
-          <Text h6 style={{ fontSize: 16, fontWeight: "bold" }}>
-            ${(price * shoppingCartItem.quantity).toFixed(2)}
-          </Text>
-        </>
-      );
-    }
-  };
 
   return (
     <Block
@@ -162,7 +83,8 @@ function ShoppingCartItem(props) {
         paddingLeft: 0,
         paddingRight: 10,
         elevation: 0,
-        borderRadius: 0
+        borderRadius: 0,
+        borderWidth: 0
       }}
     >
       <Block flex row style={{ alignItems: "center" }}>
@@ -259,7 +181,7 @@ function ShoppingCartItem(props) {
                 ))}
               </ScrollView>
             </Menu>
-            {stockElement}
+            {renderLineItemStock(shoppingCartItemsStock, shoppingCartItem)}
           </Block>
         </Block>
       </Block>
@@ -292,7 +214,7 @@ function ShoppingCartItem(props) {
           space="between"
           style={{ width: "100%", paddingTop: 5 }}
         >
-          {renderPrices()}
+          {renderPrices(productVariant, shoppingCartItem)}
         </Block>
       </Block>
     </Block>

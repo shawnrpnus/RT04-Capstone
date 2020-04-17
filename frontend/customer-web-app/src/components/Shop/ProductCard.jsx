@@ -25,6 +25,7 @@ function ProductCard(props) {
   const [activeColourIndex, setActiveColourIndex] = useState(0);
   const [isHoverFavorite, setIsHoverFavorite] = useState(false);
   const { discountedPrice } = props;
+  const storeForRecommendation = props.storeForRecommendation;
 
   return (
     <GridItem md={3} sm={6} xs={6}>
@@ -64,9 +65,11 @@ function ProductCard(props) {
               </GridItem>
               <GridItem xs>
                 <h6 className={classes.price}>
-                  {discountedPrice && <span>${props.discountedPrice}</span>}
+                  {discountedPrice && (
+                    <span>${props.discountedPrice.toFixed(2)}</span>
+                  )}
                   <span className={discountedPrice && classes.discountedPrice}>
-                    ${product.price}
+                    ${product.price.toFixed(2)}
                   </span>
                 </h6>
               </GridItem>
@@ -90,7 +93,7 @@ function ProductCard(props) {
                         style={{
                           fill: cis.colour,
                           strokeWidth: cis.colour === "#FFFFFF" ? 2 : 0,
-                          stroke: cis.colour === "#FFFFFF" ? "black" : "none"
+                          stroke: cis.colour === "#FFFFFF" ? "black" : "none",
                         }}
                       />
                     </svg>
@@ -116,6 +119,20 @@ function ProductCard(props) {
                 })}
               </GridItem>
             </GridContainer>
+            {storeForRecommendation &&
+              storeForRecommendation.map((e) => {
+                if (product.productId === e.productId)
+                  return (
+                    <h6
+                      className={classes.cardTitle}
+                      style={{ color: "#4C9A2A" }}
+                      key={e.productId}
+                    >
+                      {e.numOfAvailableColour} colour(s) is in stock at{" "}
+                      {e.store.storeName}{" "}
+                    </h6>
+                  );
+              })}
           </div>
         </CardBody>
       </Card>
@@ -124,7 +141,7 @@ function ProductCard(props) {
 }
 
 ProductCard.propTypes = {
-  productDetail: PropTypes.object.isRequired
+  productDetail: PropTypes.object.isRequired,
 };
 
 export default ProductCard;

@@ -1,7 +1,7 @@
 import {
   ALL_SKU,
   DISPLAY_PRODUCT_VARIANT,
-  DISPLAY_STOCKS
+  DISPLAY_STOCKS, SET_CURRENT_STORE
 } from "src/redux/actions/types";
 import { SPRING_BACKEND_URL } from "src/constants/routes";
 import axios from "axios";
@@ -32,7 +32,7 @@ const allSku = data => ({
   SKUs: data
 });
 
-export const retrieveProductVariantBySKU = (sku, navigation, setSKU) => {
+export const retrieveProductVariantBySKU = (sku, navigation, setSKU, store, productStockId) => {
   const req = { sku };
   return dispatch => {
     axios
@@ -42,6 +42,7 @@ export const retrieveProductVariantBySKU = (sku, navigation, setSKU) => {
         dispatch(updateDisplayedProductVariant(pv));
         navigation.navigate("Product Details");
         setSKU("");
+        dispatch(setCurrentStore(store, productStockId));
       })
       .catch(err => {
         //either blank field error ({sku: notfound}) OR pv not found ({errorMessage: msg})
@@ -53,6 +54,12 @@ export const retrieveProductVariantBySKU = (sku, navigation, setSKU) => {
 const updateDisplayedProductVariant = data => ({
   type: DISPLAY_PRODUCT_VARIANT,
   productVariant: data
+});
+
+const setCurrentStore = (store, productStockId) => ({
+  type: SET_CURRENT_STORE,
+  store: store,
+  productStockId: productStockId
 });
 
 export const retrieveStocksForProductVariant = productVariantId => {

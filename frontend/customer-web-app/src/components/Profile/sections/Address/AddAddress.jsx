@@ -1,40 +1,24 @@
 import makeStyles from "@material-ui/core/styles/makeStyles";
-import {
-  cardLink,
-  cardSubtitle,
-  cardTitle
-} from "assets/jss/material-kit-pro-react";
 import { useDispatch, useSelector } from "react-redux";
-import { useHistory, useLocation } from "react-router-dom";
-import customSelectStyle from "assets/jss/material-kit-pro-react/customSelectStyle";
-import React, { useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
+import React, { useState } from "react";
 import { clearErrors } from "redux/actions";
 import CustomTextField from "components/UI/CustomInput/CustomTextField";
 import InputAdornment from "@material-ui/core/InputAdornment";
-import {
-  Apartment,
-  Check,
-  Dehaze,
-  Face,
-  Home,
-  Place
-} from "@material-ui/icons";
+import { Check, Home, Place } from "@material-ui/icons";
 import Button from "components/UI/CustomButtons/Button";
-import SendUpdateEmailLinkRequest from "models/customer/SendUpdateEmailLinkRequest";
 import {
   addShippingAddressDetails,
-  emailSending,
-  sendUpdateEmailLink,
-  updateCustomerName,
   updateShippingAddressDetails
 } from "redux/actions/customerActions";
-import UpdateCustomerRequest from "models/customer/UpdateCustomerRequest";
 import Address from "models/customer/Address";
 import AddUpdateAddressRequest from "models/customer/AddUpdateAddressRequest";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import customCheckboxRadioSwitch from "assets/jss/material-kit-pro-react/customCheckboxRadioSwitchStyle";
 import { useSnackbar } from "notistack";
+import axios from "axios";
+import { key } from "key.js";
 
 const useStyles = makeStyles(customCheckboxRadioSwitch);
 
@@ -43,8 +27,6 @@ export default function AddAddress({
   addNewAddress: [addNewAddress, setAddNewAddress],
   currAddress: [currAddress, setCurrAddress]
 }) {
-  console.log(addNewAddress);
-  console.log(currAddress);
   //Hooks
   const classes = useStyles();
   const history = useHistory();
@@ -68,7 +50,6 @@ export default function AddAddress({
 
   const onChange = e => {
     e.persist();
-    // console.log(e.target.value);
     setInputState(inputState => ({
       ...inputState,
       [e.target.name]: e.target.value
@@ -76,40 +57,69 @@ export default function AddAddress({
     if (Object.keys(errors).length !== 0) {
       dispatch(clearErrors());
     }
-    // console.log(inputState);
   };
 
   const handleAddAddress = () => {
-    if (currAddress) {
-      const address = new Address(
-        inputState.addressId,
-        inputState.line1,
-        inputState.line2,
-        inputState.postalCode,
-        inputState.buildingName,
-        inputState.default,
-        inputState.billing
-      );
-      const req = new AddUpdateAddressRequest(currCustomer.customerId, address);
-      dispatch(updateShippingAddressDetails(req, enqueueSnackbar, history));
-      setAddNewAddress(!addNewAddress);
-      setCurrAddress("");
-    } else {
-      const address = new Address(
-        inputState.addressId,
-        inputState.line1,
-        inputState.line2,
-        inputState.postalCode,
-        inputState.buildingName,
-        inputState.default,
-        inputState.billing
-      );
-      const req = new AddUpdateAddressRequest(currCustomer.customerId, address);
-      dispatch(addShippingAddressDetails(req, enqueueSnackbar, history));
-      if (inputState.line1 !== "" && inputState.postalCode !== "") {
-        setAddNewAddress(!addNewAddress);
-      }
-    }
+    axios
+      .get(
+        `https://maps.googleapis.com/maps/api/geocode/json?address=Singapore${inputState.postalCode}&key=${key}`
+      )
+      .then(response => {
+        console.log(response.data);
+
+        if (response.data.status === "OK") {
+          const location = response.data.results[0].geometry.location;
+          if (currAddress) {
+            const address = new Address(
+              inputState.addressId,
+              inputState.line1,
+              inputState.line2,
+              inputState.postalCode,
+              inputState.buildingName,
+              inputState.default,
+              inputState.billing,
+              location.lat,
+              location.lng
+            );
+            const req = new AddUpdateAddressRequest(
+              currCustomer.customerId,
+              address
+            );
+
+            dispatch(
+              updateShippingAddressDetails(req, enqueueSnackbar, history)
+            );
+            setAddNewAddress(!addNewAddress);
+            setCurrAddress("");
+          } else {
+            const address = new Address(
+              inputState.addressId,
+              inputState.line1,
+              inputState.line2,
+              inputState.postalCode,
+              inputState.buildingName,
+              inputState.default,
+              inputState.billing,
+              location.lat,
+              location.lng
+            );
+            const req = new AddUpdateAddressRequest(
+              currCustomer.customerId,
+              address
+            );
+            dispatch(addShippingAddressDetails(req, enqueueSnackbar, history));
+            if (inputState.line1 !== "" && inputState.postalCode !== "") {
+              setAddNewAddress(!addNewAddress);
+            }
+          }
+        } else {
+          enqueueSnackbar("Invalid postal code", {
+            variant: "error",
+            autoHideDuration: 1200
+          });
+        }
+      })
+      .catch(err => console.log(err));
   };
 
   const handleToggle = e => {

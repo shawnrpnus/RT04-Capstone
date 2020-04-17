@@ -5,9 +5,11 @@ import capstone.rt04.retailbackend.repositories.ShoppingCartItemRepository;
 import capstone.rt04.retailbackend.repositories.ShoppingCartRepository;
 import capstone.rt04.retailbackend.repositories.WarehouseRepository;
 import capstone.rt04.retailbackend.util.exceptions.customer.CustomerNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.inStoreRestockOrder.InsufficientStockException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductVariantNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.shoppingcart.InvalidCartTypeException;
 import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +25,7 @@ import static capstone.rt04.retailbackend.util.Constants.ONLINE_SHOPPING_CART;
 
 @Service
 @Transactional
+@Slf4j
 public class ShoppingCartService {
 
     private final ProductService productService;
@@ -58,17 +61,20 @@ public class ShoppingCartService {
         customer.setOnlineShoppingCart(onlineShoppingCart);
     }
 
-    private ShoppingCartItem createShoppingCartItem(Integer quantity, Long productVariantId) throws ProductVariantNotFoundException {
-        System.out.println("Creating cart item");
+    public ShoppingCartItem createShoppingCartItem(Integer quantity, Long productVariantId) throws ProductVariantNotFoundException {
         ProductVariant productVariant = productService.retrieveProductVariantById(productVariantId);
         ShoppingCartItem shoppingCartItem = new ShoppingCartItem(quantity, productVariant);
-        System.out.println(shoppingCartItem);
         return shoppingCartItemRepository.save(shoppingCartItem);
     }
 
     // use for adding, editing, deleting item from shopping cart
-    public Customer updateQuantityOfProductVariant(Integer quantity, Long productVariantId, Long customerId, String cartType) throws CustomerNotFoundException, ProductVariantNotFoundException, InvalidCartTypeException {
+    public Customer updateQuantityOfProductVariant(Integer quantity, Long productVariantId, Long customerId, String cartType) throws CustomerNotFoundException, ProductVariantNotFoundException, InvalidCartTypeException, InsufficientStockException {
         ShoppingCart shoppingCart = retrieveShoppingCart(customerId, cartType);
+        Warehouse warehouse = warehouseRepository.findAll().get(0);
+
+        ProductStock productStock = productService.retrieveProductStockByWarehouseIdAndProductVariantId(
+                warehouse.getWarehouseId(), productVariantId);
+        if (productStock.getQuantity() < quantity && cartType.equals(ONLINE_SHOPPING_CART)) throw new InsufficientStockException("Insufficient stock");
 
         for (ShoppingCartItem shoppingCartItem : shoppingCart.getShoppingCartItems()) {
             Customer customer = customerService.retrieveCustomerByCustomerId(customerId);
@@ -95,13 +101,15 @@ public class ShoppingCartService {
         return customerService.lazyLoadCustomerFields(customer);
     }
 
-    public Customer updateQuantityOfProductVariantWithStore(Integer quantity, Long productVariantId, Long customerId, Long storeId) throws CustomerNotFoundException, InvalidCartTypeException, ProductVariantNotFoundException, StoreNotFoundException {
+    public Customer updateQuantityOfProductVariantWithStore(Integer quantity, Long productVariantId, Long customerId, Long storeId) throws CustomerNotFoundException, InvalidCartTypeException, ProductVariantNotFoundException, StoreNotFoundException, InsufficientStockException {
         ShoppingCart currentCart = retrieveShoppingCart(customerId, IN_STORE_SHOPPING_CART);
         Store currentCartStore = currentCart.getStore();
-        if (currentCartStore != null && !currentCartStore.getStoreId().equals(storeId)){
+        if (currentCartStore != null && !currentCartStore.getStoreId().equals(storeId)) {
             //shopping at different store, so reset the cart
             clearShoppingCart(customerId, IN_STORE_SHOPPING_CART);
         }
+        ProductStock productStock = productService.retrieveProductStockByStoreIdAndProductVariantId(storeId, productVariantId);
+        if (productStock.getQuantity() < quantity) throw new InsufficientStockException("Insufficient stock");
         Customer updatedCustomer = updateQuantityOfProductVariant(quantity, productVariantId, customerId, IN_STORE_SHOPPING_CART);
         updatedCustomer.getInStoreShoppingCart().setStore(storeService.retrieveStoreById(storeId));
         return updatedCustomer;
@@ -113,8 +121,10 @@ public class ShoppingCartService {
         shoppingCart.setShoppingCartItems(new ArrayList<>());
         shoppingCart.calculateAndSetInitialTotal(productService);
         Customer customer = customerService.retrieveCustomerByCustomerId(customerId);
+//        List<ShoppingCartItem> scis = shoppingCartItemRepository.findAll();
+//        log.info("[Clear cart] : " + scis.size());
         for (ShoppingCartItem shoppingCartItem : shoppingCartItems) {
-            shoppingCartItem.setProductVariant(null);
+            //shoppingCartItem.setProductVariant(null);
             shoppingCartItemRepository.delete(shoppingCartItem);
         }
         return customerService.lazyLoadCustomerFields(customer);
@@ -141,12 +151,12 @@ public class ShoppingCartService {
             ProductVariant pv = shoppingCartItem.getProductVariant();
             Map<String, Object> stockAndName = new HashMap<>();
             ProductStock productStock;
-            if (cartType.equals(ONLINE_SHOPPING_CART) || (inStoreDeliverHome !=null && inStoreDeliverHome)) {
+            if (cartType.equals(ONLINE_SHOPPING_CART) || (inStoreDeliverHome != null && inStoreDeliverHome)) {
                 productStock = productService.
                         retrieveProductStockByWarehouseAndProductVariantId(warehouse.getWarehouseId(), pv.getProductVariantId());
                 stockAndName.put("quantity", productStock.getQuantity());
                 stockAndName.put("location", "warehouse");
-            } else if (cartType.equals(IN_STORE_SHOPPING_CART)){
+            } else if (cartType.equals(IN_STORE_SHOPPING_CART)) {
                 productStock = productService
                         .retrieveProductStockByStoreIdAndProductVariantId(shoppingCart.getStore().getStoreId(), pv.getProductVariantId());
                 stockAndName.put("quantity", productStock.getQuantity());

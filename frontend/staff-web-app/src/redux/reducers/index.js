@@ -20,6 +20,9 @@ import instagramReducer from "./instagramReducer";
 import discountReducer from "./discountReducer";
 import transactionReducer from "./transactionReducer";
 import dashboardReducer from "./dashboardReducer";
+import leaveReducer from "./leaveReducer";
+import payrollReducer from "./payrollReducer";
+import analyticsReducer from "./analyticsReducer";
 
 const rootReducer = combineReducers({
   errors: errorReducer,
@@ -28,6 +31,8 @@ const rootReducer = combineReducers({
   tag: tagReducer,
   style: styleReducer,
   promoCode: promoCodeReducer,
+  leave: leaveReducer,
+  payroll: payrollReducer,
   product: productReducer,
   category: categoryReducer,
   staffEntity: staffReducer,
@@ -42,7 +47,8 @@ const rootReducer = combineReducers({
   instagram: instagramReducer,
   discount: discountReducer,
   dashboard: dashboardReducer,
-  util: utilReducer
+  util: utilReducer,
+  analytics: analyticsReducer
 });
 
 export default rootReducer;

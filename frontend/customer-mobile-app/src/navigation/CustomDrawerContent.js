@@ -5,7 +5,13 @@ import { ScrollView, StyleSheet } from "react-native";
 import DrawerCustomItem from "src/components/DrawerCustomItem";
 import materialTheme from "src/constants/Theme";
 
-const screens = ["ShopStack", "ProfileStack"];
+const screens = [
+  "ShopStack",
+  "ProfileStack",
+  "PurchasesStack",
+  "CollectionsStack",
+  "ReservationsStack"
+];
 
 function CustomDrawerContent(props) {
   const { navigation, state } = props;
@@ -52,7 +58,7 @@ function CustomDrawerContent(props) {
         <DrawerCustomItem
           title="Log Out"
           navigation={navigation}
-          focused={state.index === 3}
+          focused={state.index === 5}
         />
       </Block>
     </Block>

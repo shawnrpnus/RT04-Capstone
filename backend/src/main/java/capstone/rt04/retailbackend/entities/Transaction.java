@@ -19,6 +19,8 @@ import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,14 +47,19 @@ public class Transaction implements Serializable {
     private CollectionModeEnum collectionMode;
 
     private Integer totalQuantity;
-
+    @Column(precision = 11, scale = 2)
     private BigDecimal initialTotalPrice;
 
+    @Column(precision = 11, scale = 2)
     private BigDecimal finalTotalPrice; //after discounts etc.
 
     private DeliveryStatusEnum deliveryStatus;
 
     private Timestamp deliveredDateTime;
+
+    private String cardIssuer;
+
+    private String cardLast4;
 
     @ManyToOne
     private PromoCode promoCode;
@@ -91,6 +98,32 @@ public class Transaction implements Serializable {
         this.customer = customer;
     }
 
+    public LocalDate getCreatedLocalDate() {
+        return this.createdDateTime.toInstant().atZone(ZoneId.of("Singapore")).toLocalDate();
+    }
+
+    public boolean isBetween(String fromDateString, String toDateString) {
+        LocalDate createdLocalDate = getCreatedLocalDate();
+        if (fromDateString == null && toDateString == null) {
+            return true;
+        }
+
+        if (fromDateString == null) {
+            LocalDate toDate = LocalDate.parse(toDateString);
+            return (createdLocalDate.isEqual(toDate) || createdLocalDate.isBefore(toDate));
+        }
+
+        if (toDateString == null) {
+            LocalDate fromDate = LocalDate.parse(fromDateString);
+            return (createdLocalDate.isEqual(fromDate) || createdLocalDate.isAfter(fromDate));
+        }
+
+        LocalDate toDate = LocalDate.parse(toDateString);
+        LocalDate fromDate = LocalDate.parse(fromDateString);
+        return ((createdLocalDate.isEqual(fromDate) || createdLocalDate.isEqual(toDate)) ||
+                (createdLocalDate.isAfter(fromDate) && createdLocalDate.isBefore(toDate)));
+
+    }
 }
 
 

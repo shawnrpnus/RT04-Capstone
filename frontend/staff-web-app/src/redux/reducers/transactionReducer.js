@@ -2,7 +2,7 @@ import * as types from "../actions/types";
 
 const initialState = {
   allTransactions: null,
-  transactions: [],
+  transactions: null,
   transaction: null
 };
 
@@ -17,6 +17,16 @@ export default function(state = initialState, action) {
       return {
         ...state,
         transactions: action.transactions
+      };
+    case types.RETRIEVE_TRANSACTION_BY_TRANSACTION_ID_SUCCESS:
+      return {
+        ...state,
+        transaction: action.transaction
+      };
+    case types.CONFIRM_RECEIVED_TRANSACTION:
+      return {
+        ...state,
+        transaction: action.transaction
       };
     default:
       return state;

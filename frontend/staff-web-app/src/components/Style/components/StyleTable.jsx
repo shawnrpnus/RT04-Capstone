@@ -109,7 +109,8 @@ class StyleTable extends Component {
                 {
                   icon: Delete,
                   tooltip: "Delete Style",
-                  onClick: (event, rowData) => this.handleDelete(rowData.styleId)
+                  onClick: (event, rowData) =>
+                    this.handleDelete(rowData.styleId)
                 }
               ]}
               editable={{

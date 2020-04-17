@@ -8,4 +8,6 @@ import java.util.List;
 public interface DeliveryRepository extends CrudRepository<Delivery, Long> {
 
     List<Delivery> findAll();
+
+    List<Delivery> findAllByDeliveryStaff_StaffId(Long staffId);
 }

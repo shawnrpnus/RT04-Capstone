@@ -8,9 +8,9 @@ RUN mvn clean package
 
 FROM openjdk:8-jdk-alpine
 WORKDIR /app
-COPY --from=build /apricot/backend/target/retailbackend-0.0.1-SNAPSHOT.jar /app/retailbackend-0.0.1-SNAPSHOT.jar
+COPY --from=build /apricot/backend/target/retailbackend-0.0.1-SNAPSHOT.jar ./retailbackend-0.0.1-SNAPSHOT.jar
 EXPOSE 8080
-ENTRYPOINT ["java","-jar", "-Dspring.profiles.active=prod", "/app/retailbackend-0.0.1-SNAPSHOT.jar"]
+ENTRYPOINT ["java","-jar", "-Dspring.profiles.active=prod", "./retailbackend-0.0.1-SNAPSHOT.jar"]
 
 #FROM openjdk:8-jdk-alpine
 #ARG JAR_FILE=target/retailbackend-0.0.1-SNAPSHOT.jar

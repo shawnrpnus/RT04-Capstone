@@ -29,10 +29,12 @@ import {
   Remove,
   SaveAlt,
   Search,
-  ViewColumn
+  ViewColumn,
 } from "@material-ui/icons";
 import { confirmTransactionDelivery } from "../../../redux/actions/deliveryActions";
 import { getDeliveryStatusColour } from "../../../redux/actions/restockOrderAction";
+import SignaturePad from "./SignaturePad";
+import QRScanner from "./QRScanner";
 
 const _ = require("lodash");
 const tableIcons = {
@@ -52,24 +54,32 @@ const tableIcons = {
   Search: Search,
   SortArrow: () => <div />,
   ThirdStateCheck: Remove,
-  ViewColumn: ViewColumn
+  ViewColumn: ViewColumn,
 };
 
 const TransactionDetailsDialog = ({ elements, open, onClose }) => {
   const dispatch = useDispatch();
-  const history = useHistory();
-  const confirmDialog = useConfirm();
   const [itemsByStore, setItemsByStore] = useState([]);
   const [stores, setStores] = useState([]);
-  const [selectedStore, setSelectedStore] = useState("");
+  const [selectedStoreId, setSelectedStoreId] = useState("");
+  const [openQR, setOpenQR] = useState(false);
+  const [openSignaturePad, setOpenSignaturePad] = useState(false);
+  const [selectedTransaction, setSelectedTransaction] = useState([]);
+  const [byList, setByList] = useState(false);
 
   useEffect(() => {
-    const stores = elements.map(e => _.get(e, "storeToCollect.storeName", ""));
-    if (stores) setStores(_.uniq(stores));
+    const stores = elements.map(({ storeToCollect }) =>
+      storeToCollect ? storeToCollect : ""
+    );
+    setStores(
+      _.uniqBy(stores, function(store) {
+        return store.storeId;
+      })
+    );
     setItemsByStore(elements);
   }, []);
 
-  const data = itemsByStore.map(item => {
+  const data = itemsByStore.map((item) => {
     let {
       transactionId,
       orderNumber,
@@ -78,7 +88,7 @@ const TransactionDetailsDialog = ({ elements, open, onClose }) => {
       totalQuantity,
       deliveryStatus,
       deliveryAddress,
-      storeToCollect
+      storeToCollect,
     } = item;
     let date;
     if (createdDateTime)
@@ -87,6 +97,9 @@ const TransactionDetailsDialog = ({ elements, open, onClose }) => {
       ? deliveryAddress
       : storeToCollect.address;
     const address = `${line1}, ${line2}${line2 ? "," : ""} ${postalCode}`;
+    const { firstName, lastName } = item.customer;
+    const name = `${firstName} ${lastName}`;
+    console.log(item);
     return {
       transactionId,
       orderNumber,
@@ -95,7 +108,8 @@ const TransactionDetailsDialog = ({ elements, open, onClose }) => {
       totalQuantity,
       deliveryStatus: deliveryStatus.split("_").join(" "),
       deliveryAddress: address,
-      storeToCollect
+      storeToCollect,
+      name,
     };
   });
 
@@ -103,27 +117,33 @@ const TransactionDetailsDialog = ({ elements, open, onClose }) => {
     const { value } = input;
     if (value === "") {
       setItemsByStore(elements);
-      setSelectedStore(value);
+      setSelectedStoreId(value);
+      setByList(false);
     } else {
       setItemsByStore(
         elements.filter(
-          item => _.get(item, "storeToCollect.storeName") === input.value
+          (item) => _.get(item, "storeToCollect.storeId") === value
         )
       );
-      setSelectedStore(value);
+      setSelectedStoreId(value);
+      setByList(true);
+    }
+    setSelectedTransaction([]);
+  };
+
+  const handleOpenDialog = (data) => {
+    if (data && !data[0].storeToCollect) {
+      setOpenSignaturePad(true);
+    } else {
+      setOpenQR(true);
     }
   };
 
-  const handleConfirmDelivery = data => {
-    const transactionIds = data.map(e => e.transactionId);
-    confirmDialog({
-      description: "The selected transaction(s) will be marked as delivered"
-    })
-      .then(() => {
-        dispatch(confirmTransactionDelivery({ transactionIds }));
-        onClose();
-      })
-      .catch(() => null);
+  const handleConfirmDelivery = () => {
+    const data =
+      selectedTransaction.length > 0 ? selectedTransaction : itemsByStore;
+    const transactionIds = data.map((e) => e.transactionId);
+    dispatch(confirmTransactionDelivery({ transactionIds }));
   };
 
   return (
@@ -138,12 +158,14 @@ const TransactionDetailsDialog = ({ elements, open, onClose }) => {
               <MenuItem key={""} value={""}>
                 <span style={{ visibility: "hidden" }}>blank</span>
               </MenuItem>
-              {stores.map(store => {
-                return (
-                  <MenuItem key={store} value={store}>
-                    {store}
-                  </MenuItem>
-                );
+              {stores.map((store) => {
+                if (store !== "") {
+                  return (
+                    <MenuItem key={store.storeId} value={store.storeId}>
+                      {store.storeName}
+                    </MenuItem>
+                  );
+                }
               })}
             </Select>
           </Grid>
@@ -157,8 +179,9 @@ const TransactionDetailsDialog = ({ elements, open, onClose }) => {
             { title: "Transaction ID", field: "transactionId" },
             {
               title: "Order number",
-              field: "orderNumber"
+              field: "orderNumber",
             },
+            { title: "Customer name", field: "name" },
             { title: "Created Date", field: "createdDateTime" },
             { title: "Collection mode", field: "collectionMode" },
             {
@@ -172,12 +195,12 @@ const TransactionDetailsDialog = ({ elements, open, onClose }) => {
                     label={deliveryStatus}
                   />
                 );
-              }
+              },
             },
             {
               title: "Delivery address",
-              field: "deliveryAddress"
-            }
+              field: "deliveryAddress",
+            },
           ]}
           data={data}
           options={{
@@ -185,45 +208,58 @@ const TransactionDetailsDialog = ({ elements, open, onClose }) => {
             headerStyle: { textAlign: "center" }, //change header padding
             cellStyle: { textAlign: "center" },
             draggable: false,
-            selection: !selectedStore ? false : true,
-            actionsColumnIndex: -1
+            // selection: !selectedStoreId || !byList ? false : true,
+            actionsColumnIndex: -1,
           }}
-          actions={[
-            selectedStore
-              ? rowData => ({
-                  icon: Add,
-                  tooltip: "Confirm delivery",
-                  onClick: (event, rowData) =>
-                    handleConfirmDelivery(itemsByStore),
-                  disabled: itemsByStore.every(
-                    item => item.deliveryStatus === "DELIVERED"
-                  )
-                })
-              : rowData => ({
-                  icon: SaveAlt,
-                  tooltip: "Confirm delivery",
-                  onClick: (event, rowData) => handleConfirmDelivery([rowData]),
-                  disabled: rowData.deliveryStatus === "DELIVERED"
-                })
-          ]}
+          // actions={[
+          //   selectedStoreId && byList
+          //     ? (rowData) => ({
+          //         icon: Check,
+          //         tooltip: "Confirm delivery",
+          //         onClick: (event, rowData) => handleOpenDialog(),
+          //         // handleConfirmDelivery(itemsByStore),
+          //         disabled: itemsByStore.every(
+          //           (item) => item.deliveryStatus === "DELIVERED"
+          //         ),
+          //       })
+          //     : (rowData) => ({
+          //         icon: Check,
+          //         tooltip: "Confirm delivery",
+          //         onClick: (event, rowData) => {
+          //           if (rowData.storeToCollect)
+          //             setSelectedStoreId(rowData.storeToCollect.storeId);
+          //           setSelectedTransaction([rowData]);
+          //           handleOpenDialog([rowData]);
+          //         },
+          //         disabled:
+          //           rowData.deliveryStatus === "DELIVERED" ||
+          //           rowData.deliveryStatus === "READY FOR COLLECTION",
+          //       }),
+          // ]}
         />
       </DialogContent>
       <DialogActions>
         <Button autoFocus onClick={onClose} color="secondary">
           Close
         </Button>
-        {/* <Button
-          color="primary"
-          onClick={() => handleConfirmDelivery(itemsByStore)}
-          disabled={
-            itemsByStore.length === 0 ||
-            itemsByStore[0].deliveryStatus === "DELIVERED" ||
-            itemsByStore.every(item => item.status === "DELIVERED")
-          }
-        >
-          Confirm delivery
-        </Button> */}
       </DialogActions>
+      {openSignaturePad && (
+        <SignaturePad
+          open={openSignaturePad}
+          onClose={() => setOpenSignaturePad(false)}
+          confirmDelivery={handleConfirmDelivery}
+          onCloseOuterDialog={onClose}
+        />
+      )}
+      {openQR && (
+        <QRScanner
+          open={openQR}
+          onClose={() => setOpenQR(false)}
+          confirmDelivery={handleConfirmDelivery}
+          onCloseOuterDialog={onClose}
+          id={selectedStoreId}
+        />
+      )}
     </Dialog>
   );
 };
