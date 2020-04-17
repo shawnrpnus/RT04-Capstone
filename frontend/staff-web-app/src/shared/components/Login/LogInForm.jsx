@@ -23,14 +23,14 @@ class LogInForm extends Component {
     errors: PropTypes.object,
     fieldUser: PropTypes.string,
     typeFieldUser: PropTypes.string,
-    form: PropTypes.string.isRequired
+    form: PropTypes.string.isRequired,
   };
 
   static defaultProps = {
     errorMessage: "",
     errorMsg: "",
     fieldUser: "Username",
-    typeFieldUser: "text"
+    typeFieldUser: "text",
   };
 
   constructor(props) {
@@ -38,7 +38,7 @@ class LogInForm extends Component {
     this.state = {
       username: "",
       password: "",
-      showPassword: false
+      showPassword: false,
     };
 
     this.showPassword = this.showPassword.bind(this);
@@ -46,10 +46,10 @@ class LogInForm extends Component {
 
   showPassword(e) {
     e.preventDefault();
-    this.setState(prevState => ({ showPassword: !prevState.showPassword }));
+    this.setState((prevState) => ({ showPassword: !prevState.showPassword }));
   }
 
-  onChange = e => {
+  onChange = (e) => {
     const name = e.target.name;
 
     console.log(name);
@@ -62,7 +62,7 @@ class LogInForm extends Component {
     }
   };
 
-  handleSubmit = e => {
+  handleSubmit = (e) => {
     e.preventDefault();
 
     const req = new StaffLoginRequest(this.state.username, this.state.password);
@@ -76,7 +76,7 @@ class LogInForm extends Component {
       errorMsg,
       fieldUser,
       typeFieldUser,
-      form
+      form,
     } = this.props;
     const { showPassword } = this.state;
     return (
@@ -119,7 +119,7 @@ class LogInForm extends Component {
               className={`form__form-group-button${
                 showPassword ? " active" : ""
               }`}
-              onClick={e => this.showPassword(e)}
+              onClick={(e) => this.showPassword(e)}
             >
               <EyeIcon />
             </button>
@@ -154,13 +154,13 @@ class LogInForm extends Component {
 }
 
 //mapping global state to this component
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   loggedInStaff: state.staffEntity.loggedInStaff,
-  errors: state.errors
+  errors: state.errors,
 });
 
 const mapDispatchToProps = {
-  staffLogin
+  staffLogin,
 };
 
 export default connect(

@@ -11,7 +11,7 @@ import {
   ResponsiveContainer,
   Tooltip,
   XAxis,
-  YAxis
+  YAxis,
 } from "recharts";
 import "./graphStyle.css";
 
@@ -21,18 +21,19 @@ function Graph(props) {
   const { popOptions, lineMode, allStores, yAxis } = props;
 
   const storeIds = _.keys(popOptions).filter(
-    key => key !== "online" && popOptions[key]
+    (key) => key !== "online" && popOptions[key]
   );
   const onlineSelected = popOptions.online;
 
-  const salesByDay = useSelector(state => state.analytics.salesByDay);
+  const salesByDay = useSelector((state) => state.analytics.salesByDay);
 
   const lineColors = ["#8884d8", "#84d8bd", "#d8ca84", "#d88484", "#d884d2"];
 
-  const getStoreNameFromId = storeId => {
+  const getStoreNameFromId = (storeId) => {
     if (allStores) {
-      return allStores.find(store => Number(store.storeId) === Number(storeId))
-        .storeName;
+      return allStores.find(
+        (store) => Number(store.storeId) === Number(storeId)
+      ).storeName;
     }
   };
 
@@ -73,7 +74,8 @@ function Graph(props) {
                 value: renderYAxisName(),
                 angle: -90,
                 position: "insideTopLeft",
-                dy: 200
+                dy: 225,
+                dx: -20,
               }}
             />
             <Tooltip />

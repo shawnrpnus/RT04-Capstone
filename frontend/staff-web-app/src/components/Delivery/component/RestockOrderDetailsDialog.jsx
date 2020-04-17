@@ -205,7 +205,7 @@ const RestockOrderDetailsDialog = ({ elements, open, onClose }) => {
         <Button autoFocus onClick={onClose} color="secondary">
           Close
         </Button>
-        <Button
+        {/* <Button
           color="primary"
           onClick={handleOpenQR}
           disabled={
@@ -215,7 +215,7 @@ const RestockOrderDetailsDialog = ({ elements, open, onClose }) => {
           }
         >
           Confirm delivery
-        </Button>
+        </Button> */}
       </DialogActions>
       {openQR && (
         <QRScanner

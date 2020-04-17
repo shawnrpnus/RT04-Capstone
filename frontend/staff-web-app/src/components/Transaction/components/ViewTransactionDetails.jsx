@@ -3,7 +3,7 @@ import withPage from "../../Layout/page/withPage";
 import Button from "@material-ui/core/Button";
 import QRScannerTransaction from "./QRScannerTransaction";
 import {
-  confirmReceivedTransaction, retrieveTransactionByQRCode,
+  confirmReceivedTransaction, retrieveTransactionByQRCode, retrieveTransactionByTransactionIdSuccess,
 } from "../../../redux/actions/transactionActions";
 import {useDispatch, useSelector} from "react-redux";
 import TransactionStoreQR from "./TransactionStoreQR";
@@ -24,6 +24,10 @@ const ViewTransactionDetails = props => {
   const currTransaction = useSelector(state => state.transaction.transaction);
   const currStaff = useSelector(state => state.staffEntity.loggedInStaff);
 
+  useEffect( () => {
+    dispatch(retrieveTransactionByTransactionIdSuccess());
+  }, []);
+
   useEffect(() => {
     if (transactionId) {
       dispatch(retrieveTransactionByQRCode(transactionId, currStaff.store.storeId));
@@ -32,7 +36,7 @@ const ViewTransactionDetails = props => {
 
   useEffect(() => {
     if(currTransaction) {
-      if(currTransaction.deliveryStatus === "DELIVERED") {
+      if(currTransaction.deliveryStatus !== "READY_FOR_COLLECTION") {
         setIsConfirm(true);
       }
     }
@@ -76,7 +80,7 @@ const ViewTransactionDetails = props => {
             <Button
               color="primary"
               onClick={handleConfirm}
-              disabled={setIsConfirm}
+              disabled={isConfirm}
             > Confirm
             </Button>
             :

@@ -50,7 +50,7 @@ function Home(props) {
   }, [staff]);
 
   const handleNotification = notification => {
-    console.log("home notif");
+    //console.log("home notif");
     if (staff && notification.data.type === "reservationReminder") {
       dispatch(retrieveUpcomingReservations(staff.store.storeId, null));
     }

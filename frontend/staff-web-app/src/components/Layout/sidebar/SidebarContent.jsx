@@ -13,7 +13,7 @@ import {
   FaMoneyBillAlt,
   FaStaylinked,
   FaLeaf,
-  FaMoneyCheckAlt
+  FaMoneyCheckAlt,
 } from "react-icons/fa";
 import {
   MdFeedback,
@@ -21,9 +21,9 @@ import {
   MdLocalShipping,
   MdPayment,
   MdPeople,
-  MdStore
+  MdStore,
 } from "react-icons/md";
-import {DiGoogleAnalytics} from "react-icons/all";
+import { DiGoogleAnalytics } from "react-icons/all";
 
 import { TiSocialInstagram } from "react-icons/ti";
 import { IoMdPricetags } from "react-icons/io";
@@ -32,7 +32,7 @@ const _ = require("lodash");
 
 class SidebarContent extends Component {
   static propTypes = {
-    onClick: PropTypes.func.isRequired
+    onClick: PropTypes.func.isRequired,
   };
 
   hideSidebar = () => {
@@ -177,7 +177,7 @@ class SidebarContent extends Component {
             <SidebarCategory title="Style" customIcon={<FaStaylinked />}>
               {salesmarketing && (
                 <SidebarLink
-                  title="Create"
+                  title="Create Style"
                   route="/style/manage"
                   onClick={this.hideSidebar}
                 />
@@ -192,7 +192,7 @@ class SidebarContent extends Component {
           {salesmarketing && (
             <SidebarCategory title="Promo Code" customIcon={<FaBarcode />}>
               <SidebarLink
-                title="Manage"
+                title="Create Promo Code"
                 route="/promoCode/create"
                 onClick={this.hideSidebar}
               />
@@ -220,7 +220,7 @@ class SidebarContent extends Component {
                 </>
               )}
               <SidebarLink
-                title="Manage Products"
+                title={salesmarketing ? "Manage Products" : "View Products"}
                 route="/discount/associateProducts"
                 onClick={this.hideSidebar}
               />
@@ -289,7 +289,7 @@ class SidebarContent extends Component {
               />
             </SidebarCategory>
           )}
-          {delivery && (
+          {delivery && manager && (
             <SidebarCategory title="Delivery" customIcon={<MdLocalShipping />}>
               <>
                 <SidebarLink
@@ -349,15 +349,20 @@ class SidebarContent extends Component {
                 route="/transaction/viewAll"
                 onClick={this.hideSidebar}
               />
-              <SidebarLink
-                title="View details"
-                route="/transaction/viewOne"
-                onClick={this.hideSidebar}
-              />
+              {store && (
+                <SidebarLink
+                  title="View details"
+                  route="/transaction/viewOne"
+                  onClick={this.hideSidebar}
+                />
+              )}
             </SidebarCategory>
           )}
           {salesmarketing && (
-            <SidebarCategory title="Analytics" customIcon={<DiGoogleAnalytics />}>
+            <SidebarCategory
+              title="Analytics"
+              customIcon={<DiGoogleAnalytics />}
+            >
               <SidebarLink
                 title="Sales"
                 route="/analytics/sales"

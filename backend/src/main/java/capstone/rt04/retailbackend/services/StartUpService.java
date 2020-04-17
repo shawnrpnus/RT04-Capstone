@@ -1300,6 +1300,22 @@ public class StartUpService {
         Staff staff15 = new Staff("Warehouse", "Manager",  "152A", "warehousemanager@gmail.com", BigDecimal.valueOf(80));
         staff15.setAddress(new Address("Block 552 Clementi Ave West", "#11-07", "321140", "-","1.351358", "103.746107"));
         Staff newStaff9 = staffService.createNewStaff(staff15, staff15.getAddress(), role3.getRoleId(), departmentWarehouse.getDepartmentId(), null);
+
+        Staff staff16 = new Staff("Delivery", "guy",  "424A", "deliveryguy2@gmail.com",  BigDecimal.valueOf(80));
+        staff16.setAddress(new Address("747 Woodlands Cir", "#10-01", "730747", "-", "1.443310", "103.795210"));
+        staffService.createNewStaff(staff16, staff16.getAddress(), role1.getRoleId(), delivery.getDepartmentId(), null);
+
+        Staff staff17 = new Staff("Delivery", "guy",  "001A", "deliveryguy3@gmail.com",  BigDecimal.valueOf(80));
+        staff17.setAddress(new Address("747 Woodlands Cir", "#10-01", "730747", "-", "1.443310", "103.795210"));
+        staffService.createNewStaff(staff17, staff17.getAddress(), role1.getRoleId(), delivery.getDepartmentId(), null);
+
+        Staff staff18 = new Staff("Delivery", "guy",  "999A", "deliveryguy4@gmail.com",  BigDecimal.valueOf(80));
+        staff18.setAddress(new Address("747 Woodlands Cir", "#10-01", "730747", "-", "1.443310", "103.795210"));
+        staffService.createNewStaff(staff18, staff18.getAddress(), role1.getRoleId(), delivery.getDepartmentId(), null);
+
+        Staff staff19 = new Staff("Delivery", "guy",  "458M", "deliveryguy5@gmail.com",  BigDecimal.valueOf(80));
+        staff19.setAddress(new Address("747 Woodlands Cir", "#10-01", "730747", "-", "1.443310", "103.795210"));
+        staffService.createNewStaff(staff19, staff19.getAddress(), role1.getRoleId(), delivery.getDepartmentId(), null);
     }
 
     private void createPromoCodesIfNotFound() throws InputDataValidationException, CreateNewPromoCodeException, PromoCodeNotFoundException, CustomerNotFoundException {

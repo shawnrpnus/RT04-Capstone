@@ -59,7 +59,7 @@ function OrderHistoryCard(props) {
 
   let totalRefundQuantity = 0;
   let totalForEachItem = 0;
-  let textToDisplay = "this is not supposed to appear, let me know if it does";
+  let textToDisplay = "Refund Not Available [this is not supposed to appear, let me know if it does]";
   if (refunds) {
     totalRefundQuantity = new Array(refunds.length).fill(0);
     for (let i = 0; i < refunds.length; i++) {
@@ -85,6 +85,22 @@ function OrderHistoryCard(props) {
   let toRefund = false;
 
   const isRefundable = (transaction) => {
+    //cannot refund because havent reach customer
+    if(transaction.deliveryStatus === "DELIVERED" || transaction.deliveryStatus === "COLLECTED") {
+      textToDisplay = "Unhappy with our goods? Make a refund!"
+    }
+    if (transaction.deliveryStatus === "PROCESSING" ||
+                transaction.deliveryStatus === "TO_BE_DELIVERED" ||
+                transaction.deliveryStatus === "PARTIALLY_TO_BE_DELIVERED" ||
+                transaction.deliveryStatus === "IN_TRANSIT" ||
+                transaction.deliveryStatus === "PARTIALLY_IN_TRANSIT" ||
+                transaction.deliveryStatus === "READY_FOR_COLLECTION" ||
+                transaction.deliveryStatus === "PARTIALLY_FULFILLED" ||
+                transaction.deliveryStatus === "FAILED") {
+      toRefund = false;
+      return toRefund;
+    }
+
     if (transaction.deliveredDateTime) {
       let datePastRefund = new Date(transaction.deliveredDateTime);
       datePastRefund.setDate(datePastRefund.getDate() + 14);
@@ -120,7 +136,7 @@ function OrderHistoryCard(props) {
     case "PROCESSING":
       statusColor = "red";
       textToDisplay =
-        "Delivery not available [because processing, will disable button later]";
+        "Delivery not available";
       break;
     case "DELIVERED":
       statusColor = "green";

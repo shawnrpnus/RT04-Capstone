@@ -35,9 +35,9 @@ export const createInStoreRefundRequest = (
         // });
       })
       .catch(err => {
-        toast.error(err.response.data.errorMessage.toString(), {
-          position: toast.POSITION.TOP_CENTER
-        });
+        // toast.error(err.response.data.errorMessage.toString(), {
+        //   position: toast.POSITION.TOP_CENTER
+        // });
         dispatchErrorMapError(err, dispatch);
         console.log(err.response.data);
       });

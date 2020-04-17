@@ -14,7 +14,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   closeCartTooltip,
   openCartTooltip,
-  updateShoppingCart,
+  updateShoppingCart
 } from "redux/actions/shoppingCartActions";
 import UpdateShoppingCartRequest from "models/shoppingCart/UpdateShoppingCartRequest";
 import { useSnackbar } from "notistack";
@@ -24,11 +24,11 @@ import {
   addToReservationCartAPI,
   addToWishlistAPI,
   closeWishlistTooltip,
-  openWishlistTooltip,
+  openWishlistTooltip
 } from "redux/actions/customerActions";
 import {
   closeReservationTooltip,
-  openReservationTooltip,
+  openReservationTooltip
 } from "redux/actions/reservationActions";
 
 const _ = require("lodash");
@@ -40,35 +40,35 @@ function ProductDetailsCard(props) {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const { productDetail } = props;
 
-  const extractProductInformation = (productDetail) => {
+  const extractProductInformation = productDetail => {
     if (!productDetail) return {};
     const { product, colourToSizeImageMaps, discountedPrice } = productDetail;
 
     // below used to link image set to colour clicked by mapping this list of objects to
     // colour boxes and the image set + size boxes
     const colourAndSizeToVariantAndStockMap = {};
-    const colourToImageAndSizes = colourToSizeImageMaps.map((csiMap) => {
+    const colourToImageAndSizes = colourToSizeImageMaps.map(csiMap => {
       colourAndSizeToVariantAndStockMap[csiMap.colour] = _.keyBy(
         csiMap.sizeMaps,
         "size"
       );
-      const imageSet = csiMap.productImages.map((prodImage) => {
+      const imageSet = csiMap.productImages.map(prodImage => {
         return {
           original: prodImage.productImageUrl,
-          thumbnail: prodImage.productImageUrl,
+          thumbnail: prodImage.productImageUrl
         };
       });
       return {
         colour: csiMap.colour,
         imageSet: imageSet,
-        sizes: csiMap.sizeMaps.map((sizeMap) => sizeMap.size),
+        sizes: csiMap.sizeMaps.map(sizeMap => sizeMap.size)
       };
     });
     return {
       product,
       colourToImageAndSizes,
       colourAndSizeToVariantAndStockMap,
-      discountedPrice,
+      discountedPrice
     };
   };
 
@@ -76,7 +76,7 @@ function ProductDetailsCard(props) {
     product,
     colourToImageAndSizes,
     colourAndSizeToVariantAndStockMap,
-    discountedPrice,
+    discountedPrice
   } = extractProductInformation(productDetail);
 
   const [activeColourIndex, setActiveColourIndex] = useState(0);
@@ -87,13 +87,13 @@ function ProductDetailsCard(props) {
   const [isHoverFavorite, setIsHoverFavorite] = useState(false);
 
   const dispatch = useDispatch();
-  const customer = useSelector((state) => state.customer.loggedInCustomer);
+  const customer = useSelector(state => state.customer.loggedInCustomer);
 
   const addToShoppingCart = () => {
     if (selectedSize === "None") {
       enqueueSnackbar("Please select a size", {
         variant: "error",
-        autoHideDuration: 1200,
+        autoHideDuration: 1200
       });
       return;
     }
@@ -125,14 +125,14 @@ function ProductDetailsCard(props) {
     if (!customer) {
       enqueueSnackbar("Please login to add to your wishlist!", {
         variant: "error",
-        autoHideDuration: 1200,
+        autoHideDuration: 1200
       });
       return;
     }
     if (selectedSize === "None") {
       enqueueSnackbar("Please select a size", {
         variant: "error",
-        autoHideDuration: 1200,
+        autoHideDuration: 1200
       });
       return;
     }
@@ -141,7 +141,7 @@ function ProductDetailsCard(props) {
     if (isProductVariantInList(productVariantId, currentWishlist)) {
       enqueueSnackbar("Already in wishlist!", {
         variant: "error",
-        autoHideDuration: 1200,
+        autoHideDuration: 1200
       });
       return;
     }
@@ -162,7 +162,7 @@ function ProductDetailsCard(props) {
     if (selectedSize === "None") {
       enqueueSnackbar("Please select a size", {
         variant: "error",
-        autoHideDuration: 1200,
+        autoHideDuration: 1200
       });
       return;
     }
@@ -171,7 +171,7 @@ function ProductDetailsCard(props) {
     if (isProductVariantInList(productVariantId, currentReservationCart)) {
       enqueueSnackbar("Already in reservation cart!", {
         variant: "error",
-        autoHideDuration: 1200,
+        autoHideDuration: 1200
       });
       return;
     }
@@ -238,9 +238,9 @@ function ProductDetailsCard(props) {
             </Tooltip>
           </h2>
           <h3 className={classes.mainPrice}>
-            {discountedPrice && <span>${discountedPrice}</span>}
+            {discountedPrice && <span>${discountedPrice.toFixed(2)}</span>}
             <span className={discountedPrice && classes.discountedPrice}>
-              ${product.price}
+              ${product.price.toFixed(2)}
             </span>
           </h3>
           <Accordion
@@ -262,8 +262,8 @@ function ProductDetailsCard(props) {
                       />
                     ))}
                   </p>
-                ),
-              },
+                )
+              }
             ]}
           />
           <GridContainer className={classes.pickSize}>
@@ -288,7 +288,7 @@ function ProductDetailsCard(props) {
                       style={{
                         fill: "white",
                         strokeWidth: activeColourIndex === index ? 4 : 1,
-                        stroke: activeColourIndex === index ? "black" : "grey",
+                        stroke: activeColourIndex === index ? "black" : "grey"
                       }}
                     />
                     <rect
@@ -299,7 +299,7 @@ function ProductDetailsCard(props) {
                       style={{
                         fill: cis.colour,
                         strokeWidth: cis.colour === "#FFFFFF" ? 0.5 : 0,
-                        stroke: cis.colour === "#FFFFFF" ? "black" : "none",
+                        stroke: cis.colour === "#FFFFFF" ? "black" : "none"
                       }}
                     />
                   </svg>
@@ -329,7 +329,7 @@ function ProductDetailsCard(props) {
                         width="40"
                         style={{
                           margin: "0 2px",
-                          cursor: "pointer",
+                          cursor: "pointer"
                         }}
                         height="40"
                         onClick={() => setSelectedSize(size)}
@@ -341,7 +341,7 @@ function ProductDetailsCard(props) {
                             fill: hasStock ? "white" : "grey",
                             pointerEvents: hasStock ? "click" : "none",
                             strokeWidth: selectedSize === size ? 4 : 1,
-                            stroke: selectedSize === size ? "black" : "grey",
+                            stroke: selectedSize === size ? "black" : "grey"
                           }}
                         />
                         <text
@@ -350,7 +350,7 @@ function ProductDetailsCard(props) {
                           style={{
                             dominantBaseline: "middle",
                             textAnchor: "middle",
-                            fontWeight: "bold",
+                            fontWeight: "bold"
                           }}
                         >
                           {size}
@@ -374,26 +374,68 @@ function ProductDetailsCard(props) {
               )}
             </GridItem>
             <GridItem md={12} sm={12} style={{ marginTop: "10px" }}>
-              <Button
-                color="primary"
-                onClick={addToShoppingCart}
-                style={{ float: "right", width: "245px" }}
-                disabled={
-                  selectedStock <= 0 || selectedSize === "None" || !customer
+              <Tooltip
+                title={
+                  !customer
+                    ? "Please log in"
+                    : selectedStock <= 0
+                    ? "Out of Stock"
+                    : selectedSize === "None"
+                    ? "Please select a size"
+                    : ""
                 }
+                placement="left"
+                classes={{ tooltip: classes.tooltip }}
               >
-                Add to Shopping Cart &nbsp; <ShoppingCart />
-              </Button>
+                <span
+                  style={{
+                    float: "right",
+                    width: "245px",
+                    cursor: "not-allowed"
+                  }}
+                >
+                  <Button
+                    color="primary"
+                    onClick={addToShoppingCart}
+                    style={{ float: "right", width: "245px" }}
+                    disabled={
+                      selectedStock <= 0 || selectedSize === "None" || !customer
+                    }
+                  >
+                    Add to Shopping Cart &nbsp; <ShoppingCart />
+                  </Button>
+                </span>
+              </Tooltip>
             </GridItem>
             <GridItem md={12} sm={12}>
-              <Button
-                color="primary"
-                onClick={addToReservationCart}
-                style={{ float: "right", width: "245px" }}
-                disabled={selectedSize === "None" || !customer}
+              <Tooltip
+                title={
+                  !customer
+                    ? "Please log in"
+                    : selectedSize === "None"
+                    ? "Please select a size"
+                    : ""
+                }
+                placement="left"
+                classes={{ tooltip: classes.tooltip }}
               >
-                Add to Reservation Cart &nbsp; <ShoppingCart />
-              </Button>
+                <span
+                  style={{
+                    float: "right",
+                    width: "245px",
+                    cursor: "not-allowed"
+                  }}
+                >
+                  <Button
+                    color="primary"
+                    onClick={addToReservationCart}
+                    style={{ float: "right", width: "245px" }}
+                    disabled={selectedSize === "None" || !customer}
+                  >
+                    Add to Reservation Cart &nbsp; <ShoppingCart />
+                  </Button>
+                </span>
+              </Tooltip>
             </GridItem>
           </GridContainer>
         </GridItem>

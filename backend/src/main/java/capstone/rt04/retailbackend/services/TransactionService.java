@@ -45,10 +45,12 @@ public class TransactionService {
     private final CustomerService customerService;
     private final PromoCodeService promoCodeService;
     private final ShoppingCartService shoppingCartService;
+    private final DeliveryService deliveryService;
 
     public TransactionService(TransactionRepository transactionRepository, TransactionLineItemRepository transactionLineItemRepository,
                               AddressRepository addressRepository, StoreService storeService, CustomerService customerService,
-                              ShoppingCartService shoppingCartService, @Lazy ProductService productService, PromoCodeService promoCodeService) {
+                              ShoppingCartService shoppingCartService, @Lazy ProductService productService, PromoCodeService promoCodeService,
+                              @Lazy DeliveryService deliveryService) {
         this.transactionRepository = transactionRepository;
         this.transactionLineItemRepository = transactionLineItemRepository;
         this.addressRepository = addressRepository;
@@ -57,6 +59,7 @@ public class TransactionService {
         this.shoppingCartService = shoppingCartService;
         this.productService = productService;
         this.promoCodeService = promoCodeService;
+        this.deliveryService = deliveryService;
     }
 
     /*create new transaction - not the actual one; simplified just for testing other use cases*/
@@ -395,15 +398,17 @@ public class TransactionService {
 
     public List<Transaction> receiveTransactionThroughDelivery(List<Long> transactionIds) throws TransactionNotFoundException {
         Transaction transaction;
+        List<Transaction> customerToEmail = new ArrayList<>();
         for (Long transactionId : transactionIds) {
             transaction = retrieveTransactionById(transactionId);
             if (transaction.getCollectionMode().equals(CollectionModeEnum.IN_STORE)) {
                 transaction.setDeliveryStatus(DeliveryStatusEnum.READY_FOR_COLLECTION);
+                customerToEmail.add(transaction);
             } else {
                 transaction.setDeliveryStatus(DeliveryStatusEnum.DELIVERED);
             }
         }
-        return retrieveTransactionsToBeDelivered();
+        return customerToEmail;
     }
 
     public Transaction confirmReceivedTransaction(Long transactionId) throws TransactionNotFoundException {

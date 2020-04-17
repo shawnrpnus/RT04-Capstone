@@ -322,7 +322,6 @@ export const staffLogin = (staffLoginRequest, history, store) => {
       .post(STAFF_BASE_URL + "/loginStaff", staffLoginRequest)
       .then((response) => {
         const { data } = jsog.decode(response);
-        console.log(data);
         const staffId = data.staffId;
         dispatch(loginStaffSuccess(data, store));
         toast.success("You are logged in!", {

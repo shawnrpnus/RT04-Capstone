@@ -16,7 +16,7 @@ import {
   Search,
   ViewColumn,
   Delete,
-  Visibility
+  Visibility,
 } from "@material-ui/icons";
 import MaterialTable from "material-table";
 import Chip from "@material-ui/core/Chip";
@@ -25,7 +25,7 @@ import CheckSharpIcon from "@material-ui/icons/CheckSharp";
 import {
   retrieveAllFeedback,
   markAsResolved,
-  deleteFeedback
+  deleteFeedback,
 } from "../../../redux/actions/feedbackActions";
 import withPage from "../../Layout/page/withPage";
 import FeedbackReplyDialog from "./FeedbackReplyDialog";
@@ -49,12 +49,12 @@ const tableIcons = {
   Search: Search,
   SortArrow: () => <div />,
   ThirdStateCheck: Remove,
-  ViewColumn: ViewColumn
+  ViewColumn: ViewColumn,
 };
 
 const FeedbackTable = () => {
   const dispatch = useDispatch();
-  const feedbacks = useSelector(state => state.feedback.feedbacks);
+  const feedbacks = useSelector((state) => state.feedback.feedbacks);
   const confirmDialog = useConfirm();
 
   const [feedbackIndex, setFeedbackIndex] = useState({});
@@ -77,12 +77,11 @@ const FeedbackTable = () => {
           firstName,
           lastName,
           contactUsCategory,
-          status: status.split("_").join(" ")
+          status: status.split("_").join(" "),
         };
       }
     );
   }
-  console.log(feedbacks);
 
   return (
     <div className="table" style={{ verticalAlign: "middle" }}>
@@ -97,7 +96,7 @@ const FeedbackTable = () => {
           {
             title: "Status",
             field: "status",
-            render: rowData => {
+            render: (rowData) => {
               let style;
               const { status, contactUsId } = rowData;
 
@@ -119,8 +118,8 @@ const FeedbackTable = () => {
                   label={status}
                 />
               );
-            }
-          }
+            },
+          },
         ]}
         data={data}
         options={{
@@ -130,38 +129,38 @@ const FeedbackTable = () => {
           pageSizeOptions: [10, 20, 40],
           actionsColumnIndex: -1,
           headerStyle: { textAlign: "center" }, //change header padding
-          cellStyle: { textAlign: "center" }
+          cellStyle: { textAlign: "center" },
         }}
         actions={[
-          rowData => ({
+          (rowData) => ({
             icon: Visibility,
             tooltip: "View and reply",
             onClick: (e, rowData) => {
               setFeedbackIndex(rowData.tableData.id);
               toggleOpenDialog();
-            }
+            },
           }),
-          rowData => ({
+          (rowData) => ({
             icon: CheckSharpIcon,
             tooltip: "Mark as resolved",
             onClick: (e, rowData) => {
               const { contactUsId } = rowData;
               dispatch(markAsResolved({ contactUsId, reply: null }));
             },
-            disabled: rowData.status === "RESOLVED"
+            disabled: rowData.status === "RESOLVED",
           }),
-          rowData => ({
+          (rowData) => ({
             icon: Delete,
             tooltip: "Delete",
             onClick: (e, rowData) => {
               const { contactUsId } = rowData;
               confirmDialog({
-                description: "Selected feedback will be deleted"
+                description: "Selected feedback will be deleted",
               }).then(() => {
                 dispatch(deleteFeedback(contactUsId));
               });
-            }
-          })
+            },
+          }),
         ]}
       />
       {open && (

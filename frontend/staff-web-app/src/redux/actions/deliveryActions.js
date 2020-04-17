@@ -123,11 +123,17 @@ export const generateDeliveryRoute = (deliveryId) => {
   };
 };
 
-export const estimateNumberOfDeliveryManRequired = () => {
+export const estimateNumberOfDeliveryManRequired = (
+  transaction,
+  restockOrderItem,
+  maxCapacity
+) => {
   // return dispatch => {
   //   dispatch(openCircularProgress());
   return axios
-    .get(DELIVERY_BASE_URL + "/estimateNumberOfDeliveryManRequired")
+    .get(DELIVERY_BASE_URL + "/estimateNumberOfDeliveryManRequired", {
+      params: { transaction, restockOrderItem, maxCapacity },
+    })
     .then((response) => {
       // dispatch(closeCircularProgress());
       return response.data.body;

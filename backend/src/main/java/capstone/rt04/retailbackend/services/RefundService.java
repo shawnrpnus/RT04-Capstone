@@ -15,6 +15,7 @@ import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.customer.CustomerNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.promoCode.PromoCodeNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.refund.RefundNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.staff.StaffNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.transaction.TransactionNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.warehouse.WarehouseNotFoundException;
@@ -41,6 +42,7 @@ public class RefundService {
     private final RefundLineItemHandlerRepository refundLineItemHandlerRepository;
     private final StoreService storeService;
     private final WarehouseService warehouseService;
+    private final StaffService staffService;
 
     public RefundService(ValidationService validationService,
                          ProductService productService,
@@ -51,7 +53,8 @@ public class RefundService {
                          CustomerService customerService,
                          PromoCodeService promoCodeService,
                          StoreService storeService,
-                         WarehouseService warehouseService) {
+                         WarehouseService warehouseService,
+                         StaffService staffService) {
         this.validationService = validationService;
         this.productService = productService;
         this.refundRepository = refundRepository;
@@ -62,17 +65,34 @@ public class RefundService {
         this.promoCodeService = promoCodeService;
         this.storeService = storeService;
         this.warehouseService = warehouseService;
+        this.staffService = staffService;
     }
 
-    public Refund createRefund(RefundRequest refundRequest) throws TransactionNotFoundException, CustomerNotFoundException, InputDataValidationException, PromoCodeNotFoundException, RefundNotFoundException, StoreNotFoundException, WarehouseNotFoundException {
+    public Refund createRefund(RefundRequest refundRequest) throws TransactionNotFoundException, CustomerNotFoundException, InputDataValidationException, PromoCodeNotFoundException, RefundNotFoundException, StoreNotFoundException, WarehouseNotFoundException, StaffNotFoundException {
         List<RefundLineItem> refundLineItemList = new ArrayList<>();
         List<RefundLineItemHandler> refundLineItemHandlers = new ArrayList<>();
         Map<String, String> errorMap = new HashMap<>();
         Integer totalQuantity = 0;
         BigDecimal refundAmount = BigDecimal.ZERO;
         Customer customer = customerService.retrieveCustomerByCustomerId(refundRequest.getCustomerId());
+        Staff staff = null;
+        if(refundRequest.getRefundLineItemRequests().size()>0 ) {
+            if(refundRequest.getRefundLineItemRequests().get(0).getStaffId() != null) {
+                staff = staffService.retrieveStaffByStaffId(refundRequest.getRefundLineItemRequests().get(0).getStaffId());
+            }
+        }
         Long promoCodeId = Long.valueOf("0");
         boolean isRefundedBefore = false;
+
+        int qty = 0;
+        for(RefundLineItemRequest refundLineItemRequest : refundRequest.getRefundLineItemRequests()) {
+            qty += refundLineItemRequest.getQuantityToRefund();
+        }
+
+        if(qty == 0) {
+            errorMap.put("quantity", "Refund quantity must not be empty");
+            throw new InputDataValidationException(errorMap, "Refund quantity must not be empty");
+        }
 
         if (refundRequest.getReason() == null || refundRequest.getReason().isEmpty()) {
             errorMap.put("reason", ErrorMessages.REFUND_REASON_EMPTY);
@@ -177,24 +197,33 @@ public class RefundService {
             Warehouse warehouse = warehouseService.retrieveWarehouseById(warehouses.get(0).getWarehouseId());
             refund.setWarehouse(warehouse);
         }
-        if(refundRequest.getStoreId() != null) {
-            refund = updateInStoreRefund(refundRequest.getCustomerId(), refundLineItemList);
+        if(refundRequest.getStoreId() != null && staff.getStaffId()!= null) {
+            refund = updateInStoreRefund(staff.getStaffId(), refundLineItemList);
         }
 
         return refund;
     }
 
-    public Refund updateInStoreRefund(Long staffId, List<RefundLineItem> refundLineItemList) throws RefundNotFoundException {
+    public Refund updateInStoreRefund(Long staffId, List<RefundLineItem> refundLineItemList) throws RefundNotFoundException, StaffNotFoundException, WarehouseNotFoundException {
 //        private Long refundLineItemId;
 //        private String refundProgressEnum;
 //        private Long staffId;
 //        private Integer quantityConfirmedRefunded;
         Refund refund = null;
+        Staff staff = staffService.retrieveStaffByStaffId(staffId);
+        List<Warehouse> warehouses = warehouseService.retrieveAllWarehouses();
+        Warehouse warehouse = warehouseService.retrieveWarehouseById(warehouses.get(0).getWarehouseId());
         for(RefundLineItem rli : refundLineItemList) {
             RefundLineItem refundLineItem = retrieveRefundLineItemById(rli.getRefundLineItemId());
             RefundLineItemHandler refundLineItemHandler = new RefundLineItemHandler(staffId,
                     refundLineItem.getQuantity(),
                     RefundProgressEnum.REFUND_SUCCESS);
+            List<ProductStock> productStocks = refundLineItem.getTransactionLineItem().getProductVariant().getProductStocks();
+            for(ProductStock ps: productStocks) {
+                if(staff.getStore() != null && ps.getStore() != null && ps.getStore().getStoreId().equals(staff.getStore().getStoreId())) {
+                    ps.setQuantity(refundLineItem.getQuantity()+ ps.getQuantity());
+                }
+            }
             refundLineItemHandler.setRefundLineItem(refundLineItem);
             refundLineItemHandlerRepository.save(refundLineItemHandler);
             refundLineItem.getRefundLineItemHandlerList().add(refundLineItemHandler);
@@ -206,11 +235,14 @@ public class RefundService {
     }
 
     // Update multiple RefundLineItem
-    public Refund updateRefundLineItemsStatus(List<UpdateRefundLineItemHandlerRequest> updateRefundLineItemHandlerRequests) throws RefundNotFoundException {
+    public Refund updateRefundLineItemsStatus(List<UpdateRefundLineItemHandlerRequest> updateRefundLineItemHandlerRequests) throws RefundNotFoundException, StaffNotFoundException, WarehouseNotFoundException {
         Refund refund = null;
         int totalQuantity = 0;
         boolean hasRejected = false;
         int totalRejectedQuantity = 0;
+        Staff staff = staffService.retrieveStaffByStaffId(updateRefundLineItemHandlerRequests.get(0).getStaffId());
+        List<Warehouse> warehouses = warehouseService.retrieveAllWarehouses();
+        Warehouse warehouse = warehouseService.retrieveWarehouseById(warehouses.get(0).getWarehouseId());
         if (updateRefundLineItemHandlerRequests.size() == 0) {
             Map<String, String> errorMap = new HashMap<>();
             errorMap.put("refundLineItemHandlerRequests", ErrorMessages.REFUND_NOT_SELECTED);
@@ -235,6 +267,18 @@ public class RefundService {
                 totalQuantity += updateRefundLineItemHandlerRequest.getQuantityConfirmedRefunded();
             }
             RefundLineItem refundLineItem = retrieveRefundLineItemById(updateRefundLineItemHandlerRequest.getRefundLineItemId());
+
+            if(updateRefundLineItemHandlerRequest.getRefundProgressEnum().equals("REFUND_SUCCESS")) {
+                List<ProductStock> productStocks = refundLineItem.getTransactionLineItem().getProductVariant().getProductStocks();
+                for(ProductStock ps: productStocks) {
+                    if(staff.getStore() != null && ps.getStore() != null && ps.getStore().getStoreId().equals(staff.getStore().getStoreId())) {
+                        ps.setQuantity(updateRefundLineItemHandlerRequest.getQuantityConfirmedRefunded()+ ps.getQuantity());
+                    } else if (ps.getWarehouse() != null && warehouse.getWarehouseId().equals(ps.getWarehouse().getWarehouseId())) {
+                        ps.setQuantity(updateRefundLineItemHandlerRequest.getQuantityConfirmedRefunded()+ ps.getQuantity());
+                    }
+                }
+            }
+
             RefundLineItemHandler refundLineItemHandler = new RefundLineItemHandler(updateRefundLineItemHandlerRequest.getStaffId(),
                     updateRefundLineItemHandlerRequest.getQuantityConfirmedRefunded(),
                     RefundProgressEnum.valueOf(updateRefundLineItemHandlerRequest.getRefundProgressEnum()));

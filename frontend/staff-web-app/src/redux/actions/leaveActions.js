@@ -7,20 +7,21 @@ const LEAVE_BASE_URL = "/api/leave";
 const jsog = require("jsog");
 
 export const applyForLeave = (leaveCreateRequest, history) => {
-  return dispatch => {
+  return (dispatch) => {
     //redux thunk passes dispatch
     axios
       .post(LEAVE_BASE_URL + "/applyForLeave", leaveCreateRequest)
-      .then(response => {
+      .then((response) => {
         const data = jsog.decode(response);
         console.log(data);
         dispatch(applyForLeaveSuccess(response.data));
         toast.success("Leave Applied!", {
-          position: toast.POSITION.TOP_CENTER
+          position: toast.POSITION.TOP_CENTER,
         });
         retrieveAllLeaves(leaveCreateRequest.leave.applicant.staffId)(dispatch);
         history.push(`/leave/apply`);
       })
+
 
         .catch(err => {
             if (err.response) {
@@ -28,54 +29,55 @@ export const applyForLeave = (leaveCreateRequest, history) => {
                     position: toast.POSITION.TOP_CENTER
                 });
             }
+
         dispatch(applyForLeaveError(err.response.data));
         //console.log(err.response.data);
       });
   };
 };
 
-const applyForLeaveSuccess = data => ({
+const applyForLeaveSuccess = (data) => ({
   type: types.CREATE_PROMOCODE,
-  leave: data
+  leave: data,
 });
 
-const applyForLeaveError = data => ({
+const applyForLeaveError = (data) => ({
   type: types.GET_ERRORS,
-  errorMap: data
+  errorMap: data,
 });
 
-export const retrieveAllLeaves = staffId => {
-  return dispatch => {
+export const retrieveAllLeaves = (staffId) => {
+  return (dispatch) => {
     axios
       .get(LEAVE_BASE_URL + "/retrieveAllLeaves/" + staffId)
-      .then(response => {
+      .then((response) => {
         const { data } = jsog.decode(response);
         dispatch(retrieveAllLeavesSuccess(data));
       })
-      .catch(err => {
+      .catch((err) => {
         dispatch(retrieveAllLeavesError(err.response.data));
       });
   };
 };
 
-const retrieveAllLeavesSuccess = data => ({
+const retrieveAllLeavesSuccess = (data) => ({
   type: types.RETRIEVE_ALL_LEAVES,
-  allLeaves: data
+  allLeaves: data,
 });
 
-const retrieveAllLeavesError = data => ({
+const retrieveAllLeavesError = (data) => ({
   type: types.GET_ERRORS,
-  errorMap: data
+  errorMap: data,
 });
 
 export const deleteLeave = (leaveId, staffId, history) => {
-  return dispatch => {
+  return (dispatch) => {
     axios
       .delete(LEAVE_BASE_URL + "/deleteLeave/" + leaveId)
-      .then(response => {
+      .then((response) => {
         const { data } = jsog.decode(response);
         toast.success("Leave Deleted!", {
-          position: toast.POSITION.TOP_CENTER
+          position: toast.POSITION.TOP_CENTER,
         });
         dispatch(deleteLeaveSuccess(data));
         retrieveAllLeaves(staffId)(dispatch);
@@ -87,177 +89,178 @@ export const deleteLeave = (leaveId, staffId, history) => {
                     position: toast.POSITION.TOP_CENTER
                 });
             }
+
         dispatch(deleteLeaveError(err.response.data));
       });
   };
 };
 
-const deleteLeaveSuccess = data => ({
+const deleteLeaveSuccess = (data) => ({
   type: types.DELETE_LEAVE,
-  deletedLeave: data
+  deletedLeave: data,
 });
 
-const deleteLeaveError = data => ({
+const deleteLeaveError = (data) => ({
   type: types.GET_ERRORS,
-  errorMap: data
+  errorMap: data,
 });
 
-export const retrieveAllLeavesManager = staffId => {
-  return dispatch => {
+export const retrieveAllLeavesManager = (staffId) => {
+  return (dispatch) => {
     axios
       .get(LEAVE_BASE_URL + "/retrieveAllLeavesManager/" + staffId)
-      .then(response => {
+      .then((response) => {
         const { data } = jsog.decode(response);
         dispatch(retrieveAllLeavesManagerSuccess(data));
       })
-      .catch(err => {
+      .catch((err) => {
         dispatch(retrieveAllLeavesManagerError(err.response.data));
       });
   };
 };
 
-const retrieveAllLeavesManagerSuccess = data => ({
+const retrieveAllLeavesManagerSuccess = (data) => ({
   type: types.RETRIEVE_ALL_LEAVES_MANAGER,
-  allLeavesManager: data
+  allLeavesManager: data,
 });
 
-const retrieveAllLeavesManagerError = data => ({
+const retrieveAllLeavesManagerError = (data) => ({
   type: types.GET_ERRORS,
-  errorMap: data
+  errorMap: data,
 });
 
-export const retrieveAllPendingLeaves = staffId => {
-  return dispatch => {
+export const retrieveAllPendingLeaves = (staffId) => {
+  return (dispatch) => {
     axios
       .get(LEAVE_BASE_URL + "/retrieveAllPendingLeaves/" + staffId)
-      .then(response => {
+      .then((response) => {
         const { data } = jsog.decode(response);
         dispatch(retrieveAllPendingLeavesSuccess(data));
       })
-      .catch(err => {
+      .catch((err) => {
         dispatch(retrieveAllPendingLeavesError(err.response.data));
       });
   };
 };
 
-const retrieveAllPendingLeavesSuccess = data => ({
+const retrieveAllPendingLeavesSuccess = (data) => ({
   type: types.RETRIEVE_ALL_PENDING_LEAVES,
-  allPending: data
+  allPending: data,
 });
 
-const retrieveAllPendingLeavesError = data => ({
+const retrieveAllPendingLeavesError = (data) => ({
   type: types.GET_ERRORS,
-  errorMap: data
+  errorMap: data,
 });
 
 export const retrieveAllLeavesHR = () => {
-  return dispatch => {
+  return (dispatch) => {
     axios
       .get(LEAVE_BASE_URL + "/retrieveAllLeavesHR")
-      .then(response => {
+      .then((response) => {
         const { data } = jsog.decode(response);
         dispatch(retrieveAllLeavesHRSuccess(data));
       })
-      .catch(err => {
+      .catch((err) => {
         dispatch(retrieveAllLeavesHRError(err.response.data));
       });
   };
 };
 
-const retrieveAllLeavesHRSuccess = data => ({
+const retrieveAllLeavesHRSuccess = (data) => ({
   type: types.RETRIEVE_ALL_LEAVES_HR,
-  allLeavesHR: data
+  allLeavesHR: data,
 });
 
-const retrieveAllLeavesHRError = data => ({
+const retrieveAllLeavesHRError = (data) => ({
   type: types.GET_ERRORS,
-  errorMap: data
+  errorMap: data,
 });
 
 export const retrieveAllEndorsedLeaves = () => {
-  return dispatch => {
+  return (dispatch) => {
     axios
       .get(LEAVE_BASE_URL + "/retrieveAllEndorsedLeaves")
-      .then(response => {
+      .then((response) => {
         const { data } = jsog.decode(response);
         dispatch(retrieveAllEndorsedSuccess(data));
       })
-      .catch(err => {
+      .catch((err) => {
         dispatch(retrieveAllEndorsedError(err.response.data));
       });
   };
 };
 
-const retrieveAllEndorsedSuccess = data => ({
+const retrieveAllEndorsedSuccess = (data) => ({
   type: types.RETRIEVE_ALL_ENDORSED_LEAVES,
-  allEndorsed: data
+  allEndorsed: data,
 });
 
-const retrieveAllEndorsedError = data => ({
+const retrieveAllEndorsedError = (data) => ({
   type: types.GET_ERRORS,
-  errorMap: data
+  errorMap: data,
 });
 
 export const endorseRejectLeave = (endorseRejectLeaveRequest, history) => {
-  return dispatch => {
+  return (dispatch) => {
     axios
       .post(LEAVE_BASE_URL + "/endorseRejectLeave", endorseRejectLeaveRequest)
-      .then(response => {
+      .then((response) => {
         const { data } = jsog.decode(response);
         dispatch(endorseRejectLeavesSuccess(data));
         toast.success("Success!", {
-          position: toast.POSITION.TOP_CENTER
+          position: toast.POSITION.TOP_CENTER,
         });
         retrieveAllPendingLeaves(endorseRejectLeaveRequest.managerId)(dispatch);
         retrieveAllLeavesManager(endorseRejectLeaveRequest.managerId)(dispatch);
         history.push(`/leave/manager`);
       })
-      .catch(err => {
+      .catch((err) => {
         dispatch(endorseRejectLeavesError(err.response.data));
         //console.log(err.response.data);
       });
   };
 };
 
-const endorseRejectLeavesSuccess = data => ({
+const endorseRejectLeavesSuccess = (data) => ({
   type: types.ENDORSE_REJECT_LEAVE,
-  leave: data
+  leave: data,
 });
 
-const endorseRejectLeavesError = data => ({
+const endorseRejectLeavesError = (data) => ({
   type: types.GET_ERRORS,
-  errorMap: data
+  errorMap: data,
 });
 
 export const approveRejectLeave = (approveRejectLeaveRequest, history) => {
-  return dispatch => {
+  return (dispatch) => {
     axios
       .post(LEAVE_BASE_URL + "/approveRejectLeave", approveRejectLeaveRequest)
-      .then(response => {
+      .then((response) => {
         const { data } = jsog.decode(response);
         dispatch(approveRejectLeavesSuccess(data));
         toast.success("Success!", {
-          position: toast.POSITION.TOP_CENTER
+          position: toast.POSITION.TOP_CENTER,
         });
         retrieveAllEndorsedLeaves()(dispatch);
         retrieveAllLeavesHR()(dispatch);
         history.push(`/leave/hr`);
       })
-      .catch(err => {
+      .catch((err) => {
         dispatch(approveRejectLeavesError(err.response.data));
         //console.log(err.response.data);
       });
   };
 };
 
-const approveRejectLeavesSuccess = data => ({
+const approveRejectLeavesSuccess = (data) => ({
   type: types.APPROVE_REJECT_LEAVE,
-  leave: data
+  leave: data,
 });
 
-const approveRejectLeavesError = data => ({
+const approveRejectLeavesError = (data) => ({
   type: types.GET_ERRORS,
-  errorMap: data
+  errorMap: data,
 });
 
 export const updateLeave = (updateLeaveRequest, history) => {
@@ -288,42 +291,46 @@ export const updateLeave = (updateLeaveRequest, history) => {
     };
 };
 
-const updateLeaveSuccess = data => ({
-    type: types.UPDATE_LEAVE,
-    leave: data
+const updateLeaveSuccess = (data) => ({
+  type: types.UPDATE_LEAVE,
+  leave: data,
 });
 
-const updateLeavesError = data => ({
-    type: types.GET_ERRORS,
-    errorMap: data
+const updateLeavesError = (data) => ({
+  type: types.GET_ERRORS,
+  errorMap: data,
 });
 
-export const retrieveLeaveCountInAMonth = (retrieveLeaveCountInAMonthRequest) => {
-    return dispatch => {
-        //redux thunk passes dispatch
-        axios
-            .post(LEAVE_BASE_URL + "/retrieveLeaveCountInAMonth", retrieveLeaveCountInAMonthRequest)
-            .then(response => {
-                const { data } = jsog.decode(response);
-                dispatch(retrieveSuccess(data));
-                toast.success("Success!", {
-                    position: toast.POSITION.TOP_CENTER
-                });
-            })
-            .catch(err => {
-                dispatch(retrieveError(err.response.data));
-                // console.log(err.response.data);
-            });
-    };
+export const retrieveLeaveCountInAMonth = (
+  retrieveLeaveCountInAMonthRequest
+) => {
+  return (dispatch) => {
+    //redux thunk passes dispatch
+    axios
+      .post(
+        LEAVE_BASE_URL + "/retrieveLeaveCountInAMonth",
+        retrieveLeaveCountInAMonthRequest
+      )
+      .then((response) => {
+        const { data } = jsog.decode(response);
+        dispatch(retrieveSuccess(data));
+        toast.success("Success!", {
+          position: toast.POSITION.TOP_CENTER,
+        });
+      })
+      .catch((err) => {
+        dispatch(retrieveError(err.response.data));
+        // console.log(err.response.data);
+      });
+  };
 };
 
-const retrieveSuccess = data => ({
-    type: types.RETRIEVE_LEAVE_COUNT_IN_A_MONTH,
-    count: data
+const retrieveSuccess = (data) => ({
+  type: types.RETRIEVE_LEAVE_COUNT_IN_A_MONTH,
+  count: data,
 });
 
-const retrieveError = data => ({
-    type: types.GET_ERRORS,
-    errorMap: data
+const retrieveError = (data) => ({
+  type: types.GET_ERRORS,
+  errorMap: data,
 });
-

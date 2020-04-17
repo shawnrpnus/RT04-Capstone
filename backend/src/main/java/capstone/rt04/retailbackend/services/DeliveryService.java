@@ -7,6 +7,7 @@ import capstone.rt04.retailbackend.response.GroupedStoreOrderItems;
 import capstone.rt04.retailbackend.util.enums.CollectionModeEnum;
 import capstone.rt04.retailbackend.util.enums.DeliveryStatusEnum;
 import capstone.rt04.retailbackend.util.enums.ItemDeliveryStatusEnum;
+import capstone.rt04.retailbackend.util.exceptions.delivery.DeliveryCreationException;
 import capstone.rt04.retailbackend.util.exceptions.delivery.DeliveryNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.delivery.NoItemForDeliveryException;
 import capstone.rt04.retailbackend.util.exceptions.inStoreRestockOrder.InStoreRestockOrderItemNotFoundException;
@@ -38,6 +39,7 @@ public class DeliveryService {
     @Value("${node.backend.url}")
     private String NODE_API_URL;
     private final String deliveryNotificationPath = "deliveryNotification";
+    private final String readyForCollectionNotificationPath = "readyForCollection";
 
     private final DeliveryRepository deliveryRepository;
     private final StaffService staffService;
@@ -78,55 +80,83 @@ public class DeliveryService {
      */
 
     // deliverRestockOrderItem
-    public void createDeliveryForRestockOrder(List<Long> inStoreRestockOrderItemIds, Long staffId) throws InStoreRestockOrderItemNotFoundException, StaffNotFoundException {
+    public void createDeliveryForRestockOrder(List<Long> inStoreRestockOrderItemIds, Long staffId, Integer maxCapacity) throws InStoreRestockOrderItemNotFoundException, StaffNotFoundException, DeliveryCreationException {
         List<InStoreRestockOrderItem> inStoreRestockOrderItems = new ArrayList<>();
         InStoreRestockOrderItem inStoreRestockOrderItem;
+        Integer quantity = 0;
+
+        if (inStoreRestockOrderItemIds.size() == 0) return;
 
         for (Long id : inStoreRestockOrderItemIds) {
             inStoreRestockOrderItem = inStoreRestockOrderService.retrieveInStoreRestockOrderItemById(id);
+            if (quantity + inStoreRestockOrderItem.getQuantity() > maxCapacity) break;
+            if (!inStoreRestockOrderItem.getItemDeliveryStatus().equals(ItemDeliveryStatusEnum.TO_BE_DELIVERED))
+                continue;
             inStoreRestockOrderItem.setItemDeliveryStatus(ItemDeliveryStatusEnum.IN_TRANSIT);
             inStoreRestockOrderItems.add(inStoreRestockOrderItem);
+            quantity += inStoreRestockOrderItem.getQuantity();
         }
+
+        if (inStoreRestockOrderItems.size() == 0)
+            throw new DeliveryCreationException("Unable to fulfill restock order due to insufficient capacity");
+
         updateRestockOrderStatus(inStoreRestockOrderItems);
 
         Staff staff = staffService.retrieveStaffByStaffId(staffId);
-        Delivery delivery = new Delivery(new Timestamp(System.currentTimeMillis()), staff);
+        Delivery delivery = new Delivery(new Timestamp(System.currentTimeMillis()), staff, maxCapacity);
         delivery.getInStoreRestockOrderItems().addAll(inStoreRestockOrderItems);
         inStoreRestockOrderItems.forEach(item -> item.setDelivery(delivery));
         deliveryRepository.save(delivery);
     }
 
     // For delivering products from online shopping
-    public void createDeliveryForTransaction(List<Long> transactionIds, Long staffId) throws TransactionNotFoundException, StaffNotFoundException {
+    public List<Transaction> createDeliveryForTransaction(List<Long> transactionIds, Long staffId, Integer maxCapacity) throws TransactionNotFoundException, StaffNotFoundException, DeliveryCreationException {
         Transaction transaction;
         List<Transaction> transactions = new ArrayList<>();
+        Integer quantity = 0;
+
+        if (transactionIds.size() == 0) return transactions;
 
         for (Long id : transactionIds) {
             transaction = transactionService.retrieveTransactionById(id);
+            if (quantity + transaction.getTotalQuantity() > maxCapacity)
+                break;
+            if (!transaction.getDeliveryStatus().equals(DeliveryStatusEnum.TO_BE_DELIVERED))
+                continue;
             transaction.setDeliveryStatus(DeliveryStatusEnum.IN_TRANSIT);
-            transactions.add(transaction);
-        }
-
-        Staff staff = staffService.retrieveStaffByStaffId(staffId);
-        Delivery delivery = new Delivery(new Timestamp(System.currentTimeMillis()), staff);
-        delivery.getCustomerOrdersToDeliver().addAll(transactions);
-        transactions.forEach(item -> {
-            item.getDeliveries().add(delivery);
-            // TODO: Uncomment
-            // sendDeliveryNotificationEmail(item);
-        });
-        deliveryRepository.save(delivery);
-    }
-
-    public double estimateNumberOfDeliveryManRequired() {
-        List<Transaction> transactions = transactionService.retrieveTransactionsToBeDelivered();
-        List<InStoreRestockOrderItem> inStoreRestockOrderItems = inStoreRestockOrderService.retrieveAllRestockOrderItemToDeliver();
-        Integer quantity = inStoreRestockOrderItems.size();
-
-        for (Transaction transaction : transactions) {
+            if (transaction.getCollectionMode().equals(CollectionModeEnum.DELIVERY))
+                transactions.add(transaction);
             quantity += transaction.getTotalQuantity();
         }
-        return Math.ceil(quantity / 100.00);
+
+        if (transactions.size() == 0)
+            throw new DeliveryCreationException("Unable to fulfill transaction order due to insufficient capacity");
+
+        Staff staff = staffService.retrieveStaffByStaffId(staffId);
+        Delivery delivery = new Delivery(new Timestamp(System.currentTimeMillis()), staff, maxCapacity);
+        delivery.getCustomerOrdersToDeliver().addAll(transactions);
+        transactions.forEach(item -> item.getDeliveries().add(delivery));
+        deliveryRepository.save(delivery);
+        return transactions;
+    }
+
+    public double estimateNumberOfDeliveryManRequired(Boolean isTransaction, Boolean isRestockOrderItems, Integer maxCapacity) {
+        List<Transaction> transactions = transactionService.retrieveTransactionsToBeDelivered();
+        List<InStoreRestockOrderItem> inStoreRestockOrderItems = inStoreRestockOrderService.retrieveAllRestockOrderItemToDeliver();
+        Integer quantity = 0;
+
+        if (!isRestockOrderItems)
+            for (Transaction transaction : transactions) {
+                quantity += transaction.getTotalQuantity();
+            }
+
+        if (!isTransaction) {
+            for (InStoreRestockOrderItem item : inStoreRestockOrderItems) {
+                quantity += item.getQuantity();
+            }
+        }
+        ;
+        return Math.ceil(quantity / (double) maxCapacity);
     }
 
     public List<Transaction> automateDeliveryAllocation(Long staffId, Integer maxCapacity) throws StaffNotFoundException, DeliveryNotFoundException, NoItemForDeliveryException {
@@ -146,7 +176,7 @@ public class DeliveryService {
         if (transactionSize == 0 && inStoreRestockOrderItemSize == 0)
             throw new NoItemForDeliveryException("No item available for delivery");
 
-        Delivery newDelivery = new Delivery(new Timestamp(System.currentTimeMillis()), staff);
+        Delivery newDelivery = new Delivery(new Timestamp(System.currentTimeMillis()), staff, maxCapacity);
         deliveryRepository.save(newDelivery);
         Delivery delivery = retrieveDeliveryById(newDelivery.getDeliveryId());
 
@@ -169,13 +199,14 @@ public class DeliveryService {
 
             if (transactions.size() > 0 && transactionIndex < transactionSize
                     && transactions.get(transactionIndex).getTotalQuantity() + quantity <= maxCapacity
-                    && !(transactions.get(transactionIndex).getStore() != null && transactions.get(transactionIndex).getCollectionMode() == CollectionModeEnum.IN_STORE)) {
+                    && !(transactions.get(transactionIndex).getStore() != null && transactions.get(transactionIndex).getCollectionMode().equals(CollectionModeEnum.IN_STORE))) {
                 delivery.getCustomerOrdersToDeliver().add(transactions.get(transactionIndex));
                 transactions.get(transactionIndex).getDeliveries().add(delivery);
 
                 transactions.get(transactionIndex).setDeliveryStatus(DeliveryStatusEnum.IN_TRANSIT);
                 quantity += transactions.get(transactionIndex).getTotalQuantity();
-                emails.add(transactions.get(transactionIndex));
+                if (transactions.get(transactionIndex).getCollectionMode().equals(CollectionModeEnum.DELIVERY))
+                    emails.add(transactions.get(transactionIndex));
             }
 
             inStoreRestockOrderIndex += 1;
@@ -189,7 +220,7 @@ public class DeliveryService {
     }
 
     @Transactional(readOnly = true)
-    public void sendDeliveryNotificationEmail(List<Transaction> transactions) {
+    public void sendDeliveryNotificationEmail(List<Transaction> transactions, Boolean deliveryNotification) {
         restTemplate = new RestTemplate();
         List<DeliveryNotificationNodeRequest> requests = new ArrayList<>();
         DeliveryNotificationNodeRequest request;
@@ -201,10 +232,17 @@ public class DeliveryService {
             request.setEmail(customer.getEmail());
             request.setFullName(customer.getFirstName() + " " + customer.getLastName());
             request.setOrderNumber(transaction.getOrderNumber());
+            if (!deliveryNotification && transaction.getStoreToCollect() != null)
+                request.setStore(transaction.getStoreToCollect().getStoreName());
             requests.add(request);
         }
 
-        String endpoint = NODE_API_URL + "/email/" + deliveryNotificationPath;
+        String endpoint;
+        if (deliveryNotification)
+            endpoint = NODE_API_URL + "/email/" + deliveryNotificationPath;
+        else
+            endpoint = NODE_API_URL + "/email/" + readyForCollectionNotificationPath;
+
         ResponseEntity<?> response = restTemplate.postForEntity(endpoint, requests, Object.class);
         if (response.getStatusCode().equals(HttpStatus.OK)) {
             System.out.println("Email sent successfully");
@@ -362,7 +400,7 @@ public class DeliveryService {
      * @returns Distance in Meters
      */
     public double distance(double lat1, double lon1, double lat2,
-                            double lon2, double el1, double el2) {
+                           double lon2, double el1, double el2) {
 
         final int R = 6371; // Radius of the earth
 
