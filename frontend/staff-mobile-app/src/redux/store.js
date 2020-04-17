@@ -37,7 +37,7 @@ const loadLoggedInStaff = () => {
   return dispatch => {
     AsyncStorage.getItem("state", (err, result) => {
       if (err){
-        console.log(err);
+        //console.log(err);
         SplashScreen.hide();
         return initialState;
       }
