@@ -53,13 +53,10 @@ public class LeaveController {
     }
 
     @DeleteMapping(DELETE_LEAVE)
-    public ResponseEntity<?> removeLeave(@PathVariable Long leaveId) throws StaffLeaveNotFoundException, StaffLeaveCannotDeleteException {
-        try {
+    public ResponseEntity<?> removeLeave(@PathVariable Long leaveId) throws StaffLeaveNotFoundException, StaffLeaveCannotDeleteException, StaffNotFoundException {
+
             StaffLeave deletedLeave = leaveService.removeLeave(leaveId);
             return new ResponseEntity<>(deletedLeave, HttpStatus.OK);
-        }catch(StaffLeaveCannotDeleteException | StaffNotFoundException ex){
-            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
-        }
     }
 
     @GetMapping(RETRIEVE_ALL_LEAVES_MANAGER)
