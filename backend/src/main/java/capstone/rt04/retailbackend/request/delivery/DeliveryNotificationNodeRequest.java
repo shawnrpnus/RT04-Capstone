@@ -16,4 +16,6 @@ public class DeliveryNotificationNodeRequest {
     private String email;
 
     private String fullName;
+
+    private String store;
 }

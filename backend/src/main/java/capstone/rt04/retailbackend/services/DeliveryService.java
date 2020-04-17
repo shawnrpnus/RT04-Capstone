@@ -39,6 +39,7 @@ public class DeliveryService {
     @Value("${node.backend.url}")
     private String NODE_API_URL;
     private final String deliveryNotificationPath = "deliveryNotification";
+    private final String readyForCollectionNotificationPath = "readyForCollection";
 
     private final DeliveryRepository deliveryRepository;
     private final StaffService staffService;
@@ -123,7 +124,8 @@ public class DeliveryService {
             if (!transaction.getDeliveryStatus().equals(DeliveryStatusEnum.TO_BE_DELIVERED))
                 continue;
             transaction.setDeliveryStatus(DeliveryStatusEnum.IN_TRANSIT);
-            transactions.add(transaction);
+            if (transaction.getCollectionMode().equals(CollectionModeEnum.DELIVERY))
+                transactions.add(transaction);
             quantity += transaction.getTotalQuantity();
         }
 
@@ -197,13 +199,14 @@ public class DeliveryService {
 
             if (transactions.size() > 0 && transactionIndex < transactionSize
                     && transactions.get(transactionIndex).getTotalQuantity() + quantity <= maxCapacity
-                    && !(transactions.get(transactionIndex).getStore() != null && transactions.get(transactionIndex).getCollectionMode() == CollectionModeEnum.IN_STORE)) {
+                    && !(transactions.get(transactionIndex).getStore() != null && transactions.get(transactionIndex).getCollectionMode().equals(CollectionModeEnum.IN_STORE))) {
                 delivery.getCustomerOrdersToDeliver().add(transactions.get(transactionIndex));
                 transactions.get(transactionIndex).getDeliveries().add(delivery);
 
                 transactions.get(transactionIndex).setDeliveryStatus(DeliveryStatusEnum.IN_TRANSIT);
                 quantity += transactions.get(transactionIndex).getTotalQuantity();
-                emails.add(transactions.get(transactionIndex));
+                if (transactions.get(transactionIndex).getCollectionMode().equals(CollectionModeEnum.DELIVERY))
+                    emails.add(transactions.get(transactionIndex));
             }
 
             inStoreRestockOrderIndex += 1;
@@ -217,7 +220,7 @@ public class DeliveryService {
     }
 
     @Transactional(readOnly = true)
-    public void sendDeliveryNotificationEmail(List<Transaction> transactions) {
+    public void sendDeliveryNotificationEmail(List<Transaction> transactions, Boolean deliveryNotification) {
         restTemplate = new RestTemplate();
         List<DeliveryNotificationNodeRequest> requests = new ArrayList<>();
         DeliveryNotificationNodeRequest request;
@@ -229,10 +232,17 @@ public class DeliveryService {
             request.setEmail(customer.getEmail());
             request.setFullName(customer.getFirstName() + " " + customer.getLastName());
             request.setOrderNumber(transaction.getOrderNumber());
+            if (!deliveryNotification && transaction.getStoreToCollect() != null)
+                request.setStore(transaction.getStoreToCollect().getStoreName());
             requests.add(request);
         }
 
-        String endpoint = NODE_API_URL + "/email/" + deliveryNotificationPath;
+        String endpoint;
+        if (deliveryNotification)
+            endpoint = NODE_API_URL + "/email/" + deliveryNotificationPath;
+        else
+            endpoint = NODE_API_URL + "/email/" + readyForCollectionNotificationPath;
+
         ResponseEntity<?> response = restTemplate.postForEntity(endpoint, requests, Object.class);
         if (response.getStatusCode().equals(HttpStatus.OK)) {
             System.out.println("Email sent successfully");
