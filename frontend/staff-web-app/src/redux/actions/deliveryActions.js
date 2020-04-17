@@ -74,15 +74,13 @@ export const confirmTransactionDelivery = (request) => {
   };
 };
 
-export const automateDeliveryAllocation = (staffId, onClose, maxCapacity) => {
+export const automateDeliveryAllocation = (staffIds, onClose, maxCapacity) => {
   return (dispatch) => {
     dispatch(openCircularProgress());
     axios
-      .get(DELIVERY_BASE_URL + `/automateDeliveryAllocation`, {
-        params: {
-          staffId,
-          maxCapacity,
-        },
+      .post(DELIVERY_BASE_URL + `/automateDeliveryAllocation`, {
+        staffIds,
+        maxCapacity,
       })
       .then((response) => {
         console.log(response);
@@ -125,11 +123,17 @@ export const generateDeliveryRoute = (deliveryId) => {
   };
 };
 
-export const estimateNumberOfDeliveryManRequired = () => {
+export const estimateNumberOfDeliveryManRequired = (
+  transaction,
+  restockOrderItem,
+  maxCapacity
+) => {
   // return dispatch => {
   //   dispatch(openCircularProgress());
   return axios
-    .get(DELIVERY_BASE_URL + "/estimateNumberOfDeliveryManRequired")
+    .get(DELIVERY_BASE_URL + "/estimateNumberOfDeliveryManRequired", {
+      params: { transaction, restockOrderItem, maxCapacity },
+    })
     .then((response) => {
       // dispatch(closeCircularProgress());
       return response.data.body;

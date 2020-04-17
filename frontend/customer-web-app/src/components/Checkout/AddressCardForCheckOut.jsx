@@ -73,11 +73,21 @@ export default function AddressCardForCheckOut({
     }
   });
 
-  const [shownShippingAddress, setShownShippingAddress] = useState(
-    shippingAddresses.find((item) => item.default)
+  const [shownShippingAddress, setShownShippingAddress] = useState( () => {
+      if(shippingAddresses && !shippingAddresses.find((item) => item.default)) {
+        return shippingAddresses[0];
+      } else {
+        shippingAddresses.find((item) => item.default);
+      }
+  }
   );
-  const [shownBillingAddress, setShownBillingAddress] = useState(
-    shippingAddresses.find((item) => item.billing)
+  const [shownBillingAddress, setShownBillingAddress] = useState( () => {
+      if(shippingAddresses && !shippingAddresses.find((item) => item.billing)) {
+        return shippingAddresses[0];
+      } else {
+        shippingAddresses.find((item) => item.billing);
+      }
+    }
   );
   const [mode, setMode] = useState(null);
 

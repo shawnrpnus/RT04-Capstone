@@ -389,7 +389,7 @@ router.post("/sendRefundLabel", async (req, res) => {
       html: emailBody,
       attachments: [
         {
-          filename: `RefundLabel_${refundId}`,
+          filename: `RefundLabel_${refundId}.pdf`,
           path,
           contentType: "application/pdf",
         },

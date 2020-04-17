@@ -1,12 +1,14 @@
 package capstone.rt04.retailbackend.controllers;
 
 import capstone.rt04.retailbackend.entities.*;
+import capstone.rt04.retailbackend.request.delivery.AutomateDeliveryRequest;
 import capstone.rt04.retailbackend.request.delivery.DeliveryForRestockOrderCreateRequest;
 import capstone.rt04.retailbackend.request.delivery.DeliveryForTransactionCreateRequest;
 import capstone.rt04.retailbackend.request.delivery.ReceiveRestockOrderRequest;
 import capstone.rt04.retailbackend.request.transaction.TransactionReceiveDeliveryRequest;
 import capstone.rt04.retailbackend.response.GroupedStoreOrderItems;
 import capstone.rt04.retailbackend.services.*;
+import capstone.rt04.retailbackend.util.exceptions.delivery.DeliveryCreationException;
 import capstone.rt04.retailbackend.util.exceptions.delivery.DeliveryHasAlreadyBeenConfirmedException;
 import capstone.rt04.retailbackend.util.exceptions.delivery.DeliveryNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.delivery.NoItemForDeliveryException;
@@ -18,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static capstone.rt04.retailbackend.util.routeconstants.DeliveryControllerRoutes.*;
@@ -56,15 +59,23 @@ public class DeliveryController {
 
     @PostMapping(CREATE_DELIVERY_FOR_RESTOCK_ORDER)
     public ResponseEntity<?> createDeliveryForRestockOrder(@RequestBody DeliveryForRestockOrderCreateRequest request)
-            throws StaffNotFoundException, InStoreRestockOrderItemNotFoundException {
-        deliveryService.createDeliveryForRestockOrder(request.getInStoreRestockOrderItemIds(), request.getStaffId());
+            throws StaffNotFoundException, InStoreRestockOrderItemNotFoundException, DeliveryCreationException {
+        for (Long staffId : request.getStaffIds()) {
+            deliveryService.createDeliveryForRestockOrder(request.getInStoreRestockOrderItemIds(), staffId, request.getMaxCapacity());
+        }
         return new ResponseEntity<>(ResponseEntity.ok("Delivery created!"), HttpStatus.OK);
     }
 
     @PostMapping(CREATE_DELIVERY_FOR_TRANSACTION)
     public ResponseEntity<?> createDeliveryForTransaction(@RequestBody DeliveryForTransactionCreateRequest request)
-            throws TransactionNotFoundException, StaffNotFoundException {
-        deliveryService.createDeliveryForTransaction(request.getTransactionIds(), request.getStaffId());
+            throws TransactionNotFoundException, StaffNotFoundException, DeliveryCreationException {
+        List<Transaction> customerToEmail = new ArrayList<>();
+        for (Long staffId : request.getStaffIds()) {
+            List<Transaction> transactions = deliveryService.createDeliveryForTransaction(request.getTransactionIds(), staffId,
+                    request.getMaxCapacity());
+            customerToEmail.addAll(transactions);
+        }
+        deliveryService.sendDeliveryNotificationEmail(customerToEmail);
         return new ResponseEntity<>(ResponseEntity.ok("Delivery created!"), HttpStatus.OK);
     }
 
@@ -85,16 +96,21 @@ public class DeliveryController {
     }
 
     @GetMapping(ESTIMATE_NUMBER_OF_DELIVERYMAN_REQUIRED)
-    public ResponseEntity<?> estimateNumberOfDeliveryManRequired() {
-        double numberOfDeliveryManRequired = deliveryService.estimateNumberOfDeliveryManRequired();
+    public ResponseEntity<?> estimateNumberOfDeliveryManRequired(@RequestParam Boolean transaction, @RequestParam Boolean restockOrderItem,
+                                                                 @RequestParam Integer maxCapacity) {
+        double numberOfDeliveryManRequired = deliveryService.estimateNumberOfDeliveryManRequired(transaction, restockOrderItem, maxCapacity);
         return new ResponseEntity<>(ResponseEntity.ok(numberOfDeliveryManRequired), HttpStatus.OK);
     }
 
-    @GetMapping(AUTOMATE_DELIVERY_ALLOCATION)
-    public ResponseEntity<?> automateDeliveryAllocation(@RequestParam Long staffId, @RequestParam Integer maxCapacity) throws StaffNotFoundException, DeliveryNotFoundException, NoItemForDeliveryException {
-        List<Transaction> transactions = deliveryService.automateDeliveryAllocation(staffId, maxCapacity);
-        deliveryService.sendDeliveryNotificationEmail(transactions);
-        return new ResponseEntity<>(ResponseEntity.ok("Delivery generated for staff " + staffId), HttpStatus.OK);
+    @PostMapping(AUTOMATE_DELIVERY_ALLOCATION)
+    public ResponseEntity<?> automateDeliveryAllocation(@RequestBody AutomateDeliveryRequest request) throws StaffNotFoundException, DeliveryNotFoundException, NoItemForDeliveryException {
+        List<Transaction> customerToEmail = new ArrayList<>();
+        for (Long staffId : request.getStaffIds()) {
+            List<Transaction> transactions = deliveryService.automateDeliveryAllocation(staffId, request.getMaxCapacity());
+            customerToEmail.addAll(transactions);
+        }
+        deliveryService.sendDeliveryNotificationEmail(customerToEmail);
+        return new ResponseEntity<>(ResponseEntity.ok("Delivery generated for selected staff(s)"), HttpStatus.OK);
     }
 
     @GetMapping(GENERATE_DELIVERY_ROUTE)

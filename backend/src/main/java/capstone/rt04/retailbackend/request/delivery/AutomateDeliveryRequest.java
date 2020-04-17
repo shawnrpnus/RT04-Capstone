@@ -11,9 +11,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class DeliveryForRestockOrderCreateRequest {
-
-    private List<Long> inStoreRestockOrderItemIds;
+public class AutomateDeliveryRequest {
 
     private List<Long> staffIds;
 

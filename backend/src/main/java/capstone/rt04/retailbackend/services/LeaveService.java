@@ -46,6 +46,12 @@ public class LeaveService {
         Staff existingStaff = staffRepository.findById(staffLeave.getApplicant().getStaffId())
                 .orElseThrow(() -> new StaffNotFoundException("Staff with id: " + staffLeave.getApplicant().getStaffId() + " does not exist"));
 
+        if(staffLeave.getToDateTime().isBefore(staffLeave.getFromDateTime())){
+            Map<String, String> errorMap = new HashMap<>();
+            errorMap.put("fromDateTime", ErrorMessages.OVERLAP_IN_LEAVE);
+            throw new InputDataValidationException(errorMap, ErrorMessages.OVERLAP_IN_LEAVE);
+
+        }
         for(StaffLeave leave : existingStaff.getLeaves()){
             if((!leave.getStatus().equals(LeaveStatusEnum.REJECTED))&& (staffLeave.getFromDateTime().equals(leave.getFromDateTime()) || (staffLeave.getFromDateTime().isAfter(staffLeave.getToDateTime())) ||
                     (staffLeave.getFromDateTime().isAfter(leave.getFromDateTime()) && staffLeave.getFromDateTime().isBefore(leave.getToDateTime())) ||

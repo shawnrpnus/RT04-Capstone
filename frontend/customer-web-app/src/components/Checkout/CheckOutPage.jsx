@@ -498,8 +498,8 @@ export default function CheckOutPage() {
                           )}
                           {addNewAddress ? (
                             <Grid item container xs={12}>
-                              <Grid item xs={false} md={2} />
-                              <Grid item xs={12} md={8}>
+                              {/*<Grid item xs={false} md={2} />*/}
+                              <Grid item xs={12} md={9}>
                                 <AddNewAddressForCheckOut
                                   addNewAddress={[
                                     addNewAddress,
