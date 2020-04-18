@@ -10,7 +10,7 @@ import { Notifications } from "expo";
 import * as Permissions from "expo-permissions";
 import { Alert } from "react-native";
 import {
-  retrieveCustomerInStoreTransactions,
+  retrieveCustomerPendingPurchases,
   setViewedTransaction
 } from "src/redux/actions/transactionActions";
 import { StackActions } from "@react-navigation/native";
@@ -311,7 +311,7 @@ export const makePaymentMobile = (req, customerId, setLoading, navigation) => {
             params: { customerId }
           })
           .then(response => {
-            dispatch(retrieveCustomerInStoreTransactions(customerId));
+            dispatch(retrieveCustomerPendingPurchases(customerId));
             const redirectFunction = () => {
               navigation.popToTop();
               navigation.navigate("PurchasesStack", {
