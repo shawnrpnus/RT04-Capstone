@@ -24,6 +24,8 @@ services:
         #build:
         #   context: node-backend
         #   dockerfile: Dockerfile
+        environment:
+            - SPRING_API_URL=http://spring-backend:8080/api
         ports:
             - "5000:5000"
         restart: always
