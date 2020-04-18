@@ -73,12 +73,14 @@ router.post(
             return res.send(request);
           })
           .catch((err) => {
-            console.log(err.response.data);
+            //console.log(err.response.data);
+			console.log(err)
             res.status(400).send(err.response.data);
           });
       })
       .catch((err) => {
-        console.log(err.response.data);
+        //console.log(err.response.data);
+		console.log(err)
         res.status(400).send(err);
       });
   }

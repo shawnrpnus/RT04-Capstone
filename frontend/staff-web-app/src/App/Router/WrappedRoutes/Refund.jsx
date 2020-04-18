@@ -5,6 +5,7 @@ import { Route, Switch } from "react-router-dom";
 import ViewRefundRecordDetails from "../../../components/Refund/ViewRefundRecordDetails";
 import ViewAllRefundRecords from "../../../components/Refund/ViewAllRefundRecords";
 import UpdateRefundRecordDetails from "../../../components/Refund/UpdateRefundRecordDetails";
+import ViewRefundByQR from "../../../components/Refund/ViewRefundByQR";
 
 export default () => (
   <Switch>
@@ -28,5 +29,10 @@ export default () => (
       path="/refund/viewAllRefunds"
       component={ViewAllRefundRecords}
     />
+      <RetailRoute
+        exact
+        path="/refund/scanQrCode"
+        component={ViewRefundByQR}
+      />
   </Switch>
 );

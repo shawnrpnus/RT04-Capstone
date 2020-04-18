@@ -253,6 +253,13 @@ public class RefundService {
             RefundLineItemHandler refundLineItemHandlerCheck = retrieveRefundLineItemHandlersByRefundLineItemIdAndByTimestamp(updateRefundLineItemHandlerRequest.getRefundLineItemId());
 
             //if refund success, want to change back to refund in progress, cannot do so
+            if (refundLineItemHandlerCheck.getRefundProgressEnum().getValue() == RefundProgressEnum.valueOf(updateRefundLineItemHandlerRequest.getRefundProgressEnum()).getValue()) {
+                Map<String, String> errorMap = new HashMap<>();
+                errorMap.put("refundLineItemHandlerId", ErrorMessages.REFUND_LINE_ITEM_HANDLER_ID_REQUIRED);
+                throw new RefundNotFoundException(errorMap, "Refund Status is not updated");
+            }
+
+            //if refund success, want to change back to refund in progress, cannot do so
             if (refundLineItemHandlerCheck.getRefundProgressEnum().getValue() > RefundProgressEnum.valueOf(updateRefundLineItemHandlerRequest.getRefundProgressEnum()).getValue()) {
                 Map<String, String> errorMap = new HashMap<>();
                 errorMap.put("refundLineItemHandlerId", ErrorMessages.REFUND_LINE_ITEM_HANDLER_ID_REQUIRED);

@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Date;
 import java.time.ZoneId;
@@ -72,7 +73,7 @@ public class PayrollService {
                 }
             BigDecimal salaryPerDay = s.getSalary();
             BigDecimal finalMonthlyAmount = salaryPerDay.multiply(new BigDecimal(daysInMonth));
-            LocalDate dd = d.of(year, month, 28);
+            LocalDate dd = d.with(TemporalAdjusters.firstDayOfNextMonth());
             Payroll payroll = new Payroll(finalMonthlyAmount, s, dd, count);
             payrolls.add(payroll);
             }
@@ -94,7 +95,7 @@ public class PayrollService {
 
         List<Payroll> existingPayrolls = payrollRepository.findAll();
 
-        LocalDate dd = d.of(year, month, 28);
+        LocalDate dd = d.with(TemporalAdjusters.firstDayOfNextMonth());
         for(Payroll e : existingPayrolls){
             if(e.getPaymentDateTime().equals(dd)){
                     throw new PayrollCannotCreateException("Payrolls for the month have already been created");
@@ -110,11 +111,12 @@ public class PayrollService {
     }
 
 
-    public List<Payroll> retrieveLeaveCountInAMonth(LocalDate d){
+    public List<Payroll> retrievePayrollsForAMonth(LocalDate d){
         List<Payroll> payrolls = new ArrayList<Payroll>();
         List<Payroll> existingPayrolls = payrollRepository.findAll();
-        int year = d.getYear();
-        int month = d.getMonthValue();
+        LocalDate dd = d.with(TemporalAdjusters.firstDayOfNextMonth());
+        int year = dd.getYear();
+        int month = dd.getMonthValue();
         for(Payroll e : existingPayrolls){
             if(e.getPaymentDateTime().getYear()== year && e.getPaymentDateTime().getMonthValue()==month){
                 payrolls.add(e);
