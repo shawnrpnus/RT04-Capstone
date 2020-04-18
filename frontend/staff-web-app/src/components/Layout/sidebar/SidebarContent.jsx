@@ -262,6 +262,11 @@ class SidebarContent extends Component {
                 route="/refund/viewAllRefunds"
                 onClick={this.hideSidebar}
               />
+              <SidebarLink
+                title="Scan Refund QR Code"
+                route="/refund/scanQrCode"
+                onClick={this.hideSidebar}
+              />
             </SidebarCategory>
           )}
           {customerService && (

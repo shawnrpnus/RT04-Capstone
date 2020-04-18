@@ -1,6 +1,6 @@
 package capstone.rt04.retailbackend.controllers;
 
-import capstone.rt04.retailbackend.entities.StaffLeave;
+import capstone.rt04.retailbackend.entities.*;
 import capstone.rt04.retailbackend.request.leave.*;
 import capstone.rt04.retailbackend.response.GenericErrorResponse;
 import capstone.rt04.retailbackend.services.LeaveService;
@@ -39,6 +39,7 @@ public class LeaveController {
     public ResponseEntity<?> createNewLeave(@RequestBody LeaveCreateRequest leaveCreateRequest)
             throws StaffNotFoundException, StaffLeaveCannotCreateException, InputDataValidationException {
             StaffLeave newLeave = leaveService.createNewLeave(leaveCreateRequest.getLeave());
+            clearLeaveRelationship(newLeave);
             return new ResponseEntity<>(newLeave, HttpStatus.CREATED);
     }
 
@@ -46,6 +47,7 @@ public class LeaveController {
     public ResponseEntity<?> retrieveAllLeaves(@PathVariable Long staffId) {
         try {
             List<StaffLeave> leaves = leaveService.retrieveAllLeaves(staffId);
+            leaves.forEach(this::clearLeaveRelationship);
             return new ResponseEntity<>(leaves, HttpStatus.OK);
         } catch (Exception ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -56,6 +58,7 @@ public class LeaveController {
     public ResponseEntity<?> removeLeave(@PathVariable Long leaveId) throws StaffLeaveNotFoundException, StaffLeaveCannotDeleteException, StaffNotFoundException {
 
             StaffLeave deletedLeave = leaveService.removeLeave(leaveId);
+            clearLeaveRelationship(deletedLeave);
             return new ResponseEntity<>(deletedLeave, HttpStatus.OK);
     }
 
@@ -63,6 +66,7 @@ public class LeaveController {
     public ResponseEntity<?> retrieveAllLeavesManager(@PathVariable Long staffId) {
         try {
             List<StaffLeave> leaves = leaveService.retrieveAllLeavesManager(staffId);
+            leaves.forEach(this::clearLeaveRelationshipOnRetrieve);
             return new ResponseEntity<>(leaves, HttpStatus.OK);
         } catch (Exception ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -73,6 +77,7 @@ public class LeaveController {
     public ResponseEntity<?> retrieveAllPendingLeaves(@PathVariable Long staffId) {
         try {
             List<StaffLeave> leaves = leaveService.retrieveAllPendingLeaves(staffId);
+            leaves.forEach(this::clearLeaveRelationshipOnRetrieve);
             return new ResponseEntity<>(leaves, HttpStatus.OK);
         } catch (Exception ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -83,6 +88,7 @@ public class LeaveController {
     public ResponseEntity<?> retrieveAllLeavesHR() {
         try {
             List<StaffLeave> leaves = leaveService.retrieveAllLeavesHR();
+            leaves.forEach(this::clearLeaveRelationshipOnRetrieve);
             return new ResponseEntity<>(leaves, HttpStatus.OK);
         } catch (Exception ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -93,6 +99,7 @@ public class LeaveController {
     public ResponseEntity<?> retrieveAllEndorsedLeaves() {
         try {
             List<StaffLeave> leaves = leaveService.retrieveAllEndorsedLeaves();
+            leaves.forEach(this::clearLeaveRelationshipOnRetrieve);
             return new ResponseEntity<>(leaves, HttpStatus.OK);
         } catch (Exception ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -104,6 +111,7 @@ public class LeaveController {
         try {
             StaffLeave leave = leaveService.endorseRejectLeave(endorseRejectLeaveRequest.getLeaveId(),
                     endorseRejectLeaveRequest.getManagerId(), endorseRejectLeaveRequest.getAction());
+            clearLeaveRelationship(leave);
             return new ResponseEntity<>(leave, HttpStatus.OK);
         }catch (StaffNotFoundException ex){
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
@@ -117,6 +125,7 @@ public class LeaveController {
         try {
             StaffLeave leave = leaveService.approveRejectLeave(approveRejectLeaveRequest.getLeaveId(),
                     approveRejectLeaveRequest.getHrId(), approveRejectLeaveRequest.getAction());
+            clearLeaveRelationship(leave);
             return new ResponseEntity<>(leave, HttpStatus.OK);
         }catch (StaffNotFoundException ex){
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
@@ -129,16 +138,33 @@ public class LeaveController {
     public ResponseEntity<?> updateLeave(@RequestBody UpdateLeaveRequest updateLeaveRequest) throws StaffLeaveNotFoundException, StaffNotFoundException, StaffLeaveCannotUpdateException, InputDataValidationException {
             StaffLeave leave = leaveService.updateLeave(updateLeaveRequest.getLeaveId(), updateLeaveRequest.getApplicant(),
                     updateLeaveRequest.getFromDateTime(), updateLeaveRequest.getToDateTime());
+        clearLeaveRelationship(leave);
             return new ResponseEntity<>(leave, HttpStatus.OK);
     }
 
-    @PostMapping(RETRIEVE_LEAVE_COUNT_IN_A_MONTH)
-    public ResponseEntity<?> retrieveLeaveCountInAMonth(@RequestBody RetrieveLeaveCountInAMonthRequest req) {
-        try {
-            int days = leaveService.retrieveLeaveCountInAMonth(req.getStaffId(),req.getSelectedDate());
-            return new ResponseEntity<>(days, HttpStatus.OK);
-        } catch (StaffNotFoundException ex){
-            return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
+
+    private void clearLeaveRelationship(StaffLeave staffLeave) {
+        staffLeave.setRejectedBy(null);
+        staffLeave.setApprover(null);
+        staffLeave.setEndorser(null);
+        staffLeave.setApplicant(null);
+    }
+
+    private void clearLeaveRelationshipOnRetrieve(StaffLeave staffLeave) {
+        staffLeave.setRejectedBy(null);
+        staffLeave.setApprover(null);
+        staffLeave.setEndorser(null);
+        Staff staff = staffLeave.getApplicant();
+        if (staff != null) {
+            staff.setStore(null);
+            staff.setAdvertisements(null);
+            staff.setRepliedReviews(null);
+            staff.setLeaves(null);
+            staff.setPayrolls(null);
+            staff.setDeliveries(null);
+            staff.setPassword(null);
+            staff.setDepartment(null);
+            staff.setRole(null);
         }
     }
 }

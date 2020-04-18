@@ -102,6 +102,16 @@ function ProductDetailsPage(props) {
     document.body.scrollTop = 0;
   }, []);
 
+  const getRandom = (dataList) => {
+    let number = Math.floor((Math.random() * (productDataList.length-3)));
+    // console.log("length",dataList.length);
+    // console.log("number", number);
+    if(number < 0) {
+      number = 0;
+    }
+    return dataList.slice(number, number+3);
+  };
+
   return (
     currentProductDetail && (
       <div className={classes.productPage}>
@@ -128,14 +138,33 @@ function ProductDetailsPage(props) {
                   </Typography>
                   <Divider style={{ marginBottom: "5%" }} />
                   <Grid container>
-                    {productDataList.map((productDetail) => (
-                      <ProductCard
-                        productDetail={productDetail}
-                        discountedPrice={productDetail.discountedPrice}
-                        key={productDetail.product.productId}
-                        storeForRecommendation={storeForRecommendation}
-                      />
-                    ))}
+                    {(productDataList && productDataList.length < 4) ?
+                      <React.Fragment>
+                        {productDataList.map(
+                          (productDetail) =>
+                            <ProductCard
+                              productDetail={productDetail}
+                              discountedPrice={productDetail.discountedPrice}
+                              key={productDetail.product.productId}
+                              storeForRecommendation={storeForRecommendation}
+                            />
+                        )}
+                      </React.Fragment>
+
+                      :
+                      <React.Fragment>
+                        {getRandom(productDataList).map(
+                          (productDetail) =>
+                            <ProductCard
+                              productDetail={productDetail}
+                              discountedPrice={productDetail.discountedPrice}
+                              key={productDetail.product.productId}
+                              storeForRecommendation={storeForRecommendation}
+                            />
+                        )}
+                      </React.Fragment>
+                    }
+
                   </Grid>
                 </>
               )}

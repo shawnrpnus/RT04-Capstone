@@ -16,7 +16,7 @@ import { useHistory } from "react-router-dom";
 import AddUpdateAddressRequest from "../../models/customer/AddUpdateAddressRequest";
 import { addShippingAddressDetailsAtCheckout } from "../../redux/actions/transactionActions";
 import axios from "axios";
-import { key } from "key.js";
+// import { key } from "../../key";
 
 const useStyles = makeStyles(customCheckboxRadioSwitch);
 
@@ -80,7 +80,7 @@ export default function AddNewAddressForCheckOut({
 
     axios
       .get(
-        `https://maps.googleapis.com/maps/api/geocode/json?address=Singapore${inputState.postalCode}&key=${key}`
+        `https://maps.googleapis.com/maps/api/geocode/json?address=Singapore+${inputState.postalCode}|result_type=postal_code&key=AIzaSyBwSEn5eVyay7QWpufONLyFn6beB1Vf5rc`
       )
       .then((response) => {
         const location = response.data.results[0].geometry.location;

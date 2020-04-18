@@ -1,7 +1,6 @@
 package capstone.rt04.retailbackend.controllers;
 
-import capstone.rt04.retailbackend.entities.Payroll;
-import capstone.rt04.retailbackend.entities.StaffLeave;
+import capstone.rt04.retailbackend.entities.*;
 import capstone.rt04.retailbackend.request.payroll.CalculateMonthlyPayrollRequest;
 import capstone.rt04.retailbackend.request.payroll.CreatePayrollsRequest;
 import capstone.rt04.retailbackend.request.payroll.RetrievePayrollsForAMonthRequest;
@@ -35,7 +34,7 @@ public class PayrollController {
     public ResponseEntity<?> calculateMonthlySalary(@RequestBody CalculateMonthlyPayrollRequest calculateMonthlyPayrollRequest) {
         try {
             List<Payroll> payrolls = payrollService.calculateMonthlySalary(calculateMonthlyPayrollRequest.getSelectedDate());
-
+            payrolls.forEach(this::clearPayrollRelationship);
             return new ResponseEntity<>(payrolls, HttpStatus.OK);
         } catch (Exception ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -45,7 +44,7 @@ public class PayrollController {
     @PostMapping(CREATE_PAYROLLS)
     public ResponseEntity<?> createPayrolls(@RequestBody CreatePayrollsRequest createPayrollsRequest) throws PayrollCannotCreateException {
             List<Payroll> payrolls = payrollService.createPayrolls(createPayrollsRequest.getSelectedDate());
-            System.out.println(payrolls);
+            payrolls.forEach(this::clearPayrollRelationship);
             return new ResponseEntity<>(payrolls, HttpStatus.OK);
     }
 
@@ -53,6 +52,7 @@ public class PayrollController {
     public ResponseEntity<?> retrieveAllPayrolls(@PathVariable Long staffId) {
         try {
             List<Payroll> payrolls = payrollService.retrieveAllPayrolls(staffId);
+            payrolls.forEach(this::clearPayrollRelationship);
             return new ResponseEntity<>(payrolls, HttpStatus.OK);
         } catch (Exception ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -62,7 +62,8 @@ public class PayrollController {
     @PostMapping(RETRIEVE_PAYROLLS_FOR_A_MONTH)
     public ResponseEntity<?> retrievePayrollsForAMonth(@RequestBody RetrievePayrollsForAMonthRequest retrievePayrollsForAMonthRequest) {
         try {
-            List<Payroll> payrolls = payrollService.retrieveLeaveCountInAMonth(retrievePayrollsForAMonthRequest.getSelectedDate());
+            List<Payroll> payrolls = payrollService.retrievePayrollsForAMonth(retrievePayrollsForAMonthRequest.getSelectedDate());
+            payrolls.forEach(this::clearPayrollRelationship);
             return new ResponseEntity<>(payrolls, HttpStatus.OK);
         } catch (Exception ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -73,9 +74,32 @@ public class PayrollController {
     public ResponseEntity<?> updatePayrollStatus(@PathVariable Long payrollId) {
         try {
             Payroll payroll = payrollService.updateStatus(payrollId);
+            clearPayrollRelationship(payroll);
             return new ResponseEntity<>(payroll, HttpStatus.OK);
         } catch (Exception ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    private void clearPayrollRelationship(Payroll payroll) {
+        Staff staff = payroll.getStaff();
+        if (staff != null) {
+            staff.setStore(null);
+            staff.setAdvertisements(null);
+            staff.setRepliedReviews(null);
+            staff.setLeaves(null);
+            staff.setPayrolls(null);
+            staff.setDeliveries(null);
+            staff.setPassword(null);
+            Department d = staff.getDepartment();
+            if (d != null) {
+                d.setStaffList(null);
+            }
+            Role r = staff.getRole();
+            if (r != null) {
+                r.setStaffList(null);
+            }
+        }
+
     }
 }

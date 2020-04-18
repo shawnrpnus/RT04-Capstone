@@ -29,7 +29,7 @@ public class AprioriService {
          result in memory for this example.
          */
 
-        double minsup = 0.05; // means a minsup of (n) matching transactions (we used a relative support)
+        double minsup = 0.01; // means a minsup of (n) matching transactions (we used a relative support)
 
         // Applying the Apriori algorithm
         AlgoApriori algorithm = new AlgoApriori();
