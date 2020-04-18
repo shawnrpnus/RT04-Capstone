@@ -62,12 +62,6 @@ export default function(state = initialState, action) {
                 currentLeave: action.leave
             };
 
-    case types.RETRIEVE_LEAVE_COUNT_IN_A_MONTH:
-      return {
-        ...state,
-        count: action.count
-      };
-
         default:
             return state;
     }
