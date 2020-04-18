@@ -39,7 +39,8 @@ class StyleQuiz extends Component {
       hasUpdated: false,
       answers: [],
       fieldsNotChanged: true,
-      fieldsNotFilled: true
+      fieldsNotFilled: true,
+      clearForm: false,
     };
   }
 
@@ -50,6 +51,7 @@ class StyleQuiz extends Component {
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (this.props.allStyles) {
       console.log("reached");
+      console.log(this.state.question);
       let qnsCreated = this.props.allStyles[0].questions.map((v) => ({
         question: v,
       }));
@@ -80,11 +82,6 @@ class StyleQuiz extends Component {
       });
       this.setState({ answersForSelectedQns: ans });
     }
-    console.log(this.props.allStyles);
-
-    console.log(this.state.questionsCreated.length);
-    console.log(prevState.questionsCreated.length);
-    console.log(this.state.questionsCreated);
   }
 
   //for adding style qns when creating qns
@@ -153,7 +150,6 @@ class StyleQuiz extends Component {
   checkIfDuplicateExists(w) {
     return new Set(w).size !== w.length;
   }
-  
 
   //for adding style ans when creating qns
   handleTextChange = (e, index) => {
@@ -217,11 +213,11 @@ class StyleQuiz extends Component {
   checkIfCanClearForm = () => {
     //cannot clear if both qns and answers not filled up
     if (this.state.question == "" && this.state.answers.length == 0) {
-      console.log("cannot clear")
-      return true
-    } 
-    return false
-  }
+      console.log("cannot clear");
+      return true;
+    }
+    return false;
+  };
 
   //handle delete style qns
   handleDeleteQns(qnsToDelete) {
@@ -269,11 +265,9 @@ class StyleQuiz extends Component {
   };
 
   clearForm = (e) => {
-    this.setState({
-      answers: [],
-      question: "",
-    });
-  }
+    console.log(this.state.answers);
+    this.setState({ clearForm: true });
+  };
 
   resetFields = (e) => {
     const ans = [];
@@ -350,7 +344,7 @@ class StyleQuiz extends Component {
                   <Button
                     onClick={this.handleChangeUpdateAndDelete}
                     variant={this.state.mode ? "outlined" : "contained"}
-                    // disabled={this.state.questionsCreated.length == 0}
+                    disabled={this.props.allStyles && this.props.allStyles[0].questions.length == 0}
                   >
                     Update/Delete
                   </Button>
@@ -483,7 +477,7 @@ class StyleQuiz extends Component {
                           <Button
                             color="primary"
                             variant="contained"
-                            disabled={this.state.questionsCreated.length == 1}
+                            //disabled={this.state.questionsCreated.length == 1}
                             onClick={(e) =>
                               this.handleDeleteQns(this.state.selectedQns)
                             }

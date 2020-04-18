@@ -125,7 +125,9 @@ class StyleForm extends React.Component {
                 <ButtonToolbar className="form__button-toolbar">
                   <Button
                     color="primary"
-                    onClick={(e) => handleSubmit(e, this.state)}
+                    onClick={(e) => {handleSubmit(e, this.state)
+                      this.setState({ styleName: "", answers: [] });
+                    }}
                     disabled={hasErrors || this.checkIfCanSubmit()}
                   >
                     Submit

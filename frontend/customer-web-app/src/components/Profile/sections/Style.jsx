@@ -41,12 +41,15 @@ function Style(props) {
   //State
   const [inputState, setInputState] = useState({
     question0: questionBank[0].question,
+    questions: [],
     answer0: questionBank[0].answers,
     answers: [],
     error: "",
     style: "",
     //new
-    questions: [],
+    questionsRetrieved: [],
+    answer0Retrieved: [],
+    answersRetrieved: [],
     stylePreferences: [],
     currentQns: 0,
     totalQns: 0,
@@ -61,7 +64,7 @@ function Style(props) {
   useEffect(() => {
     dispatch(retrieveAllStyles());
     const ans = [];
-    if (stylesRetrieved) {
+    if (stylesRetrieved && stylesRetrieved[0].questions.length !== 0) {
       stylesRetrieved.forEach(function(value, index) {
         ans.push({
           styleId: value.styleId,
@@ -75,7 +78,6 @@ function Style(props) {
         answers: ans,
         totalQns: stylesRetrieved[0].questions.length + 1,
       }));
-      console.log(inputState.answers);
     }
     if (customer.style !== null) {
       //customer did the style quiz
@@ -93,14 +95,13 @@ function Style(props) {
       setInputState((inputState) => ({
         ...inputState,
         style: customer.style.styleName,
-        answer0: customer.style.gender,
-        questions: qns,
-        answers: answer,
+        answer0Retrieved: customer.style.gender,
+        questionsRetrieved: qns,
+        answersRetrieved: answer,
       }));
       setAddedStyle(true);
     } else {
     }
-    console.log(inputState.questions);
   }, [customer]);
 
   const checkIfCanAns = (index) => {
@@ -170,6 +171,7 @@ function Style(props) {
   };
 
   const updateStyle = () => {
+    console.log("update");
     setAddedStyle(false);
     setUpdateMode(true);
     const ans = [];
@@ -185,6 +187,7 @@ function Style(props) {
       questions: stylesRetrieved[0].questions,
       answers: ans,
       answer0: questionBank[0].answers,
+      currentQns: 0,
       totalQns: stylesRetrieved[0].questions.length + 1,
     }));
   };
@@ -206,9 +209,12 @@ function Style(props) {
     setInputState((inputState) => ({
       ...inputState,
       style: customer.style.styleName,
-      answer0: customer.style.gender,
-      questions: qns,
-      answers: answer,
+      answer0: questionBank[0].answers,
+      currentQns: 0,
+      stylePreferences: [],
+      indexes: [],
+      questions: [],
+      answers: [],
     }));
   };
 
@@ -218,7 +224,7 @@ function Style(props) {
       stylePreferences: [],
       indexes: [],
       answer0: questionBank[0].answers,
-      currentQns: 0,
+      currentQns: 0
     }));
   };
 
@@ -229,6 +235,10 @@ function Style(props) {
     setInputState((inputState) => ({
       ...inputState,
       answers: [],
+      stylePreferences: [],
+      indexes: [],
+      questions: [],
+      currentQns: 0
     }));
     const gender = inputState.answer0.toString();
     console.log(gender);
@@ -278,6 +288,7 @@ function Style(props) {
       questions: stylesRetrieved[0].questions,
       answers: ans,
       answer0: questionBank[0].answers,
+      currentQns: 0,
       totalQns: stylesRetrieved[0].questions.length + 1,
     }));
     const customerId = customer.customerId;
@@ -305,11 +316,11 @@ function Style(props) {
                 </h5>
                 <div>
                   <h6>{inputState.question0}</h6>
-                  <Button color="rose">{inputState.answer0}</Button>
-                  {inputState.questions.map((qns, qnsNo) => (
+                  <Button color="rose">{inputState.answer0Retrieved}</Button>
+                  {inputState.questionsRetrieved.map((qns, qnsNo) => (
                     <div>
                       <h6>{qns}</h6>
-                      <Button color="rose">{inputState.answers[qnsNo]}</Button>
+                      <Button color="rose">{inputState.answersRetrieved[qnsNo]}</Button>
                     </div>
                   ))}
                 </div>
