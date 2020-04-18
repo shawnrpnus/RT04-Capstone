@@ -54,12 +54,7 @@ class StaffViewEditPage extends Component {
   componentDidUpdate(prevProps, prevState, snapshot) {
     const { currentStaff } = this.props;
 
-    if (
-      !prevProps.currentStaff ||
-      (prevProps.currentStaff &&
-        prevProps.currentStaff.staffId &&
-        prevProps.currentStaff.staffId !== this.props.currentStaff.staffId)
-    ) {
+    if (currentStaff && prevProps.currentStaff !== this.props.currentStaff) {
       //set the entire state here to this.props.currentStaff etc
       this.setState({
         staffId: currentStaff.staffId,

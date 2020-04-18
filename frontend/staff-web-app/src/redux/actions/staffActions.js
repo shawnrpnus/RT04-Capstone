@@ -247,6 +247,7 @@ export const retrieveAllRoles = () => {
         dispatch(retrieveAllRolesSuccess(data));
       })
       .catch((err) => {
+          console.log(err);
         dispatch(retrieveAllRolesError(err.response.data));
       });
   };
