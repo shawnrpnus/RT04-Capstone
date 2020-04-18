@@ -1,6 +1,6 @@
 import withPage from "../Layout/page/withPage";
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import {useHistory, useParams} from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { retrieveRefundById } from "../../redux/actions/refundAction";
 import { Grid, lighten } from "@material-ui/core";
@@ -78,6 +78,7 @@ const ViewRefundRecordDetails = props => {
   const { refundId } = useParams();
   const { renderLoader } = props;
   const dispatch = useDispatch();
+  const history = useHistory();
 
   const errors = useSelector(state => state.errors);
 
@@ -122,7 +123,7 @@ const ViewRefundRecordDetails = props => {
   useEffect(() => {
     setIsLoading(true);
     setDisabled(true);
-    dispatch(retrieveRefundById(refundId, setIsLoading));
+    dispatch(retrieveRefundById(refundId, setIsLoading, history));
   }, [refundId]);
 
   useEffect(() => {

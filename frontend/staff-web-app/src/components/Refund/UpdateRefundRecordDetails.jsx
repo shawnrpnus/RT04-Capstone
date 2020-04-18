@@ -6,7 +6,7 @@ import {
   retrieveAllRefundProgressEnum,
   retrieveAllRefundStatusEnum,
   retrieveRefundById,
-  updateInStoreRefundRequest
+  updateInStoreRefundRequest, updateRefundRecordSuccess
 } from "../../redux/actions/refundAction";
 import { Grid, lighten } from "@material-ui/core";
 import InputLabel from "@material-ui/core/InputLabel";
@@ -39,6 +39,7 @@ import LinearProgress from "@material-ui/core/LinearProgress";
 import { Button } from "reactstrap";
 import UpdateRefundLineItemHandlerRequest from "../../models/refund/UpdateRefundLineItemHandlerRequest";
 import Chip from "@material-ui/core/Chip";
+import {retrieveTransactionByOrderNumberSuccess} from "../../redux/actions/transactionAction";
 
 const tableIcons = {
   Add: AddBox,
@@ -150,7 +151,7 @@ const UpdateRefundRecordDetails = props => {
   useEffect(() => {
     setIsLoading(true);
     setDisabled(true);
-    dispatch(retrieveRefundById(refundId, setIsLoading));
+    dispatch(retrieveRefundById(refundId, setIsLoading, history));
   }, [refundId]);
 
   useEffect(() => {
@@ -174,6 +175,10 @@ const UpdateRefundRecordDetails = props => {
         _.get(currRefund, "refundLineItems[0].transactionLineItem.transaction")
       );
       setCurrRefundLineItem(_.get(currRefund, "refundLineItems"));
+
+      if(inputState.refundStatus === "COMPLETED") {
+        history.push(`/refund/viewRefundRecord/${refundId}`);
+      }
     }
   }, [currRefund]);
 

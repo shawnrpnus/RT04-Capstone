@@ -4,6 +4,7 @@ import * as types from "./types";
 import { dispatchErrorMapError } from "./index";
 import { CREATE_IN_STORE_REFUND_RECORD } from "./types";
 import { UPDATE_REFUND_RECORD } from "./types";
+import {useHistory} from "react-router-dom";
 
 axios.defaults.baseURL = process.env.REACT_APP_SPRING_API_URL;
 const REFUND_BASE_URL = "/api/refund/";
@@ -156,7 +157,7 @@ const retrieveAllRefundProgressEnumSuccess = data => ({
   allRefundProgressEnum: data
 });
 
-export const retrieveRefundById = (refundId, setIsLoading) => {
+export const retrieveRefundById = (refundId, setIsLoading, history) => {
   return dispatch => {
     //redux thunk passes dispatch
     axios
@@ -171,6 +172,7 @@ export const retrieveRefundById = (refundId, setIsLoading) => {
         toast.error(err.response.data.errorMessage, {
           position: toast.POSITION.TOP_CENTER
         });
+        history.push(`/refund/scanQrCode`);
         dispatchErrorMapError(err, dispatch);
       });
   };
