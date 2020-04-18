@@ -62,7 +62,7 @@ public class PayrollController {
     @PostMapping(RETRIEVE_PAYROLLS_FOR_A_MONTH)
     public ResponseEntity<?> retrievePayrollsForAMonth(@RequestBody RetrievePayrollsForAMonthRequest retrievePayrollsForAMonthRequest) {
         try {
-            List<Payroll> payrolls = payrollService.retrieveLeaveCountInAMonth(retrievePayrollsForAMonthRequest.getSelectedDate());
+            List<Payroll> payrolls = payrollService.retrievePayrollsForAMonth(retrievePayrollsForAMonthRequest.getSelectedDate());
             return new ResponseEntity<>(payrolls, HttpStatus.OK);
         } catch (Exception ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);

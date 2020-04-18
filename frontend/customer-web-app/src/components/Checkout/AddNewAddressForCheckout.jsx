@@ -77,7 +77,7 @@ export default function AddNewAddressForCheckOut({
 
   const handleAddAddress = () => {
     //changeCurrBillingOrShipping (true = shipping, false = billing)
-    console.log(inputState.postalCode);
+
     axios
       .get(
         `https://maps.googleapis.com/maps/api/geocode/json?address=Singapore+${inputState.postalCode}|result_type=postal_code&key=AIzaSyBwSEn5eVyay7QWpufONLyFn6beB1Vf5rc`
