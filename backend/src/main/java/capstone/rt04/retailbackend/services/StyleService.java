@@ -3,9 +3,9 @@ package capstone.rt04.retailbackend.services;
 import capstone.rt04.retailbackend.entities.Customer;
 import capstone.rt04.retailbackend.entities.Product;
 import capstone.rt04.retailbackend.entities.Style;
-import capstone.rt04.retailbackend.entities.Tag;
 import capstone.rt04.retailbackend.repositories.ProductRepository;
 import capstone.rt04.retailbackend.repositories.StyleRepository;
+import capstone.rt04.retailbackend.request.style.StyleIdAnswerMap;
 import capstone.rt04.retailbackend.util.ErrorMessages;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
 import capstone.rt04.retailbackend.util.exceptions.product.ProductNotFoundException;
@@ -13,11 +13,11 @@ import capstone.rt04.retailbackend.util.exceptions.style.CreateNewStyleException
 import capstone.rt04.retailbackend.util.exceptions.style.DeleteStyleException;
 import capstone.rt04.retailbackend.util.exceptions.style.StyleNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.style.UpdateStyleException;
-import capstone.rt04.retailbackend.util.exceptions.tag.TagNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.PersistenceException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +55,6 @@ public class StyleService {
         Style style = retrieveStyleByStyleId(styleId);
         for(Long p : productIds) {
             Product retrieveProduct = productRepository.findByProductId(p);
-            //add tag both ways is implemented in the entity
             try{
                 retrieveProduct.addStyle(style);
             } catch(NullPointerException ex) {
@@ -158,6 +157,113 @@ public class StyleService {
             Map<String, String> errorMap = new HashMap<>();
             errorMap.put("styleName", "This style already exists!");
             throw new InputDataValidationException(errorMap, ErrorMessages.STYLE_ALREADY_EXISTS);
+        }
+    }
+
+    public List<Style> createStyleQuizQns(String question, List<StyleIdAnswerMap> styleIdAnswerMaps) {
+        List<Style> allStyles = retrieveAllStyles();
+        //for each style, add the qns + ans. verify that the id of style = id in map
+        for (Style style: allStyles) {
+            int ansCount = 0; //some styles may have multiple answer input, but only want the latest one
+            style.getQuestions().add(question);
+            for (StyleIdAnswerMap map: styleIdAnswerMaps) {
+                String ansRetrieved = map.getAnswer();
+                Long idRetrieved = map.getStyleId();
+                if (idRetrieved == style.getStyleId()) {
+                    if (ansCount == 0) {
+                        style.getAnswers().put(question, ansRetrieved);
+                        ansCount++;
+                    } else {
+                        style.getAnswers().remove(question);
+                        style.getAnswers().put(question, ansRetrieved);
+                        ansCount++;
+                    }
+                }
+            }
+        }
+        return allStyles;
+    }
+
+    public List<Style> deleteStyleQuizQns(Integer qnsNum) {
+        List<Style> allStyles = retrieveAllStyles();
+        for (Style style: allStyles) {
+            List<String> questions = style.getQuestions();
+            Integer lengthBefore = questions.size();
+            Integer index = 0;
+            Map<String, String> answers = style.getAnswers();
+
+            String question = questions.get(qnsNum);
+            questions.remove(question);
+            Integer lengthAfter = questions.size();
+            style.setQuestions(questions);
+            answers.remove(question);
+            style.setAnswers(answers);
+            System.out.println("size before:" + lengthBefore + "size after:" + lengthAfter);
+            System.out.println("removed question successfully");
+
+        }
+        return allStyles;
+    }
+
+    public List<Style> updateStyleQuizQns(String qnsToUpdate, String updatedQns, List<StyleIdAnswerMap> styleIdAnswerMaps) throws StyleNotFoundException {
+        //retrieve all styles
+        List<Style> allStyles = retrieveAllStyles();
+        System.out.println(styleIdAnswerMaps);
+        for (StyleIdAnswerMap map: styleIdAnswerMaps) {
+            String ansRetrieved = map.getAnswer();
+            Long idRetrieved = map.getStyleId();
+            //retrieve style by style id
+            Integer index = 0;
+            Style style = retrieveStyleByStyleId(idRetrieved);
+            List<String> questions = style.getQuestions();
+            Map<String, String> answers = style.getAnswers();
+            for (int i = 0; i < questions.size(); i++) {
+                if (questions.get(i).equals(qnsToUpdate)) {
+                    index = i;
+                    break;
+                }
+            }
+            //set questions List with updatedQns based on index
+            questions.set(index, updatedQns);
+            style.setQuestions(questions);
+            //remove old qns,ans pair value
+            answers.remove(qnsToUpdate);
+            //put in new qns,ans pair value
+            answers.put(updatedQns, ansRetrieved);
+            System.out.println(ansRetrieved);
+            //set style with updatedQns
+            style.setAnswers(answers);
+        }
+        return allStyles;
+    }
+
+    public Style createNewStyleWithAns(String styleName, List<StyleIdAnswerMap> styleIdAnswerMaps) throws CreateNewStyleException, InputDataValidationException {
+        Style newStyle = new Style(styleName);
+        Map<String, String> errorMap = validationService.generateErrorMap(newStyle);
+        if (errorMap != null){
+            throw new InputDataValidationException(errorMap, "Style is invalid!");
+        }
+        checkDuplicateStyleName(newStyle.getStyleName());
+        try {
+            //retrieve all styles
+            List<Style> allStyles = retrieveAllStyles();
+            Style firstStyle = allStyles.get(0);
+            List<String> questions = firstStyle.getQuestions();
+            List<String> newQns = new ArrayList<>();
+            Integer index = 0;
+            Map<String, String> qnsAnsMap = new HashMap<String, String>();
+            for (StyleIdAnswerMap map: styleIdAnswerMaps) {
+                qnsAnsMap.put(questions.get(index), map.getAnswer());
+                newQns.add(questions.get(index));
+                index++;
+            }
+            newStyle.setQuestions(newQns);
+            newStyle.setAnswers(qnsAnsMap);
+            Style createdStyle = styleRepository.save(newStyle);
+            createdStyle.getProducts().size();
+            return createdStyle;
+        } catch (PersistenceException ex){
+            throw new CreateNewStyleException("Error creating new style");
         }
     }
 }

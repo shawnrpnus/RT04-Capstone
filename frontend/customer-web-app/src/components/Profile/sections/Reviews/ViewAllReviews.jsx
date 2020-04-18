@@ -12,9 +12,11 @@ import GridItem from "../../../Layout/components/Grid/GridItem";
 import Media from "../../../Layout/components/Media/Media";
 import ImageGallery from "react-image-gallery";
 import wishtlistStyle from "../../../../assets/jss/material-kit-pro-react/views/wishlistStyle";
+import typographyStyle from "../../../../assets/jss/material-kit-pro-react/views/componentsSections/typographyStyle";
 
 const useStyles = makeStyles(sectionCommentsStyle);
 const useStylesForImage = makeStyles(wishtlistStyle);
+const useTypoStyles = makeStyles(typographyStyle);
 
 const _ = require("lodash");
 const moment = require("moment");
@@ -24,6 +26,7 @@ export default function ReviewCardForProfilePage(props) {
   const reviews = useSelector(state => state.review.allReviews);
   const classes = useStyles();
   const classesImage = useStyles();
+  const typoClasses = useTypoStyles();
 
   useEffect(() => {
     dispatch(retrieveReviewsByCustomerId(currCustomer.customerId));
@@ -34,6 +37,18 @@ export default function ReviewCardForProfilePage(props) {
 
   return (
     <GridContainer>
+      <GridItem
+        md={12}
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "flex-end",
+        }}
+      >
+        <h4 className={typoClasses.title} style={{ float: "left", margin: 0 }}>
+          My Reviews
+        </h4>
+      </GridItem>
       <GridItem xs={12} sm={10} md={12}>
         {reviews &&
         reviews.map(function(item, i) {
@@ -119,6 +134,13 @@ export default function ReviewCardForProfilePage(props) {
             </GridContainer>
           );
         })}
+      </GridItem>
+      <GridItem md={12}>
+        {reviews && reviews.length === 0 && (
+          <h3 style={{ textAlign: "center" }}>
+            You do not have any past reviews.
+          </h3>
+        )}
       </GridItem>
     </GridContainer>
   );

@@ -12,6 +12,7 @@ import transactionReducer from "redux/reducers/transactionReducer";
 import advertisementReducer from "redux/reducers/advertisementReducer";
 import instagramReducer from "redux/reducers/instagramReducer";
 import storeReducer from "./storeReducer";
+import styleReducer from "redux/reducers/styleReducer";
 import refundReducer from "./refundReducer";
 
 const rootReducer = combineReducers({
@@ -28,7 +29,8 @@ const rootReducer = combineReducers({
   advertisement: advertisementReducer,
   transaction: transactionReducer,
   instagram: instagramReducer,
-  store: storeReducer
+  store: storeReducer,
+  style: styleReducer
 });
 
 export default rootReducer;

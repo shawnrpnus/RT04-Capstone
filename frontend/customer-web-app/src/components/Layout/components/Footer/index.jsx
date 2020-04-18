@@ -16,7 +16,7 @@ const useStyles = makeStyles(styles);
 export default function FooterSection() {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const instagramPosts = useSelector(state => state.instagram.instagramPosts);
+  const instagramPosts = useSelector((state) => state.instagram.instagramPosts);
 
   useEffect(() => {
     dispatch(retrieveAllActiveInstagramPost());
@@ -30,40 +30,14 @@ export default function FooterSection() {
           <div className={classes.left}>
             <List className={classes.list}>
               <ListItem className={classes.inlineBlock}>
-                <a
-                  href="#pablo"
-                  className={classes.block}
-                  onClick={e => e.preventDefault()}
-                >
-                  Blog
-                </a>
+                <Link className={classes.block} key="home" to="/">
+                  Home
+                </Link>
               </ListItem>
               <ListItem className={classes.inlineBlock}>
-                <a
-                  href="#pablo"
-                  className={classes.block}
-                  onClick={e => e.preventDefault()}
-                >
-                  Presentation
-                </a>
-              </ListItem>
-              <ListItem className={classes.inlineBlock}>
-                <a
-                  href="#pablo"
-                  className={classes.block}
-                  onClick={e => e.preventDefault()}
-                >
-                  Discover
-                </a>
-              </ListItem>
-              <ListItem className={classes.inlineBlock}>
-                <a
-                  href="#pablo"
-                  className={classes.block}
-                  onClick={e => e.preventDefault()}
-                >
-                  Payment
-                </a>
+                <Link className={classes.block} key="lookbook" to="/lookbook">
+                  Lookbook
+                </Link>
               </ListItem>
               <ListItem className={classes.inlineBlock}>
                 <Link
@@ -74,18 +48,22 @@ export default function FooterSection() {
                   Contact Us
                 </Link>
               </ListItem>
+              {/* <ListItem className={classes.inlineBlock}>
+                <a
+                  href="#pablo"
+                  className={classes.block}
+                  onClick={(e) => e.preventDefault()}
+                >
+                  Discover
+                </a>
+              </ListItem>
+            */}
             </List>
           </div>
           <div className={classes.right}>
-            Copyright &copy; {1900 + new Date().getYear()}{" "}
-            <a
-              href="https://www.creative-tim.com?ref=mkpr-footer-components"
-              target="_blank"
-              className={classes.aClasses}
-            >
-              Creative Tim
-            </a>{" "}
-            All Rights Reserved.
+            copyright &copy; {1900 + new Date().getYear()}{" "}
+            <a className={classes.aClasses}>apricot & nut</a> all rights
+            reserved.
           </div>
         </div>
       }
@@ -94,17 +72,24 @@ export default function FooterSection() {
         <GridItem xs={12} sm={4} md={4}>
           <h5>About Us</h5>
           <p>
-            Creative Tim is a startup that creates design tools that make the
-            web development process faster and easier.{" "}
+            A wardrobe is a person's opportunity to stand out and make a lasting
+            first impression. Launched in 2019, apricot & nut offers a wide
+            range of apparel to fit any person's unique sense of style. Our
+            clothing and accessories are carefully curated to provide our
+            customers the latest fashions. To allow our customers to find the
+            best clothing that suits them, we offer online reservation of the
+            clothing and you can come down and try it before deciding whether to
+            purchase.
           </p>
-          <p>
+
+          {/* <p>
             We love the web and care deeply for how users interact with a
             digital product. We power businesses and individuals to create
             better looking web projects around the world.{" "}
-          </p>
+          </p> */}
         </GridItem>
         <GridItem xs={12} sm={4} md={4}>
-          <h5>Social Feed</h5>
+          {/* <h5>Social Feed</h5>
           <div className={classes.socialFeed}>
             <div>
               <i className="fab fa-twitter" />
@@ -121,7 +106,7 @@ export default function FooterSection() {
                 inspiration.
               </p>
             </div>
-          </div>
+          </div> */}
         </GridItem>
         <GridItem xs={12} sm={4} md={4}>
           <h5>Instagram Feed</h5>
@@ -142,7 +127,7 @@ export default function FooterSection() {
                     )}
                     style={{
                       height: "70px",
-                      width: "auto"
+                      width: "auto",
                     }}
                     alt={`https://www.instagram.com/p/${shortCode}`}
                   />

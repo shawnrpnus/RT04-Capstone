@@ -40,6 +40,29 @@ const createStyleError = data => ({
   errorMap: data
 });
 
+export const createNewStyleWithAns = (createStyleRequest) => {
+  return dispatch => {
+    //redux thunk passes dispatch
+    axios
+      .post(STYLE_BASE_URL + "/createNewStyleWithAns", createStyleRequest)
+      .then(response => {
+        const data = jsog.decode(response);
+        const styleId = data.styleId;
+        console.log(data);
+        dispatch(createStyleSuccess(response.data));
+        toast.success("Style Created!", {
+          position: toast.POSITION.TOP_CENTER
+        });
+        retrieveAllStyles()(dispatch);
+        //history.push(`/style/manage`);
+      })
+      .catch(err => {
+        dispatch(createStyleError(err.response.data));
+        console.log(err.response.data);
+      });
+  };
+};
+
 export const retrieveAllStyles = () => {
   return dispatch => {
     axios
@@ -49,7 +72,8 @@ export const retrieveAllStyles = () => {
         dispatch(retrieveAllStylesSuccess(data));
       })
       .catch(err => {
-        dispatch(retrieveAllStylesError(err.response.data));
+        console.log(err);
+        //dispatch(retrieveAllStylesError(err.response.data));
       });
   };
 };
@@ -200,3 +224,76 @@ const deleteStyleFromProductsError = data => ({
   type: types.GET_ERRORS,
   errorMap: data
 });
+
+export const createStyleQuizQns = (request) => {
+  console.log(request);
+  return dispatch => {
+    //redux thunk passes dispatch
+    axios
+      .post(STYLE_BASE_URL + "/createStyleQuizQns", request)
+      .then(response => {
+        const data = jsog.decode(response);
+        console.log(data);
+        dispatch(createStyleQuizQnsSuccess(response.data));
+        toast.success("Style Quiz Question Created!", {
+          position: toast.POSITION.TOP_CENTER
+        });
+        retrieveAllStyles()(dispatch);
+        //history.push(`/style/manage`);
+      })
+      .catch(err => {
+        dispatch(createStyleQuizQnsError(err.response.data));
+        console.log(err.response.data);
+      });
+  };
+}
+
+const createStyleQuizQnsSuccess = data => ({
+  type: types.CREATE_STYLE_QUIZ_QNS,
+  style: data
+});
+
+const createStyleQuizQnsError = data => ({
+  type: types.GET_ERRORS,
+  errorMap: data
+});
+
+export const deleteStyleQuizQns = qnsNum => {
+  console.log(qnsNum);
+  return dispatch => {
+    axios
+      .post(STYLE_BASE_URL + "/deleteStyleQuizQns/" + qnsNum)
+      .then(response => {
+        const { data } = jsog.decode(response);
+        toast.success("Style Quiz Question Deleted!", {
+          position: toast.POSITION.TOP_CENTER
+        });
+        retrieveAllStyles()(dispatch);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+};
+
+export const updateStyleQuizQns = (request) => {
+  console.log(request);
+  return dispatch => {
+    //redux thunk passes dispatch
+    axios
+      .post(STYLE_BASE_URL + "/updateStyleQuizQns", request)
+      .then(response => {
+        const data = jsog.decode(response);
+        console.log(data);
+        toast.success("Style Quiz Question Updated!", {
+          position: toast.POSITION.TOP_CENTER
+        });
+        retrieveAllStyles()(dispatch);
+        //history.push(`/style/manage`);
+      })
+      .catch(err => {
+        console.log(err.response.data);
+      });
+  };
+}
+

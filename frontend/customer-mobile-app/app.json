@@ -25,6 +25,11 @@
     ],
     "ios": {
       "supportsTablet": true
+    },
+    "android": {
+      "package": "com.rt04capstone.apricotcustomer",
+      "permissions": ["CAMERA"],
+      "googleServicesFile": "./google-services.json"
     }
   }
 }

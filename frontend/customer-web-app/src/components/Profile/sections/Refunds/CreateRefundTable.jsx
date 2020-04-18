@@ -197,6 +197,7 @@ function CreateRefundTable({
                                 </Select>
                               </GridItem>
                               {/*Amount*/}
+                              <GridItem md={1}></GridItem>
                               <GridItem md={2}>
                                 <h3>
                                   $
@@ -205,11 +206,11 @@ function CreateRefundTable({
                                 </h3>
                               </GridItem>
                               {/* Action */}
-                              <GridItem md={1}>
-                                <IconButton className={classes.buttonTopMargin}>
-                                  <CancelIcon style={{ color: "red" }} />
-                                </IconButton>
-                              </GridItem>
+                              {/*<GridItem md={1}>*/}
+                              {/*  <IconButton className={classes.buttonTopMargin}>*/}
+                              {/*    <CancelIcon style={{ color: "red" }} />*/}
+                              {/*  </IconButton>*/}
+                              {/*</GridItem>*/}
                             </GridContainer>
                           </Card>
                           <Divider style={{ margin: "0 5%" }} />

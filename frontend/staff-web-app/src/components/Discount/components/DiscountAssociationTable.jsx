@@ -6,7 +6,7 @@ import { useConfirm } from "material-ui-confirm";
 import {
   retrieveAllDiscount,
   addDiscountToProducts,
-  removeDiscountFromProducts
+  removeDiscountFromProducts,
 } from "../../../redux/actions/discountActions";
 import { retrieveProductsDetails } from "../../../redux/actions/productActions";
 
@@ -23,42 +23,43 @@ import ButtonGroup from "@material-ui/core/ButtonGroup";
 const _ = require("lodash");
 const moment = require("moment");
 
-const DiscountAssociationTable = props => {
+const DiscountAssociationTable = (props) => {
   const dispatch = useDispatch();
   const confirmDialog = useConfirm();
-  const discounts = useSelector(state => state.discount.discounts);
-  const products = useSelector(state => state.product.products);
+  const discounts = useSelector((state) => state.discount.discounts);
+  const products = useSelector((state) => state.product.products);
 
   const [discount, setDiscount] = useState("");
   const [addMode, setAddMode] = useState(true);
   const { discountId: selectedDiscountId } = discount;
 
+  console.log(selectedDiscountId);
   useEffect(() => {
     dispatch(retrieveProductsDetails());
     dispatch(retrieveAllDiscount());
   }, []);
 
-  const onChange = e => {
+  const onChange = (e) => {
     setDiscount(e.target.value);
   };
 
-  const handleAddDiscountToProducts = data => {
-    const productIds = data.map(e => e.productId);
+  const handleAddDiscountToProducts = (data) => {
+    const productIds = data.map((e) => e.productId);
     dispatch(
       addDiscountToProducts({ discountId: selectedDiscountId, productIds })
     );
   };
 
-  const handleRemoveDiscountFromProducts = data => {
-    const productIds = data.map(e => e.productId);
+  const handleRemoveDiscountFromProducts = (data) => {
+    const productIds = data.map((e) => e.productId);
     confirmDialog({
-      description: "Discount will be removed for the selected product(s)."
+      description: "Discount will be removed for the selected product(s).",
     })
       .then(() =>
         dispatch(
           removeDiscountFromProducts({
             discountId: selectedDiscountId,
-            productIds
+            productIds,
           })
         )
       )
@@ -74,10 +75,14 @@ const DiscountAssociationTable = props => {
       <div className="card__title">
         <Grid container spacing={3}>
           <Grid item xs={12} md={6}>
-            {addMode ? (
-              <h5 className="bold-text">Add discount to product(s)</h5>
-            ) : (
-              <h5 className="bold-text">Remove discount from product(s)</h5>
+            {salesmarketing && (
+              <>
+                {addMode ? (
+                  <h5 className="bold-text">Add discount to product(s)</h5>
+                ) : (
+                  <h5 className="bold-text">Remove discount from product(s)</h5>
+                )}
+              </>
             )}
           </Grid>
           <Grid item xs={12} md={3} />
@@ -128,8 +133,8 @@ const DiscountAssociationTable = props => {
                 <ProductsTableRaw
                   selectable={true}
                   products={products.filter(
-                    p =>
-                      p.product.discounts.filter(e => {
+                    (p) =>
+                      p.product.discounts.filter((e) => {
                         // filter out the one that clash OR match
                         const { discountId } = e;
                         const fromDateTime = moment(e.fromDateTime);
@@ -164,7 +169,7 @@ const DiscountAssociationTable = props => {
                       : "Select a discount to add discount to product(s)",
                     icon: Add,
                     onClick: (evt, data) => handleAddDiscountToProducts(data),
-                    disabled: !selectedDiscountId
+                    disabled: !selectedDiscountId,
                   }}
                   retrieveProductsDetails={retrieveProductsDetails}
                 />
@@ -178,9 +183,9 @@ const DiscountAssociationTable = props => {
                 <ProductsTableRaw
                   selectable={salesmarketing ? true : false}
                   products={products.filter(
-                    p =>
+                    (p) =>
                       p.product.discounts.filter(
-                        discount => discount.discountId === selectedDiscountId
+                        (discount) => discount.discountId === selectedDiscountId
                       ).length !== 0
                   )}
                   selectionAction={
@@ -189,7 +194,7 @@ const DiscountAssociationTable = props => {
                           tooltip: "Remove discount from product(s)",
                           icon: Delete,
                           onClick: (evt, data) =>
-                            handleRemoveDiscountFromProducts(data)
+                            handleRemoveDiscountFromProducts(data),
                         }
                       : true
                   }
