@@ -300,37 +300,3 @@ const updateLeavesError = (data) => ({
   type: types.GET_ERRORS,
   errorMap: data,
 });
-
-export const retrieveLeaveCountInAMonth = (
-  retrieveLeaveCountInAMonthRequest
-) => {
-  return (dispatch) => {
-    //redux thunk passes dispatch
-    axios
-      .post(
-        LEAVE_BASE_URL + "/retrieveLeaveCountInAMonth",
-        retrieveLeaveCountInAMonthRequest
-      )
-      .then((response) => {
-        const { data } = jsog.decode(response);
-        dispatch(retrieveSuccess(data));
-        toast.success("Success!", {
-          position: toast.POSITION.TOP_CENTER,
-        });
-      })
-      .catch((err) => {
-        dispatch(retrieveError(err.response.data));
-        // console.log(err.response.data);
-      });
-  };
-};
-
-const retrieveSuccess = (data) => ({
-  type: types.RETRIEVE_LEAVE_COUNT_IN_A_MONTH,
-  count: data,
-});
-
-const retrieveError = (data) => ({
-  type: types.GET_ERRORS,
-  errorMap: data,
-});

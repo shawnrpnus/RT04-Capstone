@@ -233,7 +233,7 @@ public class StaffController {
     public ResponseEntity<?> retrieveAllStoreStaff() {
         try {
             List<Staff> staff = staffService.retrieveStoreStaff();
-            System.out.print(staff);
+            staff.forEach(this::clearStaffRelationship);
             return new ResponseEntity<>(staff, HttpStatus.OK);
         } catch (Exception ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);

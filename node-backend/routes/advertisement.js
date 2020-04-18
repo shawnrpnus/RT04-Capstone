@@ -10,6 +10,8 @@ cloudinary.config({
   api_secret: process.env.API_SECRET,
 });
 
+console.log(process.env.SPRING_API_URL);
+
 const storage = multer.diskStorage({
   destination: function(req, file, cb) {
     cb(null, "./uploads");
