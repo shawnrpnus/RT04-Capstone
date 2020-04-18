@@ -120,7 +120,7 @@ export const updateStaff = (staffDetailsUpdateRequest, history) => {
         });
 
         history.push(`/staff/view/${staffId}`);
-        window.location.reload(false);
+        // window.location.reload(false);
       })
       .catch((err) => {
         dispatch(updateStaffError(err.response.data));

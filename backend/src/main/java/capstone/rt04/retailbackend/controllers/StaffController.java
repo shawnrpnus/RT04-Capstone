@@ -128,6 +128,18 @@ public class StaffController {
     public ResponseEntity<?> retrieveAllDepartments() {
         try {
             List<Department> departments = staffService.retrieveAllDepartments();
+            for(Department d :departments) {
+                for(Staff s : d.getStaffList()) {
+                    s.getRole().setStaffList(null);
+                    if(s.getStore() != null) {
+                        s.getStore().setReservations(null);
+                        s.getStore().setInStoreRestockOrders(null);
+                        s.getStore().setProductStocks(null);
+                        s.getStore().setStaff(null);
+                        s.getStore().setTransactions(null);
+                    }
+                }
+            }
             return new ResponseEntity<>(departments, HttpStatus.OK);
         } catch (Exception ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);

@@ -311,6 +311,7 @@ public class StaffService {
             staffToUpdate.setLastName(staff.getLastName());
             staffToUpdate.setNric(staff.getNric());
             staffToUpdate.setEmail(staff.getEmail());
+            staffToUpdate.setSalary(staff.getSalary());
             staffToUpdate.setAddress(address);
             addressRepository.delete(oldAddress);
 
