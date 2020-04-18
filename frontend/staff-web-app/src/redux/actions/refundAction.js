@@ -71,6 +71,9 @@ export const updateInStoreRefundRequest = (
       })
       .catch(err => {
         dispatchErrorMapError(err, dispatch);
+        toast.error(err.response.data.errorMessage.toString(), {
+          position: toast.POSITION.TOP_CENTER
+        });
         console.log(err.response.data);
       });
   };
