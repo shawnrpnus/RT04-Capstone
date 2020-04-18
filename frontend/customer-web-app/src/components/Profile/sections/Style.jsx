@@ -350,7 +350,7 @@ function Style(props) {
                       .map((ans, index) => (
                         <Button
                           color="rose"
-                          disabled={checkIfCanAns(qnsNo + 1)}
+                          // disabled={checkIfCanAns(qnsNo + 1)}
                           onClick={(e) =>
                             handleSaveAns(index, question, ans[0][1])
                           }
