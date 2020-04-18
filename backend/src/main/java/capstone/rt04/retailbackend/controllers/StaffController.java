@@ -118,8 +118,21 @@ public class StaffController {
     public ResponseEntity<?> retrieveAllRoles() {
         try {
             List<Role> roles = staffService.retrieveAllRoles();
+            for(Role r :roles) {
+                for(Staff s : r.getStaffList()) {
+                    s.getDepartment().setStaffList(null);
+                    if(s.getStore() != null) {
+                        s.getStore().setReservations(null);
+                        s.getStore().setInStoreRestockOrders(null);
+                        s.getStore().setProductStocks(null);
+                        s.getStore().setStaff(null);
+                        s.getStore().setTransactions(null);
+                    }
+                }
+            }
             return new ResponseEntity<>(roles, HttpStatus.OK);
         } catch (Exception ex) {
+            System.out.print(ex);
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
