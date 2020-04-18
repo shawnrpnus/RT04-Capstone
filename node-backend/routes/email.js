@@ -421,7 +421,7 @@ router.post("/sendRefundLabel", async (req, res) => {
 
   const path =
     __dirname.split("routes")[0] +
-    `refundLabelPDF\\RefundLabel_${refundId}.pdf`;
+    `refundLabelPDF/RefundLabel_${refundId}.pdf`;
 
   transporter.sendMail(
     {

@@ -107,6 +107,11 @@ public class RefundService {
             throw new InputDataValidationException(errorMap, ErrorMessages.REFUND_STORE_ID_EMPTY);
         }
         for (RefundLineItemRequest refundLineItemRequest : refundRequest.getRefundLineItemRequests()) {
+
+            if(refundLineItemRequest.getQuantityToRefund() == 0) {
+                continue;
+            }
+
             TransactionLineItem transactionLineItem = transactionService.retrieveTransactionLineItemById(refundLineItemRequest.getTransactionLineItemId());
             BigDecimal unitPrice;
             if(transactionLineItem.getRefundLineItems().size() > 0) {
@@ -248,15 +253,12 @@ public class RefundService {
             errorMap.put("refundLineItemHandlerRequests", ErrorMessages.REFUND_NOT_SELECTED);
             throw new RefundNotFoundException(errorMap, "Refund Items must be selected");
         }
-
+        boolean canSubmit = false;
         for (UpdateRefundLineItemHandlerRequest updateRefundLineItemHandlerRequest : updateRefundLineItemHandlerRequests) {
             RefundLineItemHandler refundLineItemHandlerCheck = retrieveRefundLineItemHandlersByRefundLineItemIdAndByTimestamp(updateRefundLineItemHandlerRequest.getRefundLineItemId());
 
-            //if refund success, want to change back to refund in progress, cannot do so
-            if (refundLineItemHandlerCheck.getRefundProgressEnum().getValue() == RefundProgressEnum.valueOf(updateRefundLineItemHandlerRequest.getRefundProgressEnum()).getValue()) {
-                Map<String, String> errorMap = new HashMap<>();
-                errorMap.put("refundLineItemHandlerId", ErrorMessages.REFUND_LINE_ITEM_HANDLER_ID_REQUIRED);
-                throw new RefundNotFoundException(errorMap, "Refund Status is not updated");
+            if (refundLineItemHandlerCheck.getRefundProgressEnum().getValue() < RefundProgressEnum.valueOf(updateRefundLineItemHandlerRequest.getRefundProgressEnum()).getValue()) {
+                canSubmit = true;
             }
 
             //if refund success, want to change back to refund in progress, cannot do so
@@ -300,6 +302,12 @@ public class RefundService {
                 refund.setRefundStatus(RefundStatusEnum.PROCESSING);
             }
         }
+        if (!canSubmit) {
+            Map<String, String> errorMap = new HashMap<>();
+            errorMap.put("refundLineItemHandlerId", ErrorMessages.REFUND_LINE_ITEM_HANDLER_ID_REQUIRED);
+            throw new RefundNotFoundException(errorMap, "Refund cannot be updated");
+        }
+
 
         Refund refundFinal = retrieveRefundById(refund.getRefundId());
 

@@ -178,7 +178,7 @@ export const retrieveRefundById = (refundId, setIsLoading, history) => {
   };
 };
 
-const retrieveRefundByIdSuccess = data => ({
+export const retrieveRefundByIdSuccess = data => ({
   type: types.RETRIEVE_REFUND_BY_ID,
   currRefund: data
 });
