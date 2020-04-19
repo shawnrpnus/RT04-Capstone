@@ -32,14 +32,12 @@ function TransactionDetails(props) {
   const dispatch = useDispatch();
   const staff = useSelector(state => state.staff.loggedInStaff);
   const transaction = useSelector(state => state.delivery.viewedTransaction);
-  const [displayCamera, setDisplayCamera] = useState(false);
   const [loading, setLoading] = useState(false);
   const [signatureModalVisible, setSignatureModalVisible] = useState(false);
 
-  const signatureCanvas = useRef();
-
   const handleSubmit = img => {
     if (img) {
+      setSignatureModalVisible(false);
       dispatch(
         confirmCustomerDirectDelivery(
           [transaction.transactionId],
@@ -47,25 +45,8 @@ function TransactionDetails(props) {
           setLoading
         )
       );
-      setSignatureModalVisible(false);
     }
   };
-
-  const clearCanvas = () => {
-    signatureCanvas.current.clear();
-  };
-
-  useFocusEffect(
-    React.useCallback(() => {
-      const task = InteractionManager.runAfterInteractions(() => {
-        setDisplayCamera(false);
-      });
-      return () => {
-        task.cancel();
-        setDisplayCamera(false);
-      };
-    }, [])
-  );
 
   const style = `.m-signature-pad--footer
     .button {
@@ -242,7 +223,9 @@ function TransactionDetails(props) {
             </TouchableOpacity>
             <Signature
               // handle when you click save button
-              onOK={img => handleSubmit(img)}
+              onOK={img => {
+                  handleSubmit(img);
+              }}
               onEmpty={() => {}}
               webStyle={style}
               autoClear={true}

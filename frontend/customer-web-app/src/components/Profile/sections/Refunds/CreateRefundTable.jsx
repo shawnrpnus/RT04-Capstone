@@ -110,12 +110,13 @@ function CreateRefundTable({
                       } = lineItem;
                       const afterDiscount = finalSubTotal / quantity;
                       const beforeDiscount = initialSubTotal / quantity;
-                      if (!totalForEachItem) {
-                        totalForEachItem = new Array(index).fill(0);
-                      }
-                      if (!totalForEachItem[index]) {
-                        totalForEachItem[index] = 0;
-                      }
+                      // if (!totalForEachItem) {
+                      //   totalForEachItem = new Array(index).fill(0);
+                      // }
+                      // if (!totalForEachItem[index]) {
+                      //   totalForEachItem[index] = 0;
+                      // }
+                      // console.log(totalForEachItem);
                       const quantityToRefund =
                         quantity + 1 - totalForEachItem[index];
                       // const quantityToRefund = quantity +1;

@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   retrieveAllRefundProgressEnum,
   retrieveAllRefundStatusEnum,
-  retrieveRefundById,
+  retrieveRefundById, retrieveRefundByIdSuccess,
   updateInStoreRefundRequest, updateRefundRecordSuccess
 } from "../../redux/actions/refundAction";
 import { Grid, lighten } from "@material-ui/core";
@@ -89,7 +89,9 @@ const UpdateRefundRecordDetails = props => {
   const history = useHistory();
   const errors = useSelector(state => state.errors);
 
-  useEffect(() => dispatch(retrieveAllRefundProgressEnum()), []);
+  useEffect(() => {
+      dispatch(retrieveAllRefundProgressEnum());
+      }, []);
 
   const [isLoading, setIsLoading] = useState(true);
   const [disabled, setDisabled] = useState(false);

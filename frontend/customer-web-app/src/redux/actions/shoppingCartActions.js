@@ -2,7 +2,7 @@ import axios from "axios";
 import {
   CART_TOOLTIP_CLOSE,
   CART_TOOLTIP_OPEN,
-  UPDATE_SHOPPING_CART_SUCCESS
+  UPDATE_SHOPPING_CART_SUCCESS,
 } from "redux/actions/types";
 import { dispatchErrorMapError } from "redux/actions/index";
 import { refreshCustomerEmail } from "./customerActions";
@@ -19,14 +19,14 @@ export const updateShoppingCart = (
   removeFromWishlistAPI,
   updateShoppingCartQty
 ) => {
-  return dispatch => {
+  return (dispatch) => {
     //redux thunk passes dispatch
     axios
       .post(
         CUSTOMER_BASE_URL + "/updateShoppingCart",
         updateShoppingCartRequest
       )
-      .then(response => {
+      .then((response) => {
         handleUpdateShoppingCart(response.data, dispatch);
         if (!updateShoppingCartQty) {
           if (removeFromWishlistAPI) {
@@ -39,23 +39,23 @@ export const updateShoppingCart = (
             );
             enqueueSnackbar("Moved to shopping cart!", {
               variant: "success",
-              autoHideDuration: 1200
+              autoHideDuration: 1200,
             });
           } else {
             enqueueSnackbar &&
               enqueueSnackbar("Item Added!", {
                 variant: "success",
-                autoHideDuration: 1200
+                autoHideDuration: 1200,
               });
           }
         }
       })
-      .catch(err => {
+      .catch((err) => {
         if (err.response && err.response.data)
           enqueueSnackbar &&
             enqueueSnackbar("Insufficient stock!", {
               variant: "error",
-              autoHideDuration: 1200
+              autoHideDuration: 1200,
             });
         dispatchErrorMapError(err, dispatch);
       });
@@ -63,9 +63,9 @@ export const updateShoppingCart = (
 };
 
 // Customer reducer
-const updateShoppingCartThroughCustomer = data => ({
+const updateShoppingCartThroughCustomer = (data) => ({
   type: UPDATE_SHOPPING_CART_SUCCESS,
-  customer: data
+  customer: data,
 });
 
 const handleUpdateShoppingCart = (responseData, dispatch) => {
@@ -76,73 +76,73 @@ const handleUpdateShoppingCart = (responseData, dispatch) => {
 export const getClientSecret = (totalAmount, setClientSecret) => {
   axios
     .post(`/directPayment`, null, {
-      params: { totalAmount: (totalAmount * 100).toFixed(0) }
+      params: { totalAmount: (totalAmount * 100).toFixed(0) },
     })
-    .then(resp => {
+    .then((resp) => {
       // Return a client_secret string
       console.log(resp);
       setClientSecret(resp.data);
     })
-    .catch(err => {
+    .catch((err) => {
       console.log(err);
     });
 };
 
 export const completeDirectPayment = (paymentRequest, history, email) => {
-  return dispatch => {
+  return (dispatch) => {
     axios
       .post(`/completeDirectPayment`, paymentRequest)
-      .then(resp => {
+      .then((resp) => {
         // Return a customer object
         // Update customer
         dispatch(refreshCustomerEmail(email));
         history.push("/account/profile/orderHistory");
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
       });
   };
 };
 
 export const makePaymentWithSavedCard = (paymentRequest, history, email) => {
-  return dispatch => {
+  return (dispatch) => {
     axios
       .post(`/makePaymentWithSavedCard`, paymentRequest)
-      .then(resp => {
+      .then((resp) => {
         // Return a customer object
         // Update customer
         dispatch(refreshCustomerEmail(email));
         history.push("/account/profile/orderHistory");
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
       });
   };
 };
 
-export const clearShoppingCart = customerId => {
+export const clearShoppingCart = (customerId) => {
   console.log(customerId);
-  return dispatch => {
+  return (dispatch) => {
     axios
       .post(CUSTOMER_BASE_URL + "/clearShoppingCart", null, {
-        params: { customerId, cartType: "online" }
+        params: { customerId, cartType: "online" },
       })
-      .then(resp => {
+      .then((resp) => {
         // Return a customer object
         // Update customer
         console.log(resp);
         handleUpdateShoppingCart(resp.data, dispatch);
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
       });
   };
 };
 
 export const openCartTooltip = {
-  type: CART_TOOLTIP_OPEN
+  type: CART_TOOLTIP_OPEN,
 };
 
 export const closeCartTooltip = {
-  type: CART_TOOLTIP_CLOSE
+  type: CART_TOOLTIP_CLOSE,
 };

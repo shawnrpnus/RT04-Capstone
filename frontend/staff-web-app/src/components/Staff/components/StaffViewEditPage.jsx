@@ -7,7 +7,7 @@ import {
   deleteStaff,
   retrieveAllRoles,
   retrieveAllDepartments,
-  updateStaff
+  updateStaff,
 } from "../../../redux/actions/staffActions";
 import Address from "../../../models/address";
 import staffUpdate from "../../../models/staff/staffUpdate";
@@ -40,7 +40,7 @@ class StaffViewEditPage extends Component {
     clearErrors: PropTypes.func.isRequired,
     disabled: PropTypes.bool,
     currentStaff: PropTypes.object,
-    retrieveStaffById: PropTypes.func
+    retrieveStaffById: PropTypes.func,
   };
 
   componentDidMount() {
@@ -54,12 +54,7 @@ class StaffViewEditPage extends Component {
   componentDidUpdate(prevProps, prevState, snapshot) {
     const { currentStaff } = this.props;
 
-    if (
-      !prevProps.currentStaff ||
-      (prevProps.currentStaff &&
-        prevProps.currentStaff.staffId &&
-        prevProps.currentStaff.staffId !== this.props.currentStaff.staffId)
-    ) {
+    if (currentStaff && prevProps.currentStaff !== this.props.currentStaff) {
       //set the entire state here to this.props.currentStaff etc
       this.setState({
         staffId: currentStaff.staffId,
@@ -79,16 +74,18 @@ class StaffViewEditPage extends Component {
         departmentName: currentStaff.department.departmentName,
         roleName: currentStaff.role.roleName,
         storeName:
-          currentStaff && currentStaff.store ? currentStaff.store.storeName : ""
+          currentStaff && currentStaff.store
+            ? currentStaff.store.storeName
+            : "",
       });
     }
   }
 
-  updateErrors = errorMap => {
+  updateErrors = (errorMap) => {
     this.props.updateErrors(errorMap);
   };
 
-  handleDelete = staffId => {
+  handleDelete = (staffId) => {
     this.props
       .confirmDialog({ description: "Staff will be deleted permanently" })
       .then(() => this.props.deleteStaff(staffId, this.props.history));
@@ -144,11 +141,11 @@ class StaffViewEditPage extends Component {
         : "",
       roleName: currentStaff ? currentStaff.role.roleName : "",
       storeName:
-        currentStaff && currentStaff.store ? currentStaff.store.storeName : ""
+        currentStaff && currentStaff.store ? currentStaff.store.storeName : "",
     };
   }
 
-  onChange = e => {
+  onChange = (e) => {
     const name = e.target.name;
     console.log(e);
     this.setState({ [name]: e.target.value }); //computed property name syntax
@@ -162,21 +159,23 @@ class StaffViewEditPage extends Component {
 
   handlePostalCodeClick = () => {
     const postalCode = this.state.postalCode;
-    axios.get(`https://geocode.xyz/${postalCode}?geoit=json`).then(response => {
-      const { data } = response;
-      if (!data.error && data.standard.countryname === "Singapore") {
-        const addrLine1 = data.standard.addresst;
-        this.setState({ line1: addrLine1 });
-      } else {
-        const customErrors = {
-          postalCode: "Postal code is invalid"
-        };
-        this.props.updateErrors(customErrors);
-      }
-    });
+    axios
+      .get(`https://geocode.xyz/${postalCode}?geoit=json`)
+      .then((response) => {
+        const { data } = response;
+        if (!data.error && data.standard.countryname === "Singapore") {
+          const addrLine1 = data.standard.addresst;
+          this.setState({ line1: addrLine1 });
+        } else {
+          const customErrors = {
+            postalCode: "Postal code is invalid",
+          };
+          this.props.updateErrors(customErrors);
+        }
+      });
   };
 
-  handleSubmit = e => {
+  handleSubmit = (e) => {
     e.preventDefault();
 
     const staff = new staffUpdate(
@@ -227,7 +226,7 @@ class StaffViewEditPage extends Component {
             Autofill
           </Button>
         </InputAdornment>
-      )
+      ),
     };
 
     const header =
@@ -365,11 +364,12 @@ class StaffViewEditPage extends Component {
                     disabled={mode === "view"}
                     autoFocus={true}
                     InputProps={{
-                      startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                      startAdornment: (
+                        <InputAdornment position="start">$</InputAdornment>
+                      ),
                     }}
                   />
                 </Grid>
-
 
                 <Grid item xs={12} md={6}>
                   {mode === "view" ? (
@@ -388,14 +388,14 @@ class StaffViewEditPage extends Component {
                     <Autocomplete
                       id="tags-standard"
                       options={this.props.allDepartments}
-                      getOptionLabel={option => option.departmentName}
+                      getOptionLabel={(option) => option.departmentName}
                       onChange={(event, value) =>
                         this.onSelectDepartment(event, value)
                       }
                       getOptionSelected={(option, value) =>
                         option.departmentId === value.departmentId
                       }
-                      renderInput={params => (
+                      renderInput={(params) => (
                         <TextField
                           {...params}
                           variant="standard"
@@ -426,14 +426,14 @@ class StaffViewEditPage extends Component {
                     <Autocomplete
                       id="tags-standard"
                       options={this.props.allRoles}
-                      getOptionLabel={option => option.roleName}
+                      getOptionLabel={(option) => option.roleName}
                       onChange={(event, value) =>
                         this.onSelectRole(event, value)
                       }
                       getOptionSelected={(option, value) =>
                         option.roleId === value.roleId
                       }
-                      renderInput={params => (
+                      renderInput={(params) => (
                         <TextField
                           {...params}
                           variant="standard"
@@ -466,14 +466,14 @@ class StaffViewEditPage extends Component {
                         <Autocomplete
                           id="tags-standard"
                           options={this.props.allStores}
-                          getOptionLabel={option => option.storeName}
+                          getOptionLabel={(option) => option.storeName}
                           onChange={(event, value) =>
                             this.onSelectStore(event, value)
                           }
                           getOptionSelected={(option, value) =>
                             option.storeId === value.storeId
                           }
-                          renderInput={params => (
+                          renderInput={(params) => (
                             <TextField
                               {...params}
                               variant="standard"
@@ -493,7 +493,7 @@ class StaffViewEditPage extends Component {
                   <Button
                     color="primary"
                     className="icon"
-                    onClick={e => this.handleSubmit(e)}
+                    onClick={(e) => this.handleSubmit(e)}
                     disabled={hasErrors}
                   >
                     <p>
@@ -553,12 +553,12 @@ class StaffViewEditPage extends Component {
 }
 
 //mapping global state to this component
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   allRoles: state.staffEntity.allRoles,
   allDepartments: state.staffEntity.allDepartments,
   allStores: state.storeEntity.allStores,
   currentStaff: state.staffEntity.retrievedStaff,
-  errors: state.errors
+  errors: state.errors,
 });
 
 const mapDispatchToProps = {
@@ -569,7 +569,7 @@ const mapDispatchToProps = {
   deleteStaff,
   retrieveAllRoles,
   retrieveAllDepartments,
-  retrieveAllStores
+  retrieveAllStores,
 };
 
 export default connect(

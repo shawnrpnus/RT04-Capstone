@@ -120,10 +120,11 @@ export const updateStaff = (staffDetailsUpdateRequest, history) => {
         });
 
         history.push(`/staff/view/${staffId}`);
-        window.location.reload(false);
+        // window.location.reload(false);
       })
       .catch((err) => {
-        dispatch(updateStaffError(err.response.data));
+        console.log(err);
+        if (err.response) dispatch(updateStaffError(err.response.data));
         //console.log(err.response.data);
       });
   };
@@ -246,6 +247,7 @@ export const retrieveAllRoles = () => {
         dispatch(retrieveAllRolesSuccess(data));
       })
       .catch((err) => {
+          console.log(err);
         dispatch(retrieveAllRolesError(err.response.data));
       });
   };
@@ -271,7 +273,9 @@ export const retrieveAllDepartments = () => {
         dispatch(retrieveAllDepartmentsSuccess(data));
       })
       .catch((err) => {
-        dispatch(retrieveAllDepartmentsError(err.response.data));
+        console.log(err);
+        if (err.response)
+          dispatch(retrieveAllDepartmentsError(err.response.data));
       });
   };
 };
@@ -300,7 +304,8 @@ export const deleteStaff = (staffId, history) => {
         history.push(`/staff/viewAll`);
       })
       .catch((err) => {
-        dispatch(deleteStaffError(err.response.data));
+        console.log(err);
+        // dispatch(deleteStaffError(err.response.data));
       });
   };
 };
@@ -395,7 +400,7 @@ export const reassignStaffStore = (reassignStaffStoreRequest, history) => {
       })
       .catch((err) => {
         console.log(err);
-        dispatch(reassignError(err.response.data));
+        if (err.response) dispatch(reassignError(err.response.data));
       });
   };
 };

@@ -22,6 +22,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import static capstone.rt04.retailbackend.util.routeconstants.RefundControllerRoutes.*;
@@ -89,6 +91,8 @@ public class RefundController {
         for (Refund refund : refunds) {
             relationshipService.clearRefundRelationships(refund);
         }
+        Collections.sort(refunds, Comparator.comparing(Refund::getRefundDateTime).reversed());
+
         return new ResponseEntity<>(refunds, HttpStatus.OK);
     }
 

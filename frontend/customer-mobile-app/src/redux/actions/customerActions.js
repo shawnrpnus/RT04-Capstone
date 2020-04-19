@@ -10,7 +10,7 @@ import { Notifications } from "expo";
 import * as Permissions from "expo-permissions";
 import { Alert } from "react-native";
 import {
-  retrieveCustomerInStoreTransactions,
+  retrieveCustomerPendingPurchases,
   setViewedTransaction
 } from "src/redux/actions/transactionActions";
 import { StackActions } from "@react-navigation/native";
@@ -203,17 +203,17 @@ export const createShippingAddress = (
   setLoading
 ) => {
   const req = { customerId, shippingAddress };
-  setLoading(true);
+  if(setLoading) setLoading(true);
   return dispatch => {
     axios
       .post(CUSTOMER_BASE_URL + "/addShippingAddress", req)
       .then(response => {
         dispatchUpdatedCustomer(response.data, dispatch);
-        setLoading(false);
+        if(setLoading) setLoading(false);
         navigation.navigate("View Addresses");
       })
       .catch(err => {
-        setLoading(false);
+        if(setLoading) setLoading(false);
         dispatchErrorMapError(err, dispatch);
       });
   };
@@ -224,7 +224,7 @@ export const removeShippingAddress = (
   shippingAddressId,
   setLoading
 ) => {
-  setLoading(true);
+  if (setLoading) setLoading(true);
   return dispatch => {
     axios
       .delete(
@@ -233,11 +233,11 @@ export const removeShippingAddress = (
       )
       .then(response => {
         dispatchUpdatedCustomer(response.data, dispatch);
-        setLoading(false);
+        if(setLoading) setLoading(false);
       })
       .catch(err => {
         console.log(err);
-        setLoading(false);
+        if(setLoading) setLoading(false);
       });
   };
 };
@@ -261,13 +261,13 @@ export const addCreditCard = (customerId, tokenId, setLoading) => {
 
 export const removeCreditCard = (customerId, creditCardId, setLoading) => {
   const req = { customerId, creditCardId };
-  setLoading(true);
+  if(setLoading) setLoading(true);
   return dispatch => {
     axios
       .post(SPRING_BACKEND_URL + "/deleteCardOnStripeAndSql", req)
       .then(response => {
         dispatchUpdatedCustomer(response.data, dispatch);
-        setLoading(false);
+        if(setLoading) setLoading(false);
       })
       .catch(err => {
         console.log(err);
@@ -300,7 +300,7 @@ export const addAddressAtCheckout = (
 };
 
 export const makePaymentMobile = (req, customerId, setLoading, navigation) => {
-  setLoading(true);
+  if(setLoading) setLoading(true);
   return dispatch => {
     axios
       .post(SPRING_BACKEND_URL + "/makePaymentWithSavedCard", req)
@@ -311,7 +311,7 @@ export const makePaymentMobile = (req, customerId, setLoading, navigation) => {
             params: { customerId }
           })
           .then(response => {
-            dispatch(retrieveCustomerInStoreTransactions(customerId));
+            dispatch(retrieveCustomerPendingPurchases(customerId));
             const redirectFunction = () => {
               navigation.popToTop();
               navigation.navigate("PurchasesStack", {
@@ -327,11 +327,14 @@ export const makePaymentMobile = (req, customerId, setLoading, navigation) => {
               )
             );
           })
-          .catch(err => console.log(err));
+          .catch(err => {
+            console.log(err)
+            if (setLoading) setLoading(false);
+          });
       })
       .catch(err => {
         console.log(err);
-        setLoading(false);
+        if (setLoading) setLoading(false);
       });
   };
 };

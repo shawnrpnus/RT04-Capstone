@@ -85,6 +85,8 @@ public class RelationshipService {
             sci.getProductVariant().getProduct().setTags(null);
             sci.getProductVariant().getProduct().setCategory(null);
             sci.getProductVariant().getProduct().setStyles(null);
+            clearDiscountRelationships(sci.getProductVariant().getProduct().getDiscounts());
+            sci.getProductVariant().getProduct().setReviews(null);
             removeStoreStocksFromProductVariant(sci.getProductVariant());
         }
     }

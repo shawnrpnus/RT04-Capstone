@@ -1,14 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { Block, Text } from "galio-framework";
-import { Dimensions, FlatList, ScrollView } from "react-native";
-import { useDispatch, useSelector } from "react-redux";
-import { retrieveCustomerInStoreTransactions } from "src/redux/actions/transactionActions";
-import TransactionCard from "src/screens/Purchases/TransactionCard";
+import React, {useEffect, useState} from "react";
+import {Text} from "galio-framework";
+import {Dimensions} from "react-native";
+import {useDispatch, useSelector} from "react-redux";
 import Spinner from "react-native-loading-spinner-overlay";
-import {
-  retrievePastReservations,
-  retrieveUpcomingReservations
-} from "src/redux/actions/reservationActions";
+import {retrievePastReservations} from "src/redux/actions/reservationActions";
 import ReservationList from "src/screens/Reservation/ReservationList";
 
 const { width, height } = Dimensions.get("window");

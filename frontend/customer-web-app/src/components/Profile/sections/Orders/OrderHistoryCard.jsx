@@ -37,68 +37,44 @@ function OrderHistoryCard(props) {
     READY_FOR_COLLECTION: "READY FOR COLLECTION",
   };
 
-  async function fetchData() {
-    const refundsToCheck = await retrieveRefundsByTransactionId(
-      transaction.transactionId
-    );
-    setMyRefund(refundsToCheck);
-  }
-  useEffect(() => {
-    // console.log(transaction.transactionLineItems[0].refundLineItems.length === 0 );
-    if (transaction.transactionLineItems[0].refundLineItems.length !== 0) {
-      fetchData();
-    }
-  }, []);
-
-  // const refunds = useSelector(
-  //   state => state.refund.refunds
-  // );
   const [largeModal, setLargeModal] = React.useState(false);
-  const [refunds, setMyRefund] = useState(null);
-  // setTimeout(() => setMyRefund(currRefund), 2000);
+  const [totalForEachItem, setTotalForEachItem] = useState([]);
+  const [isRefundable, setIsRefundable] = useState(false);
+  const [textToDisplay, setTextToDisplay] = useState("Unhappy with our goods? Make a refund!");
 
-  let totalRefundQuantity = 0;
-  let totalForEachItem = 0;
-  let textToDisplay = "Refund Not Available [this is not supposed to appear, let me know if it does]";
-  if (refunds) {
-    totalRefundQuantity = new Array(refunds.length).fill(0);
-    for (let i = 0; i < refunds.length; i++) {
-      totalRefundQuantity[i] = new Array(
-        refunds[i].refundLineItems.length
-      ).fill(0);
-      // console.log('l', refunds[i].refundLineItems);
-      for (let j = 0; j < refunds[i].refundLineItems.length; j++) {
-        // console.log(refunds[i].refundLineItems[j].quantity);
-        totalRefundQuantity[i][j] = refunds[i].refundLineItems[j].quantity;
+  useEffect( () => {
+    setIsRefundable(checkRefundable(transaction));
+  },[transaction]);
+
+  console.log(totalForEachItem);
+
+  const checkRefundable = (transaction) => {
+    if (!transaction) {
+      return false;
+    }
+    let toRefund = false;
+
+    setTotalForEachItem(new Array(transaction.transactionLineItems.length).fill(0));
+    let total = new Array(transaction.transactionLineItems.length).fill(0);
+    for (let i = 0; i < transaction.transactionLineItems.length; i++) {
+      for (
+        let j = 0;
+        j < transaction.transactionLineItems[i].refundLineItems.length;
+        j++
+      ) {
+        total[i] +=
+          transaction.transactionLineItems[i].refundLineItems[j].quantity;
+        setTotalForEachItem(total);
       }
     }
 
-    totalForEachItem = new Array(totalRefundQuantity[0].length).fill(0);
-    for (let i = 0; i < totalRefundQuantity.length; i++) {
-      for (let j = 0; j < totalRefundQuantity[i].length; j++) {
-        // console.log("totalRefundQuantity[j][i]",totalRefundQuantity[i][j]);
-        totalForEachItem[j] += totalRefundQuantity[i][j];
-      }
-    }
-  }
-  // console.log('l', totalForEachItem);
-  let toRefund = false;
-
-  const isRefundable = (transaction) => {
-    //cannot refund because havent reach customer
-    if(transaction.deliveryStatus === "DELIVERED" || transaction.deliveryStatus === "COLLECTED") {
-      textToDisplay = "Unhappy with our goods? Make a refund!"
-    }
-    if (transaction.deliveryStatus === "PROCESSING" ||
-                transaction.deliveryStatus === "TO_BE_DELIVERED" ||
-                transaction.deliveryStatus === "PARTIALLY_TO_BE_DELIVERED" ||
-                transaction.deliveryStatus === "IN_TRANSIT" ||
-                transaction.deliveryStatus === "PARTIALLY_IN_TRANSIT" ||
-                transaction.deliveryStatus === "READY_FOR_COLLECTION" ||
-                transaction.deliveryStatus === "PARTIALLY_FULFILLED" ||
-                transaction.deliveryStatus === "FAILED") {
-      toRefund = false;
-      return toRefund;
+    if (
+      transaction.deliveryStatus !== "DELIVERED" &&
+      transaction.deliveryStatus !== "COLLECTED"
+    ) {
+      setTextToDisplay("Delivery not available");
+      setIsRefundable(false);
+      return false;
     }
 
     if (transaction.deliveredDateTime) {
@@ -106,27 +82,28 @@ function OrderHistoryCard(props) {
       datePastRefund.setDate(datePastRefund.getDate() + 14);
       if (datePastRefund < new Date()) {
         toRefund = false;
+        setTextToDisplay("Refund Date Exceeded");
+        setIsRefundable(false);
         return toRefund;
       }
-      // console.log(datePastRefund);
     }
 
     //no refund before
-    if (totalForEachItem == 0) {
+    if (totalForEachItem === 0) {
       toRefund = true;
+      setIsRefundable(true);
       return toRefund;
     }
 
     for (let i = 0; i < transaction.transactionLineItems.length; i++) {
-      let val = totalForEachItem[i];
-      // console.log(val);
+      let val = total[i];
       if (transaction.transactionLineItems[i].quantity > val) {
         toRefund = true;
+        setIsRefundable(true);
         return toRefund;
       }
     }
     // cannot refund because max liao
-    textToDisplay = "Fully Refunded";
     return toRefund;
   };
   const status = deliveryStatusEnumMap[transaction.deliveryStatus];
@@ -135,14 +112,9 @@ function OrderHistoryCard(props) {
   switch (status) {
     case "PROCESSING":
       statusColor = "red";
-      textToDisplay =
-        "Delivery not available";
       break;
     case "DELIVERED":
       statusColor = "green";
-      if (transaction.deliveredDateTime) {
-        textToDisplay = "Refund Date Exceeded";
-      }
       break;
     case "COLLECTED":
       statusColor = "green";
@@ -150,15 +122,9 @@ function OrderHistoryCard(props) {
     default:
       statusColor = "sandybrown";
   }
-  if (transaction) {
-    isRefundable(transaction);
-  }
 
   const lineItems = transaction.transactionLineItems;
 
-  // const productVariants = transaction.transactionLineItems.map(lineItem => {
-  //   return lineItem.productVariant;
-  // });
 
   const openModal = (transactionId) => {
     setLargeModal(true);
@@ -231,7 +197,7 @@ function OrderHistoryCard(props) {
                     color="primary"
                     style={{ float: "bottom" }}
                     onClick={() => openModal(transaction.transactionId)}
-                    disabled={!toRefund}
+                    disabled={!isRefundable}
                   >
                     Make a Refund
                   </Button>
