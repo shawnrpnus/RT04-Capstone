@@ -44,14 +44,24 @@ public class RefundController {
     @PostMapping(CREATE_IN_STORE_REFUND_RECORD)
     public ResponseEntity<?> createRefundRecord(@RequestBody RefundRequest refundRequest) throws CustomerNotFoundException, TransactionNotFoundException, InputDataValidationException, PromoCodeNotFoundException, RefundNotFoundException, StoreNotFoundException, WarehouseNotFoundException, StaffNotFoundException {
         Refund refund = refundService.createRefund(refundRequest);
+        Transaction transaction = refund.getRefundLineItems().get(0).getTransactionLineItem().getTransaction();
         //need to clear customer so that the response is faster
         relationshipService.clearRefundRelationships(refund);
+        refund.getRefundLineItems().get(0).getTransactionLineItem().setTransaction(transaction);
+        refund.getRefundLineItems().get(0).getTransactionLineItem().getTransaction().setDeliveryAddress(null);
+        refund.getRefundLineItems().get(0).getTransactionLineItem().getTransaction().setTransactionLineItems(null);
+        refund.getRefundLineItems().get(0).getTransactionLineItem().getTransaction().setDeliveries(null);
+        refund.getRefundLineItems().get(0).getTransactionLineItem().getTransaction().setStoreToCollect(null);
+        refund.getRefundLineItems().get(0).getTransactionLineItem().getTransaction().setStore(null);
+        refund.getRefundLineItems().get(0).getTransactionLineItem().getTransaction().setCustomer(null);
+        refund.getRefundLineItems().get(0).getTransactionLineItem().getTransaction().setBillingAddress(null);
         return new ResponseEntity<>(refund, HttpStatus.CREATED);
     }
 
     @PostMapping(UPDATE_REFUND_RECORD)
     public ResponseEntity<?> updateRefundRecord(@RequestBody List<UpdateRefundLineItemHandlerRequest> updateRefundLineItemHandlerRequests) throws RefundNotFoundException, WarehouseNotFoundException, StaffNotFoundException {
         Refund refund = refundService.updateRefundLineItemsStatus(updateRefundLineItemHandlerRequests);
+        relationshipService.clearRefundRelationships(refund);
         return new ResponseEntity<>(refund, HttpStatus.OK);
     }
 

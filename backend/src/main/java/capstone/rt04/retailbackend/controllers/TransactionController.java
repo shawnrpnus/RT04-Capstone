@@ -1,6 +1,9 @@
 package capstone.rt04.retailbackend.controllers;
 
+import capstone.rt04.retailbackend.entities.RefundLineItem;
+import capstone.rt04.retailbackend.entities.RefundLineItemHandler;
 import capstone.rt04.retailbackend.entities.Transaction;
+import capstone.rt04.retailbackend.entities.TransactionLineItem;
 import capstone.rt04.retailbackend.request.transaction.SalesByCategoryRequest;
 import capstone.rt04.retailbackend.request.transaction.SalesByDayRequest;
 import capstone.rt04.retailbackend.request.transaction.TransactionRetrieveRequest;
@@ -81,6 +84,17 @@ public class TransactionController {
             Transaction transaction = transactionService.retrieveTransactionByOrderNumber(orderNumber);
             relationshipService.clearTransactionRelationshipsForStaffSide(transaction);
             relationshipService.clearCustomerRelationships(transaction.getCustomer());
+            for(TransactionLineItem tli : transaction.getTransactionLineItems()) {
+                for(RefundLineItem rli : tli.getRefundLineItems()) {
+                    rli.getRefund().setCustomer(null);
+                    rli.getRefund().setRefundLineItems(null);
+                    rli.setTransactionLineItem(null);
+                    rli.getRefund().getWarehouse().setProductStocks(null);
+                    for(RefundLineItemHandler rlih : rli.getRefundLineItemHandlerList()) {
+                        rlih.setRefundLineItem(null);
+                    }
+                }
+            }
             return new ResponseEntity<>(transaction, HttpStatus.OK);
         } catch (TransactionNotFoundException ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
@@ -212,6 +226,7 @@ public class TransactionController {
     public ResponseEntity<?> confirmReceivedTransaction(@RequestBody UpdateTransactionRequest updateTransactionRequest) {
         try {
             Transaction transaction = transactionService.confirmReceivedTransaction(updateTransactionRequest.getTransactionId());
+            relationshipService.clearTransactionRelationships(transaction);
             return new ResponseEntity<>(transaction, HttpStatus.OK);
         } catch (TransactionNotFoundException ex) {
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);

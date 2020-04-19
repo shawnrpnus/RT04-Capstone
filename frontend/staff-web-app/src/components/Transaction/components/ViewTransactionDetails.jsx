@@ -38,6 +38,8 @@ const ViewTransactionDetails = props => {
     if(currTransaction) {
       if(currTransaction.deliveryStatus !== "READY_FOR_COLLECTION") {
         setIsConfirm(true);
+      } else {
+        setIsConfirm(false);
       }
     }
   }, [currTransaction]);

@@ -45,7 +45,7 @@ function ReservationsGraph(props) {
   const [initialToDateMoment, setInitialToDateMoment] = useState(null);
   const [storeOptions, setStoreOptions] = useState({});
   const [mode, setMode] = useState("combined");
-  const [yAxis, setYAxis] = useState("averageReservations");
+  const [yAxis, setYAxis] = useState("totalReservations");
 
   useEffect(() => {
     dispatch(retrieveReservationsByTimeslot(null, null, null));
@@ -229,11 +229,11 @@ function ReservationsGraph(props) {
                     onChange={e => setYAxis(e.target.value)}
                     style={{ width: "100%" }}
                   >
-                    <MenuItem value={"averageReservations"}>
-                      Average Reservations
-                    </MenuItem>
                     <MenuItem value={"totalReservations"}>
                       Total Reservations
+                    </MenuItem>
+                    <MenuItem value={"averageReservations"}>
+                      Average Reservations
                     </MenuItem>
                   </Select>
                 </FormControl>
