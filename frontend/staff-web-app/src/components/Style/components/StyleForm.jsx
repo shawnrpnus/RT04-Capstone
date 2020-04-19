@@ -50,6 +50,9 @@ class StyleForm extends React.Component {
   };
 
   checkIfCanSubmit = () => {
+    if (this.state.styleName == "") {
+      return true;
+    }
     if (
       this.props.allStyles &&
       this.state.answers.length !== this.props.allStyles[0].questions.length
@@ -142,7 +145,9 @@ class StyleForm extends React.Component {
                 <ButtonToolbar className="form__button-toolbar">
                   <Button
                     color="primary"
-                    onClick={(e) => handleSubmit(e, this.state)}
+                    onClick={(e) => {handleSubmit(e, this.state)
+                      this.setState({ styleName: "" });
+                    }}
                     disabled={hasErrors}
                   >
                     Submit

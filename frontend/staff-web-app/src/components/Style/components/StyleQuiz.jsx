@@ -69,6 +69,7 @@ class StyleQuiz extends Component {
       const ans = [];
       const qns = this.state.selectedQns;
       console.log(qns);
+      console.log(this.props.allStyles);
       this.props.allStyles.forEach(function(value, index) {
         Object.entries(value.answers).forEach(function(key, val) {
           if (key[0] === qns) {
@@ -80,6 +81,7 @@ class StyleQuiz extends Component {
           }
         });
       });
+      console.log(ans);
       this.setState({ answersForSelectedQns: ans });
     }
   }
@@ -266,7 +268,7 @@ class StyleQuiz extends Component {
 
   clearForm = (e) => {
     console.log(this.state.answers);
-    this.setState({ clearForm: true });
+    this.setState({ clearForm: true, question: "", answers : [] });
   };
 
   resetFields = (e) => {
@@ -304,7 +306,7 @@ class StyleQuiz extends Component {
     const question = this.state.question;
     this.props.createStyleQuizQns({ question, styleIdAnswerMaps });
     this.setState({
-      mode: false,
+      //mode: false,
       question: "",
       answers: [],
       currentStyleId: 0,
@@ -369,8 +371,7 @@ class StyleQuiz extends Component {
                     <br />
                     <h5 className="bold-text">Answer For Each Style</h5>
                     <br />
-                    {Object.keys(this.props.allStyles)
-                      .filter((key) => this.props.allStyles[key].styleId)
+                    {this.props.allStyles
                       .map((key, index) => {
                         return (
                           <div>

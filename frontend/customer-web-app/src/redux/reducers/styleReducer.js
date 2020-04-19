@@ -1,7 +1,7 @@
 import * as types from "../actions/types";
 
 const initialState = {
-  allStyles: null
+  allStyles: []
 };
 
 export default function(state = initialState, action) {

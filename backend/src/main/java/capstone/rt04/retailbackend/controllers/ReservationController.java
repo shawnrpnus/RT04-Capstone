@@ -150,6 +150,18 @@ public class ReservationController {
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
 
+    @GetMapping("/staffPushNotification")
+    public ResponseEntity<?> staffPushNotification(){
+        reservationService.sendPushNotifToAllStores();
+        return ResponseEntity.ok("Push notifications sent to all store staff");
+    }
+
+    @GetMapping("/customerPushNotification")
+    public ResponseEntity<?> customerPushNotification(@RequestParam Long customerId) throws CustomerNotFoundException {
+        reservationService.sendPushNotificationToCustomer(customerId);
+        return ResponseEntity.ok("Push notifications sent to customer with ID: " + customerId);
+    }
+
     private void clearReservationStockCheckResponseRelationships(ReservationStockCheckResponse rscp) {
         Store store = rscp.getStore();
         store.setProductStocks(null);
@@ -181,6 +193,7 @@ public class ReservationController {
             reservation.getCustomer().setCreditCards(null);
             reservation.getCustomer().setShippingAddresses(null);
             reservation.getCustomer().setUsedPromoCodes(null);
+            reservation.getCustomer().setRefunds(null);
         }
         if (reservation.getStore() != null) {
             relationshipService.clearStoreRelationships(reservation.getStore());

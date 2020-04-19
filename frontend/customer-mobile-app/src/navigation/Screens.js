@@ -23,7 +23,6 @@ import Checkout from "src/screens/Checkout/Checkout";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import ViewDetails from "src/screens/ViewDetails";
 import AddToCart from "src/screens/AddToCart";
-import PurchaseHistory from "src/screens/Purchases/PurchaseHistory";
 import PurchaseDetails from "src/screens/Purchases/PurchaseDetails";
 import UpcomingReservations from "src/screens/Reservation/UpcomingReservations";
 import PastReservations from "src/screens/Reservation/PastReservations";

@@ -67,22 +67,6 @@ public class StaffController {
     }
 
 
-    //HR informs admin to create new staff account and provides admin with staff ID
-    //Email will be sent to new staff containing username and password.
-    //I did not include verification here
-//    @PostMapping(CREATE_NEW_STAFF_ACCOUNT)
-//    public ResponseEntity<?> createNewStaffAccount(@RequestBody StaffAccountCreateRequest staffAccountCreateRequest) throws CreateNewStaffAccountException {
-//
-//        try {
-//            List<Staff> staff = staffService.createNewStaffAccount(staffAccountCreateRequest.getStaffIds());
-//            return new ResponseEntity<>(staff, HttpStatus.CREATED);
-//        } catch (CreateNewStaffAccountException ex){
-//            return new ResponseEntity<>(ex.getErrorMap(), HttpStatus.BAD_REQUEST);
-//        }
-//
-//
-//    }
-
     @GetMapping(RETRIEVE_STAFF_BY_ID)
     public ResponseEntity<?> retrieveStaffById(@PathVariable Long staffId) {
         try {
@@ -118,8 +102,21 @@ public class StaffController {
     public ResponseEntity<?> retrieveAllRoles() {
         try {
             List<Role> roles = staffService.retrieveAllRoles();
+            for(Role r :roles) {
+                for(Staff s : r.getStaffList()) {
+                    s.getDepartment().setStaffList(null);
+                    if(s.getStore() != null) {
+                        s.getStore().setReservations(null);
+                        s.getStore().setInStoreRestockOrders(null);
+                        s.getStore().setProductStocks(null);
+                        s.getStore().setStaff(null);
+                        s.getStore().setTransactions(null);
+                    }
+                }
+            }
             return new ResponseEntity<>(roles, HttpStatus.OK);
         } catch (Exception ex) {
+            System.out.print(ex);
             return new ResponseEntity<>(new GenericErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -237,8 +234,8 @@ public class StaffController {
 
     @PostMapping(REASSIGN_STAFF_STORE)
     public ResponseEntity<?> reassignStaffStore(@RequestBody ReassignStaffStoreRequest reassignStaffStoreRequest) throws StoreNotFoundException, StaffNotFoundException {
-        Store store = staffService.reassignStaffStore(reassignStaffStoreRequest.getStoreId(), reassignStaffStoreRequest.getStaffIds());
-        return new ResponseEntity<>(store, HttpStatus.OK);
+        staffService.reassignStaffStore(reassignStaffStoreRequest.getStoreId(), reassignStaffStoreRequest.getStaffIds());
+        return new ResponseEntity<>(null, HttpStatus.OK);
     }
 
     @GetMapping(RETRIEVE_ALL_STORE_STAFF)
