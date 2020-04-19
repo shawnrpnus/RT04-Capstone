@@ -1,7 +1,7 @@
 import axios from "axios";
 import { dispatchErrorMapError } from "./index";
 import {
-  RETRIEVE_RESERVATIONS_BY_TIMESLOT,
+  RETRIEVE_RESERVATIONS_BY_TIMESLOT, RETRIEVE_SALES_BY_CATEGORY,
   RETRIEVE_SALES_BY_DAY,
   RETRIEVE_TRANSACTION_BY_ORDER_NUMBER_SUCCESS
 } from "./types";
@@ -84,3 +84,28 @@ export const analytics_updateStore = (store) => {
       });
   };
 };
+
+export const retrieveSalesByCategory = (
+  fromDateString,
+  toDateString,
+) => {
+  return dispatch =>
+    axios
+      .post(TRANSACTION_BASE_URL + "/retrieveSalesByCategory", {
+        fromDateString,
+        toDateString,
+      })
+      .then(response => {
+        const data = jsog.decode(response.data);
+        dispatch(retrieveSalesByCategorySuccess(data));
+      })
+      .catch(err => {
+        console.log(err);
+      });
+};
+
+export const retrieveSalesByCategorySuccess = data => ({
+  type: RETRIEVE_SALES_BY_CATEGORY,
+  salesByCategory: data
+});
+

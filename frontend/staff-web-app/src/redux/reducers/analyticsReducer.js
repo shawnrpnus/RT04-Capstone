@@ -3,6 +3,7 @@ import * as types from "../actions/types";
 const initialState = {
   salesByDay: null,
   reservationsByTimeslot: null,
+  salesByCategory: null
 };
 
 export default function(state = initialState, action) {
@@ -16,6 +17,11 @@ export default function(state = initialState, action) {
       return {
         ...state,
         reservationsByTimeslot: action.reservationsByTimeslot
+      }
+    case types.RETRIEVE_SALES_BY_CATEGORY:
+      return {
+        ...state,
+        salesByCategory: action.salesByCategory
       }
     default:
       return state;

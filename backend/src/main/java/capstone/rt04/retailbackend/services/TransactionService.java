@@ -4,6 +4,7 @@ import capstone.rt04.retailbackend.entities.*;
 import capstone.rt04.retailbackend.repositories.AddressRepository;
 import capstone.rt04.retailbackend.repositories.TransactionLineItemRepository;
 import capstone.rt04.retailbackend.repositories.TransactionRepository;
+import capstone.rt04.retailbackend.response.CategoryDetails;
 import capstone.rt04.retailbackend.response.analytics.SalesByDay;
 import capstone.rt04.retailbackend.util.Constants;
 import capstone.rt04.retailbackend.util.enums.CollectionModeEnum;
@@ -46,11 +47,12 @@ public class TransactionService {
     private final PromoCodeService promoCodeService;
     private final ShoppingCartService shoppingCartService;
     private final DeliveryService deliveryService;
+    private final CategoryService categoryService;
 
     public TransactionService(TransactionRepository transactionRepository, TransactionLineItemRepository transactionLineItemRepository,
                               AddressRepository addressRepository, StoreService storeService, CustomerService customerService,
                               ShoppingCartService shoppingCartService, @Lazy ProductService productService, PromoCodeService promoCodeService,
-                              @Lazy DeliveryService deliveryService) {
+                              @Lazy DeliveryService deliveryService, CategoryService categoryService) {
         this.transactionRepository = transactionRepository;
         this.transactionLineItemRepository = transactionLineItemRepository;
         this.addressRepository = addressRepository;
@@ -60,6 +62,7 @@ public class TransactionService {
         this.productService = productService;
         this.promoCodeService = promoCodeService;
         this.deliveryService = deliveryService;
+        this.categoryService = categoryService;
     }
 
     /*create new transaction - not the actual one; simplified just for testing other use cases*/
@@ -734,5 +737,51 @@ public class TransactionService {
             result.add(date);
         }
         return result;
+    }
+
+    public Map<String, Object> getSalesByCategory(String fromDateString, String toDateString){
+        List<CategoryDetails> categories = categoryService.retrieveAllChildCategories();
+        List<Transaction> allTransactions = transactionRepository.findAllByOrderByCreatedDateTime();
+        LocalDate earliestTransactionDate = allTransactions.get(0).getCreatedLocalDate();
+        LocalDate latestTransactionDate = allTransactions.get(allTransactions.size() - 1).getCreatedLocalDate();
+        Map<String, Object> finalResult = new HashMap<>();
+        finalResult.put("earliestTransactionDate", earliestTransactionDate);
+        finalResult.put("latestTransactionDate", latestTransactionDate);
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (CategoryDetails categoryDetails : categories){
+            Long categoryId = categoryDetails.getCategory().getCategoryId();
+            Map<String, Object> salesData = getSalesDataForCategory(categoryId, fromDateString, toDateString);
+            salesData.put("categoryName", categoryDetails.getCategory().getCategoryName());
+            salesData.put("leafNodeName", categoryDetails.getLeafNodeName());
+            result.add(salesData);
+        }
+        finalResult.put("result", result);
+        return finalResult;
+    }
+
+    public Map<String, Object> getSalesDataForCategory(Long categoryId, String fromDateString, String toDateString){
+        List<Transaction> transactions = retrieveAllTransaction();
+        Map<String, Object> salesData = new HashMap<>();
+
+        Integer numPurchases = 0;
+        BigDecimal revenue = BigDecimal.ZERO;
+        for (Transaction t: transactions){
+            if (t.isBetween(fromDateString, toDateString)) {
+                for (TransactionLineItem tli : t.getTransactionLineItems()) {
+                    if (tli.getProductVariant().getProduct().getCategory().getCategoryId().equals(categoryId)) {
+                        if (tli.getFinalSubTotal() == null){
+                            revenue = revenue.add(tli.getInitialSubTotal());
+                        } else {
+                            revenue = revenue.add(tli.getFinalSubTotal());
+                        }
+                        numPurchases += tli.getQuantity();
+                    }
+                }
+            }
+        }
+
+        salesData.put("numPurchases", numPurchases);
+        salesData.put("revenue", revenue);
+        return salesData;
     }
 }
