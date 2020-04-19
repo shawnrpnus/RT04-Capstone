@@ -181,6 +181,7 @@ public class ReservationController {
             reservation.getCustomer().setCreditCards(null);
             reservation.getCustomer().setShippingAddresses(null);
             reservation.getCustomer().setUsedPromoCodes(null);
+            reservation.getCustomer().setRefunds(null);
         }
         if (reservation.getStore() != null) {
             relationshipService.clearStoreRelationships(reservation.getStore());

@@ -261,7 +261,7 @@ public class DeliveryService {
 
         delivery.getCustomerOrdersToDeliver().forEach(transaction -> {
             System.out.println(transaction.getTransactionId());
-            if (transaction.getDeliveryAddress() != null) {
+            if (transaction.getDeliveryAddress() != null && !addresses.contains(transaction.getDeliveryAddress())) {
                 addresses.add(transaction.getDeliveryAddress());
             } else if (transaction.getStoreToCollect() != null) {
                 if (!addresses.contains(transaction.getStoreToCollect().getAddress())) {
@@ -300,7 +300,6 @@ public class DeliveryService {
             route.add(distances.get(0).getKey().getAddressId());
             addresses.remove(distances.get(0).getKey());
         }
-
 
         for (Long id : route) {
             GroupedStoreOrderItems groupedStoreOrderItems = new GroupedStoreOrderItems();
