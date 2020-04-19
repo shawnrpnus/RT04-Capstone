@@ -104,10 +104,10 @@ export const updateStyle = (updateStyleRequest, history) => {
         history.push(`/style/manage`);
       })
       .catch(err => {
-        toast.error(err.response.data.errorMessage.toString(), {
+        toast.error(Object.values(err.response.data).toString(), {
           position: toast.POSITION.TOP_CENTER
         });
-        dispatch(updateStyleError(err.response.data));
+        //dispatch(updateStyleError(err.response.data));
         console.log(err.response.data);
       });
   };
@@ -115,7 +115,7 @@ export const updateStyle = (updateStyleRequest, history) => {
 
 const updateStyleSuccess = data => ({
   type: types.UPDATE_STYLE,
-  storeEntity: data
+  style: data
 });
 
 const updateStyleError = data => ({

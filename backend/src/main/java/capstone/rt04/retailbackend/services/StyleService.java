@@ -129,23 +129,20 @@ public class StyleService {
         }
     }
 
-    public Style deleteStyle(Long styleId) throws StyleNotFoundException, DeleteStyleException {
+    public void deleteStyle(Long styleId) throws StyleNotFoundException, DeleteStyleException {
         Style styleToDelete = retrieveStyleByStyleId(styleId);
         try {
             List<Customer> customers = styleToDelete.getCustomers();
-            styleToDelete.setCustomers(null);
             for (Customer customer : customers){
                 customer.setStyle(null);
             }
 
             List<Product> products = styleToDelete.getProducts();
-            styleToDelete.setProducts(null);
             for (Product product : products){
                 product.getStyles().remove(styleToDelete);
             }
 
             styleRepository.delete(styleToDelete);
-            return styleToDelete;
         } catch (Exception ex){
             throw new DeleteStyleException("Error deleting style!");
         }
@@ -155,31 +152,27 @@ public class StyleService {
         Style existingStyle = styleRepository.findByStyleName(styleName).orElse(null);
         if (existingStyle != null){
             Map<String, String> errorMap = new HashMap<>();
-            errorMap.put("styleName", "This style already exists!");
+            errorMap.put("styleName", "This style is already exists!");
             throw new InputDataValidationException(errorMap, ErrorMessages.STYLE_ALREADY_EXISTS);
         }
     }
 
     public List<Style> createStyleQuizQns(String question, List<StyleIdAnswerMap> styleIdAnswerMaps) {
         List<Style> allStyles = retrieveAllStyles();
-        //for each style, add the qns + ans. verify that the id of style = id in map
+        Integer index = 0;
         for (Style style: allStyles) {
-            int ansCount = 0; //some styles may have multiple answer input, but only want the latest one
-            style.getQuestions().add(question);
-            for (StyleIdAnswerMap map: styleIdAnswerMaps) {
-                String ansRetrieved = map.getAnswer();
-                Long idRetrieved = map.getStyleId();
-                if (idRetrieved == style.getStyleId()) {
-                    if (ansCount == 0) {
-                        style.getAnswers().put(question, ansRetrieved);
-                        ansCount++;
-                    } else {
-                        style.getAnswers().remove(question);
-                        style.getAnswers().put(question, ansRetrieved);
-                        ansCount++;
-                    }
-                }
-            }
+            List<String> questions = style.getQuestions();
+            Map<String, String> answers = style.getAnswers();
+            questions.add(question);
+            //get styleIdAnswerMap based on index
+            StyleIdAnswerMap map = styleIdAnswerMaps.get(index);
+            //based on this styleIdAnswerMap, get the answer
+            String ansRetrieved = map.getAnswer();
+            answers.put(question, ansRetrieved);
+            style.setQuestions(questions);
+            style.setAnswers(answers);
+            System.out.println(style.getAnswers());
+            index++;
         }
         return allStyles;
     }

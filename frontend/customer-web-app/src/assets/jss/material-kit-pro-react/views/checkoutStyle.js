@@ -15,7 +15,7 @@ import {
 import buttonGroup from "assets/jss/material-kit-pro-react/buttonGroupStyle.js";
 import tooltips from "assets/jss/material-kit-pro-react/tooltipsStyle.js";
 
-const styles = {
+const styles = (theme) => ({
   main,
   mainRaised,
   mrAuto,
@@ -197,6 +197,10 @@ const styles = {
       fontSize: "80%",
     },
   },
-};
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 999,
+    color: "#fff",
+  },
+});
 
 export default styles;

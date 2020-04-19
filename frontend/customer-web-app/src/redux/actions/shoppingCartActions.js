@@ -88,33 +88,49 @@ export const getClientSecret = (totalAmount, setClientSecret) => {
     });
 };
 
-export const completeDirectPayment = (paymentRequest, history, email) => {
+export const completeDirectPayment = (
+  paymentRequest,
+  history,
+  email,
+  setIsLoading
+) => {
   return (dispatch) => {
+    setIsLoading(true);
     axios
       .post(`/completeDirectPayment`, paymentRequest)
       .then((resp) => {
         // Return a customer object
         // Update customer
         dispatch(refreshCustomerEmail(email));
+        setIsLoading(false);
         history.push("/account/profile/orderHistory");
       })
       .catch((err) => {
+        setIsLoading(false);
         console.log(err);
       });
   };
 };
 
-export const makePaymentWithSavedCard = (paymentRequest, history, email) => {
+export const makePaymentWithSavedCard = (
+  paymentRequest,
+  history,
+  email,
+  setIsLoading
+) => {
   return (dispatch) => {
+    setIsLoading(true);
     axios
       .post(`/makePaymentWithSavedCard`, paymentRequest)
       .then((resp) => {
         // Return a customer object
         // Update customer
         dispatch(refreshCustomerEmail(email));
+        setIsLoading(false);
         history.push("/account/profile/orderHistory");
       })
       .catch((err) => {
+        setIsLoading(false);
         console.log(err);
       });
   };

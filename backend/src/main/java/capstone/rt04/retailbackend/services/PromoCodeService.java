@@ -2,7 +2,6 @@ package capstone.rt04.retailbackend.services;
 
 import capstone.rt04.retailbackend.entities.Customer;
 import capstone.rt04.retailbackend.entities.PromoCode;
-import capstone.rt04.retailbackend.entities.Transaction;
 import capstone.rt04.retailbackend.repositories.PromoCodeRepository;
 import capstone.rt04.retailbackend.util.ErrorMessages;
 import capstone.rt04.retailbackend.util.exceptions.InputDataValidationException;
@@ -138,6 +137,8 @@ public class PromoCodeService {
             throw new InvalidPromoCodeException("Invalid promo code");
         } else if (promoCode.getMinimumPurchase().compareTo(finalTotalAmount) > 0) {
             throw new InvalidPromoCodeException("Minimum purchase is $" + promoCode.getMinimumPurchase());
+        } else if (promoCode.getFlatDiscount().compareTo(finalTotalAmount) > 0) {
+            throw new InvalidPromoCodeException("Flat discount cannot exceed amount to pay");
         }
         return promoCode;
     }
