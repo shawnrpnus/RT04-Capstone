@@ -1,12 +1,9 @@
-import React, { useState } from "react";
-import { Block, Button, Text } from "galio-framework";
-import { HelperText, Switch, TextInput } from "react-native-paper";
-import { clearErrors } from "src/redux/actions";
+import React from "react";
+import {Block, Button, Text} from "galio-framework";
+import {HelperText, Switch, TextInput} from "react-native-paper";
 import materialTheme from "src/constants/Theme";
-import { useDispatch, useSelector } from "react-redux";
-import { createShippingAddress } from "src/redux/actions/customerActions";
-import { Dimensions } from "react-native";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import {Dimensions} from "react-native";
+import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
 
 const _ = require("lodash");
 const { width, height } = Dimensions.get("window");

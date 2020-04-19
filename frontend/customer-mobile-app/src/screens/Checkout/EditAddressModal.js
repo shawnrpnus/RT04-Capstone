@@ -7,11 +7,11 @@ import Modal from "react-native-modal";
 import { useDispatch, useSelector } from "react-redux";
 import AddressCardCheckout from "src/screens/Checkout/AddressCardCheckout";
 import AddressForm from "src/screens/Profile/Address/AddressForm";
-import { clearErrors } from "src/redux/actions";
+import {clearErrors, errorMapError} from "src/redux/actions";
 import {
   addAddressAtCheckout,
-  createShippingAddress
 } from "src/redux/actions/customerActions";
+import axios from "axios";
 
 const _ = require("lodash");
 const { width, height } = Dimensions.get("window");
@@ -51,13 +51,27 @@ function EditAddressModal(props) {
   };
 
   const handleCreateAddress = () => {
-    addAddressAtCheckout(
-      customer.customerId,
-      inputState,
-      dispatch,
-      setAddressModalMode,
-      addressModalMode === "Billing" ? setBillingAddress : setDeliveryAddress
-    );
+    axios
+      .get(
+        `https://maps.googleapis.com/maps/api/geocode/json?address=Singapore+${inputState.postalCode}|result_type=postal_code&key=AIzaSyBwSEn5eVyay7QWpufONLyFn6beB1Vf5rc`
+      )
+      .then(response => {
+        if (response.data.status === "OK") {
+          const location = response.data.results[0].geometry.location;
+          const addr = { ...inputState, lat: location.lat, lng: location.lng };
+          addAddressAtCheckout(
+            customer.customerId,
+            addr,
+            dispatch,
+            setAddressModalMode,
+            addressModalMode === "Billing"
+              ? setBillingAddress
+              : setDeliveryAddress
+          );
+        } else {
+          dispatch(errorMapError({postalCode: "Postal code is invalid"}));
+        }
+      });
   };
 
   const getSortedShippingAddresses = customer => {

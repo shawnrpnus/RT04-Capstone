@@ -289,6 +289,7 @@ export const addAddressAtCheckout = (
     })
     .then(response => {
       const { data } = jsog.decode(response);
+      console.log(data);
       setAddressModalMode(null);
       setCheckoutAddress(data);
       dispatch(refreshCustomer(customerId));

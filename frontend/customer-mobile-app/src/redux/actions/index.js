@@ -7,7 +7,7 @@ export const clearErrors = () => ({
   type: types.CLEAR_ERRORS
 });
 
-const errorMapError = data => ({
+export const errorMapError = data => ({
   type: GET_ERRORS,
   errorMap: data
 });
