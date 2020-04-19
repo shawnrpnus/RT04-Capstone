@@ -327,11 +327,9 @@ export default function CheckOutPage() {
 
   return (
     <div>
-      {isLoading && (
-        <Backdrop className={classes.backdrop} open={isLoading}>
-          <CircularProgress color="inherit" />
-        </Backdrop>
-      )}
+      <Backdrop className={classes.backdrop} open={isLoading}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
       <Parallax image={require("assets/img/bg6.jpg")} filter="dark" small>
         <div className={classes.container}>
           <GridContainer>

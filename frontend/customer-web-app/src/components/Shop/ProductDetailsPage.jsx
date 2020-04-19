@@ -12,10 +12,7 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 import ReviewCard from "../Reviews/ReviewCard";
 import ProductCard from "components/Shop/ProductCard";
-import {
-  checkIfCanWriteReview,
-  retrieveAllReviewsByProductId,
-} from "../../redux/actions/reviewAction";
+import { retrieveAllReviewsByProductId } from "../../redux/actions/reviewAction";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Backdrop from "@material-ui/core/Backdrop";
 import Typography from "@material-ui/core/Typography";
@@ -49,15 +46,19 @@ function ProductDetailsPage(props) {
 
     if (props.isGeolocationAvailable && props.coords) {
       const { latitude, longitude } = props.coords;
+      setIsLoading(true);
       dispatch(
-        getEligibleStoreForRecommendation({
-          productIds,
-          lat: latitude,
-          lng: longitude,
-        })
+        getEligibleStoreForRecommendation(
+          {
+            productIds,
+            lat: latitude,
+            lng: longitude,
+          },
+          setIsLoading
+        )
       );
     }
-  }, [currentProductDetail, storeForRecommendation]);
+  }, [currentProductDetail]);
 
   const recommendedProducts = _.get(
     currentProductDetail,
@@ -103,79 +104,76 @@ function ProductDetailsPage(props) {
   }, []);
 
   const getRandom = (dataList) => {
-    let number = Math.floor((Math.random() * (productDataList.length-3)));
-    // console.log("length",dataList.length);
-    // console.log("number", number);
-    if(number < 0) {
+    let number = Math.floor(Math.random() * (productDataList.length - 3));
+
+    if (number < 0) {
       number = 0;
     }
-    return dataList.slice(number, number+3);
+    return dataList.slice(number, number + 4);
   };
 
   return (
-    currentProductDetail && (
-      <div className={classes.productPage}>
-        <Parallax
-          image={require("assets/img/bg6.jpg")}
-          filter="rose"
-          className={classes.pageHeader}
-        />
-        <div className={classNames(classes.section, classes.sectionGray)}>
-          <div className={classes.container}>
-            <div className={classNames(classes.main, classes.mainRaised)}>
-              <ProductDetailsCard
-                productDetail={currentProductDetail}
-                key={currentProductDetail.product.productId}
-              />
-              <ReviewCard reviews={currentProductReviews} />
-              {productDataList.length > 0 && (
-                <>
-                  <Typography
-                    className={classes.title}
-                    style={{ textAlign: "center" }}
-                  >
-                    You may also like
-                  </Typography>
-                  <Divider style={{ marginBottom: "5%" }} />
-                  <Grid container>
-                    {(productDataList && productDataList.length < 4) ?
-                      <React.Fragment>
-                        {productDataList.map(
-                          (productDetail) =>
+    <>
+      <Backdrop className={classes.backdrop} open={isLoading}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
+      {currentProductDetail && (
+        <div className={classes.productPage}>
+          <Parallax
+            image={require("assets/img/bg6.jpg")}
+            filter="rose"
+            className={classes.pageHeader}
+          />
+          <div className={classNames(classes.section, classes.sectionGray)}>
+            <div className={classes.container}>
+              <div className={classNames(classes.main, classes.mainRaised)}>
+                <ProductDetailsCard
+                  productDetail={currentProductDetail}
+                  key={currentProductDetail.product.productId}
+                />
+                <ReviewCard reviews={currentProductReviews} />
+                {productDataList.length > 0 && (
+                  <>
+                    <Typography
+                      className={classes.title}
+                      style={{ textAlign: "center" }}
+                    >
+                      You may also like
+                    </Typography>
+                    <Divider style={{ marginBottom: "5%" }} />
+                    <Grid container>
+                      {productDataList && productDataList.length < 4 ? (
+                        <React.Fragment>
+                          {productDataList.map((productDetail) => (
                             <ProductCard
                               productDetail={productDetail}
                               discountedPrice={productDetail.discountedPrice}
                               key={productDetail.product.productId}
                               storeForRecommendation={storeForRecommendation}
                             />
-                        )}
-                      </React.Fragment>
-
-                      :
-                      <React.Fragment>
-                        {getRandom(productDataList).map(
-                          (productDetail) =>
+                          ))}
+                        </React.Fragment>
+                      ) : (
+                        <React.Fragment>
+                          {getRandom(productDataList).map((productDetail) => (
                             <ProductCard
                               productDetail={productDetail}
                               discountedPrice={productDetail.discountedPrice}
                               key={productDetail.product.productId}
                               storeForRecommendation={storeForRecommendation}
                             />
-                        )}
-                      </React.Fragment>
-                    }
-
-                  </Grid>
-                </>
-              )}
+                          ))}
+                        </React.Fragment>
+                      )}
+                    </Grid>
+                  </>
+                )}
+              </div>
             </div>
           </div>
         </div>
-        <Backdrop className={classes.backdrop} open={isLoading}>
-          <CircularProgress color="inherit" />
-        </Backdrop>
-      </div>
-    )
+      )}
+    </>
   );
 }
 

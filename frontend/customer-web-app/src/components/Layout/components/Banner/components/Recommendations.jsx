@@ -1,10 +1,6 @@
 import React, { useEffect } from "react";
-import classNames from "classnames";
 import GridItem from "components/Layout/components/Grid/GridItem";
-import {
-  filterProducts,
-  retrieveProductsDetails,
-} from "redux/actions/productActions";
+import { filterProducts } from "redux/actions/productActions";
 import ProductCard from "components/Shop/ProductCard";
 import GridContainer from "components/Layout/components/Grid/GridContainer";
 import { useDispatch, useSelector } from "react-redux";
