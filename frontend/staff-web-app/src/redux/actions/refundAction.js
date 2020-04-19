@@ -25,7 +25,7 @@ export const createInStoreRefundRequest = (
       .post(REFUND_BASE_URL + "createRefundRecord", refundRequest)
       .then(response => {
         const { data } = jsog.decode(response);
-        console.log(data);
+        // console.log(data);
         dispatch(createInStoreRefundSuccess(data));
         history.push(`/refund/viewRefundRecord/${data.refundId}`);
         toast.success("Refund Request Created!", {
@@ -92,7 +92,7 @@ export const updateInStoreRefundRequest = (
         amountBeforePromoCode  = (amountBeforePromoCode/tAmount)*totalAmount;
 
 
-        console.log("amtBeforePromoCode", amountBeforePromoCode);
+        // console.log("amtBeforePromoCode", amountBeforePromoCode);
         const val = (amountBeforePromoCode).toFixed(2);
 
         const completedRefundConfirmation = new CompletedRefundConfirmation(
@@ -101,7 +101,7 @@ export const updateInStoreRefundRequest = (
           data.customer.email,
           val
         );
-        console.log(completedRefundConfirmation);
+        // console.log(completedRefundConfirmation);
 
         if(data.refundStatus === "COMPLETED" ||
           data.refundStatus === "COMPLETED_WITH_REJECTED_PRODUCTS") {
@@ -208,7 +208,7 @@ export const retrieveRefundById = (refundId, setIsLoading, history) => {
       .get(REFUND_BASE_URL + `retrieveRefundById/${refundId}`)
       .then(response => {
         const data = jsog.decode(response.data);
-        console.log(data);
+        // console.log(data);
         dispatch(retrieveRefundByIdSuccess(data));
         setIsLoading(false);
       })
