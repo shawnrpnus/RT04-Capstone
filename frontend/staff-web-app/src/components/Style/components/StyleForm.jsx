@@ -106,7 +106,7 @@ class StyleForm extends React.Component {
             {this.state.qnsCreated.length !== 0 ? (
               <Grid item xs={12}>
                 <h5 className="bold-text">
-                  Add Answer to Created Style Questions
+                  Add Answer to Created Quiz Questions
                 </h5>
                 <br />
                 {this.state.qnsCreated.map((key, index) => {
