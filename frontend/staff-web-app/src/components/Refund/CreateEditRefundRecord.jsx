@@ -245,15 +245,18 @@ const CreateEditRefundRecord = (props) => {
     const lineItems = currTransaction.transactionLineItems;
     console.log(lineItems);
     let amt = 0;
+    let beforeAmt = 0;
     let temp = { ...inputState };
     let arrayAmt = [...inputState.refundAmt];
     lineItems.forEach(myFunction);
     function myFunction(item, index) {
       if (item.finalSubTotal) {
         amt += (item.finalSubTotal / item.quantity) * arr[index];
+        beforeAmt += (item.finalSubTotal / item.quantity) * arr[index];
         arrayAmt[index] = item.finalSubTotal / item.quantity;
       } else {
         amt += (item.initialSubTotal / item.quantity) * arr[index];
+        beforeAmt += (item.initialSubTotal / item.quantity) * arr[index];
         arrayAmt[index] = item.initialSubTotal / item.quantity;
       }
 
@@ -264,7 +267,10 @@ const CreateEditRefundRecord = (props) => {
       return amt;
     }
     if (inputState.promoCode && !inputState.promoCodeClaimed) {
-      amt -= inputState.promoCode.flatDiscount;
+      if(inputState.promoCode.flatDiscount) {
+        const amountBeforeFlatDisc = (beforeAmt/currTransaction.initialTotalPrice)*inputState.promoCode.flatDiscount;
+        amt -= amountBeforeFlatDisc;
+      }
       let val = 1 - inputState.promoCode.percentageDiscount / 100.0;
       amt *= val;
     }

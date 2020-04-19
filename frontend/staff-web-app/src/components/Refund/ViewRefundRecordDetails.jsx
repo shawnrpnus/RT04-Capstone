@@ -126,6 +126,23 @@ const ViewRefundRecordDetails = props => {
     dispatch(retrieveRefundById(refundId, setIsLoading, history));
   }, [refundId]);
 
+  const calculateAmountBeforePromoCode = (refund) => {
+    const size = _.get(refund, "refundLineItems.length");
+    let amountBeforePromoCode = 0;
+    if (size) {
+      for (let i = 0; i < size; i++) {
+        let li = _.get(refund, "refundLineItems");
+        amountBeforePromoCode += li[i].totalPrice;
+      }
+    }
+    const val = (amountBeforePromoCode- refund.refundAmount).toFixed(2);
+    if(val <= 0.00) {
+      console.log("inside lol");
+      return "-";
+    }
+    return val;
+  };
+
   useEffect(() => {
     if (currRefund !== null) {
       setCurrTransaction(
@@ -142,23 +159,25 @@ const ViewRefundRecordDetails = props => {
         quantity: currRefund.quantity,
         customerName:
           currRefund.customer.firstName + " " + currRefund.customer.lastName,
-        email: currRefund.customer.email
+        email: currRefund.customer.email,
+        promoCodeDiscount: calculateAmountBeforePromoCode(currRefund)
       }));
     }
   }, [currRefund]);
 
   useEffect(() => {
+    console.log("what is curr transaction",currTransaction);
     if (currTransaction != null) {
       setInputState(inputState => ({
         ...inputState,
         promoCodeName: currTransaction.promoCode
           ? currTransaction.promoCode.promoCodeName
           : "-",
-        promoCodeDiscount: _.get(currTransaction, "promoCode.flatDiscount")
-          ? "$" + _.get(currTransaction, "promoCode.flatDiscount")
-          : _.get(currTransaction, "promoCode.percentageDiscount")
-          ? _.get(currTransaction, "promoCode.percentageDiscount") + "%"
-          : "-"
+        // promoCodeDiscount: _.get(currTransaction, "promoCode.flatDiscount")
+        //   ? "$" + _.get(currTransaction, "promoCode.flatDiscount")
+        //   : _.get(currTransaction, "promoCode.percentageDiscount")
+        //   ? _.get(currTransaction, "promoCode.percentageDiscount") + "%"
+        //   : "-"
       }));
     }
   }, [currTransaction]);
@@ -366,7 +385,7 @@ const ViewRefundRecordDetails = props => {
               )}
             </Grid>
             <Grid item xs={12} md={2}>
-              {currTransaction ? (
+              {currRefund && inputState.promoCodeName? (
                 <MaterialTextField
                   fieldLabel="Promo Code Used"
                   fieldName="promoCodeName"
@@ -381,7 +400,7 @@ const ViewRefundRecordDetails = props => {
               )}
             </Grid>
             <Grid item xs={12} md={2}>
-              {currTransaction ? (
+              {currRefund ? (
                 <MaterialTextField
                   fieldLabel="Discount Amount"
                   fieldName="promoCodeDiscount"

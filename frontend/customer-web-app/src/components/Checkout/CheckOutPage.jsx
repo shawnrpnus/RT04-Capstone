@@ -16,6 +16,8 @@ import CardContent from "@material-ui/core/CardContent";
 import InputLabel from "@material-ui/core/InputLabel";
 import IconButton from "@material-ui/core/IconButton";
 import CancelIcon from "@material-ui/icons/Cancel";
+import Backdrop from "@material-ui/core/Backdrop";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 // redux
 import { useDispatch, useSelector } from "react-redux";
@@ -52,7 +54,7 @@ import { retrieveAllStore } from "redux/actions/storeActions";
 import { applyPromoCode } from "redux/actions/promoCodeActions";
 import UpdateShoppingCartRequest from "../../models/shoppingCart/UpdateShoppingCartRequest.js";
 import Radio from "@material-ui/core/Radio";
-import {FiberManualRecord} from "@material-ui/icons";
+import { FiberManualRecord } from "@material-ui/icons";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 
 const useStyles = makeStyles(checkoutStyle);
@@ -87,6 +89,8 @@ export default function CheckOutPage() {
   const [editCurrAddress, setEditCurrAddress] = useState("");
   const [isDelivery, setIsDelivery] = useState(true);
   const [storeToCollectId, setStoreToCollectId] = useState(null);
+
+  const [isLoading, setIsLoading] = useState(false);
 
   // Promo code
   const [promoCode, setPromoCode] = useState("");
@@ -208,7 +212,12 @@ export default function CheckOutPage() {
           console.log(result);
           paymentRequest.paymentMethodId = result.paymentIntent.payment_method;
           dispatch(
-            completeDirectPayment(paymentRequest, history, customer.email)
+            completeDirectPayment(
+              paymentRequest,
+              history,
+              customer.email,
+              setIsLoading
+            )
           );
         }
       }
@@ -216,7 +225,12 @@ export default function CheckOutPage() {
       // console.log("Payment with saved card!");
       // console.log(paymentRequest);
       dispatch(
-        makePaymentWithSavedCard(paymentRequest, history, customer.email)
+        makePaymentWithSavedCard(
+          paymentRequest,
+          history,
+          customer.email,
+          setIsLoading
+        )
       );
     }
   };
@@ -313,6 +327,11 @@ export default function CheckOutPage() {
 
   return (
     <div>
+      {isLoading && (
+        <Backdrop className={classes.backdrop} open={isLoading}>
+          <CircularProgress color="inherit" />
+        </Backdrop>
+      )}
       <Parallax image={require("assets/img/bg6.jpg")} filter="dark" small>
         <div className={classes.container}>
           <GridContainer>
@@ -455,18 +474,24 @@ export default function CheckOutPage() {
                                   value="a"
                                   name="radio button enabled"
                                   aria-label="A"
-                                  icon={<FiberManualRecord className={classes.radioUnchecked} />}
+                                  icon={
+                                    <FiberManualRecord
+                                      className={classes.radioUnchecked}
+                                    />
+                                  }
                                   checkedIcon={
-                                    <FiberManualRecord className={classes.radioChecked} />
+                                    <FiberManualRecord
+                                      className={classes.radioChecked}
+                                    />
                                   }
                                   classes={{
                                     checked: classes.radio,
-                                    root: classes.radioRoot
+                                    root: classes.radioRoot,
                                   }}
                                 />
                               }
                               classes={{
-                                label: classes.label
+                                label: classes.label,
                               }}
                               label="DELIVERY"
                             />
@@ -478,18 +503,24 @@ export default function CheckOutPage() {
                                   value="a"
                                   name="radio button enabled"
                                   aria-label="A"
-                                  icon={<FiberManualRecord className={classes.radioUnchecked} />}
+                                  icon={
+                                    <FiberManualRecord
+                                      className={classes.radioUnchecked}
+                                    />
+                                  }
                                   checkedIcon={
-                                    <FiberManualRecord className={classes.radioChecked} />
+                                    <FiberManualRecord
+                                      className={classes.radioChecked}
+                                    />
                                   }
                                   classes={{
                                     checked: classes.radio,
-                                    root: classes.radioRoot
+                                    root: classes.radioRoot,
                                   }}
                                 />
                               }
                               classes={{
-                                label: classes.label
+                                label: classes.label,
                               }}
                               label="COLLECT IN STORE"
                             />

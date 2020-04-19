@@ -44,6 +44,7 @@ function CreateRefundTable({
     let amount = 0;
     amount = calculateTotalRefundAmount(arr);
 
+    console.log("amount",amount);
     setInputState(inputState => ({
       ...inputState,
       quantityToRefund: arr,
@@ -55,31 +56,40 @@ function CreateRefundTable({
   const calculateTotalRefundAmount = arr => {
     const lineItems = currTransaction.transactionLineItems;
     let amt = 0;
+    let beforeAmt = 0;
     let temp = { ...inputState };
     let arrayAmt = [...inputState.refundAmt];
     lineItems.forEach(myFunction);
     function myFunction(item, index) {
       if (item.finalSubTotal) {
         amt += (item.finalSubTotal / item.quantity) * arr[index];
+        beforeAmt += (item.finalSubTotal / item.quantity) * arr[index];
         arrayAmt[index] = item.finalSubTotal / item.quantity;
       } else {
         amt += (item.initialSubTotal / item.quantity) * arr[index];
+        beforeAmt += (item.initialSubTotal / item.quantity) * arr[index];
         arrayAmt[index] = item.initialSubTotal / item.quantity;
       }
 
       setInputState(inputState => ({
         ...inputState,
-        refundAmt: arrayAmt
+        refundAmt: arrayAmt,
+        beforePromoCode: beforeAmt
       }));
       return amt;
     }
     if (inputState.promoCode && !inputState.promoCodeClaimed) {
-      amt -= inputState.promoCode.flatDiscount;
+      if(inputState.promoCode.flatDiscount) {
+        const amountBeforeFlatDisc = Math.round((beforeAmt/currTransaction.initialTotalPrice)*inputState.promoCode.flatDiscount*100)/100;
+        amt -= amountBeforeFlatDisc;
+      }
+      // amt -= inputState.promoCode.flatDiscount;
       let val = 1 - inputState.promoCode.percentageDiscount / 100.0;
       amt *= val;
     }
     if (amt < 0) {
       amt = 0;
+      beforeAmt = 0;
     }
     return amt;
   };
@@ -202,8 +212,8 @@ function CreateRefundTable({
                               <GridItem md={2}>
                                 <h3>
                                   $
-                                  {inputState.refundAmt[index].toFixed(2) *
-                                    inputState.quantityToRefund[index]}
+                                  {(inputState.refundAmt[index] *
+                                    inputState.quantityToRefund[index]).toFixed(2)}
                                 </h3>
                               </GridItem>
                               {/* Action */}

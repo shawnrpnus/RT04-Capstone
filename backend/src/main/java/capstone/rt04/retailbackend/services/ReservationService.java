@@ -464,6 +464,25 @@ public class ReservationService {
                     "There are reservation(s) that require your attention!",
                     data, "reservation");
         }
+    }
+
+    public void sendPushNotifToAllStores(){
+        List<Store> stores = storeService.retrieveAllStores();
+        for (Store s : stores){
+            sendExpoPushNotifToStore(s.getStoreId());
+        }
+    }
+
+    public void sendPushNotificationToCustomer(Long customerId) throws CustomerNotFoundException {
+        Customer c = customerService.retrieveCustomerByCustomerId(customerId);
+        List<String> tokens = new ArrayList<>();
+        tokens.add(c.getPushNotificationToken());
+        Map<String, String> data = new HashMap<>();
+        data.put("type", "reservationReminder");
+        sendExpoPushNotifWithTokens(tokens,
+                "Upcoming Reservation",
+                "You have a reservation in 1 hour!",
+                data, "reservation");
 
     }
 

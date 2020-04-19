@@ -1,24 +1,24 @@
-import { useHistory } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import React, { useEffect, useState } from "react";
-import { updatedViewedTransaction } from "../../../../redux/actions/transactionActions";
-import { clearErrors } from "../../../../redux/actions";
-import { createOnlineRefundRequest } from "../../../../redux/actions/refundAction";
+import {useHistory} from "react-router-dom";
+import {useDispatch, useSelector} from "react-redux";
+import React, {useEffect, useState} from "react";
+import {updatedViewedTransaction} from "../../../../redux/actions/transactionActions";
+import {clearErrors} from "../../../../redux/actions";
+import {createOnlineRefundRequest} from "../../../../redux/actions/refundAction";
 import RefundLineItemRequest from "../../../../models/refund/RefundLineItemRequest";
 import RefundRequest from "../../../../models/refund/RefundRequest";
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
-import { Close, Face, ShortText } from "@material-ui/icons";
+import {Close, Face, ShortText} from "@material-ui/icons";
 import DialogContent from "@material-ui/core/DialogContent";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import style from "assets/jss/material-kit-pro-react/views/componentsSections/javascriptStyles.js";
 import Transition from "react-transition-group/Transition";
 import GridContainer from "../../../Layout/components/Grid/GridContainer";
-import { Button } from "components/UI/CustomButtons/Button";
+import {Button} from "components/UI/CustomButtons/Button";
 import CreateRefundTable from "./CreateRefundTable";
 import Grid from "@material-ui/core/Grid";
 import CardActions from "@material-ui/core/CardActions";
-import { useSnackbar } from "notistack";
+import {useSnackbar} from "notistack";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import CustomTextField from "../../../UI/CustomInput/CustomTextField";
 
@@ -26,10 +26,10 @@ const _ = require("lodash");
 const useStyles = makeStyles(style);
 
 const CreateRefund = ({
-  largeModal: [largeModal, setLargeModal],
-  transactionId: transactionId,
+                        largeModal: [largeModal, setLargeModal],
+                        transactionId: transactionId,
                         totalForEachItem: totalForEachItem
-}) => {
+                      }) => {
   const errors = useSelector((state) => state.errors);
   const dispatch = useDispatch();
   const history = useHistory();
@@ -39,7 +39,7 @@ const CreateRefund = ({
   //State
   const [inputState, setInputState] = useState({
     quantity: 0,
-    refundAmt: new Array(12).fill(0),
+    refundAmt: new Array(100).fill(0),
     totalRefundAmount: 0,
     refundMode: "ONLINE",
     refundStatus: "",
@@ -47,11 +47,12 @@ const CreateRefund = ({
     refundDateTime: "",
     reason: "",
     transactionOrderNumber: "",
-    quantityToRefund: new Array(12).fill(0),
+    quantityToRefund: new Array(100).fill(0),
     customerId: "",
     promoCode: "-",
     promoCodeName: "",
-    promoCodeClaimed: false
+    promoCodeClaimed: false,
+    beforePromoCode: 0
   });
   useEffect(() => {
     dispatch(updatedViewedTransaction());
@@ -60,7 +61,15 @@ const CreateRefund = ({
     (state) => state.transaction.viewedTransaction
   );
   const currCustomer = useSelector((state) => state.customer.loggedInCustomer);
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  const {enqueueSnackbar, closeSnackbar} = useSnackbar();
+
+  const hasBeenRefunded = (currTransaction) => {
+    for(let i = 0; i < _.get(currTransaction, "transactionLineItems.length"); i++) {
+      if(currTransaction.transactionLineItems[i].refundLineItems.length > 0) {
+        return true;
+      }
+    }
+  };
 
   useEffect(
     () =>
@@ -68,15 +77,15 @@ const CreateRefund = ({
         ...inputState,
         quantityToRefund: _.get(currTransaction, "transactionLineItems.length")
           ? new Array(
-              _.get(currTransaction, "transactionLineItems.length")
-            ).fill(0)
-          : new Array(12).fill(0),
+            _.get(currTransaction, "transactionLineItems.length")
+          ).fill(0)
+          : new Array(100).fill(0),
 
         refundAmt: _.get(currTransaction, "transactionLineItems.length")
           ? new Array(
-              _.get(currTransaction, "transactionLineItems.length")
-            ).fill(0)
-          : new Array(12).fill(0),
+            _.get(currTransaction, "transactionLineItems.length")
+          ).fill(0)
+          : new Array(100).fill(0),
 
         customerId: _.get(currTransaction, "customer.customerId"),
         promoCode: _.get(currTransaction, "promoCode")
@@ -84,10 +93,11 @@ const CreateRefund = ({
           : 0,
         promoCodeName:
           _.get(currTransaction, "promoCode")
-          ? _.get(currTransaction, "promoCode.promoCodeName")
-          : "-",
-        promoCodeClaimed: _.get(currTransaction, "transactionLineItems[0].refundLineItems[0]")
-          && _.get(currTransaction, "promoCode") && _.get(currTransaction, "promoCode.flatDiscount")
+            ? _.get(currTransaction, "promoCode.promoCodeName")
+            : "-",
+        promoCodeClaimed: false
+        // promoCodeClaimed: hasBeenRefunded(currTransaction)
+        //   && _.get(currTransaction, "promoCode") && _.get(currTransaction, "promoCode.flatDiscount")
       })),
     [currTransaction]
   );
@@ -105,7 +115,7 @@ const CreateRefund = ({
   const closeModal = () => {
     setInputState(() => ({
       quantity: 0,
-      refundAmt: new Array(12).fill(0),
+      refundAmt: new Array(100).fill(0),
       totalRefundAmount: 0,
       refundMode: "ONLINE",
       refundStatus: "",
@@ -113,10 +123,11 @@ const CreateRefund = ({
       refundDateTime: "",
       reason: "",
       transactionOrderNumber: "",
-      quantityToRefund: new Array(12).fill(0),
+      quantityToRefund: new Array(100).fill(0),
       customerId: "",
       promoCode: "-",
       promoCodeName: "",
+      beforePromoCode: 0
     }));
     dispatch(updatedViewedTransaction());
     setLargeModal(false);
@@ -128,6 +139,7 @@ const CreateRefund = ({
     const storeId = null;
     const refundLineItems = [];
     lineItems.forEach(myFunction);
+
     function myFunction(item, index) {
       refundLineItems.push(
         new RefundLineItemRequest(
@@ -137,6 +149,7 @@ const CreateRefund = ({
         )
       );
     }
+
     const refundRequest = new RefundRequest(
       inputState.refundMode,
       inputState.reason,
@@ -149,7 +162,7 @@ const CreateRefund = ({
     const orderNumber = currTransaction.orderNumber;
     // console.log("NAMEEEEE",name);
     let deliveryAddress = JSON.stringify(currTransaction.billingAddress);
-    if(currTransaction.collectionMode === "DELIVERY") {
+    if (currTransaction.collectionMode === "DELIVERY") {
       deliveryAddress = JSON.stringify(currTransaction.deliveryAddress);
     }
     // console.log(orderNumber);
@@ -195,7 +208,7 @@ const CreateRefund = ({
               onClick={() => closeModal()}
             >
               {" "}
-              <Close className={classes.modalClose} />
+              <Close className={classes.modalClose}/>
             </Button>
             <h3 className={classes.modalTitle}>
               <b>Create New Refund</b>
@@ -213,40 +226,51 @@ const CreateRefund = ({
             />
             {currTransaction ? (
               <GridContainer>
-                <Grid item md={6} style={{ paddingLeft: "40px" }}>
-                  <h5>
-                    Promo Code Used:
-                    <b>{inputState.promoCodeName}</b>
-                    &nbsp;
-                    {
-                      inputState.promoCodeClaimed
-                      ?<b>(CLAIMED)</b>
-                        :
-                        ""
-                    }
+                <Grid item md={6}>
 
-                  </h5>
                 </Grid>
                 <Grid item md={2}></Grid>
-                <Grid item md={3}>
+                <Grid container md={3} alignItems="flex-start" justify="flex-end">
                   <h5>
-                    Refund Quantity: <b>{inputState.quantity}</b>
+                    Subtotal: <b>${inputState.beforePromoCode.toFixed(2)}</b>
                   </h5>
-                  {/*<h5><b>*/}
-                  {/*<CustomTextField style={{left:"auto"}}*/}
-                  {/*  fieldLabel="Quantity"*/}
-                  {/*  fieldName="quantity"*/}
-                  {/*  inputState={inputState}*/}
-                  {/*  onChange={onChange}*/}
-                  {/*  errors={errors}*/}
-                  {/*  disabled={true}*/}
-
-                  {/*/></b></h5>*/}
                 </Grid>
                 <Grid item md={1}>
                 </Grid>
-                <Grid item md={8}></Grid>
-                <Grid item md={4}>
+                {inputState.promoCode
+                ?
+                  (
+                  <React.Fragment>
+                    <Grid item md={6} style={{paddingLeft: "40px"}}>
+                      <h5>
+                        Promo Code Used:
+                        <b> {inputState.promoCodeName}</b>
+                        &nbsp;
+                        {
+                          inputState.promoCodeClaimed
+                            ? <b>(CLAIMED)</b>
+                            :
+                            ""
+                        }
+                      </h5>
+                    </Grid>
+                    <Grid container md={5} alignItems="flex-start" justify="flex-end">
+                      <h5>
+                        - <b>(${(inputState.beforePromoCode.toFixed(2) - inputState.totalRefundAmount.toFixed(2)).toFixed(2)})</b>
+                      </h5>
+                    </Grid>
+                    <Grid item md={1} />
+                  </React.Fragment>
+                )
+                  :""
+                }
+
+                <Grid item md={4} style={{paddingLeft: "40px"}}>
+                  <h5>
+                    Refund Quantity: <b>{inputState.quantity}</b>
+                  </h5>
+                </Grid>
+                <Grid container md={7} alignItems="flex-start" justify="flex-end">
                   <h5>
                     Total Refund Amount:
                     {inputState.totalRefundAmount ? (
@@ -256,7 +280,8 @@ const CreateRefund = ({
                     )}
                   </h5>
                 </Grid>
-                <Grid item md={11} style={{ paddingLeft: "40px" }}>
+                <Grid item md={1}/>
+                <Grid item md={11} style={{paddingLeft: "40px"}}>
                   <CustomTextField
                     fieldLabel="Reason"
                     fieldName="reason"
@@ -269,7 +294,7 @@ const CreateRefund = ({
                           position="start"
                           className={classes.inputAdornment}
                         >
-                          <ShortText className={classes.inputAdornmentIcon} />
+                          <ShortText className={classes.inputAdornmentIcon}/>
                         </InputAdornment>
                       ),
                     }}

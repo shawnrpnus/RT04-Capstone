@@ -1,6 +1,7 @@
 package capstone.rt04.retailbackend.controllers;
 
 import capstone.rt04.retailbackend.entities.Refund;
+import capstone.rt04.retailbackend.entities.Transaction;
 import capstone.rt04.retailbackend.request.refund.RefundRequest;
 import capstone.rt04.retailbackend.request.refund.UpdateRefundLineItemHandlerRequest;
 import capstone.rt04.retailbackend.services.RefundService;
@@ -72,7 +73,16 @@ public class RefundController {
     @GetMapping(RETRIEVE_REFUND_BY_ID)
     public ResponseEntity<?> retrieveRefundById(@PathVariable Long refundId) throws RefundNotFoundException {
         Refund refund = refundService.retrieveRefundById(refundId);
+        Transaction transaction = refund.getRefundLineItems().get(0).getTransactionLineItem().getTransaction();
         relationshipService.clearRefundRelationships(refund);
+        refund.getRefundLineItems().get(0).getTransactionLineItem().setTransaction(transaction);
+        refund.getRefundLineItems().get(0).getTransactionLineItem().getTransaction().setDeliveryAddress(null);
+        refund.getRefundLineItems().get(0).getTransactionLineItem().getTransaction().setTransactionLineItems(null);
+        refund.getRefundLineItems().get(0).getTransactionLineItem().getTransaction().setDeliveries(null);
+        refund.getRefundLineItems().get(0).getTransactionLineItem().getTransaction().setStoreToCollect(null);
+        refund.getRefundLineItems().get(0).getTransactionLineItem().getTransaction().setStore(null);
+        refund.getRefundLineItems().get(0).getTransactionLineItem().getTransaction().setCustomer(null);
+        refund.getRefundLineItems().get(0).getTransactionLineItem().getTransaction().setBillingAddress(null);
         return new ResponseEntity<>(refund, HttpStatus.OK);
     }
 
