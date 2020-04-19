@@ -127,8 +127,8 @@ public class StartUpService {
             Category men = categoryService.createNewCategory(new Category("Men"), null); //root
             Category topsM = categoryService.createNewCategory(new Category("Tops"), men.getCategoryId());//sub
             Category shorts = categoryService.createNewCategory(new Category("Shorts"), men.getCategoryId());//sub
-            Category jeans = categoryService.createNewCategory(new Category("Jeans"), men.getCategoryId());
-            jeansCategoryId = jeans.getCategoryId();
+           // Category jeans = categoryService.createNewCategory(new Category("Jeans"), men.getCategoryId());
+          //  jeansCategoryId = jeans.getCategoryId();
             Category shirts = categoryService.createNewCategory(new Category("Shirts"), topsM.getCategoryId()); //leaf
             shirtCategoryId = shirts.getCategoryId();
             Category tShirt = categoryService.createNewCategory(new Category("T-Shirts"), topsM.getCategoryId());//leaf
@@ -139,8 +139,8 @@ public class StartUpService {
             bermudasCategoryId = bermudas.getCategoryId();
             Category casualShorts = categoryService.createNewCategory(new Category("Casual"), shorts.getCategoryId());//leaf
             casualShortsCategoryId = casualShorts.getCategoryId();
-            Category denimJeans = categoryService.createNewCategory(new Category("Denim Jeans"), jeans.getCategoryId());
-            denimJeansWCategoryId = denimJeans.getCategoryId();
+           // Category denimJeans = categoryService.createNewCategory(new Category("Denim Jeans"), jeans.getCategoryId());
+           // denimJeansWCategoryId = denimJeans.getCategoryId();
 
             Category women = categoryService.createNewCategory(new Category("Women"), null);
             Category topsW = categoryService.createNewCategory(new Category("Tops"), women.getCategoryId());
@@ -694,7 +694,7 @@ public class StartUpService {
             maroonProductImageUrls33.add("https://dynamic.zacdn.com/h6GDn3z_7t0paj0x9psbPMV5Pt8=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/puma-3653-717699-3.jpg");
             maroonProductImageUrls33.add("https://dynamic.zacdn.com/7b9R1ch4pFCjaZVNU2Zj9cw71Qk=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/puma-3653-717699-4.jpg");
             List<ColourToImageUrlsMap> colourToImageUrlsMaps33 = new ArrayList<>();
-            colourToImageUrlsMaps33.add(new ColourToImageUrlsMap("#FFFFFF", whiteProductImageUrls33));
+            //colourToImageUrlsMaps33.add(new ColourToImageUrlsMap("#FFFFFF", whiteProductImageUrls33));
             colourToImageUrlsMaps33.add(new ColourToImageUrlsMap("#C8385A", maroonProductImageUrls33));
             colourToImageUrlsMaps33.add(new ColourToImageUrlsMap("#000000", blackImageUrls33));
 
