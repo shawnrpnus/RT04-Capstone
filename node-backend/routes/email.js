@@ -7,7 +7,7 @@ const mailGenerator = new Mailgen({
   product: {
     // Appears in header & footer of e-mails
     name: "apricot & nut",
-    link: "http://localhost:3000",
+    link: "https://apricot-and-nut.herokuapp.com/",
     // Optional product logo
     logo:
       "https://res.cloudinary.com/rt04capstone/image/upload/v1583433855/rsz_1apricot-nut-logo-word_jzhocy.png",
