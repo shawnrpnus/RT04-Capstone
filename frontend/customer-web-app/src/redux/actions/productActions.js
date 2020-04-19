@@ -86,7 +86,7 @@ export const getEligibleStoreForRecommendation = (request, setIsLoading) => {
       .then((response) => {
         const data = jsog.decode(response.data);
         dispatch(viewEligibleStoreForRecommendation(data));
-        // setIsLoading(false);
+        setIsLoading(false);
       })
       .catch((err) => {
         dispatchErrorMapError(err, dispatch);
