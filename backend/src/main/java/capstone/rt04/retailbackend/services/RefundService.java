@@ -106,6 +106,7 @@ public class RefundService {
             errorMap.put("store", ErrorMessages.REFUND_STORE_ID_EMPTY);
             throw new InputDataValidationException(errorMap, ErrorMessages.REFUND_STORE_ID_EMPTY);
         }
+        Transaction currTransaction = null;
         for (RefundLineItemRequest refundLineItemRequest : refundRequest.getRefundLineItemRequests()) {
 
             if(refundLineItemRequest.getQuantityToRefund() == 0) {
@@ -113,14 +114,12 @@ public class RefundService {
             }
 
             TransactionLineItem transactionLineItem = transactionService.retrieveTransactionLineItemById(refundLineItemRequest.getTransactionLineItemId());
+            currTransaction = transactionLineItem.getTransaction();
             BigDecimal unitPrice;
-            if(transactionLineItem.getRefundLineItems().size() > 0) {
-                isRefundedBefore = true;
-            }
             if (transactionLineItem.getFinalSubTotal() != null) {
-                unitPrice = transactionLineItem.getFinalSubTotal().divide(new BigDecimal(transactionLineItem.getQuantity()), 2, RoundingMode.HALF_EVEN);
+                unitPrice = transactionLineItem.getFinalSubTotal().divide(new BigDecimal(transactionLineItem.getQuantity()), 3, RoundingMode.HALF_UP);
             } else {
-                unitPrice = transactionLineItem.getInitialSubTotal().divide(new BigDecimal(transactionLineItem.getQuantity()), 2, RoundingMode.HALF_EVEN);
+                unitPrice = transactionLineItem.getInitialSubTotal().divide(new BigDecimal(transactionLineItem.getQuantity()), 3, RoundingMode.HALF_UP);
             }
             if(transactionLineItem.getTransaction().getPromoCode() != null) {
                 promoCodeId = transactionLineItem.getTransaction().getPromoCode().getPromoCodeId();
@@ -150,8 +149,14 @@ public class RefundService {
         PromoCode promoCode;
         if(promoCodeId != Long.valueOf("0")) {
             promoCode = promoCodeService.retrievePromoCodeById(promoCodeId);
-            if(!(promoCode.getFlatDiscount() == null) && !isRefundedBefore){
-                refundAmount = refundAmount.subtract(promoCode.getFlatDiscount());
+            if(!(promoCode.getFlatDiscount() == null)){
+//                const amountBeforeFlatDisc = (beforeAmt/currTransaction.finalTotalPrice)*inputState.promoCode.flatDiscount;
+//                amt -= amountBeforeFlatDisc;
+                BigDecimal promoRefund = refundAmount;
+                promoRefund = promoRefund.divide(currTransaction.getInitialTotalPrice(),3,RoundingMode.HALF_UP);
+                promoRefund = promoRefund.multiply(promoCode.getFlatDiscount());
+                refundAmount = refundAmount.subtract(promoRefund);
+//                refundAmount = refundAmount.subtract(promoCode.getFlatDiscount());
             } else if (!(promoCode.getPercentageDiscount() == null)) {
                 BigDecimal val = promoCode.getPercentageDiscount().multiply(BigDecimal.valueOf(0.01));
                 val = BigDecimal.ONE.subtract(val);

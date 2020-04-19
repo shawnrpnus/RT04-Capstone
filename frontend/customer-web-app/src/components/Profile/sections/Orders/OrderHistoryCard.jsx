@@ -104,6 +104,7 @@ function OrderHistoryCard(props) {
       }
     }
     // cannot refund because max liao
+    setTextToDisplay("Fully Refunded");
     return toRefund;
   };
   const status = deliveryStatusEnumMap[transaction.deliveryStatus];
