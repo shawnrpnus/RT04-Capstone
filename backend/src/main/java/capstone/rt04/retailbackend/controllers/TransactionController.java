@@ -1,6 +1,7 @@
 package capstone.rt04.retailbackend.controllers;
 
 import capstone.rt04.retailbackend.entities.Transaction;
+import capstone.rt04.retailbackend.request.transaction.SalesByCategoryRequest;
 import capstone.rt04.retailbackend.request.transaction.SalesByDayRequest;
 import capstone.rt04.retailbackend.request.transaction.TransactionRetrieveRequest;
 import capstone.rt04.retailbackend.request.transaction.UpdateTransactionRequest;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 import static capstone.rt04.retailbackend.util.routeconstants.TransactionControllerRoutes.*;
 
@@ -227,6 +229,13 @@ public class TransactionController {
     public ResponseEntity<?> retrieveSalesByDay(@RequestBody SalesByDayRequest req){
         List<SalesByDay> res = transactionService.retrieveSalesByDayWithParameters(req.getFromDateString(),
                 req.getToDateString(), req.getFromStoreIds(), req.getOnlineSelected());
+        return new ResponseEntity<>(res, HttpStatus.OK);
+    }
+
+    @PostMapping("/retrieveSalesByCategory")
+    public ResponseEntity<?> retrieveSalesByCategory(@RequestBody SalesByCategoryRequest req){
+        Map<String, Object> res = transactionService.getSalesByCategory(req.getFromDateString(),
+                req.getToDateString());
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
 }

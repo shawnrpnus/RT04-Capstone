@@ -127,8 +127,8 @@ public class StartUpService {
             Category men = categoryService.createNewCategory(new Category("Men"), null); //root
             Category topsM = categoryService.createNewCategory(new Category("Tops"), men.getCategoryId());//sub
             Category shorts = categoryService.createNewCategory(new Category("Shorts"), men.getCategoryId());//sub
-            Category jeans = categoryService.createNewCategory(new Category("Jeans"), men.getCategoryId());
-            jeansCategoryId = jeans.getCategoryId();
+           // Category jeans = categoryService.createNewCategory(new Category("Jeans"), men.getCategoryId());
+          //  jeansCategoryId = jeans.getCategoryId();
             Category shirts = categoryService.createNewCategory(new Category("Shirts"), topsM.getCategoryId()); //leaf
             shirtCategoryId = shirts.getCategoryId();
             Category tShirt = categoryService.createNewCategory(new Category("T-Shirts"), topsM.getCategoryId());//leaf
@@ -139,8 +139,8 @@ public class StartUpService {
             bermudasCategoryId = bermudas.getCategoryId();
             Category casualShorts = categoryService.createNewCategory(new Category("Casual"), shorts.getCategoryId());//leaf
             casualShortsCategoryId = casualShorts.getCategoryId();
-            Category denimJeans = categoryService.createNewCategory(new Category("Denim Jeans"), jeans.getCategoryId());
-            denimJeansWCategoryId = denimJeans.getCategoryId();
+           // Category denimJeans = categoryService.createNewCategory(new Category("Denim Jeans"), jeans.getCategoryId());
+           // denimJeansWCategoryId = denimJeans.getCategoryId();
 
             Category women = categoryService.createNewCategory(new Category("Women"), null);
             Category topsW = categoryService.createNewCategory(new Category("Tops"), women.getCategoryId());
@@ -454,10 +454,10 @@ public class StartUpService {
             biegeProductImageUrls17.add("https://dynamic.zacdn.com/HuWf0n_MLrxNVB0irnV4vS3sIRQ=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-5617-6862811-3.jpg");
             biegeProductImageUrls17.add("https://dynamic.zacdn.com/rl5uR-rGRtH0owOgZio2PwMvmr4=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-5617-6862811-4.jpg");
             List<String> blackProductImageUrls17 = new ArrayList<>();
-            blackProductImageUrls11.add("https://dynamic.zacdn.com/O-9taEorxb3-5J5CWPKFBJfu2Ck=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-5624-2172811-1.jpg");
-            blackProductImageUrls11.add("https://dynamic.zacdn.com/bez0cBpel1k7AruavxxgS-DEVpI=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-5624-2172811-2.jpg");
-            blackProductImageUrls11.add("https://dynamic.zacdn.com/Lfr5J-eQ0aqKIEWEkhqkSOoJt60=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-5625-2172811-3.jpg");
-            blackProductImageUrls11.add("https://dynamic.zacdn.com/PluowINt9W-kLGqB_sppxQ9UJuM=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-5625-2172811-4.jpg");
+            blackProductImageUrls17.add("https://dynamic.zacdn.com/O-9taEorxb3-5J5CWPKFBJfu2Ck=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-5624-2172811-1.jpg");
+            blackProductImageUrls17.add("https://dynamic.zacdn.com/bez0cBpel1k7AruavxxgS-DEVpI=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-5624-2172811-2.jpg");
+            blackProductImageUrls17.add("https://dynamic.zacdn.com/Lfr5J-eQ0aqKIEWEkhqkSOoJt60=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-5625-2172811-3.jpg");
+            blackProductImageUrls17.add("https://dynamic.zacdn.com/PluowINt9W-kLGqB_sppxQ9UJuM=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-5625-2172811-4.jpg");
             List<String> pinkProductImageUrls17 = new ArrayList<>();
             pinkProductImageUrls17.add("https://dynamic.zacdn.com/pWK2vef9f2dXkJJO4RwRuQqNEqw=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-5628-4072811-1.jpg");
             pinkProductImageUrls17.add("https://dynamic.zacdn.com/seRUwlQC37UxqbYUchwJOd-Nm0s=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-5629-4072811-2.jpg");
@@ -694,7 +694,7 @@ public class StartUpService {
             maroonProductImageUrls33.add("https://dynamic.zacdn.com/h6GDn3z_7t0paj0x9psbPMV5Pt8=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/puma-3653-717699-3.jpg");
             maroonProductImageUrls33.add("https://dynamic.zacdn.com/7b9R1ch4pFCjaZVNU2Zj9cw71Qk=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/puma-3653-717699-4.jpg");
             List<ColourToImageUrlsMap> colourToImageUrlsMaps33 = new ArrayList<>();
-            colourToImageUrlsMaps33.add(new ColourToImageUrlsMap("#FFFFFF", whiteProductImageUrls33));
+            //colourToImageUrlsMaps33.add(new ColourToImageUrlsMap("#FFFFFF", whiteProductImageUrls33));
             colourToImageUrlsMaps33.add(new ColourToImageUrlsMap("#C8385A", maroonProductImageUrls33));
             colourToImageUrlsMaps33.add(new ColourToImageUrlsMap("#000000", blackImageUrls33));
 

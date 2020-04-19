@@ -383,6 +383,11 @@ class SidebarContent extends Component {
                 route="/analytics/reservations"
                 onCLick={this.hideSidebar}
               />
+              <SidebarLink
+                title={"Category"}
+                route="/analytics/category"
+                onCLick={this.hideSidebar}
+              />
             </SidebarCategory>
           )}
         </ul>

@@ -316,7 +316,7 @@ function PurchasesStack(props) {
         name="Purchase Details"
         component={PurchaseDetails}
         options={{
-          header: props => <CustomHeader title="Purchase Details" {...props} />,
+          header: props => <CustomHeader title="Purchase Details" back {...props} />,
           headerStyle: { height: 100 }
         }}
       />
@@ -380,7 +380,7 @@ function CollectionsStack(props) {
         name="Order Details"
         component={PurchaseDetails}
         options={{
-          header: props => <CustomHeader title="Order Details" {...props} />,
+          header: props => <CustomHeader title="Order Details" back {...props} />,
           headerStyle: { height: 100 }
         }}
       />
@@ -441,7 +441,7 @@ function ReservationsStack(props) {
         component={ReservationDetails}
         options={{
           header: props => (
-            <CustomHeader title="Reservation Details" {...props} />
+            <CustomHeader title="Reservation Details" back {...props} />
           ),
           headerStyle: { height: 100 }
         }}

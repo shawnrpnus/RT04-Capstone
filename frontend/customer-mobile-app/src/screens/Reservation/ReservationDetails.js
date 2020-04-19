@@ -63,6 +63,16 @@ function ReservationDetails(props) {
     }
   };
 
+  const simulateAttendance = () => {
+    dispatch(
+      markReservationAttendance(
+        reservation.reservationId,
+        setLoading,
+        customer.customerId
+      )
+    );
+  };
+
   useFocusEffect(
     React.useCallback(() => {
       const task = InteractionManager.runAfterInteractions(() => {
@@ -231,6 +241,20 @@ function ReservationDetails(props) {
               />
             ))}
           </Block>
+          {!reservation.attended && (
+            <Block flex center>
+              <Button
+                mode="contained"
+                style={{ width: width * 0.8, marginTop: 15, padding: 5 }}
+                onPress={simulateAttendance}
+                theme={{
+                  colors: { primary: Theme.COLORS.ACCENT_DARKER }
+                }}
+              >
+                Simulate Attendance
+              </Button>
+            </Block>
+          )}
         </ScrollView>
       )}
       <Spinner
