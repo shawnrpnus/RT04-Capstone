@@ -5,7 +5,8 @@ const initialState = {
   allRefundStatusEnum: null,
   allRefundProgressEnum: null,
   currRefund: null,
-  allRefunds: null
+  allRefunds: null,
+  email: null
 };
 
 export default function(state = initialState, action) {
@@ -44,6 +45,16 @@ export default function(state = initialState, action) {
       return {
         ...state,
         allRefundProgressEnum: action.allRefundProgressEnum
+      };
+    case types.SEND_COMPLETED_REFUND_CONFIRMATION:
+      return {
+        ...state,
+        email: action.email
+      };
+    case types.SEND_RECEIVED_REFUND_CONFIRMATION:
+      return {
+        ...state,
+        email: action.email
       };
     default:
       return state;

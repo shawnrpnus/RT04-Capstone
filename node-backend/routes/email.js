@@ -449,4 +449,91 @@ router.post("/sendRefundLabel", async (req, res) => {
   );
 });
 
+
+router.post("/sendReceivedRefundConfirmation", async (req, res) => {
+  const name = req.body.name;
+  const refundNumber = req.body.refundNumber;
+  const refundId = req.body.refundId;
+  const email = req.body.email;
+  const totalAmount = req.body.totalAmount;
+  const emailContent = {
+    body: {
+      name: `${name}`,
+      intro:
+        "We’ve received your return Refund No. " + `${refundNumber}` + ". " +
+        "We’ll send you an email confirmation containing the return details " +
+        "and refund amount within two business days. Thank you for shopping with us!",
+      outro:
+        "Once again, our apologies pertaining to this issue. " +
+        "We do hope that your next experience with us would be a much better one. " +
+        "We hope you'll shop with us again. " +
+        "Feel free to contact us @ 6512 5534 with any questions. ",
+    },
+  };
+
+  const emailBody = mailGenerator.generate(emailContent);
+  const emailText = mailGenerator.generatePlaintext(emailContent);
+
+  transporter.sendMail(
+    {
+      from: "rt04capstone@gmail.com",
+      to: email,
+      subject: `We’ve received your apricot & nut return `,
+      text: emailText,
+      html: emailBody,
+    },
+    (error, info) => {
+      if (error) {
+        console.log(error);
+        res.status(500).send({ message: "Email failed to send" });
+      } else {
+        res.status(200).send({ message: "Email Sent" });
+      }
+    }
+  );
+});
+
+router.post("/sendConfirmedRefundConfirmation", async (req, res) => {
+  const name = req.body.name;
+  const refundNumber = req.body.refundNumber;
+  const refundId = req.body.refundId;
+  const email = req.body.email;
+  const totalAmount = req.body.totalAmount;
+  const emailContent = {
+    body: {
+      name: `${name}`,
+      intro:
+        "Your return Refund No. " + `${refundNumber}` + " has been confirmed. " +
+        "We’ll credit the refund amount SGD$" + `${totalAmount}` +" to your bank account linked to the transaction. " +
+        "You will see the amount credited within 5-7 business days. ",
+      outro:
+        "Once again, our apologies pertaining to this issue. " +
+        "We do hope that your next experience with us would be a much better one. " +
+        "We hope you'll shop with us again. " +
+        "Feel free to contact us @ 6512 5534 with any questions. ",
+    },
+  };
+
+  const emailBody = mailGenerator.generate(emailContent);
+  const emailText = mailGenerator.generatePlaintext(emailContent);
+
+  transporter.sendMail(
+    {
+      from: "rt04capstone@gmail.com",
+      to: email,
+      subject: `We've confirmed your refund!`,
+      text: emailText,
+      html: emailBody,
+    },
+    (error, info) => {
+      if (error) {
+        console.log(error);
+        res.status(500).send({ message: "Email failed to send" });
+      } else {
+        res.status(200).send({ message: "Email Sent" });
+      }
+    }
+  );
+});
+
 module.exports = router;

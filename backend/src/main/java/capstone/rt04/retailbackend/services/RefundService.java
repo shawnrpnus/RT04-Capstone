@@ -301,9 +301,10 @@ public class RefundService {
             refundLineItem.getRefundLineItemHandlerList().add(refundLineItemHandler);
 
             refund = retrieveRefundById(refundLineItem.getRefund().getRefundId());
-            if(updateRefundLineItemHandlerRequest.getRefundProgressEnum().equals(RefundProgressEnum.RECEIVED_BY_STORE.toString())) {
-                refund.setRefundStatus(RefundStatusEnum.PROCESSING);
-            } else if(updateRefundLineItemHandlerRequest.getRefundProgressEnum().equals(RefundProgressEnum.HANDLED_BY_STAFF.toString())) {
+//            if(updateRefundLineItemHandlerRequest.getRefundProgressEnum().equals(RefundProgressEnum.RECEIVED_BY_STORE.toString())) {
+//                refund.setRefundStatus(RefundStatusEnum.PROCESSING);
+//            } else
+                if(updateRefundLineItemHandlerRequest.getRefundProgressEnum().equals(RefundProgressEnum.HANDLED_BY_STAFF.toString())) {
                 refund.setRefundStatus(RefundStatusEnum.PROCESSING);
             }
         }
