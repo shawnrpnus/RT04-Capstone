@@ -454,10 +454,10 @@ public class StartUpService {
             biegeProductImageUrls17.add("https://dynamic.zacdn.com/HuWf0n_MLrxNVB0irnV4vS3sIRQ=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-5617-6862811-3.jpg");
             biegeProductImageUrls17.add("https://dynamic.zacdn.com/rl5uR-rGRtH0owOgZio2PwMvmr4=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-5617-6862811-4.jpg");
             List<String> blackProductImageUrls17 = new ArrayList<>();
-            blackProductImageUrls11.add("https://dynamic.zacdn.com/O-9taEorxb3-5J5CWPKFBJfu2Ck=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-5624-2172811-1.jpg");
-            blackProductImageUrls11.add("https://dynamic.zacdn.com/bez0cBpel1k7AruavxxgS-DEVpI=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-5624-2172811-2.jpg");
-            blackProductImageUrls11.add("https://dynamic.zacdn.com/Lfr5J-eQ0aqKIEWEkhqkSOoJt60=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-5625-2172811-3.jpg");
-            blackProductImageUrls11.add("https://dynamic.zacdn.com/PluowINt9W-kLGqB_sppxQ9UJuM=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-5625-2172811-4.jpg");
+            blackProductImageUrls17.add("https://dynamic.zacdn.com/O-9taEorxb3-5J5CWPKFBJfu2Ck=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-5624-2172811-1.jpg");
+            blackProductImageUrls17.add("https://dynamic.zacdn.com/bez0cBpel1k7AruavxxgS-DEVpI=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-5624-2172811-2.jpg");
+            blackProductImageUrls17.add("https://dynamic.zacdn.com/Lfr5J-eQ0aqKIEWEkhqkSOoJt60=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-5625-2172811-3.jpg");
+            blackProductImageUrls17.add("https://dynamic.zacdn.com/PluowINt9W-kLGqB_sppxQ9UJuM=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-5625-2172811-4.jpg");
             List<String> pinkProductImageUrls17 = new ArrayList<>();
             pinkProductImageUrls17.add("https://dynamic.zacdn.com/pWK2vef9f2dXkJJO4RwRuQqNEqw=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-5628-4072811-1.jpg");
             pinkProductImageUrls17.add("https://dynamic.zacdn.com/seRUwlQC37UxqbYUchwJOd-Nm0s=/fit-in/762x1100/filters:quality(95):fill(ffffff)/http://static.sg.zalora.net/p/zalora-5629-4072811-2.jpg");
