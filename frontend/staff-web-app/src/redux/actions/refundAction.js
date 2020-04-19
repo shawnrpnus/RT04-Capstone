@@ -5,10 +5,14 @@ import { dispatchErrorMapError } from "./index";
 import { CREATE_IN_STORE_REFUND_RECORD } from "./types";
 import { UPDATE_REFUND_RECORD } from "./types";
 import {useHistory} from "react-router-dom";
+import CompletedRefundConfirmation from "../../models/refund/CompletedRefundConfirmation";
 
 axios.defaults.baseURL = process.env.REACT_APP_SPRING_API_URL;
 const REFUND_BASE_URL = "/api/refund/";
 const jsog = require("jsog");
+const NODE_API_URL = process.env.REACT_APP_NODE_API_URL;
+const EMAIL_BASE_URL = "/api/email";
+const _ = require("lodash");
 
 export const createInStoreRefundRequest = (
   refundRequest,
@@ -63,8 +67,48 @@ export const updateInStoreRefundRequest = (
       )
       .then(response => {
         const { data } = jsog.decode(response);
-        console.log(data);
+        // console.log(data);
         dispatch(updateRefundRecordSuccess(data));
+        const name = data.customer.firstName + data.customer.lastName;
+
+        const size = _.get(data, "refundLineItems.length");
+        let amountBeforePromoCode = 0;
+        let tAmount = 0;
+        let totalAmount = _.get(data, "refundAmount");
+
+        if (size) {
+          for (let i = 0; i < size; i++) {
+            let li = _.get(data, "refundLineItems");
+
+            if(data.refundLineItems[i].refundLineItemHandlerList
+                [data.refundLineItems[i].refundLineItemHandlerList.length-1].refundProgressEnum ===
+              "REFUND_SUCCESS") {
+              amountBeforePromoCode += li[i].totalPrice;
+            }
+            tAmount += li[i].totalPrice;
+          }
+        }
+
+        amountBeforePromoCode  = (amountBeforePromoCode/tAmount)*totalAmount;
+
+
+        console.log("amtBeforePromoCode", amountBeforePromoCode);
+        const val = (amountBeforePromoCode).toFixed(2);
+
+        const completedRefundConfirmation = new CompletedRefundConfirmation(
+          data.refundNumber,
+          name,
+          data.customer.email,
+          val
+        );
+        console.log(completedRefundConfirmation);
+
+        if(data.refundStatus === "COMPLETED" ||
+          data.refundStatus === "COMPLETED_WITH_REJECTED_PRODUCTS") {
+          dispatch(sendCompletedRefundConfirmation(completedRefundConfirmation));
+        } else if (data.refundStatus === "PROCESSING") {
+          dispatch(sendReceivedRefundConfirmation(completedRefundConfirmation));
+        }
         history.push(`/refund/viewRefundRecord/${data.refundId}`);
         toast.success("Refund Request Updated!", {
           position: toast.POSITION.TOP_CENTER
@@ -223,3 +267,39 @@ export const retrieveAllRefundsByParameter = (
       });
   };
 };
+
+
+export const sendCompletedRefundConfirmation = (request) => {
+  return (dispatch) => {
+    axios
+      .post(NODE_API_URL + EMAIL_BASE_URL + "/sendConfirmedRefundConfirmation", request)
+      .then(({ data }) => {
+        dispatch(sendCompletedRefundConfirmationSuccess(data));
+      })
+      .catch((err) => {
+        dispatchErrorMapError(err, dispatch);
+      });
+  };
+};
+const sendCompletedRefundConfirmationSuccess = (data) => ({
+  type: types.SEND_COMPLETED_REFUND_CONFIRMATION,
+  email: data,
+});
+
+export const sendReceivedRefundConfirmation = (request) => {
+  return (dispatch) => {
+    axios
+      .post(NODE_API_URL + EMAIL_BASE_URL + "/sendReceivedRefundConfirmation", request)
+      .then(({ data }) => {
+        dispatch(sendReceivedRefundConfirmationSuccess(data));
+      })
+      .catch((err) => {
+        dispatchErrorMapError(err, dispatch);
+      });
+  };
+};
+
+const sendReceivedRefundConfirmationSuccess = (data) => ({
+  type: types.SEND_RECEIVED_REFUND_CONFIRMATION,
+  email: data,
+});

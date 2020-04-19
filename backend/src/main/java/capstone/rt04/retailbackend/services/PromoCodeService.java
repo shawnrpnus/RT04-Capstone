@@ -137,7 +137,7 @@ public class PromoCodeService {
             throw new InvalidPromoCodeException("Invalid promo code");
         } else if (promoCode.getMinimumPurchase().compareTo(finalTotalAmount) > 0) {
             throw new InvalidPromoCodeException("Minimum purchase is $" + promoCode.getMinimumPurchase());
-        } else if (promoCode.getFlatDiscount().compareTo(finalTotalAmount) > 0) {
+        } else if (promoCode.getFlatDiscount() != null && promoCode.getFlatDiscount().compareTo(finalTotalAmount) > 0) {
             throw new InvalidPromoCodeException("Flat discount cannot exceed amount to pay");
         }
         return promoCode;

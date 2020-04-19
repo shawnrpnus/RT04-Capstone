@@ -99,9 +99,14 @@ const UpdateRefundRecordDetails = props => {
   const allRefundProgressEnums = useSelector(
     state => state.refund.allRefundProgressEnum
   );
+  // const allRefundProgressEnums =
+  //   ["PENDING_DELIVERY",
+  //   "HANDLED_BY_STAFF",
+  //   "REFUND_SUCCESS",
+  //   "REFUND_REJECTED"];
   const currStaff = useSelector(state => state.staffEntity.loggedInStaff);
 
-  console.log(currRefund);
+  // console.log(currRefund);
 
   //State
   const [inputState, setInputState] = useState({
@@ -120,14 +125,14 @@ const UpdateRefundRecordDetails = props => {
     refundProgress: "",
     customerName: "",
     email: "",
-    refundLineItemStatus: new Array(12).fill(0)
+    refundLineItemStatus: new Array(12).fill("")
   });
   const [currTransaction, setCurrTransaction] = useState(null);
   const [currRefundLineItem, setCurrRefundLineItem] = useState(null);
 
   const onChange = e => {
     e.persist();
-    console.log(e);
+    // console.log(e);
     setInputState(inputState => ({
       ...inputState,
       [e.target.name]: e.target.value
@@ -148,7 +153,6 @@ const UpdateRefundRecordDetails = props => {
     }));
   };
 
-  console.log(refundId);
   //Make API call to retrieve single prod from url param
   useEffect(() => {
     setIsLoading(true);
@@ -171,7 +175,7 @@ const UpdateRefundRecordDetails = props => {
         email: currRefund.customer.email,
         refundLineItemStatus: new Array(
           _.get(currRefund, "transactionLineItems.length")
-        ).fill(0)
+        ).fill("")
       }));
       setCurrTransaction(
         _.get(currRefund, "refundLineItems[0].transactionLineItem.transaction")
@@ -186,7 +190,7 @@ const UpdateRefundRecordDetails = props => {
 
   const onSubmit = () => {
     // console.log(inputState);
-    console.log(currRefundLineItem);
+    // console.log(currRefundLineItem);
     // console.log(inputState.refundLineItemStatus);
     const staffId = currStaff.staffId;
 
@@ -364,7 +368,7 @@ const UpdateRefundRecordDetails = props => {
                       title: "Refund Progress",
                       field: "refundProgress",
                       render: rowData => {
-                        console.log("RowData", rowData);
+                        // console.log("RowData", rowData);
                         const tableData = rowData.tableData;
                         const length = rowData.refundLineItemHandlerList.length;
                         const progress =
@@ -406,7 +410,7 @@ const UpdateRefundRecordDetails = props => {
                               <Select
                                 name="refundStatus"
                                 value={
-                                  inputState.refundLineItemStatus[tableData.id]
+                                  _.get(inputState, `refundLineItemStatus[${tableData.id}]`,"")
                                 }
                                 onChange={e => {
                                   onChangeRefundProgress(e, tableData.id);
