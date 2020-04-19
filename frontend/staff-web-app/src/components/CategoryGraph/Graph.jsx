@@ -58,7 +58,7 @@ function Graph(props) {
               <Label value="Category" offset={50} position="bottom" />
             </XAxis>
             <YAxis
-              domain={["dataMin", "dataMax"]}
+              domain={[dataMin => Math.max(0, dataMin-1000), "dataMax"]}
               label={{
                 value: renderYAxisName(),
                 angle: -90,

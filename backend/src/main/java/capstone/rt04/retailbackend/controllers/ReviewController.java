@@ -21,6 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -42,12 +43,14 @@ public class ReviewController {
     public ResponseEntity<?> createNewReview(@RequestBody ReviewCreateRequest reviewCreateRequest) throws InputDataValidationException, CreateNewReviewException {
         Review newReview = reviewService.createNewReview(reviewCreateRequest.getReview(), reviewCreateRequest.getProductId(),
                 reviewCreateRequest.getCustomerId());
+        clearReviewRelationships(newReview);
         return new ResponseEntity<>(newReview, HttpStatus.CREATED);
     }
 
     @GetMapping(ReviewControllerRoutes.RETRIEVE_REVIEW_BY_ID)
     public ResponseEntity<?> retrieveReviewById(@PathVariable Long reviewId) throws ReviewNotFoundException {
         Review review = reviewService.retrieveReviewById(reviewId);
+        clearReviewRelationships(review);
         return new ResponseEntity<>(review, HttpStatus.OK);
     }
 
@@ -78,26 +81,28 @@ public class ReviewController {
     @GetMapping(ReviewControllerRoutes.RETRIEVE_ALL_REVIEW_BY_PRODUCT_ID)
     public ResponseEntity<?> retrieveAllReviewByProductId(@PathVariable Long productId) throws ProductNotFoundException, ReviewNotFoundException {
         List<Review> reviews = reviewService.retrieveAllReviewsByProductId(productId);
-        clearReviewRelationships(reviews);
+        reviews.forEach(this::clearReviewRelationships);
         return new ResponseEntity<>(reviews, HttpStatus.OK);
     }
 
     @GetMapping(ReviewControllerRoutes.RETRIEVE_ALL_REVIEWS)
     public ResponseEntity<?> retrieveAllReviews() {
         List<Review> reviews = reviewService.retrieveAllReviews();
-        clearReviewRelationships(reviews);
+        reviews.forEach(this::clearReviewRelationships);
         return new ResponseEntity<>(reviews, HttpStatus.OK);
     }
 
     @PostMapping(ReviewControllerRoutes.UPDATE_REVIEW)
     public ResponseEntity<?> updateReview(@RequestBody ReviewCreateRequest reviewCreateRequest) throws ProductNotFoundException, ReviewNotUpdatedException, CustomerNotFoundException {
         Review review = reviewService.updateReview(reviewCreateRequest.getReview(), reviewCreateRequest.getCustomerId(), reviewCreateRequest.getProductId());
+        clearReviewRelationships(review);
         return new ResponseEntity<>(review, HttpStatus.OK);
     }
 
     @DeleteMapping(ReviewControllerRoutes.DELETE_REVIEW)
     public ResponseEntity<?> deleteReview(@PathVariable Long reviewId) throws ReviewNotDeletedException, ReviewNotFoundException, CustomerNotFoundException, ProductNotFoundException {
         Review deletedReview = reviewService.deleteReview(reviewId);
+        clearReviewRelationships(deletedReview);
         return new ResponseEntity<>(deletedReview, HttpStatus.OK);
     }
 
@@ -110,24 +115,23 @@ public class ReviewController {
     @PostMapping(ReviewControllerRoutes.RESPOND_TO_REVIEW)
     public ResponseEntity<?> respondToReview(@RequestBody ReviewResponseRequest request) throws ReviewNotFoundException {
         List<Review> reviews = reviewService.respondToReview(request.getReviewId(), request.getResponse());
-        clearReviewRelationships(reviews);
+        reviews.forEach(this::clearReviewRelationships);
         return new ResponseEntity<>(reviews, HttpStatus.OK);
     }
 
     @DeleteMapping(ReviewControllerRoutes.DELETE_REVIEW_RESPONSE)
     public ResponseEntity<?> deleteReviewResponse(@PathVariable Long reviewId) throws ReviewNotFoundException {
         List<Review> reviews = reviewService.deleteReviewResponse(reviewId);
-        clearReviewRelationships(reviews);
+        reviews.forEach(this::clearReviewRelationships);
         return new ResponseEntity<>(reviews, HttpStatus.OK);
     }
 
-    private void clearReviewRelationships(List<Review> reviews) {
-        for (Review review : reviews) {
-            if (review.getStaff() != null) {
-                review.getStaff().setRepliedReviews(null);
-            }
-            relationshipService.clearProductRelationships(review.getProduct());
-            relationshipService.clearCustomerRelationships(review.getCustomer());
+    private void clearReviewRelationships(Review review) {
+        if (review.getStaff() != null) {
+            review.getStaff().setRepliedReviews(null);
         }
+        relationshipService.clearProductRelationships(review.getProduct());
+        relationshipService.clearCustomerRelationships(review.getCustomer());
     }
+
 }
