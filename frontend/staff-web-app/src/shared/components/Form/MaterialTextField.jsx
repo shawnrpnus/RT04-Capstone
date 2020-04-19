@@ -25,7 +25,7 @@ const MaterialTextField = props => {
       <TextField
         className="material-form__field"
         name={fieldName}
-        value={_.get(state, fieldName)}
+        value={_.get(state, fieldName, "")}
         error={!!errors[fieldName]}
         helperText={errors[fieldName]}
         onChange={onChange}

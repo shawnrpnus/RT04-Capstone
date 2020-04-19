@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import { clearErrors } from "redux/actions";
 import { useDispatch, useSelector } from "react-redux";
 import signupPageStyle from "assets/jss/material-kit-pro-react/views/signupPageStyle";
 import { makeStyles } from "@material-ui/core/styles";
@@ -14,7 +13,8 @@ import {
   updateStylePreferences,
 } from "redux/actions/customerActions";
 import { retrieveAllStyles } from "redux/actions/styleActions";
-import { CheckBoxOutlineBlankRounded } from "@material-ui/icons";
+import { refreshCustomerEmail } from "redux/actions/customerActions";
+
 const useStyles = makeStyles(signupPageStyle);
 const _ = require("lodash");
 
@@ -46,7 +46,6 @@ function Style(props) {
     answers: [],
     error: "",
     style: "",
-    //new
     questionsRetrieved: [],
     answer0Retrieved: [],
     answersRetrieved: [],
@@ -63,8 +62,21 @@ function Style(props) {
 
   useEffect(() => {
     dispatch(retrieveAllStyles());
+  }, []);
+
+  useEffect(() => {
     const ans = [];
-    if (stylesRetrieved && stylesRetrieved[0].questions.length !== 0) {
+    // retrieve all questions and answer
+    console.log(stylesRetrieved.length > 0);
+    if (stylesRetrieved.length > 0) {
+      console.log(stylesRetrieved[0].questions.length !== 0);
+      console.log(stylesRetrieved);
+    }
+    if (
+      stylesRetrieved.length > 0 &&
+      stylesRetrieved[0].questions.length !== 0
+    ) {
+      console.log("1st render");
       stylesRetrieved.forEach(function(value, index) {
         ans.push({
           styleId: value.styleId,
@@ -79,6 +91,10 @@ function Style(props) {
         totalQns: stylesRetrieved[0].questions.length + 1,
       }));
     }
+    dispatch(refreshCustomerEmail(customer.email));
+  }, [stylesRetrieved]);
+
+  useEffect(() => {
     if (customer.style !== null) {
       //customer did the style quiz
       var style = new Array();
@@ -100,7 +116,6 @@ function Style(props) {
         answersRetrieved: answer,
       }));
       setAddedStyle(true);
-    } else {
     }
   }, [customer]);
 
@@ -116,13 +131,18 @@ function Style(props) {
     console.log(index);
     console.log(qns);
     console.log(answer);
-    inputState.stylePreferences.push(qns);
-    inputState.stylePreferences.push(answer);
-    inputState.indexes.push(index);
-    console.log(inputState.stylePreferences);
-    console.log(inputState.indexes);
+    const stylePreferences = inputState.stylePreferences;
+    const indexes = inputState.indexes;
+    stylePreferences.push(qns);
+    stylePreferences.push(answer);
+    indexes.push(index);
+    // inputState.stylePreferences.push(qns);
+    // inputState.stylePreferences.push(answer);
+    // inputState.indexes.push(index);
     setInputState((inputState) => ({
       ...inputState,
+      stylePreferences: stylePreferences,
+      indexes: indexes,
       currentQns: inputState.currentQns + 1,
     }));
   };
@@ -141,7 +161,10 @@ function Style(props) {
     const stylePreference = inputState.stylePreferences.toString();
     setInputState((inputState) => ({
       ...inputState,
+      questions: [],
       answers: [],
+      stylePreferences: [],
+      indexes: [],
     }));
     const gender = inputState.answer0.toString();
     console.log(gender);
@@ -164,9 +187,9 @@ function Style(props) {
     }
     //based on most common index, find the styleId
     var styleId = stylesRetrieved[mostFrequent].styleId;
-    console.log(styleId);
     const req = { customerId, stylePreference, styleId, gender };
     dispatch(addStylePreferences(req, enqueueSnackbar, setAddedStyle));
+    dispatch(refreshCustomerEmail(customer.email));
     setAddedStyle(true);
   };
 
@@ -184,9 +207,10 @@ function Style(props) {
     setInputState((inputState) => ({
       ...inputState,
       question0: questionBank[0].question,
+      answer0: questionBank[0].answers,
       questions: stylesRetrieved[0].questions,
       answers: ans,
-      answer0: questionBank[0].answers,
+      stylePreferences: [],
       currentQns: 0,
       totalQns: stylesRetrieved[0].questions.length + 1,
     }));
@@ -224,7 +248,7 @@ function Style(props) {
       stylePreferences: [],
       indexes: [],
       answer0: questionBank[0].answers,
-      currentQns: 0
+      currentQns: 0,
     }));
   };
 
@@ -238,7 +262,7 @@ function Style(props) {
       stylePreferences: [],
       indexes: [],
       questions: [],
-      currentQns: 0
+      currentQns: 0,
     }));
     const gender = inputState.answer0.toString();
     console.log(gender);
@@ -264,6 +288,7 @@ function Style(props) {
     console.log(styleId);
     const req = { customerId, stylePreference, styleId, gender };
     dispatch(addStylePreferences(req, enqueueSnackbar, setAddedStyle));
+    dispatch(refreshCustomerEmail(customer.email));
     setAddedStyle(true);
   };
 
@@ -290,20 +315,56 @@ function Style(props) {
       answer0: questionBank[0].answers,
       currentQns: 0,
       totalQns: stylesRetrieved[0].questions.length + 1,
+      stylePreferences: [],
     }));
     const customerId = customer.customerId;
     const styleChosen = customer.style.styleName;
     const req = { customerId, styleChosen };
     dispatch(deleteStylePreferences(req, enqueueSnackbar, setAddedStyle));
+    dispatch(refreshCustomerEmail(customer.email));
     setPopoverOpen(false);
   };
+
+  console.log(inputState);
 
   return (
     <div className={classes.textCenter}>
       <h4>Style Quiz</h4>
       <small>Receive recommendations on products that suit your style</small>
-      {stylesRetrieved && stylesRetrieved[0].questions.length === 0 ? (
-        <h5 className="bold-text">Look out for upcoming Style Quiz!</h5>
+      {stylesRetrieved.length > 0 &&
+      stylesRetrieved[0].questions.length === 0 ? (
+        <React.Fragment>
+          {hasAddStyle ? (
+            <div>
+              <div>
+                <h5>
+                  <i>
+                    Your Style is <b>{inputState.style}</b>
+                  </i>
+                </h5>
+                <div>
+                  <h6>{inputState.question0}</h6>
+                  <Button color="rose">{inputState.answer0Retrieved}</Button>
+                  {inputState.questionsRetrieved.map((qns, qnsNo) => (
+                    <div>
+                      <h6>{qns}</h6>
+                      <Button color="rose">
+                        {inputState.answersRetrieved[qnsNo]}
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+                <div className={classes.textCenter} style={{ marginTop: 20 }}>
+                  <Button round color="primary" onClick={clearConfirmation}>
+                    Delete Style Preferences
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <h5 className="bold-text">Look out for upcoming Style Quiz!</h5>
+          )}
+        </React.Fragment>
       ) : (
         <React.Fragment>
           {hasAddStyle ? ( //if added style
@@ -320,7 +381,9 @@ function Style(props) {
                   {inputState.questionsRetrieved.map((qns, qnsNo) => (
                     <div>
                       <h6>{qns}</h6>
-                      <Button color="rose">{inputState.answersRetrieved[qnsNo]}</Button>
+                      <Button color="rose">
+                        {inputState.answersRetrieved[qnsNo]}
+                      </Button>
                     </div>
                   ))}
                 </div>

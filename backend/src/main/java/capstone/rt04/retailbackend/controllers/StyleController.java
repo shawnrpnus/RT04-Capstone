@@ -62,9 +62,8 @@ public class StyleController {
 
     @DeleteMapping(StyleControllerRoutes.DELETE_STYLE)
     public ResponseEntity<?> deleteStyle(@PathVariable Long styleId) throws StyleNotFoundException, DeleteStyleException {
-        Style style = styleService.deleteStyle(styleId);
-        clearStyleRelationship(style);
-        return new ResponseEntity<>(style, HttpStatus.OK);
+        styleService.deleteStyle(styleId);
+        return new ResponseEntity<>("Style has been deleted", HttpStatus.OK);
     }
 
     @PostMapping(StyleControllerRoutes.ADD_STYLE_TO_PRODUCTS)
