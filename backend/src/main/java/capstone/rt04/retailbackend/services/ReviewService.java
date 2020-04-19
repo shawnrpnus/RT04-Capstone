@@ -133,8 +133,10 @@ public class ReviewService {
             for (TransactionLineItem tle : transaction.getTransactionLineItems()) {
                 if (tle.getProductVariant().getProduct().getProductId().equals(productId)) {
                     DeliveryStatusEnum deliveryStatus = transaction.getDeliveryStatus();
-                    return (deliveryStatus.equals(DeliveryStatusEnum.DELIVERED) ||
-                            deliveryStatus.equals(DeliveryStatusEnum.COLLECTED));
+                    if (deliveryStatus.equals(DeliveryStatusEnum.DELIVERED) ||
+                            deliveryStatus.equals(DeliveryStatusEnum.COLLECTED)){
+                        return true;
+                    }
                 }
             }
         }
