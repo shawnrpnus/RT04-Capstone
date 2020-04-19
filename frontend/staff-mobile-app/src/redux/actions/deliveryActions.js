@@ -89,18 +89,24 @@ export const confirmGroupedStoreOrderDelivery = (
 ) => {
   setLoading(true);
   return dispatch => {
-    const restockPromise = axios.post(
-      DELIVERY_BASE_URL + "/receiveRestockOrderItemThroughDelivery",
-      {
-        inStoreRestockOrderItemIds
-      }
-    );
-    const transactionPromise = axios.post(
-      DELIVERY_BASE_URL + "/receiveTransactionThroughDelivery",
-      {
-        transactionIds
-      }
-    );
+    let restockPromise = Promise.resolve();
+    if (inStoreRestockOrderItemIds && inStoreRestockOrderItemIds.length > 0) {
+      restockPromise = axios.post(
+        DELIVERY_BASE_URL + "/receiveRestockOrderItemThroughDelivery",
+        {
+          inStoreRestockOrderItemIds
+        }
+      );
+    }
+    let transactionPromise = Promise.resolve();
+    if (transactionIds && transactionIds.length > 0) {
+      transactionPromise = axios.post(
+        DELIVERY_BASE_URL + "/receiveTransactionThroughDelivery",
+        {
+          transactionIds
+        }
+      );
+    }
     Promise.all([restockPromise, transactionPromise])
       .then(_ => {
         const setViewedGroupStoreOrder = deliveryItems => {
