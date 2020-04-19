@@ -210,6 +210,7 @@ public class CustomerController {
         System.out.println(addUpdateShippingAddressRequest.getShippingAddress().getLng());
         if (inputErrMap != null) return new ResponseEntity<>(inputErrMap, HttpStatus.BAD_REQUEST);
         Customer customer = customerService.addShippingAddress(addUpdateShippingAddressRequest.getCustomerId(), addUpdateShippingAddressRequest.getShippingAddress());
+        relationshipService.clearCustomerRelationships(customer);
         return new ResponseEntity<>(customer, HttpStatus.OK);
     }
 
@@ -226,6 +227,7 @@ public class CustomerController {
 //        validationService.throwExceptionIfInvalidBean(req);
 //        Customer customer = customerService.deleteShippingAddress(req.getCustomerId(), req.getShippingAddressId());
         Customer customer = customerService.deleteShippingAddress(customerId, shippingAddressId);
+        relationshipService.clearCustomerRelationships(customer);
         return new ResponseEntity<>(customer, HttpStatus.OK);
     }
 
