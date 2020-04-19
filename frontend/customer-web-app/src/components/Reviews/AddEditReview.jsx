@@ -15,17 +15,17 @@ import Review from "../../models/review/Review";
 import AddEditReviewRequest from "../../models/review/AddEditReviewRequest";
 import {
   createReviewDetails,
-  updateReviewDetails
+  updateReviewDetails,
 } from "../../redux/actions/reviewAction";
 
 const useStyles = makeStyles(sectionCommentsStyle);
 const StyledRating = withStyles({
   iconFilled: {
-    color: "#ff6d75"
+    color: "#ffb400",
   },
   iconHover: {
-    color: "#ff3d47"
-  }
+    color: "#ffb400",
+  },
 })(Rating);
 export default function AddEditReview(props) {
   const {
@@ -33,24 +33,24 @@ export default function AddEditReview(props) {
     currReview,
     setCurrReview,
     addNewReview,
-    setAddNewReview
+    setAddNewReview,
   } = props;
   const classes = useStyles();
   //Redux
   const dispatch = useDispatch();
   const history = useHistory();
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
-  const currCustomer = useSelector(state => state.customer.loggedInCustomer);
-  const errors = useSelector(state => state.errors);
+  const currCustomer = useSelector((state) => state.customer.loggedInCustomer);
+  const errors = useSelector((state) => state.errors);
   const currentProductDetail = useSelector(
-    state => state.product.currentProductDetail
+    (state) => state.product.currentProductDetail
   );
 
   //State
   const [inputState, setInputState] = useState({
     reviewId: currReview ? currReview.reviewId : "",
     content: currReview ? currReview.content : "",
-    rating: currReview ? currReview.rating : 3
+    rating: currReview ? currReview.rating : 3,
   });
   const months = [
     "January",
@@ -64,7 +64,7 @@ export default function AddEditReview(props) {
     "September",
     "October",
     "November",
-    "December"
+    "December",
   ];
   const dateTime = new Date();
   const formatted_date =
@@ -74,11 +74,11 @@ export default function AddEditReview(props) {
     " " +
     dateTime.getFullYear();
 
-  const onChange = e => {
+  const onChange = (e) => {
     e.persist();
-    setInputState(inputState => ({
+    setInputState((inputState) => ({
       ...inputState,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     }));
     if (Object.keys(errors).length !== 0) {
       dispatch(clearErrors());
@@ -151,15 +151,15 @@ export default function AddEditReview(props) {
               {currCustomer.firstName} {currCustomer.lastName}{" "}
               <small>· {formatted_date}</small>
               <br />
-              <Rating
-                name="simple-controlled"
+              <StyledRating
                 value={inputState.rating}
                 onChange={(event, newValue) => {
-                  setInputState(inputState => ({
+                  setInputState((inputState) => ({
                     ...inputState,
-                    rating: newValue
+                    rating: newValue,
                   }));
                 }}
+                style={{ color: "red" }}
               />
             </span>
           }

@@ -18,12 +18,12 @@ import {
   ViewColumn,
   Visibility,
   List,
-  Delete
+  Delete,
 } from "@material-ui/icons";
 import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
 import {
   retrieveProductsDetails,
-  deleteProduct
+  deleteProduct,
 } from "../../../../redux/actions/productActions";
 import withPage from "../../../Layout/page/withPage";
 import colourList from "../../../../scss/colours.json";
@@ -49,7 +49,7 @@ const tableIcons = {
   Search: Search,
   SortArrow: () => <div />,
   ThirdStateCheck: Remove,
-  ViewColumn: ViewColumn
+  ViewColumn: ViewColumn,
 };
 
 const jsonColorNameList = _.keyBy(colourList, "name");
@@ -58,7 +58,8 @@ const jsonColorHexList = _.keyBy(colourList, "hex");
 class ProductsTable extends PureComponent {
   state = {
     selectedProductId: "",
-    openProductStocksDetailsDialogue: false
+    openProductStocksDetailsDialogue: false,
+    lookup: {},
   };
 
   componentDidMount() {
@@ -74,18 +75,18 @@ class ProductsTable extends PureComponent {
     }
   }
 
-  handleViewProductDetails = id => {
+  handleViewProductDetails = (id) => {
     this.props.history.push(`/product/viewProductDetails/${id}`);
   };
 
-  handleViewProductStocksDetails = productId => {
+  handleViewProductStocksDetails = (productId) => {
     this.setState({
       selectedProductId: productId,
-      openProductStocksDetailsDialogue: true
+      openProductStocksDetailsDialogue: true,
     });
   };
 
-  handleDeleteProduct = productId => {
+  handleDeleteProduct = (productId) => {
     this.props
       .confirmDialog({ description: "Selected product will be deleted" })
       .then(() =>
@@ -102,26 +103,33 @@ class ProductsTable extends PureComponent {
     const warehouse =
       _.get(this.props, "staff.department.departmentName") === "Warehouse";
     const storeId = _.get(store, "storeId", null);
+    const lookup = {};
 
     let data = [];
     if (products) {
-      data = products.map(e => {
+      let i = 0;
+      data = products.map((e) => {
         const { product, colourToSizeImageMaps } = e;
         let image;
-        const colours = colourToSizeImageMaps.map(e => {
+        const colours = colourToSizeImageMaps.map((e) => {
           if (!image)
             image = e.productImages[0] && e.productImages[0].productImageUrl;
           return jsonColorHexList[e.colour].name;
         });
+
+        if (!lookup[product.category.categoryId]) {
+          lookup[product.category.categoryId] = product.category.categoryName;
+        }
+
         return {
           productId: product.productId,
           productName: product.productName,
           serialNumber: product.serialNumber,
           cost: product.cost,
           price: product.price,
-          category: product.category.categoryName,
+          category: product.category.categoryId,
           colours: colours,
-          image: image
+          image: image,
         };
       });
     }
@@ -140,18 +148,18 @@ class ProductsTable extends PureComponent {
                 field: "image",
                 filtering: false,
                 sorting: false,
-                render: rowData => (
+                render: (rowData) => (
                   <Link to={`/product/viewProductDetails/${rowData.productId}`}>
                     <img
                       style={{
                         width: "100%",
                         height: "auto",
-                        borderRadius: "10%"
+                        borderRadius: "10%",
                       }}
                       src={rowData.image}
                     />
                   </Link>
-                )
+                ),
               },
               { title: "Serial No.", field: "serialNumber" },
               { title: "Name", field: "productName" },
@@ -160,7 +168,7 @@ class ProductsTable extends PureComponent {
               {
                 title: "Colours",
                 field: "colours",
-                render: rowData =>
+                render: (rowData) =>
                   rowData.colours.map((color, index) => {
                     return (
                       <FiberManualRecordIcon
@@ -169,19 +177,20 @@ class ProductsTable extends PureComponent {
                           color: jsonColorNameList[color].hex,
                           border: color === "White" ? "1px black solid" : null,
                           borderRadius: "200px",
-                          transform: color === "White" ? "scale(0.7)" : false
+                          transform: color === "White" ? "scale(0.7)" : false,
                         }}
                       />
                     );
-                  })
+                  }),
               },
               {
                 title: "Category",
                 field: "category",
                 hidden:
                   Array.isArray(columnsToHide) &&
-                  columnsToHide.includes("category")
-              }
+                  columnsToHide.includes("category"),
+                lookup,
+              },
             ]}
             data={data}
             options={{
@@ -193,7 +202,7 @@ class ProductsTable extends PureComponent {
               headerStyle: { textAlign: "center" }, //change header padding
               cellStyle: { textAlign: "center" },
               selection: this.props.selectable,
-              draggable: false
+              draggable: false,
             }}
             actions={
               !this.props.selectionAction
@@ -202,7 +211,7 @@ class ProductsTable extends PureComponent {
                       icon: Visibility,
                       tooltip: "View Product Variants",
                       onClick: (event, rowData) =>
-                        this.handleViewProductDetails(rowData.productId)
+                        this.handleViewProductDetails(rowData.productId),
                     },
 
                     !salesmarketing && (storeId || warehouse)
@@ -212,7 +221,7 @@ class ProductsTable extends PureComponent {
                           onClick: (event, rowData) =>
                             this.handleViewProductStocksDetails(
                               rowData.productId
-                            )
+                            ),
                         }
                       : null,
                     salesmarketing
@@ -220,9 +229,9 @@ class ProductsTable extends PureComponent {
                           icon: Delete,
                           tooltip: "Delete product",
                           onClick: (event, rowData) =>
-                            this.handleDeleteProduct(rowData.productId)
+                            this.handleDeleteProduct(rowData.productId),
                         }
-                      : null
+                      : null,
                   ]
                 : [this.props.selectionAction][0].icon === undefined
                 ? null
@@ -249,14 +258,14 @@ class ProductsTable extends PureComponent {
 }
 
 // mapping the state of 'global store' to the props of the local component
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   products: state.product.products,
-  errors: state.errors
+  errors: state.errors,
 });
 
 const mapDispatchToProps = {
   retrieveProductsDetails,
-  deleteProduct
+  deleteProduct,
 };
 
 export const ProductsTableRaw = withRouter(ProductsTable);
