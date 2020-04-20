@@ -58,12 +58,13 @@ function Graph(props) {
               <Label value="Category" offset={50} position="bottom" />
             </XAxis>
             <YAxis
-              domain={[dataMin => Math.max(0, dataMin-1000), "dataMax"]}
+              domain={[0, "dataMax"]}
               label={{
                 value: renderYAxisName(),
                 angle: -90,
                 position: "insideTopLeft",
-                dy: 200
+                dy: 200,
+                dx: -20
               }}
             />
             <Tooltip />

@@ -39,7 +39,7 @@ export const createOnlineRefundRequest = (
           orderNumber
         );
         dispatch(createRefundLabel(generateRefundLabel));
-        setTimeout(() => dispatch(sendRefundLabel(generateRefundLabel)), 10000);
+        setTimeout(() => dispatch(sendRefundLabel(generateRefundLabel)), 20000);
         history.push(`/account/profile/viewRefund/${data.refundId}`);
         enqueueSnackbar("Refund request created. Please check your email for the refund instructions!", {
           variant: "success",

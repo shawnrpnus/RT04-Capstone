@@ -30,6 +30,7 @@ import ReservationDetails from "src/screens/Reservation/ReservationDetails";
 import PendingPurchases from "src/screens/Purchases/PendingPurchases";
 import CompletedPurchases from "src/screens/Purchases/CompletedPurchases";
 import PendingCollections from "src/screens/Purchases/Collections/PendingCollections";
+import CompletedCollections from "src/screens/Purchases/Collections/CompletedCollections";
 
 // screens
 
@@ -413,7 +414,7 @@ function CollectionsTabs(props) {
       />
       <Tab.Screen
         name="Completed Collections"
-        component={CompletedPurchases}
+        component={CompletedCollections}
         options={{
           tabBarLabel: "Completed",
           tabBarIcon: ({ focused, color }) => (
