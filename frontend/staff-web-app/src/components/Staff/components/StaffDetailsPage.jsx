@@ -7,12 +7,11 @@ import MaterialTextField from "../../../shared/components/Form/MaterialTextField
 import Button from "@material-ui/core/Button";
 import * as PropTypes from "prop-types";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
-import CloseCircleIcon from "mdi-react/CloseCircleIcon";
-import ContentSaveIcon from "mdi-react/ContentSaveIcon";
-import ButtonToolbar from "reactstrap/es/ButtonToolbar";
 import StaffChangePasswordRequest from "../../../models/staff/StaffChangePasswordRequest";
 import { changePassword } from "../../../redux/actions/staffActions";
 import InputAdornment from "@material-ui/core/InputAdornment";
+import SaveIcon from '@material-ui/icons/Save';
+import CancelIcon from '@material-ui/icons/Cancel';
 
 const _ = require("lodash");
 
@@ -338,27 +337,24 @@ class StaffDetailsPage extends Component {
                   type="password"
                 />
               </Grid>
-            </Grid>
+              <Grid item xs={12} md={12}></Grid>
 
-            <ButtonToolbar className="form__button-toolbar">
               <Button
+                  startIcon={<SaveIcon />}
                 color="primary"
-                className="icon"
+                variant="contained"
                 onClick={e => this.handleSubmit(e)}
-                disabled={hasErrors}
+                  size="small"
               >
-                <p>
-                  <ContentSaveIcon />
                   Submit
-                </p>
+
               </Button>
-              <Button type="button" className="icon" onClick={this.onCancel}>
-                <p>
-                  <CloseCircleIcon />
+              <Button startIcon={<CancelIcon/>} variant="contained" size="small" onClick={this.onCancel}>
+
                   Cancel
-                </p>
+
               </Button>
-            </ButtonToolbar>
+            </Grid>
           </form>
         )}
       </React.Fragment>

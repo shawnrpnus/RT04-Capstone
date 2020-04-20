@@ -233,9 +233,10 @@ public class StaffController {
     }
 
     @PostMapping(REASSIGN_STAFF_STORE)
-    public ResponseEntity<?> reassignStaffStore(@RequestBody ReassignStaffStoreRequest reassignStaffStoreRequest) throws StoreNotFoundException, StaffNotFoundException {
-        staffService.reassignStaffStore(reassignStaffStoreRequest.getStoreId(), reassignStaffStoreRequest.getStaffIds());
-        return new ResponseEntity<>(null, HttpStatus.OK);
+    public ResponseEntity<?> reassignStaffStore(@RequestBody ReassignStaffStoreRequest reassignStaffStoreRequest) throws StoreNotFoundException, StaffNotFoundException, StoreCannotReassignException {
+            staffService.reassignStaffStore(reassignStaffStoreRequest.getStoreId(), reassignStaffStoreRequest.getStaffIds());
+            return new ResponseEntity<>(null, HttpStatus.OK);
+
     }
 
     @GetMapping(RETRIEVE_ALL_STORE_STAFF)

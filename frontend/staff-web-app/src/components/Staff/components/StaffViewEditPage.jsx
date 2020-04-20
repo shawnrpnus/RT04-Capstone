@@ -1,4 +1,4 @@
-import React, { Component, PureComponent } from "react";
+import React, { Component } from "react";
 import withPage from "../../Layout/page/withPage";
 import { connect } from "react-redux";
 import { clearErrors, updateErrors } from "../../../redux/actions";
@@ -19,7 +19,6 @@ import { Button, ButtonToolbar } from "reactstrap";
 import * as PropTypes from "prop-types";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import axios from "axios";
-import MaterialNumberSelect from "../../../shared/components/Form/MaterialNumberSelect";
 import ContentSaveIcon from "mdi-react/ContentSaveIcon";
 import CloseCircleIcon from "mdi-react/CloseCircleIcon";
 import Autocomplete from "@material-ui/lab/Autocomplete";
@@ -30,6 +29,7 @@ import PencilIcon from "mdi-react/PencilIcon";
 import DeleteIcon from "mdi-react/DeleteIcon";
 import TableEyeIcon from "mdi-react/TableEyeIcon";
 import withMaterialConfirmDialog from "../../Layout/page/withMaterialConfirmDialog";
+import { toast } from "react-toastify";
 
 const _ = require("lodash");
 
@@ -147,7 +147,6 @@ class StaffViewEditPage extends Component {
 
   onChange = (e) => {
     const name = e.target.name;
-    console.log(e);
     this.setState({ [name]: e.target.value }); //computed property name syntax
     if (Object.keys(this.props.errors).length !== 0) {
       this.props.clearErrors();
@@ -166,11 +165,19 @@ class StaffViewEditPage extends Component {
         if (!data.error && data.standard.countryname === "Singapore") {
           const addrLine1 = data.standard.addresst;
           this.setState({ line1: addrLine1 });
+        } else if (data.error.code === "006") {
         } else {
           const customErrors = {
             postalCode: "Postal code is invalid",
           };
           this.props.updateErrors(customErrors);
+        }
+      })
+      .catch((err) => {
+        if (err) {
+          toast.error("Unexpected error, please submit autofill again!", {
+            position: toast.POSITION.TOP_CENTER,
+          });
         }
       });
   };

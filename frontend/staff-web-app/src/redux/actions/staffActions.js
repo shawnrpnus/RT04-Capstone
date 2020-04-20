@@ -399,8 +399,12 @@ export const reassignStaffStore = (reassignStaffStoreRequest, history) => {
         retrieveAllStoreStaff()(dispatch);
       })
       .catch((err) => {
-        console.log(err);
-        if (err.response) dispatch(reassignError(err.response.data));
+          if (err.response) {
+              toast.error(err.response.data.errorMessage, {
+                  position: toast.POSITION.TOP_CENTER
+              });
+          }
+          retrieveAllStoreStaff()(dispatch);
       });
   };
 };

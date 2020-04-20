@@ -805,11 +805,15 @@ public class ProductService {
     public List<ProductStock> retrieveLowStockProducts(Long storeId) {
         Warehouse warehouse = warehouseService.retrieveAllWarehouses().get(0);
         List<ProductStock> productStocks;
+        List<ProductStock> stocks = (List<ProductStock>) productStockRepository.findAll();
+        Integer noticationLevel = 0;
+        if (stocks != null && stocks.size() > 0)
+            noticationLevel = stocks.get(0).getNotificationLevel();
 
         if (storeId == null) {
-            productStocks = productStockRepository.findAllByWarehouse_WarehouseIdAndQuantityLessThan(warehouse.getWarehouseId(), 10);
+            productStocks = productStockRepository.findAllByWarehouse_WarehouseIdAndQuantityLessThanEqual(warehouse.getWarehouseId(), noticationLevel);
         } else {
-            productStocks = productStockRepository.findAllByStore_StoreIdAndQuantityLessThan(storeId, 10);
+            productStocks = productStockRepository.findAllByStore_StoreIdAndQuantityLessThanEqual(storeId, noticationLevel);
         }
         lazilyLoadProductStock(productStocks);
         return productStocks;
