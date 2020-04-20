@@ -36,6 +36,7 @@ import capstone.rt04.retailbackend.util.exceptions.review.ReviewNotUpdatedExcept
 import capstone.rt04.retailbackend.util.exceptions.shoppingcart.InvalidCartTypeException;
 import capstone.rt04.retailbackend.util.exceptions.staff.CreateNewStaffAccountException;
 import capstone.rt04.retailbackend.util.exceptions.staff.StaffNotFoundException;
+import capstone.rt04.retailbackend.util.exceptions.staff.StoreCannotReassignException;
 import capstone.rt04.retailbackend.util.exceptions.store.StoreNotFoundException;
 import capstone.rt04.retailbackend.util.exceptions.style.CreateNewStyleException;
 import capstone.rt04.retailbackend.util.exceptions.style.DeleteStyleException;
@@ -123,7 +124,7 @@ public class GeneralExceptionHandler extends ResponseEntityExceptionHandler {
             DeliveryHasAlreadyBeenConfirmedException.class, ReviewNotUpdatedException.class, NoItemForDeliveryException.class,
 
             PromoCodeUsedException.class, InvalidPromoCodeException.class, CreateNewPromoCodeException.class, StripeException.class, StaffLeaveCannotCreateException.class, StaffLeaveCannotUpdateException.class,
-            PayrollCannotCreateException.class, StaffLeaveCannotDeleteException.class
+            PayrollCannotCreateException.class, StaffLeaveCannotDeleteException.class, StoreCannotReassignException.class
 
     })
     public final ResponseEntity<Object> handleBadRequestExceptions(Exception ex, WebRequest req) {

@@ -87,19 +87,18 @@ class ReassignStaffToStore extends Component {
     handleSelected = (evt, data) => {
         this.setState({ showReselectStore: true });
         evt.preventDefault();
-        console.log(data);
         data.forEach(element => {
             this.state.staffIds.push(element.staffId);
         });
     };
     handleConfirm = e => {
         e.preventDefault();
-        console.log(this.state.staffIds);
         const req = new ReassignStaffStoreRequest(this.state.newStoreId, this.state.staffIds);
         this.props.reassignStaffStore(req, this.props.history);
         this.setState({ staffIds: [] });
         this.setState({ showReselectStore: false });
         this.setState({ mode:true });
+        this.setState({newStoreId:""})
 
     };
 
@@ -112,7 +111,6 @@ class ReassignStaffToStore extends Component {
     }
 
     render() {
-        console.log(this.props.storeStaff);
         return (
             <React.Fragment>
             <div className="card__title">
