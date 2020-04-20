@@ -39,7 +39,6 @@ export const createOnlineRefundRequest = (
           orderNumber
         );
         dispatch(createRefundLabel(generateRefundLabel));
-        setTimeout(() => dispatch(sendRefundLabel(generateRefundLabel)), 10000);
         history.push(`/account/profile/viewRefund/${data.refundId}`);
         enqueueSnackbar("Refund request created. Please check your email for the refund instructions!", {
           variant: "success",
@@ -104,6 +103,7 @@ export const createRefundLabel = (request) => {
     axios
       .post(NODE_API_URL + REFUND_BASE_URL + "/generateRefundPDF", request)
       .then(({ data }) => {
+        setTimeout(() => dispatch(sendRefundLabel(request)), 5000);
         dispatch(createRefundLabelSuccess(data));
       })
       .catch((err) => {
