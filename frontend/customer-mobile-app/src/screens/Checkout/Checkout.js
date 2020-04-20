@@ -1,20 +1,16 @@
-import React, { useState } from "react";
-import { Block, Text } from "galio-framework";
-import { Dimensions, ScrollView } from "react-native";
-import { useDispatch, useSelector } from "react-redux";
+import React, {useState} from "react";
+import {Block} from "galio-framework";
+import {Dimensions, ScrollView} from "react-native";
+import {useDispatch, useSelector} from "react-redux";
 import CollectionOptions from "src/screens/Checkout/CollectionOptions";
 import PaymentOptions from "src/screens/Checkout/PaymentOptions";
 import CheckoutItemList from "src/screens/Checkout/CheckoutItemList";
 import Spinner from "react-native-loading-spinner-overlay";
 import PromoCode from "src/screens/Checkout/PromoCode";
 import Totals from "src/screens/Checkout/Totals";
-import { Button } from "react-native-paper";
-import Theme from "src/constants/Theme";
-import { set } from "react-native-reanimated";
 import EditCardModal from "src/screens/Checkout/EditCardModal";
 import EditAddressModal from "src/screens/Checkout/EditAddressModal";
-import { makePaymentMobile } from "src/redux/actions/customerActions";
-import {useFocusEffect} from "@react-navigation/native";
+import {makePaymentMobile} from "src/redux/actions/customerActions";
 
 const { width, height } = Dimensions.get("window");
 
@@ -53,7 +49,7 @@ function Checkout(props) {
       paymentMethodId: creditCard.paymentMethodId,
       totalAmount: Number(checkoutFinalTotal),
       storeId: customer.inStoreShoppingCart.store.storeId,
-      deliveryAddress,
+      deliveryAddress: collectionOption === "delivery" ? deliveryAddress : null,
       billingAddress,
       storeToCollectId:
         collectionOption === "in-store"
