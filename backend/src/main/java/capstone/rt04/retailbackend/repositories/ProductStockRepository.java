@@ -18,9 +18,9 @@ public interface ProductStockRepository extends CrudRepository<ProductStock, Lon
 
     ProductStock findByWarehouse_WarehouseIdAndProductVariant_ProductVariantId(Long warehouseId, Long productVariantId);
 
-    List<ProductStock> findAllByWarehouse_WarehouseIdAndQuantityLessThan(Long warehouseId, Integer quantity);
+    List<ProductStock> findAllByWarehouse_WarehouseIdAndQuantityLessThanEqual(Long warehouseId, Integer quantity);
 
-    List<ProductStock> findAllByStore_StoreIdAndQuantityLessThan(Long warehouseId, Integer quantity);
+    List<ProductStock> findAllByStore_StoreIdAndQuantityLessThanEqual(Long warehouseId, Integer quantity);
 
     @Query("SELECT ps FROM ProductStock ps WHERE ps.store.storeId =?1 AND ps.productVariant.productVariantId =?2")
     ProductStock findAllByStoreStoreIdAndProductVariantProductVariantId(Long storeId, Long productVariantId);
