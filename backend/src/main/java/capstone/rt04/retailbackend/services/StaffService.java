@@ -553,7 +553,10 @@ public class StaffService {
         javaMailSender.send(msg);
     }
 
-    public void reassignStaffStore(Long storeId, List<Long> staffIds) throws StoreNotFoundException, StaffNotFoundException {
+    public void reassignStaffStore(Long storeId, List<Long> staffIds) throws StoreNotFoundException, StaffNotFoundException, StoreCannotReassignException {
+        if(storeId == null){
+            throw new StoreCannotReassignException("Please select a store!");
+        }
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new StoreNotFoundException("Store with id: " + storeId + " does not exist"));
         for (Long s : staffIds) {

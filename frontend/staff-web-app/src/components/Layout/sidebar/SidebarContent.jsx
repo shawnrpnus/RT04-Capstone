@@ -187,11 +187,13 @@ class SidebarContent extends Component {
                 route="/style/addStyleToProducts"
                 onClick={this.hideSidebar}
               />
+              {salesmarketing && (
               <SidebarLink
                   title="Style Quiz"
                   route="/style/manageStyleQuiz"
                   onClick={this.hideSidebar}
-                />
+              />
+              )}
             </SidebarCategory>
           )}
           {salesmarketing && (
